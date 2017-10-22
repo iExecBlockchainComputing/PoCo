@@ -20,11 +20,11 @@ settings.C_cost    = 1
 settings.C_CR      = lambda x: 0.9
 settings.V_funds   = None          # set by experience
 ###############################################################################
-targets = [0.99, 0.999, 0.9999]
+targets = [0.99, 0.999, 0.9999, 0.99999]
 funds   = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]
 runs    = 10000
 sample  = 128
-pwd     = "/home/amxx/Work/iExec/sandbox/simulator/data"
+pwd     = "/home/amxx/Work/iExec/sandbox/simulator/data/%dx%d" % (runs, sample)
 x       = np.logspace(np.log10(5e-4), np.log10(5e-1), sample)
 ###############################################################################
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 					arr_profit          = np.empty((i+1,3))
 					arr_profit[:i+1,0 ] = x[:i+1]
 					arr_profit[:i+1,1:] = y_profit[f][:i+1]
-					np.save("%s/profitability.fund-%.2f.trg-%f.checkpoint" % (pwd, f, target), arr_profit)
+					np.save("%s/profitability.fund-%05.2f.trg-%f.checkpoint" % (pwd, f, target), arr_profit)
 
 		# Final
 		os.rename("%s/effectiveness.trg-%f.checkpoint.npy" % (pwd, target),
@@ -104,5 +104,5 @@ if __name__ == '__main__':
 		os.rename("%s/consensus.trg-%f.checkpoint.npy"     % (pwd, target),
 		          "%s/consensus.trg-%f.npy"                % (pwd, target))
 		for f in funds:
-			os.rename("%s/profitability.fund-%.2f.trg-%f.checkpoint.npy" % (pwd, f, target),
-			          "%s/profitability.fund-%.2f.trg-%f.npy"            % (pwd, f, target))
+			os.rename("%s/profitability.fund-%05.2f.trg-%f.checkpoint.npy" % (pwd, f, target),
+			          "%s/profitability.fund-%05.2f.trg-%f.npy"            % (pwd, f, target))
