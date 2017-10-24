@@ -12,7 +12,6 @@ def initPlot():
 	plt.axes().spines['top'  ].set_visible(False)
 
 def endPlot(fname=None):
-	plt.legend()
 	if fname == None:
 		plt.show()
 	else:
@@ -25,63 +24,77 @@ funds   = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]
 pwd_in  = "/home/amxx/Work/iExec/sandbox/simulator/data/10000x128"
 pwd_out = "/home/amxx/Work/iExec/sandbox/simulator/plot/10000x128"
 ###############################################################################
+styles  = [':', '--', '-.', '-']
+###############################################################################
 
 if __name__ == '__main__':
 
 
 	# ---------------------------------------------------------------------------
 
-	for target in targets:
-		data = np.load("%s/effectiveness.trg-%f.npy" % (pwd_in, target))
-		initPlot()
-		plt.plot(data[:,0], data[:,1], color=colors[0])
-		plt.title("Attack effectiveness\n(target credibility: %.4f%%)" % (target*100))
-		plt.xlabel("Portion of the platform controlled by attackers")
-		plt.ylabel("Attack success rate")
-		plt.xlim(left=data[:,0].min(), right=data[:,0].max())
-		plt.xscale('log')
-		plt.ylim(bottom=0)
-		plt.grid(axis='y', linestyle='--')
-		endPlot("%s/effectiveness.trg-%f.png" % (pwd_out, target))
-		# endPlot()
+	initPlot()
+	data_effect = dict()
+	for target, style in zip(targets, styles):
+		data_effect[target] = np.load("%s/effectiveness.trg-%f.npy" % (pwd_in, target))
+		plt.plot(data_effect[target][:,0], data_effect[target][:,1], label="Target: %.4f%%" % (target*100), color=colors[0], linestyle=style)
+	plt.title("Attack effectiveness")
+	plt.xlabel("Portion of the platform controlled by attackers")
+	plt.ylabel("Attack success rate")
+	plt.legend(loc='upper left')
+	plt.grid(axis='y', linestyle='--')
+	xmin = min(d[:,0].min() for d in data_effect.values())
+	xmax = max(d[:,0].max() for d in data_effect.values())
+	plt.xlim(left=xmin, right=xmax)
+	plt.xscale('log')
+	plt.ylim(bottom=0)
+	endPlot("%s/effectiveness.png" % (pwd_out))
+	# endPlot()
 
 	# ---------------------------------------------------------------------------
 
-	for target in targets:
-		data = np.load("%s/consensus.trg-%f.npy" % (pwd_in, target))
+	initPlot()
+	data_consensus = dict()
+	for target, style in zip(targets, styles):
+		data_consensus[target] = np.load("%s/consensus.trg-%f.npy" % (pwd_in, target))
+		plt.plot(data_consensus[target][:,0], data_consensus[target][:,1], label="Target: %.4f%%" % (target*100), color=colors[1], linestyle=style)
+	plt.title("Number of contribution to consensus")
+	plt.xlabel("Portion of the platform controlled by attackers")
+	plt.ylabel("Mean number of votes")
+	plt.legend(loc='upper left')
+	plt.grid(axis='y', linestyle='--')
+	xmin = min(d[:,0].min() for d in data_consensus.values())
+	xmax = max(d[:,0].max() for d in data_consensus.values())
+	plt.xlim(left=xmin, right=xmax)
+	plt.xscale('log')
+	plt.ylim(bottom=0)
+	endPlot("%s/consensus.png" % (pwd_out))
+	# endPlot()
+
+	# ---------------------------------------------------------------------------
+
+	for f in funds:
 		initPlot()
-		plt.plot(data[:,0], data[:,1], color=colors[1])
-		plt.title("Number of contribution to consensus\n(target credibility: %.4f%%)" % (target*100))
+		data_profit = dict()
+		for target, style in zip(targets, styles):
+			data_profit[target] = np.load("%s/profitability.fund-%05.2f.trg-%f.npy" % (pwd_in, f, target))
+			plt.plot(data_profit[target][:,0], data_profit[target][:,1], label="Target: %.4f%% - Good workers" % (target*100), color=colors[2], linestyle=style)
+			plt.plot(data_profit[target][:,0], data_profit[target][:,2], label="Target: %.4f%% - Attackers   " % (target*100), color=colors[3], linestyle=style)
+		# plt.title("Profitability\n(committement funds %.2f, target credibility: %.4f%%)" % (f, target*100))
+		plt.title("Profitability\n(committement funds %.2f)" % (f))
 		plt.xlabel("Portion of the platform controlled by attackers")
-		plt.ylabel("Mean number of votes")
-		plt.xlim(left=data[:,0].min(), right=data[:,0].max())
-		plt.xscale('log')
-		plt.ylim(bottom=0)
-		plt.grid(axis='y', which='major', linestyle='--')
+		plt.ylabel("Mean profit per contribution")
+		plt.legend(loc='lower left')
+		plt.grid(axis='y', which='major', linestyle='-')
 		plt.grid(axis='y', which='minor', linestyle='--', alpha=0.3)
-		endPlot("%s/consensus.trg-%f.png" % (pwd_out, target))
+		xmin = min(            d[:,0].min()   for d in data_profit.values())
+		xmax = max(            d[:,0].max()   for d in data_profit.values())
+		ymax = max(np.absolute(d[:,1:]).max() for d in data_profit.values())
+		plt.xlim(left=xmin, right=xmax)
+		plt.xscale('log')
+		plt.ylim(bottom=-1.2*ymax, top=1.2*ymax)
+		plt.axes().yaxis.set_minor_locator  (plt.axes().yaxis.get_major_locator())
+		plt.axes().yaxis.set_minor_formatter(plt.axes().yaxis.get_major_formatter())
+		plt.axes().yaxis.set_major_locator(ticker.MultipleLocator(10000000))
+		plt.axes().yaxis.set_major_formatter(ticker.FormatStrFormatter(''))
+		endPlot("%s/profitability.fund-%05.2f.png" % (pwd_out, f))
 		# endPlot()
-
-	# ---------------------------------------------------------------------------
-
-	for target in targets:
-		for f in funds:
-			data = np.load("%s/profitability.fund-%05.2f.trg-%f.npy" % (pwd_in, f, target))
-			initPlot()
-			plt.plot(data[:,0], data[:,1], label="Good workers", color=colors[2])
-			plt.plot(data[:,0], data[:,2], label="Attackers",    color=colors[3])
-			plt.title("Profitability\n(committement funds %.2f, target credibility: %.4f%%)" % (f, target*100))
-			plt.xlabel("Portion of the platform controlled by attackers")
-			plt.ylabel("Mean profit per contribution")
-			plt.xlim(left=data[:,0].min(), right=data[:,0].max())
-			plt.xscale('log')
-			sup = np.absolute(data[:,1:]).max()
-			plt.ylim(bottom=-1.2*sup, top=1.2*sup)
-			plt.grid(axis='y', which='major', linestyle='-')
-			plt.grid(axis='y', which='minor', linestyle='--', alpha=0.3)
-			plt.axes().yaxis.set_minor_locator  (plt.axes().yaxis.get_major_locator())
-			plt.axes().yaxis.set_minor_formatter(plt.axes().yaxis.get_major_formatter())
-			plt.axes().yaxis.set_major_locator(ticker.MultipleLocator(10000000))
-			plt.axes().yaxis.set_major_formatter(ticker.FormatStrFormatter(''))
-			endPlot("%s/profitability.fund-%05.2f.trg-%f.png" % (pwd_out, f, target))
-			# endPlot()
