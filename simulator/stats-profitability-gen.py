@@ -20,7 +20,7 @@ settings.C_cost    = 1
 settings.C_CR      = lambda x: 0.9
 settings.V_funds   = None          # set by experience
 ###############################################################################
-targets = [0.99999] # [0.99, 0.999, 0.9999, 0.99999]
+targets = [0.99, 0.999, 0.9999, 0.99999]
 funds   = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0]
 runs    = 100000
 sample  = 128
