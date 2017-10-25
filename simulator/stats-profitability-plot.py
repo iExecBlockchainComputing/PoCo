@@ -20,9 +20,9 @@ def endPlot(fname=None):
 
 ###############################################################################
 targets = [0.99, 0.999, 0.9999, 0.99999]
-funds   = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]
-pwd_in  = "/home/amxx/Work/iExec/sandbox/simulator/data/10000x128"
-pwd_out = "/home/amxx/Work/iExec/sandbox/simulator/plot/10000x128"
+funds   = [0.0, 0.1, 0.2, 0.5, 1.0, 2.0]
+pwd_in  = "/home/amxx/Work/iExec/PoCo_sandbox/simulator/data/100000x128"
+pwd_out = "/home/amxx/Work/iExec/PoCo_sandbox/simulator/plot/100000x128"
 ###############################################################################
 styles  = [':', '--', '-.', '-']
 ###############################################################################
