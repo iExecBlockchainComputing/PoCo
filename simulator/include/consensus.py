@@ -48,8 +48,9 @@ class Sarmenta:
 		self.consensus = Consensus(result=result, score=score, cost=self.cost, contribs=contribs)
 		return True
 
-def listTXS(consensus):
-	kitty  = sum(v.funds for v,cr in consensus.contribs.items() if v.result != consensus.result) + consensus.cost
-	weight = sum(cr      for v,cr in consensus.contribs.items() if v.result == consensus.result)
-	txs    = { v.user: kitty*cr/weight if v.result == consensus.result else -v.funds for v,cr in consensus.contribs.items() }
+def listTXS(consensus, cr2weight=(lambda cr: 1/(1-cr))):
+	voteweight      = { v: cr2weight(cr) for v,cr in consensus.contribs.items() }
+	consensusweight = sum(w              for v,w  in voteweight.items()         if v.result == consensus.result)
+	kitty           = sum(v.funds        for v,cr in consensus.contribs.items() if v.result != consensus.result) + consensus.cost
+	txs             = { v.user: kitty*w/consensusweight if v.result == consensus.result else -v.funds for v,w in voteweight.items() }
 	return txs

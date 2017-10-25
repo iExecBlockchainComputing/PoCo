@@ -25,10 +25,10 @@ def Ideal(marked_ratio=0):
 		WorkerType(type='-',      ratio=1-marked_ratio, answer=lambda: 0)
 	])
 
-	def CoordinatedAttackers(attackers_ratio):
-		return WorkerDistribution([
-	WorkerType(type='attacker', ratio=attackers_ratio,   answer=lambda: -1),
-	WorkerType(type='-',        ratio=1-attackers_ratio, answer=lambda:  0)
+def CoordinatedAttackers(attackers_ratio):
+	return WorkerDistribution([
+		WorkerType(type='attacker', ratio=attackers_ratio,   answer=lambda: -1),
+		WorkerType(type='-',        ratio=1-attackers_ratio, answer=lambda:  0)
 	])
 
 def BadAPP(badanswer_ratio, marked_ratio=0):
