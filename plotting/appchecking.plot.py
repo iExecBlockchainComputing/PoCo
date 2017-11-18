@@ -73,6 +73,6 @@ def multiPlot():
 
 
 if __name__ == '__main__':
-	multiPlot()
-	# print("n(p=0.9999, x=0.0001):", Functions.n(p=0.9999, x=0.0001))
+	# multiPlot()
+	print("n(p=0.999, x=0.01):", Functions.n(p=0.999, x=0.01))
 	# print("p(x=0.1000, n=100   ):", Functions.p(x=0.1, n=100))
