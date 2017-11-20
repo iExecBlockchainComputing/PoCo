@@ -1,25 +1,43 @@
 #!/usr/bin/python
 
+# import mmap
+import binascii
 import os
 import hashlib
 
-NONCE_LENGTH = 16
+SALT_LENGTH = 256
 
 class hash:
-	def _hash(data, nonce): return hashlib.sha256(data+nonce).hexdigest()
-	def raw  (data, nonce): return hash._hash(data,                    nonce)
-	def str  (data, nonce): return hash._hash(data.encode(),           nonce)
-	def file (data, nonce): return hash._hash(open(data, 'rb').read(), nonce)
+	def raw(data, salt):
+		return hashlib.sha256(salt+data).hexdigest()
+
+	def str(data, salt):
+		return hashlib.sha256(salt+data.encode()).hexdigest()
+
+	def file (data, salt):
+		block  = 65536
+		hasher = hashlib.sha256()
+		hasher.update(salt)
+		with open(data, 'rb') as f:
+			while True:
+				buf = f.read(block)
+				if not buf: break
+				hasher.update(buf)
+		return hasher.hexdigest()
 
 class digest:
-	def __init__(self, content, nonce=None, split="://"):
+	def __init__(self, content, salt=None, split="://"):
 		if split not in content: raise ValueError
 		self.content          = content
 		self.type, self.value = content.split(split,1)
-		self.nonce            = os.urandom(NONCE_LENGTH) if nonce is None else nonce
-	def voteHash(self): return getattr(hash, self.type)(data=self.value, nonce=b""       )
-	def signHash(self): return getattr(hash, self.type)(data=self.value, nonce=self.nonce)
-	def privHash(self): return hash._hash              (data=b"",        nonce=self.nonce)
+		if   type(salt) is bytes : self.salt = salt
+		elif type(salt) is str   : self.salt = binascii.unhexlify(salt)
+		elif salt       is None  : self.salt = os.urandom(SALT_LENGTH)
+		else                     : raise ValueError
+	def hexSalt (self): return binascii.hexlify(self.salt).decode()
+	def voteHash(self): return getattr(hash, self.type)(data=self.value, salt=b""      )
+	def signHash(self): return getattr(hash, self.type)(data=self.value, salt=self.salt)
+	def privHash(self): return hash.raw                (data=b"",        salt=self.salt)
 
 class contribution:
 	def __init__(self, vote, sign, priv):
@@ -29,9 +47,9 @@ class contribution:
 	def make(content):
 		dg = digest(content)
 		tx = contribution(vote=dg.voteHash(), sign=dg.signHash(), priv=dg.privHash())
-		return tx, dg.nonce
-	def check(self, content, nonce):
-		dg = digest(content, nonce)
+		return tx, dg.hexSalt()
+	def check(self, content, salt):
+		dg = digest(content, salt)
 		return self.vote == dg.voteHash() \
 		   and self.sign == dg.signHash() \
 		   and self.priv == dg.privHash()
@@ -41,16 +59,26 @@ class contribution:
 
 
 
+
 if __name__ == '__main__':
 
 	content1 = "file:///home/amxx/todl.txt"
 	content2 = "file:///home/amxx/todl2.txt"
 
-	tx, nonce = contribution.make(content1)
-	valid     = tx.check(content2, nonce)
+
+	# dg = digest(content1, b"abc")
+	# print(dg.voteHash())
+	# print(dg.signHash())
+	# print(dg.privHash())
+	# print(dg.salt)
+
+	tx, salt = contribution.make(content1)
+	valid     = tx.check(content2, salt)
 
 	print(tx)
-	print(nonce)
+	print(salt)
 	print(valid)
 
 	pass
+
+
