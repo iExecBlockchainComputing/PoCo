@@ -4,7 +4,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import ticker
 
-colors = [ c['color'] for c in plt.rcParams['axes.prop_cycle'] ]
+colors      = [ c['color'] for c in plt.rcParams['axes.prop_cycle'] ]
+xticks      = [ 0.5, 0.2, 0.1, 0.05, 0.02, 0.01, 0.005, 0.002, 0.001, 0.0005 ]
+xticklabels = ["%.2f%%" % (100.0*x) for x in xticks]
+
 
 def initPlot():
 	plt.figure(figsize=(16,9))
@@ -36,7 +39,7 @@ if __name__ == '__main__':
 	data_effect = dict()
 	for target, style in zip(targets, styles):
 		data_effect[target] = np.load("%s/effectiveness.trg-%f.npy" % (pwd_in, target))
-		plt.plot(data_effect[target][:,0], data_effect[target][:,1], label="Target: %.4f%%" % (target*100), color=colors[0], linestyle=style)
+		plt.plot(data_effect[target][:,0], data_effect[target][:,1], label="Confidence threshold: %.4f%%" % (target*100), color=colors[0], linestyle=style)
 	plt.title("Attack effectiveness")
 	plt.xlabel("Portion of the platform controlled by attackers")
 	plt.ylabel("Attack success rate")
@@ -46,6 +49,7 @@ if __name__ == '__main__':
 	xmax = max(d[:,0].max() for d in data_effect.values())
 	plt.xlim(left=xmin, right=xmax)
 	plt.xscale('log')
+	plt.xticks(xticks, xticklabels)
 	plt.ylim(bottom=0)
 	endPlot("%s/effectiveness.png" % (pwd_out))
 	# endPlot()
@@ -56,7 +60,7 @@ if __name__ == '__main__':
 	data_consensus = dict()
 	for target, style in zip(targets, styles):
 		data_consensus[target] = np.load("%s/consensus.trg-%f.npy" % (pwd_in, target))
-		plt.plot(data_consensus[target][:,0], data_consensus[target][:,1], label="Target: %.4f%%" % (target*100), color=colors[1], linestyle=style)
+		plt.plot(data_consensus[target][:,0], data_consensus[target][:,1], label="Confidence threshold: %.4f%%" % (target*100), color=colors[1], linestyle=style)
 	plt.title("Number of contribution to consensus")
 	plt.xlabel("Portion of the platform controlled by attackers")
 	plt.ylabel("Mean number of votes")
@@ -66,6 +70,7 @@ if __name__ == '__main__':
 	xmax = max(d[:,0].max() for d in data_consensus.values())
 	plt.xlim(left=xmin, right=xmax)
 	plt.xscale('log')
+	plt.xticks(xticks, xticklabels)
 	plt.ylim(bottom=0)
 	endPlot("%s/consensus.png" % (pwd_out))
 	# endPlot()
@@ -77,10 +82,10 @@ if __name__ == '__main__':
 		data_profit = dict()
 		for target, style in zip(targets, styles):
 			data_profit[target] = np.load("%s/profitability.fund-%05.2f.trg-%f.npy" % (pwd_in, f, target))
-			plt.plot(data_profit[target][:,0], data_profit[target][:,1], label="Target: %.4f%% - Good workers" % (target*100), color=colors[2], linestyle=style)
-			plt.plot(data_profit[target][:,0], data_profit[target][:,2], label="Target: %.4f%% - Attackers   " % (target*100), color=colors[3], linestyle=style)
+			plt.plot(data_profit[target][:,0], data_profit[target][:,1], label="Confidence threshold: %.4f%% - Honest workers" % (target*100), color=colors[2], linestyle=style)
+			plt.plot(data_profit[target][:,0], data_profit[target][:,2], label="Confidence threshold: %.4f%% - Attackers   " % (target*100), color=colors[3], linestyle=style)
 		# plt.title("Profitability\n(committement funds %.2f, target credibility: %.4f%%)" % (f, target*100))
-		plt.title("Profitability\n(committement funds %.2f)" % (f))
+		plt.title("Profitability\n(staked amount: %.2f)" % (f))
 		plt.xlabel("Portion of the platform controlled by attackers")
 		plt.ylabel("Mean profit per contribution")
 		plt.legend(loc='lower left')
@@ -91,6 +96,7 @@ if __name__ == '__main__':
 		ymax = max(np.absolute(d[:,1:]).max() for d in data_profit.values())
 		plt.xlim(left=xmin, right=xmax)
 		plt.xscale('log')
+		plt.xticks(xticks, xticklabels)
 		plt.ylim(bottom=-1.2*ymax, top=1.2*ymax)
 		plt.axes().yaxis.set_minor_locator  (plt.axes().yaxis.get_major_locator())
 		plt.axes().yaxis.set_minor_formatter(plt.axes().yaxis.get_major_formatter())
