@@ -1,21 +1,8 @@
 pragma solidity ^0.4.19;
 
-/*****************************************************************************
- * Contract owned: restrict execution to creator                             *
- *****************************************************************************/
-contract owned
-{
-	address owner;
-	function owned() public
-	{
-		owner = msg.sender;
-	}
-	modifier onlyOwner
-	{
-		require(msg.sender == owner);
-		_;
-	}
-}
+/* import "SafeMath.sol"; */
+import "owned.sol";
+import "wallet.sol";
 
 /*****************************************************************************
  * Contract Consensus: ...                                                   *
@@ -53,8 +40,8 @@ contract Consensus is owned
 	{
 		require(m_status == Status.Pending);
 
-		m_contributors.push(msg.sender);
-		m_contributions[msg.sender] = Contribution({
+		m_contributors.push(_worker);
+		m_contributions[_worker] = Contribution({
 			valid:      true,
 			resultHash: _resultHash,
 			resultSign: _resultSign
@@ -70,7 +57,7 @@ contract Consensus is owned
 		m_resultHash = _resultHash;
 		for (uint i=0; i<m_contributors.length; ++i)
 		{
-		    address w = m_contributors[i];
+			address w = m_contributors[i];
 			if (m_contributions[w].resultHash == _resultHash)
 			{
 				++winners;
@@ -90,69 +77,9 @@ contract Consensus is owned
 }
 
 /*****************************************************************************
- * Contract Stacker: ...                                                     *
- *****************************************************************************/
-contract Staker
-{
-	/**
-	 * Account structure
-	 */
-	struct Account
-	{
-		uint stake;
-		uint locked;
-	}
-	/**
-	 * Internal data: address to account mapping
-	 */
-	mapping(address => Account) m_accounts;
-	/**
-	 * Public functions
-	 */
-	function balance() public view returns(uint)
-	{
-		return m_accounts[msg.sender].stake;
-	}
-	function deposit() public payable
-	{
-		m_accounts[msg.sender].stake += msg.value;
-	}
-	function withdraw(uint _amount) public
-	{
-		require(_amount > 0  && m_accounts[msg.sender].stake >= _amount);
-		m_accounts[msg.sender].stake -= _amount;
-		msg.sender.transfer(_amount);
-	}
-	/**
-	 * Internal function
-	 */
-	function lock(address _worker, uint _amount) internal
-	{
-		require(m_accounts[_worker].stake >= _amount);
-		m_accounts[_worker].stake  -= _amount;
-		m_accounts[_worker].locked += _amount;
-	}
-	function unlock(address _worker, uint _amount) internal
-	{
-		require(m_accounts[_worker].locked >= _amount);
-		m_accounts[_worker].locked -= _amount;
-		m_accounts[_worker].stake  += _amount;
-	}
-	function reward(address _worker, uint _amount) internal
-	{
-		m_accounts[msg.sender].stake += _amount;
-	}
-	function seize(address _worker, uint _amount) internal
-	{
-		require(m_accounts[_worker].locked >= _amount);
-		m_accounts[_worker].locked -= _amount;
-	}
-}
-
-/*****************************************************************************
  * Contract PoCo: ...                                                        *
  *****************************************************************************/
-contract PoCo is Staker
+contract PoCo is wallet
 {
 	mapping(uint => Consensus) m_tasks;
 	mapping(address => uint)   m_reputation;
@@ -199,21 +126,21 @@ contract PoCo is Staker
 			_resultHash: _resultHash
 		});
 
-		address[] memory contributors = m_tasks[_taskID].m_contributors();
+		/* address[] memory contributors = m_tasks[_taskID].m_contributors();
 		for (uint i=0; i<contributors.length; ++i)
 		{
 			address w = contributors[i];
 			if (m_tasks[_taskID].m_contributions()[w].resultHash == _resultHash)
 			{
-				/* unfreeze(w, m_tasks[_key].m_stake()); */
-				/* reward  (w, m_tasks[_key].m_individualReward()); */
+				// unfreeze(w, m_tasks[_key].m_stake());
+				// reward  (w, m_tasks[_key].m_individualReward());
 				m_reputation[w] = SafeMath.safeAdd(m_reputation[w], 1);
 			}
 			else
 			{
-				/* seize(w, m_tasks[_key].m_stake()); */
+				// seize(w, m_tasks[_key].m_stake());
 				m_reputation[w] = SafeMath.safeSub(m_reputation[w], SafeMath.min(m_reputation[w], 50));
 			}
-		}
+		} */
 	}
 }
