@@ -10,15 +10,15 @@ contract PoCo is wallet
 	{
 		Status  status;
 		address chair;
-		uint    reward;
-		uint    stake;
+		uint256 reward;
+		uint256 stake;
 	}
 	struct Contribution
 	{
 		bool    submitted;
 		uint256 resultHash;
 		uint256 resultSign;
-		int     balance;
+		int256  balance;
 	}
 
 	mapping(uint256 => Task)                             public m_tasks;
@@ -56,8 +56,8 @@ contract PoCo is wallet
 
 		uint    i;
 		address w;
-		uint    reward     = m_tasks[_taskID].reward;
-		uint    cntWinners = 0;
+		uint256 reward     = m_tasks[_taskID].reward;
+		uint256 cntWinners = 0;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -71,7 +71,7 @@ contract PoCo is wallet
 			}
 		}
 
-		uint individualReward = reward / cntWinners;
+		uint256 individualReward = reward / cntWinners;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
