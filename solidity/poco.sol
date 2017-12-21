@@ -64,15 +64,15 @@ contract PoCo is wallet
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				++cntWinners;
+				++cntWinners; //TODO: SafeMath
 			}
 			else
 			{
-				reward += m_tasks[_taskID].stake;
+				reward += m_tasks[_taskID].stake; //TODO: SafeMath
 			}
 		}
-
-		uint256 individualReward = reward / cntWinners;
+		require(cntWinners > 0);
+		uint256 individualReward = reward / cntWinners; //TODO: SafeMath
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -80,7 +80,7 @@ contract PoCo is wallet
 			{
 				reward(w, individualReward);
 				unlock(w, m_tasks[_taskID].stake);
-				m_reputation[w] += 1;
+				m_reputation[w] += 1; //TODO: SafeMath
 
 				m_tasksContributions[_taskID][msg.sender].balance = individualReward;
 			}
@@ -88,9 +88,9 @@ contract PoCo is wallet
 			{
 				// No Reward
 				seize(w, m_tasks[_taskID].stake);
-				m_reputation[w] -= min(50, m_reputation[w]);
+				m_reputation[w] -= min(50, m_reputation[w]); //TODO: SafeMath
 
-				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake;
+				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake; //TODO: SafeMath
 			}
 		}
 	}
