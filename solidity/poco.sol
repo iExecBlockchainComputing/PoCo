@@ -5,7 +5,7 @@ import "wallet.sol";
 
 contract PoCo is wallet
 {
-	enum Status { Null, Pending, Locked, Finished }
+	enum Status { Null, Pending, Locked, Finished, Canceled }
 	struct Task
 	{
 		Status  status;
@@ -92,6 +92,18 @@ contract PoCo is wallet
 
 				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake; //TODO: SafeMath
 			}
+		}
+	}
+
+	function cancel(uint256 _taskID) public
+	{
+		require(m_tasks[_taskID].chair  == msg.sender);
+		require(m_tasks[_taskID].status == Status.Pending || m_tasks[_taskID].status == Status.Locked);
+		m_tasks[_taskID].status = Status.Canceled;
+		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+		{
+			w = m_tasksWorkers[_taskID][i];
+			unlock(w, m_tasks[_taskID].stake);
 		}
 	}
 
