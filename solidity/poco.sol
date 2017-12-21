@@ -1,146 +1,111 @@
 pragma solidity ^0.4.19;
 
-/* import "SafeMath.sol"; */
-import "owned.sol";
 import "wallet.sol";
 
-/*****************************************************************************
- * Contract Consensus: ...                                                   *
- *****************************************************************************/
-contract Consensus is owned
-{
-	enum Status { Pending, Done }
-	struct Contribution
-	{
-		bool    valid;
-		uint256 resultHash;
-		uint256 resultSign;
-	}
-	Status                           public m_status;
-	uint256                          public m_resultHash;
-	uint                             public m_grant;
-	uint                             public m_stake;
-	address                          public m_chair;
-	address[]                        public m_contributors;
-	mapping(address => Contribution) public m_contributions;
 
-	uint                             public m_reward;
-	uint                             public m_individualReward;
-
-	function Consensus(uint _grant, uint _stake, address _chair) public
-	{
-		m_status = Status.Pending;
-		m_grant  = _grant;
-		m_stake  = _stake;
-		m_reward = _grant;
-		m_chair  = _chair;
-	}
-
-	function submit(address _worker, uint256 _resultHash, uint256 _resultSign) public onlyOwner
-	{
-		require(m_status == Status.Pending);
-
-		m_contributors.push(_worker);
-		m_contributions[_worker] = Contribution({
-			valid:      true,
-			resultHash: _resultHash,
-			resultSign: _resultSign
-		});
-	}
-
-	function finalize(uint256 _resultHash) public onlyOwner
-	{
-		require(m_status == Status.Pending);
-
-		uint winners = 0;
-		m_status     = Status.Done;
-		m_resultHash = _resultHash;
-		for (uint i=0; i<m_contributors.length; ++i)
-		{
-			address w = m_contributors[i];
-			if (m_contributions[w].resultHash == _resultHash)
-			{
-				++winners;
-			}
-			else
-			{
-				m_reward += m_stake;
-			}
-		}
-		m_individualReward = m_reward / winners;
-	}
-
-	function close() public onlyOwner
-	{
-		selfdestruct(owner);
-	}
-}
-
-/*****************************************************************************
- * Contract PoCo: ...                                                        *
- *****************************************************************************/
 contract PoCo is wallet
 {
-	mapping(uint => Consensus) m_tasks;
-	mapping(address => uint)   m_reputation;
-
-	// DEBUG
-	function show(uint256 _taskID) public view returns(Consensus)
+	enum Status { Null, Pending, Locked, Finished }
+	struct Task
 	{
-		return m_tasks[_taskID];
+		Status  status;
+		address chair;
+		uint256 reward;
+		uint256 stake;
+	}
+	struct Contribution
+	{
+		bool    submitted;
+		uint256 resultHash;
+		uint256 resultSign;
+		int256  balance;
 	}
 
-	function createTask(uint256 _taskID, uint _grant, uint _stake) public
-	{
-		require(m_tasks[_taskID] == address(0));
+	mapping(uint256 => Task                            ) public m_tasks;
+	mapping(uint256 => address[]                       ) public m_tasksWorkers;
+	mapping(uint256 => mapping(address => Contribution)) public m_tasksContributions;
+	mapping(address => uint256                         ) public m_reputation;
 
-		m_tasks[_taskID] = new Consensus({
-			_grant: _grant,
-			_stake: _stake,
-			_chair: msg.sender
-		});
+	function createTask(uint256 _taskID, uint _reward, uint _stake) public
+	{
+		require(m_tasks[_taskID].status == Status.Null);
+		m_tasks[_taskID].status = Status.Pending;
+		m_tasks[_taskID].reward = _reward;
+		m_tasks[_taskID].stake  = _stake;
+		m_tasks[_taskID].chair  = msg.sender;
 	}
 
 	function submit(uint256 _taskID, uint256 _resultHash, uint256 _resultSign) public
 	{
-		require(m_tasks[_taskID] != address(0));
-		/* require(m_tasks[_taskID].m_status() == Consensus.Status.Pending) */
-		require(m_tasks[_taskID].m_stake()  <= m_accounts[msg.sender].stake);
+		require(m_tasks[_taskID].status == Status.Pending);
+		require(!m_tasksContributions[_taskID][msg.sender].submitted);
 
-		m_tasks[_taskID].submit({
-			_worker:     msg.sender,
-			_resultHash: _resultHash,
-			_resultSign: _resultSign
-		});
+		lock(msg.sender, m_tasks[_taskID].stake);
 
-		//freeze(msg.sender, tasks[_taskID].stake);
+		m_tasksWorkers[_taskID].push(msg.sender);
+		m_tasksContributions[_taskID][msg.sender].submitted  = true;
+		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
+		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
+
 	}
 
-	function finalizeTask(uint256 _taskID, uint256 _resultHash) public
+	function finalizeTask(uint256 _taskID, uint256 _consensus) public
 	{
-		require(m_tasks[_taskID] != address(0));
-		/* require(tasks[_taskID].m_status == Consensus.Status.Pending); */
-		require(m_tasks[_taskID].m_chair() == msg.sender);
+		require(m_tasks[_taskID].chair  == msg.sender);
+		require(m_tasks[_taskID].status == Status.Locked);
+		m_tasks[_taskID].status = Status.Finished;
 
-		m_tasks[_taskID].finalize({
-			_resultHash: _resultHash
-		});
-
-		/* address[] memory contributors = m_tasks[_taskID].m_contributors();
-		for (uint i=0; i<contributors.length; ++i)
+		uint    i;
+		address w;
+		uint256 reward     = m_tasks[_taskID].reward;
+		uint256 cntWinners = 0;
+		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
-			address w = contributors[i];
-			if (m_tasks[_taskID].m_contributions()[w].resultHash == _resultHash)
+			w = m_tasksWorkers[_taskID][i];
+			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				// unfreeze(w, m_tasks[_key].m_stake());
-				// reward  (w, m_tasks[_key].m_individualReward());
-				m_reputation[w] = SafeMath.safeAdd(m_reputation[w], 1);
+				++cntWinners;
 			}
 			else
 			{
-				// seize(w, m_tasks[_key].m_stake());
-				m_reputation[w] = SafeMath.safeSub(m_reputation[w], SafeMath.min(m_reputation[w], 50));
+				reward += m_tasks[_taskID].stake;
 			}
-		} */
+		}
+
+		uint256 individualReward = reward / cntWinners;
+		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+		{
+			w = m_tasksWorkers[_taskID][i];
+			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+			{
+				reward(w, individualReward);
+				unlock(w, m_tasks[_taskID].stake);
+				m_reputation[w] += 1;
+
+				m_tasksContributions[_taskID][msg.sender].balance = individualReward;
+			}
+			else
+			{
+				// No Reward
+				seize(w, m_tasks[_taskID].stake);
+				m_reputation[w] -= min(50, m_reputation[w]);
+
+				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake;
+			}
+		}
+	}
+
+	function lock(uint256 _taskID) public
+	{
+		require(m_tasks[_taskID].chair  == msg.sender);
+		require(m_tasks[_taskID].status == Status.Pending);
+		m_tasks[_taskID].status = Status.Locked;
+	}
+
+	function unlock(uint256 _taskID) public
+	{
+		require(m_tasks[_taskID].chair  == msg.sender);
+		require(m_tasks[_taskID].status == Status.Locked);
+		m_tasks[_taskID].status = Status.Pending;
 	}
 }
