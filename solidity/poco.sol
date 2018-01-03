@@ -71,21 +71,21 @@ contract PoCo is wallet
 
 		uint    i;
 		address w;
-		uint    cntWinners       = 0;
-		uint    totalReward      = m_tasks[_taskID].reward;
-		uint    individualReward;
 		/**
 		 * Reward distribution:
 		 * totalReward is to be distributed amoung the winners relative to their
 		 * contribution. I believe that the weight should be someting like:
 		 *
-		 * w ~= log(max(1,reputation))
+		 * w ~= 1+log(max(1,reputation))
 		 *
 		 * But how to handle log in solidity ? Is it worth the gaz ?
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
 		 *
 		 * Current code shows a simple distribution (equal shares)
 		 */
+		uint    cntWinners       = 0;
+ 		uint    totalReward      = m_tasks[_taskID].reward;
+ 		uint    individualReward;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -118,6 +118,49 @@ contract PoCo is wallet
 				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
+
+		/**
+		 * Futur: requires a "log" function
+		 */
+		/*
+ 		uint                     totalWeight = 0;
+		uint                     totalReward = m_tasks[_taskID].reward;
+		mapping(address => uint) workerWeight;
+		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+		{
+			w = m_tasksWorkers[_taskID][i];
+			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+			{
+				uint weight     = 1+log(max256(1, m_reputation[w]));
+				workerWeight[w] = weight;
+				totalWeight    += weight;
+			}
+			else
+			{
+				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
+			}
+		}
+		require(totalWeight > 0);
+		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+		{
+			w = m_tasksWorkers[_taskID][i];
+			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+			{
+				unlock(w, m_tasks[_taskID].stake);
+				uint individualReward = totalReward * workerWeight[w] / totalWeight;
+				reward(w, individualReward);
+				m_reputation[w] += 1; // TODO: SafeMath
+				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
+			}
+			else
+			{
+				seize(w, m_tasks[_taskID].stake);
+				// No Reward
+				m_reputation[w] -= min256(50, m_reputation[w]); // TODO: SafeMath
+				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
+			}
+		}
+		*/
 
 		return true;
 	}
