@@ -11,37 +11,44 @@ contract PoCo is wallet
 	{
 		Status  status;
 		address chair;
-		uint256 reward;
-		uint256 stake;
+		uint    reward;
+		uint    stake;
 	}
 	struct Contribution
 	{
-		bool    submitted;
-		uint256 resultHash;
-		uint256 resultSign;
-		int256  balance;
+		bool submitted;
+		uint resultHash;
+		uint resultSign;
+		int  balance;
 	}
 
-	mapping(uint256 => Task                            ) public m_tasks;
-	mapping(uint256 => address[]                       ) public m_tasksWorkers;
-	mapping(uint256 => mapping(address => Contribution)) public m_tasksContributions;
-	mapping(address => uint256                         ) public m_reputation;
+	mapping(uint => Task                            ) public m_tasks;
+	mapping(uint => address[]                       ) public m_tasksWorkers;
+	mapping(uint => mapping(address => Contribution)) public m_tasksContributions;
+	mapping(address => uint                         ) public m_reputation;
 
 	/* function PoCo(address _tokenAddress) public // For ETH based wallet */
 	function PoCo(address _tokenAddress) wallet(_tokenAddress) public // For RLC based wallet
 	{
 	}
 
-	function createTask(uint256 _taskID, uint _reward, uint _stake) public
+	function reputation(address _user) public view returns (uint)
+	{
+		return m_reputation[_user];
+	}
+
+	function createTask(uint _taskID, uint _reward, uint _stake) public returns (bool)
 	{
 		require(m_tasks[_taskID].status == Status.Null);
 		m_tasks[_taskID].status = Status.Pending;
 		m_tasks[_taskID].reward = _reward;
 		m_tasks[_taskID].stake  = _stake;
 		m_tasks[_taskID].chair  = msg.sender;
+
+		return true;
 	}
 
-	function submit(uint256 _taskID, uint256 _resultHash, uint256 _resultSign) public
+	function submit(uint _taskID, uint _resultHash, uint _resultSign) public returns (bool)
 	{
 		require(m_tasks[_taskID].status == Status.Pending);
 		require(!m_tasksContributions[_taskID][msg.sender].submitted);
@@ -53,9 +60,10 @@ contract PoCo is wallet
 		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
 		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
 
+		return true;
 	}
 
-	function finalizeTask(uint256 _taskID, uint256 _consensus) public
+	function finalizeTask(uint _taskID, uint _consensus) public returns (bool)
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Locked);
@@ -63,8 +71,8 @@ contract PoCo is wallet
 
 		uint    i;
 		address w;
-		uint256 reward     = m_tasks[_taskID].reward;
-		uint256 cntWinners = 0;
+		uint reward     = m_tasks[_taskID].reward;
+		uint cntWinners = 0;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -78,7 +86,7 @@ contract PoCo is wallet
 			}
 		}
 		require(cntWinners > 0);
-		uint256 individualReward = reward / cntWinners; //TODO: SafeMath
+		uint individualReward = reward / cntWinners; //TODO: SafeMath
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -99,9 +107,11 @@ contract PoCo is wallet
 				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake; //TODO: SafeMath
 			}
 		}
+
+		return true;
 	}
 
-	function cancel(uint256 _taskID) public
+	function cancel(uint _taskID) public returns (bool)
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Pending || m_tasks[_taskID].status == Status.Locked);
@@ -111,16 +121,18 @@ contract PoCo is wallet
 			w = m_tasksWorkers[_taskID][i];
 			unlock(w, m_tasks[_taskID].stake);
 		}
+
+		return true;
 	}
 
-	function lock(uint256 _taskID) public
+	function lock(uint _taskID) public
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Pending);
 		m_tasks[_taskID].status = Status.Locked;
 	}
 
-	function unlock(uint256 _taskID) public
+	function unlock(uint _taskID) public
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Locked);
