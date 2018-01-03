@@ -1,10 +1,12 @@
 pragma solidity ^0.4.19;
 
 import "./SafeMath.sol";
+import "./RLC_interfaces.sol"
 
 /*****************************************************************************
- * Contract wallet: ...                                                      *
+ * Contract wallet_rlc: ...                                                  *
  *****************************************************************************/
+
 contract wallet is SafeMath
 {
 	/**
@@ -18,23 +20,38 @@ contract wallet is SafeMath
 	/**
 	 * Internal data: address to account mapping
 	 */
-	mapping(address => Account) m_accounts;
+	mapping(address => Account) public m_accounts;
+	/**
+	 * RLC contract for token transfers.
+	 */
+	RLC public rlc;
+	/**
+	 * Constructor
+	 */
+	function wallet(address _tokenAddress) public
+	{
+		rlc = RLC(_tokenAddress);
+	}
 	/**
 	 * Public functions
 	 */
-	function deposit() public payable
+	function deposit(uint _amount) public returns (bool)
 	{
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = safeAdd(m_accounts[msg.sender].stake, msg.value);
+		return true;
 	}
 	function withdraw(uint _amount) public returns (bool)
 	{
-		m_accounts[msg.sender].stake = safeSub(m_accounts[msg.sender].stake, _amount);
-		msg.sender.transfer(_amount);
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transfer(msg.sender, _amount));
+		m_accounts[msg.sender].stake = safeSub(m_accounts[msg.sender].stake, msg.value);
 		return true;
 	}
-	function checkBalance() public view returns(uint)
+	function checkBalance() public view returns (uint, uint)
 	{
-		return m_accounts[msg.sender].stake;
+		return (m_accounts[msg.sender].stake, m_accounts[msg.sender].locked);
 	}
 	/**
 	 * Internal function
