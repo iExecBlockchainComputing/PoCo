@@ -39,8 +39,11 @@ contract PoCo is wallet, scoring
 		m_tasks[_taskID].reward = _reward;
 		m_tasks[_taskID].stake  = _stake;
 		m_tasks[_taskID].chair  = msg.sender;
-		// TODO: where does the reward come from ?
-
+		/**
+		 * TODO: where does the reward technically come from ?
+		 * funds are provided by the user requiring the application execution
+		 */
+		
 		return true;
 	}
 
