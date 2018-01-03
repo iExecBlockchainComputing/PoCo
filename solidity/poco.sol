@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
-import "wallet.sol";
+/* import "wallet.sol"; // For ETH based wallet */
+import "RLC_wallet.sol"; // For RLC based wallet
 
 
 contract PoCo is wallet
@@ -25,6 +26,11 @@ contract PoCo is wallet
 	mapping(uint256 => address[]                       ) public m_tasksWorkers;
 	mapping(uint256 => mapping(address => Contribution)) public m_tasksContributions;
 	mapping(address => uint256                         ) public m_reputation;
+
+	/* function PoCo(address _tokenAddress) public // For ETH based wallet */
+	function PoCo(address _tokenAddress) wallet(_tokenAddress) public // For RLC based wallet
+	{
+	}
 
 	function createTask(uint256 _taskID, uint _reward, uint _stake) public
 	{
