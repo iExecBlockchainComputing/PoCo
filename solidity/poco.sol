@@ -71,8 +71,9 @@ contract PoCo is wallet
 
 		uint    i;
 		address w;
-		uint reward     = m_tasks[_taskID].reward;
-		uint cntWinners = 0;
+		uint    cntWinners       = 0;
+		uint    totalReward      = m_tasks[_taskID].reward;
+		uint    individualReward;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -82,11 +83,11 @@ contract PoCo is wallet
 			}
 			else
 			{
-				reward += m_tasks[_taskID].stake; //TODO: SafeMath
+				totalReward += m_tasks[_taskID].stake; //TODO: SafeMath
 			}
 		}
 		require(cntWinners > 0);
-		uint individualReward = reward / cntWinners; //TODO: SafeMath
+		individualReward = totalReward / cntWinners; //TODO: SafeMath
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
