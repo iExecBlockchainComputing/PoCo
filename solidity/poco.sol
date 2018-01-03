@@ -27,7 +27,7 @@ contract PoCo is wallet
 	mapping(uint => mapping(address => Contribution)) public m_tasksContributions;
 	mapping(address => uint                         ) public m_reputation;
 
-	/* function PoCo(address _tokenAddress) public // For ETH based wallet */
+	/* function PoCo() public // For ETH based wallet */
 	function PoCo(address _tokenAddress) wallet(_tokenAddress) public // For RLC based wallet
 	{
 	}
@@ -79,15 +79,15 @@ contract PoCo is wallet
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				++cntWinners; //TODO: SafeMath
+				++cntWinners; // TODO: SafeMath
 			}
 			else
 			{
-				totalReward += m_tasks[_taskID].stake; //TODO: SafeMath
+				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
 			}
 		}
 		require(cntWinners > 0);
-		individualReward = totalReward / cntWinners; //TODO: SafeMath
+		individualReward = totalReward / cntWinners; // TODO: SafeMath
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -95,17 +95,17 @@ contract PoCo is wallet
 			{
 				reward(w, individualReward);
 				unlock(w, m_tasks[_taskID].stake);
-				m_reputation[w] += 1; //TODO: SafeMath
+				m_reputation[w] += 1; // TODO: SafeMath
 
-				m_tasksContributions[_taskID][msg.sender].balance = individualReward;
+				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
 			}
 			else
 			{
 				// No Reward
 				seize(w, m_tasks[_taskID].stake);
-				m_reputation[w] -= min(50, m_reputation[w]); //TODO: SafeMath
+				m_reputation[w] -= min256(50, m_reputation[w]); // TODO: SafeMath
 
-				m_tasksContributions[_taskID][msg.sender].balance =  -m_tasks[_taskID].stake; //TODO: SafeMath
+				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
 
@@ -117,9 +117,9 @@ contract PoCo is wallet
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Pending || m_tasks[_taskID].status == Status.Locked);
 		m_tasks[_taskID].status = Status.Canceled;
-		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+		for (uint i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
-			w = m_tasksWorkers[_taskID][i];
+			address w = m_tasksWorkers[_taskID][i];
 			unlock(w, m_tasks[_taskID].stake);
 		}
 
