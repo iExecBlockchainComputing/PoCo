@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
-/* import "wallet.sol"; // For ETH based wallet */
-import "RLC_wallet.sol"; // For RLC based wallet
+/* import "./wallet.sol"; // For ETH based wallet */
+import "./RLC_wallet.sol"; // For RLC based wallet
 
 
 contract PoCo is wallet
@@ -123,9 +123,10 @@ contract PoCo is wallet
 		 * Futur: requires a "log" function
 		 */
 		/*
- 		uint                     totalWeight = 0;
-		uint                     totalReward = m_tasks[_taskID].reward;
 		mapping(address => uint) workerWeight;
+ 		uint                     totalWeight       = 0;
+		uint                     totalReward       = m_tasks[_taskID].reward;
+		uint                     distributedReward = 0;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -149,6 +150,7 @@ contract PoCo is wallet
 				unlock(w, m_tasks[_taskID].stake);
 				uint individualReward = totalReward * workerWeight[w] / totalWeight;
 				reward(w, individualReward);
+				distributedReward += individualReward;
 				m_reputation[w] += 1; // TODO: SafeMath
 				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
 			}
@@ -160,6 +162,7 @@ contract PoCo is wallet
 				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
+		// TODO: What to do with the rest (totalReward - distributedReward) → To the scheduler ?
 		*/
 
 		return true;
