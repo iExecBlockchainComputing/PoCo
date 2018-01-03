@@ -2,9 +2,9 @@ pragma solidity ^0.4.19;
 
 /* import "./wallet.sol"; // For ETH based wallet */
 import "./RLC_wallet.sol"; // For RLC based wallet
+import "./scoring.sol"
 
-
-contract PoCo is wallet
+contract PoCo is wallet, scoring
 {
 	enum Status { Null, Pending, Locked, Finished, Canceled }
 	struct Task
@@ -25,16 +25,10 @@ contract PoCo is wallet
 	mapping(uint => Task                            ) public m_tasks;
 	mapping(uint => address[]                       ) public m_tasksWorkers;
 	mapping(uint => mapping(address => Contribution)) public m_tasksContributions;
-	mapping(address => uint                         ) public m_reputation;
 
 	/* function PoCo() public // For ETH based wallet */
 	function PoCo(address _tokenAddress) wallet(_tokenAddress) public // For RLC based wallet
 	{
-	}
-
-	function reputation(address _user) public view returns (uint)
-	{
-		return m_reputation[_user];
 	}
 
 	function createTask(uint _taskID, uint _reward, uint _stake) public returns (bool)
@@ -77,7 +71,7 @@ contract PoCo is wallet
 		 * totalReward is to be distributed amoung the winners relative to their
 		 * contribution. I believe that the weight should be someting like:
 		 *
-		 * w ~= 1+log(max(1,reputation))
+		 * w ~= 1+log(max(1,score))
 		 *
 		 * But how to handle log in solidity ? Is it worth the gaz ?
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
@@ -108,14 +102,14 @@ contract PoCo is wallet
 			{
 				unlock(w, m_tasks[_taskID].stake);
 				reward(w, individualReward);
-				m_reputation[w] += 1; // TODO: SafeMath
+				scoreWin(w, 1);
 				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
 			}
 			else
 			{
 				seize(w, m_tasks[_taskID].stake);
 				// No Reward
-				m_reputation[w] -= min256(50, m_reputation[w]); // TODO: SafeMath
+				scoreWin(w, 50);
 				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
@@ -124,16 +118,16 @@ contract PoCo is wallet
 		 * Futur: requires a "log" function
 		 */
 		/*
-		mapping(address => uint) workerWeight;
- 		uint                     totalWeight       = 0;
 		uint                     totalReward       = m_tasks[_taskID].reward;
 		uint                     distributedReward = 0;
+		uint                     totalWeight       = 0;
+		mapping(address => uint) workerWeight;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				uint weight     = 1+log(max256(1, m_reputation[w]));
+				uint weight     = 1+log(max256(1, score(w)));
 				workerWeight[w] = weight;
 				totalWeight    += weight;
 			}
@@ -148,18 +142,18 @@ contract PoCo is wallet
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				unlock(w, m_tasks[_taskID].stake);
 				uint individualReward = totalReward * workerWeight[w] / totalWeight;
-				reward(w, individualReward);
 				distributedReward += individualReward;
-				m_reputation[w] += 1; // TODO: SafeMath
+				unlock(w, m_tasks[_taskID].stake);
+				reward(w, individualReward);
+				scoreWin(w, 1);
 				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
 			}
 			else
 			{
 				seize(w, m_tasks[_taskID].stake);
 				// No Reward
-				m_reputation[w] -= min256(50, m_reputation[w]); // TODO: SafeMath
+				scoreLose(w, 50);
 				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
