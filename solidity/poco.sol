@@ -44,6 +44,7 @@ contract PoCo is wallet
 		m_tasks[_taskID].reward = _reward;
 		m_tasks[_taskID].stake  = _stake;
 		m_tasks[_taskID].chair  = msg.sender;
+		// TODO: where does the reward come from ?
 
 		return true;
 	}
@@ -175,24 +176,28 @@ contract PoCo is wallet
 		m_tasks[_taskID].status = Status.Canceled;
 		for (uint i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
-			address w = m_tasksWorkers[_taskID][i];
-			unlock(w, m_tasks[_taskID].stake);
+			unlock(m_tasksWorkers[_taskID][i], m_tasks[_taskID].stake);
 		}
+		// TODO: what happens to the original reward ?
 
 		return true;
 	}
 
-	function lock(uint _taskID) public
+	function lock(uint _taskID) public returns (bool)
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Pending);
 		m_tasks[_taskID].status = Status.Locked;
+
+		return true;
 	}
 
-	function unlock(uint _taskID) public
+	function unlock(uint _taskID) public returns (bool)
 	{
 		require(m_tasks[_taskID].chair  == msg.sender);
 		require(m_tasks[_taskID].status == Status.Locked);
 		m_tasks[_taskID].status = Status.Pending;
+
+		return true;
 	}
 }
