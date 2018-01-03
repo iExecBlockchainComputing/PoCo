@@ -2,7 +2,8 @@ pragma solidity ^0.4.19;
 
 /* import "./wallet.sol"; // For ETH based wallet */
 import "./RLC_wallet.sol"; // For RLC based wallet
-import "./scoring.sol"
+
+import "./scoring.sol";
 
 contract PoCo is wallet, scoring
 {

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.19;
 
-import "./SafeMath.sol";s
+import "./SafeMath.sol";
 
-contract scoring
+contract scoring is SafeMath
 {
 	mapping(address => uint) public m_score;
 
