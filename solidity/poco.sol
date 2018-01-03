@@ -74,6 +74,18 @@ contract PoCo is wallet
 		uint    cntWinners       = 0;
 		uint    totalReward      = m_tasks[_taskID].reward;
 		uint    individualReward;
+		/**
+		 * Reward distribution:
+		 * totalReward is to be distributed amoung the winners relative to their
+		 * contribution. I believe that the weight should be someting like:
+		 *
+		 * w ~= log(max(1,reputation))
+		 *
+		 * But how to handle log in solidity ? Is it worth the gaz ?
+		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
+		 *
+		 * Current code shows a simple distribution (equal shares)
+		 */
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -93,18 +105,16 @@ contract PoCo is wallet
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
-				reward(w, individualReward);
 				unlock(w, m_tasks[_taskID].stake);
+				reward(w, individualReward);
 				m_reputation[w] += 1; // TODO: SafeMath
-
 				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
 			}
 			else
 			{
-				// No Reward
 				seize(w, m_tasks[_taskID].stake);
+				// No Reward
 				m_reputation[w] -= min256(50, m_reputation[w]); // TODO: SafeMath
-
 				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
