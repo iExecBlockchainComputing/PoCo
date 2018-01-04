@@ -43,7 +43,7 @@ contract PoCo is wallet, scoring
 		 * TODO: where does the reward technically come from ?
 		 * funds are provided by the user requiring the application execution
 		 */
-		
+
 		return true;
 	}
 
@@ -107,14 +107,14 @@ contract PoCo is wallet, scoring
 				unlock(w, m_tasks[_taskID].stake);
 				reward(w, individualReward);
 				scoreWin(w, 1);
-				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
+				m_tasksContributions[_taskID][w].balance = int256(individualReward);
 			}
 			else
 			{
 				seize(w, m_tasks[_taskID].stake);
 				// No Reward
 				scoreWin(w, 50);
-				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
+				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
 
@@ -151,14 +151,14 @@ contract PoCo is wallet, scoring
 				unlock(w, m_tasks[_taskID].stake);
 				reward(w, individualReward);
 				scoreWin(w, 1);
-				m_tasksContributions[_taskID][msg.sender].balance = int256(individualReward);
+				m_tasksContributions[_taskID][w].balance = int256(individualReward);
 			}
 			else
 			{
 				seize(w, m_tasks[_taskID].stake);
 				// No Reward
 				scoreLose(w, 50);
-				m_tasksContributions[_taskID][msg.sender].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
+				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
 		// TODO: What to do with the rest (totalReward - distributedReward) → To the scheduler ?
