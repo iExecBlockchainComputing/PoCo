@@ -339,12 +339,14 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
         }
 
-        function revealConsensus(bytes32 _taskID, uint consensus ) public
-        {
+        function revealConsensus(bytes32 _taskID, uint consensus ) public onlyOwner /*=onlySheduler*/
+{
           require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED); //or state Locked to add ?
           m_tasks[_taskID].consensus=consensus;
           m_tasks[_taskID].status = TaskStatusEnum.CONSENSUS_REACHED;
           m_tasksContributionsRevealDeadLine[_taskID] = now.add(REVEAL_PERIOD_DURATION);
+
+          // TODO LOG
         }
 
 
