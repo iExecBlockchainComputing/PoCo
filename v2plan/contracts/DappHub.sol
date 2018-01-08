@@ -16,7 +16,7 @@ contract DappHub is IDappHub {
   }
 
   //mapping (dapp address => Dapp Struct)
-  mapping (address => Dapp ) dapps ;
+  mapping (address => Dapp ) dapps;
 
   function registerDappAndProvider(uint256 dappPrice,string dappName) public  returns (bool) {
       assert(dapps[msg.sender].provider == 0x0);

@@ -9,11 +9,11 @@ import './Scoring.sol';
  * @title Poco
  */
 
-contract Poco is
-DappHub, Stake , Scoring
+contract Poco is DappHub, Stake , Scoring //, poco is also a WorkerPoolHub but removed because of bytcodes contract limitation
  {
-   uint private constant WORKER_POOL_CREATION_STAKE = 5000;
-
+   uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
+   uint private constant WORKER_MEMBERSHIP_STAKE = 5000; //updated by vote or super admin ?
+   uint private constant DAPP_PRICE_STAKE_RATIO = 1; //updated by vote or super admin ?
 
   WorkerPoolHub  workerPoolHub;
 
@@ -21,7 +21,6 @@ DappHub, Stake , Scoring
 
   function Poco(address _tokenAddress, address _workerPoolHubAddress ) Stake(_tokenAddress) public
 	{
-
    workerPoolHub = WorkerPoolHub(_workerPoolHubAddress);
 	}
 
@@ -40,7 +39,10 @@ DappHub, Stake , Scoring
 
     //you must be on the withe list of the worker pool to subribe.
     uint256 dappPrice =dapps[msg.sender].dappPrice;
-
+    if(dapps[msg.sender].dappPrice > 0){
+        address dappProvider=dapps[msg.sender].provider;
+        require(lock(dappProvider,dappPrice*DAPP_PRICE_STAKE_RATIO)); //TODO add SafeMath
+    }
     uint256 userCost=dappPrice + taskCost ;
 
     //reward = taskCost + dappPrice;
@@ -59,13 +61,14 @@ DappHub, Stake , Scoring
 
   function finalizedTask(bytes32 _taskID,address dapp) public returns (bool){
     require(msg.sender == m_taskPoolAffectation[_taskID]);
-    if(dapps[msg.sender].dappPrice > 0){
-      require(reward(dapps[msg.sender].provider,dapps[msg.sender].dappPrice));
+    if(dapps[dapp].dappPrice > 0){
+      require(reward(dapps[dapp].provider,dapps[dapp].dappPrice));
+      address dappProvider=dapps[msg.sender].provider;
+      require(unlock(dappProvider,dapps[dapp].dappPrice*DAPP_PRICE_STAKE_RATIO)); //TODO add SafeMath
     }
     // incremente D(w) or D(s) reputation too  ?
     return true;
   }
-
 
   function createPool(string name) public returns(address poolAddress) {
     // add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
@@ -73,7 +76,6 @@ DappHub, Stake , Scoring
     address newPool =workerPoolHub.createPool(name);
     return newPool;
   }
-
 
   function openPool(address _workerPool) public  returns (bool){
     WorkerPool aPool= WorkerPool(_workerPool);
@@ -89,6 +91,18 @@ DappHub, Stake , Scoring
       require(aPool.closePool());
       unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
     return true;
+  }
+
+  function subscribeToPool(address _workerPool) public returns(bool subscribed) {
+    require(workerPoolHub.subscribeToPool(_workerPool));
+    lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+    return true;
+  }
+
+   function unsubscribeToPool(address _workerPool) public returns(bool unsubscribed) {
+     require(workerPoolHub.unsubscribeToPool(_workerPool));
+     unlock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+     return true;
   }
 
   // add a scoreWinLooseTask for S(w) S(s) too ?

@@ -34,7 +34,7 @@ contract WorkerPoolHub is Ownable { // TODO change owner to poco at migrate
   }
 
 
-  function subscribeToPool(address poolAddress) public  returns(bool subscribed) {
+  function subscribeToPool(address poolAddress) public onlyOwner /*owner == poco*/ returns(bool subscribed) {
   WorkerPool aPoolToSubscribe= WorkerPool(poolAddress);
   //you must be on the withe list of the worker pool to subribe.
   require(aPoolToSubscribe.isWorkerAllowed(msg.sender));
@@ -45,7 +45,7 @@ contract WorkerPoolHub is Ownable { // TODO change owner to poco at migrate
   return true;
   }
 
-   function unsubscribeToPool(address poolAddress) public  returns(bool unsubscribed) {
+   function unsubscribeToPool(address poolAddress) public onlyOwner /*owner == poco*/ returns(bool unsubscribed) {
    WorkerPool aPoolToUnSubscribe= WorkerPool(poolAddress);
   require(m_workerAffectation[msg.sender] == poolAddress );
   require(aPoolToUnSubscribe.removeWorker(msg.sender));

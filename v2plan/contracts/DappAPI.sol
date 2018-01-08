@@ -10,9 +10,10 @@ contract DappAPI is IDappAPI, Ownable { //Owned by a D(w){
     address pocoAddress;
     Poco aPoco;
 
+
     event IexecSubmitCallback(bytes32 submitTxHash, address indexed user, string stdout, string uri);
 
-
+    // TO ADD  enum DAPPStatusEnum{OPEN,CLOSE}
     // TODO : D(w) can black white list of worker pool S(s)
     // TODO : D(w) can black white list of users U(w)
 
