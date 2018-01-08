@@ -415,114 +415,121 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           }
 
           //call this for reward dappProvider if dappPrice > 0
-          Poco aPoco = Poco(poco);
+        Poco aPoco = Poco(poco);
           require(aPoco.finalizedTask(_taskID,m_tasks[_taskID].dapp));
 
           //extrenalize part of the reward logic into a upgradable contract owned by scheduler ?
           // add penalized to the call worker to contrubution and they never contribute ?
-
-
-            uint    i;
-        		address w;
-        		/**
-        		 * Reward distribution:
-        		 * totalReward is to be distributed amoung the winners relative to their
-        		 * contribution. I believe that the weight should be someting like:
-        		 *
-        		 * w ~= 1+log(max(1,score))
-        		 *
-        		 * But how to handle log in solidity ? Is it worth the gaz ?
-        		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-        		 *
-        		 * Current code shows a simple distribution (equal shares)
-        		 */
-        		uint    cntWinners       = 0;
-         		uint    totalReward      = m_tasks[_taskID].reward;
-         		uint    individualReward;
-        		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
-        		{
-        			w = m_tasksWorkers[_taskID][i];
-        			if (m_tasksContributions[_taskID][w].poco)
-        			{
-        				++cntWinners; // TODO: SafeMath
-        			}
-        			else
-        			{
-        				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
-        			}
-        		}
-        		require(cntWinners > 0);
-        		individualReward = totalReward / cntWinners; // TODO: SafeMath
-        		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
-        		{
-        			w = m_tasksWorkers[_taskID][i];
-        			if (m_tasksContributions[_taskID][w].poco)
-        			{
-
-        				require(aPoco.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
-        				require(aPoco.rewardForTask(_taskID,w, individualReward));
-                require(aPoco.scoreWinForTask(_taskID,w, 1));
-        				m_tasksContributions[_taskID][w].balance = int256(individualReward);
-        			}
-        			else
-        			{
-        				require(aPoco.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
-        				// No Reward
-        				require(aPoco.scoreWinForTask(_taskID,w, 50));
-        				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
-        			}
-        		}
-
-        		/**
-        		 * Futur: requires a "log" function
-        		 */
-        		/*
-        		uint                     totalReward       = m_tasks[_taskID].reward;
-        		uint                     distributedReward = 0;
-        		uint                     totalWeight       = 0;
-        		mapping(address => uint) workerWeight;
-        		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
-        		{
-        			w = m_tasksWorkers[_taskID][i];
-        			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
-        			{
-        				uint weight     = 1+log(max256(1, score(w)));
-        				workerWeight[w] = weight;
-        				totalWeight    += weight;
-        			}
-        			else
-        			{
-        				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
-        			}
-        		}
-        		require(totalWeight > 0);
-        		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
-        		{
-        			w = m_tasksWorkers[_taskID][i];
-        			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
-        			{
-        				uint individualReward = totalReward * workerWeight[w] / totalWeight;
-        				distributedReward += individualReward;
-        				unlock(w, m_tasks[_taskID].stake);
-        				reward(w, individualReward);
-        				scoreWin(w, 1);
-        				m_tasksContributions[_taskID][w].balance = int256(individualReward);
-        			}
-        			else
-        			{
-        				seize(w, m_tasks[_taskID].stake);
-        				// No Reward
-        				scoreLose(w, 50);
-        				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
-        			}
-        		}
-        		// TODO: What to do with the rest (totalReward - distributedReward) → To the scheduler ?
-        		*/
+          require(rewardTask(_taskID));
 
 
           return true;
 
         }
+
+        function rewardTask(bytes32 _taskID) internal returns (bool){
+          Poco aPoco = Poco(poco);
+
+                      uint    i;
+                  		address w;
+                  		/**
+                  		 * Reward distribution:
+                  		 * totalReward is to be distributed amoung the winners relative to their
+                  		 * contribution. I believe that the weight should be someting like:
+                  		 *
+                  		 * w ~= 1+log(max(1,score))
+                  		 *
+                  		 * But how to handle log in solidity ? Is it worth the gaz ?
+                  		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
+                  		 *
+                  		 * Current code shows a simple distribution (equal shares)
+                  		 */
+                  		uint    cntWinners       = 0;
+                   		uint    totalReward      = m_tasks[_taskID].reward;
+                   		uint    individualReward;
+                  		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+                  		{
+                  			w = m_tasksWorkers[_taskID][i];
+                  			if (m_tasksContributions[_taskID][w].poco)
+                  			{
+                  				++cntWinners; // TODO: SafeMath
+                  			}
+                  			else
+                  			{
+                  				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
+                  			}
+                  		}
+                  		require(cntWinners > 0);
+                  		individualReward = totalReward / cntWinners; // TODO: SafeMath
+                  		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+                  		{
+                  			w = m_tasksWorkers[_taskID][i];
+                  			if (m_tasksContributions[_taskID][w].poco)
+                  			{
+
+                  				require(aPoco.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
+                  				require(aPoco.rewardForTask(_taskID,w, individualReward));
+                          require(aPoco.scoreWinForTask(_taskID,w, 1));
+                  				m_tasksContributions[_taskID][w].balance = int256(individualReward);
+                  			}
+                  			else
+                  			{
+                  				require(aPoco.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
+                  				// No Reward
+                  				require(aPoco.scoreWinForTask(_taskID,w, 50));
+                  				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
+                  			}
+                  		}
+
+                  		/**
+                  		 * Futur: requires a "log" function
+                  		 */
+                  		/*
+                  		uint                     totalReward       = m_tasks[_taskID].reward;
+                  		uint                     distributedReward = 0;
+                  		uint                     totalWeight       = 0;
+                  		mapping(address => uint) workerWeight;
+                  		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+                  		{
+                  			w = m_tasksWorkers[_taskID][i];
+                  			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+                  			{
+                  				uint weight     = 1+log(max256(1, score(w)));
+                  				workerWeight[w] = weight;
+                  				totalWeight    += weight;
+                  			}
+                  			else
+                  			{
+                  				totalReward += m_tasks[_taskID].stake; // TODO: SafeMath
+                  			}
+                  		}
+                  		require(totalWeight > 0);
+                  		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
+                  		{
+                  			w = m_tasksWorkers[_taskID][i];
+                  			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+                  			{
+                  				uint individualReward = totalReward * workerWeight[w] / totalWeight;
+                  				distributedReward += individualReward;
+                  				unlock(w, m_tasks[_taskID].stake);
+                  				reward(w, individualReward);
+                  				scoreWin(w, 1);
+                  				m_tasksContributions[_taskID][w].balance = int256(individualReward);
+                  			}
+                  			else
+                  			{
+                  				seize(w, m_tasks[_taskID].stake);
+                  				// No Reward
+                  				scoreLose(w, 50);
+                  				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
+                  			}
+                  		}
+                  		// TODO: What to do with the rest (totalReward - distributedReward) → To the scheduler ?
+                  		*/
+
+                      return true;
+        }
+
 
 
         function iexecSubmitCallback(bytes32 _taskID, address dapp, address user, string stdout, string uri) internal {
