@@ -12,7 +12,8 @@ contract DappAPI is IDappAPI, Ownable { //Owned by a D(w){
 
 
     event IexecSubmitCallback(bytes32 submitTxHash, address indexed user, string stdout, string uri);
-
+    // Add an indentity stake :the same as the worker and worker pool stake. To prevent from spam attack
+    // Add an unregisterDappAndProvider function to unlock this identidy stake. or OPEN/CLOSE status for lock and unlock stake. to be stored in dappHub
     // TO ADD  enum DAPPStatusEnum{OPEN,CLOSE}
     // TODO : D(w) can black white list of worker pool S(s)
     // TODO : D(w) can black white list of users U(w)
