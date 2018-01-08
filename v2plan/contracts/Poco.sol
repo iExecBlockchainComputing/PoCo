@@ -27,7 +27,7 @@ DappHub, Stake , Scoring
 
   //event SubmitTask(address indexed user, address indexed workerPool, address indexed dapp, string taskParam, uint taskCost);
 
-  function submitTask(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback) /*onlyDappRegistered*/ public returns (bool){
+  function submitTask(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback) onlyDappRegistered public returns (bool){
      // msg.sender is D(s)
      // tx.origin is U(w)
 
