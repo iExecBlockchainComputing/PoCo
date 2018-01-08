@@ -1,10 +1,14 @@
 pragma solidity ^0.4.18;
+import './Poco.sol';
+import './interfaces/IDappAPI.sol';
+import "rlc-token/contracts/Ownable.sol";
 
 
-contract DappAPI is Ownable { //Owned by a D(w){
+contract DappAPI is IDappAPI, Ownable { //Owned by a D(w){
 
 
     address pocoAddress;
+    Poco aPoco;
 
     event IexecSubmitCallback(bytes32 submitTxHash, address indexed user, string stdout, string uri);
 
@@ -15,13 +19,12 @@ contract DappAPI is Ownable { //Owned by a D(w){
     //constructor
     function DappAPI(address _pocoAddress, uint256 dappPrice, string dappName) public {
         pocoAddress=_pocoAddress;
-        Poco aPoco = Poco(pocoAddress);
+        aPoco = Poco(pocoAddress);
         require(aPoco.registerDappAndProvider(dappPrice,dappName));
     }
 
     function iexecSubmit(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback) public {
-        Poco aPoco = Poco(pocoAddress);
-        require(iexecOracle.submitTask(workerPool,taskParam, taskCost, askedTrust, dappCallback));
+        require(aPoco.submitTask(workerPool,taskParam, taskCost, askedTrust, dappCallback));
     }
 
     function iexecSubmitCallback(bytes32 submitTxHash, address user, string stdout, string uri) public returns  (bool){

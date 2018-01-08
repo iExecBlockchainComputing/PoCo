@@ -1,13 +1,17 @@
 pragma solidity ^0.4.18;
 
-import './interfaces/ITaskRegistry.sol';
+import './DappHub.sol';
+import './WorkerPoolHub.sol';
+import './Stake.sol';
+import './Scoring.sol';
+import './interfaces/IPoco.sol';
 /**
  * @title Poco
  */
-contract Poco is DappHub , WorkerPoolHub, Stake , Scoring {
+contract Poco is IPoco, DappHub , WorkerPoolHub, Stake , Scoring {
 
 
-  mapping (bytes32 => Task) m_taskPoolAffectation;
+  mapping (bytes32 => address) m_taskPoolAffectation;
 
   function Poco(address _tokenAddress) Stake(_tokenAddress) public
 	{
@@ -22,13 +26,13 @@ contract Poco is DappHub , WorkerPoolHub, Stake , Scoring {
 
     require(taskCost >0); // to check ?
 
-    bytes32 taskID = sha3(msg.data, block.number);
+    bytes32 taskID = sha256(msg.data, block.number);
     WorkerPool aPool= WorkerPool(workerPool);
 
     // TODO check aPool is presenty in this poco WorkerPoolHub
 
     //you must be on the withe list of the worker pool to subribe.
-    uint256 dappPrice =dappRegistry[msg.sender].dappPrice;
+    uint256 dappPrice =dapps[msg.sender].dappPrice;
 
     uint256 userCost=dappPrice + taskCost ;
 
@@ -37,20 +41,19 @@ contract Poco is DappHub , WorkerPoolHub, Stake , Scoring {
     //lock user RLC
     require(debit(tx.origin,userCost));
 
-    require(aPool.submitedTask(taskID,msg.sender,taskParam, taskCost, askedTrust, dappCallback )));
+    require(aPool.submitedTask(taskID,msg.sender,taskParam, taskCost, askedTrust, dappCallback ));
 
     //needed for completeTask and pay dappProvider at the end.
     m_taskPoolAffectation[taskID]=workerPool;
-
-    SubmitTask(bytes32 taskID,tx.origin, workerPool, msg.sender, userCost, taskParam, dappCallback);
+    //TODO LOG SubmitTask(taskID,tx.origin, workerPool, msg.sender, userCost, taskParam, dappCallback);
 
     return true;
   }
 
-  function finalizedTask(bytes32 _taskID,address dapp) returns (bool){
-    required(msg.sender == m_taskPoolAffectation[_taskID]);
-    if(dappRegistry[msg.sender].dappPrice > 0){
-      require(reward(dappRegistry[msg.sender].provider,dappRegistry[msg.sender].dappPrice));
+  function finalizedTask(bytes32 _taskID,address dapp) public returns (bool){
+    require(msg.sender == m_taskPoolAffectation[_taskID]);
+    if(dapps[msg.sender].dappPrice > 0){
+      require(reward(dapps[msg.sender].provider,dapps[msg.sender].dappPrice));
     }
     // incremente D(w) or D(s) reputation too  ?
     return true;
@@ -58,15 +61,40 @@ contract Poco is DappHub , WorkerPoolHub, Stake , Scoring {
 
   // add a scoreWinLooseTask for S(w) S(s) too ?
 
-  function scoreWinTask(bytes32 _taskID,address _worker,uint _value)returns (bool){
+  function scoreWinForTask(bytes32 _taskID,address _worker,uint _value) public returns (bool){
     require(msg.sender == m_taskPoolAffectation[_taskID]);
     require(scoreWin(_worker,_value));
     return true;
   }
 
-  function scoreLoseTask(bytes32 _taskID,address _worker,uint _value)returns (bool){
+  function scoreLoseForTask(bytes32 _taskID,address _worker,uint _value) public returns (bool){
     require(msg.sender == m_taskPoolAffectation[_taskID]);
     require(scoreLose(_worker,_value));
+    return true;
+  }
+
+
+  function lockForTask(bytes32 _taskID, address _user, uint _amount) public returns (bool){
+    require(msg.sender == m_taskPoolAffectation[_taskID]);
+    require(lock(_user,_amount));
+    return true;
+  }
+
+  function unlockForTask(bytes32 _taskID, address _user, uint _amount) public returns (bool){
+    require(msg.sender == m_taskPoolAffectation[_taskID]);
+    require(unlock(_user,_amount));
+    return true;
+  }
+
+  function rewardForTask(bytes32 _taskID, address _user, uint _amount) public returns (bool){
+    require(msg.sender == m_taskPoolAffectation[_taskID]);
+    require(reward(_user,_amount));
+    return true;
+  }
+
+  function seizeForTask(bytes32 _taskID, address _user, uint _amount) public returns (bool){
+    require(msg.sender == m_taskPoolAffectation[_taskID]);
+    require(seize(_user,_amount));
     return true;
   }
 

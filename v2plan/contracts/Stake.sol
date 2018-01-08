@@ -1,6 +1,7 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
-import "./SafeMath.sol";
+import "rlc-token/contracts/SafeMath.sol";
+import "rlc-token/contracts/RLC.sol";
 
 /*****************************************************************************
  * Contract Stake: ...                                                      *

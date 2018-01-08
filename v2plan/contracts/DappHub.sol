@@ -1,4 +1,5 @@
 pragma solidity ^0.4.18;
+import './interfaces/IDappHub.sol';
 
 contract DappHub is IDappHub {
 
@@ -17,7 +18,7 @@ contract DappHub is IDappHub {
   //mapping (dapp address => Dapp Struct)
   mapping (address => Dapp ) dapps ;
 
-  function registerDappAndProvider(uint256 dappPrice,string dappName) stopInEmergency public  returns (bool) {
+  function registerDappAndProvider(uint256 dappPrice,string dappName) public  returns (bool) {
       assert(dapps[msg.sender].provider == 0x0);
       assert(msg.sender != tx.origin);
       dapps[msg.sender].provider=tx.origin;

@@ -1,5 +1,12 @@
 pragma solidity ^0.4.18;
 
+import "./Poco.sol";
+import "./DappAPI.sol";
+import "./interfaces/IWorkerPool.sol";
+import "rlc-token/contracts/Ownable.sol";
+import "rlc-token/contracts/Ownable.sol";
+
+
 
 contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
@@ -15,7 +22,14 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
       uint public constant REVEAL_PERIOD_DURATION =  3 hours;
 
-      mapping(address=> uint256 index) public workerIndex;
+      modifier onlyPoco() {
+      if (msg.sender == poco)
+        _;
+      }
+
+
+      // mapping(address=> index)
+      mapping(address=> uint256) public workerIndex;
 
       /**
         WHITELIST AND BLACKLIST WORKER POLICY
@@ -26,7 +40,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       mapping(address => bool) whitelistWorker;
       event WhitelistWorkerChange(address worker,bool isWhitelisted);
       modifier checkWhitelistWorker(address _worker) {
-        require(workersPolicy.WorkersPolicyEnum.BLACKLIST || whitelistWorker[_worker] == true);
+        require(workersPolicy == WorkersPolicyEnum.BLACKLIST || whitelistWorker[_worker] == true);
         _;
       }
       function updateWhitelistWorker(address _worker, bool _isWhitelisted)
@@ -46,23 +60,33 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           }
       }
 
-      function isWorkerWhitelisted(address _worker) returns (bool) {
+      function isWorkerWhitelisted(address _worker) public returns (bool) {
           return whitelistWorker[_worker];
+      }
+
+
+      function isWorkerAllowed(address _worker) public returns (bool) {
+          if(workersPolicy == WorkersPolicyEnum.WHITELIST){
+            return isWorkerWhitelisted(_worker);
+          }
+          else{
+            return ! isWorkerblacklisted(_worker);
+         }
       }
 
 
       mapping(address => bool) blacklistWorker;
       event BlacklistWorkerChange(address worker,bool isBlacklisted);
       modifier checkBlacklistWorker(address _worker) {
-        require(workersPolicy.WorkersPolicyEnum.WHITELIST || blacklistWorker[_worker] == false);
+        require(workersPolicy == WorkersPolicyEnum.WHITELIST || blacklistWorker[_worker] == false);
         _;
       }
       function updateBlacklistWorker(address _worker, bool _isBlacklisted)
       public
       onlyOwner
       {
-          blacklistWorker[_worker] = _isWhiteListed;
-          BlacklistWorkerChange(_worker, _isWhiteListed);
+          blacklistWorker[_worker] = _isBlacklisted;
+          BlacklistWorkerChange(_worker, _isBlacklisted);
       }
       function updateBlacklistWorkers(address[] _workers, bool _isBlacklisted)
       public
@@ -72,13 +96,14 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
               updateBlacklistWorker(_workers[i], _isBlacklisted);
           }
       }
-      function isWorkerblacklisted(address _worker) returns (bool) {
+      function isWorkerblacklisted(address _worker) public returns (bool) {
           return blacklistWorker[_worker];
       }
 
-      function changeWorkerListPolicy(WorkersPolicyEnum _workersPolicyEnum){
+      function changeWorkerListPolicy(WorkersPolicyEnum _workersPolicyEnum) public {
         WorkersPolicyChange(workersPolicy,_workersPolicyEnum);
         workersPolicy = _workersPolicyEnum;
+        //TODO LOG
       }
 
 
@@ -87,10 +112,11 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       **/
       enum DappsPolicyEnum{WHITELIST,BLACKLIST}
       DappsPolicyEnum public dappsPolicy =DappsPolicyEnum.WHITELIST;
+      event DappsPolicyChange(DappsPolicyEnum oldPolicy,DappsPolicyEnum newPolicy);
       mapping(address => bool) whitelistDapp;
       event WhitelistDappChange(address dapp,bool isWhitelisted);
       modifier checkWhitelistDapp(address _dapp) {
-        require(DappsPolicy.DappsPolicyEnum.BLACKLIST || whitelistDapp[_dapp] == true);
+        require(dappsPolicy ==  DappsPolicyEnum.BLACKLIST || whitelistDapp[_dapp] == true);
         _;
       }
       function updateWhitelistDapp(address _dapp, bool _isWhitelisted)
@@ -110,7 +136,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           }
       }
 
-      function isDappWhitelisted(address _dapp) returns (bool) {
+      function isDappWhitelisted(address _dapp) public returns (bool) {
           return whitelistDapp[_dapp];
       }
 
@@ -118,15 +144,15 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       mapping(address => bool) blacklistDapp;
       event BlacklistDappChange(address dapp,bool isBlacklisted);
       modifier checkBlacklistDapp(address _dapp) {
-        require(dappsPolicy.DappsPolicyEnum.WHITELIST || blacklistDapp[_dapp] == false);
+        require(dappsPolicy == DappsPolicyEnum.WHITELIST || blacklistDapp[_dapp] == false);
         _;
       }
       function updateBlacklistDapp(address _dapp, bool _isBlacklisted)
       public
       onlyOwner
       {
-          blacklistDapp[_dapp] = _isWhiteListed;
-          BlacklistDappChange(_dapp, _isWhiteListed);
+          blacklistDapp[_dapp] = _isBlacklisted;
+          BlacklistDappChange(_dapp, _isBlacklisted);
       }
       function updateBlacklistDapps(address[] _dapps, bool _isBlacklisted)
       public
@@ -136,13 +162,14 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
               updateBlacklistDapp(_dapps[i], _isBlacklisted);
           }
       }
-      function isDappblacklisted(address _dapp) returns (bool) {
+      function isDappblacklisted(address _dapp) public returns (bool) {
           return blacklistDapp[_dapp];
       }
 
-      function changeDappListPolicy(DappsPolicyEnum _dappsPolicyEnum){
-        WorkersPolicyChange(dappsPolicy,_dappsPolicyEnum);
+      function changeDappListPolicy(DappsPolicyEnum _dappsPolicyEnum) public {
+        DappsPolicyChange(dappsPolicy,_dappsPolicyEnum);
         dappsPolicy = _dappsPolicyEnum;
+        //TODO LOG
       }
 
       /**
@@ -161,7 +188,8 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         TaskStatusEnum status;
         address user;
         address dapp;
-        address dappCallback;
+        address workerPool;
+        bool dappCallback;
         string taskParam;
         uint trust;
         uint reward;
@@ -169,7 +197,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         string stdout;
         string stderr;
         string uri;
-        uint consensus;
+        uint256 consensus;
       }
       //mapping (taskID => Task) m_tasks;
       mapping (bytes32 => Task) m_tasks;
@@ -201,12 +229,12 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       function WorkerPool(address _poco,string _name) public {
           poco = _poco;
           name = _name;
-          stakePolicyRatio = 0.3; //sheduler can tun it after
+          stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
       }
 
 
-      function isWorkerRegistered( address worker) returns (bool) {
-          return getWorkerAddress(worker) != 0; //TODO to test
+      function isWorkerRegistered( address _worker) public returns (bool) {
+          return getWorkerIndex(_worker) != 0; //TODO to test
       }
 
       function changeStakePolicyRatio(uint newstakePolicyRatio)
@@ -217,15 +245,15 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           //TODO LOG
       }
 
-      function getWorkersCount() constant returns (uint) {
+      function getWorkersCount() constant public returns (uint) {
          return workers.length;
       }
 
-      function getWorkerAddress(uint _index) constant returns (address){
+      function getWorkerAddress(uint _index) constant public returns (address){
        return workers[_index];
       }
 
-      function getWorkerIndex( address worker) constant returns (uint){
+      function getWorkerIndex( address worker) constant public returns (uint){
        return workerIndex[worker];
       }
 
@@ -251,7 +279,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       }
 
 
-      function submitedTask(bytes32 _taskID,address dapp, tring taskParam, uint reward,uint trust, bool dappCallback) public onlyPoco returns (bool){
+      function submitedTask(bytes32 _taskID,address dapp, string taskParam, uint reward,uint trust, bool dappCallback) public onlyPoco returns (bool){
           // msg.sender = dapp
           //check and reject idempotence on _taskID
           require(m_tasks[_taskID].status == TaskStatusEnum.UNSET);
@@ -261,6 +289,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           m_tasks[_taskID].dapp=dapp;
           m_tasks[_taskID].taskParam=taskParam;
           m_tasks[_taskID].trust=trust;
+          m_tasks[_taskID].workerPool=this;
           //TODO add a shceduler tax on the reward allocted for worker. for his owned reward
           m_tasks[_taskID].reward=reward;
           m_tasks[_taskID].stake=reward*stakePolicyRatio; //TODO safemath
@@ -281,13 +310,13 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         require(m_tasks[_taskID].workerPool == msg.sender);
         m_tasks[_taskID].status = TaskStatusEnum.ACCEPTED;
         m_tasks[_taskID].timestamp=now;
-        TaskAccepted(_taskID,m_tasks[_taskID].user,m_tasks[_taskID].workerPool,m_tasks[_taskID].dapp,m_tasks[_taskID].taskParam,m_tasks[_taskID].reward);
+        //TODO LOG TaskAccepted
 
         return true;
       }
 
 
-      function claimAcceptedTask {
+      function claimAcceptedTask () public {
                 //TODO
         // ACCEPTED tasked never completed for a long long time by the workerPool.
         //see "loose of stake" in IPoco.sol 1)
@@ -295,7 +324,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
       }
         // in this case, the lock fund of the scheduler will go to the user.
 
-      function cancelTask {
+      function cancelTask () public {
         //TODO
 
         // only on pending task.
@@ -328,23 +357,24 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
           require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED);
           require(!m_tasksContributions[_taskID][msg.sender].submitted);
           require(m_tasksContributions[_taskID][msg.sender].asked);
-          require(contributionHash!= 0x0 );
+          require(_resultHash!= 0x0 );
+          require(_resultSaltedHash!= 0x0 );
 
-          workersList[_taskID].push(msg.sender);
+          m_tasksWorkers[_taskID].push(msg.sender);
           m_tasksContributions[_taskID][msg.sender].submitted  = true;
           m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
           m_tasksContributions[_taskID][msg.sender].resultSaltedHash = _resultSaltedHash;
-
-          lock(msg.sender, m_tasks[_taskID].stake);
+          Poco aPoco = Poco(poco);
+          require(aPoco.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 
         }
 
-        function revealConsensus(bytes32 _taskID, uint consensus ) public onlyOwner /*=onlySheduler*/
+        function revealConsensus(bytes32 _taskID, uint256 consensus ) public onlyOwner /*=onlySheduler*/
 {
           require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED); //or state Locked to add ?
           m_tasks[_taskID].consensus=consensus;
           m_tasks[_taskID].status = TaskStatusEnum.CONSENSUS_REACHED;
-          m_tasksContributionsRevealDeadLine[_taskID] = now.add(REVEAL_PERIOD_DURATION);
+          m_tasksContributionsRevealDeadLine[_taskID] = now+REVEAL_PERIOD_DURATION; //TODO add safe math
 
           // TODO LOG
         }
@@ -356,9 +386,10 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
             require(m_tasks[_taskID].status == TaskStatusEnum.CONSENSUS_REACHED);
             require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now < m_tasksContributionsRevealDeadLine[_taskID]);
             require(m_tasksContributions[_taskID][msg.sender].submitted);
-            require(salt!= 0x0 );
+            require(_salt!= 0x0 );
             require(_result!= 0x0 );
-            if(sha(_result + _salt ) ==  m_tasksContributions[_taskID][msg.sender].resultSaltedHash ){
+            //TODO write correct check of concat _result + _salt not add of int
+            if(sha256(_result + _salt ) ==  bytes32(m_tasksContributions[_taskID][msg.sender].resultSaltedHash) ){
               //proof of contribution for this worker
               m_tasksContributions[_taskID][msg.sender].poco  = true;
             }
@@ -385,7 +416,7 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
           //call this for reward dappProvider if dappPrice > 0
           Poco aPoco = Poco(poco);
-          require(aPoco.finalizedTask(m_tasks[_taskID].dapp));
+          require(aPoco.finalizedTask(_taskID,m_tasks[_taskID].dapp));
 
           //extrenalize part of the reward logic into a upgradable contract owned by scheduler ?
           // add penalized to the call worker to contrubution and they never contribute ?
@@ -408,7 +439,6 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         		uint    cntWinners       = 0;
          		uint    totalReward      = m_tasks[_taskID].reward;
          		uint    individualReward;
-            Poco aPoco = Poco(poco);
         		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
         		{
         			w = m_tasksWorkers[_taskID][i];
@@ -429,16 +459,16 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         			if (m_tasksContributions[_taskID][w].poco)
         			{
 
-        				require(aPoco.unlock(w, m_tasks[_taskID].stake));
-        				require(aPoco.reward(w, individualReward));
-                require(aPoco.scoreWinTask(_taskID,w, 1));
+        				require(aPoco.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
+        				require(aPoco.rewardForTask(_taskID,w, individualReward));
+                require(aPoco.scoreWinForTask(_taskID,w, 1));
         				m_tasksContributions[_taskID][w].balance = int256(individualReward);
         			}
         			else
         			{
-        				require(aPoco.seize(w, m_tasks[_taskID].stake));
+        				require(aPoco.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
         				// No Reward
-        				require(aPoco.scoreWinTask(_taskID,w, 50));
+        				require(aPoco.scoreWinForTask(_taskID,w, 50));
         				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
         			}
         		}

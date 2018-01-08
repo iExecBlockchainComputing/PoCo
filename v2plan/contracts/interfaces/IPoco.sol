@@ -1,6 +1,10 @@
 pragma solidity ^0.4.18;
 
 
+import "./IDappHub.sol";
+import "./IWorkerPoolHub.sol";
+import "./IStake.sol";
+import "./IScoring.sol";
 
 contract IPoco is IDappHub , IWorkerPoolHub, IStake , IScoring  {
 /*
@@ -75,13 +79,13 @@ contract IPoco is IDappHub , IWorkerPoolHub, IStake , IScoring  {
 
     function submitTask(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback)  public returns (bool);
 
-    function finalizedTask(bytes32 _taskID,address dapp) returns (bool);
+    function finalizedTask(bytes32 _taskID,address dapp) public returns (bool);
 
     // add a scoreWinLooseTask for S(w) S(s) too ?
 
-    function scoreWinTask(bytes32 _taskID,address _worker,uint _value);
+    function scoreWinTask(bytes32 _taskID,address _worker,uint _value) public returns (bool);
 
-    function scoreLoseTask(bytes32 _taskID,address _worker,uint _value)returns (bool);
+    function scoreLoseTask(bytes32 _taskID,address _worker,uint _value) public returns (bool);
 
 
 

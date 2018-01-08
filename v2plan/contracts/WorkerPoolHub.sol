@@ -1,5 +1,7 @@
 pragma solidity ^0.4.18;
 
+import './WorkerPool.sol';
+
 contract WorkerPoolHub {
 
 
@@ -14,15 +16,15 @@ contract WorkerPoolHub {
   event CreateWorkerPool(address scheduler,string name);
 
 
-  function getPoolCount() view returns (uint) {
+  function getPoolCount() view public returns (uint) {
   return workerPools.length;
   }
 
-  function getPoolAddress(uint _index) view returns (address){
+  function getPoolAddress(uint _index) view public returns (address){
   return workerPools[_index];
   }
 
-  function createPool(string name) returns(address poolAddress) {
+  function createPool(string name) public returns(address poolAddress) {
   address newPool = new WorkerPool(this,name);
   workerPools.push(newPool);
   CreateWorkerPool(msg.sender,name);
@@ -31,21 +33,21 @@ contract WorkerPoolHub {
   }
 
 
-  function subscribeToPool(address poolAddress) returns(address poolAddress) {
-  WorkerPool aPool= WorkerPool(poolAddress);
+  function subscribeToPool(address poolAddress) public returns(bool subscribed) {
+  WorkerPool aPoolToSubscribe= WorkerPool(poolAddress);
   //you must be on the withe list of the worker pool to subribe.
-  require(aPool.isWorkerAllowed(msg.sender));
+  require(aPoolToSubscribe.isWorkerAllowed(msg.sender));
   // you must have no cuurent affectation on others worker Pool
   require(m_workerAffectation[msg.sender] == 0x0);
-  require(aPool.addWorker(msg.sender));
+  require(aPoolToSubscribe.addWorker(msg.sender));
   m_workerAffectation[msg.sender] = poolAddress;
   return true;
   }
 
-  function unsubscribeToPool(address poolAddress) returns(address poolAddress) {
-  WorkerPool aPool= WorkerPool(poolAddress);
+  function unsubscribeToPool(address poolAddress) public returns(bool unsubscribed) {
+  WorkerPool aPoolToUnSubscribe= WorkerPool(poolAddress);
   require(m_workerAffectation[msg.sender] == poolAddress );
-  require(aPool.removeWorker(msg.sender));
+  require(aPoolToUnSubscribe.removeWorker(msg.sender));
   m_workerAffectation[msg.sender] == 0x0;
   return true;
   }

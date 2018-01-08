@@ -1,8 +1,8 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
+import "./interfaces/IScoring.sol";
+import "rlc-token/contracts/SafeMath.sol";
 
-import "./SafeMath.sol";
-
-contract Scoring is SafeMath
+contract Scoring is IScoring, SafeMath
 {
 	mapping(address => uint) public m_score;
 
