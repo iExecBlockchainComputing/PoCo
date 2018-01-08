@@ -1,12 +1,6 @@
 pragma solidity ^0.4.18;
 
-
-import "./IDappHub.sol";
-import "./IWorkerPoolHub.sol";
-import "./IStake.sol";
-import "./IScoring.sol";
-
-contract IPoco is IDappHub , IWorkerPoolHub, IStake , IScoring  {
+contract IPoco  {
 /*
 
   Introduction :

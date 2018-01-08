@@ -4,23 +4,30 @@ import './DappHub.sol';
 import './WorkerPoolHub.sol';
 import './Stake.sol';
 import './Scoring.sol';
-import './interfaces/IPoco.sol';
+
 /**
  * @title Poco
  */
-contract Poco is IPoco, DappHub , WorkerPoolHub, Stake , Scoring {
 
+contract Poco is
+DappHub, Stake , Scoring
+ {
+   uint private constant WORKER_POOL_CREATION_STAKE = 5000;
+
+
+  WorkerPoolHub  workerPoolHub;
 
   mapping (bytes32 => address) m_taskPoolAffectation;
 
-  function Poco(address _tokenAddress) Stake(_tokenAddress) public
+  function Poco(address _tokenAddress, address _workerPoolHubAddress ) Stake(_tokenAddress) public
 	{
 
+   workerPoolHub = WorkerPoolHub(_workerPoolHubAddress);
 	}
 
   //event SubmitTask(address indexed user, address indexed workerPool, address indexed dapp, string taskParam, uint taskCost);
 
-  function submitTask(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback) onlyDappRegistered public returns (bool){
+  function submitTask(address workerPool, string taskParam, uint taskCost, uint askedTrust, bool dappCallback) /*onlyDappRegistered*/ public returns (bool){
      // msg.sender is D(s)
      // tx.origin is U(w)
 
@@ -29,14 +36,14 @@ contract Poco is IPoco, DappHub , WorkerPoolHub, Stake , Scoring {
     bytes32 taskID = sha256(msg.data, block.number);
     WorkerPool aPool= WorkerPool(workerPool);
 
-    // TODO check aPool is presenty in this poco WorkerPoolHub
+    require(aPool.isOpen());
 
     //you must be on the withe list of the worker pool to subribe.
     uint256 dappPrice =dapps[msg.sender].dappPrice;
 
     uint256 userCost=dappPrice + taskCost ;
 
-    //reward = taskCost + dappPrice
+    //reward = taskCost + dappPrice;
 
     //lock user RLC
     require(debit(tx.origin,userCost));
@@ -56,6 +63,31 @@ contract Poco is IPoco, DappHub , WorkerPoolHub, Stake , Scoring {
       require(reward(dapps[msg.sender].provider,dapps[msg.sender].dappPrice));
     }
     // incremente D(w) or D(s) reputation too  ?
+    return true;
+  }
+
+
+  function createPool(string name) public returns(address poolAddress) {
+    // add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
+    require(lock(msg.sender,WORKER_POOL_CREATION_STAKE));
+    address newPool =workerPoolHub.createPool(name);
+    return newPool;
+  }
+
+
+  function openPool(address _workerPool) public  returns (bool){
+    WorkerPool aPool= WorkerPool(_workerPool);
+    require(aPool.getWorkerPoolOwner() == msg.sender);
+    require(aPool.openPool());
+    lock(msg.sender,WORKER_POOL_CREATION_STAKE);
+    return true;
+  }
+
+  function closePool(address _workerPool) public   returns (bool){
+      WorkerPool aPool= WorkerPool(_workerPool);
+      require(aPool.getWorkerPoolOwner() == msg.sender);
+      require(aPool.closePool());
+      unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
     return true;
   }
 

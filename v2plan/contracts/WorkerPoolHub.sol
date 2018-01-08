@@ -1,8 +1,9 @@
 pragma solidity ^0.4.18;
 
 import './WorkerPool.sol';
+import "rlc-token/contracts/Ownable.sol";
 
-contract WorkerPoolHub {
+contract WorkerPoolHub is Ownable { // TODO change owner to poco at migrate
 
 
   address[] workerPools;
@@ -24,8 +25,8 @@ contract WorkerPoolHub {
   return workerPools[_index];
   }
 
-  function createPool(string name) public returns(address poolAddress) {
-  address newPool = new WorkerPool(this,name);
+  function createPool(string name) public onlyOwner /*owner == poco*/ returns(address poolAddress) {
+  address newPool = new WorkerPool(owner,name);
   workerPools.push(newPool);
   CreateWorkerPool(msg.sender,name);
   // add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
@@ -33,7 +34,7 @@ contract WorkerPoolHub {
   }
 
 
-  function subscribeToPool(address poolAddress) public returns(bool subscribed) {
+  function subscribeToPool(address poolAddress) public  returns(bool subscribed) {
   WorkerPool aPoolToSubscribe= WorkerPool(poolAddress);
   //you must be on the withe list of the worker pool to subribe.
   require(aPoolToSubscribe.isWorkerAllowed(msg.sender));
@@ -44,14 +45,13 @@ contract WorkerPoolHub {
   return true;
   }
 
-  function unsubscribeToPool(address poolAddress) public returns(bool unsubscribed) {
-  WorkerPool aPoolToUnSubscribe= WorkerPool(poolAddress);
+   function unsubscribeToPool(address poolAddress) public  returns(bool unsubscribed) {
+   WorkerPool aPoolToUnSubscribe= WorkerPool(poolAddress);
   require(m_workerAffectation[msg.sender] == poolAddress );
   require(aPoolToUnSubscribe.removeWorker(msg.sender));
   m_workerAffectation[msg.sender] == 0x0;
   return true;
   }
-
 
 
 

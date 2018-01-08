@@ -20,11 +20,24 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
       address poco;
 
+      PoolStatusEnum poolStatus;
+
+      enum PoolStatusEnum{OPEN,CLOSE}
+
       uint public constant REVEAL_PERIOD_DURATION =  3 hours;
 
       modifier onlyPoco() {
       if (msg.sender == poco)
         _;
+      }
+
+
+      //constructor
+      function WorkerPool(address _poco,string _name) public {
+          poco = _poco;
+          name = _name;
+          stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
+          poolStatus=PoolStatusEnum.OPEN;
       }
 
 
@@ -225,12 +238,6 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
 
       event CallForWork(bytes32 taskID, address indexed worker);
 
-      //constructor
-      function WorkerPool(address _poco,string _name) public {
-          poco = _poco;
-          name = _name;
-          stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
-      }
 
 
       function isWorkerRegistered( address _worker) public returns (bool) {
@@ -257,13 +264,18 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
        return workerIndex[worker];
       }
 
-      function addWorker(address worker) public onlyPoco returns (bool){
+      function getWorkerPoolOwner() view public returns (address){
+        return owner;
+      }
+
+      function addWorker(address worker) public onlyOwner returns (bool){
         workers.push(worker);
         //LOG TODO
         return true;
       }
 
-      function removeWorker(address worker) public onlyPoco returns (bool){
+
+      function removeWorker(address worker) public onlyOwner returns (bool){
         uint index =getWorkerIndex(worker);
         //TODO test this. index 0 or 1?
         require (index > 0);
@@ -278,6 +290,24 @@ contract WorkerPool is IWorkerPool, Ownable { //Owned by a S(w)
         return true;
       }
 
+      function openPool() public onlyPoco /*for staking management*/ returns (bool){
+        require(poolStatus == PoolStatusEnum.CLOSE);
+        poolStatus = PoolStatusEnum.OPEN;
+        return true;
+      }
+      function closePool() public onlyPoco /*for staking management*/ returns (bool){
+        require(poolStatus == PoolStatusEnum.OPEN);
+        poolStatus = PoolStatusEnum.CLOSE;
+        return true;
+      }
+
+      function isOpen() public returns (bool){
+        return poolStatus == PoolStatusEnum.OPEN;
+      }
+
+      function isClose() public returns (bool){
+        return poolStatus == PoolStatusEnum.CLOSE;
+      }
 
       function submitedTask(bytes32 _taskID,address dapp, string taskParam, uint reward,uint trust, bool dappCallback) public onlyPoco returns (bool){
           // msg.sender = dapp
