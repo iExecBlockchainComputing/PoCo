@@ -30,19 +30,23 @@ component [POCOs]
 
 
 Uw -down-> [Ds]
-Dw --> [Ds]
-Dw --> Dp
-Sw -up-> [Ss]
-Sw -down-> [Sp]
+Dw -right-> [Ds]: owner
+Dw -left-> Dp: control
+Sw -up-> [Ss]: owner
+Sw -down-> [Sp]: control
 
 [Ds] <-down-> [POCOs]
 [POCOs] <-down-> [Ss]
 [Sp] <-up-> [Ss]
 [Wp] <-up-> [Ss]
 
-[Ww] -right-> [Wp]
+[Ww] -right-> [Wp]: control
 
 [Wp] <-right-> [Sp]
+
+
+[Wp] <-up-> [Dp]
+
 
 'missing link :  [Dp] <-> [Wp] . add mannualy on img because i do not succeed to layout it
 

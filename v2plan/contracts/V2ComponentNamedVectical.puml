@@ -30,19 +30,21 @@ component [POCOContract]
 
 
 DappUser -down-> [DappContract]
-DappProvider --> [DappContract]
-DappProvider --> AppProvider
-SchedulerProvider -up-> [WorkerPoolContract]
-SchedulerProvider -down-> [Scheduler]
+DappProvider -right-> [DappContract]: owner
+DappProvider -left-> AppProvider : control
+SchedulerProvider -up-> [WorkerPoolContract]: owner
+SchedulerProvider -down-> [Scheduler]: control
 
 [DappContract] <-down-> [POCOContract]
 [POCOContract] <-down-> [WorkerPoolContract]
 [Scheduler] <-up-> [WorkerPoolContract]
 [Worker] <-up-> [WorkerPoolContract]
 
-[WorkerProvider] -right-> [Worker]
+[WorkerProvider] -right-> [Worker] : control
 
 [Worker] <-right-> [Scheduler]
+
+[Worker] <-up-> [AppProvider]
 
 'missing link :  [AppProvider] <-> [Worker] . add mannualy on img because i do not succeed to layout it
 
