@@ -27,5 +27,6 @@ Scoring <|-- POCO
 WorkerPool "n" *-- "0" WorkerPoolHub
 
 DappAPI <|-- MyDapp
+MyDapp "n" *-- "0" DappHub
 
 @enduml
