@@ -1,0 +1,51 @@
+@startuml
+
+
+:Uw:
+
+:Dw:
+cloud {
+  [Ds]
+}
+component [Ds]
+component [Dp]
+
+:Sw:
+cloud {
+  [Ss]
+}
+
+component [Ss]
+component [Sp]
+
+:Ww:
+component [Wp]
+
+cloud {
+  [POCOs]
+}
+component [POCOs]
+
+
+
+
+Uw -down-> [Ds]
+Dw --> [Ds]
+Dw --> Dp
+Sw -up-> [Ss]
+Sw -down-> [Sp]
+
+[Ds] <-down-> [POCOs]
+[POCOs] <-down-> [Ss]
+[Sp] <-up-> [Ss]
+[Wp] <-up-> [Ss]
+
+[Ww] -right-> [Wp]
+
+[Wp] <-right-> [Sp]
+
+'missing link :  [Dp] <-> [Wp] . add mannualy on img because i do not succeed to layout it
+
+
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+
+
+:DappUser:
+
+:DappProvider:
+cloud {
+  [DappContract]
+}
+component [DappContract]
+component [AppProvider]
+
+:SchedulerProvider:
+cloud {
+  [WorkerPoolContract]
+}
+
+component [WorkerPoolContract]
+component [Scheduler]
+
+:WorkerProvider:
+component [Worker]
+
+cloud {
+  [POCOContract]
+}
+component [POCOContract]
+
+
+
+
+DappUser -down-> [DappContract]: 1) iexecSubmit()
+DappProvider <-right- [DappContract]:owned by
+DappProvider -left-> AppProvider : control
+SchedulerProvider <-up- [WorkerPoolContract]:owned by
+SchedulerProvider -down-> [Scheduler] : control
+
+[DappContract] -down-> [POCOContract]: 2a) submitTask()
+[DappContract] <-down- [POCOContract]: 12) iexecSubmitCallback()
+[POCOContract] -down-> [WorkerPoolContract]:  2b) submitTask()
+[POCOContract] <-down- [WorkerPoolContract]:  11b) finalizedTask()
+[Scheduler] <-up-> [WorkerPoolContract]: 3) acceptTask()\n4) callForContribution()\n7) revealConsensus\n11a) finalizedTask()
+[Worker] <-up-> [WorkerPoolContract]: 6) contribute\n8) reveal
+
+[WorkerProvider] -right-> [Worker] : control
+
+[Worker] <-up-> [AppProvider]: 5) getApp()
+
+[Worker] <-right-> [Scheduler]:10) getResult
+
+'missing link :  [AppProvider] <-> [Worker] . add mannualy on img because i do not succeed to layout it
+
+
+
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+
+
+:DappUser:
+
+:DappProvider:
+cloud {
+  [DappContract]
+}
+component [DappContract]
+component [AppProvider]
+
+:SchedulerProvider:
+cloud {
+  [WorkerPoolContract]
+}
+
+component [WorkerPoolContract]
+component [Scheduler]
+
+:WorkerProvider:
+component [Worker]
+
+cloud {
+  [POCOContract]
+}
+component [POCOContract]
+
+
+
+
+DappUser -down-> [DappContract]
+DappProvider --> [DappContract]
+DappProvider --> AppProvider
+SchedulerProvider -up-> [WorkerPoolContract]
+SchedulerProvider -down-> [Scheduler]
+
+[DappContract] <-down-> [POCOContract]
+[POCOContract] <-down-> [WorkerPoolContract]
+[Scheduler] <-up-> [WorkerPoolContract]
+[Worker] <-up-> [WorkerPoolContract]
+
+[WorkerProvider] -right-> [Worker]
+
+[Worker] <-right-> [Scheduler]
+
+'missing link :  [AppProvider] <-> [Worker] . add mannualy on img because i do not succeed to layout it
+
+
+
+@enduml
