@@ -31,9 +31,9 @@ contract Poco is DappHub, Stake , Scoring //, poco is also a WorkerPoolHub but r
 		// msg.sender is D(s)
 		// tx.origin is U(w)
 
-		require(taskCost >0); // to check ?
+		require(taskCost > 0); // to check ?
 
-		bytes32 taskID   = sha256(msg.data, block.number);
+		bytes32 taskID   = keccak256(msg.data, block.number); // sha256 → keccak256
 		WorkerPool aPool = WorkerPool(workerPool);
 
 		require(aPool.isOpen());
@@ -116,14 +116,14 @@ contract Poco is DappHub, Stake , Scoring //, poco is also a WorkerPoolHub but r
 
 	// add a scoreWinLooseTask for S(w) S(s) too ?
 
-	function scoreWinForTask(bytes32 _taskID,address _worker,uint _value) public returns (bool)
+	function scoreWinForTask(bytes32 _taskID, address _worker, uint _value) public returns (bool)
 	{
 		require(msg.sender == m_taskPoolAffectation[_taskID]);
 		require(scoreWin(_worker,_value));
 		return true;
 	}
 
-	function scoreLoseForTask(bytes32 _taskID,address _worker,uint _value) public returns (bool)
+	function scoreLoseForTask(bytes32 _taskID, address _worker, uint _value) public returns (bool)
 	{
 		require(msg.sender == m_taskPoolAffectation[_taskID]);
 		require(scoreLose(_worker,_value));
