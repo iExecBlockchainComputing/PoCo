@@ -8,7 +8,7 @@ import "rlc-token/contracts/RLC.sol";
  *****************************************************************************/
 contract Stake is SafeMath
 {
-  /**
+	/**
 	 * Account structure
 	 */
 	struct Account
@@ -77,7 +77,7 @@ contract Stake is SafeMath
 		m_accounts[_user].locked = safeSub(m_accounts[_user].locked, _amount);
 		return true;
 	}
-  function debit(address _user, uint _amount) internal returns (bool)
+	function debit(address _user, uint _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = safeSub(m_accounts[_user].stake,  _amount);
 		return true;
