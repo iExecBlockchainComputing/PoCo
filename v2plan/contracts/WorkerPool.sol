@@ -417,8 +417,8 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		require(_result != 0x0);
 		//TODO write correct check of concat _result + _salt not add of int
 		if(
-			sha256(_result        ) == bytes32(m_tasksContributions[_taskID][msg.sender].resultHash      ) &&
-			sha256(_result ^ _salt) == bytes32(m_tasksContributions[_taskID][msg.sender].resultSaltedHash) // ^ → xor
+			keccak256(_result        ) == bytes32(m_tasksContributions[_taskID][msg.sender].resultHash      ) &&         // sha256 → keccak256
+			keccak256(_result ^ _salt) == bytes32(m_tasksContributions[_taskID][msg.sender].resultSaltedHash) // ^ → xor // sha256 → keccak256
 		)
 		{
 			//proof of contribution for this worker
@@ -504,7 +504,7 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 			{
 				require(aPoco.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
 				// No Reward
-				require(aPoco.scoreWinForTask(_taskID,w, 50));
+				require(aPoco.scoreLoseForTask(_taskID,w, 50));
 				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
@@ -539,16 +539,16 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 			{
 				uint individualReward = totalReward * workerWeight[w] / totalWeight;
 				distributedReward += individualReward;
-				unlock(w, m_tasks[_taskID].stake);
-				reward(w, individualReward);
-				scoreWin(w, 1);
+				require(aPoco.unlockForTask(w, m_tasks[_taskID].stake));
+				require(aPoco.rewardForTask(w, individualReward));
+				require(aPoco.scoreWinForTask(w, 1));
 				m_tasksContributions[_taskID][w].balance = int256(individualReward);
 			}
 			else
 			{
-				seize(w, m_tasks[_taskID].stake);
+				require(aPoco.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
 				// No Reward
-				scoreLose(w, 50);
+				require(aPoco.scoreLoseForTask(_taskID,w, 50));
 				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}
