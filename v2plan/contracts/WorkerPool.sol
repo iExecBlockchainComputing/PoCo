@@ -209,7 +209,7 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		string         stdout;
 		string         stderr;
 		string         uri;
-		uint256        consensus;
+		bytes32        consensus;
 	}
 	//mapping (taskID => Task) m_tasks;
 	mapping (bytes32 => Task) m_tasks;
@@ -219,9 +219,8 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		bool    asked;
 		bool    submitted;
 		bool    poco;
-		uint256 resultHash;
-		//uint256 saltHash; // unused
-		uint256 resultSaltedHash;
+		bytes32 resultHash;
+		bytes32 resultSign; // change from salt to tx.origin based signature
 		int256  balance;
 	}
 
@@ -381,24 +380,24 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		return true;
 	}
 
-	function contribute(bytes32 _taskID, uint256 _resultHash, uint256 _resultSaltedHash) public
+	function contribute(bytes32 _taskID, bytes32 _resultHash, bytes32 _resultSign) public
 	{
 		// msg.sender = a worker
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED);
 		require(m_tasksContributions[_taskID][msg.sender].asked);
 		require(!m_tasksContributions[_taskID][msg.sender].submitted);
-		require(_resultHash       != 0x0);
-		require(_resultSaltedHash != 0x0);
+		require(_resultHash != 0x0);
+		require(_resultSign != 0x0);
 
 		m_tasksWorkers[_taskID].push(msg.sender);
-		m_tasksContributions[_taskID][msg.sender].submitted        = true;
-		m_tasksContributions[_taskID][msg.sender].resultHash       = _resultHash;
-		m_tasksContributions[_taskID][msg.sender].resultSaltedHash = _resultSaltedHash;
+		m_tasksContributions[_taskID][msg.sender].submitted  = true;
+		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
+		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
 		Poco aPoco = Poco(poco);
 		require(aPoco.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 	}
 
-	function revealConsensus(bytes32 _taskID, uint256 consensus) public onlyOwner /*=onlySheduler*/
+	function revealConsensus(bytes32 _taskID, bytes32 consensus) public onlyOwner /*=onlySheduler*/
 	{
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED); //or state Locked to add ?
 		m_tasks[_taskID].status    = TaskStatusEnum.CONSENSUS_REACHED;
@@ -407,18 +406,17 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		// TODO LOG
 	}
 
-	function reveal(bytes32 _taskID, uint256 _result, uint256 _salt ) public
+	function reveal(bytes32 _taskID, bytes32 _result) public
 	{
 		// msg.sender = a worker
 		require(m_tasks[_taskID].status == TaskStatusEnum.CONSENSUS_REACHED);
 		require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now < m_tasksContributionsRevealDeadLine[_taskID]);
 		require(m_tasksContributions[_taskID][msg.sender].submitted);
-		require(_salt   != 0x0);
 		require(_result != 0x0);
 		//TODO write correct check of concat _result + _salt not add of int
 		if(
-			keccak256(_result        ) == bytes32(m_tasksContributions[_taskID][msg.sender].resultHash      ) &&         // sha256 → keccak256
-			keccak256(_result ^ _salt) == bytes32(m_tasksContributions[_taskID][msg.sender].resultSaltedHash) // ^ → xor // sha256 → keccak256
+			keccak256(_result                        ) == m_tasksContributions[_taskID][msg.sender].resultHash &&         // sha256 → keccak256
+			keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[_taskID][msg.sender].resultSign // ^ → xor // sha256 → keccak256
 		)
 		{
 			//proof of contribution for this worker
@@ -535,7 +533,7 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
-			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+			if (m_tasksContributions[_taskID][w].poco)
 			{
 				uint individualReward = totalReward * workerWeight[w] / totalWeight;
 				distributedReward += individualReward;
