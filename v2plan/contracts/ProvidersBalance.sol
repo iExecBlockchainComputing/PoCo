@@ -1,0 +1,87 @@
+pragma solidity ^0.4.18;
+
+import "./SafeMathOZ.sol";
+import "rlc-token/contracts/RLC.sol";
+
+/*****************************************************************************
+ * Contract ProvidersBalance: ...                                                      *
+ *****************************************************************************/
+contract ProvidersBalance
+{
+	using SafeMathOZ for uint256;
+	/**
+	 * Account structure
+	 */
+	struct Account
+	{
+		uint256 stake;
+		uint256 locked;
+	}
+	/**
+	 * Internal data: address to account mapping
+	 */
+	mapping(address => Account) public m_accounts;
+	/**
+	 * RLC contract for token transfers.
+	 */
+	RLC public rlc;
+	/**
+	 * Constructor
+	 */
+	function ProvidersBalance(address _tokenAddress) public
+	{
+		rlc = RLC(_tokenAddress);
+	}
+	/**
+	 * Public functions
+	 */
+	function deposit(uint256 _amount) public returns (bool)
+	{
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transferFrom(msg.sender, address(this), _amount));
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(msg.value);
+		return true;
+	}
+	function withdraw(uint256 _amount) public returns (bool)
+	{
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transfer(msg.sender, _amount));
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(msg.value);
+		return true;
+	}
+	function checkBalance() public view returns (uint, uint)
+	{
+		return (m_accounts[msg.sender].stake, m_accounts[msg.sender].locked);
+	}
+	/**
+	 * Internal function
+	 */
+	function lock  (address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
+		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
+		return true;
+	}
+	function unlock(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		return true;
+	}
+	function reward(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		return true;
+	}
+	function seize (address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		return true;
+	}
+	function debit(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
+		return true;
+	}
+
+}

@@ -1,62 +1,60 @@
 pragma solidity ^0.4.18;
-import './interfaces/IDappHub.sol';
 
-contract DappHub is IDappHub
+import './Dapp.sol';
+import "rlc-token/contracts/Ownable.sol";
+import "./SafeMathOZ.sol";
+contract DappHub is Ownable // is Owned by IexecHub
 {
+  using SafeMathOZ for uint256;
+  event CreateDapp(address indexed dappOwner, address indexed dapp, string dappName,uint256 dappPrice, string dappParam, string dappUri);
 
-	modifier onlyDappRegistered()
+  // owner => dapps count
+	mapping (address => uint256) m_dappsCountByOwner;
+
+  // owner => index => dapp
+  mapping (address => mapping (uint256 => address)) m_dappByOwnerByIndex;
+
+  //  dapp => owner
+  mapping (address => address) m_ownerByDapp;
+
+	function getDappsCount(address _owner) view public returns (uint256)
 	{
-		require(dapps[msg.sender].provider != 0x0);
-		_;
+		return m_dappsCountByOwner[_owner];
 	}
 
-	struct Dapp
+  function getDapp(address _owner,uint256 _index) view public returns (address)
+  {
+    return m_dappByOwnerByIndex[_owner][_index];
+  }
+
+  function getDappOwner(address _dapp) view public returns (address)
+  {
+    return m_ownerByDapp[_dapp];
+  }
+
+  function isDappRegistred(address _dapp) view public returns (bool)
+  {
+    return m_ownerByDapp[_dapp] != 0x0;
+  }
+
+	function createDapp(string _dappName, uint256 _dappPrice, string _dappParam, string _dappUri) public onlyOwner /*owner == IexecHub*/ returns(address createdDapp)
 	{
-		string dappName;
-		uint256 dappPrice;
-		address provider;
-		//TODO add type and uri where to find (docker, IPFS, iexec (in xtremweb server))
+    // tx.origin == owner
+    // msg.sender == IexecHub
+		address newDapp = new Dapp(msg.sender,_dappName, _dappPrice, _dappParam, _dappUri);
+    m_dappsCountByOwner[tx.origin]=m_dappsCountByOwner[tx.origin].add(1);
+    m_dappByOwnerByIndex[tx.origin][m_dappsCountByOwner[tx.origin]] = newDapp;
+    m_ownerByDapp[newDapp]= tx.origin;
+    CreateDapp(tx.origin,newDapp,_dappName, _dappPrice, _dappParam, _dappUri);
+		return newDapp;
 	}
 
-	//mapping (dapp address => Dapp Struct)
-	mapping (address => Dapp ) dapps;
 
-	function registerDappAndProvider(uint256 dappPrice,string dappName) public returns (bool)
-	{
-		assert(dapps[msg.sender].provider == 0x0);
-		assert(msg.sender != tx.origin);
-		dapps[msg.sender].provider=tx.origin;
-		dapps[msg.sender].dappPrice=dappPrice;
-		dapps[msg.sender].dappName=dappName;
-		Register(msg.sender,tx.origin,dappPrice,dappName);
+  function getDappPrice(address _dapp) view public returns (uint256 dappPrice) {
+      Dapp dapp =Dapp(_dapp);
+      return dapp.dappPrice();
+  }
 
-		// TODO add a dappPrice ratio staking check for D(w)
 
-		return true;
-	}
-
-	function getDapp(address dapp) constant public returns (string dappName, uint256 dappPrice, address provider)
-	{
-		return (
-			dapps[dapp].dappName,
-			dapps[dapp].dappPrice,
-			dapps[dapp].provider
-		);
-	}
-
-	function getProvider(address dapp) constant public returns (address provider)
-	{
-		return dapps[dapp].provider;
-	}
-
-	function getDappPrice(address dapp) constant public returns (uint256 dappPrice)
-	{
-		return dapps[dapp].dappPrice;
-	}
-
-	function getDappName(address dapp) constant public returns (string dappName)
-	{
-		return dapps[dapp].dappName;
-	}
 
 }
