@@ -268,6 +268,10 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 	function removeWorker(address worker) public onlyOwner returns (bool)
 	{
 		uint index = getWorkerIndex(worker);
+		/**
+		 * THIS IS BAD, GAS COST IS TERRIBLE.
+		 */
+		/*
 		//TODO test this. index 0 or 1?
 		require (index > 0); //Hadrien: pourquoi ? Si on veux supprimer l'index 0 ca devrai etre possible (et le code marche)
 		require (index < workers.length);
@@ -278,6 +282,15 @@ contract WorkerPool is IWorkerPool, Ownable //Owned by a S(w)
 		}
 		delete workers[workers.length-1];
 		workers.length--;
+		*/
+
+		/**
+		 * Good solution: we don't need to keep the worker in order.
+		 */
+		workers[index] = workers[workers.length-1];
+		delete workers[worker.length-1];
+		workers.length--;
+
 		//LOG TODO
 		return true;
 	}
