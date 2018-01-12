@@ -17,12 +17,12 @@ contract iexecHubOwnable
 		require(msg.sender == iexecHubAddress);
 		_;
 	}
-	function transferOwnership(address _newOwner) public onlyOwner
+	function changeOwner(address _newOwner) public onlyOwner
 	{
 		require(_newOwner != 0x0);
 		owner = _newOwner;
 	}
-	function setIexecHubAddress(address _newIexecHubAddress) public onlyOwner
+	function changeIexecHubAddress(address _newIexecHubAddress) public onlyOwner
 	{
 		require(_newIexecHubAddress != 0x0);
 		iexecHubAddress = _newIexecHubAddress;
