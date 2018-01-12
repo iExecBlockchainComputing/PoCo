@@ -1,50 +1,38 @@
 pragma solidity ^0.4.18;
 
-import "./IexecHub.sol";
+import './OwnableOZ.sol';
+import './IexecHubInterface.sol';
+
 import "./TaskRequest.sol";
 import "./SafeMathOZ.sol";
 
-contract WorkerPool//Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 {
 
 	using SafeMathOZ for uint256;
 
-	address public owner;
-  string  public name;
-  address private iexecHubAddress;
-  IexecHub private iexecHub;
-
-	uint256           stakePolicyRatio;
-	address[]     workers;
-
-
 	enum PoolStatusEnum{OPEN,CLOSE}
-	PoolStatusEnum poolStatus;
+
+	string   public  name;
+	uint256          stakePolicyRatio;
+	PoolStatusEnum   poolStatus;
+	address[]        workers;
 
 	uint256 public constant REVEAL_PERIOD_DURATION =  3 hours;
 
-	modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
-
-	modifier onlyIexecHub()
-	{
-		require(msg.sender == iexecHubAddress);
-		_;
-	}
-
 	//constructor
-	function WorkerPool(address _iexecHubAddress, string _name) public
+	function WorkerPool(
+		address _iexecHubAddress,
+		string _name)
+	OwnableOZ        (tx.origin) // owner = tx.origin
+	IexecHubInterface(_iexecHubAddress)
+	public
 	{
 		// tx.origin == owner
-    // msg.sender == DatasetHub
-    require(tx.origin != msg.sender );
-    owner = tx.origin;
-    iexecHubAddress  = _iexecHubAddress;
-    iexecHub         = IexecHub(iexecHubAddress);
-    name             = _name;
+		// msg.sender == DatasetHub
+		require(tx.origin != msg.sender );
 
+		name             = _name;
 		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
 		poolStatus       = PoolStatusEnum.OPEN;
 	}
@@ -297,7 +285,7 @@ contract WorkerPool//Owned by a S(w)
 		 * Good solution: we don't need to keep the worker in order.
 		 */
 		workers[index] = workers[workers.length-1];
-		delete workers[worker.length-1];
+		delete workers[workers.length-1];
 		workers.length--;
 
 		//LOG TODO
@@ -346,7 +334,7 @@ contract WorkerPool//Owned by a S(w)
 		require(m_tasks[_taskID].status == TaskStatusEnum.PENDING);
 		m_tasks[_taskID].status    = TaskStatusEnum.ACCEPTED;
 		m_tasks[_taskID].timestamp = now;
-	  require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+		require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 
 		//TODO LOG TaskAccepted
 		return true;

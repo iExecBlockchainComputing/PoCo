@@ -1,7 +1,9 @@
 pragma solidity ^0.4.18;
-import './IexecHubOwnable.sol';
 
-contract Dapp is iexecHubOwnable //Owned by a D(w){
+import './OwnableOZ.sol';
+import './IexecHubInterface.sol';
+
+contract Dapp is OwnableOZ, IexecHubInterface //Owned by a D(w){
 {
 	string   public  dappName;
 	uint256  public  dappPrice;
@@ -18,19 +20,18 @@ contract Dapp is iexecHubOwnable //Owned by a D(w){
 		uint256 _dappPrice,
 		string  _dappParam,
 		string  _dappUri)
-	iexecHubOwnable(tx.origin, _iexecHubAddress)
+	OwnableOZ        (tx.origin) // owner = tx.origin
+	IexecHubInterface(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender);
 
-		dappName         = _dappName;
-		dappPrice        = _dappPrice;
-		dappParam        = _dappParam;
-		dappUri          = _dappUri;
+		dappName  = _dappName;
+		dappPrice = _dappPrice;
+		dappParam = _dappParam;
+		dappUri   = _dappUri;
 	}
-
-
 
 }
