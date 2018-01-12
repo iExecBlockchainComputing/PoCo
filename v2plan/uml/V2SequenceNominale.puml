@@ -1,0 +1,88 @@
+@startuml
+DappUser -> MyDapp
+
+MyDapp --> IexecHub: createTaskRequest(app,dataset,workerpool)
+
+note over IexecHub : check smart contract app, workerpool, dataset (optional) asked are well registered
+IexecHub --> ProvidersBalance :debit MyDapp RLC \n(dappPrice+taskPrice+datasetPrice)
+
+IexecHub --> TaskRequest: createTaskRequest
+activate TaskRequest
+
+TaskRequest --> IexecHub : taskId
+
+IexecHub -> WorkerPool: submitedTask(taskId)
+
+activate WorkerPool
+
+note over WorkerPool :TaskStatusEnum.PENDING
+WorkerPool o-> Dispatcher : watch SubmitedTask event
+activate Dispatcher
+Dispatcher -> Dispatcher : analyse asked task
+Dispatcher --> WorkerPool : acceptTask(taskId)
+note over WorkerPool :TaskStatusEnum.ACCEPTED
+WorkerPool -> IexecHub : lockForTask(taskId,Scheduler) a taskPrice ratio
+IexecHub -> ProvidersBalance : lockForTask(taskId,Scheduler)
+
+Dispatcher -> Dispatcher : randonmy choose worker
+Dispatcher  --> WorkerPool : callForContribution(taskId,worker)
+deactivate Dispatcher
+WorkerPool o-> Worker : watch CallforContribution event
+activate Worker
+Worker  <--> AppRepository : getApp
+Worker  <--> DatasetRepository : getDataset
+
+
+Worker-> Worker: execute the asked work
+activate Worker
+
+Worker-> Worker: resultHash (vote)
+Worker-> Worker: resultSigned(proof of knowledge)
+Worker  --> WorkerPool : contribute(taskId,resultHash,resultSigned)
+deactivate  Worker
+deactivate  Worker
+
+WorkerPool -> IexecHub : lockForTask(taskId,RessourceProvider) a taskPrice ratio
+IexecHub -> ProvidersBalance : lockForTask(taskId,RessourceProvider)
+
+WorkerPool o-> Dispatcher : watch Contribute event
+activate Dispatcher
+Dispatcher -> Dispatcher: check if consensus on resultHash is reached
+
+Dispatcher --> WorkerPool : revealConsensus
+deactivate Dispatcher
+note over WorkerPool :TaskStatusEnum.CONSENSUS_REACHED
+note over WorkerPool :consensus on resultHash is revealed
+note over WorkerPool : a limited REVEAL_PERIOD is start in the smart contract
+WorkerPool o-> Worker : watch RevealConsensus event
+activate Worker
+Worker  --> WorkerPool  :reveal(result)
+note over WorkerPool : during the REVEAL_PERIOD, workers reveal \n(result and salt ) for the following rewards
+deactivate Worker
+WorkerPool o-> Dispatcher : watch Reveal event
+activate Dispatcher
+Dispatcher -> Dispatcher : check if all workers are reveal or reveal period end
+Dispatcher  <--> Worker  : getResult
+note over Dispatcher : Dispatcher ask and retrived result on worker who has revealed a right contribution
+
+Dispatcher --> WorkerPool : finalizedTask
+deactivate Dispatcher
+
+note over WorkerPool : TaskStatusEnum.FINALIZED
+
+WorkerPool --> IexecHub : finalizedTask
+deactivate WorkerPool
+IexecHub --> ProvidersBalance :
+
+note over ProvidersBalance : Take stake of bad workers for others
+note over ProvidersBalance : unlock good workers staking
+note over ProvidersBalance : unlock scheduler staking
+note over ProvidersBalance : reward good workers
+note over ProvidersBalance : reward scheduler
+note over ProvidersBalance  : pay Price for app and dataset provider
+ProvidersBalance --> IexecHub :
+
+IexecHub --> TaskRequest : taskRequestCallback
+TaskRequest --> MyDapp : taskRequestCallback
+deactivate TaskRequest
+@enduml
