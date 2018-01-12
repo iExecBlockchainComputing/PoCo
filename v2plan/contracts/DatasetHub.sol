@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "./OwnableOZ.sol";
 import "./Dataset.sol";
+import "./OwnableOZ.sol";
 import "./SafeMathOZ.sol";
 
 contract DatasetHub is OwnableOZ // is Owned by IexecHub

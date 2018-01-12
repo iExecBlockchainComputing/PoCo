@@ -12,28 +12,35 @@ import "./SafeMathOZ.sol";
  * @title IexecHub
  */
 
-contract IexecHub is ProvidersBalance , ProvidersScoring
+contract IexecHub is ProvidersBalance, ProvidersScoring
 {
 	using SafeMathOZ for uint256;
 	uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant DAPP_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant DATASET_CREATION_STAKE = 5000; //updated by vote or super admin ?
+	uint private constant DAPP_CREATION_STAKE        = 5000; //updated by vote or super admin ?
+	uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
 	uint private constant TASKREQUEST_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant WORKER_MEMBERSHIP_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant DAPP_PRICE_STAKE_RATIO = 1; //updated by vote or super admin ?
+	uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
+	uint private constant DAPP_PRICE_STAKE_RATIO     = 1;    //updated by vote or super admin ?
 
 	WorkerPoolHub  workerPoolHub;
-  DappHub  dappHub;
-	DatasetHub  datasetHub;
-	TaskRequestHub  taskRequestHub;
+	DappHub        dappHub;
+	DatasetHub     datasetHub;
+	TaskRequestHub taskRequestHub;
 
 	mapping (address => address) m_taskPoolAffectation;
 
-	function IexecHub(address _tokenAddress, address _workerPoolHubAddress, address _dappHubAddress, address _datasetHubAddress , address _taskRequestHubAddress) ProvidersBalance(_tokenAddress) public
+	function IexecHub(
+		address _tokenAddress,
+		address _workerPoolHubAddress,
+		address _dappHubAddress,
+		address _datasetHubAddress,
+		address _taskRequestHubAddress)
+	ProvidersBalance(_tokenAddress)
+	public
 	{
-		workerPoolHub = WorkerPoolHub(_workerPoolHubAddress);
-		dappHub = DappHub(_dappHubAddress);
-		datasetHub = DatasetHub(_datasetHubAddress);
+		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
+		dappHub        = DappHub       (_dappHubAddress       );
+		datasetHub     = DatasetHub    (_datasetHubAddress    );
 		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
 	}
 
@@ -66,7 +73,8 @@ contract IexecHub is ProvidersBalance , ProvidersScoring
 		require(lock(msg.sender,TASKREQUEST_CREATION_STAKE));		//prevent creation spam ?
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
 		require(dappHub.isDappRegistred(_dapp));
-		if (_dataset != address(0)){
+		if (_dataset != address(0))
+		{
 			require(datasetHub.isDatasetRegistred(_dataset));
 		}
 

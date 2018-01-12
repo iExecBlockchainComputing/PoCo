@@ -33,30 +33,30 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Methods
 	 */
-	function getWorkerPoolsCount(address _owner) view public returns (uint256)
+	function getWorkerPoolsCount(address _owner) public view returns (uint256)
 	{
 		return m_workerPoolsCountByOwner[_owner];
 	}
 
-	function getWorkerPool(address _owner,uint256 _index) view public returns (address)
+	function getWorkerPool(address _owner,uint256 _index) public view returns (address)
 	{
 		return m_workerPoolByOwnerByIndex[_owner][_index];
 	}
 
-	function getWorkerPoolOwner(address _workerPool) view public returns (address)
+	function getWorkerPoolOwner(address _workerPool) public view returns (address)
 	{
 		return m_ownerByWorkerPool[_workerPool];
 	}
 
-	function isWorkerPoolRegistred(address _workerPool) view public returns (bool)
+	function isWorkerPoolRegistred(address _workerPool) public view returns (bool)
 	{
 		return m_ownerByWorkerPool[_workerPool] != 0x0;
 	}
 
 	function createWorkerPool(string _name) public onlyOwner /*owner == IexecHub*/ returns(address createdWorkerPool)
 	{
-	 // tx.origin == owner
-	 // msg.sender == IexecHub
+		// tx.origin == owner
+		// msg.sender == IexecHub
 		address newWorkerPool = new WorkerPool(msg.sender,_name);
 		m_workerPoolsCountByOwner[tx.origin]=m_workerPoolsCountByOwner[tx.origin].add(1);
 		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
