@@ -1,57 +1,67 @@
 pragma solidity ^0.4.18;
 
 import './WorkerPool.sol';
-import "rlc-token/contracts/Ownable.sol";
+import "./OwnableOZ.sol";
 import "./SafeMathOZ.sol";
 
-contract WorkerPoolHub is Ownable // is Owned by IexecHub
+contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 {
 
 	using SafeMathOZ for uint256;
 
-  event CreateWorkerPool(address indexed workerPoolOwner, address indexed pool, string name);
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed pool, string name);
 
 	//worker => workerPool
 	mapping (address => address) m_workerAffectation;
 
-  // owner => workerPools count
+	// owner => workerPools count
 	mapping (address => uint256) m_workerPoolsCountByOwner;
 
-  // owner => index => workerPool
-  mapping (address => mapping (uint => address)) m_workerPoolByOwnerByIndex;
+	// owner => index => workerPool
+	mapping (address => mapping (uint => address)) m_workerPoolByOwnerByIndex;
 
-  //  workerPool => owner
-  mapping (address => address) m_ownerByWorkerPool;
+	//  workerPool => owner
+	mapping (address => address) m_ownerByWorkerPool;
 
+	/**
+	 * Explicit constructor !
+	 */
+	function WorkerPoolHub() OwnableOZ(msg.sender) public
+	{
+	}
+
+	/**
+	 * Methods
+	 */
 	function getWorkerPoolsCount(address _owner) view public returns (uint256)
 	{
 		return m_workerPoolsCountByOwner[_owner];
 	}
 
-  function getWorkerPool(address _owner,uint256 _index) view public returns (address)
-  {
-    return m_workerPoolByOwnerByIndex[_owner][_index];
-  }
+	function getWorkerPool(address _owner,uint256 _index) view public returns (address)
+	{
+		return m_workerPoolByOwnerByIndex[_owner][_index];
+	}
 
-  function getWorkerPoolOwner(address _workerPool) view public returns (address)
-  {
-    return m_ownerByWorkerPool[_workerPool];
-  }
+	function getWorkerPoolOwner(address _workerPool) view public returns (address)
+	{
+		return m_ownerByWorkerPool[_workerPool];
+	}
 
-  function isWorkerPoolRegistred(address _workerPool) view public returns (bool)
-  {
-    return m_ownerByWorkerPool[_workerPool] != 0x0;
-  }
+	function isWorkerPoolRegistred(address _workerPool) view public returns (bool)
+	{
+		return m_ownerByWorkerPool[_workerPool] != 0x0;
+	}
 
 	function createWorkerPool(string _name) public onlyOwner /*owner == IexecHub*/ returns(address createdWorkerPool)
 	{
-   // tx.origin == owner
-   // msg.sender == IexecHub
+	 // tx.origin == owner
+	 // msg.sender == IexecHub
 		address newWorkerPool = new WorkerPool(msg.sender,_name);
-    m_workerPoolsCountByOwner[tx.origin]=m_workerPoolsCountByOwner[tx.origin].add(1);
-    m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
-    m_ownerByWorkerPool[newWorkerPool]= tx.origin;
-    CreateWorkerPool(tx.origin,newWorkerPool,_name);
+		m_workerPoolsCountByOwner[tx.origin]=m_workerPoolsCountByOwner[tx.origin].add(1);
+		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
+		m_ownerByWorkerPool[newWorkerPool]= tx.origin;
+		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
 
