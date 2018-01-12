@@ -2,41 +2,64 @@ pragma solidity ^0.4.18;
 
 import './WorkerPool.sol';
 import "rlc-token/contracts/Ownable.sol";
+import "./SafeMathOZ.sol";
 
-contract WorkerPoolHub is Ownable // TODO change owner to poco at migrate
+contract WorkerPoolHub is Ownable // is Owned by IexecHub
 {
-	address[] workerPools;
+
+	using SafeMathOZ for uint256;
+
+  event CreateWorkerPool(address indexed workerPoolOwner, address indexed pool, string name);
 
 	//worker => workerPool
 	mapping (address => address) m_workerAffectation;
 
-	mapping (address => address) m_registeredPools;
+  // owner => workerPools count
+	mapping (address => uint256) m_workerPoolsCountByOwner;
 
-	event CreateWorkerPool(address scheduler,string name);
+  // owner => index => workerPool
+  mapping (address => mapping (uint => address)) m_workerPoolByOwnerByIndex;
 
-	function getPoolCount() view public returns (uint)
+  //  workerPool => owner
+  mapping (address => address) m_ownerByWorkerPool;
+
+	function getWorkerPoolsCount(address _owner) view public returns (uint256)
 	{
-		return workerPools.length;
+		return m_workerPoolsCountByOwner[_owner];
 	}
-	function getPoolAddress(uint _index) view public returns (address)
-	{
-		return workerPools[_index];
-	}
 
-	function createPool(string name) public onlyOwner /*owner == poco*/ returns(address poolAddress)
+  function getWorkerPool(address _owner,uint256 _index) view public returns (address)
+  {
+    return m_workerPoolByOwnerByIndex[_owner][_index];
+  }
+
+  function getWorkerPoolOwner(address _workerPool) view public returns (address)
+  {
+    return m_ownerByWorkerPool[_workerPool];
+  }
+
+  function isWorkerPoolRegistred(address _workerPool) view public returns (bool)
+  {
+    return m_ownerByWorkerPool[_workerPool] != 0x0;
+  }
+
+	function createWorkerPool(string _name) public onlyOwner /*owner == IexecHub*/ returns(address createdWorkerPool)
 	{
-		address newPool = new WorkerPool(owner,name);
-		workerPools.push(newPool);
-		CreateWorkerPool(msg.sender,name);
-		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		return newPool;
+   // tx.origin == owner
+   // msg.sender == IexecHub
+		address newWorkerPool = new WorkerPool(msg.sender,_name);
+    m_workerPoolsCountByOwner[tx.origin]=m_workerPoolsCountByOwner[tx.origin].add(1);
+    m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
+    m_ownerByWorkerPool[newWorkerPool]= tx.origin;
+    CreateWorkerPool(tx.origin,newWorkerPool,_name);
+		return newWorkerPool;
 	}
 
 	function subscribeToPool(address poolAddress) public onlyOwner /*owner == poco*/ returns(bool subscribed)
 	{
 		WorkerPool aPoolToSubscribe = WorkerPool(poolAddress);
 		// you must be on the white list of the worker pool to subscribe.
-		require(aPoolToSubscribe.isWorkerAllowed(msg.sender));
+		//require(aPoolToSubscribe.isWorkerAllowed(msg.sender)); TODO
 		// you must have no cuurent affectation on others worker Pool
 		require(m_workerAffectation[msg.sender] == 0x0);
 		require(aPoolToSubscribe.addWorker(msg.sender));

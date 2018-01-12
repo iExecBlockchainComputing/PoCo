@@ -1,32 +1,59 @@
-var Poco = artifacts.require("./Poco.sol");
+var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-/*
-module.exports = function(deployer) {
-  return deployer.deploy(Poco, '0x607F4C5BB672230e8672085532f7e901544a7375') //RLC TOKEN ADRESS
-    .then(() => Poco.deployed())
-    .then(instance => {
-      console.log("Poco deployed at address :" + instance.address);
-    });
-};
-*/
+var DappHub = artifacts.require("./DappHub.sol");
+var DatasetHub = artifacts.require("./DatasetHub.sol");
+var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
 
 module.exports = function(deployer) {
   let aWorkerPoolHubInstance;
-  let aPoco;
-  return deployer.deploy(WorkerPoolHub) //RLC TOKEN ADRESS
+  let aDappHubInstance;
+  let aDatasetHubInstance;
+  let aTaskRequestHubInstance;
+  let aIexecHub;
+  return deployer.deploy(WorkerPoolHub)
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
-      aWorkerPoolHubInstance =instance;
+      aWorkerPoolHubInstance = instance;
       console.log("WorkerPoolHub deployed at address :" + instance.address);
-      return deployer.deploy(Poco, '0x607F4C5BB672230e8672085532f7e901544a7375',aWorkerPoolHubInstance.address); //CALL BACK PRICE
+      return deployer.deploy(DappHub);
     })
-    .then(() => Poco.deployed())
+    .then(() => DappHub.deployed())
     .then(instance => {
-      aPoco =instance;
-      console.log("Poco deployed at address :" + aPoco.address);
-      return aWorkerPoolHubInstance.transferOwnership(aPoco.address);
+      aDappHubInstance = instance;
+      console.log("DappHub deployed at address :" + instance.address);
+      return deployer.deploy(DatasetHub);
     })
-    .then(() => console.log("transferOwnership of WorkerPoolHub to Poco"));
+    .then(() => DatasetHub.deployed())
+    .then(instance => {
+      aDatasetHubInstance = instance;
+      console.log("DatasetHub deployed at address :" + instance.address);
+      return deployer.deploy(TaskRequestHub);
+    })
+    .then(() => TaskRequestHub.deployed())
+    .then(instance => {
+      aTaskRequestHubInstance = instance;
+      console.log("TaskRequestHub deployed at address :" + instance.address);
+      return deployer.deploy(IexecHub, '0x7314dc4d7794b5e7894212ca1556ae8e3de58621', aWorkerPoolHubInstance.address, aDappHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
+    })
+    .then(() => IexecHub.deployed())
+    .then(instance => {
+      aIexecHub = instance;
+      console.log("IexecHub deployed at address :" + aIexecHub.address);
+      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+    })
+    .then(() => {
+      console.log("transferOwnership of WorkerPoolHub to IexecHub");
+      return aDappHubInstance.transferOwnership(aIexecHub.address);
+    })
+    .then(() => {
+      console.log("transferOwnership of DappHub to IexecHub");
+      return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+    })
+    .then(() => {
+      console.log("transferOwnership of DatasetHub to IexecHub");
+      return aTaskRequestHubInstance.transferOwnership(aIexecHub.address);
+    })
+    .then(() => console.log("transferOwnership of TaskRequestHub to IexecHub"));
 };
 
 
