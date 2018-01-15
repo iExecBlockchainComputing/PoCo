@@ -28,7 +28,7 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
-		require(_requester != address(0))
+		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
 
 		workerPoolRequested = _workerPool;
@@ -50,7 +50,7 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 	{
 		require(workerPoolRequested == msg.sender);
 		require(this == _taskId);
-		IexecAPI iexecAPI = IexecAPI(requester);
+		IexecAPI iexecAPI = IexecAPI(m_owner);
 		require(iexecAPI.taskRequestCallback(_taskId,_stdout,_stderr,_uri));
 		return true;
  }
