@@ -24,11 +24,9 @@ contract OwnableOZ
 	 * @dev The Ownable constructor sets the original `owner` of the contract to the sender
 	 * account.
 	 */
-	function OwnableOZ(address _owner) public
+	function OwnableOZ() public
 	{
-
-		require(_owner != address(0));
-		m_owner = _owner;
+		m_owner = msg.sender;
 	}
 
 	/**

@@ -22,7 +22,7 @@ contract DappHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Explicit constructor !
 	 */
-	function DaapHub() OwnableOZ(msg.sender) public
+	function DaapHub() public
 	{
 	}
 

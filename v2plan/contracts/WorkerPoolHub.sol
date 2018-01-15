@@ -26,7 +26,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Explicit constructor !
 	 */
-	function WorkerPoolHub() OwnableOZ(msg.sender) public
+	function WorkerPoolHub() public
 	{
 	}
 

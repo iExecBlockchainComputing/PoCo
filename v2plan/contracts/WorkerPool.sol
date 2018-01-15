@@ -24,13 +24,13 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	function WorkerPool(
 		address _iexecHubAddress,
 		string _name)
-	OwnableOZ        (tx.origin) // owner = tx.origin
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender );
+		transferOwnership(tx.origin); // owner → tx.origin
 
 		name             = _name;
 		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after

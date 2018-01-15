@@ -23,7 +23,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Explicit constructor !
 	 */
-	function TaskRequestHub() OwnableOZ(msg.sender) public
+	function TaskRequestHub() public
 	{
 	}
 

@@ -20,13 +20,14 @@ contract Dataset is OwnableOZ, IexecHubInterface
 		uint256 _datasetPrice,
 		string _datasetParam,
 		string _datasetUri)
-	OwnableOZ        (tx.origin) // owner = tx.origin
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender);
+		transferOwnership(tx.origin); // owner → tx.origin
+
 
 		datasetName  = _datasetName;
 		datasetPrice = _datasetPrice;

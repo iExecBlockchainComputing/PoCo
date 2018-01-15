@@ -20,13 +20,13 @@ contract Dapp is OwnableOZ, IexecHubInterface //Owned by a D(w){
 		uint256 _dappPrice,
 		string  _dappParam,
 		string  _dappUri)
-	OwnableOZ        (tx.origin) // owner = tx.origin
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender);
+		transferOwnership(tx.origin); // owner → tx.origin
 
 		dappName  = _dappName;
 		dappPrice = _dappPrice;

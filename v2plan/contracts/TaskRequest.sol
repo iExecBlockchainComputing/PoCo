@@ -25,11 +25,11 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 		uint    _taskCost,
 		uint    _askedTrust,
 		bool    _dappCallback)
-	OwnableOZ        (_requester) // owner = _requester
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
 		require(_requester != address(0))
+		transferOwnership(_requester); // owner → tx.origin
 
 		workerPoolRequested = _workerPool;
 		dappRequested       = _dapp;

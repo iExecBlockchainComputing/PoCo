@@ -22,7 +22,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Explicit constructor !
 	 */
-	function DatasetHub() OwnableOZ(msg.sender) public
+	function DatasetHub() public
 	{
 	}
 
