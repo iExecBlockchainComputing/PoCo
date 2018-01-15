@@ -10,7 +10,7 @@ npm install
 
 # how to migrate  
 
-### prepare ethereumjs simu
+### choice 1 :prepare ethereumjs simu
 Install the latest testrpc
 ```
 npm install -g ethereumjs-testrpc
@@ -27,7 +27,7 @@ Listening on localhost:8545
 ```
 
 
-### prepare Local geth node
+### choice 2 : prepare Local geth node
 
 Pull the the following docker image
 ```
@@ -42,10 +42,8 @@ wait to see in logs the word : LOCAL_GETH_WELL_INITIALIZED :
 docker logs -f iexec-geth-local
 ```
 Your local geth network  is ready, you can launch your truffle test with :
-```
-truffle test
-```
-### deploy
+
+### choice 1 or 2 then : deploy smart contract
 
 ```
 ./node_modules/.bin/truffle migrate
