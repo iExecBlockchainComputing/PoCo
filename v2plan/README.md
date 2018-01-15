@@ -41,7 +41,7 @@ wait to see in logs the word : LOCAL_GETH_WELL_INITIALIZED :
 ```
 docker logs -f iexec-geth-local
 ```
-Your local geth network  is ready, you can launch your truffle test with :
+Your local geth network  is ready, you can launch your truffle action 
 
 ### choice 1 or 2 then : deploy smart contract
 
