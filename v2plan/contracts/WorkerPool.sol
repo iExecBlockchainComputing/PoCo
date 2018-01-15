@@ -5,6 +5,7 @@ import './IexecHubInterface.sol';
 import './IexecHub.sol';
 import "./TaskRequest.sol";
 import "./SafeMathOZ.sol";
+import "./AuthorizedList.sol";
 
 contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 {
@@ -18,7 +19,15 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	PoolStatusEnum   poolStatus;
 	address[]        workers;
 
+	// mapping(address=> index)
+	mapping(address=> uint256) public workerIndex;
+
 	uint256 public constant REVEAL_PERIOD_DURATION =  3 hours;
+
+  address public workersAuthorizedListAddress;
+	address public dappsAuthorizedListAddress;
+	address public requestersAuthorizedListAddress;
+
 
 	//constructor
 	function WorkerPool(
@@ -35,151 +44,52 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		name             = _name;
 		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
 		poolStatus       = PoolStatusEnum.OPEN;
-	}
 
-	// mapping(address=> index)
-	mapping(address=> uint256) public workerIndex;
+
+		/* cannot do the following AuthorizedList contracts creation because of :
+		   VM Exception while processing transaction: out of gas at deploy.
+		   use attach....AuthorizedListContract instead function
+		*/
+   /*
+	  workersAuthorizedListAddress = new AuthorizedList();
+	  AuthorizedList(workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		dappsAuthorizedListAddress = new AuthorizedList();
+		AuthorizedList(dappsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		requesterAuthorizedListAddress = new AuthorizedList();
+		AuthorizedList(requesterAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		*/
+	}
 
 	/**
-	 * WHITELIST AND BLACKLIST WORKER POLICY
+	 * WHITELIST AND BLACKLIST POLICY START
 	 */
-	/*enum WorkersPolicyEnum { WHITELIST, BLACKLIST }
-	WorkersPolicyEnum public workersPolicy = WorkersPolicyEnum.WHITELIST;
-	event WorkersPolicyChange(WorkersPolicyEnum oldPolicy,WorkersPolicyEnum newPolicy);
 
-	function changeWorkerListPolicy(WorkersPolicyEnum _workersPolicyEnum) public onlyOwner
-	{
-		WorkersPolicyChange(workersPolicy,_workersPolicyEnum);
-		workersPolicy = _workersPolicyEnum;
-		//TODO LOG
+	function attachWorkersAuthorizedListContract(address _workersAuthorizedListAddress) public onlyOwner{
+		workersAuthorizedListAddress =_workersAuthorizedListAddress;
 	}
 
-	mapping(address => bool) whitelistWorker;
-	mapping(address => bool) blacklistWorker;
-	event WhitelistWorkerChange(address worker,bool isWhitelisted);
-	event BlacklistWorkerChange(address worker,bool isBlacklisted);
+	function attachDappsAuthorizedListContract(address _dappsAuthorizedListAddress) public onlyOwner{
+		dappsAuthorizedListAddress =_dappsAuthorizedListAddress;
+	}
 
-	modifier checkWhitelistWorker(address _worker)
-	{
-		require(workersPolicy == WorkersPolicyEnum.BLACKLIST || whitelistWorker[_worker] == true);
-		_;
+	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner{
+		requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
 	}
-	modifier checkBlacklistWorker(address _worker)
-	{
-		require(workersPolicy == WorkersPolicyEnum.WHITELIST || blacklistWorker[_worker] == false);
-		_;
-	}
-	function updateWhitelistWorker(address _worker, bool _isWhitelisted) public onlyOwner
-	{
-		whitelistWorker[_worker] = _isWhitelisted;
-		WhitelistWorkerChange(_worker, _isWhitelisted);
-	}
-	function updateBlacklistWorker(address _worker, bool _isBlacklisted) public onlyOwner
-	{
-			blacklistWorker[_worker] = _isBlacklisted;
-			BlacklistWorkerChange(_worker, _isBlacklisted);
-	}
-	function updateWhitelistWorkers(address[] _workers, bool _isWhitelisted) public onlyOwner
-	{
-		for (uint i = 0; i < _workers.length; ++i)
-		{
-			updateWhitelistWorker(_workers[i], _isWhitelisted);
-		}
-	}
-	function updateBlacklistWorkers(address[] _workers, bool _isBlacklisted) public onlyOwner
-	{
-		for (uint i = 0; i < _workers.length; ++i)
-		{
-			updateBlacklistWorker(_workers[i], _isBlacklisted);
-		}
-	}
-	function isWorkerWhitelisted(address _worker) public returns (bool)
-	{
-		return whitelistWorker[_worker];
-	}
-	function isWorkerblacklisted(address _worker) public returns (bool)
-	{
-		return blacklistWorker[_worker];
-	}
+
 	function isWorkerAllowed(address _worker) public returns (bool)
 	{
-		if(workersPolicy == WorkersPolicyEnum.WHITELIST)
-		{
-			return isWorkerWhitelisted(_worker);
-		}
-		else
-		{
-			return !isWorkerblacklisted(_worker);
-		}
-	}
-*/
-	/**
-	 * WHITELIST AND BLACKLIST DAPP POLICY
-	 */
-	/*enum DappsPolicyEnum { WHITELIST, BLACKLIST }
-	DappsPolicyEnum public dappsPolicy = DappsPolicyEnum.WHITELIST;
-	event DappsPolicyChange(DappsPolicyEnum oldPolicy,DappsPolicyEnum newPolicy);
-
-	function changeDappListPolicy(DappsPolicyEnum _dappsPolicyEnum) public onlyOwner
-	{
-		DappsPolicyChange(dappsPolicy,_dappsPolicyEnum);
-		dappsPolicy = _dappsPolicyEnum;
-		//TODO LOG
+	  return AuthorizedList(workersAuthorizedListAddress).isActorAllowed(_worker);
 	}
 
-	mapping(address => bool) whitelistDapp;
-	mapping(address => bool) blacklistDapp;
-	event WhitelistDappChange(address dapp,bool isWhitelisted);
-	event BlacklistDappChange(address dapp,bool isBlacklisted);
+	function isDappAllowed(address _dapp) public returns (bool)
+	{
+	  return AuthorizedList(dappsAuthorizedListAddress).isActorAllowed(_dapp);
+	}
 
-	modifier checkWhitelistDapp(address _dapp)
+	function isRequesterAllowed(address _requester) public returns (bool)
 	{
-		require(dappsPolicy ==  DappsPolicyEnum.BLACKLIST || whitelistDapp[_dapp] == true);
-		_;
+	  return AuthorizedList(requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
-	modifier checkBlacklistDapp(address _dapp)
-	{
-		require(dappsPolicy == DappsPolicyEnum.WHITELIST || blacklistDapp[_dapp] == false);
-		_;
-	}
-	function updateWhitelistDapp(address _dapp, bool _isWhitelisted) public onlyOwner
-	{
-		whitelistDapp[_dapp] = _isWhitelisted;
-		WhitelistDappChange(_dapp, _isWhitelisted);
-	}
-	function updateBlacklistDapp(address _dapp, bool _isBlacklisted) public onlyOwner
-	{
-		blacklistDapp[_dapp] = _isBlacklisted;
-		BlacklistDappChange(_dapp, _isBlacklisted);
-	}
-	function updateWhitelistDapps(address[] _dapps, bool _isWhitelisted) public onlyOwner
-	{
-		for (uint i = 0; i < _dapps.length; ++i)
-		{
-			updateWhitelistDapp(_dapps[i], _isWhitelisted);
-		}
-	}
-	function updateBlacklistDapps(address[] _dapps, bool _isBlacklisted) public onlyOwner
-	{
-		for (uint i = 0; i < _dapps.length; ++i)
-		{
-			updateBlacklistDapp(_dapps[i], _isBlacklisted);
-		}
-	}
-	function isDappWhitelisted(address _dapp) public returns (bool)
-	{
-		return whitelistDapp[_dapp];
-	}
-	function isDappblacklisted(address _dapp) public returns (bool)
-	{
-		return blacklistDapp[_dapp];
-	}
-	*/
-	/**
-	 * WHITELIST AND BLACKLIST USER POLICY
-	 */
-
-	//TODO
 
 	enum TaskStatusEnum
 	{
