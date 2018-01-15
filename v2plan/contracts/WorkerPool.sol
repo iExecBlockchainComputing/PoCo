@@ -254,7 +254,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	}
 	function getWorkerPoolOwner() public view returns (address)
 	{
-		return owner;
+		return m_owner;
 	}
 	function addWorker(address worker) public onlyOwner returns (bool)
 	{
@@ -334,7 +334,9 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		require(m_tasks[_taskID].status == TaskStatusEnum.PENDING);
 		m_tasks[_taskID].status    = TaskStatusEnum.ACCEPTED;
 		m_tasks[_taskID].timestamp = now;
-		require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+		/* require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake)); */
+		require(IexecHub(iexecHubAddress).lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+
 
 		//TODO LOG TaskAccepted
 		return true;
@@ -384,7 +386,9 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		m_tasksContributions[_taskID][msg.sender].submitted  = true;
 		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
 		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
-		require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+		/* require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake)); */
+		require(IexecHub(iexecHubAddress).lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+
 	}
 
 	function revealConsensus(address _taskID, bytes32 consensus) public onlyOwner /*=onlySheduler*/
@@ -434,7 +438,8 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		}
 
 		// call this for reward dappProvider if dappPrice > 0
-		require(iexecHub.finalizedTask(_taskID));
+		/* require(iexecHub.finalizedTask(_taskID)); */
+		require(IexecHub(iexecHubAddress).finalizedTask(_taskID));
 
 		//extrenalize part of the reward logic into a upgradable contract owned by scheduler ?
 		// add penalized to the call worker to contrubution and they never contribute ?
@@ -445,7 +450,9 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 
 	function rewardTask(address _taskID) internal returns (bool)
 	{
-		uint256    i;
+		IexecHub iexecHub = IexecHub(iexecHubAddress);
+
+		uint256 i;
 		address w;
 		/**
 		 * Reward distribution:
