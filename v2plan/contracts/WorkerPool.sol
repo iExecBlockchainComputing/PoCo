@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import './OwnableOZ.sol';
 import './IexecHubInterface.sol';
-
+import './IexecHub.sol';
 import "./TaskRequest.sol";
 import "./SafeMathOZ.sol";
 
