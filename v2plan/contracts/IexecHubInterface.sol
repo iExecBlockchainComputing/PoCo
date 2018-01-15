@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
-import './IexecHub.sol';
+/* import './IexecHub.sol'; */
 
 contract IexecHubInterface
 {
 	address internal iexecHubAddress;
-	address internal iexecHub;
+	/* address internal iexecHub; */
 
 	/* event IexecHubTransferred(address indexed previousIexecHub, address indexed newIexecHub); */
 
@@ -25,6 +25,6 @@ contract IexecHubInterface
 	{
 		require(_iexecHubAddress != address(0));
 		iexecHubAddress = _iexecHubAddress;
-		iexecHub        = IexecHub(_iexecHubAddress);
+		/* iexecHub        = IexecHub(_iexecHubAddress); */
 	}
 }
