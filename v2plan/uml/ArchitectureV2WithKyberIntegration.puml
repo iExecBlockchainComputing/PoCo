@@ -1,0 +1,120 @@
+@startuml
+
+
+:iExecCloudUser:
+:DappUser:
+:AppProvider:
+:Scheduler:
+:DatasetProvider:
+:ResourceProvider:
+
+
+cloud {
+  [KyberNetwork]
+}
+
+cloud {
+  [MyDapp]
+  [IexecAPI]
+  [KyberProxy]
+}
+component [MyDapp]
+component [IexecAPI]
+component [KyberProxy]
+[KyberProxy] <|-left-  [MyDapp]
+[IexecAPI] <|-right-  [MyDapp]
+
+KyberProxy -up-> [KyberNetwork]: send ERC20 or ETH
+KyberProxy <-up- [KyberNetwork]: get RLC TOKEN
+
+DappUser -down-> [MyDapp]: use ERC20 or ETH
+
+cloud {
+  [TaskRequest]
+}
+
+component [TaskRequest]
+
+MyDapp <-down-> [TaskRequest]: owner
+
+iExecCloudUser -down-> [TaskRequest]: owner
+
+cloud {
+  [App]
+}
+component [App]
+component [AppRepository]
+
+
+cloud {
+  [Dataset]
+}
+component [Dataset]
+component [DatasetRepository]
+
+
+cloud {
+  [WorkerPool]
+}
+
+component [WorkerPool]
+component [Dispatcher]
+component [ResultRepository]
+
+component [Worker]
+
+cloud {
+  [iExecHub]
+  [ProvidersScoring]
+  [ProvidersBalance]
+}
+
+cloud {
+  [RLC Token]
+}
+component [ProvidersScoring]
+component [iExecHub]
+component [ProvidersBalance]
+component [RLC Token]
+
+
+[ProvidersBalance] <-right-> [RLC Token]
+
+[ProvidersBalance] <|-left-  [iExecHub]
+[ProvidersScoring] <|-right-  [iExecHub]
+
+
+AppProvider -up-> [App]: owner
+AppProvider -down-> AppRepository: expose
+
+DatasetProvider -up-> [Dataset]: owner
+DatasetProvider -down-> DatasetRepository: expose
+
+Scheduler -up-> [WorkerPool]: owner
+Scheduler -down-> [Dispatcher]: control
+Scheduler -down-> [ResultRepository]: control and expose
+ResultRepository <-left-> [Dispatcher]
+
+
+[Dataset] <-up-> [iExecHub]
+[App] <-up-> [iExecHub]
+
+[iExecHub] <-down-> [WorkerPool]
+[iExecHub] <-up-> [TaskRequest]: only RLC Token accepted here ( can be obtain thanks to KyberProxy )
+[Dispatcher] <-up-> [WorkerPool]
+[Worker] <-up-> [WorkerPool]
+
+[ResourceProvider] -right-> [Worker]: control
+
+[Worker] <-right-> [Dispatcher]
+
+
+[Worker] <-up-> [AppRepository]
+
+[Worker] <-up-> [DatasetRepository]
+
+'missing link :  [AppRepository] <-> [Worker] . add mannualy on img because i do not succeed to layout it
+
+
+
+@enduml
