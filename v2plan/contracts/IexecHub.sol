@@ -72,18 +72,28 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 
 		require(lock(msg.sender,TASKREQUEST_CREATION_STAKE));		//prevent creation spam ?
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
+
+		//APP
 		require(dappHub.isDappRegistred(_dapp));
+		require(dappHub.isOpen(_dapp));
+		require(dappHub.isWorkerPoolAllowed(_dapp,_workerPool));
+		require(dappHub.isRequesterAllowed(_dapp,msg.sender));
+
+		//DATASET
 		if (_dataset != address(0))
 		{
 			require(datasetHub.isDatasetRegistred(_dataset));
+			require(datasetHub.isOpen(_dataset));
+			require(datasetHub.isWorkerPoolAllowed(_dataset,_workerPool));
+			require(datasetHub.isDappAllowed(_dataset,_dapp));
+			require(datasetHub.isRequesterAllowed(_dataset,msg.sender));
+			require(dappHub.isDatasetAllowed(_dapp,_dataset));
 		}
 
-
-		/*
-		check needed ?
-		WorkerPool aPool = WorkerPool(workerPool);
+		//WORKER_POOL
+		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.isOpen());
-		*/
+
 
 		uint256 dappPrice = dappHub.getDappPrice(_dapp);
 		//TODO datasetPrice
@@ -93,7 +103,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(debit(msg.sender,userCost));
 
 		address newTaskRequest =taskRequestHub.createTaskRequest(msg.sender,_workerPool,_dapp,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
-		WorkerPool aPool = WorkerPool(_workerPool);
+
 		require(aPool.submitedTask(newTaskRequest));
 
 		m_taskPoolAffectation[newTaskRequest]=_workerPool;
@@ -123,7 +133,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.openPool());
+		require(aPool.open());
 		lock(msg.sender,WORKER_POOL_CREATION_STAKE);
 		return true;
 	}
@@ -132,7 +142,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	{
 		WorkerPool aPool= WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.closePool());
+		require(aPool.close());
 		unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
 		return true;
 	}

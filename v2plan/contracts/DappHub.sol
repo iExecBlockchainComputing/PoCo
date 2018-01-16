@@ -63,8 +63,29 @@ contract DappHub is OwnableOZ // is Owned by IexecHub
 
 	function getDappPrice(address _dapp) public view returns(uint256 dappPrice)
 	{
-		Dapp dapp = Dapp(_dapp);
-		return dapp.dappPrice();
+		return Dapp(_dapp).dappPrice();
 	}
+
+	function isOpen(address _dapp) public view returns (bool)
+	{
+		return Dapp(_dapp).isOpen();
+	}
+
+	function isWorkerPoolAllowed(address _dapp, address _workerPool) public returns (bool)
+	{
+		return Dapp(_dapp).isWorkerPoolAllowed(_workerPool);
+	}
+
+	function isDatasetAllowed(address _dapp, address _dataset) public returns (bool)
+	{
+		return Dapp(_dapp).isDatasetAllowed(_dataset);
+	}
+
+	function isRequesterAllowed(address _dapp, address _requester) public returns (bool)
+	{
+		return Dapp(_dapp).isRequesterAllowed(_requester);
+	}
+
+
 
 }

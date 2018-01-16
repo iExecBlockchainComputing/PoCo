@@ -12,12 +12,12 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 
 	using SafeMathOZ for uint256;
 
-	enum PoolStatusEnum{OPEN,CLOSE}
+	enum WorkerPoolStatusEnum{OPEN,CLOSE}
 
-	string   public  name;
-	uint256          stakePolicyRatio;
-	PoolStatusEnum   poolStatus;
-	address[]        workers;
+	string               public  name;
+	uint256              public  stakePolicyRatio;
+	WorkerPoolStatusEnum public  workerPoolStatus;
+	address[]            public  workers;
 
 	// mapping(address=> index)
 	mapping(address=> uint256) public workerIndex;
@@ -25,9 +25,6 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	uint256 public constant REVEAL_PERIOD_DURATION =  3 hours;
 
   address public workersAuthorizedListAddress;
-	address public dappsAuthorizedListAddress;
-	address public requestersAuthorizedListAddress;
-
 
 	//constructor
 	function WorkerPool(
@@ -43,7 +40,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 
 		name             = _name;
 		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
-		poolStatus       = PoolStatusEnum.OPEN;
+		workerPoolStatus       = WorkerPoolStatusEnum.OPEN;
 
 
 		/* cannot do the following AuthorizedList contracts creation because of :
@@ -60,35 +57,11 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		*/
 	}
 
-	/**
-	 * WHITELIST AND BLACKLIST POLICY START
-	 */
 
-	function attachWorkersAuthorizedListContract(address _workersAuthorizedListAddress) public onlyOwner{
-		workersAuthorizedListAddress =_workersAuthorizedListAddress;
-	}
-
-	function attachDappsAuthorizedListContract(address _dappsAuthorizedListAddress) public onlyOwner{
-		dappsAuthorizedListAddress =_dappsAuthorizedListAddress;
-	}
-
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner{
-		requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
-	}
 
 	function isWorkerAllowed(address _worker) public returns (bool)
 	{
 	  return AuthorizedList(workersAuthorizedListAddress).isActorAllowed(_worker);
-	}
-
-	function isDappAllowed(address _dapp) public returns (bool)
-	{
-	  return AuthorizedList(dappsAuthorizedListAddress).isActorAllowed(_dapp);
-	}
-
-	function isRequesterAllowed(address _requester) public returns (bool)
-	{
-	  return AuthorizedList(requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
 
 	enum TaskStatusEnum
@@ -175,25 +148,6 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	function removeWorker(address worker) public onlyOwner returns (bool)
 	{
 		uint index = getWorkerIndex(worker);
-		/**
-		 * THIS IS BAD, GAS COST IS TERRIBLE.
-		 */
-		/*
-		//TODO test this. index 0 or 1?
-		require (index > 0); //Hadrien: pourquoi ? Si on veux supprimer l'index 0 ca devrai etre possible (et le code marche)
-		require (index < workers.length);
-		// size limit of worker on pool ?. worker pool will be stuck if we cannot remove because of out of gas
-		for (uint i = index; i<workers.length-1; ++i)
-		{
-			workers[i] = workers[i+1];
-		}
-		delete workers[workers.length-1];
-		workers.length--;
-		*/
-
-		/**
-		 * Good solution: we don't need to keep the worker in order.
-		 */
 		workers[index] = workers[workers.length-1];
 		delete workers[workers.length-1];
 		workers.length--;
@@ -201,26 +155,26 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		//LOG TODO
 		return true;
 	}
-	function openPool() public onlyIexecHub /*for staking management*/ returns (bool)
+
+	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(poolStatus == PoolStatusEnum.CLOSE);
-		poolStatus = PoolStatusEnum.OPEN;
+		require(workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
+		workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		return true;
 	}
-	function closePool() public onlyIexecHub /*for staking management*/ returns (bool)
+
+	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(poolStatus == PoolStatusEnum.OPEN);
-		poolStatus = PoolStatusEnum.CLOSE;
+		require(workerPoolStatus == WorkerPoolStatusEnum.OPEN);
+		workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
 		return true;
 	}
-	function isOpen() public returns (bool)
+
+	function isOpen() public view returns (bool)
 	{
-		return poolStatus == PoolStatusEnum.OPEN;
+		return workerPoolStatus == WorkerPoolStatusEnum.OPEN;
 	}
-	function isClose() public returns (bool)
-	{
-		return poolStatus == PoolStatusEnum.CLOSE;
-	}
+
 	function submitedTask(
 		address _taskID
 	) public onlyIexecHub returns (bool)

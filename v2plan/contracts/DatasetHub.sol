@@ -67,4 +67,25 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		return dataset.datasetPrice();
 	}
 
+	function isOpen(address _dataset) public view returns (bool)
+	{
+		return Dataset(_dataset).isOpen();
+	}
+
+	function isWorkerPoolAllowed(address _dataset, address _workerPool) public returns (bool)
+	{
+		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
+	}
+
+	function isDappAllowed(address _dataset, address _dapp) public returns (bool)
+	{
+		return Dataset(_dataset).isDappAllowed(_dapp);
+	}
+
+	function isRequesterAllowed(address _dataset, address _requester) public returns (bool)
+	{
+	  return Dataset(_dataset).isRequesterAllowed(_requester);
+	}
+
+
 }
