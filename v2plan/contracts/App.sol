@@ -4,18 +4,18 @@ import './OwnableOZ.sol';
 import './IexecHubInterface.sol';
 import "./AuthorizedList.sol";
 
-contract Dapp is OwnableOZ, IexecHubInterface //Owned by a D(w){
+contract App is OwnableOZ, IexecHubInterface //Owned by a D(w){
 {
 
 
-	enum DappStatusEnum{OPEN,CLOSE}
+	enum AppStatusEnum{OPEN,CLOSE}
 
-	string   public  dappName;
-	uint256  public  dappPrice;
-	string   public  dappParam;
-	string   public  dappUri;
+	string   public  appName;
+	uint256  public  appPrice;
+	string   public  appParam;
+	string   public  appUri;
 
-  DappStatusEnum public dappStatus;
+  AppStatusEnum public appStatus;
 
 	address public workerPoolsAuthorizedListAddress;
 	address public datasetsAuthorizedListAddress;
@@ -23,12 +23,12 @@ contract Dapp is OwnableOZ, IexecHubInterface //Owned by a D(w){
 
 
 	//constructor
-	function Dapp(
+	function App(
 		address _iexecHubAddress,
-		string  _dappName,
-		uint256 _dappPrice,
-		string  _dappParam,
-		string  _dappUri)
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParam,
+		string  _appUri)
 	IexecHubInterface(_iexecHubAddress)
 	public
 	{
@@ -37,30 +37,30 @@ contract Dapp is OwnableOZ, IexecHubInterface //Owned by a D(w){
 		require(tx.origin != msg.sender);
 		transferOwnership(tx.origin); // owner → tx.origin
 
-		dappName   = _dappName;
-		dappPrice  = _dappPrice;
-		dappParam  = _dappParam;
-		dappUri    = _dappUri;
-		dappStatus = DappStatusEnum.OPEN;
+		appName   = _appName;
+		appPrice  = _appPrice;
+		appParam  = _appParam;
+		appUri    = _appUri;
+		appStatus = AppStatusEnum.OPEN;
 	}
 
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(dappStatus == DappStatusEnum.CLOSE);
-		dappStatus = DappStatusEnum.OPEN;
+		require(appStatus == AppStatusEnum.CLOSE);
+		appStatus = AppStatusEnum.OPEN;
 		return true;
 	}
 
 	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(dappStatus == DappStatusEnum.OPEN);
-		dappStatus = DappStatusEnum.CLOSE;
+		require(appStatus == AppStatusEnum.OPEN);
+		appStatus = AppStatusEnum.CLOSE;
 		return true;
 	}
 
 	function isOpen() public view returns (bool)
 	{
-		return dappStatus == DappStatusEnum.OPEN;
+		return appStatus == AppStatusEnum.OPEN;
 	}
 
 	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner{

@@ -77,9 +77,9 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
 	}
 
-	function isDappAllowed(address _dataset, address _dapp) public returns (bool)
+	function isAppAllowed(address _dataset, address _app) public returns (bool)
 	{
-		return Dataset(_dataset).isDappAllowed(_dapp);
+		return Dataset(_dataset).isAppAllowed(_app);
 	}
 
 	function isRequesterAllowed(address _dataset, address _requester) public returns (bool)

@@ -9,7 +9,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 
 	using SafeMathOZ for uint256;
 
-	event CreateTaskRequest(address taskRequestOwner, address taskRequest,  address indexed workerPool, address indexed dapp, address indexed dataset, string taskParam, uint taskCost, uint askedTrust, bool dappCallback);
+	event CreateTaskRequest(address taskRequestOwner, address taskRequest,  address indexed workerPool, address indexed app, address indexed dataset, string taskParam, uint taskCost, uint askedTrust, bool dappCallback);
 
 	// owner => taskRequests count
 	mapping (address => uint256) m_taskRequestsCountByOwner;
@@ -47,15 +47,15 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByTaskRequest[_taskRequest] != 0x0;
 	}
 
-	function createTaskRequest(address _requester,address _workerPool, address _dapp, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public onlyOwner /*owner == IexecHub*/ returns(address createdTaskRequest)
+	function createTaskRequest(address _requester,address _workerPool, address _app, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public onlyOwner /*owner == IexecHub*/ returns(address createdTaskRequest)
 	{
 		// _requester == owner of the task
 		// msg.sender == IexecHub
-		address newTaskRequest = new TaskRequest(msg.sender,_requester, _workerPool, _dapp,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
+		address newTaskRequest = new TaskRequest(msg.sender,_requester, _workerPool, _app,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
 		m_taskRequestsCountByOwner[_requester]=m_taskRequestsCountByOwner[_requester].add(1);
 		m_taskRequestByOwnerByIndex[_requester][m_taskRequestsCountByOwner[_requester]] = newTaskRequest;
 		m_ownerByTaskRequest[newTaskRequest]= _requester;
-		CreateTaskRequest(_requester,newTaskRequest,_workerPool, _dapp,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
+		CreateTaskRequest(_requester,newTaskRequest,_workerPool, _app,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
 		return newTaskRequest;
 	}
 

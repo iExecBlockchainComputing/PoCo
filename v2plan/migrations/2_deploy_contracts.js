@@ -1,12 +1,12 @@
 var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var DappHub = artifacts.require("./DappHub.sol");
+var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
 
 module.exports = function(deployer) {
   let aWorkerPoolHubInstance;
-  let aDappHubInstance;
+  let aAppHubInstance;
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
   let aIexecHub;
@@ -15,12 +15,12 @@ module.exports = function(deployer) {
     .then(instance => {
       aWorkerPoolHubInstance = instance;
       console.log("WorkerPoolHub deployed at address :" + instance.address);
-      return deployer.deploy(DappHub);
+      return deployer.deploy(AppHub);
     })
-    .then(() => DappHub.deployed())
+    .then(() => AppHub.deployed())
     .then(instance => {
-      aDappHubInstance = instance;
-      console.log("DappHub deployed at address :" + instance.address);
+      aAppHubInstance = instance;
+      console.log("AppHub deployed at address :" + instance.address);
       return deployer.deploy(DatasetHub);
     })
     .then(() => DatasetHub.deployed())
@@ -33,7 +33,7 @@ module.exports = function(deployer) {
     .then(instance => {
       aTaskRequestHubInstance = instance;
       console.log("TaskRequestHub deployed at address :" + instance.address);
-      return deployer.deploy(IexecHub, '0x7314dc4d7794b5e7894212ca1556ae8e3de58621', aWorkerPoolHubInstance.address, aDappHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
+      return deployer.deploy(IexecHub, '0x7314dc4d7794b5e7894212ca1556ae8e3de58621', aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -43,10 +43,10 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("transferOwnership of WorkerPoolHub to IexecHub");
-      return aDappHubInstance.transferOwnership(aIexecHub.address);
+      return aAppHubInstance.transferOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of DappHub to IexecHub");
+      console.log("transferOwnership of AppHub to IexecHub");
       return aDatasetHubInstance.transferOwnership(aIexecHub.address);
     })
     .then(() => {

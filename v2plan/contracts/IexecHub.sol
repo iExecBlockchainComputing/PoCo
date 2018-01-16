@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import './DappHub.sol';
+import './AppHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
 import './ProvidersBalance.sol';
@@ -16,14 +16,14 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 {
 	using SafeMathOZ for uint256;
 	uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant DAPP_CREATION_STAKE        = 5000; //updated by vote or super admin ?
+	uint private constant APP_CREATION_STAKE        = 5000; //updated by vote or super admin ?
 	uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
 	uint private constant TASKREQUEST_CREATION_STAKE = 5000; //updated by vote or super admin ?
 	uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
-	uint private constant DAPP_PRICE_STAKE_RATIO     = 1;    //updated by vote or super admin ?
+	uint private constant APP_PRICE_STAKE_RATIO     = 1;    //updated by vote or super admin ?
 
 	WorkerPoolHub  workerPoolHub;
-	DappHub        dappHub;
+	AppHub        appHub;
 	DatasetHub     datasetHub;
 	TaskRequestHub taskRequestHub;
 
@@ -32,14 +32,14 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	function IexecHub(
 		address _tokenAddress,
 		address _workerPoolHubAddress,
-		address _dappHubAddress,
+		address _appHubAddress,
 		address _datasetHubAddress,
 		address _taskRequestHubAddress)
 	ProvidersBalance(_tokenAddress)
 	public
 	{
 		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
-		dappHub        = DappHub       (_dappHubAddress       );
+		appHub        = AppHub       (_appHubAddress       );
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
 		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
 	}
@@ -52,11 +52,11 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return newWorkerPool;
 	}
 
-	function createDapp(string _dappName, uint256 _dappPrice, string _dappParam, string _dappUri) public returns(address createdDapp)
+	function createApp(string _appName, uint256 _appPrice, string _appParam, string _appUri) public returns(address createdApp)
 	{
-		require(lock(msg.sender,DAPP_CREATION_STAKE));		//prevent creation spam ?
-		address newDapp =dappHub.createDapp(_dappName,_dappPrice,_dappParam,_dappUri);
-		return newDapp;
+		require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
+		address newApp =appHub.createApp(_appName,_appPrice,_appParam,_appUri);
+		return newApp;
 	}
 
 	function createDataset(string _datasetName, uint256 _datasetPrice, string _datasetParam, string _datasetUri) public returns(address createdDataset)
@@ -66,7 +66,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return newDataset;
 	}
 
-	function createTaskRequest(address _workerPool, address _dapp, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public returns(address createdTaskRequest)
+	function createTaskRequest(address _workerPool, address _app, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public returns(address createdTaskRequest)
 	{
 		// msg.sender = requester
 
@@ -74,10 +74,10 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
 
 		//APP
-		require(dappHub.isDappRegistred(_dapp));
-		require(dappHub.isOpen(_dapp));
-		require(dappHub.isWorkerPoolAllowed(_dapp,_workerPool));
-		require(dappHub.isRequesterAllowed(_dapp,msg.sender));
+		require(appHub.isAppRegistred(_app));
+		require(appHub.isOpen(_app));
+		require(appHub.isWorkerPoolAllowed(_app,_workerPool));
+		require(appHub.isRequesterAllowed(_app,msg.sender));
 
 		//DATASET
 		if (_dataset != address(0))
@@ -85,9 +85,9 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 			require(datasetHub.isDatasetRegistred(_dataset));
 			require(datasetHub.isOpen(_dataset));
 			require(datasetHub.isWorkerPoolAllowed(_dataset,_workerPool));
-			require(datasetHub.isDappAllowed(_dataset,_dapp));
+			require(datasetHub.isAppAllowed(_dataset,_app));
 			require(datasetHub.isRequesterAllowed(_dataset,msg.sender));
-			require(dappHub.isDatasetAllowed(_dapp,_dataset));
+			require(appHub.isDatasetAllowed(_app,_dataset));
 		}
 
 		//WORKER_POOL
@@ -95,14 +95,14 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(aPool.isOpen());
 
 
-		uint256 dappPrice = dappHub.getDappPrice(_dapp);
+		uint256 dappPrice = appHub.getAppPrice(_app);
 		//TODO datasetPrice
 		uint256 userCost = _taskCost.add(dappPrice);
 
 		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		require(debit(msg.sender,userCost));
 
-		address newTaskRequest =taskRequestHub.createTaskRequest(msg.sender,_workerPool,_dapp,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
+		address newTaskRequest =taskRequestHub.createTaskRequest(msg.sender,_workerPool,_app,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
 
 		require(aPool.submitedTask(newTaskRequest));
 
@@ -118,7 +118,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		{
 			require(reward(dapps[dapp].provider,dapps[dapp].dappPrice));
 			address dappProvider=dapps[msg.sender].provider;
-			require(unlock(dappProvider,dapps[dapp].dappPrice*DAPP_PRICE_STAKE_RATIO)); //TODO add SafeMath
+			require(unlock(dappProvider,dapps[dapp].dappPrice*APP_PRICE_STAKE_RATIO)); //TODO add SafeMath
 		}
 		// incremente D(w) or D(s) reputation too  ?
 */

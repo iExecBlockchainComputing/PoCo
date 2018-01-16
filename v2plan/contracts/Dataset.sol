@@ -18,7 +18,7 @@ contract Dataset is OwnableOZ, IexecHubInterface
 	DatasetStatusEnum public datasetStatus;
 
 	address public workerPoolsAuthorizedListAddress;
-	address public dappsAuthorizedListAddress;
+	address public appsAuthorizedListAddress;
 	address public requestersAuthorizedListAddress;
 
 	//TODO add OPEN and CLOSE STATUS for datasetUri maintenance
@@ -68,8 +68,8 @@ contract Dataset is OwnableOZ, IexecHubInterface
 		workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
 	}
 
-	function attachDappsAuthorizedListContract(address _dappsAuthorizedListAddress) public onlyOwner{
-		dappsAuthorizedListAddress =_dappsAuthorizedListAddress;
+	function attachAppsAuthorizedListContract(address _appsAuthorizedListAddress) public onlyOwner{
+		appsAuthorizedListAddress =_appsAuthorizedListAddress;
 	}
 
 	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner{
@@ -81,9 +81,9 @@ contract Dataset is OwnableOZ, IexecHubInterface
 	  return AuthorizedList(workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
 	}
 
-	function isDappAllowed(address _dapp) public returns (bool)
+	function isAppAllowed(address _app) public returns (bool)
 	{
-	  return AuthorizedList(dappsAuthorizedListAddress).isActorAllowed(_dapp);
+	  return AuthorizedList(appsAuthorizedListAddress).isActorAllowed(_app);
 	}
 
 	function isRequesterAllowed(address _requester) public returns (bool)

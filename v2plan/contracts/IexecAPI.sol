@@ -16,9 +16,9 @@ contract IexecAPI
 		iexecHub = IexecHub(iexecHubAddress);
 	}
 
-	function createTaskRequest(address _workerPool, address _dapp, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public
+	function createTaskRequest(address _workerPool, address _app, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public
 	{
-		iexecHub.createTaskRequest(_workerPool,_dapp,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
+		iexecHub.createTaskRequest(_workerPool,_app,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
 	}
 
 	//TODO add cancel Task function

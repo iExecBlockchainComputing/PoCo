@@ -7,7 +7,7 @@ import './IexecAPI.sol';
 contract TaskRequest is OwnableOZ, IexecHubInterface
 {
 	address public workerPoolRequested;
-	address public dappRequested;
+	address public appRequested;
 	address public datasetRequested;
 	string  public taskParam;
 	uint256 public taskCost;
@@ -19,7 +19,7 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 		address _iexecHubAddress,
 		address _requester,
 		address _workerPool,
-		address _dapp,
+		address _app,
 		address _dataset,
 		string  _taskParam,
 		uint    _taskCost,
@@ -32,7 +32,7 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 		transferOwnership(_requester); // owner → tx.origin
 
 		workerPoolRequested = _workerPool;
-		dappRequested       = _dapp;
+		appRequested       = _app;
 		datasetRequested    = _dataset;
 		taskParam           = _taskParam;
 		taskCost            = _taskCost;
