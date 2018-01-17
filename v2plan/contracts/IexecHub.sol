@@ -94,20 +94,20 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
 
 		//APP
-		require(appHub.isAppRegistred(_app));
-		require(appHub.isOpen(_app));
-		require(appHub.isWorkerPoolAllowed(_app,_workerPool));
-		require(appHub.isRequesterAllowed(_app,msg.sender));
+		require(appHub.isAppRegistred     (_app             ));
+		require(appHub.isOpen             (_app             ));
+		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
+		require(appHub.isRequesterAllowed (_app, msg.sender ));
 
 		//DATASET
 		if (_dataset != address(0))
 		{
-			require(datasetHub.isDatasetRegistred (_dataset));
-			require(datasetHub.isOpen             (_dataset));
-			require(datasetHub.isWorkerPoolAllowed(_dataset,_workerPool));
-			require(datasetHub.isAppAllowed       (_dataset,_app));
-			require(datasetHub.isRequesterAllowed (_dataset,msg.sender));
-			require(appHub.isDatasetAllowed       (_app,_dataset));
+			require(datasetHub.isDatasetRegistred (_dataset             ));
+			require(datasetHub.isOpen             (_dataset             ));
+			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
+			require(datasetHub.isAppAllowed       (_dataset, _app       ));
+			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
+			require(appHub.isDatasetAllowed       (_app,     _dataset   ));
 		}
 
 		//WORKER_POOL
@@ -115,18 +115,29 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(aPool.isOpen());
 
 
-		uint256 dappPrice = appHub.getAppPrice(_app);
-		//TODO datasetPrice
-		uint256 userCost = _taskCost.add(dappPrice);
+		uint256 userCost = _taskCost;
+		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
+		/* TODO datasetPrice */
+		// if (_dataset != address(0))
+		// userCost = userCost.add(datasetHub.getDatasetPrice(_dataset)); // datasetPrice
 
 		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		require(debit(msg.sender,userCost));
+		require(debit(msg.sender, userCost));
 
-		address newTaskRequest =taskRequestHub.createTaskRequest(msg.sender,_workerPool,_app,_dataset,_taskParam,_taskCost,_askedTrust,_dappCallback);
+		address newTaskRequest = taskRequestHub.createTaskRequest(
+			msg.sender, // requester
+			_workerPool,
+			_app,
+			_dataset,
+			_taskParam,
+			_taskCost,
+			_askedTrust,
+			_dappCallback
+		);
 
 		require(aPool.submitedTask(newTaskRequest));
 
-		m_taskPoolAffectation[newTaskRequest]=_workerPool;
+		m_taskPoolAffectation[newTaskRequest] = _workerPool;
 		// address newTaskRequest will the taskID
 		return newTaskRequest;
 	}

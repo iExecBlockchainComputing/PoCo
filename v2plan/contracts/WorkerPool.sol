@@ -70,7 +70,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	/**
 	 * Members
 	 */
-
 	string                                       public m_name;
 	uint256                                      public m_stakePolicyRatio;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
@@ -101,7 +100,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	//constructor
 	function WorkerPool(
 		address _iexecHubAddress,
-		string _name)
+		string  _name)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -129,12 +128,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		*/
 	}
 
-	function changeStakePolicyRatio(uint256 newstakePolicyRatio) public onlyOwner
+	function changeStakePolicyRatio(uint256 _newstakePolicyRatio) public onlyOwner
 	{
-		m_stakePolicyRatio = newstakePolicyRatio;
+		m_stakePolicyRatio = _newstakePolicyRatio;
 		//TODO LOG
 	}
-
 
 	function getWorkerPoolOwner() public view returns (address)
 	{
@@ -311,7 +309,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		require(m_tasks[_taskID].status == TaskStatusEnum.CONSENSUS_REACHED);
 		//TODO add all workers have reveal so we do not have to wait until the end of REVEAL_PERIOD_DURATION
-		require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now >= m_tasksContributionsRevealDeadLine[_taskID]);
+		require(m_tasks[_taskID].revealDate <= now);
 		m_tasks[_taskID].status    = TaskStatusEnum.FINALIZED;
 		m_tasks[_taskID].timestamp = now;
 		m_tasks[_taskID].stdout    = _stdout;

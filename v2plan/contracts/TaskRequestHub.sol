@@ -47,15 +47,47 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByTaskRequest[_taskRequest] != 0x0;
 	}
 
-	function createTaskRequest(address _requester,address _workerPool, address _app, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public onlyOwner /*owner == IexecHub*/ returns(address createdTaskRequest)
+	function createTaskRequest(
+		address _requester,
+		address _workerPool,
+		address _app,
+		address _dataset,
+		string  _taskParam,
+		uint    _taskCost,
+		uint    _askedTrust,
+		bool    _dappCallback)
+	public onlyOwner /*owner == IexecHub*/ returns(address createdTaskRequest)
 	{
 		// _requester == owner of the task
 		// msg.sender == IexecHub
-		address newTaskRequest = new TaskRequest(msg.sender,_requester, _workerPool, _app,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
-		m_taskRequestsCountByOwner[_requester]=m_taskRequestsCountByOwner[_requester].add(1);
+		address newTaskRequest = new TaskRequest(
+			msg.sender,
+			_requester,
+			_workerPool,
+			_app,
+			_dataset,
+			_taskParam,
+			_taskCost,
+			_askedTrust,
+			_dappCallback
+		);
+
+		m_taskRequestsCountByOwner[_requester] = m_taskRequestsCountByOwner[_requester].add(1);
 		m_taskRequestByOwnerByIndex[_requester][m_taskRequestsCountByOwner[_requester]] = newTaskRequest;
-		m_ownerByTaskRequest[newTaskRequest]= _requester;
-		CreateTaskRequest(_requester,newTaskRequest,_workerPool, _app,  _dataset,  _taskParam,  _taskCost,  _askedTrust, _dappCallback);
+		m_ownerByTaskRequest[newTaskRequest] = _requester;
+
+		CreateTaskRequest(
+			_requester,
+			newTaskRequest,
+			_workerPool,
+			_app,
+			_dataset,
+			_taskParam,
+			_taskCost,
+			_askedTrust,
+			_dappCallback
+		);
+
 		return newTaskRequest;
 	}
 
