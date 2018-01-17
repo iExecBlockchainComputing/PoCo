@@ -5,46 +5,53 @@ import './OwnableOZ.sol';
  */
 contract AuthorizedList is OwnableOZ
 {
-
 	enum ListPolicyEnum { WHITELIST, BLACKLIST }
 
-	event PolicyChange(ListPolicyEnum oldPolicy,ListPolicyEnum newPolicy);
+	/**
+	 * Members
+	 */
+	ListPolicyEnum           public m_policy = ListPolicyEnum.WHITELIST;
+	mapping(address => bool) public m_whitelist;
+	mapping(address => bool) public m_blacklist;
+
+	/**
+	 * Events
+	 */
+	event PolicyChange   (ListPolicyEnum oldPolicy, ListPolicyEnum newPolicy);
 	event WhitelistChange(address actor, bool isWhitelisted);
 	event BlacklistChange(address actor, bool isBlacklisted);
 
-	ListPolicyEnum public policy = ListPolicyEnum.WHITELIST;
-
-	mapping(address => bool) whitelist;
-	mapping(address => bool) blacklist;
-
+	/**
+	 * Methods
+	 */
 	modifier checkWhitelist(address _actor)
 	{
-		require(policy == ListPolicyEnum.BLACKLIST || whitelist[_actor] == true);
+		require(m_policy == ListPolicyEnum.BLACKLIST || m_whitelist[_actor] == true);
 		_;
 	}
 
 	modifier checkBlacklist(address _actor)
 	{
-		require(policy == ListPolicyEnum.WHITELIST || blacklist[_actor] == false);
+		require(m_policy == ListPolicyEnum.WHITELIST || m_blacklist[_actor] == false);
 		_;
 	}
 
 	function changeListPolicy(ListPolicyEnum _policyEnum) public onlyOwner
 	{
-		PolicyChange(policy,_policyEnum);
-		policy = _policyEnum;
+		PolicyChange(m_policy, _policyEnum);
+		m_policy = _policyEnum;
 	}
 
 	function updateWhitelist(address _actor, bool _isWhitelisted) public onlyOwner
 	{
-		whitelist[_actor] = _isWhitelisted;
+		m_whitelist[_actor] = _isWhitelisted;
 		WhitelistChange(_actor, _isWhitelisted);
 	}
 
 	function updateBlacklist(address _actor, bool _isBlacklisted) public onlyOwner
 	{
-			blacklist[_actor] = _isBlacklisted;
-			BlacklistChange(_actor, _isBlacklisted);
+		m_blacklist[_actor] = _isBlacklisted;
+		BlacklistChange(_actor, _isBlacklisted);
 	}
 
 	function updateWhitelist(address[] _actors, bool _isWhitelisted) public onlyOwner
@@ -65,17 +72,17 @@ contract AuthorizedList is OwnableOZ
 
 	function isWhitelisted(address _actor) public view returns (bool)
 	{
-		return whitelist[_actor];
+		return m_whitelist[_actor];
 	}
 
 	function isblacklisted(address _actor) public view returns (bool)
 	{
-		return blacklist[_actor];
+		return m_blacklist[_actor];
 	}
 
 	function isActorAllowed(address _actor) public view returns (bool)
 	{
-		if(policy == ListPolicyEnum.WHITELIST)
+		if (m_policy == ListPolicyEnum.WHITELIST)
 		{
 			return isWhitelisted(_actor);
 		}

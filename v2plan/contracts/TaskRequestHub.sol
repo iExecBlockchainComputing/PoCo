@@ -9,16 +9,30 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 
 	using SafeMathOZ for uint256;
 
-	event CreateTaskRequest(address taskRequestOwner, address taskRequest,  address indexed workerPool, address indexed app, address indexed dataset, string taskParam, uint taskCost, uint askedTrust, bool dappCallback);
-
+	/**
+	 * Members
+	 */
 	// owner => taskRequests count
-	mapping (address => uint256) m_taskRequestsCountByOwner;
-
+	mapping(address => uint256)                  m_taskRequestsCountByOwner;
 	// owner => index => taskRequest
-	mapping (address => mapping (uint => address)) m_taskRequestByOwnerByIndex;
-
+	mapping(address => mapping(uint => address)) m_taskRequestByOwnerByIndex;
 	//  taskRequest => owner
-	mapping (address => address) m_ownerByTaskRequest;
+	mapping(address => address)                  m_ownerByTaskRequest;
+
+	/**
+	 * Events
+	 */
+	event CreateTaskRequest(
+		address taskRequestOwner,
+		address taskRequest,
+		address indexed workerPool,
+		address indexed app,
+		address indexed dataset,
+		string  taskParam,
+		uint    taskCost,
+		uint    askedTrust,
+		bool    dappCallback
+	);
 
 	/**
 	 * Explicit constructor !

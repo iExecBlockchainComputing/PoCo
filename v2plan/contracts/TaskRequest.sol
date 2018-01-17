@@ -6,13 +6,16 @@ import './IexecAPI.sol';
 
 contract TaskRequest is OwnableOZ, IexecHubAccessor
 {
-	address public workerPoolRequested;
-	address public appRequested;
-	address public datasetRequested;
-	string  public taskParam;
-	uint256 public taskCost;
-	uint256 public askedTrust;
-	bool    public dappCallback;
+	/**
+	 * Members
+	 */
+	address public m_workerPoolRequested;
+	address public m_appRequested;
+	address public m_datasetRequested;
+	string  public m_taskParam;
+	uint256 public m_taskCost;
+	uint256 public m_askedTrust;
+	bool    public m_dappCallback;
 
 	//constructor
 	function TaskRequest(
@@ -31,13 +34,13 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
 
-		workerPoolRequested = _workerPool;
-		appRequested       = _app;
-		datasetRequested    = _dataset;
-		taskParam           = _taskParam;
-		taskCost            = _taskCost;
-		askedTrust          = _askedTrust;
-		dappCallback        = _dappCallback;
+		m_workerPoolRequested = _workerPool;
+		m_appRequested        = _app;
+		m_datasetRequested    = _dataset;
+		m_taskParam           = _taskParam;
+		m_taskCost            = _taskCost;
+		m_askedTrust          = _askedTrust;
+		m_dappCallback        = _dappCallback;
 	}
 
 	//optional dappCallback call can be done
@@ -48,10 +51,15 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		string _uri)
 	public returns (bool)
 	{
-		require(workerPoolRequested == msg.sender);
-		require(this == _taskId);
-		IexecAPI iexecAPI = IexecAPI(m_owner);
-		require(iexecAPI.taskRequestCallback(_taskId,_stdout,_stderr,_uri));
+		require(this       == _taskId              );
+		require(msg.sender == m_workerPoolRequested);
+
+		require(IexecAPI(m_owner).taskRequestCallback(
+			_taskId,
+			_stdout,
+			_stderr,
+			_uri
+		));
 		return true;
  }
 

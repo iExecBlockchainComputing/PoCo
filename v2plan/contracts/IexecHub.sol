@@ -145,7 +145,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	function finalizedTask(address _taskID) public returns (bool)
 	{
 	/*	require(msg.sender == m_taskPoolAffectation[_taskID]);
-		if(dapps[dapp].dappPrice > 0)
+		if (dapps[dapp].dappPrice > 0)
 		{
 			require(reward(dapps[dapp].provider,dapps[dapp].dappPrice));
 			address dappProvider=dapps[msg.sender].provider;

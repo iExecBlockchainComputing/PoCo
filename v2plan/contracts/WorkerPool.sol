@@ -212,7 +212,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 		m_tasks[_taskID].status    = TaskStatusEnum.PENDING;
 		m_tasks[_taskID].taskID    = _taskID;
-		m_tasks[_taskID].stake     = aTaskRequest.taskCost().mul(m_stakePolicyRatio).div(100);
+		m_tasks[_taskID].stake     = aTaskRequest.m_taskCost().mul(m_stakePolicyRatio).div(100);
 		m_tasks[_taskID].timestamp = now;
 		//TODO check accept this dapp in weight list
 		//TODO check accept this user in weight list
@@ -318,7 +318,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 
 		TaskRequest aTaskRequest = TaskRequest(_taskID);
-		if(aTaskRequest.dappCallback())
+		if (aTaskRequest.m_dappCallback())
 		{
 			require(aTaskRequest.taskRequestCallback(_taskID,_stdout,_stderr,_uri));
 		}
@@ -351,7 +351,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		 * Current code shows a simple distribution (equal shares)
 		 */
 		uint256 cntWinners       = 0;
-		uint256 totalReward      = aTaskRequest.taskCost();
+		uint256 totalReward      = aTaskRequest.m_taskCost();
 		uint256 individualReward;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
