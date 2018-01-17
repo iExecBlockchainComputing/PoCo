@@ -7,22 +7,27 @@ import "./AuthorizedList.sol";
 contract App is OwnableOZ, IexecHubAccessor //Owned by a D(w){
 {
 
+	enum AppStatusEnum { OPEN, CLOSE }
 
-	enum AppStatusEnum{OPEN,CLOSE}
+	/**
+	 * Members
+	 */
+	string        public m_appName;
+	uint256       public m_appPrice;
+	string        public m_appParam;
+	string        public m_appUri;
+	AppStatusEnum public m_appStatus;
 
-	string   public  appName;
-	uint256  public  appPrice;
-	string   public  appParam;
-	string   public  appUri;
+	/**
+	 * Address of slave contracts
+	 */
+	address       public m_workerPoolsAuthorizedListAddress;
+	address       public m_datasetsAuthorizedListAddress;
+	address       public m_requestersAuthorizedListAddress;
 
-  AppStatusEnum public appStatus;
-
-	address public workerPoolsAuthorizedListAddress;
-	address public datasetsAuthorizedListAddress;
-	address public requestersAuthorizedListAddress;
-
-
-	//constructor
+	/**
+	 * Constructor
+	 */
 	function App(
 		address _iexecHubAddress,
 		string  _appName,
@@ -37,57 +42,63 @@ contract App is OwnableOZ, IexecHubAccessor //Owned by a D(w){
 		require(tx.origin != msg.sender);
 		transferOwnership(tx.origin); // owner → tx.origin
 
-		appName   = _appName;
-		appPrice  = _appPrice;
-		appParam  = _appParam;
-		appUri    = _appUri;
-		appStatus = AppStatusEnum.OPEN;
+		m_appName   = _appName;
+		m_appPrice  = _appPrice;
+		m_appParam  = _appParam;
+		m_appUri    = _appUri;
+		m_appStatus = AppStatusEnum.OPEN;
 	}
 
+	/**
+	 * Methods
+	 */
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(appStatus == AppStatusEnum.CLOSE);
-		appStatus = AppStatusEnum.OPEN;
+		require(m_appStatus == AppStatusEnum.CLOSE);
+		m_appStatus = AppStatusEnum.OPEN;
 		return true;
 	}
 
 	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(appStatus == AppStatusEnum.OPEN);
-		appStatus = AppStatusEnum.CLOSE;
+		require(m_appStatus == AppStatusEnum.OPEN);
+		m_appStatus = AppStatusEnum.CLOSE;
 		return true;
 	}
 
 	function isOpen() public view returns (bool)
 	{
-		return appStatus == AppStatusEnum.OPEN;
+		return m_appStatus == AppStatusEnum.OPEN;
 	}
 
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner{
-		workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
+	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
+	{
+		m_workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
 	}
 
-	function attachDatasetsAuthorizedListContract(address _datasetsAuthorizedListAddress) public onlyOwner{
-		datasetsAuthorizedListAddress =_datasetsAuthorizedListAddress;
+	function attachDatasetsAuthorizedListContract(address _datasetsAuthorizedListAddress) public onlyOwner
+	{
+		m_datasetsAuthorizedListAddress =_datasetsAuthorizedListAddress;
 	}
 
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner{
-		requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
+	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
+	{
+		m_requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
 	}
 
 	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
 	{
-		return AuthorizedList(workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
+		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
 	}
 
 	function isDatasetAllowed(address _dataset) public returns (bool)
 	{
-		return AuthorizedList(datasetsAuthorizedListAddress).isActorAllowed(_dataset);
+		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
 	}
 
 	function isRequesterAllowed(address _requester) public returns (bool)
 	{
-		return AuthorizedList(requestersAuthorizedListAddress).isActorAllowed(_requester);
+		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
 
 }

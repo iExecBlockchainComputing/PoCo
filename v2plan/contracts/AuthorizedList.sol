@@ -10,7 +10,7 @@ contract AuthorizedList is OwnableOZ
 	/**
 	 * Members
 	 */
-	ListPolicyEnum           public m_policy = ListPolicyEnum.WHITELIST;
+	ListPolicyEnum           public m_policy;
 	mapping(address => bool) public m_whitelist;
 	mapping(address => bool) public m_blacklist;
 
@@ -22,7 +22,15 @@ contract AuthorizedList is OwnableOZ
 	event BlacklistChange(address actor, bool isBlacklisted);
 
 	/**
-	 * Methods
+	* Constructor
+	*/
+	function AuthorizedList() public
+	{
+		m_policy = ListPolicyEnum.WHITELIST;
+	}
+
+	/**
+	 * Modifiers
 	 */
 	modifier checkWhitelist(address _actor)
 	{
@@ -36,6 +44,9 @@ contract AuthorizedList is OwnableOZ
 		_;
 	}
 
+	/**
+	* Methods
+	*/
 	function changeListPolicy(ListPolicyEnum _policyEnum) public onlyOwner
 	{
 		PolicyChange(m_policy, _policyEnum);

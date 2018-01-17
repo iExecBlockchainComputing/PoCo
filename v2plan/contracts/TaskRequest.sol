@@ -17,7 +17,9 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	uint256 public m_askedTrust;
 	bool    public m_dappCallback;
 
-	//constructor
+	/**
+	 * Constructor
+	 */
 	function TaskRequest(
 		address _iexecHubAddress,
 		address _requester,
@@ -43,6 +45,9 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		m_dappCallback        = _dappCallback;
 	}
 
+	/**
+	 * Members
+	 */
 	//optional dappCallback call can be done
 	function taskRequestCallback(
 		address _taskId,

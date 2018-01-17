@@ -35,28 +35,31 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	);
 
 	/**
-	 * Explicit constructor !
+	 * Constructor
 	 */
 	function TaskRequestHub() public
 	{
 	}
 
-	function getTaskRequestsCount(address _owner) view public returns (uint256)
+	/**
+	 * Methods
+	 */
+	function getTaskRequestsCount(address _owner) public view returns (uint256)
 	{
 		return m_taskRequestsCountByOwner[_owner];
 	}
 
-	function getTaskRequest(address _owner,uint256 _index) view public returns (address)
+	function getTaskRequest(address _owner,uint256 _index) public view returns (address)
 	{
 		return m_taskRequestByOwnerByIndex[_owner][_index];
 	}
 
-	function getTaskRequestOwner(address _taskRequest) view public returns (address)
+	function getTaskRequestOwner(address _taskRequest) public view returns (address)
 	{
 		return m_ownerByTaskRequest[_taskRequest];
 	}
 
-	function isTaskRequestRegistred(address _taskRequest) view public returns (bool)
+	function isTaskRequestRegistred(address _taskRequest) public view returns (bool)
 	{
 		return m_ownerByTaskRequest[_taskRequest] != 0x0;
 	}

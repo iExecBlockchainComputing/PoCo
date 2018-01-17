@@ -13,11 +13,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	uint256 public constant REVEAL_PERIOD_DURATION = 3 hours;
 
-	enum WorkerPoolStatusEnum
-	{
-		OPEN,
-		CLOSE
-	}
+	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
 	enum TaskStatusEnum
 	{

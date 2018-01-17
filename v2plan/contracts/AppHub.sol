@@ -6,21 +6,33 @@ import "./SafeMathOZ.sol";
 
 contract AppHub is OwnableOZ // is Owned by IexecHub
 {
+
 	using SafeMathOZ for uint256;
 
-	event CreateApp(address indexed appOwner, address indexed app, string appName,uint256 appPrice, string appParam, string appUri);
-
+	/**
+	 * Members
+	 */
 	// owner => apps count
-	mapping (address => uint256) m_appsCountByOwner;
-
+	mapping(address => uint256)                     m_appsCountByOwner;
 	// owner => index => app
-	mapping (address => mapping (uint256 => address)) m_appByOwnerByIndex;
-
+	mapping(address => mapping(uint256 => address)) m_appByOwnerByIndex;
 	//  app => owner
-	mapping (address => address) m_ownerByApp;
+	mapping(address => address)                     m_ownerByApp;
 
 	/**
-	 * Explicit constructor !
+	 * Events
+	 */
+	event CreateApp(
+		address indexed appOwner,
+		address indexed app,
+		string  appName,
+		uint256 appPrice,
+		string  appParam,
+		string  appUri
+	);
+
+	/**
+	 * Constructor
 	 */
 	function AppHub() public
 	{
@@ -49,21 +61,42 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByApp[_app] != 0x0;
 	}
 
-	function createApp(string _appName, uint256 _appPrice, string _appParam, string _appUri) public onlyOwner /*owner == IexecHub*/ returns(address createdApp)
+	function createApp(
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParam,
+		string  _appUri)
+	public onlyOwner /*owner == IexecHub*/ returns(address createdApp)
 	{
 		// tx.origin == owner
 		// msg.sender == IexecHub
-		address newApp = new App(msg.sender,_appName, _appPrice, _appParam, _appUri);
+		address newApp = new App(
+			msg.sender,
+			_appName,
+			_appPrice,
+			_appParam,
+			_appUri
+		);
+
 		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1);
 		m_appByOwnerByIndex[tx.origin][m_appsCountByOwner[tx.origin]] = newApp;
 		m_ownerByApp[newApp] = tx.origin;
-		CreateApp(tx.origin,newApp,_appName, _appPrice, _appParam, _appUri);
+
+		CreateApp(
+			tx.origin,
+			newApp,
+			_appName,
+			_appPrice,
+			_appParam,
+			_appUri
+		);
+
 		return newApp;
 	}
 
 	function getAppPrice(address _app) public view returns(uint256 appPrice)
 	{
-		return App(_app).appPrice();
+		return App(_app).m_appPrice();
 	}
 
 	function isOpen(address _app) public view returns (bool)

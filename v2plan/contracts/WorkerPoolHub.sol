@@ -9,22 +9,29 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 
 	using SafeMathOZ for uint256;
 
-	event CreateWorkerPool(address indexed workerPoolOwner, address indexed pool, string name);
-
+	/**
+	 * Members
+	 */
 	//worker => workerPool
-	mapping (address => address) m_workerAffectation;
-
+	mapping(address => address)                  m_workerAffectation;
 	// owner => workerPools count
-	mapping (address => uint256) m_workerPoolsCountByOwner;
-
+	mapping(address => uint256)                  m_workerPoolsCountByOwner;
 	// owner => index => workerPool
-	mapping (address => mapping (uint => address)) m_workerPoolByOwnerByIndex;
-
+	mapping(address => mapping(uint => address)) m_workerPoolByOwnerByIndex;
 	//  workerPool => owner
-	mapping (address => address) m_ownerByWorkerPool;
+	mapping(address => address)                  m_ownerByWorkerPool;
 
 	/**
-	 * Explicit constructor !
+	 * Events
+	 */
+	event CreateWorkerPool(
+		address indexed workerPoolOwner,
+		address indexed pool,
+		string  name
+	);
+
+	/**
+	 * Constructor
 	 */
 	function WorkerPoolHub() public
 	{
@@ -58,9 +65,9 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		// tx.origin == owner
 		// msg.sender == IexecHub
 		address newWorkerPool = new WorkerPool(msg.sender,_name);
-		m_workerPoolsCountByOwner[tx.origin]=m_workerPoolsCountByOwner[tx.origin].add(1);
+		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1);
 		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
-		m_ownerByWorkerPool[newWorkerPool]= tx.origin;
+		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
 		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}

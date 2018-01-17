@@ -7,19 +7,23 @@ import "./AuthorizedList.sol";
 contract Dataset is OwnableOZ, IexecHubAccessor
 {
 
+	enum DatasetStatusEnum { OPEN, CLOSE }
 
-	enum DatasetStatusEnum{OPEN,CLOSE}
+	/**
+	 * Members
+	 */
+	string            public m_datasetName;
+	uint256           public m_datasetPrice;
+	string            public m_datasetParam;
+	string            public m_datasetUri;
+	DatasetStatusEnum public m_datasetStatus;
 
-	string   public  datasetName;
-	uint256  public  datasetPrice;
-	string   public  datasetParam;
-	string   public  datasetUri;
-
-	DatasetStatusEnum public datasetStatus;
-
-	address public workerPoolsAuthorizedListAddress;
-	address public appsAuthorizedListAddress;
-	address public requestersAuthorizedListAddress;
+	/**
+	 * Address of slave contracts
+	 */
+	address           public m_workerPoolsAuthorizedListAddress;
+	address           public m_appsAuthorizedListAddress;
+	address           public m_requestersAuthorizedListAddress;
 
 	//TODO add OPEN and CLOSE STATUS for datasetUri maintenance
 
@@ -38,57 +42,60 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		require(tx.origin != msg.sender);
 		transferOwnership(tx.origin); // owner → tx.origin
 
-		datasetName  = _datasetName;
-		datasetPrice = _datasetPrice;
-		datasetParam = _datasetParam;
-		datasetUri   = _datasetUri;
-		datasetStatus= DatasetStatusEnum.OPEN;
+		m_datasetName   = _datasetName;
+		m_datasetPrice  = _datasetPrice;
+		m_datasetParam  = _datasetParam;
+		m_datasetUri    = _datasetUri;
+		m_datasetStatus = DatasetStatusEnum.OPEN;
 	}
 
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(datasetStatus == DatasetStatusEnum.CLOSE);
-		datasetStatus = DatasetStatusEnum.OPEN;
+		require(m_datasetStatus == DatasetStatusEnum.CLOSE);
+		m_datasetStatus = DatasetStatusEnum.OPEN;
 		return true;
 	}
 
 	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(datasetStatus == DatasetStatusEnum.OPEN);
-		datasetStatus = DatasetStatusEnum.CLOSE;
+		require(m_datasetStatus == DatasetStatusEnum.OPEN);
+		m_datasetStatus = DatasetStatusEnum.CLOSE;
 		return true;
 	}
 
 	function isOpen() public view returns (bool)
 	{
-		return datasetStatus == DatasetStatusEnum.OPEN;
+		return m_datasetStatus == DatasetStatusEnum.OPEN;
 	}
 
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner{
-		workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
+	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
+	{
+		m_workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
 	}
 
-	function attachAppsAuthorizedListContract(address _appsAuthorizedListAddress) public onlyOwner{
-		appsAuthorizedListAddress =_appsAuthorizedListAddress;
+	function attachAppsAuthorizedListContract(address _appsAuthorizedListAddress) public onlyOwner
+	{
+		m_appsAuthorizedListAddress =_appsAuthorizedListAddress;
 	}
 
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner{
-		requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
+	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
+	{
+		m_requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
 	}
 
 	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
 	{
-	  return AuthorizedList(workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
+		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
 	}
 
 	function isAppAllowed(address _app) public returns (bool)
 	{
-	  return AuthorizedList(appsAuthorizedListAddress).isActorAllowed(_app);
+	  return AuthorizedList(m_appsAuthorizedListAddress).isActorAllowed(_app);
 	}
 
 	function isRequesterAllowed(address _requester) public returns (bool)
 	{
-	  return AuthorizedList(requestersAuthorizedListAddress).isActorAllowed(_requester);
+	  return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
 
 
