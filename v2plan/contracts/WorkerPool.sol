@@ -9,59 +9,14 @@ import "./AuthorizedList.sol";
 
 contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 {
-
 	using SafeMathOZ for uint256;
 
-	enum WorkerPoolStatusEnum{OPEN,CLOSE}
+	uint256 public constant REVEAL_PERIOD_DURATION = 3 hours;
 
-	string               public  name;
-	uint256              public  stakePolicyRatio;
-	WorkerPoolStatusEnum public  workerPoolStatus;
-	address[]            public  workers;
-
-	// mapping(address=> index)
-	mapping(address=> uint256) public workerIndex;
-
-	uint256 public constant REVEAL_PERIOD_DURATION =  3 hours;
-
-	address public workersAuthorizedListAddress;
-
-	//constructor
-	function WorkerPool(
-		address _iexecHubAddress,
-		string _name)
-	IexecHubAccessor(_iexecHubAddress)
-	public
+	enum WorkerPoolStatusEnum
 	{
-		// tx.origin == owner
-		// msg.sender == DatasetHub
-		require(tx.origin != msg.sender );
-		transferOwnership(tx.origin); // owner → tx.origin
-
-		name             = _name;
-		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
-		workerPoolStatus = WorkerPoolStatusEnum.OPEN;
-
-
-		/* cannot do the following AuthorizedList contracts creation because of :
-		   VM Exception while processing transaction: out of gas at deploy.
-		   use attach....AuthorizedListContract instead function
-		*/
-   /*
-	  workersAuthorizedListAddress = new AuthorizedList();
-	  AuthorizedList(workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		dappsAuthorizedListAddress = new AuthorizedList();
-		AuthorizedList(dappsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		requesterAuthorizedListAddress = new AuthorizedList();
-		AuthorizedList(requesterAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		*/
-	}
-
-
-
-	function isWorkerAllowed(address _worker) public returns (bool)
-	{
-	  return AuthorizedList(workersAuthorizedListAddress).isActorAllowed(_worker);
+		OPEN,
+		CLOSE
 	}
 
 	enum TaskStatusEnum
@@ -90,10 +45,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		string         stderr;
 		string         uri;
 		bytes32        consensus;
+		uint256        revealDate;
 	}
-	//mapping (taskID => Task) m_tasks;
-	mapping (address => Task) m_tasks;
-
 	enum WorkStatusEnum
 	{
 		UNSET,
@@ -114,89 +67,155 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		int256         balance;
 	}
 
-	//mapping (taskID => worker address => Work) m_tasksContributions;
-	mapping (address => mapping (address => Work)) m_tasksContributions;
+	/**
+	 * Members
+	 */
 
-	//mapping (taskID => worker address )
-	mapping(address => address[]) public m_tasksWorkers;
+	string                                       public m_name;
+	uint256                                      public m_stakePolicyRatio;
+	WorkerPoolStatusEnum                         public m_workerPoolStatus;
+	address[]                                    public m_workers;
+	// mapping(address=> index)
+	mapping(address => uint256)                  public m_workerIndex;
+	// mapping(taskID => Task);
+	mapping(address => Task)                     public m_tasks;
+	// mapping(taskID => worker address => Work);
+	mapping(address => mapping(address => Work)) public m_tasksContributions;
+	// mapping(taskID => worker address)
+	mapping(address => address[])                public m_tasksWorkers;
 
-	mapping(address => uint256) public m_tasksContributionsRevealDeadLine;
-
+	/**
+	 * Events
+	 */
 	event CallForWork(address taskID, address indexed worker);
 
-	function isWorkerRegistered( address _worker) public returns (bool)
+	/**
+	 * Address of slave contracts
+	 */
+	address public m_workersAuthorizedListAddress;
+
+	/**
+	 * Methods
+	 */
+
+	//constructor
+	function WorkerPool(
+		address _iexecHubAddress,
+		string _name)
+	IexecHubAccessor(_iexecHubAddress)
+	public
 	{
-		return getWorkerIndex(_worker) != 0; //TODO to test
+		// tx.origin == owner
+		// msg.sender == DatasetHub
+		require(tx.origin != msg.sender );
+		transferOwnership(tx.origin); // owner → tx.origin
+
+		m_name             = _name;
+		m_stakePolicyRatio = 30; // % of the task price to stake → cf function SubmitTask
+		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+
+
+		/* cannot do the following AuthorizedList contracts creation because of :
+		   VM Exception while processing transaction: out of gas at deploy.
+		   use attach....AuthorizedListContract instead function
+		*/
+   /*
+	  workersAuthorizedListAddress = new AuthorizedList();
+	  AuthorizedList(workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		dappsAuthorizedListAddress = new AuthorizedList();
+		AuthorizedList(dappsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		requesterAuthorizedListAddress = new AuthorizedList();
+		AuthorizedList(requesterAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		*/
 	}
+
 	function changeStakePolicyRatio(uint256 newstakePolicyRatio) public onlyOwner
 	{
-		stakePolicyRatio = newstakePolicyRatio;
+		m_stakePolicyRatio = newstakePolicyRatio;
 		//TODO LOG
 	}
-	function getWorkersCount() constant public returns (uint)
-	{
-	 return workers.length;
-	}
-	function getWorkerAddress(uint _index) constant public returns (address)
-	{
-		return workers[_index];
-	}
-	function getWorkerIndex( address worker) constant public returns (uint)
-	{
-		return workerIndex[worker];
-	}
+
+
 	function getWorkerPoolOwner() public view returns (address)
 	{
 		return m_owner;
 	}
-	function addWorker(address worker) public onlyOwner returns (bool)
+
+	/************************* worker list management **************************/
+	function isWorkerAllowed(address _worker) public returns (bool)
 	{
-		workers.push(worker);
+		return AuthorizedList(m_workersAuthorizedListAddress).isActorAllowed(_worker);
+	}
+	function isWorkerRegistered(address _worker) public returns (bool)
+	{
+		/* return getWorkerIndex(_worker) != 0; //TODO to test → DOES NOT WORK FOR worker 0 */
+		uint index = m_workerIndex[_worker];
+		return m_workers[index] == _worker;
+	}
+	function getWorkerAddress(uint _index) constant public returns (address)
+	{
+		return m_workers[_index];
+	}
+	function getWorkerIndex(address _worker) constant public returns (uint)
+	{
+		uint index = m_workerIndex[_worker];
+		require(m_workers[index] == _worker);
+		return index;
+	}
+	function getWorkersCount() constant public returns (uint)
+	{
+		return m_workers.length;
+	}
+	function addWorker(address _worker) public onlyOwner returns (bool)
+	{
+		uint index = m_workers.push(_worker);
+		m_workerIndex[_worker] = index;
+
 		//LOG TODO
 		return true;
 	}
-	function removeWorker(address worker) public onlyOwner returns (bool)
+	function removeWorker(address _worker) public onlyOwner returns (bool)
 	{
-		uint index = getWorkerIndex(worker);
-		workers[index] = workers[workers.length-1];
-		delete workers[workers.length-1];
-		workers.length--;
+		uint index = getWorkerIndex(_worker); // fails if worker not registered
+		m_workers[index] = m_workers[m_workers.length-1];
+		delete m_workers[m_workers.length-1];
+		m_workers.length--;
 
 		//LOG TODO
 		return true;
 	}
 
+	/************************* open / close mechanisms *************************/
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
-		workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
+		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		return true;
 	}
-
 	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(workerPoolStatus == WorkerPoolStatusEnum.OPEN);
-		workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
+		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
+		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
 		return true;
 	}
-
 	function isOpen() public view returns (bool)
 	{
-		return workerPoolStatus == WorkerPoolStatusEnum.OPEN;
+		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;
 	}
 
-	function submitedTask(
-		address _taskID
-	) public onlyIexecHub returns (bool)
+	/**************************** tasks management *****************************/
+	function submitedTask(address _taskID) public onlyIexecHub returns (bool)
 	{
 		//check and reject idempotence on _taskID
 		require(m_tasks[_taskID].status == TaskStatusEnum.UNSET);
-		m_tasks[_taskID].status       = TaskStatusEnum.PENDING;
-		m_tasks[_taskID].taskID       = _taskID;
+
 		//TODO add a shceduler tax on the reward allocted for worker. for his owned reward
-		TaskRequest aTaskRequest =TaskRequest(_taskID);
-		m_tasks[_taskID].stake        = aTaskRequest.taskCost()*stakePolicyRatio;
-		m_tasks[_taskID].timestamp    = now;
+		TaskRequest aTaskRequest = TaskRequest(_taskID);
+
+		m_tasks[_taskID].status    = TaskStatusEnum.PENDING;
+		m_tasks[_taskID].taskID    = _taskID;
+		m_tasks[_taskID].stake     = aTaskRequest.taskCost().mul(m_stakePolicyRatio).div(100);
+		m_tasks[_taskID].timestamp = now;
 		//TODO check accept this dapp in weight list
 		//TODO check accept this user in weight list
 		return true;
@@ -216,7 +235,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	}
 
 
-	function cancelTask () public // onlyIexecHub ?
+	function cancelTask() public // onlyIexecHub ?
 	{
 		//TODO
 
@@ -226,22 +245,22 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		// The user in this case can call this function for the user have RLC back in his pocker;
 	}
 
-	function claimFailedConsensus () public // TODO
+	function claimFailedConsensus() public // TODO
 	{
 		//TODO
 	}
 
-	function callForContribution(address _taskID, address worker ) public onlyOwner /*=onlySheduler*/ returns (bool)
+	function callForContribution(address _taskID, address _worker) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED);
 
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
 
-		require(isWorkerRegistered(worker));
-		require(m_tasksContributions[_taskID][worker].status == WorkStatusEnum.UNSET );
-		m_tasksContributions[_taskID][worker].status = WorkStatusEnum.REQUESTED;
-		CallForWork(_taskID,worker);
+		require(isWorkerRegistered(_worker));
+		require(m_tasksContributions[_taskID][_worker].status == WorkStatusEnum.UNSET );
+		m_tasksContributions[_taskID][_worker].status = WorkStatusEnum.REQUESTED;
+		CallForWork(_taskID, _worker);
 		return true;
 	}
 
@@ -261,12 +280,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	}
 
-	function revealConsensus(address _taskID, bytes32 consensus) public onlyOwner /*=onlySheduler*/
+	function revealConsensus(address _taskID, bytes32 _consensus) public onlyOwner /*=onlySheduler*/
 	{
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED); //or state Locked to add ?
-		m_tasks[_taskID].status    = TaskStatusEnum.CONSENSUS_REACHED;
-		m_tasks[_taskID].consensus = consensus;
-		m_tasksContributionsRevealDeadLine[_taskID] = REVEAL_PERIOD_DURATION.add(now); //TODO add safe math
+		m_tasks[_taskID].status     = TaskStatusEnum.CONSENSUS_REACHED;
+		m_tasks[_taskID].timestamp  = now;
+		m_tasks[_taskID].consensus  = _consensus;
+		m_tasks[_taskID].revealDate = REVEAL_PERIOD_DURATION.add(now); //TODO add safe math → put inside task ?
 		// TODO LOG
 	}
 
@@ -274,9 +294,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		// msg.sender = a worker
 		require(m_tasks[_taskID].status == TaskStatusEnum.CONSENSUS_REACHED);
-		require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now < m_tasksContributionsRevealDeadLine[_taskID]);
+		require(m_tasks[_taskID].revealDate > now);
 		require(m_tasksContributions[_taskID][msg.sender].status == WorkStatusEnum.SUBMITTED);
 		require(_result != 0x0);
+
 		//TODO write correct check of concat _result + _salt not add of int
 		bool valid = keccak256(_result                        ) == m_tasksContributions[_taskID][msg.sender].resultHash             // sha256 → keccak256
 		          && keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[_taskID][msg.sender].resultSign; // ^ → xor // sha256 → keccak256
@@ -292,13 +313,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		//TODO add all workers have reveal so we do not have to wait until the end of REVEAL_PERIOD_DURATION
 		require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now >= m_tasksContributionsRevealDeadLine[_taskID]);
 		m_tasks[_taskID].status    = TaskStatusEnum.FINALIZED;
+		m_tasks[_taskID].timestamp = now;
 		m_tasks[_taskID].stdout    = _stdout;
 		m_tasks[_taskID].stderr    = _stderr;
 		m_tasks[_taskID].uri       = _uri;
-		m_tasks[_taskID].timestamp = now;
 
 
-		TaskRequest aTaskRequest =TaskRequest(_taskID);
+		TaskRequest aTaskRequest = TaskRequest(_taskID);
 		if(aTaskRequest.dappCallback())
 		{
 			require(aTaskRequest.taskRequestCallback(_taskID,_stdout,_stderr,_uri));
@@ -316,6 +337,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function rewardTask(address _taskID) internal returns (bool)
 	{
+		TaskRequest aTaskRequest = TaskRequest(_taskID);
 		uint256 i;
 		address w;
 		/**
@@ -330,10 +352,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		 *
 		 * Current code shows a simple distribution (equal shares)
 		 */
-		uint256    cntWinners       = 0;
-		TaskRequest aTaskRequest =TaskRequest(_taskID);
-		uint256    totalReward      = aTaskRequest.taskCost();
-		uint256    individualReward;
+		uint256 cntWinners       = 0;
+		uint256 totalReward      = aTaskRequest.taskCost();
+		uint256 individualReward;
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
@@ -341,7 +362,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
 				cntWinners = cntWinners.add(1);
 			}
-			else
+			else // WorkStatusEnum.POCO_REJECT
 			{
 				totalReward = totalReward.add(m_tasks[_taskID].stake);
 			}
@@ -358,7 +379,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 				require(iexecHubInterface.scoreWinForTask(_taskID,w, 1));
 				m_tasksContributions[_taskID][w].balance = int256(individualReward);
 			}
-			else
+			else // WorkStatusEnum.POCO_REJECT
 			{
 				require(iexecHubInterface.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
 				// No Reward
