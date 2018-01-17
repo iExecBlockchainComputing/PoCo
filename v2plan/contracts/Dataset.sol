@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 
 import './OwnableOZ.sol';
-import './IexecHubInterface.sol';
+import './IexecHubAccessor.sol';
 import "./AuthorizedList.sol";
 
-contract Dataset is OwnableOZ, IexecHubInterface
+contract Dataset is OwnableOZ, IexecHubAccessor
 {
 
 
@@ -30,7 +30,7 @@ contract Dataset is OwnableOZ, IexecHubInterface
 		uint256 _datasetPrice,
 		string _datasetParam,
 		string _datasetUri)
-	IexecHubInterface(_iexecHubAddress)
+	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner

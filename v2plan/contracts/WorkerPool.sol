@@ -1,13 +1,13 @@
 pragma solidity ^0.4.18;
 
 import './OwnableOZ.sol';
-import './IexecHubInterface.sol';
+import './IexecHubAccessor.sol';
 import './IexecHub.sol';
 import "./TaskRequest.sol";
 import "./SafeMathOZ.sol";
 import "./AuthorizedList.sol";
 
-contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 {
 
 	using SafeMathOZ for uint256;
@@ -30,7 +30,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 	function WorkerPool(
 		address _iexecHubAddress,
 		string _name)
-	IexecHubInterface(_iexecHubAddress)
+	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
@@ -198,8 +198,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		require(m_tasks[_taskID].status == TaskStatusEnum.PENDING);
 		m_tasks[_taskID].status    = TaskStatusEnum.ACCEPTED;
 		m_tasks[_taskID].timestamp = now;
-		/* require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake)); */
-		require(IexecHub(iexecHubAddress).lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+		require(iexecHubInterface.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 
 
 		//TODO LOG TaskAccepted
@@ -250,8 +249,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		m_tasksContributions[_taskID][msg.sender].submitted  = true;
 		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
 		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
-		/* require(iexecHub.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake)); */
-		require(IexecHub(iexecHubAddress).lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
+		require(iexecHubInterface.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 
 	}
 
@@ -302,8 +300,7 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 		}
 
 		// call this for reward dappProvider if dappPrice > 0
-		/* require(iexecHub.finalizedTask(_taskID)); */
-		require(IexecHub(iexecHubAddress).finalizedTask(_taskID));
+		require(iexecHubInterface.finalizedTask(_taskID));
 
 		//extrenalize part of the reward logic into a upgradable contract owned by scheduler ?
 		// add penalized to the call worker to contrubution and they never contribute ?
@@ -314,8 +311,6 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 
 	function rewardTask(address _taskID) internal returns (bool)
 	{
-		IexecHub iexecHub = IexecHub(iexecHubAddress);
-
 		uint256 i;
 		address w;
 		/**
@@ -353,16 +348,16 @@ contract WorkerPool is OwnableOZ, IexecHubInterface//Owned by a S(w)
 			w = m_tasksWorkers[_taskID][i];
 			if (m_tasksContributions[_taskID][w].poco)
 			{
-				require(iexecHub.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
-				require(iexecHub.rewardForTask(_taskID,w, individualReward));
-				require(iexecHub.scoreWinForTask(_taskID,w, 1));
+				require(iexecHubInterface.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
+				require(iexecHubInterface.rewardForTask(_taskID,w, individualReward));
+				require(iexecHubInterface.scoreWinForTask(_taskID,w, 1));
 				m_tasksContributions[_taskID][w].balance = int256(individualReward);
 			}
 			else
 			{
-				require(iexecHub.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
+				require(iexecHubInterface.seizeForTask(_taskID,w, m_tasks[_taskID].stake));
 				// No Reward
-				require(iexecHub.scoreLoseForTask(_taskID,w, 50));
+				require(iexecHubInterface.scoreLoseForTask(_taskID,w, 50));
 				m_tasksContributions[_taskID][w].balance = -int256(m_tasks[_taskID].stake); // TODO: SafeMath
 			}
 		}

@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 
 import "./OwnableOZ.sol";
-import './IexecHubInterface.sol';
+import './IexecHubAccessor.sol';
 import './IexecAPI.sol';
 
-contract TaskRequest is OwnableOZ, IexecHubInterface
+contract TaskRequest is OwnableOZ, IexecHubAccessor
 {
 	address public workerPoolRequested;
 	address public appRequested;
@@ -25,7 +25,7 @@ contract TaskRequest is OwnableOZ, IexecHubInterface
 		uint    _taskCost,
 		uint    _askedTrust,
 		bool    _dappCallback)
-	IexecHubInterface(_iexecHubAddress)
+	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		require(_requester != address(0));

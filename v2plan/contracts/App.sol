@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 
 import './OwnableOZ.sol';
-import './IexecHubInterface.sol';
+import './IexecHubAccessor.sol';
 import "./AuthorizedList.sol";
 
-contract App is OwnableOZ, IexecHubInterface //Owned by a D(w){
+contract App is OwnableOZ, IexecHubAccessor //Owned by a D(w){
 {
 
 
@@ -29,7 +29,7 @@ contract App is OwnableOZ, IexecHubInterface //Owned by a D(w){
 		uint256 _appPrice,
 		string  _appParam,
 		string  _appUri)
-	IexecHubInterface(_iexecHubAddress)
+	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner

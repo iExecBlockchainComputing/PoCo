@@ -23,7 +23,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	uint private constant APP_PRICE_STAKE_RATIO     = 1;    //updated by vote or super admin ?
 
 	WorkerPoolHub  workerPoolHub;
-	AppHub        appHub;
+	AppHub         appHub;
 	DatasetHub     datasetHub;
 	TaskRequestHub taskRequestHub;
 
