@@ -39,14 +39,14 @@ contract ProvidersBalance
 	{
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(msg.value);
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		return true;
 	}
 	function withdraw(uint256 _amount) public returns (bool)
 	{
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transfer(msg.sender, _amount));
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(msg.value);
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		return true;
 	}
 	function checkBalance() public view returns (uint, uint)
