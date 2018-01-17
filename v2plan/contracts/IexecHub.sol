@@ -16,11 +16,11 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 {
 	using SafeMathOZ for uint256;
 	uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant APP_CREATION_STAKE        = 5000; //updated by vote or super admin ?
+	uint private constant APP_CREATION_STAKE         = 5000; //updated by vote or super admin ?
 	uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
 	uint private constant TASKREQUEST_CREATION_STAKE = 5000; //updated by vote or super admin ?
 	uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
-	uint private constant APP_PRICE_STAKE_RATIO     = 1;    //updated by vote or super admin ?
+	uint private constant APP_PRICE_STAKE_RATIO      = 1;    //updated by vote or super admin ?
 
 	WorkerPoolHub  workerPoolHub;
 	AppHub         appHub;
@@ -39,34 +39,54 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	public
 	{
 		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
-		appHub        = AppHub       (_appHubAddress       );
+		appHub         = AppHub        (_appHubAddress        );
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
 		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
 	}
 
-	function createWorkerPool(string _name) public returns(address createdWorkerPool)
+	function createWorkerPool(
+		string _name)
+	public returns(address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		require(lock(msg.sender,WORKER_POOL_CREATION_STAKE));
-		address newWorkerPool =workerPoolHub.createWorkerPool(_name);
+		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
 		return newWorkerPool;
 	}
 
-	function createApp(string _appName, uint256 _appPrice, string _appParam, string _appUri) public returns(address createdApp)
+	function createApp(
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParam,
+		string  _appUri)
+	public returns(address createdApp)
 	{
 		require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
-		address newApp =appHub.createApp(_appName,_appPrice,_appParam,_appUri);
+		address newApp = appHub.createApp(_appName,_appPrice,_appParam,_appUri);
 		return newApp;
 	}
 
-	function createDataset(string _datasetName, uint256 _datasetPrice, string _datasetParam, string _datasetUri) public returns(address createdDataset)
+	function createDataset(
+		string  _datasetName,
+		uint256 _datasetPrice,
+		string  _datasetParam,
+		string  _datasetUri)
+	public returns(address createdDataset)
 	{
 		require(lock(msg.sender,DATASET_CREATION_STAKE));		//prevent creation spam ?
-		address newDataset=datasetHub.createDataset( _datasetName, _datasetPrice, _datasetParam, _datasetUri);
+		address newDataset = datasetHub.createDataset( _datasetName, _datasetPrice, _datasetParam, _datasetUri);
 		return newDataset;
 	}
 
-	function createTaskRequest(address _workerPool, address _app, address _dataset, string _taskParam, uint _taskCost, uint _askedTrust, bool _dappCallback) public returns(address createdTaskRequest)
+	function createTaskRequest(
+		address _workerPool,
+		address _app,
+		address _dataset,
+		string  _taskParam,
+		uint    _taskCost,
+		uint    _askedTrust,
+		bool    _dappCallback)
+	public returns(address createdTaskRequest)
 	{
 		// msg.sender = requester
 
@@ -82,12 +102,12 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		//DATASET
 		if (_dataset != address(0))
 		{
-			require(datasetHub.isDatasetRegistred(_dataset));
-			require(datasetHub.isOpen(_dataset));
+			require(datasetHub.isDatasetRegistred (_dataset));
+			require(datasetHub.isOpen             (_dataset));
 			require(datasetHub.isWorkerPoolAllowed(_dataset,_workerPool));
-			require(datasetHub.isAppAllowed(_dataset,_app));
-			require(datasetHub.isRequesterAllowed(_dataset,msg.sender));
-			require(appHub.isDatasetAllowed(_app,_dataset));
+			require(datasetHub.isAppAllowed       (_dataset,_app));
+			require(datasetHub.isRequesterAllowed (_dataset,msg.sender));
+			require(appHub.isDatasetAllowed       (_app,_dataset));
 		}
 
 		//WORKER_POOL

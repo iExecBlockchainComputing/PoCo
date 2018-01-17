@@ -24,7 +24,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	uint256 public constant REVEAL_PERIOD_DURATION =  3 hours;
 
-  address public workersAuthorizedListAddress;
+	address public workersAuthorizedListAddress;
 
 	//constructor
 	function WorkerPool(
@@ -40,7 +40,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 		name             = _name;
 		stakePolicyRatio = 1;// TODO to  set 0.3 better value by default. sheduler can tun it after
-		workerPoolStatus       = WorkerPoolStatusEnum.OPEN;
+		workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 
 
 		/* cannot do the following AuthorizedList contracts creation because of :
@@ -94,14 +94,24 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	//mapping (taskID => Task) m_tasks;
 	mapping (address => Task) m_tasks;
 
+	enum WorkStatusEnum
+	{
+		UNSET,
+		REQUESTED,
+		SUBMITTED,
+		POCO_REJECT,
+		POCO_ACCEPT
+	}
+
 	struct Work
 	{
-		bool    asked;
-		bool    submitted;
-		bool    poco;
-		bytes32 resultHash;
-		bytes32 resultSign; // change from salt to tx.origin based signature
-		int256  balance;
+		/* bool    asked; */
+		/* bool    submitted; */
+		/* bool    poco; */
+		WorkStatusEnum status;
+		bytes32        resultHash;
+		bytes32        resultSign; // change from salt to tx.origin based signature
+		int256         balance;
 	}
 
 	//mapping (taskID => worker address => Work) m_tasksContributions;
@@ -229,9 +239,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
 
 		require(isWorkerRegistered(worker));
-		require(! m_tasksContributions[_taskID][worker].submitted );
-		require(! m_tasksContributions[_taskID][worker].asked );
-		m_tasksContributions[_taskID][worker].asked  = true;
+		require(m_tasksContributions[_taskID][worker].status == WorkStatusEnum.UNSET );
+		m_tasksContributions[_taskID][worker].status = WorkStatusEnum.REQUESTED;
 		CallForWork(_taskID,worker);
 		return true;
 	}
@@ -240,13 +249,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		// msg.sender = a worker
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED);
-		require(m_tasksContributions[_taskID][msg.sender].asked);
-		require(!m_tasksContributions[_taskID][msg.sender].submitted);
+		require(m_tasksContributions[_taskID][msg.sender].status == WorkStatusEnum.REQUESTED);
 		require(_resultHash != 0x0);
 		require(_resultSign != 0x0);
 
 		m_tasksWorkers[_taskID].push(msg.sender);
-		m_tasksContributions[_taskID][msg.sender].submitted  = true;
+		m_tasksContributions[_taskID][msg.sender].status     = WorkStatusEnum.SUBMITTED;
 		m_tasksContributions[_taskID][msg.sender].resultHash = _resultHash;
 		m_tasksContributions[_taskID][msg.sender].resultSign = _resultSign;
 		require(iexecHubInterface.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
@@ -267,17 +275,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		// msg.sender = a worker
 		require(m_tasks[_taskID].status == TaskStatusEnum.CONSENSUS_REACHED);
 		require(m_tasksContributionsRevealDeadLine[_taskID] != 0x0 && now < m_tasksContributionsRevealDeadLine[_taskID]);
-		require(m_tasksContributions[_taskID][msg.sender].submitted);
+		require(m_tasksContributions[_taskID][msg.sender].status == WorkStatusEnum.SUBMITTED);
 		require(_result != 0x0);
 		//TODO write correct check of concat _result + _salt not add of int
-		if(
-			keccak256(_result                        ) == m_tasksContributions[_taskID][msg.sender].resultHash &&         // sha256 → keccak256
-			keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[_taskID][msg.sender].resultSign // ^ → xor // sha256 → keccak256
-		)
-		{
-			//proof of contribution for this worker
-			m_tasksContributions[_taskID][msg.sender].poco = true;
-		}
+		bool valid = keccak256(_result                        ) == m_tasksContributions[_taskID][msg.sender].resultHash             // sha256 → keccak256
+		          && keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[_taskID][msg.sender].resultSign; // ^ → xor // sha256 → keccak256
+
+		m_tasksContributions[_taskID][msg.sender].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		//TODO LOG  reveal step
 	}
 
@@ -295,7 +299,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 
 		TaskRequest aTaskRequest =TaskRequest(_taskID);
-		if(aTaskRequest.dappCallback()){
+		if(aTaskRequest.dappCallback())
+		{
 			require(aTaskRequest.taskRequestCallback(_taskID,_stdout,_stderr,_uri));
 		}
 
@@ -332,7 +337,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
-			if (m_tasksContributions[_taskID][w].poco)
+			if (m_tasksContributions[_taskID][w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
 				cntWinners = cntWinners.add(1);
 			}
@@ -346,7 +351,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		for (i=0; i<m_tasksWorkers[_taskID].length; ++i)
 		{
 			w = m_tasksWorkers[_taskID][i];
-			if (m_tasksContributions[_taskID][w].poco)
+			if (m_tasksContributions[_taskID][w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
 				require(iexecHubInterface.unlockForTask(_taskID,w, m_tasks[_taskID].stake));
 				require(iexecHubInterface.rewardForTask(_taskID,w, individualReward));
