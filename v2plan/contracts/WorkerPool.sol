@@ -12,6 +12,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	using SafeMathOZ for uint256;
 
 	uint256 public constant REVEAL_PERIOD_DURATION = 3 hours;
+	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
@@ -240,9 +241,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function claimFailedConsensus() public // TODO
+	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
 	{
+		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED);
+		require(now > CONSENSUS_DURATION_LIMIT);
+		m_tasks[_taskID].status    = TaskStatusEnum.CONSENSUS_FAILLED;
+		//refund task user cost here
+		//where worker contribution stake and scheduler stake goes ?
+		// toto réponds : les stake vont au msg.sender entrainant une chasse aux sorcieres généralisées pour sniffer les workerpools
+		//                avec formations de milices organisée pour detecter cela et aussi des groupes de saboteurs
 		//TODO
+		return true;
 	}
 
 	function callForContribution(address _taskID, address _worker) public onlyOwner /*=onlySheduler*/ returns (bool)
