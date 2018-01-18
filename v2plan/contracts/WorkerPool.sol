@@ -34,7 +34,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	struct Task
 	{
 		address        taskID;
-		uint256        timestamp;
 		TaskStatusEnum status;
 		uint256        stake;
 		string         stdout;
@@ -209,7 +208,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_tasks[_taskID].status    = TaskStatusEnum.PENDING;
 		m_tasks[_taskID].taskID    = _taskID;
 		m_tasks[_taskID].stake     = aTaskRequest.m_taskCost().mul(m_stakePolicyRatio).div(100);
-		m_tasks[_taskID].timestamp = now;
 		//TODO check accept this dapp in weight list
 		//TODO check accept this user in weight list
 		return true;
@@ -220,7 +218,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		// msg.sender == scheduler ==o wner
 		require(m_tasks[_taskID].status == TaskStatusEnum.PENDING);
 		m_tasks[_taskID].status    = TaskStatusEnum.ACCEPTED;
-		m_tasks[_taskID].timestamp = now;
 		require(iexecHubInterface.lockForTask(_taskID, msg.sender, m_tasks[_taskID].stake));
 
 
@@ -229,14 +226,18 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	}
 
 
-	function cancelTask() public // onlyIexecHub ?
+	function cancelTask(address _taskID) public onlyIexecHub returns (bool)
 	{
-		//TODO
 
 		// only on pending task.
 		// The workerPool do not want to treat this under priced task, so has never ACCEPTED this task.
-		// Think like orderbook by here it is a taskbook. The user remove his order.
+		// Think like orderbook but here it is a taskbook. The user remove his order.
 		// The user in this case can call this function for the user have RLC back in his pocker;
+
+		require(m_tasks[_taskID].status == TaskStatusEnum.PENDING);
+		m_tasks[_taskID].status    = TaskStatusEnum.CANCELLED;
+		//TODO LOG cancelTask
+		return true;
 	}
 
 	function claimFailedConsensus() public // TODO
@@ -278,7 +279,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		require(m_tasks[_taskID].status == TaskStatusEnum.ACCEPTED); //or state Locked to add ?
 		m_tasks[_taskID].status     = TaskStatusEnum.CONSENSUS_REACHED;
-		m_tasks[_taskID].timestamp  = now;
 		m_tasks[_taskID].consensus  = _consensus;
 		m_tasks[_taskID].revealDate = REVEAL_PERIOD_DURATION.add(now); //TODO add safe math → put inside task ?
 		// TODO LOG
@@ -307,7 +307,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		//TODO add all workers have reveal so we do not have to wait until the end of REVEAL_PERIOD_DURATION
 		require(m_tasks[_taskID].revealDate <= now);
 		m_tasks[_taskID].status    = TaskStatusEnum.FINALIZED;
-		m_tasks[_taskID].timestamp = now;
 		m_tasks[_taskID].stdout    = _stdout;
 		m_tasks[_taskID].stderr    = _stderr;
 		m_tasks[_taskID].uri       = _uri;

@@ -46,27 +46,33 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	}
 
 	/**
-	 * Members
+	 * function
 	 */
-	//optional dappCallback call can be done
-	function taskRequestCallback(
-		address _taskId,
-		string  _stdout,
-		string  _stderr,
-		string _uri)
-	public returns (bool)
-	{
-		require(this       == _taskId              );
-		require(msg.sender == m_workerPoolRequested);
+	 function cancelTask() public onlyOwner returns(bool)
+	 {
+		 require(iexecHubInterface.cancelTask(this));
+		 return true;
+	 }
 
-		require(IexecAPI(m_owner).taskRequestCallback(
-			_taskId,
-			_stdout,
-			_stderr,
-			_uri
-		));
-		return true;
- }
+		//optional dappCallback call can be done
+		function taskRequestCallback(
+			address _taskId,
+			string  _stdout,
+			string  _stderr,
+			string _uri)
+		public returns (bool)
+		{
+			require(this       == _taskId              );
+			require(msg.sender == m_workerPoolRequested);
+
+			require(IexecAPI(m_owner).taskRequestCallback(
+				_taskId,
+				_stdout,
+				_stderr,
+				_uri
+			));
+			return true;
+	 	}
 
 
 

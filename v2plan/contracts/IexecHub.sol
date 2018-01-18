@@ -30,6 +30,8 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	mapping (address => address) m_taskWorkerPoolAffectation;
 	mapping (address => address) m_taskAppAffectation;
 	mapping (address => address) m_taskDatasetAffectation;
+	mapping (address => address) m_taskRequesterAffectation;
+	mapping (address => uint256) m_taskCost;
 
 	function IexecHub(
 		address _tokenAddress,
@@ -145,8 +147,20 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
 		m_taskAppAffectation[newTaskRequest] =_app;
 		m_taskDatasetAffectation[newTaskRequest] =_dataset;
+		m_taskRequesterAffectation[newTaskRequest] =msg.sender;
+		m_taskCost[newTaskRequest] = userCost;
 		// address newTaskRequest will the taskID
 		return newTaskRequest;
+	}
+
+	function cancelTask(address _taskID) public returns (bool)
+	{
+		require(msg.sender == m_taskRequesterAffectation[_taskID]);
+		address workpool=m_taskWorkerPoolAffectation[_taskID];
+		WorkerPool thePool = WorkerPool(workpool);
+		require(thePool.cancelTask(_taskID));
+		require(reward(msg.sender,m_taskCost[_taskID]));
+		return true;
 	}
 
 	function finalizedTask(address _taskID) public returns (bool)

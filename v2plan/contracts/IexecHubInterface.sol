@@ -40,6 +40,10 @@ contract IexecHubInterface
 			bool _dappCallback)
 		public returns(address createdTaskRequest);
 
+		function cancelTask(
+			address _taskID)
+		public returns (bool);
+
 		function finalizedTask(
 			address _taskID)
 		public returns(bool);
