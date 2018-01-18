@@ -3,11 +3,13 @@ pragma solidity ^0.4.18;
 import './AppHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
+import "./Contributions.sol";
 import './ProvidersBalance.sol';
 import './ProvidersScoring.sol';
 import './DatasetHub.sol';
 import './TaskRequestHub.sol';
 import "./SafeMathOZ.sol";
+
 /**
  * @title IexecHub
  */
@@ -28,10 +30,19 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	TaskRequestHub taskRequestHub;
 
 	mapping (address => address) m_taskWorkerPoolAffectation;
+	mapping (address => address) m_taskContributionsAffectation;
 	mapping (address => address) m_taskAppAffectation;
 	mapping (address => address) m_taskDatasetAffectation;
 	mapping (address => address) m_taskRequesterAffectation;
-	mapping (address => uint256) m_taskCost;
+	mapping (address => uint256) m_taskUserCost;
+	mapping (address => bool)    m_acceptedTaskRequest;
+
+
+	event TaskRequest(address taskID, address indexed workerPool);
+	event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
+	event TaskCancelled(address taskID, address indexed workerPool);
+	event TaskAborted(address taskID, address workContributions);
+	event TaskCompleted(address taskID, address workContributions);
 
 	function IexecHub(
 		address _tokenAddress,
@@ -142,30 +153,58 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 			_dappCallback
 		);
 
-		require(aPool.submitedTask(newTaskRequest));
+
 
 		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
 		m_taskAppAffectation[newTaskRequest] =_app;
 		m_taskDatasetAffectation[newTaskRequest] =_dataset;
 		m_taskRequesterAffectation[newTaskRequest] =msg.sender;
-		m_taskCost[newTaskRequest] = userCost;
+
+		m_taskUserCost[newTaskRequest] = userCost;
 		// address newTaskRequest will the taskID
+		TaskRequest(newTaskRequest,_workerPool);
 		return newTaskRequest;
+	}
+
+	function acceptTask(address _taskID) public  returns (bool)
+	{
+
+		WorkerPool aPool = WorkerPool(m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == aPool.m_owner());
+		address contributions = aPool.acceptTask(_taskID,getTaskCost(_taskID));
+		m_taskContributionsAffectation[_taskID] =contributions;
+		m_acceptedTaskRequest[_taskID] = true;
+		require(taskRequestHub.setAccepted(_taskID));
+		TaskAccepted(_taskID,m_taskWorkerPoolAffectation[_taskID],contributions);
+		return true;
 	}
 
 	function cancelTask(address _taskID) public returns (bool)
 	{
 		require(msg.sender == m_taskRequesterAffectation[_taskID]);
-		address workpool=m_taskWorkerPoolAffectation[_taskID];
-		WorkerPool thePool = WorkerPool(workpool);
-		require(thePool.cancelTask(_taskID));
-		require(reward(msg.sender,m_taskCost[_taskID]));
+		require(m_acceptedTaskRequest[_taskID] == false);
+		require(reward(msg.sender,m_taskUserCost[_taskID]));
+		require(taskRequestHub.setCancelled(_taskID));
+		TaskCancelled(_taskID,m_taskWorkerPoolAffectation[_taskID]);
 		return true;
 	}
 
-	function finalizedTask(address _taskID) public returns (bool)
+	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		Contributions aContributions = Contributions(m_taskContributionsAffectation[_taskID]);
+		require(aContributions.claimFailedConsensus());
+		require(reward(m_taskRequesterAffectation[_taskID],m_taskUserCost[_taskID]));
+		//where worker contribution stake and scheduler stake goes ?
+		// toto réponds : les stake vont au msg.sender entrainant une chasse aux sorcieres généralisées pour sniffer les workerpools
+		//                avec formations de milices organisée pour detecter cela et aussi des groupes de saboteurs. ahahah !
+	  require(taskRequestHub.setAborted(_taskID));
+		TaskAborted(_taskID,m_taskContributionsAffectation[_taskID]);
+		return true;
+	}
+
+	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri) public returns (bool)
+	{
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		address appForTask = m_taskAppAffectation[_taskID];
 		uint256 appPrice= appHub.getAppPrice(appForTask);
 		if ( appPrice > 0 )
@@ -183,12 +222,20 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 				// to unlock a stake ?
 			}
 		}
+    require(taskRequestHub.setResult(_taskID,_stdout,_stderr,_uri));
 		// incremente app and dataset reputation too  ?
+		TaskCompleted(_taskID,m_taskContributionsAffectation[_taskID]);
 		return true;
 	}
 
-	//TODO add cancelTask function
-
+	function getWorkerAffectation(address _worker) public view returns (address workerPool)
+	{
+		return workerPoolHub.getWorkerAffectation(_worker);
+	}
+	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
+	{
+		return taskRequestHub.getTaskCost(_taskID);
+	}
 
 	function openPool(address _workerPool) public returns (bool)
 	{
@@ -226,42 +273,42 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 
 	function scoreWinForTask(address _taskID, address _worker, uint _value) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(scoreWin(_worker,_value));
 		return true;
 	}
 
 	function scoreLoseForTask(address _taskID, address _worker, uint _value) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(scoreLose(_worker,_value));
 		return true;
 	}
 
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(lock(_user,_amount));
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(unlock(_user,_amount));
 		return true;
 	}
 
 	function rewardForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(reward(_user,_amount));
 		return true;
 	}
 
 	function seizeForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(seize(_user,_amount));
 		return true;
 	}

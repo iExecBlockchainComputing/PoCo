@@ -6,6 +6,19 @@ import './IexecAPI.sol';
 
 contract TaskRequest is OwnableOZ, IexecHubAccessor
 {
+
+
+	enum TaskRequestStatusEnum
+	{
+		UNSET,
+		PENDING,
+		ACCEPTED,
+		CANCELLED,
+		ABORTED,
+		COMPLETED
+	}
+
+
 	/**
 	 * Members
 	 */
@@ -16,6 +29,11 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	uint256 public m_taskCost;
 	uint256 public m_askedTrust;
 	bool    public m_dappCallback;
+
+  TaskRequestStatusEnum  public m_status;
+	string  public m_stdout;
+	string  public m_stderr;
+	string  public m_uri;
 
 	/**
 	 * Constructor
@@ -43,36 +61,45 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		m_taskCost            = _taskCost;
 		m_askedTrust          = _askedTrust;
 		m_dappCallback        = _dappCallback;
+		m_status =TaskRequestStatusEnum.PENDING;
 	}
 
-	/**
-	 * function
-	 */
-	 function cancelTask() public onlyOwner returns(bool)
-	 {
-		 require(iexecHubInterface.cancelTask(this));
-		 return true;
-	 }
+	function setAccepted()  onlyIexecHub public returns (bool)
+	{
+		m_status = TaskRequestStatusEnum.ACCEPTED;
+		return true;
+	}
 
-		//optional dappCallback call can be done
-		function taskRequestCallback(
-			address _taskId,
-			string  _stdout,
-			string  _stderr,
-			string _uri)
-		public returns (bool)
-		{
-			require(this       == _taskId              );
-			require(msg.sender == m_workerPoolRequested);
+	function setCancelled()  onlyIexecHub  public returns (bool)
+	{
+		m_status = TaskRequestStatusEnum.CANCELLED;
+		return true;
+	}
 
+	function setAborted()  onlyIexecHub  public returns (bool)
+	{
+		m_status = TaskRequestStatusEnum.ABORTED;
+		return true;
+	}
+
+	function setResult(string _stdout, string _stderr, string _uri) onlyIexecHub public returns (bool)
+	{
+		m_stdout = _stdout;
+		m_stderr = _stderr;
+		m_uri    = _uri;
+		m_status = TaskRequestStatusEnum.COMPLETED;
+		if(m_dappCallback){
+			//optional dappCallback call can be done
 			require(IexecAPI(m_owner).taskRequestCallback(
-				_taskId,
+				this,
 				_stdout,
 				_stderr,
 				_uri
 			));
-			return true;
-	 	}
+		}
+		return true;
+	}
+
 
 
 

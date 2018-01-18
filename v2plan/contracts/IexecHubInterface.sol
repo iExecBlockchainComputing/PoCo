@@ -45,8 +45,20 @@ contract IexecHubInterface
 		public returns (bool);
 
 		function finalizedTask(
-			address _taskID)
+			address _taskID,
+			string _stdout,
+			string _stderr,
+			string _uri
+			)
 		public returns(bool);
+
+		function getTaskCost(
+			address _taskID)
+		public view returns (uint256 taskCost);
+
+		function getWorkerAffectation(
+			address _worker)
+		public view returns (address workerPool);
 
 		function openPool(
 			address _workerPool)

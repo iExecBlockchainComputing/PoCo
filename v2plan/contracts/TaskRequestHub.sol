@@ -108,5 +108,30 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		return newTaskRequest;
 	}
 
+	function getTaskCost(address _taskId) public view returns (uint256)
+	{
+		return TaskRequest(_taskId).m_taskCost();
+	}
+
+	function setResult(address _taskId,string _stdout, string _stderr, string _uri)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	{
+		return TaskRequest(_taskId).setResult(_stdout,_stderr,_uri);
+	}
+
+	function setAccepted(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	{
+		return TaskRequest(_taskId).setAccepted();
+	}
+
+	function setCancelled(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	{
+		return TaskRequest(_taskId).setCancelled();
+	}
+
+	function setAborted(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	{
+		return TaskRequest(_taskId).setAborted();
+	}
+
 
 }
