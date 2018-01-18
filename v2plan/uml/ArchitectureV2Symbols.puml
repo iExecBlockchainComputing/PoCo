@@ -1,0 +1,113 @@
+@startuml
+
+
+:iExecCloudUser:
+:Uw:
+:Aw:
+:Sw:
+:Dw:
+:Ww:
+
+
+cloud {
+  [MyDapp]
+  [IexecAPI]
+}
+component [MyDapp]
+component [IexecAPI]
+[IexecAPI] <|-right-  [MyDapp]
+
+
+
+Uw -down-> [MyDapp]: use
+
+
+cloud {
+  [TaskRequest]
+}
+
+component [TaskRequest]
+
+MyDapp <-down-> [TaskRequest]: owner
+
+iExecCloudUser -down-> [TaskRequest]: owner
+
+cloud {
+  [As]
+}
+component [As]
+component [Ar]
+
+
+cloud {
+  [Ds]
+}
+component [Ds]
+component [Dr]
+
+
+cloud {
+  [Ss]
+}
+
+component [Ss]
+component [Sp]
+component [Sr]
+
+component [Wp]
+
+cloud {
+  [iExecHub]
+  [ProvidersScoring]
+  [ProvidersBalance]
+}
+
+cloud {
+  [RLC Token]
+}
+component [ProvidersScoring]
+component [iExecHub]
+component [ProvidersBalance]
+component [RLC Token]
+
+
+[ProvidersBalance] <-right-> [RLC Token]
+
+[ProvidersBalance] <|-left-  [iExecHub]
+[ProvidersScoring] <|-right-  [iExecHub]
+
+
+Aw -up-> [As]: owner
+Aw -down-> Ar: expose
+
+Dw -up-> [Ds]: owner
+Dw -down-> Dr: expose
+
+Sw -up-> [Ss]: owner
+Sw -down-> [Sp]: control
+Sw -down-> [Sr]: control and expose
+Sr <-left-> [Sp]
+
+
+[Ds] <-up-> [iExecHub]
+[As] <-up-> [iExecHub]
+
+[iExecHub] <-down-> [Ss]
+[iExecHub] <-up-> [TaskRequest]
+[Sp] <-up-> [Ss]
+[Wp] <-up-> [Ss]
+
+[Ww] -right-> [Wp]: control
+
+[Wp] <-right-> [Sp]
+
+
+[Wp] <-up-> [Ar]
+
+[Wp] <-up-> [Dr]
+
+'missing link :  [Ar] <-> [Wp] . add mannualy on img because i do not succeed to layout it
+
+
+
+@enduml

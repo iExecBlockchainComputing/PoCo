@@ -1,0 +1,36 @@
+@startuml
+object IexecAPI
+object MyDapp
+IexecAPI <|-- MyDapp
+
+object App
+object AppHub
+
+object Dataset
+object DatasetHub
+
+object TaskRequest
+object TaskRequestHub
+
+object WorkerPool
+object WorkerPoolHub
+
+object ProvidersBalance
+object ProvidersScoring
+object IexecHub
+
+AppHub <|-- IexecHub
+DatasetHub <|-- IexecHub
+WorkerPoolHub <|-- IexecHub
+TaskRequestHub <|-- IexecHub
+ProvidersBalance <|-- IexecHub
+ProvidersScoring <|-- IexecHub
+
+WorkerPool "n" *-- "0" WorkerPoolHub
+App "n" *-- "0" AppHub
+Dataset "n" *-- "0" DatasetHub
+TaskRequest "n" *-- "0" TaskRequestHub
+
+MyDapp --> TaskRequest: create
+
+@enduml
