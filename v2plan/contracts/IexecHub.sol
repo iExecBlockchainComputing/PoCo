@@ -27,7 +27,9 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	DatasetHub     datasetHub;
 	TaskRequestHub taskRequestHub;
 
-	mapping (address => address) m_taskPoolAffectation;
+	mapping (address => address) m_taskWorkerPoolAffectation;
+	mapping (address => address) m_taskAppAffectation;
+	mapping (address => address) m_taskDatasetAffectation;
 
 	function IexecHub(
 		address _tokenAddress,
@@ -99,6 +101,9 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
 		require(appHub.isRequesterAllowed (_app, msg.sender ));
 
+		// userCost at least _taskCost
+		uint256 userCost = _taskCost;
+
 		//DATASET
 		if (_dataset != address(0))
 		{
@@ -108,18 +113,18 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 			require(datasetHub.isAppAllowed       (_dataset, _app       ));
 			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
 			require(appHub.isDatasetAllowed       (_app,     _dataset   ));
+
+			// add optional datasetPrice for userCost
+			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
+
 		}
 
 		//WORKER_POOL
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.isOpen());
 
-
-		uint256 userCost = _taskCost;
+		// add optional appPrice  for userCost
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
-		/* TODO datasetPrice */
-		// if (_dataset != address(0))
-		// userCost = userCost.add(datasetHub.getDatasetPrice(_dataset)); // datasetPrice
 
 		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		require(debit(msg.sender, userCost));
@@ -137,23 +142,34 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 
 		require(aPool.submitedTask(newTaskRequest));
 
-		m_taskPoolAffectation[newTaskRequest] = _workerPool;
+		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
+		m_taskAppAffectation[newTaskRequest] =_app;
+		m_taskDatasetAffectation[newTaskRequest] =_dataset;
 		// address newTaskRequest will the taskID
 		return newTaskRequest;
 	}
 
 	function finalizedTask(address _taskID) public returns (bool)
 	{
-	/*	require(msg.sender == m_taskPoolAffectation[_taskID]);
-		if (dapps[dapp].dappPrice > 0)
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
+		address appForTask = m_taskAppAffectation[_taskID];
+		uint256 appPrice= appHub.getAppPrice(appForTask);
+		if ( appPrice > 0 )
 		{
-			require(reward(dapps[dapp].provider,dapps[dapp].dappPrice));
-			address dappProvider=dapps[msg.sender].provider;
-			require(unlock(dappProvider,dapps[dapp].dappPrice*APP_PRICE_STAKE_RATIO)); //TODO add SafeMath
+			require(reward(appHub.getAppOwner(appForTask),appPrice));
+				// to unlock a stake ?
 		}
-		// incremente D(w) or D(s) reputation too  ?
-*/
-		// TODO option of call back to dapp smart contract asked by user
+		address datasetForTask = m_taskDatasetAffectation[_taskID];
+		if (datasetForTask != address(0))
+		{
+			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
+			if ( datasetPrice > 0 )
+			{
+				require(reward(datasetHub.getDatasetOwner(datasetForTask),datasetPrice));
+				// to unlock a stake ?
+			}
+		}
+		// incremente app and dataset reputation too  ?
 		return true;
 	}
 
@@ -196,42 +212,42 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 
 	function scoreWinForTask(address _taskID, address _worker, uint _value) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(scoreWin(_worker,_value));
 		return true;
 	}
 
 	function scoreLoseForTask(address _taskID, address _worker, uint _value) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(scoreLose(_worker,_value));
 		return true;
 	}
 
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(lock(_user,_amount));
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(unlock(_user,_amount));
 		return true;
 	}
 
 	function rewardForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(reward(_user,_amount));
 		return true;
 	}
 
 	function seizeForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskPoolAffectation[_taskID]);
+		require(msg.sender == m_taskWorkerPoolAffectation[_taskID]);
 		require(seize(_user,_amount));
 		return true;
 	}
