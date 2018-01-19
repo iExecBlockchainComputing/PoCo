@@ -29,13 +29,18 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	// mapping(taskID => TaskContributions address);
 	//mapping(address => address)                     public m_tasks;
 
-
+	address private m_workerPoolHubAddress;
 
 	/**
 	 * Address of slave contracts
 	 */
 	address public m_workersAuthorizedListAddress;
 
+	modifier onlyWorkerPoolHub()
+	{
+		require(msg.sender == m_workerPoolHubAddress);
+		_;
+	}
 
 	/**
 	 * Methods
@@ -57,6 +62,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_schedulerStakePolicyRatio = 30; // % of the task price to stake → cf function SubmitTask
 		m_workerStakePolicyRatio = 30;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		m_workerPoolHubAddress =msg.sender;
 
 
 		/* cannot do the following AuthorizedList contracts creation because of :
@@ -110,7 +116,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		return m_workers.length;
 	}
-	function addWorker(address _worker) public onlyOwner returns (bool)
+	function addWorker(address _worker) public onlyWorkerPoolHub  returns (bool)
 	{
 		uint index = m_workers.push(_worker);
 		m_workerIndex[_worker] = index;
@@ -118,7 +124,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		//LOG TODO
 		return true;
 	}
-	function removeWorker(address _worker) public onlyOwner returns (bool)
+	function removeWorker(address _worker) public onlyWorkerPoolHub returns (bool)
 	{
 		uint index = getWorkerIndex(_worker); // fails if worker not registered
 		m_workers[index] = m_workers[m_workers.length-1];

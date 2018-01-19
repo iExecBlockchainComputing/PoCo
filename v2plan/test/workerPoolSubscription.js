@@ -4,6 +4,8 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkerPool = artifacts.require("./WorkerPool.sol");
+var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -33,6 +35,14 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
+
+
+  //specific for test :
+  let workerPoolAddress;
+  let aWorkerPoolInstance;
+  let aWorkersAuthorizedListInstance
+
+
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -145,35 +155,67 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of TaskRequestHub to IexecHub")
-      });
-  });
-
-  it("WorkerPool Ceation", function() {
-    let workerPoolAddressFromLog;
-    return aIexecHubInstance.createWorkerPool("myWorkerPool", {
-        from: scheduler
+        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+          from: scheduler
+        });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aWorkerPoolHubInstance.CreateWorkerPool({}));
+        return aWorkerPoolHubInstance.getWorkerPool(scheduler, 1);
       })
-      .then(events => {
-        assert.strictEqual(events[0].args.workerPoolOwner, scheduler, "workerPoolOwner");
-        workerPoolAddressFromLog =events[0].args.workerPool;
-        assert.strictEqual(events[0].args.name, "myWorkerPool", "name");
-        return aWorkerPoolHubInstance.getWorkerPoolsCount(scheduler);
+      .then(result => {
+        workerPoolAddress = result;
+        return AuthorizedList.new({
+          from: scheduler
+        });
       })
-      .then(count => {
-        assert.strictEqual(1, count.toNumber(), "scheduler must have 1 workerPool now ");
-        return aWorkerPoolHubInstance.getWorkerPool(scheduler, count);
+      .then(instance => {
+        aWorkersAuthorizedListInstance = instance;
+        return WorkerPool.at(workerPoolAddress);
       })
-      .then(workerPoolAddress => {
-        assert.strictEqual(workerPoolAddressFromLog, workerPoolAddress, "check workerPoolAddress");
+      .then(instance => {
+        aWorkerPoolInstance = instance;
+        return aWorkerPoolInstance.attachWorkerPoolsAuthorizedListContract(aWorkersAuthorizedListInstance.address, {
+          from: scheduler
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      })
+
+    //workersAuthorizedListAddress
+    ;
+  });
+  it("TestRPC mode example : test only launch when testrpc is used", function() {
+    if (!isTestRPC) this.skip("This test is only for TestRPC");
+  });
+
+  it("a white listed  worker can Subscribe", function() {
+    return aWorkersAuthorizedListInstance.updateWhitelist(worker, true, {
+        from: scheduler,
+        gas: amountGazProvided
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+          from: worker,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
       });
   });
 
-
-  //check attachWorkerPoolsAuthorizedListContract TODO
+  it("worker not white listed cannot Subscribe", function() {
+    return Extensions.expectedExceptionPromise(() => {
+        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+          from: worker,
+          gas: amountGazProvided
+        });
+      },
+      amountGazProvided);
+  });
 
 
 });
