@@ -95,7 +95,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_taskReward =_taskReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
-		require(iexecHubInterface.lockForTask(_taskID, tx.origin, _schedulerStakePolicyRatio));
+		require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_schedulerStake));
+		// how  this m_schedulerStake  is used for ?
 	}
 
 
@@ -104,6 +105,18 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		require(now > m_consensusTimout);
 		m_status    = ConsensusStatusEnum.FAILLED;
+		uint256 i;
+		address w;
+		for (i=0; i<m_tasksWorkers.length; ++i)
+		{
+			w = m_tasksWorkers[i];
+			if (m_tasksContributions[w].status == WorkStatusEnum.SUBMITTED)
+			{
+				require(iexecHubInterface.unlockForTask(m_taskID,w, m_workerStake));
+			}
+		}
+		require(iexecHubInterface.lockForTask(m_taskID,m_owner, m_schedulerStake));
+		// how  this m_schedulerStake  is used for ?
 		return true;
 	}
 
@@ -186,7 +199,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function rewardTask() internal returns (bool)
 	{
-		//TaskRequest aTaskRequest = TaskRequest(m_taskID);
 		uint256 i;
 		address w;
 		/**
