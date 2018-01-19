@@ -7,6 +7,7 @@ var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
+var TaskRequest = artifacts.require("./TaskRequest.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -25,6 +26,15 @@ Promise.promisifyAll(web3.evm, {
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
+
+  TaskRequest.TaskRequestStatusEnum = {
+    UNSET: 0,
+    PENDING: 1,
+    ACCEPTED: 2,
+    CANCELLED: 3,
+    ABORTED: 4,
+    COMPLETED: 5
+  };
 
   let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
   let amountGazProvided = 4000000;

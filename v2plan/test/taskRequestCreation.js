@@ -7,6 +7,8 @@ var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
+var TaskRequest = artifacts.require("./TaskRequest.sol");
+
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -25,6 +27,15 @@ Promise.promisifyAll(web3.evm, {
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
+
+  TaskRequest.TaskRequestStatusEnum = {
+    UNSET: 0,
+		PENDING: 1,
+		ACCEPTED: 2,
+		CANCELLED: 3,
+		ABORTED: 4,
+		COMPLETED: 5
+  };
 
   let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
   let amountGazProvided = 4000000;
@@ -46,6 +57,9 @@ contract('IexecHub', function(accounts) {
   let aAppInstance;
   let aWorkerPoolsAuthorizedListInstance;
   let aRequestersAuthorizedListInstance;
+  let aTaskRequestInstance;
+
+
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -236,26 +250,44 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-      })
-      ;
+      });
   });
 
-  /*
-createTaskRequest :
-  address _workerPool,
-  address _app,
-  address _dataset,
-  string  _taskParam,
-  uint    _taskCost,
-  uint    _askedTrust,
-  bool    _dappCallback
-  */
   it("Create a Hello World Task Request by iExecCloudUser", function() {
+    let taskRequestAddressFromLog;
     return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
         from: iExecCloudUser
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Extensions.getEventsPromise(aTaskRequestHubInstance.CreateTaskRequest({}));
+      })
+      .then(events => {
+        assert.strictEqual(events[0].args.taskRequestOwner, iExecCloudUser, "taskRequestOwner");
+        taskRequestAddressFromLog = events[0].args.taskRequest;
+        assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "workerPool");
+        assert.strictEqual(events[0].args.app, aAppInstance.address, "appPrice");
+        assert.strictEqual(events[0].args.dataset, '0x0000000000000000000000000000000000000000', "dataset");
+        assert.strictEqual(events[0].args.taskParam, "noTaskParam", "taskParam");
+        assert.strictEqual(events[0].args.taskCost.toNumber(), 0, "taskCost");
+        assert.strictEqual(events[0].args.askedTrust.toNumber(), 1, "askedTrust");
+        assert.strictEqual(events[0].args.dappCallback, false, "dappCallback");
+        return aTaskRequestHubInstance.getTaskRequestsCount(iExecCloudUser);
+      })
+      .then(count => {
+        assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 taskRequest now ");
+        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, count);
+      })
+      .then(taskId => {
+        assert.strictEqual(taskRequestAddressFromLog, taskId, "check taskId");
+        return TaskRequest.at(taskId);
+      })
+      .then(instance => {
+        aTaskRequestInstance =instance;
+        return aTaskRequestInstance.m_status.call();
+      })
+      .then(m_statusCall =>{
+          assert.strictEqual(m_statusCall.toNumber(),TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
       });
   });
 
