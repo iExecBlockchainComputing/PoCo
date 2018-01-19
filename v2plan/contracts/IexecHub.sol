@@ -17,12 +17,10 @@ import "./SafeMathOZ.sol";
 contract IexecHub is ProvidersBalance, ProvidersScoring
 {
 	using SafeMathOZ for uint256;
-	uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant APP_CREATION_STAKE         = 5000; //updated by vote or super admin ?
-	uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
-	uint private constant TASKREQUEST_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
-	uint private constant APP_PRICE_STAKE_RATIO      = 1;    //updated by vote or super admin ?
+	//uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
+	//uint private constant APP_CREATION_STAKE         = 5000; //updated by vote or super admin ?
+	//uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
+	//uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
 
 	WorkerPoolHub  workerPoolHub;
 	AppHub         appHub;
@@ -64,7 +62,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	public returns(address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		require(lock(msg.sender,WORKER_POOL_CREATION_STAKE));
+		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
 		return newWorkerPool;
 	}
@@ -76,7 +74,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		string  _appUri)
 	public returns(address createdApp)
 	{
-		require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
+		//require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
 		address newApp = appHub.createApp(_appName,_appPrice,_appParam,_appUri);
 		return newApp;
 	}
@@ -88,7 +86,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		string  _datasetUri)
 	public returns(address createdDataset)
 	{
-		require(lock(msg.sender,DATASET_CREATION_STAKE));		//prevent creation spam ?
+		//require(lock(msg.sender,DATASET_CREATION_STAKE));		//prevent creation spam ?
 		address newDataset = datasetHub.createDataset( _datasetName, _datasetPrice, _datasetParam, _datasetUri);
 		return newDataset;
 	}
@@ -105,7 +103,6 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	{
 		// msg.sender = requester
 
-		require(lock(msg.sender,TASKREQUEST_CREATION_STAKE));		//prevent creation spam ?
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
 
 		//APP
@@ -242,7 +239,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
 		require(aPool.open());
-		lock(msg.sender,WORKER_POOL_CREATION_STAKE);
+	//	lock(msg.sender,WORKER_POOL_CREATION_STAKE);
 		return true;
 	}
 
@@ -251,21 +248,21 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		WorkerPool aPool= WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
 		require(aPool.close());
-		unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
+		//unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
 		return true;
 	}
 
 	function subscribeToPool(address _workerPool) public returns(bool subscribed)
 	{
 		require(workerPoolHub.subscribeToPool(_workerPool));
-		lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+	//	lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
 		return true;
 	}
 
 	function unsubscribeToPool(address _workerPool) public returns(bool unsubscribed)
 	{
 		require(workerPoolHub.unsubscribeToPool(_workerPool));
-		unlock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+	//	unlock(msg.sender,WORKER_MEMBERSHIP_STAKE);
 		return true;
 	}
 
