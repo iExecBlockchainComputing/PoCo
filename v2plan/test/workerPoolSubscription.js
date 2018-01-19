@@ -165,7 +165,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(result => {
         workerPoolAddress = result;
-        return AuthorizedList.new({
+        return AuthorizedList.new(0,{ //0 = whiteListPolicy
           from: scheduler
         });
       })
@@ -181,10 +181,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-      })
-
-    //workersAuthorizedListAddress
-    ;
+      });
   });
   it("TestRPC mode example : test only launch when testrpc is used", function() {
     if (!isTestRPC) this.skip("This test is only for TestRPC");

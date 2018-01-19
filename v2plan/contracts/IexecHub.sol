@@ -50,7 +50,6 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
   event WorkerPoolSubscription(address indexed workerPool, address worker);
 
-
 	function IexecHub(
 		address _tokenAddress,
 		address _workerPoolHubAddress,

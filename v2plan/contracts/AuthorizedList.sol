@@ -24,9 +24,9 @@ contract AuthorizedList is OwnableOZ
 	/**
 	* Constructor
 	*/
-	function AuthorizedList() public
+	function AuthorizedList(ListPolicyEnum _initialPolicy) public
 	{
-		m_policy = ListPolicyEnum.WHITELIST;
+		m_policy = _initialPolicy;
 	}
 
 	/**

@@ -72,7 +72,7 @@ module.exports = {
   },
   // From https://gist.github.com/xavierlepretre/afab5a6ca65e0c52eaf902b50b807401
   getEventsPromise: function(myFilter, count, timeOut) {
-    timeOut = timeOut ? timeOut : 80000;
+    timeOut = timeOut ? timeOut : 100000;
     var promise = new Promise(function(resolve, reject) {
       count = (typeof count !== "undefined") ? count : 1;
       var results = [];

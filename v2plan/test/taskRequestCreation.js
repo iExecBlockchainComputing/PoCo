@@ -6,6 +6,7 @@ var DatasetHub = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
+var App = artifacts.require("./App.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -35,6 +36,16 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
+
+  //specific for test :
+  let workerPoolAddress;
+  let aWorkerPoolInstance;
+  let aWorkersAuthorizedListInstance
+
+  let appAddress;
+  let aAppInstance;
+  let aWorkerPoolsAuthorizedListInstance;
+  let aRequestersAuthorizedListInstance;
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -146,37 +157,108 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        console.log("transferOwnership of TaskRequestHub to IexecHub")
+        console.log("transferOwnership of TaskRequestHub to IexecHub");
+        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+          from: scheduler
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aWorkerPoolHubInstance.getWorkerPool(scheduler, 1);
+      })
+      .then(result => {
+        workerPoolAddress = result;
+        return AuthorizedList.new(0, {
+          from: scheduler
+        });
+      })
+      .then(instance => {
+        aWorkersAuthorizedListInstance = instance;
+        return WorkerPool.at(workerPoolAddress);
+      })
+      .then(instance => {
+        aWorkerPoolInstance = instance;
+        return aWorkerPoolInstance.attachWorkerPoolsAuthorizedListContract(aWorkersAuthorizedListInstance.address, {
+          from: scheduler
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aWorkersAuthorizedListInstance.updateWhitelist(worker, true, {
+          from: scheduler,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+          from: worker,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.createApp("hello-world-docker", 0, "docker", "hello-world", {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aAppHubInstance.getApp(appProvider, 1);
+      })
+      .then(result => {
+        appAddress = result;
+        return App.at(appAddress);
+      })
+      .then(instance => {
+        aAppInstance = instance;
+        return AuthorizedList.new(1, { //black list strategy
+          from: appProvider
+        });
+      })
+      .then(instance => {
+        aWorkerPoolsAuthorizedListInstance = instance;
+        return aAppInstance.attachWorkerPoolsAuthorizedListContract(aWorkerPoolsAuthorizedListInstance.address, {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return AuthorizedList.new(1, { //black list strategy
+          from: appProvider
+        });
+      })
+      .then(instance => {
+        aRequestersAuthorizedListInstance = instance;
+        return aAppInstance.attachRequestersAuthorizedListContract(aRequestersAuthorizedListInstance.address, {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      })
+      ;
+  });
+
+  /*
+createTaskRequest :
+  address _workerPool,
+  address _app,
+  address _dataset,
+  string  _taskParam,
+  uint    _taskCost,
+  uint    _askedTrust,
+  bool    _dappCallback
+  */
+  it("Create a Hello World Task Request by iExecCloudUser", function() {
+    return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
+        from: iExecCloudUser
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
       });
   });
 
-  it("free App Ceation", function() {
-    let appAddressFromLog;
-    return aIexecHubInstance.createApp("freeapp", 0, "freeapp_param", "freeapp_uri",{
-      from: appProvider
-    })
-    .then(txMined => {
-      assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-      return Extensions.getEventsPromise(aAppHubInstance.CreateApp({}));
-    })
-    .then(events => {
-      assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-      appAddressFromLog =events[0].args.app;
-      assert.strictEqual(events[0].args.appName, "freeapp", "appName");
-      assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-      assert.strictEqual(events[0].args.appParam, "freeapp_param", "appParam");
-      assert.strictEqual(events[0].args.appUri, "freeapp_uri", "appUri");
-      return aAppHubInstance.getAppsCount(appProvider);
-    })
-    .then(count => {
-      assert.strictEqual(1, count.toNumber(), "appProvider must have 1 app now ");
-      return aAppHubInstance.getApp(appProvider, count);
-    })
-    .then(appAddress => {
-      assert.strictEqual(appAddressFromLog, appAddress, "check appAddress");
-    });
-
-  });
 
 
 

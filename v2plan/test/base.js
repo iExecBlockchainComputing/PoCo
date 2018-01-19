@@ -4,6 +4,9 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkerPool = artifacts.require("./WorkerPool.sol");
+var AuthorizedList = artifacts.require("./AuthorizedList.sol");
+var App = artifacts.require("./App.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
