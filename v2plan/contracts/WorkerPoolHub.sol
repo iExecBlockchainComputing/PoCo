@@ -21,14 +21,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	//  workerPool => owner
 	mapping(address => address)                  m_ownerByWorkerPool;
 
-	/**
-	 * Events
-	 */
-	event CreateWorkerPool(
-		address indexed workerPoolOwner,
-		address indexed workerPool,
-		string  name
-	);
 
 	/**
 	 * Constructor
@@ -73,7 +65,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1);
 		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
 		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
-		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
 
@@ -83,21 +74,24 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		// you must be on the white list of the worker pool to subscribe.
 		require(aPoolToSubscribe.isWorkerAllowed(tx.origin));
 		// you must have no cuurent affectation on others worker Pool
-		require(m_workerAffectation[msg.sender] == 0x0);
-		require(aPoolToSubscribe.addWorker(msg.sender));
-		m_workerAffectation[msg.sender] = _workerPool;
+		require(m_workerAffectation[tx.origin] == 0x0);
+		require(aPoolToSubscribe.addWorker(tx.origin));
+		m_workerAffectation[tx.origin] = _workerPool;
 		return true;
 	}
-	function unsubscribeToPool(address _workerPool) public onlyOwner /*owner == IexecHub*/ returns(bool unsubscribed)
+
+	function unsubscribeToPool(address _workerPool,address _worker) public onlyOwner /*owner == IexecHub*/ returns(bool unsubscribed)
 	{
 		WorkerPool aPoolToUnSubscribe= WorkerPool(_workerPool);
-		require(m_workerAffectation[msg.sender] == _workerPool );
-		require(aPoolToUnSubscribe.removeWorker(msg.sender));
-		m_workerAffectation[msg.sender] == 0x0;
-		return true;
+		require(m_workerAffectation[_worker] == _workerPool );
+		m_workerAffectation[_worker] == 0x0;
+		if(_worker == tx.origin || m_ownerByWorkerPool[_workerPool] == tx.origin)//worker quit || scheduler expulse
+		{
+			require(aPoolToUnSubscribe.removeWorker(_worker));
+			return true;
+	 }
+		 return false;
 	}
-
-
 
 
 }

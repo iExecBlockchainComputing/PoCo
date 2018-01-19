@@ -35,12 +35,21 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	mapping (address => uint256) m_taskUserCost;
 	mapping (address => bool)    m_acceptedTaskRequest;
 
-
+	/**
+	 * Events
+	 */
 	event TaskRequest(address taskID, address indexed workerPool);
 	event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
 	event TaskCancelled(address taskID, address indexed workerPool);
 	event TaskAborted(address taskID, address workContributions);
 	event TaskCompleted(address taskID, address workContributions);
+
+	event CreateWorkerPool(address indexed workerPoolOwner,address indexed workerPool,string  name);
+  event OpenWorkerPool(address indexed workerPool);
+	event CloseWorkerPool(address indexed workerPool);
+	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
+  event WorkerPoolSubscription(address indexed workerPool, address worker);
+
 
 	function IexecHub(
 		address _tokenAddress,
@@ -64,6 +73,7 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
+		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
 
@@ -234,21 +244,21 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
-	function openPool(address _workerPool) public returns (bool)
+	function openWorkerPool(address _workerPool) public returns (bool)
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
 		require(aPool.open());
-	//	lock(msg.sender,WORKER_POOL_CREATION_STAKE);
+	  OpenWorkerPool(_workerPool);
 		return true;
 	}
 
-	function closePool(address _workerPool) public returns (bool)
+	function closeWorkerPool(address _workerPool) public returns (bool)
 	{
 		WorkerPool aPool= WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
 		require(aPool.close());
-		//unlock(msg.sender,WORKER_POOL_CREATION_STAKE);
+		CloseWorkerPool(_workerPool);
 		return true;
 	}
 
@@ -256,13 +266,14 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	{
 		require(workerPoolHub.subscribeToPool(_workerPool));
 	//	lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+    WorkerPoolSubscription(_workerPool,tx.origin);
 		return true;
 	}
 
-	function unsubscribeToPool(address _workerPool) public returns(bool unsubscribed)
+	function unsubscribeToPool(address _workerPool,address _worker) public returns(bool unsubscribed)
 	{
-		require(workerPoolHub.unsubscribeToPool(_workerPool));
-	//	unlock(msg.sender,WORKER_MEMBERSHIP_STAKE);
+		require(workerPoolHub.unsubscribeToPool(_workerPool,_worker));
+    WorkerPoolUnsubscription(_workerPool,_worker);
 		return true;
 	}
 

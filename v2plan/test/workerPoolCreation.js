@@ -155,7 +155,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aWorkerPoolHubInstance.CreateWorkerPool({}));
+        return Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
       })
       .then(events => {
         assert.strictEqual(events[0].args.workerPoolOwner, scheduler, "workerPoolOwner");

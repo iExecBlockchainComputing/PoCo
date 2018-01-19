@@ -157,4 +157,6 @@ contract('IexecHub', function(accounts) {
   });
 
 
+//TODO Ownable not changeable because of association on mapping. or change mapping allowed according to tansfertOwnership
+
 });
