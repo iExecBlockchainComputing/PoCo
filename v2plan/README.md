@@ -72,21 +72,21 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
-            <td>[App](./contracts/App.sol)</td>
+            <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
         <tr>
         <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
             <td>createTaskRequest</td>
             <td>IexecHub</td>
             <td>iExecCloudUser</td>
-            <td>[TaskRequest](./contracts/TaskRequest.sol)</td>
+            <td><a href="./contracts/TaskRequest.sol" target="_blank">TaskRequest</a></td>
         </tr>
         <tr>
         <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
             <td>scheduler</td>
-            <td>[Contributions](./contracts/Contributions.sol)</td>
+            <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
         </tr>
         <tr>
         <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
