@@ -47,7 +47,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
     </thead>
     <tbody>
         <tr>
-            <td>[0_base.js](./test/0_base.js)</td>
+            <td><a href="./test/0_base.js" target="_blank">0_base.js</a></td>
             <td></td>
             <td></td>
             <td>Marketplace Creator</td>
