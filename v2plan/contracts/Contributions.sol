@@ -63,7 +63,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	event CallForContribution(address indexed worker);
 	event Contribute(address indexed worker,bytes32 resultHash);
 	event RevealConsensus(bytes32 consensus);
-	event Reveal(address indexed worker, bytes32 result);
+	event Reveal(address indexed worker, string result);
 
 
 
@@ -165,18 +165,17 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function reveal(bytes32 _result) public returns (bool)
+	function reveal(string _result) public returns (bool)
 	{
 		// msg.sender = a workerpool
 		// tx.origin  = a worker
 		require(m_status == ConsensusStatusEnum.REACHED);
 		require(m_revealDate > now);
 		require(m_tasksContributions[tx.origin].status == WorkStatusEnum.SUBMITTED);
-		require(_result != 0x0);
+		//require(_result != 0x0);
 
-		bool valid = true; //tmp for test purpuse. will be replace buy the folowing 2 lines :
-		//keccak256(_result                        ) == m_tasksContributions[tx.origin].resultHash  ;          // sha256 → keccak256
-		//          && keccak256(_result ^ keccak256(tx.origin)) == m_tasksContributions[tx.origin].resultSign; // ^ → xor // sha256 → keccak256
+		bool valid = keccak256(_result                        ) == m_tasksContributions[tx.origin].resultHash;
+		    //      && keccak256(_result ^ keccak256(tx.origin)) == m_tasksContributions[tx.origin].resultSign; // ^ → xor // sha256 → keccak256
 
 		m_tasksContributions[tx.origin].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		m_revealCounter=m_revealCounter.add(1);

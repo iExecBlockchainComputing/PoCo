@@ -299,7 +299,7 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(1, 1, {
+        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1")), 1, {
           from: worker,
           gas: amountGazProvided
         });
@@ -311,7 +311,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("scheduler reveal consensus result", function() {
-    return aContributiuonsInstance.revealConsensus(1, {
+    return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
         from: scheduler,
         gas: amountGazProvided
       }).then(txMined => {
@@ -319,7 +319,8 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aContributiuonsInstance.RevealConsensus({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.consensus, '0x1000000000000000000000000000000000000000000000000000000000000000', "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, '0xb4f476bf64f216027f51e4d6591c133b32e9bb61288b4f2979ccdbc8f24930a6', "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, web3.sha3(web3.sha3("1").replace('0x', '')), "check revealed Consensus ");
         return aContributiuonsInstance.m_status.call();
       })
       .then(m_statusCall => {

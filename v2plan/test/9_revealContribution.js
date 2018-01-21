@@ -16,6 +16,7 @@ const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth, {
   suffix: "Promise"
@@ -299,14 +300,14 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(1, 1, {
+        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
           from: worker,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.revealConsensus(1, {
+        return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
           from: scheduler,
           gas: amountGazProvided
         });
@@ -318,7 +319,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("worker reveal his work contribution", function() {
-    return aContributiuonsInstance.reveal(1, {
+    return aContributiuonsInstance.reveal(web3.sha3("1").replace('0x', ''), {
         from: worker,
         gas: amountGazProvided
       })
@@ -328,7 +329,9 @@ contract('IexecHub', function(accounts) {
       })
       .then(events => {
         assert.strictEqual(events[0].args.worker, worker, "check worker");
-        assert.strictEqual(events[0].args.result, '0x1000000000000000000000000000000000000000000000000000000000000000', "check revealed result by worker");
+        console.log(worker);
+        assert.strictEqual(events[0].args.result, 'c89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6', "check revealed result by worker");
+        assert.strictEqual(events[0].args.result, web3.sha3("1").replace('0x', ''), "check revealed result by worker");
     });
   });
 

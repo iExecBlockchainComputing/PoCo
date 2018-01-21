@@ -299,21 +299,21 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(1, 1, {
+        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
           from: worker,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.revealConsensus(1, {
+        return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
           from: scheduler,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.reveal(1, {
+        return aContributiuonsInstance.reveal(web3.sha3("1").replace('0x', ''), {
           from: worker,
           gas: amountGazProvided
         });

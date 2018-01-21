@@ -304,7 +304,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("worker contribution", function() {
-    return aContributiuonsInstance.contribute(1, 1, {
+    return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
         from: worker,
         gas: amountGazProvided
       }).then(txMined => {
