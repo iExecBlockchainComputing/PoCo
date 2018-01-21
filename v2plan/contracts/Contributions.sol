@@ -177,6 +177,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		//TODO write correct check of concat _result + _salt not add of int
 		bool valid = keccak256(_result                        ) == m_tasksContributions[tx.origin].resultHash             // sha256 → keccak256
 		          && keccak256(_result ^ keccak256(tx.origin)) == m_tasksContributions[tx.origin].resultSign; // ^ → xor // sha256 → keccak256
+		//TODO test keccak256(tx.origin)  because actual test 9_revealContribution.js pass with contribute(1,1) and it should not
 
 		m_tasksContributions[tx.origin].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		m_revealCounter=m_revealCounter.add(1);
