@@ -10,6 +10,8 @@ var App = artifacts.require("./App.sol");
 var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
+
+
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
@@ -37,13 +39,12 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum =
-  {
+  Contributions.ConsensusStatusEnum = {
     UNSET: 0,
-    IN_PROGRESS:1,
-    REACHED:2,
-    FAILLED:3,
-    FINALIZED:4
+    IN_PROGRESS: 1,
+    REACHED: 2,
+    FAILLED: 3,
+    FINALIZED: 4
   };
 
   let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
@@ -56,6 +57,21 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
+
+  //specific for test :
+  let workerPoolAddress;
+  let aWorkerPoolInstance;
+  let aWorkersAuthorizedListInstance
+
+  let appAddress;
+  let aAppInstance;
+  let aWorkerPoolsAuthorizedListInstance;
+  let aRequestersAuthorizedListInstance;
+  let aTaskRequestInstance;
+  let taskID;
+
+  let aContributiuonsInstance;
+
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -167,19 +183,133 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        console.log("transferOwnership of TaskRequestHub to IexecHub")
+        console.log("transferOwnership of TaskRequestHub to IexecHub");
+        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+          from: scheduler
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aWorkerPoolHubInstance.getWorkerPool(scheduler, 1);
+      })
+      .then(result => {
+        workerPoolAddress = result;
+        return AuthorizedList.new(0, {
+          from: scheduler
+        });
+      })
+      .then(instance => {
+        aWorkersAuthorizedListInstance = instance;
+        return WorkerPool.at(workerPoolAddress);
+      })
+      .then(instance => {
+        aWorkerPoolInstance = instance;
+        return aWorkerPoolInstance.attachWorkerPoolsAuthorizedListContract(aWorkersAuthorizedListInstance.address, {
+          from: scheduler
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aWorkersAuthorizedListInstance.updateWhitelist(worker, true, {
+          from: scheduler,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+          from: worker,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.createApp("hello-world-docker", 0, "docker", "hello-world", {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aAppHubInstance.getApp(appProvider, 1);
+      })
+      .then(result => {
+        appAddress = result;
+        return App.at(appAddress);
+      })
+      .then(instance => {
+        aAppInstance = instance;
+        return AuthorizedList.new(1, { //black list strategy
+          from: appProvider
+        });
+      })
+      .then(instance => {
+        aWorkerPoolsAuthorizedListInstance = instance;
+        return aAppInstance.attachWorkerPoolsAuthorizedListContract(aWorkerPoolsAuthorizedListInstance.address, {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return AuthorizedList.new(1, { //black list strategy
+          from: appProvider
+        });
+      })
+      .then(instance => {
+        aRequestersAuthorizedListInstance = instance;
+        return aAppInstance.attachRequestersAuthorizedListContract(aRequestersAuthorizedListInstance.address, {
+          from: appProvider
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
+          from: iExecCloudUser
+        });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 1);
+      })
+      .then(result => {
+        taskID = result;
+        console.log("taskID is :" + taskID);
+        return TaskRequest.at(taskID);
+      })
+      .then(instance => {
+        aTaskRequestInstance = instance;
       });
   });
 
-  it("Geth mode example : test only launch when geth is used", function() {
-    if (isTestRPC) this.skip("This test is only for geth");
+
+
+  it("scheduler accept Pending taskRequest", function() {
+    let contributionsAddress;
+    return aIexecHubInstance.acceptTask(taskID, {
+        from: scheduler,
+        gas: amountGazProvided
+      })
+      .then(txMined => { //event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Extensions.getEventsPromise(aIexecHubInstance.TaskAccepted({}));
+      })
+      .then(events => {
+        assert.strictEqual(events[0].args.taskID, taskID, "taskID check");
+        assert.strictEqual(events[0].args.workerPool, workerPoolAddress, "workerPool check");
+        contributionsAddress = events[0].args.workContributions;
+        return aTaskRequestInstance.m_status.call();
+      })
+      .then(m_statusCall => {
+        assert.strictEqual(m_statusCall.toNumber(), TaskRequest.TaskRequestStatusEnum.ACCEPTED, "check m_status ACCEPTED");
+        return Contributions.at(contributionsAddress);
+      }).then(instance => {
+        aContributiuonsInstance = instance;
+        return aContributiuonsInstance.m_status.call();
+      })
+      .then(m_statusCall => {
+        assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+      });
   });
 
-  it("TestRPC mode example : test only launch when testrpc is used", function() {
-    if (!isTestRPC) this.skip("This test is only for TestRPC");
-  });
 
-
-//TODO Ownable not changeable because of association on mapping. or change mapping allowed according to tansfertOwnership
 
 });

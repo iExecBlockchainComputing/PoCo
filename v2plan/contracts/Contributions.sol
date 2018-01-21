@@ -95,8 +95,9 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_taskReward =_taskReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
-		require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_schedulerStake));
 		// how  this m_schedulerStake  is used for ?
+		//require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_schedulerStake));
+
 	}
 
 
@@ -155,6 +156,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	function revealConsensus(bytes32 _consensus) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS); //or state Locked to add ?
+		require(m_tasksWorkers.length >0);// you cannot revealConsensus if you do not have callForContribution and no worker have contribute
 		m_status     = ConsensusStatusEnum.REACHED;
 		m_consensus  = _consensus;
 		m_revealDate = REVEAL_PERIOD_DURATION.add(now);

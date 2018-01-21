@@ -22,6 +22,15 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	/**
 	 * Members
 	 */
+	address private m_taskRequestHubAddress;
+
+	modifier onlytaskRequestHub()
+	{
+		require(msg.sender == m_taskRequestHubAddress);
+		_;
+	}
+
+
 	address public m_workerPoolRequested;
 	address public m_appRequested;
 	address public m_datasetRequested;
@@ -53,6 +62,7 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	{
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
+		m_taskRequestHubAddress =msg.sender;
 
 		m_workerPoolRequested = _workerPool;
 		m_appRequested        = _app;
@@ -64,25 +74,25 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		m_status =TaskRequestStatusEnum.PENDING;
 	}
 
-	function setAccepted()  onlyIexecHub public returns (bool)
+	function setAccepted() onlytaskRequestHub public returns (bool)
 	{
 		m_status = TaskRequestStatusEnum.ACCEPTED;
 		return true;
 	}
 
-	function setCancelled()  onlyIexecHub  public returns (bool)
+	function setCancelled() onlytaskRequestHub  public returns (bool)
 	{
 		m_status = TaskRequestStatusEnum.CANCELLED;
 		return true;
 	}
 
-	function setAborted()  onlyIexecHub  public returns (bool)
+	function setAborted() onlytaskRequestHub  public returns (bool)
 	{
 		m_status = TaskRequestStatusEnum.ABORTED;
 		return true;
 	}
 
-	function setResult(string _stdout, string _stderr, string _uri) onlyIexecHub public returns (bool)
+	function setResult(string _stdout, string _stderr, string _uri) onlytaskRequestHub public returns (bool)
 	{
 		m_stdout = _stdout;
 		m_stderr = _stderr;
