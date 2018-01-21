@@ -148,7 +148,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_tasksContributions[msg.sender].status     = WorkStatusEnum.SUBMITTED;
 		m_tasksContributions[msg.sender].resultHash = _resultHash;
 		m_tasksContributions[msg.sender].resultSign = _resultSign;
-		require(iexecHubInterface.lockForTask(m_taskID, msg.sender, workerStake));
+		// TODO : implement stake
+		//require(iexecHubInterface.lockForTask(m_taskID, msg.sender, workerStake));
 		Contribute(msg.sender,_resultHash);
 		return m_workerStake;
 	}
