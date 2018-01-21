@@ -51,73 +51,73 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
             <td></td>
             <td>Marketplace Creator</td>
-            <td>[IexecHub](./contracts/IexecHub.sol) </td>
+            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a></td>
         </tr>
         <tr>
-            <td>[1_workerPoolCreation.js](./test/1_workerPoolCreation.js)</td>
+            <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
             <td>scheduler</td>
-            <td>[WorkerPool](./contracts/WorkerPool.sol)</td>
+            <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
-            <td>[2_workerPoolSubscription.js](./test/2_workerPoolSubscription.js)</td>
+            <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
             <td>worker</td>
             <td></td>
         </tr>
         <tr>
-        <td>[3_appCreation.js](./test/3_appCreation.js)</td>
+        <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
             <td>[App](./contracts/App.sol)</td>
         </tr>
         <tr>
-        <td>[4_taskRequestCreation.js](./test/4_taskRequestCreation.js)</td>
+        <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
             <td>createTaskRequest</td>
             <td>IexecHub</td>
             <td>iExecCloudUser</td>
             <td>[TaskRequest](./contracts/TaskRequest.sol)</td>
         </tr>
         <tr>
-        <td>[5_taskRequestAccepted.js](./test/5_taskRequestAccepted.js)</td>
+        <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
             <td>scheduler</td>
             <td>[Contributions](./contracts/Contributions.sol)</td>
         </tr>
         <tr>
-        <td>[6_callForContributions.js](./test/6_callForContributions.js)</td>
+        <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
             <td>callForContribution</td>
             <td>Contributions</td>
             <td>scheduler</td>
             <td></td>
         </tr>
         <tr>
-        <td>[7_workerContribute.js](./test/7_workerContribute.js)</td>
+        <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>Contributions</td>
             <td>worker</td>
             <td></td>
         </tr>
         <tr>
-        <td>[8_revealConsensus.js](./test/8_revealConsensus.js)</td>
+        <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>Contributions</td>
             <td>scheduler</td>
             <td></td>
         </tr>
         <tr>
-        <td>[9_revealContribution.js](./test/9_revealContribution.js)</td>
+        <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>Contributions</td>
             <td>worker</td>
             <td></td>
         </tr>
         <tr>
-        <td>[10_finalizedTask.js](./test/10_finalizedTask.js)</td>
+        <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
             <td>finalizedTask</td>
             <td>Contributions</td>
             <td>scheduler</td>
