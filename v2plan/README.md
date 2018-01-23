@@ -80,7 +80,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx4 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 4</a></td>
             <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
             <td>createTaskRequest</td>
             <td>IexecHub</td>
@@ -88,7 +88,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td><a href="./contracts/TaskRequest.sol" target="_blank">TaskRequest</a></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx5 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 5</a></td>
             <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
@@ -96,7 +96,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx6 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 6</a></td>
             <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
             <td>callForContribution</td>
             <td>Contributions</td>
@@ -104,7 +104,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx7 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
             <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>Contributions</td>
@@ -112,7 +112,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx8 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
             <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>Contributions</td>
@@ -120,7 +120,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx9 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
             <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>Contributions</td>
@@ -128,7 +128,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">tx10 :V2SequenceNominale.pdf</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 10</a></td>
             <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
             <td>finalizedTask</td>
             <td>Contributions</td>
