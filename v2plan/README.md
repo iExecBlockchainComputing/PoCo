@@ -38,6 +38,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
 <table>
     <thead>
         <tr>
+            <th>Sequence Diagram</th>
             <th>Test</th>
             <th>Fonction</th>
             <th align="center">on Contract</th>
@@ -47,6 +48,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
     </thead>
     <tbody>
         <tr>
+            <td></td>
             <td><a href="./test/0_base.js" target="_blank">0_base.js</a></td>
             <td></td>
             <td></td>
@@ -54,6 +56,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a></td>
         </tr>
         <tr>
+            <td></td>
             <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
@@ -61,6 +64,7 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
+            <td></td>
             <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
@@ -68,56 +72,64 @@ create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed
             <td></td>
         </tr>
         <tr>
-        <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
+            <td></td>
+            <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
         <tr>
-        <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
             <td>createTaskRequest</td>
             <td>IexecHub</td>
             <td>iExecCloudUser</td>
             <td><a href="./contracts/TaskRequest.sol" target="_blank">TaskRequest</a></td>
         </tr>
         <tr>
-        <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
             <td>scheduler</td>
             <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
         </tr>
         <tr>
-        <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
             <td>callForContribution</td>
             <td>Contributions</td>
             <td>scheduler</td>
             <td></td>
         </tr>
         <tr>
-        <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>Contributions</td>
             <td>worker</td>
             <td></td>
         </tr>
         <tr>
-        <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>Contributions</td>
             <td>scheduler</td>
             <td></td>
         </tr>
         <tr>
-        <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>Contributions</td>
             <td>worker</td>
             <td></td>
         </tr>
         <tr>
-        <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">V2SequenceNominale.pdf</a></td>
+            <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
             <td>finalizedTask</td>
             <td>Contributions</td>
             <td>scheduler</td>
