@@ -1,88 +1,192 @@
 @startuml
-DappUser -> MyDapp
+
+iExecCloudUser -> MyDapp
+
+box "Smart contracts"
+	participant MyDapp
+	participant IexecHub
+	participant TaskRequest
+    participant WorkerPool
+    participant Contributions
+end box
+
+
+autonumber 4
 
 MyDapp --> IexecHub: createTaskRequest(app,dataset,workerpool)
-
+activate IexecHub
 note over IexecHub : check smart contract app, workerpool, dataset (optional) asked are well registered
-IexecHub --> ProvidersBalance :debit MyDapp RLC \n(dappPrice+taskPrice+datasetPrice)
-
+create TaskRequest
+autonumber 4
 IexecHub --> TaskRequest: createTaskRequest
+note over TaskRequest :TaskRequestStatusEnum.PENDING
+note over IexecHub : debit RLC user
 activate TaskRequest
+autonumber 4
 
-TaskRequest --> IexecHub : taskId
+IexecHub <-- TaskRequest
+deactivate TaskRequest
+note over IexecHub :Log event TaskRequest(taskId,workerPool)
+autonumber 4
+MyDapp <-- IexecHub
 
-IexecHub -> WorkerPool: submitedTask(taskId)
+deactivate IexecHub
 
-activate WorkerPool
+box "Spring boot app" #LightBlue
+	participant Dispatcher
+    participant Worker
+end box
 
-note over WorkerPool :TaskStatusEnum.PENDING
-WorkerPool o-> Dispatcher : watch SubmitedTask event
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+autonumber 4
+IexecHub o-> Dispatcher : watch TaskRequest(taskId,workerPool) event
 activate Dispatcher
 Dispatcher -> Dispatcher : analyse asked task
-Dispatcher --> WorkerPool : acceptTask(taskId)
-note over WorkerPool :TaskStatusEnum.ACCEPTED
-WorkerPool -> IexecHub : lockForTask(taskId,Scheduler) a taskPrice ratio
-IexecHub -> ProvidersBalance : lockForTask(taskId,Scheduler)
-
-Dispatcher -> Dispatcher : randonmy choose worker
-Dispatcher  --> WorkerPool : callForContribution(taskId,worker)
+autonumber 5
+Dispatcher --> IexecHub : acceptTask(taskId)
+activate IexecHub
+autonumber 5
+IexecHub --> WorkerPool
+activate WorkerPool
+autonumber 5
+create Contributions
+WorkerPool --> Contributions
+activate Contributions
+note over Contributions :ConsensusStatusEnum.IN_PROGRESS
+autonumber 5
+Contributions --> WorkerPool
+deactivate Contributions
+autonumber 5
+WorkerPool --> IexecHub
+deactivate WorkerPool
+autonumber 5
+IexecHub --> TaskRequest
+activate TaskRequest
+note over TaskRequest :TaskRequestStatusEnum.ACCEPTED
+autonumber 5
+TaskRequest --> IexecHub
+deactivate TaskRequest
+note over IexecHub :Log event TaskAccepted(taskID,workerPool,contributions);
+autonumber 5
+IexecHub --> Dispatcher
+deactivate IexecHub
 deactivate Dispatcher
-WorkerPool o-> Worker : watch CallforContribution event
+autonumber 5
+IexecHub o-> Dispatcher : watch TaskAccepted(taskID,workerPool,contributions) event
+
+autonumber 6
+activate Dispatcher
+Dispatcher -> Dispatcher : randonmy choose worker
+
+autonumber 6
+Dispatcher  --> Contributions : callForContribution(taskId,worker)
+activate Contributions
+note over Contributions :Log event CallForContribution(worker);
+autonumber 6
+Contributions --> Dispatcher
+deactivate Contributions
+
+deactivate Dispatcher
+autonumber 6
+Contributions o-> Worker : watch CallforContribution event
 activate Worker
 Worker  <--> AppRepository : getApp
+autonumber 7
+autonumber 7
 Worker  <--> DatasetRepository : getDataset
 
-
+autonumber 7
 Worker-> Worker: execute the asked work
 activate Worker
-
+autonumber 7
 Worker-> Worker: resultHash (vote)
+autonumber 7
 Worker-> Worker: resultSigned(proof of knowledge)
-Worker  --> WorkerPool : contribute(taskId,resultHash,resultSigned)
-deactivate  Worker
+autonumber 7
+Worker  --> Contributions : contribute(resultHash,resultSigned)
 deactivate  Worker
 
-WorkerPool -> IexecHub : lockForTask(taskId,RessourceProvider) a taskPrice ratio
-IexecHub -> ProvidersBalance : lockForTask(taskId,RessourceProvider)
 
-WorkerPool o-> Dispatcher : watch Contribute event
+activate Contributions
+note over Contributions :Log event Contribute(worker,resultHash(vote));
+deactivate Contributions
+autonumber 7
+Contributions  --> Worker
+deactivate  Worker
+deactivate Contributions
+autonumber 7
+Contributions o-> Dispatcher : watch Contribute(worker,resultHash(vote)) event
 activate Dispatcher
+
+autonumber 8
 Dispatcher -> Dispatcher: check if consensus on resultHash is reached
-
-Dispatcher --> WorkerPool : revealConsensus
+autonumber 8
+Dispatcher --> Contributions : revealConsensus
+activate Contributions
+note over Contributions :ConsensusStatusEnum.REACHED
+note over Contributions :consensus on resultHash is revealed
+note over Contributions : a limited REVEAL_PERIOD is start in the smart contract
+note over Contributions :Log event RevealConsensus(consensus)
+autonumber 8
+Contributions --> Dispatcher
 deactivate Dispatcher
-note over WorkerPool :TaskStatusEnum.CONSENSUS_REACHED
-note over WorkerPool :consensus on resultHash is revealed
-note over WorkerPool : a limited REVEAL_PERIOD is start in the smart contract
-WorkerPool o-> Worker : watch RevealConsensus event
+deactivate Contributions
+autonumber 8
+Contributions o-> Worker : watch RevealConsensus event
 activate Worker
-Worker  --> WorkerPool  :reveal(result)
-note over WorkerPool : during the REVEAL_PERIOD, workers reveal \n(result and salt ) for the following rewards
+autonumber 9
+Worker  --> Contributions  :reveal(result)
+activate Contributions
+note over Contributions : during the REVEAL_PERIOD, workers reveal \n(result and salt ) for the following rewards
+note over Contributions :Log event Reveal(worker,result);
+
+autonumber 9
+Contributions  --> Worker
+deactivate Contributions
 deactivate Worker
-WorkerPool o-> Dispatcher : watch Reveal event
+autonumber 9
+Contributions o-> Dispatcher : watch Reveal event
 activate Dispatcher
+
+autonumber 10
 Dispatcher -> Dispatcher : check if all workers are reveal or reveal period end
+autonumber 10
 Dispatcher  <--> Worker  : getResult
 note over Dispatcher : Dispatcher ask and retrived result on worker who has revealed a right contribution
 
-Dispatcher --> WorkerPool : finalizedTask
+autonumber 10
+Dispatcher --> Contributions : finalizedTask(stdout,stderr,uri)
+activate Contributions
+autonumber 10
+note over Contributions : ConsensusStatusEnum.FINALIZED
+autonumber 10
+Contributions --> IexecHub :finalizedTask
+autonumber 10
+activate IexecHub
+
+IexecHub --> TaskRequest :setResult(stdout,stderr,uri)
+activate TaskRequest
+autonumber 10
+note over TaskRequest : TaskRequestStatusEnum.COMPLETED
+TaskRequest <--> MyDapp : taskRequestCallback
+autonumber 10
+TaskRequest -> IexecHub
+
+deactivate TaskRequest
+note over IexecHub : RLC reward/seize for actors
+autonumber 10
+IexecHub --> Contributions
+deactivate IexecHub
+autonumber 10
+Contributions --> Dispatcher : finalizedTask
+deactivate Contributions
 deactivate Dispatcher
-
-note over WorkerPool : TaskStatusEnum.FINALIZED
-
-WorkerPool --> IexecHub : finalizedTask
-deactivate WorkerPool
-IexecHub --> ProvidersBalance :
-
-note over ProvidersBalance : Take stake of bad workers for others
-note over ProvidersBalance : unlock good workers staking
-note over ProvidersBalance : unlock scheduler staking
-note over ProvidersBalance : reward good workers
-note over ProvidersBalance : reward scheduler
-note over ProvidersBalance  : pay Price for app and dataset provider
-ProvidersBalance --> IexecHub :
-
-IexecHub --> TaskRequest : taskRequestCallback
-TaskRequest --> MyDapp : taskRequestCallback
 deactivate TaskRequest
 @enduml

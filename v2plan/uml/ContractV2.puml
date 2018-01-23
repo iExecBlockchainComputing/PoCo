@@ -1,6 +1,7 @@
 @startuml
 object IexecAPI
 object MyDapp
+object Contributions
 IexecAPI <|-- MyDapp
 
 object App
@@ -31,6 +32,9 @@ App "n" *-- "0" AppHub
 Dataset "n" *-- "0" DatasetHub
 TaskRequest "n" *-- "0" TaskRequestHub
 
+
+
 MyDapp --> TaskRequest: create
+Contributions  "n" *--"0" WorkerPool
 
 @enduml
