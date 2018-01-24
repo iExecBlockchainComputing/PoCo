@@ -13,33 +13,187 @@
 ## Marketplace Creator :
 create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [ProvidersBalance](./contracts/ProvidersBalance.sol),[ProvidersScoring](./contracts/ProvidersScoring.sol),[TaskRequestHub](./contracts/TaskRequestHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol). Once smart contract are created, Marketplace can be used by the following actors :
 
+blockchain interaction :
+<table>
+    <thead>
+        <tr>
+            <th>Sequence Diagram</th>
+            <th>Truffle Test</th>
+            <th>Fonction</th>
+            <th align="center">on Contract</th>
+            <th align="right">by Actor</th>
+            <th align="right">through Program</th>
+            <th align="center">Contract created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td><a href="./test/0_base.js" target="_blank">0_base.js</a></td>
+            <td></td>
+            <td></td>
+            <td>Marketplace Creator</td>
+            <td>truffle cli</td>
+            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
 ## Scheduler :
 - Scheduler = S(w)
 - S(s) =  a [WorkerPool](./contracts/WorkerPool.sol) smart contract owned by S(w)
 - S(p) = Dispatcher = application that schedule a worker pool activity  on the responsability of S(w). (works, tasks, datas for result in xtremweb)
 - S(r) = ResultRepository = provide the task result for U(w) on the responsability of S(w)
 
+blockchain interaction :
+
+<table>
+    <thead>
+        <tr>
+            <th>Truffle Test</th>
+            <th>Fonction</th>
+            <th align="center">on Contract</th>
+            <th align="right">by Actor</th>
+            <th align="right">through Program</th>
+            <th align="center">Contract created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
+            <td>createWorkerPool</td>
+            <td>IexecHub</td>
+            <td>scheduler</td>
+            <td>dispatcher and/or iexec-sdk ?</td>
+            <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
+        </tr>
+        <tr>
+            <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
+            <td>acceptTask</td>
+            <td>IexecHub</td>
+            <td>scheduler</td>
+            <td>dispatcher</td>
+            <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
+        </tr>
+        <tr>
+            <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
+            <td>callForContribution</td>
+            <td>Contributions</td>
+            <td>scheduler</td>
+            <td>dispatcher</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
+            <td>revealConsensus</td>
+            <td>Contributions</td>
+            <td>scheduler</td>
+            <td>dispatcher</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
+            <td>finalizedTask</td>
+            <td>Contributions</td>
+            <td>scheduler</td>
+            <td>dispatcher</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+
+
 ## Worker :
 - W(w) = RessourceProvider =  RessourceProvider wallet
 - W(p) = Worker = xtremweb worker application today
+
+blockchain interaction :
+<table>
+    <thead>
+        <tr>
+            <th>Truffle Test</th>
+            <th>Fonction</th>
+            <th align="center">on Contract</th>
+            <th align="right">by Actor</th>
+            <th align="right">through Program</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
+            <td>subscribeToPool</td>
+            <td>IexecHub</td>
+            <td>worker</td>
+            <td>worker</td>
+        </tr>
+        <tr>
+            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
+            <td>contribute</td>
+            <td>Contributions</td>
+            <td>worker</td>
+            <td>worker</td>
+        </tr>
+        <tr>
+            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
+            <td>reveal</td>
+            <td>Contributions</td>
+            <td>worker</td>
+            <td>worker</td>
+        </tr>
+    </tbody>
+</table>
+
+
 
 ## App Provider
 - A(w) = AppProvider = app Provider wallet
 - A(s) = [App](./contracts/App.sol) = app smart contract created by A(w) with the app characteristics
 - A(r) = AppRepository = provide app reference on the responsability of A(w). . (apps, datas for apps in xtremweb, docker hub for docker app etc ... ) for W(p) usage
 
+blockchain interaction :
+<table>
+    <thead>
+        <tr>
+            <th>Sequence Diagram</th>
+            <th>Truffle Test</th>
+            <th>Fonction</th>
+            <th align="center">on Contract</th>
+            <th align="right">by Actor</th>
+            <th align="right">through Program</th>
+            <th align="center">Contract created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
+            <td>createApp</td>
+            <td>IexecHub</td>
+            <td>appProvider</td>
+            <td>iexec-SDK ?</td>
+            <td><a href="./contracts/App.sol" target="_blank">App</a></td>
+        </tr>
+    </tbody>
+</table>
 
 ## Dataset Provider
 - D(w) = DatasetProvider = dataset Provider wallet
 - D(s) = [Dataset](./contracts/Dataset.sol) = app smart contract created by D(w) with the dataset characteristics
 - D(r) = DatasetRepository = provide dataset reference on the responsability of D(w) for W(p) usage
 
+blockchain interaction :
+TODO
 ## Nominal use case :
 <table>
     <thead>
         <tr>
             <th>Sequence Diagram</th>
-            <th>Test</th>
+            <th>Truffle Test</th>
             <th>Fonction</th>
             <th align="center">on Contract</th>
             <th align="right">by Actor</th>
