@@ -1,6 +1,8 @@
 var TestSha = artifacts.require("./TestSha.sol");
 
 const Promise = require("bluebird");
+const keccak256 = require("solidity-sha3");
+
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
@@ -65,27 +67,31 @@ contract('IexecHub', function(accounts) {
   });
 
   it("testSolidityKeccak256FromString", function() {
-    return aTestShaInstance.testSolidityKeccak256FromString("0x2ef06b8bbad022ca2dd29795902ceb588d06d1cfd10cb6e687db0dbb837865e9")
+    return aTestShaInstance.testSolidityKeccak256FromString("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6")
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromString({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.result, "0x19e98db1bba2bcfa5173878f361558fba623f8e8234428e15ee08f4a3eab2fc2", "check result");
-        assert.strictEqual(events[0].args.result, web3.sha3("0x2ef06b8bbad022ca2dd29795902ceb588d06d1cfd10cb6e687db0dbb837865e9"), "check input");
-        assert.strictEqual(events[0].args.input, "0x2ef06b8bbad022ca2dd29795902ceb588d06d1cfd10cb6e687db0dbb837865e9", "check input");
+        assert.strictEqual(events[0].args.result, "0xf1a309330efd9a6867e20fa573071b644fbdd1d567dfa2084ba4f94e94df1cbf", "check result");
+        assert.strictEqual(events[0].args.result, web3.sha3("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+        assert.notEqual(events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+
+        assert.strictEqual(events[0].args.input, "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", "check input");
       });
   });
 
   it("testSolidityKeccak256FromBytes", function() {
-    return aTestShaInstance.testSolidityKeccak256FromBytes("0x2ef06b8bbad022ca2dd29795902ceb588d06d1cfd10cb6e687db0dbb837865e9")
+    return aTestShaInstance.testSolidityKeccak256FromBytes("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6")
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromBytes({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.result, "0x7923f91d6a87840a7cede996606501768bbe2cdfdd34b8d6b193de881b867aed", "check result. is the same as web3java !!!");
-        assert.strictEqual(events[0].args.input, "0x2ef06b8bbad022ca2dd29795902ceb588d06d1cfd10cb6e687db0dbb837865e9", "check input");
+        assert.strictEqual(events[0].args.result, "0x4aeff0db81e3146828378be230d377356e57b6d599286b4b517dbf8941b3e1b2", "check result. is the same as web3java !!!");
+        assert.strictEqual(events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+        assert.notEqual(events[0].args.result, web3.sha3("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+        assert.strictEqual(events[0].args.input, "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", "check input");
       });
   });
 

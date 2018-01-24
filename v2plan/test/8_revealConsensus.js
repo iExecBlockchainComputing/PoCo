@@ -11,7 +11,7 @@ var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
 
-
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
@@ -299,7 +299,7 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1")), 1, {
+        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), 1, {
           from: worker,
           gas: amountGazProvided
         });
@@ -311,7 +311,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("scheduler reveal consensus result", function() {
-    return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
+    return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
         from: scheduler,
         gas: amountGazProvided
       }).then(txMined => {
@@ -319,8 +319,8 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aContributiuonsInstance.RevealConsensus({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.consensus, '0xb4f476bf64f216027f51e4d6591c133b32e9bb61288b4f2979ccdbc8f24930a6', "check revealed Consensus ");
-        assert.strictEqual(events[0].args.consensus, web3.sha3(web3.sha3("1").replace('0x', '')), "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, '0x4aeff0db81e3146828378be230d377356e57b6d599286b4b517dbf8941b3e1b2', "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, keccak256.sha3num(web3.sha3("1")), "check revealed Consensus ");
         return aContributiuonsInstance.m_status.call();
       })
       .then(m_statusCall => {

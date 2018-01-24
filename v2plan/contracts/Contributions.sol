@@ -63,7 +63,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	event CallForContribution(address indexed worker);
 	event Contribute(address indexed worker,bytes32 resultHash);
 	event RevealConsensus(bytes32 consensus);
-	event Reveal(address indexed worker, string result);
+	event Reveal(address indexed worker, bytes32 result);
 
 
 
@@ -165,7 +165,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function reveal(string _result) public returns (bool)
+	function reveal(bytes32 _result) public returns (bool)
 	{
 		// msg.sender = a workerpool
 		// tx.origin  = a worker

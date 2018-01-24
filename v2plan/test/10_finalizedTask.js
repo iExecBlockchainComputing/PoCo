@@ -11,7 +11,7 @@ var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
 
-
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
@@ -299,21 +299,21 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
+        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), 1, {
           from: worker,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
+        return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
           from: scheduler,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.reveal(web3.sha3("1").replace('0x', ''), {
+        return aContributiuonsInstance.reveal(web3.sha3("1"), {
           from: worker,
           gas: amountGazProvided
         });

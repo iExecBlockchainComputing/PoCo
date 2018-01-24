@@ -11,7 +11,7 @@ var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
 
-
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
@@ -300,14 +300,14 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
+        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), 1, {
           from: worker,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.revealConsensus(web3.sha3(web3.sha3("1").replace('0x', '')), {
+        return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
           from: scheduler,
           gas: amountGazProvided
         });
@@ -319,7 +319,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("worker reveal his work contribution", function() {
-    return aContributiuonsInstance.reveal(web3.sha3("1").replace('0x', ''), {
+    return aContributiuonsInstance.reveal(web3.sha3("1"), {
         from: worker,
         gas: amountGazProvided
       })
@@ -330,8 +330,8 @@ contract('IexecHub', function(accounts) {
       .then(events => {
         assert.strictEqual(events[0].args.worker, worker, "check worker");
         console.log(worker);
-        assert.strictEqual(events[0].args.result, 'c89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6', "check revealed result by worker");
-        assert.strictEqual(events[0].args.result, web3.sha3("1").replace('0x', ''), "check revealed result by worker");
+        assert.strictEqual(events[0].args.result, '0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6', "check revealed result by worker");
+        assert.strictEqual(events[0].args.result, web3.sha3("1"), "check revealed result by worker");
     });
   });
 
