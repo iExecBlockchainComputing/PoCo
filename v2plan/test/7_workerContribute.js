@@ -11,7 +11,8 @@ var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
 
-
+const BN = require("bn");
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");
@@ -302,9 +303,10 @@ contract('IexecHub', function(accounts) {
       });
   });
 
-
   it("worker contribution", function() {
-    return aContributiuonsInstance.contribute(web3.sha3(web3.sha3("1").replace('0x', '')), 1, {
+    const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
+    const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
+    return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)), {
         from: worker,
         gas: amountGazProvided
       }).then(txMined => {

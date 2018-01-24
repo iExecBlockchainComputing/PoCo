@@ -10,7 +10,7 @@ var App = artifacts.require("./App.sol");
 var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
-
+const BN = require("bn");
 const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -299,7 +299,27 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), 1, {
+
+
+        const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
+        const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
+
+        /*
+        console.log(web3.sha3("1"));
+        console.log(web3.sha3("salt"));
+        console.log(resultHash.xor(workerSalt).toString(16));
+        console.log(keccak256.sha3num("0x68c0ceeb07d48c79892b773b198e0081e235e40c916949068700dbbd8e48f0b6"));
+        console.log(keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)));
+        result:
+        0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6
+        0xa05e334153147e75f3f416139b5109d1179cb56fef6a4ecb4c4cbc92a7c37b70
+        68c0ceeb07d48c79892b773b198e0081e235e40c916949068700dbbd8e48f0b6
+        0x570ac63f587493f3ec6a35fb0ff6863a1244914e734c6d013bd73b7afd1e70f3
+        0x570ac63f587493f3ec6a35fb0ff6863a1244914e734c6d013bd73b7afd1e70f3
+        */
+                  //keccak256(_resultHash         ) => vote
+                  //keccak256(_resultHash ^ _salt ) => proof of knowledge
+        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)), {
           from: worker,
           gas: amountGazProvided
         });
@@ -313,7 +333,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.reveal(web3.sha3("1"), {
+        return aContributiuonsInstance.reveal(web3.sha3("1"),web3.sha3("salt"), {
           from: worker,
           gas: amountGazProvided
         });

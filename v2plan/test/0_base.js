@@ -10,6 +10,8 @@ var App = artifacts.require("./App.sol");
 var TaskRequest = artifacts.require("./TaskRequest.sol");
 var Contributions = artifacts.require("./Contributions.sol");
 
+const BN = require("bn");
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../utils/extensions.js");

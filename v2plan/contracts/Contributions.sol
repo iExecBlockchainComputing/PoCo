@@ -165,21 +165,21 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function reveal(bytes32 _result) public returns (bool)
+	function reveal(bytes32 _result, bytes32 _salt) public returns (bool)
 	{
 		// msg.sender = a workerpool
 		// tx.origin  = a worker
 		require(m_status == ConsensusStatusEnum.REACHED);
 		require(m_revealDate > now);
 		require(m_tasksContributions[tx.origin].status == WorkStatusEnum.SUBMITTED);
-		//require(_result != 0x0);
+		require(_result != 0x0);
 
-		bool valid = keccak256(_result                        ) == m_tasksContributions[tx.origin].resultHash;
-		    //      && keccak256(_result ^ keccak256(tx.origin)) == m_tasksContributions[tx.origin].resultSign; // ^ → xor // sha256 → keccak256
+		bool valid = keccak256(_result         ) == m_tasksContributions[tx.origin].resultHash
+		          && keccak256(_result ^ _salt ) == m_tasksContributions[tx.origin].resultSign;
 
 		m_tasksContributions[tx.origin].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		m_revealCounter=m_revealCounter.add(1);
-    Reveal(tx.origin,_result);
+    Reveal(tx.origin,_result); //TODO add WorkStatusEnum in LOG
 		return true;
 	}
 
