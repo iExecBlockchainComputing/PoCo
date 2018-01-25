@@ -13,7 +13,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy , uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
+  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy, uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
 
 	/**
 	 * Members
@@ -87,12 +87,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function changeWorkerPoolPolicy(
 	uint256 _newStakeRatioPolicy,
+	uint256 _newSchedulerRewardRatioPolicy,
 	uint256 _newResultRetentionPolicy
 	)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
+		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
 		m_stakeRatioPolicy = _newStakeRatioPolicy;
+		m_schedulerRewardRatioPolicy =_newSchedulerRewardRatioPolicy;
 		m_resultRetentionPolicy = _newResultRetentionPolicy;
 	}
 
