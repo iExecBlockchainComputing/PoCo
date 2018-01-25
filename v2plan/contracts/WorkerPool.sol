@@ -13,15 +13,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-
-
+  event WorkerPoolPolicyUpdate(uint256 oldSchedulerStakeRatioPolicy, uint256 newSchedulerStakeRatioPolicy, uint256 oldWorkerStakeRatioPolicy, uint256 newWorkerStakeRatioPolicy , uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
 
 	/**
 	 * Members
 	 */
 	string                                       public m_name;
-	uint256                                      public m_schedulerStakePolicyRatio;
-	uint256                                      public m_workerStakePolicyRatio;
+	uint256                                      public m_schedulerStakeRatioPolicy;
+	uint256                                      public m_workerStakeRatioPolicy;
+	uint256                                      public m_resultRetentionPolicy;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
 	// mapping(address=> index)
@@ -59,8 +59,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		transferOwnership(tx.origin); // owner → tx.origin
 
 		m_name             = _name;
-		m_schedulerStakePolicyRatio = 30; // % of the task price to stake → cf function SubmitTask
-		m_workerStakePolicyRatio = 30;
+		m_schedulerStakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
+		m_workerStakeRatioPolicy = 30;
+		m_resultRetentionPolicy  = 7 days;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
 
@@ -84,11 +85,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
  		m_workersAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
  	}
 
-	function changeStakePolicyRatio(uint256 _newWorkerStakePolicyRatio,uint256 _newSchedulerStakePolicyRatio) public onlyOwner
+	function changeWorkerPoolPolicy(
+	uint256 _newSchedulerStakeRatioPolicy,
+	uint256 _newWorkerStakeRatioPolicy,
+	uint256 _newResultRetentionPolicy
+	)
+	public onlyOwner
 	{
-		m_schedulerStakePolicyRatio = _newSchedulerStakePolicyRatio;
-		m_workerStakePolicyRatio = _newWorkerStakePolicyRatio;
-		//TODO LOG
+		WorkerPoolPolicyUpdate(m_schedulerStakeRatioPolicy,_newSchedulerStakeRatioPolicy,m_workerStakeRatioPolicy,_newWorkerStakeRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
+		m_schedulerStakeRatioPolicy = _newSchedulerStakeRatioPolicy;
+		m_workerStakeRatioPolicy = _newWorkerStakeRatioPolicy;
+		m_resultRetentionPolicy = _newResultRetentionPolicy;
 	}
 
 	function getWorkerPoolOwner() public view returns (address)
@@ -156,7 +163,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	/**************************** tasks management *****************************/
 	function acceptTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (address taskContributions)
 	{
-		address newContributions = new Contributions(iexecHubAddress,_taskID,_taskCost,_taskCost.mul(m_schedulerStakePolicyRatio).div(100),_taskCost.mul(m_workerStakePolicyRatio).div(100));
+		address newContributions = new Contributions(iexecHubAddress,_taskID,_taskCost,_taskCost.mul(m_schedulerStakeRatioPolicy).div(100),_taskCost.mul(m_workerStakeRatioPolicy).div(100));
 		return newContributions;
 	}
 
