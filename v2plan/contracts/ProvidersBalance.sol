@@ -44,14 +44,14 @@ contract ProvidersBalance
 	}
 	function withdraw(uint256 _amount) public returns (bool)
 	{
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transfer(msg.sender, _amount));
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		return true;
 	}
-	function checkBalance() public view returns (uint, uint)
+	function checkBalance(address _owner) public view returns (uint stake, uint locked)
 	{
-		return (m_accounts[msg.sender].stake, m_accounts[msg.sender].locked);
+		return (m_accounts[_owner].stake, m_accounts[_owner].locked);
 	}
 	/**
 	 * Internal function
@@ -64,6 +64,7 @@ contract ProvidersBalance
 	}
 	function unlock(address _user, uint256 _amount) internal returns (bool)
 	{
+		//TODO check locked is present before sub. and test it
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
 		return true;
@@ -80,6 +81,9 @@ contract ProvidersBalance
 	}
 	function debit(address _user, uint256 _amount) internal returns (bool)
 	{
+		if(m_accounts[_user].stake < _amount){
+			require(deposit(_amount));
+		}
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		return true;
 	}

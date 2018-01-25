@@ -39,13 +39,12 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum =
-  {
+  Contributions.ConsensusStatusEnum = {
     UNSET: 0,
-    IN_PROGRESS:1,
-    REACHED:2,
-    FAILLED:3,
-    FINALIZED:4
+    IN_PROGRESS: 1,
+    REACHED: 2,
+    FAILLED: 3,
+    FINALIZED: 4
   };
 
   let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
@@ -102,6 +101,63 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Promise.all([
+          aRLCInstance.transfer(scheduler, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(worker, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(appProvider, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(datasetProvider, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(dappUser, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(dappProvider, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(iExecCloudUser, 1000, {
+            from: universalCreator,
+            gas: amountGazProvided
+          })
+        ]);
+      })
+      .then(txsMined => {
+        assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Promise.all([
+          aRLCInstance.balanceOf(scheduler),
+          aRLCInstance.balanceOf(worker),
+          aRLCInstance.balanceOf(appProvider),
+          aRLCInstance.balanceOf(datasetProvider),
+          aRLCInstance.balanceOf(dappUser),
+          aRLCInstance.balanceOf(dappProvider),
+          aRLCInstance.balanceOf(iExecCloudUser)
+        ]);
+      })
+      .then(balances => {
+        assert.strictEqual(balances[0].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[1].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[2].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[3].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[4].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[5].toNumber(), 1000, "1000 nRLC here");
+        assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
         return WorkerPoolHub.new({
           from: universalCreator
         });
@@ -170,6 +226,45 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of TaskRequestHub to IexecHub")
+        return Promise.all([
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: scheduler,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: worker,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: appProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: datasetProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: dappUser,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: dappProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: iExecCloudUser,
+            gas: amountGazProvided
+          })
+        ]);
+      })
+      .then(txsMined => {
+        assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
       });
   });
 
@@ -182,6 +277,6 @@ contract('IexecHub', function(accounts) {
   });
 
 
-//TODO Ownable not changeable because of association on mapping. or change mapping allowed according to tansfertOwnership
+  //TODO Ownable not changeable because of association on mapping. or change mapping allowed according to tansfertOwnership
 
 });

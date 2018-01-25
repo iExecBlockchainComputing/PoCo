@@ -117,6 +117,63 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Promise.all([
+          aRLCInstance.transfer(scheduler, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(worker, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(appProvider, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(datasetProvider, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(dappUser, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(dappProvider, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.transfer(iExecCloudUser, 100, {
+            from: universalCreator,
+            gas: amountGazProvided
+          })
+        ]);
+      })
+      .then(txsMined => {
+        assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Promise.all([
+          aRLCInstance.balanceOf(scheduler),
+          aRLCInstance.balanceOf(worker),
+          aRLCInstance.balanceOf(appProvider),
+          aRLCInstance.balanceOf(datasetProvider),
+          aRLCInstance.balanceOf(dappUser),
+          aRLCInstance.balanceOf(dappProvider),
+          aRLCInstance.balanceOf(iExecCloudUser)
+        ]);
+      })
+      .then(balances => {
+        assert.strictEqual(balances[0].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[1].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[2].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[3].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[4].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[5].toNumber(), 100, "100 nRLC here");
+        assert.strictEqual(balances[6].toNumber(), 100, "100 nRLC here");
         return WorkerPoolHub.new({
           from: universalCreator
         });
@@ -185,6 +242,47 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of TaskRequestHub to IexecHub");
+
+
+        return Promise.all([
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: scheduler,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: worker,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: appProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: datasetProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: dappUser,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: dappProvider,
+            gas: amountGazProvided
+          }),
+          aRLCInstance.approve(aIexecHubInstance.address, 100, {
+            from: iExecCloudUser,
+            gas: amountGazProvided
+          })
+        ]);
+      })
+      .then(txsMined => {
+        assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
+        assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
         return aIexecHubInstance.createWorkerPool("myWorkerPool", {
           from: scheduler
         });
@@ -263,7 +361,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
+        return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 100, 1, false, {
           from: iExecCloudUser
         });
       })
@@ -306,15 +404,40 @@ contract('IexecHub', function(accounts) {
   it("worker contribution", function() {
     const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
     const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
-    return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)), {
+    return aIexecHubInstance.deposit(30, {
         from: worker,
         gas: amountGazProvided
-      }).then(txMined => {
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aContributiuonsInstance.contribute.call(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x" + resultHash.xor(workerSalt).toString(16)), {
+          from: worker,
+          gas: amountGazProvided
+        });
+      })
+      .then(m_workerStake => {
+        assert.strictEqual(m_workerStake.toNumber(), 30, "30% of 100 (taskprice) = 30 will be lock for worker");
+        return aIexecHubInstance.checkBalance.call(worker);
+      })
+      .then(checkBalance => {
+        assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the worker");
+        assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the worker");
+        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x" + resultHash.xor(workerSalt).toString(16)), {
+          from: worker,
+          gas: amountGazProvided
+        });
+      })
+      .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.getEventsPromise(aContributiuonsInstance.Contribute({}));
       })
       .then(events => {
         assert.strictEqual(events[0].args.worker, worker, "check worker call ");
+        return aIexecHubInstance.checkBalance.call(worker);
+      })
+      .then(checkBalance => {
+        assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the worker");
+        assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the worker");
       });
   });
 
