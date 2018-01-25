@@ -48,7 +48,8 @@ contract IexecHubInterface
 			address _taskID,
 			string _stdout,
 			string _stderr,
-			string _uri
+			string _uri,
+			uint256 _schedulerReward
 			)
 		public returns(bool);
 

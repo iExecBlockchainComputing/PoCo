@@ -15,9 +15,9 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
   address        public m_workerPool;
 	address        public m_taskID;
 	ConsensusStatusEnum public m_status;
-	uint256        public m_taskReward;
-	uint256        public m_workerStake;
-	uint256        public m_schedulerStake;
+	uint256        public m_schedulerReward;
+	uint256        public m_workersReward;
+	uint256        public m_stakeAmount;
 	bytes32        public m_consensus;
 	uint256        public m_revealDate;
 	uint256        public m_revealCounter;
@@ -82,21 +82,21 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	 */
 
 	//constructor
-	function Contributions( address _iexecHubAddress, address _taskID,uint256 _taskReward, uint256 _schedulerStakePolicyRatio,uint256 _workerStakePolicyRatio)
+	function Contributions( address _iexecHubAddress, address _taskID,uint256 _workersReward,uint256 _schedulerReward, uint256 _stakeAmount)
 	OwnableOZ()// owner is WorkerPool contract
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		m_taskID=_taskID;
 		m_status=ConsensusStatusEnum.IN_PROGRESS;
-		m_schedulerStake = _schedulerStakePolicyRatio;
-	  m_workerStake =_workerStakePolicyRatio;
+	  m_stakeAmount =_stakeAmount;
 		m_workerPool = msg.sender;
-		m_taskReward =_taskReward;
+		m_workersReward =_workersReward;
+		m_schedulerReward = _schedulerReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
-		// how  this m_schedulerStake  is used for ?
-		//require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_schedulerStake));
+		// how  this m_stakeAmount  is used for ?
+		//require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_stakeAmount));
 
 	}
 
@@ -113,11 +113,11 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			w = m_tasksWorkers[i];
 			if (m_tasksContributions[w].status == WorkStatusEnum.SUBMITTED)
 			{
-				require(iexecHubInterface.unlockForTask(m_taskID,w, m_workerStake));
+				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));
 			}
 		}
-		require(iexecHubInterface.lockForTask(m_taskID,m_owner, m_schedulerStake));
-		// how  this m_schedulerStake  is used for ?
+		require(iexecHubInterface.lockForTask(m_taskID,m_owner, m_stakeAmount));
+		// how  this m_stakeAmount  is used for ?
 		return true;
 	}
 
@@ -148,9 +148,10 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_tasksContributions[msg.sender].status     = WorkStatusEnum.SUBMITTED;
 		m_tasksContributions[msg.sender].resultHash = _resultHash;
 		m_tasksContributions[msg.sender].resultSign = _resultSign;
-		require(iexecHubInterface.lockForTask(m_taskID, msg.sender, m_workerStake));
+
+		require(iexecHubInterface.lockForTask(m_taskID, msg.sender, m_stakeAmount));
 		Contribute(msg.sender,_resultHash);
-		return m_workerStake;
+		return m_stakeAmount;
 	}
 
 	function revealConsensus(bytes32 _consensus) public onlyOwner /*=onlySheduler*/ returns (bool)
@@ -194,7 +195,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		// add penalized to the call worker to contrubution and they never contribute ?
 		require(rewardTask());
 
-		require(iexecHubInterface.finalizedTask(m_taskID,_stdout,_stderr,_uri));
+		require(iexecHubInterface.finalizedTask(m_taskID,_stdout,_stderr,_uri,m_schedulerReward));
 		return true;
 	}
 
@@ -215,7 +216,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		 * Current code shows a simple distribution (equal shares)
 		 */
 		uint256 cntWinners       = 0;
-		uint256 totalReward      = m_taskReward;
+		uint256 totalReward      = m_workersReward;
 		uint256 individualReward;
 		for (i=0; i<m_tasksWorkers.length; ++i)
 		{
@@ -226,7 +227,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			}
 			else // WorkStatusEnum.POCO_REJECT
 			{
-				totalReward = totalReward.add(m_workerStake);
+				totalReward = totalReward.add(m_stakeAmount);
 			}
 		}
 		require(cntWinners > 0);
@@ -237,7 +238,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			w = m_tasksWorkers[i];
 			if (m_tasksContributions[w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
-				require(iexecHubInterface.unlockForTask(m_taskID,w, m_workerStake));//should failed if no locked ?
+				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));//should failed if no locked ?
 				require(iexecHubInterface.rewardForTask(m_taskID,w, individualReward));
 				require(iexecHubInterface.scoreWinForTask(m_taskID,w, 1));
 				m_tasksContributions[w].balance = int256(individualReward);
@@ -245,10 +246,10 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 			else // WorkStatusEnum.POCO_REJECT
 			{
-				require(iexecHubInterface.seizeForTask(m_taskID,w, m_workerStake));
+				require(iexecHubInterface.seizeForTask(m_taskID,w, m_stakeAmount));
 				// No Reward
 				require(iexecHubInterface.scoreLoseForTask(m_taskID,w, 50));
-				m_tasksContributions[w].balance = -int256(m_workerStake); // TODO: SafeMath
+				m_tasksContributions[w].balance = -int256(m_stakeAmount); // TODO: SafeMath
 			}
 		}
 	  return true;

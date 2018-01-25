@@ -13,14 +13,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-  event WorkerPoolPolicyUpdate(uint256 oldSchedulerStakeRatioPolicy, uint256 newSchedulerStakeRatioPolicy, uint256 oldWorkerStakeRatioPolicy, uint256 newWorkerStakeRatioPolicy , uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
+  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy , uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
 
 	/**
 	 * Members
 	 */
 	string                                       public m_name;
-	uint256                                      public m_schedulerStakeRatioPolicy;
-	uint256                                      public m_workerStakeRatioPolicy;
+	uint256                                      public m_schedulerRewardRatioPolicy;
+	uint256                                      public m_stakeRatioPolicy;
 	uint256                                      public m_resultRetentionPolicy;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
@@ -59,8 +59,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		transferOwnership(tx.origin); // owner → tx.origin
 
 		m_name             = _name;
-		m_schedulerStakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
-		m_workerStakeRatioPolicy = 30;
+		m_schedulerRewardRatioPolicy = 10; //% of the task reward going to scheduler vs workers reward
+		m_stakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
 		m_resultRetentionPolicy  = 7 days;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
@@ -86,15 +86,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
  	}
 
 	function changeWorkerPoolPolicy(
-	uint256 _newSchedulerStakeRatioPolicy,
-	uint256 _newWorkerStakeRatioPolicy,
+	uint256 _newStakeRatioPolicy,
 	uint256 _newResultRetentionPolicy
 	)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(m_schedulerStakeRatioPolicy,_newSchedulerStakeRatioPolicy,m_workerStakeRatioPolicy,_newWorkerStakeRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
-		m_schedulerStakeRatioPolicy = _newSchedulerStakeRatioPolicy;
-		m_workerStakeRatioPolicy = _newWorkerStakeRatioPolicy;
+		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
+		m_stakeRatioPolicy = _newStakeRatioPolicy;
 		m_resultRetentionPolicy = _newResultRetentionPolicy;
 	}
 
@@ -127,8 +125,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	{
 		uint index = m_workers.push(_worker);
 		m_workerIndex[_worker] = index;
-
-		//LOG TODO
 		return true;
 	}
 	function removeWorker(address _worker) public onlyWorkerPoolHub returns (bool)
@@ -137,8 +133,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_workers[index] = m_workers[m_workers.length-1];
 		delete m_workers[m_workers.length-1];
 		m_workers.length--;
-
-		//LOG TODO
 		return true;
 	}
 
@@ -163,7 +157,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	/**************************** tasks management *****************************/
 	function acceptTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (address taskContributions)
 	{
-		address newContributions = new Contributions(iexecHubAddress,_taskID,_taskCost,_taskCost.mul(m_schedulerStakeRatioPolicy).div(100),_taskCost.mul(m_workerStakeRatioPolicy).div(100));
+		// when 2 cannot be divide by 3 for ratio calculus ?
+		uint256 schedulerReward =_taskCost.mul(m_schedulerRewardRatioPolicy).div(100);
+		uint256 workersReward =_taskCost.mul(uint256(100).sub(m_schedulerRewardRatioPolicy)).div(100);
+		assert(schedulerReward.add(workersReward) == _taskCost);
+		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100));
 		return newContributions;
 	}
 

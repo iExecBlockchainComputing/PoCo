@@ -208,9 +208,10 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return true;
 	}
 
-	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri) public returns (bool)
+	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(reward(tx.origin,_schedulerReward));
 		address appForTask = m_taskAppAffectation[_taskID];
 		uint256 appPrice= appHub.getAppPrice(appForTask);
 		if ( appPrice > 0 )

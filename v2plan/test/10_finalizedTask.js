@@ -483,8 +483,13 @@ contract('IexecHub', function(accounts) {
         return aIexecHubInstance.checkBalance.call(worker);
       })
       .then(checkBalance => {
-        assert.strictEqual(checkBalance[0].toNumber(), 130, "check stake of the worker");
+        assert.strictEqual(checkBalance[0].toNumber(), 120, "check stake of the worker. won 90% of task price 90. (initial balance 30)");
         assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the worker");
+        return aIexecHubInstance.checkBalance.call(scheduler);
+      })
+      .then(checkBalance => {
+        assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the scheduler.won 10% of task price");
+        assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduler");
       });
   });
 
