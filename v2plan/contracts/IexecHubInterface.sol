@@ -77,17 +77,15 @@ contract IexecHubInterface
 			address _workerPool)
 		public returns(bool unsubscribed);
 
-		function scoreWinForTask(
+	 function addAccurateContribution(
+		 address _taskID,
+		 address _worker)
+	  public returns(bool added);
+		
+		function addFaultyContribution(
 			address _taskID,
-			address _worker,
-			uint _value)
-		public returns(bool);
-
-		function scoreLoseForTask(
-			address _taskID,
-			address _worker,
-			uint _value)
-		public returns(bool);
+			address _worker)
+		public returns(bool added);
 
 		function lockForTask(
 			address _taskID,

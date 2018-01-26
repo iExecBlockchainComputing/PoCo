@@ -111,13 +111,13 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		for (i=0; i<m_tasksWorkers.length; ++i)
 		{
 			w = m_tasksWorkers[i];
-			if (m_tasksContributions[w].status == WorkStatusEnum.SUBMITTED)
+			if (m_tasksContributions[w].status != WorkStatusEnum.REQUESTED)
 			{
-				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));
+ 				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));
 			}
+			//FaultyContribution(w);
+			require(iexecHubInterface.addFaultyContribution(m_taskID,w));
 		}
-		require(iexecHubInterface.lockForTask(m_taskID,m_owner, m_stakeAmount));
-		// how  this m_stakeAmount  is used for ?
 		return true;
 	}
 
@@ -240,15 +240,12 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
 				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));//should failed if no locked ?
 				require(iexecHubInterface.rewardForTask(m_taskID,w, individualReward));
-				require(iexecHubInterface.scoreWinForTask(m_taskID,w, 1));
 				m_tasksContributions[w].balance = int256(individualReward);
 			}
-
 			else // WorkStatusEnum.POCO_REJECT
 			{
 				require(iexecHubInterface.seizeForTask(m_taskID,w, m_stakeAmount));
 				// No Reward
-				require(iexecHubInterface.scoreLoseForTask(m_taskID,w, 50));
 				m_tasksContributions[w].balance = -int256(m_stakeAmount); // TODO: SafeMath
 			}
 		}

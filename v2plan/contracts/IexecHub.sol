@@ -5,7 +5,6 @@ import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
 import "./Contributions.sol";
 import './ProvidersBalance.sol';
-import './ProvidersScoring.sol';
 import './DatasetHub.sol';
 import './TaskRequestHub.sol';
 import "./SafeMathOZ.sol";
@@ -14,7 +13,7 @@ import "./SafeMathOZ.sol";
  * @title IexecHub
  */
 
-contract IexecHub is ProvidersBalance, ProvidersScoring
+contract IexecHub is ProvidersBalance
 {
 	using SafeMathOZ for uint256;
 	//uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
@@ -49,6 +48,10 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 	event CloseWorkerPool(address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
   event WorkerPoolSubscription(address indexed workerPool, address worker);
+
+	event FaultyContribution(address taskID, address indexed worker);
+	event AccurateContribution(address taskID, address indexed worker);
+
 
 	function IexecHub(
 		address _tokenAddress,
@@ -277,19 +280,20 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return true;
 	}
 
-	// add a scoreWinLooseTask for S(w) S(s) too ?
-
-	function scoreWinForTask(address _taskID, address _worker, uint _value) public returns (bool)
+/*
+	function addAccurateContribution(address _taskID, address _worker) public returns(bool added)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(scoreWin(_worker,_value));
+		require(workerPoolHub.addAccurateContribution(_worker));
 		return true;
 	}
+	*/
 
-	function scoreLoseForTask(address _taskID, address _worker, uint _value) public returns (bool)
+	function addFaultyContribution(address _taskID, address _worker) public returns(bool added)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(scoreLose(_worker,_value));
+		require(workerPoolHub.addFaultyContribution(_worker));
+		FaultyContribution(_taskID,_worker);
 		return true;
 	}
 
@@ -307,17 +311,21 @@ contract IexecHub is ProvidersBalance, ProvidersScoring
 		return true;
 	}
 
-	function rewardForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(reward(_user,_amount));
+		require(workerPoolHub.addAccurateContribution(_worker));
+		AccurateContribution(_taskID,_worker);
+		require(reward(_worker,_amount));
 		return true;
 	}
 
-	function seizeForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(seize(_user,_amount));
+		require(workerPoolHub.addFaultyContribution(_worker));
+		FaultyContribution(_taskID,_worker);
+		require(seize(_worker,_amount));
 		return true;
 	}
 
