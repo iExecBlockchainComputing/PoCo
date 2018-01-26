@@ -68,7 +68,7 @@ blockchain interaction :
             <td>createWorkerPool</td>
             <td>IexecHub</td>
             <td>scheduler</td>
-            <td>dispatcher and/or iexec-sdk ?</td>
+            <td>dispatcher cli web3j</td>
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
