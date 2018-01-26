@@ -6,8 +6,8 @@ box "Smart contracts"
 	participant MyDapp
 	participant IexecHub
 	participant TaskRequest
-    participant WorkerPool
-    participant Contributions
+  participant WorkerPool
+  participant Contributions
 end box
 
 
@@ -33,8 +33,8 @@ MyDapp <-- IexecHub
 deactivate IexecHub
 
 box "Spring boot app" #LightBlue
-	participant Dispatcher
-    participant Worker
+	participant iexec_scheduler
+  participant iexec_worker
 end box
 
 
@@ -46,11 +46,11 @@ end box
 
 
 autonumber 4
-IexecHub o-> Dispatcher : watch TaskRequest(taskId,workerPool) event
-activate Dispatcher
-Dispatcher -> Dispatcher : analyse asked task
+IexecHub o-> iexec_scheduler : watch TaskRequest(taskId,workerPool) event
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : analyse asked task
 autonumber 5
-Dispatcher --> IexecHub : acceptTask(taskId)
+iexec_scheduler --> IexecHub : acceptTask(taskId)
 activate IexecHub
 autonumber 5
 IexecHub --> WorkerPool
@@ -75,94 +75,94 @@ TaskRequest --> IexecHub
 deactivate TaskRequest
 note over IexecHub :Log event TaskAccepted(taskID,workerPool,contributions);
 autonumber 5
-IexecHub --> Dispatcher
+IexecHub --> iexec_scheduler
 deactivate IexecHub
-deactivate Dispatcher
+deactivate iexec_scheduler
 autonumber 5
-IexecHub o-> Dispatcher : watch TaskAccepted(taskID,workerPool,contributions) event
+IexecHub o-> iexec_scheduler : watch TaskAccepted(taskID,workerPool,contributions) event
 
 autonumber 6
-activate Dispatcher
-Dispatcher -> Dispatcher : randonmy choose worker
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : randonmy choose worker
 
 autonumber 6
-Dispatcher  --> Contributions : callForContribution(taskId,worker)
+iexec_scheduler  --> Contributions : callForContribution(taskId,worker)
 activate Contributions
 note over Contributions :Log event CallForContribution(worker);
 autonumber 6
-Contributions --> Dispatcher
+Contributions --> iexec_scheduler
 deactivate Contributions
 
-deactivate Dispatcher
+deactivate iexec_scheduler
 autonumber 6
-Contributions o-> Worker : watch CallforContribution event
-activate Worker
-Worker  <--> AppRepository : getApp
+Contributions o-> iexec_worker : watch CallforContribution event
+activate iexec_worker
+iexec_worker  <--> AppRepository : getApp
 autonumber 7
 autonumber 7
-Worker  <--> DatasetRepository : getDataset
+iexec_worker  <--> DatasetRepository : getDataset
 
 autonumber 7
-Worker-> Worker: execute the asked work
-activate Worker
+iexec_worker-> iexec_worker: execute the asked work
+activate iexec_worker
 autonumber 7
-Worker-> Worker: resultHash (vote)
+iexec_worker-> iexec_worker: resultHash (vote)
 autonumber 7
-Worker-> Worker: resultSigned(proof of knowledge)
+iexec_worker-> iexec_worker: resultSigned(proof of knowledge)
 autonumber 7
-Worker  --> Contributions : contribute(resultHash,resultSigned)
-deactivate  Worker
+iexec_worker  --> Contributions : contribute(resultHash,resultSigned)
+deactivate  iexec_worker
 
 
 activate Contributions
 note over Contributions :Log event Contribute(worker,resultHash(vote));
 deactivate Contributions
 autonumber 7
-Contributions  --> Worker
-deactivate  Worker
+Contributions  --> iexec_worker
+deactivate  iexec_worker
 deactivate Contributions
 autonumber 7
-Contributions o-> Dispatcher : watch Contribute(worker,resultHash(vote)) event
-activate Dispatcher
+Contributions o-> iexec_scheduler : watch Contribute(worker,resultHash(vote)) event
+activate iexec_scheduler
 
 autonumber 8
-Dispatcher -> Dispatcher: check if consensus on resultHash is reached
+iexec_scheduler -> iexec_scheduler: check if consensus on resultHash is reached
 autonumber 8
-Dispatcher --> Contributions : revealConsensus
+iexec_scheduler --> Contributions : revealConsensus
 activate Contributions
 note over Contributions :ConsensusStatusEnum.REACHED
 note over Contributions :consensus on resultHash is revealed
 note over Contributions : a limited REVEAL_PERIOD is start in the smart contract
 note over Contributions :Log event RevealConsensus(consensus)
 autonumber 8
-Contributions --> Dispatcher
-deactivate Dispatcher
+Contributions --> iexec_scheduler
+deactivate iexec_scheduler
 deactivate Contributions
 autonumber 8
-Contributions o-> Worker : watch RevealConsensus event
-activate Worker
+Contributions o-> iexec_worker : watch RevealConsensus event
+activate iexec_worker
 autonumber 9
-Worker  --> Contributions  :reveal(result)
+iexec_worker  --> Contributions  :reveal(result)
 activate Contributions
 note over Contributions : during the REVEAL_PERIOD, workers reveal \n(result and salt ) for the following rewards
 note over Contributions :Log event Reveal(worker,result);
 
 autonumber 9
-Contributions  --> Worker
+Contributions  --> iexec_worker
 deactivate Contributions
-deactivate Worker
+deactivate iexec_worker
 autonumber 9
-Contributions o-> Dispatcher : watch Reveal event
-activate Dispatcher
+Contributions o-> iexec_scheduler : watch Reveal event
+activate iexec_scheduler
 
 autonumber 10
-Dispatcher -> Dispatcher : check if all workers are reveal or reveal period end
+iexec_scheduler -> iexec_scheduler : check if all workers are reveal or reveal period end
 autonumber 10
-Dispatcher  <--> Worker  : getResult
-note over Dispatcher : Dispatcher ask and retrived result on worker who has revealed a right contribution
+iexec_scheduler  <--> iexec_worker  : getResult
+note over iexec_scheduler : iexec_scheduler ask and retrived result on worker who has revealed a right contribution
 
 autonumber 10
-Dispatcher --> Contributions : finalizedTask(stdout,stderr,uri)
+iexec_scheduler --> Contributions : finalizedTask(stdout,stderr,uri)
 activate Contributions
 autonumber 10
 note over Contributions : ConsensusStatusEnum.FINALIZED
@@ -185,8 +185,8 @@ autonumber 10
 IexecHub --> Contributions
 deactivate IexecHub
 autonumber 10
-Contributions --> Dispatcher : finalizedTask
+Contributions --> iexec_scheduler : finalizedTask
 deactivate Contributions
-deactivate Dispatcher
+deactivate iexec_scheduler
 deactivate TaskRequest
 @enduml

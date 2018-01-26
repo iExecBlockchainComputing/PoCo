@@ -44,9 +44,9 @@ blockchain interaction :
 
 
 ## Scheduler :
-- Scheduler = S(w)
+- ScheduleProvider = S(w)
 - S(s) =  a [WorkerPool](./contracts/WorkerPool.sol) smart contract owned by S(w)
-- S(p) = Dispatcher = application that schedule a worker pool activity  on the responsability of S(w). (works, tasks, datas for result in xtremweb)
+- S(p) = iexec-scheduler = application that schedule a worker pool activity  on the responsability of S(w). (works, tasks, datas for result in xtremweb)
 - S(r) = ResultRepository = provide the task result for U(w) on the responsability of S(w)
 
 blockchain interaction :
@@ -67,40 +67,40 @@ blockchain interaction :
             <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
-            <td>scheduler</td>
-            <td>dispatcher cli web3j</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler (cli web3j)</td>
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
             <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
-            <td>scheduler</td>
-            <td>dispatcher</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler</td>
             <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
         </tr>
         <tr>
             <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
             <td>callForContribution</td>
             <td>Contributions</td>
-            <td>scheduler</td>
-            <td>dispatcher</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
             <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>Contributions</td>
-            <td>scheduler</td>
-            <td>dispatcher</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
             <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
             <td>finalizedTask</td>
             <td>Contributions</td>
-            <td>scheduler</td>
-            <td>dispatcher</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
     </tbody>
@@ -110,7 +110,7 @@ blockchain interaction :
 
 ## Worker :
 - W(w) = RessourceProvider =  RessourceProvider wallet
-- W(p) = Worker = xtremweb worker application today
+- W(p) = iexec-worker = xtremweb worker application today
 
 blockchain interaction :
 <table>
@@ -128,22 +128,22 @@ blockchain interaction :
             <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
-            <td>worker</td>
-            <td>worker</td>
+            <td>RessourceProvider</td>
+            <td>iexec-worker</td>
         </tr>
         <tr>
             <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>Contributions</td>
-            <td>worker</td>
-            <td>worker</td>
+            <td>RessourceProvider</td>
+            <td>iexec-worker</td>
         </tr>
         <tr>
             <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>Contributions</td>
-            <td>worker</td>
-            <td>worker</td>
+            <td>RessourceProvider</td>
+            <td>iexec-worker</td>
         </tr>
     </tbody>
 </table>
@@ -175,7 +175,7 @@ blockchain interaction :
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
-            <td>iexec-SDK ?</td>
+            <td>?</td>
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
     </tbody>
@@ -196,7 +196,7 @@ TODO
             <th>Truffle Test</th>
             <th>Fonction</th>
             <th align="center">on Contract</th>
-            <th align="right">by Actor</th>
+            <th align="right">by Actor through program</th>
             <th align="center">Contract created</th>
         </tr>
     </thead>
@@ -214,7 +214,7 @@ TODO
             <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
-            <td>scheduler</td>
+            <td>iexec-scheduler</td>
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
@@ -222,7 +222,7 @@ TODO
             <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
-            <td>worker</td>
+            <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
@@ -238,7 +238,7 @@ TODO
             <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
             <td>createTaskRequest</td>
             <td>IexecHub</td>
-            <td>iExecCloudUser</td>
+            <td>iExecCloudUser (iexec-sdk)</td>
             <td><a href="./contracts/TaskRequest.sol" target="_blank">TaskRequest</a></td>
         </tr>
         <tr>
@@ -246,7 +246,7 @@ TODO
             <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
             <td>acceptTask</td>
             <td>IexecHub</td>
-            <td>scheduler</td>
+            <td>iexec-scheduler</td>
             <td><a href="./contracts/Contributions.sol" target="_blank">Contributions</a></td>
         </tr>
         <tr>
@@ -254,7 +254,7 @@ TODO
             <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
             <td>callForContribution</td>
             <td>Contributions</td>
-            <td>scheduler</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
@@ -262,7 +262,7 @@ TODO
             <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>Contributions</td>
-            <td>worker</td>
+            <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
@@ -270,7 +270,7 @@ TODO
             <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>Contributions</td>
-            <td>scheduler</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
@@ -278,7 +278,7 @@ TODO
             <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>Contributions</td>
-            <td>worker</td>
+            <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
@@ -286,7 +286,7 @@ TODO
             <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
             <td>finalizedTask</td>
             <td>Contributions</td>
-            <td>scheduler</td>
+            <td>iexec-scheduler</td>
             <td></td>
         </tr>
     </tbody>

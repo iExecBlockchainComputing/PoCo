@@ -2,10 +2,10 @@
 
 
 :iExecCloudUser:
-:Uw:
-:Aw:
+:DappUser:
+:AppProvider:
 :Sw:
-:Dw:
+:DatasetProvider:
 :Ww:
 
 
@@ -19,7 +19,7 @@ component [IexecAPI]
 
 
 
-Uw -down-> [MyDapp]: use
+DappUser -down-> [MyDapp]: use
 
 
 cloud {
@@ -33,24 +33,26 @@ MyDapp <-down-> [TaskRequest]: owner
 iExecCloudUser -down-> [TaskRequest]: owner
 
 cloud {
-  [As]
+  [App]
 }
-component [As]
-component [Ar]
+component [App]
+component [AppRepository]
 
 
 cloud {
-  [Ds]
+  [Dataset]
 }
-component [Ds]
-component [Dr]
+component [Dataset]
+component [DatasetRepository]
 
 
 cloud {
   [Ss]
+  [Contributions]
 }
 
 component [Ss]
+component [Contributions]
 component [Sp]
 component [Sr]
 
@@ -77,36 +79,40 @@ component [RLC Token]
 [ProvidersScoring] <|-right-  [iExecHub]
 
 
-Aw -up-> [As]: owner
-Aw -down-> Ar: expose
+AppProvider -up-> [App]: owner
+AppProvider -down-> AppRepository: expose
 
-Dw -up-> [Ds]: owner
-Dw -down-> Dr: expose
+DatasetProvider -up-> [Dataset]: owner
+DatasetProvider -down-> DatasetRepository: expose
 
 Sw -up-> [Ss]: owner
+
+[Ss] -right-> [Contributions] :create
 Sw -down-> [Sp]: control
 Sw -down-> [Sr]: control and expose
 Sr <-left-> [Sp]
 
 
-[Ds] <-up-> [iExecHub]
-[As] <-up-> [iExecHub]
+[Dataset] <-up-> [iExecHub]
+[App] <-up-> [iExecHub]
 
 [iExecHub] <-down-> [Ss]
+[iExecHub] <-down-> [Contributions]
 [iExecHub] <-up-> [TaskRequest]
-[Sp] <-up-> [Ss]
-[Wp] <-up-> [Ss]
+
+[Sp] <-up-> [Contributions]
+[Wp] <-up-> [Contributions]
 
 [Ww] -right-> [Wp]: control
 
 [Wp] <-right-> [Sp]
 
 
-[Wp] <-up-> [Ar]
+[Wp] <-up-> [AppRepository]
 
-[Wp] <-up-> [Dr]
+[Wp] <-up-> [DatasetRepository]
 
-'missing link :  [Ar] <-> [Wp] . add mannualy on img because i do not succeed to layout it
+'missing link :  [AppRepository] <-> [Wp] . add mannualy on img because i do not succeed to layout it
 
 
 
