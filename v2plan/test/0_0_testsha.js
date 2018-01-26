@@ -22,7 +22,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
+  let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
   let isTestRPC;
   let testTimemout = 0;
@@ -31,33 +31,33 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduler = accounts[0];
-    worker = accounts[1];
+    scheduleProvider = accounts[0];
+    resourceProvider = accounts[1];
     appProvider = accounts[2];
     datasetProvider = accounts[3];
     dappUser = accounts[4];
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
-    universalCreator = accounts[7];
+    marketplaceCreator = accounts[7];
 
 
     return Extensions.makeSureAreUnlocked(
-        [scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser])
-      .then(() => web3.eth.getBalancePromise(scheduler))
+        [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser])
+      .then(() => web3.eth.getBalancePromise(scheduleProvider))
       .then(balance => assert.isTrue(
         web3.toWei(web3.toBigNumber(80), "ether").lessThan(balance),
         "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether")))
-      .then(() => Extensions.refillAccount(scheduler, worker, 10))
-      .then(() => Extensions.refillAccount(scheduler, appProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, datasetProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, dappUser, 10))
-      .then(() => Extensions.refillAccount(scheduler, dappProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, iExecCloudUser, 10))
-      .then(() => Extensions.refillAccount(scheduler, universalCreator, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, resourceProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, appProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, datasetProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappUser, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, iExecCloudUser, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, marketplaceCreator, 10))
       .then(() => web3.version.getNodePromise())
       .then(node => isTestRPC = node.indexOf("EthereumJS TestRPC") >= 0)
       .then(() => TestSha.new({
-        from: universalCreator
+        from: marketplaceCreator
       }))
       .then(instance => {
         aTestShaInstance = instance;

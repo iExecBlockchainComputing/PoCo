@@ -25,7 +25,7 @@ Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
-  let scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, universalCreator;
+  let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
   let isTestRPC;
   let testTimemout = 0;
@@ -38,33 +38,33 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduler = accounts[0];
-    worker = accounts[1];
+    scheduleProvider = accounts[0];
+    resourceProvider = accounts[1];
     appProvider = accounts[2];
     datasetProvider = accounts[3];
     dappUser = accounts[4];
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
-    universalCreator = accounts[7];
+    marketplaceCreator = accounts[7];
 
     return Extensions.makeSureAreUnlocked(
-        [scheduler, worker, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser])
-      .then(() => web3.eth.getBalancePromise(scheduler))
+        [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser])
+      .then(() => web3.eth.getBalancePromise(scheduleProvider))
       .then(balance => assert.isTrue(
         web3.toWei(web3.toBigNumber(80), "ether").lessThan(balance),
         "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether")))
-      .then(() => Extensions.refillAccount(scheduler, worker, 10))
-      .then(() => Extensions.refillAccount(scheduler, appProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, datasetProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, dappUser, 10))
-      .then(() => Extensions.refillAccount(scheduler, dappProvider, 10))
-      .then(() => Extensions.refillAccount(scheduler, iExecCloudUser, 10))
-      .then(() => Extensions.refillAccount(scheduler, universalCreator, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, resourceProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, appProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, datasetProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappUser, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappProvider, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, iExecCloudUser, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, marketplaceCreator, 10))
       .then(() => web3.version.getNodePromise())
       .then(node => isTestRPC = node.indexOf("EthereumJS TestRPC") >= 0)
       .then(() => {
         return RLC.new({
-          from: universalCreator,
+          from: marketplaceCreator,
           gas: amountGazProvided
         });
       })
@@ -73,39 +73,39 @@ contract('IexecHub', function(accounts) {
         console.log("aRLCInstance.address is ");
         console.log(aRLCInstance.address);
         return aRLCInstance.unlock({
-          from: universalCreator,
+          from: marketplaceCreator,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Promise.all([
-          aRLCInstance.transfer(scheduler, 100, {
-            from: universalCreator,
+          aRLCInstance.transfer(scheduleProvider, 100, {
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
-          aRLCInstance.transfer(worker, 100, {
-            from: universalCreator,
+          aRLCInstance.transfer(resourceProvider, 100, {
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
           aRLCInstance.transfer(appProvider, 100, {
-            from: universalCreator,
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
           aRLCInstance.transfer(datasetProvider, 100, {
-            from: universalCreator,
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
           aRLCInstance.transfer(dappUser, 100, {
-            from: universalCreator,
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
           aRLCInstance.transfer(dappProvider, 100, {
-            from: universalCreator,
+            from: marketplaceCreator,
             gas: amountGazProvided
           }),
           aRLCInstance.transfer(iExecCloudUser, 100, {
-            from: universalCreator,
+            from: marketplaceCreator,
             gas: amountGazProvided
           })
         ]);
@@ -119,8 +119,8 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Promise.all([
-          aRLCInstance.balanceOf(scheduler),
-          aRLCInstance.balanceOf(worker),
+          aRLCInstance.balanceOf(scheduleProvider),
+          aRLCInstance.balanceOf(resourceProvider),
           aRLCInstance.balanceOf(appProvider),
           aRLCInstance.balanceOf(datasetProvider),
           aRLCInstance.balanceOf(dappUser),
@@ -137,7 +137,7 @@ contract('IexecHub', function(accounts) {
         assert.strictEqual(balances[5].toNumber(), 100, "100 nRLC here");
         assert.strictEqual(balances[6].toNumber(), 100, "100 nRLC here");
         return WorkerPoolHub.new({
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(instance => {
@@ -145,7 +145,7 @@ contract('IexecHub', function(accounts) {
         console.log("aWorkerPoolHubInstance.address is ");
         console.log(aWorkerPoolHubInstance.address);
         return AppHub.new({
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(instance => {
@@ -153,7 +153,7 @@ contract('IexecHub', function(accounts) {
         console.log("aAppHubInstance.address is ");
         console.log(aAppHubInstance.address);
         return DatasetHub.new({
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(instance => {
@@ -161,7 +161,7 @@ contract('IexecHub', function(accounts) {
         console.log("aDatasetHubInstance.address is ");
         console.log(aDatasetHubInstance.address);
         return TaskRequestHub.new({
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(instance => {
@@ -169,7 +169,7 @@ contract('IexecHub', function(accounts) {
         console.log("aTaskRequestHubInstance.address is ");
         console.log(aTaskRequestHubInstance.address);
         return IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address, {
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(instance => {
@@ -177,28 +177,28 @@ contract('IexecHub', function(accounts) {
         console.log("aIexecHubInstance.address is ");
         console.log(aIexecHubInstance.address);
         return aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of WorkerPoolHub to IexecHub");
         return aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of AppHub to IexecHub");
         return aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of DatasetHub to IexecHub");
         return aTaskRequestHubInstance.transferOwnership(aIexecHubInstance.address, {
-          from: universalCreator
+          from: marketplaceCreator
         });
       })
       .then(txMined => {
@@ -206,11 +206,11 @@ contract('IexecHub', function(accounts) {
         console.log("transferOwnership of TaskRequestHub to IexecHub")
         return Promise.all([
           aRLCInstance.approve(aIexecHubInstance.address, 100, {
-            from: scheduler,
+            from: scheduleProvider,
             gas: amountGazProvided
           }),
           aRLCInstance.approve(aIexecHubInstance.address, 100, {
-            from: worker,
+            from: resourceProvider,
             gas: amountGazProvided
           }),
           aRLCInstance.approve(aIexecHubInstance.address, 100, {
