@@ -14,10 +14,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 */
 	//worker => workerPool
 	mapping(address => address)                  m_workerAffectation;
-	//worker => AccurateContributionsCount
-  mapping(address => uint256)                  m_workerAccurateContributions;
-	//worker => FaultyContributionsCount
-	mapping(address => uint256)                  m_workerFaultyContributions;
 	// owner => workerPools count
 	mapping(address => uint256)                  m_workerPoolsCountByOwner;
 	// owner => index => workerPool
@@ -49,6 +45,11 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	function getWorkerPoolOwner(address _workerPool) public view returns (address)
 	{
 		return m_ownerByWorkerPool[_workerPool];
+	}
+
+	function getWorkerStatus(address _worker) public view returns (address workerPool)
+	{
+		return m_workerAffectation[_worker];
 	}
 
 	function getWorkerAffectation(address _worker) public view returns (address workerPool)
@@ -97,16 +98,5 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		 return false;
 	}
 
-	function addAccurateContribution(address _worker) public onlyOwner /*owner == IexecHub*/ returns(bool added)
-	{
-		m_workerAccurateContributions[_worker]=m_workerAccurateContributions[_worker].add(1);
-		return true;
-	}
-
-	function addFaultyContribution(address _worker) public onlyOwner /*owner == IexecHub*/ returns(bool added)
-	{
-		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
-		return true;
-	}
 
 }

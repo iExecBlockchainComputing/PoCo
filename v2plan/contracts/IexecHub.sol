@@ -34,6 +34,11 @@ contract IexecHub is ProvidersBalance
 	mapping (address => uint256) m_taskUserCost;
 	mapping (address => bool)    m_acceptedTaskRequest;
 
+	//worker => AccurateContributionsCount
+	mapping(address => uint256)                  m_workerAccurateContributions;
+	//worker => FaultyContributionsCount
+	mapping(address => uint256)                  m_workerFaultyContributions;
+
 	/**
 	 * Events
 	 */
@@ -242,6 +247,12 @@ contract IexecHub is ProvidersBalance
 	{
 		return workerPoolHub.getWorkerAffectation(_worker);
 	}
+
+	function getWorkerContributions(address _worker) public view returns (uint256 accurateContributions,uint256 faultyContributions)
+	{
+		return (m_workerAccurateContributions[_worker],m_workerFaultyContributions[_worker]);
+	}
+
 	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
 	{
 		return taskRequestHub.getTaskCost(_taskID);
@@ -280,19 +291,10 @@ contract IexecHub is ProvidersBalance
 		return true;
 	}
 
-/*
-	function addAccurateContribution(address _taskID, address _worker) public returns(bool added)
-	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(workerPoolHub.addAccurateContribution(_worker));
-		return true;
-	}
-	*/
-
 	function addFaultyContribution(address _taskID, address _worker) public returns(bool added)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(workerPoolHub.addFaultyContribution(_worker));
+		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
 		FaultyContribution(_taskID,_worker);
 		return true;
 	}
@@ -314,7 +316,7 @@ contract IexecHub is ProvidersBalance
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(workerPoolHub.addAccurateContribution(_worker));
+		m_workerAccurateContributions[_worker]=m_workerAccurateContributions[_worker].add(1);
 		AccurateContribution(_taskID,_worker);
 		require(reward(_worker,_amount));
 		return true;
@@ -323,7 +325,7 @@ contract IexecHub is ProvidersBalance
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(workerPoolHub.addFaultyContribution(_worker));
+		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
 		FaultyContribution(_taskID,_worker);
 		require(seize(_worker,_amount));
 		return true;

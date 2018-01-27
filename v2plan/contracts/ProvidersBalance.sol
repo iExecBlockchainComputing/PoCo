@@ -8,6 +8,10 @@ import "rlc-token/contracts/RLC.sol";
  *****************************************************************************/
 contract ProvidersBalance
 {
+//	event Deposit(address owner, uint256 amount);
+//	event Withdraw(address owner, uint256 amount);
+//	event Reward(address user, uint256 amount);
+//	event Seize(address user, uint256 amount);
 	using SafeMathOZ for uint256;
 	/**
 	 * Account structure
@@ -40,6 +44,7 @@ contract ProvidersBalance
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
+		//Deposit(msg.sender,_amount);
 		return true;
 	}
 	function withdraw(uint256 _amount) public returns (bool)
@@ -47,6 +52,7 @@ contract ProvidersBalance
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transfer(msg.sender, _amount));
+		//Withdraw(msg.sender,_amount);
 		return true;
 	}
 	function checkBalance(address _owner) public view returns (uint stake, uint locked)
@@ -56,7 +62,7 @@ contract ProvidersBalance
 	/**
 	 * Internal function
 	 */
-	function lock  (address _user, uint256 _amount) internal returns (bool)
+	function lock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
@@ -72,11 +78,13 @@ contract ProvidersBalance
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+	//	Reward(_user,_amount);
 		return true;
 	}
 	function seize (address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+	//	Seize(_user,_amount);
 		return true;
 	}
 	function debit(address _user, uint256 _amount) internal returns (bool)
