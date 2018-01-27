@@ -57,9 +57,9 @@ contract IexecHubInterface
 			address _taskID)
 		public view returns (uint256 taskCost);
 
-		function getWorkerAffectation(
+		function getWorkerStatus(
 			address _worker)
-		public view returns (address workerPool);
+		public view returns (address workerPool,uint256 accurateContributions,uint256 faultyContributions);
 
 		function openPool(
 			address _workerPool)
@@ -81,7 +81,7 @@ contract IexecHubInterface
 		 address _taskID,
 		 address _worker)
 	  public returns(bool added);
-		
+
 		function addFaultyContribution(
 			address _taskID,
 			address _worker)

@@ -63,7 +63,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	event CallForContribution(address indexed worker);
 	event Contribute(address indexed worker,bytes32 resultHash);
 	event RevealConsensus(bytes32 consensus);
-	event Reveal(address indexed worker, bytes32 result);
+	event Reveal(address indexed worker, bytes32 result,WorkStatusEnum pocoStatus);
 
 
 
@@ -115,7 +115,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
  				require(iexecHubInterface.unlockForTask(m_taskID,w, m_stakeAmount));
 			}
-			//FaultyContribution(w);
 			require(iexecHubInterface.addFaultyContribution(m_taskID,w));
 		}
 		return true;
@@ -127,8 +126,11 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
-
-		require(iexecHubInterface.getWorkerAffectation(_worker) == m_workerPool);
+		address workerPool;
+		uint256 accurateContributions;
+		uint256 faultyContributions;
+    (workerPool,accurateContributions,faultyContributions)=iexecHubInterface.getWorkerStatus(_worker);
+		require(workerPool == m_workerPool);
 		require(m_tasksContributions[_worker].status == WorkStatusEnum.UNSET );
 		m_tasksContributions[_worker].status = WorkStatusEnum.REQUESTED;
 		CallForContribution(_worker);
@@ -167,19 +169,18 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function reveal(bytes32 _result, bytes32 _salt) public returns (bool)
 	{
-		// msg.sender = a workerpool
-		// tx.origin  = a worker
+		// msg.sender = a worker
 		require(m_status == ConsensusStatusEnum.REACHED);
 		require(m_revealDate > now);
-		require(m_tasksContributions[tx.origin].status == WorkStatusEnum.SUBMITTED);
+		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.SUBMITTED);
 		require(_result != 0x0);
 
-		bool valid = keccak256(_result         ) == m_tasksContributions[tx.origin].resultHash
-		          && keccak256(_result ^ _salt ) == m_tasksContributions[tx.origin].resultSign;
+		bool valid = keccak256(_result         ) == m_tasksContributions[msg.sender].resultHash
+		          && keccak256(_result ^ _salt ) == m_tasksContributions[msg.sender].resultSign;
 
-		m_tasksContributions[tx.origin].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
+		m_tasksContributions[msg.sender].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		m_revealCounter=m_revealCounter.add(1);
-    Reveal(tx.origin,_result); //TODO add WorkStatusEnum in LOG
+    Reveal(msg.sender,_result,m_tasksContributions[msg.sender].status); //TODO add WorkStatusEnum in LOG
 		return true;
 	}
 
@@ -191,7 +192,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(m_revealDate <= now || m_revealCounter == m_tasksWorkers.length);
 		m_status  = ConsensusStatusEnum.FINALIZED;
 
-		//extrenalize part of the reward logic into a upgradable contract owned by scheduler ?
 		// add penalized to the call worker to contrubution and they never contribute ?
 		require(rewardTask());
 

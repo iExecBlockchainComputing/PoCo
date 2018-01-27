@@ -4,22 +4,36 @@ import './AppHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
 import "./Contributions.sol";
-import './ProvidersBalance.sol';
 import './DatasetHub.sol';
 import './TaskRequestHub.sol';
 import "./SafeMathOZ.sol";
+import "rlc-token/contracts/RLC.sol";
 
 /**
  * @title IexecHub
  */
 
-contract IexecHub is ProvidersBalance
+contract IexecHub
 {
 	using SafeMathOZ for uint256;
 	//uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
 	//uint private constant APP_CREATION_STAKE         = 5000; //updated by vote or super admin ?
 	//uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
 	//uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
+
+	struct Account
+	{
+		uint256 stake;
+		uint256 locked;
+	}
+	/**
+	 * Internal data: address to account mapping
+	 */
+	mapping(address => Account) public m_accounts;
+	/**
+	 * RLC contract for token transfers.
+	 */
+	RLC public rlc;
 
 	WorkerPoolHub  workerPoolHub;
 	AppHub         appHub;
@@ -57,6 +71,11 @@ contract IexecHub is ProvidersBalance
 	event FaultyContribution(address taskID, address indexed worker);
 	event AccurateContribution(address taskID, address indexed worker);
 
+	event Deposit(address owner, uint256 amount);
+	event Withdraw(address owner, uint256 amount);
+	event Reward(address user, uint256 amount);
+	event Seize(address user, uint256 amount);
+
 
 	function IexecHub(
 		address _tokenAddress,
@@ -64,9 +83,9 @@ contract IexecHub is ProvidersBalance
 		address _appHubAddress,
 		address _datasetHubAddress,
 		address _taskRequestHubAddress)
-	ProvidersBalance(_tokenAddress)
 	public
 	{
+		rlc = RLC(_tokenAddress);
 		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
 		appHub         = AppHub        (_appHubAddress        );
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
@@ -154,7 +173,10 @@ contract IexecHub is ProvidersBalance
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		require(debit(msg.sender, userCost));
+		if(m_accounts[msg.sender].stake < userCost){
+			require(deposit(userCost));
+		}
+		m_accounts[msg.sender].stake  = m_accounts[msg.sender].stake.sub(userCost);
 
 		address newTaskRequest = taskRequestHub.createTaskRequest(
 			msg.sender, // requester
@@ -243,14 +265,9 @@ contract IexecHub is ProvidersBalance
 		return true;
 	}
 
-	function getWorkerAffectation(address _worker) public view returns (address workerPool)
+	function getWorkerStatus(address _worker) public view returns (address workerPool,uint256 accurateContributions,uint256 faultyContributions)
 	{
-		return workerPoolHub.getWorkerAffectation(_worker);
-	}
-
-	function getWorkerContributions(address _worker) public view returns (uint256 accurateContributions,uint256 faultyContributions)
-	{
-		return (m_workerAccurateContributions[_worker],m_workerFaultyContributions[_worker]);
+		return (workerPoolHub.getWorkerAffectation(_worker),m_workerAccurateContributions[_worker],m_workerFaultyContributions[_worker]);
 	}
 
 	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
@@ -302,14 +319,16 @@ contract IexecHub is ProvidersBalance
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(lock(_user,_amount));
+		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
+		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(unlock(_user,_amount));
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
 		return true;
 	}
 
@@ -327,9 +346,39 @@ contract IexecHub is ProvidersBalance
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
 		FaultyContribution(_taskID,_worker);
-		require(seize(_worker,_amount));
+		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);
+		Seize(_worker,_amount);
 		return true;
 	}
 
+	function deposit(uint256 _amount) public returns (bool)
+	{
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transferFrom(msg.sender, address(this), _amount));
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
+		Deposit(msg.sender,_amount);
+		return true;
+	}
+	function withdraw(uint256 _amount) public returns (bool)
+	{
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
+		// TODO: is the transferFrom cancel is SafeMath throws ?
+		require(rlc.transfer(msg.sender, _amount));
+		Withdraw(msg.sender,_amount);
+		return true;
+	}
+	function checkBalance(address _owner) public view returns (uint stake, uint locked)
+	{
+		return (m_accounts[_owner].stake, m_accounts[_owner].locked);
+	}
+	/**
+	 * Internal function
+	 */
+	function reward(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		Reward(_user,_amount);
+		return true;
+	}
 
 }
