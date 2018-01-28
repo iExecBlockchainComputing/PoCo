@@ -47,6 +47,15 @@ contract('IexecHub', function(accounts) {
     FINALIZED: 4
   };
 
+  Contributions.WorkStatusEnum = {
+    UNSET:0,
+    REQUESTED:1,
+    SUBMITTED:2,
+    POCO_REJECT:3,
+    POCO_ACCEPT:4
+  };
+
+
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
   let isTestRPC;

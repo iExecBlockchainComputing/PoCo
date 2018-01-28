@@ -49,6 +49,15 @@ contract('IexecHub', function(accounts) {
     FINALIZED: 4
   };
 
+  Contributions.WorkStatusEnum = {
+    UNSET:0,
+    REQUESTED:1,
+    SUBMITTED:2,
+    POCO_REJECT:3,
+    POCO_ACCEPT:4
+  };
+
+
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
   let isTestRPC;
@@ -432,6 +441,7 @@ contract('IexecHub', function(accounts) {
         console.log(resourceProvider);
         assert.strictEqual(events[0].args.result, '0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6', "check revealed result by resourceProvider");
         assert.strictEqual(events[0].args.result, web3.sha3("1"), "check revealed result by resourceProvider");
+        assert.strictEqual(events[0].args.pocoStatus.toNumber(), Contributions.WorkStatusEnum.POCO_ACCEPT, "POCO_ACCEPT !");
     });
   });
 

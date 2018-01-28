@@ -53,14 +53,14 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		WorkStatusEnum status;
 		bytes32        resultHash;
 		bytes32        resultSign; // change from salt to tx.origin based signature
-		int256         balance;
+		int256         balance; //TO remove ? no getter on this.
 	}
 
 	/**
 	 * Events
 	 */
 
-	event CallForContribution(address indexed worker);
+	event CallForContribution(address indexed worker,uint256 accurateContributions, uint256 faultyContributions);
 	event Contribute(address indexed worker,bytes32 resultHash);
 	event RevealConsensus(bytes32 consensus);
 	event Reveal(address indexed worker, bytes32 result,WorkStatusEnum pocoStatus);
@@ -133,7 +133,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(workerPool == m_workerPool);
 		require(m_tasksContributions[_worker].status == WorkStatusEnum.UNSET );
 		m_tasksContributions[_worker].status = WorkStatusEnum.REQUESTED;
-		CallForContribution(_worker);
+		CallForContribution(_worker,accurateContributions,faultyContributions);
 		return true;
 	}
 
@@ -246,14 +246,12 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
 				require(iexecHubInterface.seizeForTask(m_taskID,w, m_stakeAmount));
 				// No Reward
+				//TO remove ? no getter on this.
 				m_tasksContributions[w].balance = -int256(m_stakeAmount); // TODO: SafeMath
 			}
 		}
 	  return true;
 	}
-
-
-
 
 
 }
