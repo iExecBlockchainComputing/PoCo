@@ -11,7 +11,7 @@
 - (r) = a repository on the responsability of (w)
 
 ## Marketplace Creator :
-create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [ProvidersBalance](./contracts/ProvidersBalance.sol),[ProvidersScoring](./contracts/ProvidersScoring.sol),[TaskRequestHub](./contracts/TaskRequestHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol). Once smart contract are created, Marketplace can be used by the following actors :
+create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [TaskRequestHub](./contracts/TaskRequestHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol). Once smart contract are created, Marketplace can be used by the following actors :
 
 blockchain interaction :
 <table>
