@@ -73,11 +73,10 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromString({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.result, "0xf1a309330efd9a6867e20fa573071b644fbdd1d567dfa2084ba4f94e94df1cbf", "check result");
-        assert.strictEqual(events[0].args.result, web3.sha3("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
-        assert.notEqual(events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
-
-        assert.strictEqual(events[0].args.input, "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", "check input");
+        assert.strictEqual(events[0].args.input,                   ("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+        assert.strictEqual(events[0].args.result, web3.sha3        ("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
+        assert.strictEqual(events[0].args.result, "0xf1a309330efd9a6867e20fa573071b644fbdd1d567dfa2084ba4f94e94df1cbf",                    "check result");
+        // assert.notEqual   (events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
       });
   });
 
@@ -88,10 +87,56 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromBytes({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.result, "0x4aeff0db81e3146828378be230d377356e57b6d599286b4b517dbf8941b3e1b2", "check result. is the same as web3java !!!");
-        assert.strictEqual(events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
-        assert.notEqual(events[0].args.result, web3.sha3("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
-        assert.strictEqual(events[0].args.input, "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", "check input");
+        assert.strictEqual(events[0].args.input,                    "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6",                     "check input");
+        assert.strictEqual(events[0].args.result, web3.sha3(        "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", {encoding: 'hex'}), "check input");
+        // assert.strictEqual(events[0].args.result, keccak256.sha3num("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"),                    "check input");
+        assert.strictEqual(events[0].args.result,                   "0x4aeff0db81e3146828378be230d377356e57b6d599286b4b517dbf8941b3e1b2",                     "check result. is the same as web3java !!!");
+      });
+  });
+
+  it("testSolidityKeccak256FromAddress", function(){
+    return aTestShaInstance.testSolidityKeccak256FromAddress(marketplaceCreator)
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromAddress({}));
+      })
+      .then(events => {
+        assert.strictEqual(events[0].args.input,           (marketplaceCreator                   ), "test fail, Address 0");
+        assert.strictEqual(events[0].args.result, web3.sha3(marketplaceCreator, {encoding: 'hex'}), "test fail, Address 1");
+        // assert.strictEqual(events[0].args.result, keccak256.sha3num( 0x14723a09acff6d2a60dcdf7aa4aff308fddc160c ),                        "test fail, Address 2");
+        // NOT PREDICTABLE, address (marketplaceCreator) can depend on the runtime
+        // assert.strictEqual(events[0].args.result, "",  "test fail, Address 3");
+      });
+  });
+
+  it("testSignedVote", function(){
+    const result        = web3.sha3("tagazok"); // bytes32 signature of the returned value
+    const address       = accounts[0];
+    const resultHash    = web3.sha3(result,  {encoding: 'hex'});
+    const addressHash   = web3.sha3(address, {encoding: 'hex'});
+    var   xor           = '0x';
+    // length 64, with starting 0x
+    for(i=2; i<66; ++i) xor += (parseInt(result.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16);
+    const sign          = web3.sha3(xor, {encoding: 'hex'});
+
+    // console.log("result:      ", result);
+    // console.log("address:     ", address);
+    // console.log("resultHash:  ", resultHash);
+    // console.log("addressHash: ", addressHash);
+    // console.log("xor:         ", xor);
+    // console.log("sign:        ", sign);
+
+    return aTestShaInstance.testSignedVote(result)
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Extensions.getEventsPromise(aTestShaInstance.SignedVote({}));
+      })
+      .then(events => {
+        assert.strictEqual(events[0].args.input, result,                                                                "test fail, SignedVote 0 (input)");
+        assert.strictEqual(events[0].args.voter, address,                                                               "test fail, SignedVote 1 (voter)"); // accounts[0] is the requester
+        assert.strictEqual(events[0].args.vote,  resultHash,                                                            "test fail, SignedVote 2 (vote)");
+        assert.strictEqual(events[0].args.sign,  sign,                                                                  "test fail, SignedVote 3 (sign)");
+        assert.strictEqual(events[0].args.vote,  "0xca27f1c6a82d0e2d5a2393071a6528b5f5bde9cefadcb36ba69c287581904a29",  "test fail, SignedVote 4 (vote)");
       });
   });
 

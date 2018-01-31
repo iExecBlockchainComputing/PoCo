@@ -173,7 +173,8 @@ contract IexecHub
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		if(m_accounts[msg.sender].stake < userCost){
+		if (m_accounts[msg.sender].stake < userCost)
+		{
 			require(deposit(userCost));
 		}
 		m_accounts[msg.sender].stake  = m_accounts[msg.sender].stake.sub(userCost);
@@ -192,11 +193,10 @@ contract IexecHub
 
 
 		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
-		m_taskAppAffectation[newTaskRequest] =_app;
-		m_taskDatasetAffectation[newTaskRequest] =_dataset;
-		m_taskRequesterAffectation[newTaskRequest] =msg.sender;
-
-		m_taskUserCost[newTaskRequest] = userCost;
+		m_taskAppAffectation[newTaskRequest]        = _app;
+		m_taskDatasetAffectation[newTaskRequest]    = _dataset;
+		m_taskRequesterAffectation[newTaskRequest]  = msg.sender;
+		m_taskUserCost[newTaskRequest]              = userCost;
 		// address newTaskRequest will the taskID
 		TaskRequest(newTaskRequest,_workerPool);
 		return newTaskRequest;
@@ -243,8 +243,8 @@ contract IexecHub
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
 		require(reward(tx.origin,_schedulerReward));
 		address appForTask = m_taskAppAffectation[_taskID];
-		uint256 appPrice= appHub.getAppPrice(appForTask);
-		if ( appPrice > 0 )
+		uint256 appPrice   = appHub.getAppPrice(appForTask);
+		if (appPrice > 0)
 		{
 			require(reward(appHub.getAppOwner(appForTask),appPrice));
 				// to unlock a stake ?
@@ -253,7 +253,7 @@ contract IexecHub
 		if (datasetForTask != address(0))
 		{
 			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
-			if ( datasetPrice > 0 )
+			if (datasetPrice > 0)
 			{
 				require(reward(datasetHub.getDatasetOwner(datasetForTask),datasetPrice));
 				// to unlock a stake ?
@@ -265,9 +265,9 @@ contract IexecHub
 		return true;
 	}
 
-	function getWorkerStatus(address _worker) public view returns (address workerPool,uint256 accurateContributions,uint256 faultyContributions)
+	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 accurateContributions, uint256 faultyContributions)
 	{
-		return (workerPoolHub.getWorkerAffectation(_worker),m_workerAccurateContributions[_worker],m_workerFaultyContributions[_worker]);
+		return (workerPoolHub.getWorkerAffectation(_worker), m_workerAccurateContributions[_worker], m_workerFaultyContributions[_worker]);
 	}
 
 	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
@@ -286,7 +286,7 @@ contract IexecHub
 
 	function closeWorkerPool(address _workerPool) public returns (bool)
 	{
-		WorkerPool aPool= WorkerPool(_workerPool);
+		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
 		require(aPool.close());
 		CloseWorkerPool(_workerPool);
@@ -297,22 +297,22 @@ contract IexecHub
 	{
 		require(workerPoolHub.subscribeToPool(_workerPool));
 	//	lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
-    WorkerPoolSubscription(_workerPool,tx.origin);
+    WorkerPoolSubscription(_workerPool, tx.origin);
 		return true;
 	}
 
 	function unsubscribeToPool(address _workerPool,address _worker) public returns(bool unsubscribed)
 	{
-		require(workerPoolHub.unsubscribeToPool(_workerPool,_worker));
-    WorkerPoolUnsubscription(_workerPool,_worker);
+		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
+    WorkerPoolUnsubscription(_workerPool, _worker);
 		return true;
 	}
 
 	function addFaultyContribution(address _taskID, address _worker) public returns(bool added)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
-		FaultyContribution(_taskID,_worker);
+		m_workerFaultyContributions[_worker] = m_workerFaultyContributions[_worker].add(1);
+		FaultyContribution(_taskID, _worker);
 		return true;
 	}
 
@@ -335,19 +335,21 @@ contract IexecHub
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerAccurateContributions[_worker]=m_workerAccurateContributions[_worker].add(1);
-		AccurateContribution(_taskID,_worker);
-		require(reward(_worker,_amount));
+		m_workerAccurateContributions[_worker] = m_workerAccurateContributions[_worker].add(1);
+		AccurateContribution(_taskID, _worker);
+		require(reward(_worker, _amount));
 		return true;
 	}
 
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerFaultyContributions[_worker]=m_workerFaultyContributions[_worker].add(1);
-		FaultyContribution(_taskID,_worker);
+		m_workerFaultyContributions[_worker] = m_workerFaultyContributions[_worker].add(1);
+		FaultyContribution(_taskID, _worker);
+		// ------------- code of seize(address, uint256) inlined here -------------
 		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);
-		Seize(_worker,_amount);
+		Seize(_worker, _amount);
+		// ------------------------------------------------------------------------
 		return true;
 	}
 
@@ -356,7 +358,7 @@ contract IexecHub
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
-		Deposit(msg.sender,_amount);
+		Deposit(msg.sender, _amount);
 		return true;
 	}
 	function withdraw(uint256 _amount) public returns (bool)
@@ -364,7 +366,7 @@ contract IexecHub
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transfer(msg.sender, _amount));
-		Withdraw(msg.sender,_amount);
+		Withdraw(msg.sender, _amount);
 		return true;
 	}
 	function checkBalance(address _owner) public view returns (uint stake, uint locked)
@@ -376,7 +378,7 @@ contract IexecHub
 	 */
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
-		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
 		Reward(_user,_amount);
 		return true;
 	}
