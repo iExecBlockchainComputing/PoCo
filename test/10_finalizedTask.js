@@ -1,50 +1,45 @@
-var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var AppHub = artifacts.require("./AppHub.sol");
-var DatasetHub = artifacts.require("./DatasetHub.sol");
+var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub       = artifacts.require("./IexecHub.sol");
+var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
+var AppHub         = artifacts.require("./AppHub.sol");
+var DatasetHub     = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
-var WorkerPool = artifacts.require("./WorkerPool.sol");
+var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
-var App = artifacts.require("./App.sol");
-var TaskRequest = artifacts.require("./TaskRequest.sol");
-var Contributions = artifacts.require("./Contributions.sol");
+var App            = artifacts.require("./App.sol");
+var TaskRequest    = artifacts.require("./TaskRequest.sol");
+var Contributions  = artifacts.require("./Contributions.sol");
 
-const BN = require("bn");
-const keccak256 = require("solidity-sha3");
-const Promise = require("bluebird");
+const BN              = require("bn");
+const keccak256       = require("solidity-sha3");
+const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
+const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+
 addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.version, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.evm, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
   TaskRequest.TaskRequestStatusEnum = {
-    UNSET: 0,
-    PENDING: 1,
-    ACCEPTED: 2,
+    UNSET:     0,
+    PENDING:   1,
+    ACCEPTED:  2,
     CANCELLED: 3,
-    ABORTED: 4,
+    ABORTED:   4,
     COMPLETED: 5
   };
 
   Contributions.ConsensusStatusEnum = {
-    UNSET: 0,
+    UNSET:       0,
     IN_PROGRESS: 1,
-    REACHED: 2,
-    FAILLED: 3,
-    FINALIZED: 4
+    REACHED:     2,
+    FAILLED:     3,
+    FINALIZED:   4
   };
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
@@ -75,13 +70,13 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduleProvider = accounts[0];
-    resourceProvider = accounts[1];
-    appProvider = accounts[2];
-    datasetProvider = accounts[3];
-    dappUser = accounts[4];
-    dappProvider = accounts[5];
-    iExecCloudUser = accounts[6];
+    scheduleProvider   = accounts[0];
+    resourceProvider   = accounts[1];
+    appProvider        = accounts[2];
+    datasetProvider    = accounts[3];
+    dappUser           = accounts[4];
+    dappProvider       = accounts[5];
+    iExecCloudUser     = accounts[6];
     marketplaceCreator = accounts[7];
 
     return Extensions.makeSureAreUnlocked(
@@ -90,12 +85,12 @@ contract('IexecHub', function(accounts) {
       .then(balance => assert.isTrue(
         web3.toWei(web3.toBigNumber(80), "ether").lessThan(balance),
         "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether")))
-      .then(() => Extensions.refillAccount(scheduleProvider, resourceProvider, 10))
-      .then(() => Extensions.refillAccount(scheduleProvider, appProvider, 10))
-      .then(() => Extensions.refillAccount(scheduleProvider, datasetProvider, 10))
-      .then(() => Extensions.refillAccount(scheduleProvider, dappUser, 10))
-      .then(() => Extensions.refillAccount(scheduleProvider, dappProvider, 10))
-      .then(() => Extensions.refillAccount(scheduleProvider, iExecCloudUser, 10))
+      .then(() => Extensions.refillAccount(scheduleProvider, resourceProvider,   10))
+      .then(() => Extensions.refillAccount(scheduleProvider, appProvider,        10))
+      .then(() => Extensions.refillAccount(scheduleProvider, datasetProvider,    10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappUser,           10))
+      .then(() => Extensions.refillAccount(scheduleProvider, dappProvider,       10))
+      .then(() => Extensions.refillAccount(scheduleProvider, iExecCloudUser,     10))
       .then(() => Extensions.refillAccount(scheduleProvider, marketplaceCreator, 10))
       .then(() => web3.version.getNodePromise())
       .then(node => isTestRPC = node.indexOf("EthereumJS TestRPC") >= 0)
@@ -402,26 +397,8 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
-        const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
-        const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
-
-        /*
-        console.log(web3.sha3("1"));
-        console.log(web3.sha3("salt"));
-        console.log(resultHash.xor(workerSalt).toString(16));
-        console.log(keccak256.sha3num("0x68c0ceeb07d48c79892b773b198e0081e235e40c916949068700dbbd8e48f0b6"));
-        console.log(keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)));
-        result:
-        0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6
-        0xa05e334153147e75f3f416139b5109d1179cb56fef6a4ecb4c4cbc92a7c37b70
-        68c0ceeb07d48c79892b773b198e0081e235e40c916949068700dbbd8e48f0b6
-        0x570ac63f587493f3ec6a35fb0ff6863a1244914e734c6d013bd73b7afd1e70f3
-        0x570ac63f587493f3ec6a35fb0ff6863a1244914e734c6d013bd73b7afd1e70f3
-        */
-        //keccak256(_resultHash         ) => vote
-        //keccak256(_resultHash ^ _salt ) => proof of knowledge
-        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x" + resultHash.xor(workerSalt).toString(16)), {
+        const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign, {
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -433,14 +410,16 @@ contract('IexecHub', function(accounts) {
       .then(checkBalance => {
         assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
         assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider");
-        return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
+        const hash = Extensions.hashResult("iExec the wanderer");
+        return aContributiuonsInstance.revealConsensus(hash, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.reveal(web3.sha3("1"), web3.sha3("salt"), {
+        const result = web3.sha3("iExec the wanderer");
+        return aContributiuonsInstance.reveal(result, {
           from: resourceProvider,
           gas: amountGazProvided
         });

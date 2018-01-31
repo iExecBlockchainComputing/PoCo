@@ -258,6 +258,22 @@ module.exports = {
       }
       return true;
     }
-  }
+  },
+  hashByteResult: function(byteresult)
+  {
+    const resultHash    = web3.sha3(byteresult,  {encoding: 'hex'}); // Vote
+    return resultHash;
+  },
+  signByteResult: function(byteresult, address)
+  {
+    const resultHash    = web3.sha3(byteresult, {encoding: 'hex'}); // Vote
+    const addressHash   = web3.sha3(address,    {encoding: 'hex'});
+    var   xor           = '0x';
+    for(i=2; i<66; ++i) xor += (parseInt(byteresult.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
+    const sign          = web3.sha3(xor, {encoding: 'hex'}); // Sign
+    return {hash: resultHash, sign: sign};
+  },
+  hashResult: function(result)          { return this.hashByteResult(web3.sha3(result)         ); },
+  signResult: function(result, address) { return this.signByteResult(web3.sha3(result), address); },
 
 };

@@ -1,26 +1,18 @@
 var TestSha = artifacts.require("./TestSha.sol");
 
-const Promise = require("bluebird");
-const keccak256 = require("solidity-sha3");
-
+const Promise         = require("bluebird");
+const keccak256       = require("solidity-sha3");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
+const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+
 addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.version, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.evm, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
-
-
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
@@ -31,13 +23,13 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduleProvider = accounts[0];
-    resourceProvider = accounts[1];
-    appProvider = accounts[2];
-    datasetProvider = accounts[3];
-    dappUser = accounts[4];
-    dappProvider = accounts[5];
-    iExecCloudUser = accounts[6];
+    scheduleProvider   = accounts[0];
+    resourceProvider   = accounts[1];
+    appProvider        = accounts[2];
+    datasetProvider    = accounts[3];
+    dappUser           = accounts[4];
+    dappProvider       = accounts[5];
+    iExecCloudUser     = accounts[6];
     marketplaceCreator = accounts[7];
 
 
@@ -110,32 +102,20 @@ contract('IexecHub', function(accounts) {
   });
 
   it("testSignedVote", function(){
-    const result        = web3.sha3("tagazok"); // bytes32 signature of the returned value
-    const address       = accounts[0];
-    const resultHash    = web3.sha3(result,  {encoding: 'hex'});
-    const addressHash   = web3.sha3(address, {encoding: 'hex'});
-    var   xor           = '0x';
-    // length 64, with starting 0x
-    for(i=2; i<66; ++i) xor += (parseInt(result.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16);
-    const sign          = web3.sha3(xor, {encoding: 'hex'});
+    const result  = web3.sha3("tagazok"); // bytes32 signature of the returned value
+    const address = accounts[0];
 
-    // console.log("result:      ", result);
-    // console.log("address:     ", address);
-    // console.log("resultHash:  ", resultHash);
-    // console.log("addressHash: ", addressHash);
-    // console.log("xor:         ", xor);
-    // console.log("sign:        ", sign);
-
-    return aTestShaInstance.testSignedVote(result)
+    return aTestShaInstance.testSignedVote(result, {from: address})
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.getEventsPromise(aTestShaInstance.SignedVote({}));
       })
       .then(events => {
+        const signed = Extensions.signResult("tagazok", address);
         assert.strictEqual(events[0].args.input, result,                                                                "test fail, SignedVote 0 (input)");
         assert.strictEqual(events[0].args.voter, address,                                                               "test fail, SignedVote 1 (voter)"); // accounts[0] is the requester
-        assert.strictEqual(events[0].args.vote,  resultHash,                                                            "test fail, SignedVote 2 (vote)");
-        assert.strictEqual(events[0].args.sign,  sign,                                                                  "test fail, SignedVote 3 (sign)");
+        assert.strictEqual(events[0].args.vote,  signed.hash,                                                           "test fail, SignedVote 2 (vote)");
+        assert.strictEqual(events[0].args.sign,  signed.sign,                                                           "test fail, SignedVote 3 (sign)");
         assert.strictEqual(events[0].args.vote,  "0xca27f1c6a82d0e2d5a2393071a6528b5f5bde9cefadcb36ba69c287581904a29",  "test fail, SignedVote 4 (vote)");
       });
   });

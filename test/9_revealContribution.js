@@ -1,60 +1,53 @@
-var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var AppHub = artifacts.require("./AppHub.sol");
-var DatasetHub = artifacts.require("./DatasetHub.sol");
+var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub       = artifacts.require("./IexecHub.sol");
+var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
+var AppHub         = artifacts.require("./AppHub.sol");
+var DatasetHub     = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
-var WorkerPool = artifacts.require("./WorkerPool.sol");
+var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
-var App = artifacts.require("./App.sol");
-var TaskRequest = artifacts.require("./TaskRequest.sol");
-var Contributions = artifacts.require("./Contributions.sol");
+var App            = artifacts.require("./App.sol");
+var TaskRequest    = artifacts.require("./TaskRequest.sol");
+var Contributions  = artifacts.require("./Contributions.sol");
 
-
-const BN = require("bn");
-const keccak256 = require("solidity-sha3");
-const Promise = require("bluebird");
+const BN              = require("bn");
+const keccak256       = require("solidity-sha3");
+const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
+const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
 
 addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.version, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.evm, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
   TaskRequest.TaskRequestStatusEnum = {
-    UNSET: 0,
-    PENDING: 1,
-    ACCEPTED: 2,
+    UNSET:     0,
+    PENDING:   1,
+    ACCEPTED:  2,
     CANCELLED: 3,
-    ABORTED: 4,
+    ABORTED:   4,
     COMPLETED: 5
   };
 
   Contributions.ConsensusStatusEnum = {
-    UNSET: 0,
+    UNSET:       0,
     IN_PROGRESS: 1,
-    REACHED: 2,
-    FAILLED: 3,
-    FINALIZED: 4
+    REACHED:     2,
+    FAILLED:     3,
+    FINALIZED:   4
   };
 
   Contributions.WorkStatusEnum = {
-    UNSET:0,
-    REQUESTED:1,
-    SUBMITTED:2,
-    POCO_REJECT:3,
-    POCO_ACCEPT:4
+    UNSET:       0,
+    REQUESTED:   1,
+    SUBMITTED:   2,
+    POCO_REJECT: 3,
+    POCO_ACCEPT: 4
   };
 
 
@@ -86,13 +79,13 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduleProvider = accounts[0];
-    resourceProvider = accounts[1];
-    appProvider = accounts[2];
-    datasetProvider = accounts[3];
-    dappUser = accounts[4];
-    dappProvider = accounts[5];
-    iExecCloudUser = accounts[6];
+    scheduleProvider   = accounts[0];
+    resourceProvider   = accounts[1];
+    appProvider        = accounts[2];
+    datasetProvider    = accounts[3];
+    dappUser           = accounts[4];
+    dappProvider       = accounts[5];
+    iExecCloudUser     = accounts[6];
     marketplaceCreator = accounts[7];
 
     return Extensions.makeSureAreUnlocked(
@@ -405,18 +398,19 @@ contract('IexecHub', function(accounts) {
           from: scheduleProvider,
           gas: amountGazProvided
         });
-      }).then(txMined => {
+      })
+      .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
-        const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
-        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)), {
+        const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign, {
           from: resourceProvider,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
+        const hash = Extensions.hashResult("iExec the wanderer");
+        return aContributiuonsInstance.revealConsensus(hash, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
@@ -428,7 +422,8 @@ contract('IexecHub', function(accounts) {
 
 
   it("resourceProvider reveal his work contribution", function() {
-    return aContributiuonsInstance.reveal(web3.sha3("1"),web3.sha3("salt"), {
+    const result = web3.sha3("iExec the wanderer");
+    return aContributiuonsInstance.reveal(result, {
         from: resourceProvider,
         gas: amountGazProvided
       })
@@ -437,11 +432,10 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aContributiuonsInstance.Reveal({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider");
-        console.log(resourceProvider);
-        assert.strictEqual(events[0].args.result, '0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6', "check revealed result by resourceProvider");
-        assert.strictEqual(events[0].args.result, web3.sha3("1"), "check revealed result by resourceProvider");
-        assert.strictEqual(events[0].args.pocoStatus.toNumber(), Contributions.WorkStatusEnum.POCO_ACCEPT, "POCO_ACCEPT !");
+        assert.strictEqual(events[0].args.worker,                resourceProvider,                                                     "check resourceProvider");
+        assert.strictEqual(events[0].args.result,                '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
+        assert.strictEqual(events[0].args.result,                web3.sha3("iExec the wanderer"),                                      "check revealed result by resourceProvider");
+        assert.strictEqual(events[0].args.pocoStatus.toNumber(), Contributions.WorkStatusEnum.POCO_ACCEPT,                             "POCO_ACCEPT !");
     });
   });
 

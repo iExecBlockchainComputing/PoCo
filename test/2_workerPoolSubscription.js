@@ -1,26 +1,21 @@
-var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var AppHub = artifacts.require("./AppHub.sol");
-var DatasetHub = artifacts.require("./DatasetHub.sol");
+var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub       = artifacts.require("./IexecHub.sol");
+var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
+var AppHub         = artifacts.require("./AppHub.sol");
+var DatasetHub     = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
-var WorkerPool = artifacts.require("./WorkerPool.sol");
+var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 
-const Promise = require("bluebird");
+const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
+const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+
 addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.version, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.evm, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
@@ -46,13 +41,13 @@ contract('IexecHub', function(accounts) {
 
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
-    scheduleProvider = accounts[0];
-    resourceProvider = accounts[1];
-    appProvider = accounts[2];
-    datasetProvider = accounts[3];
-    dappUser = accounts[4];
-    dappProvider = accounts[5];
-    iExecCloudUser = accounts[6];
+    scheduleProvider   = accounts[0];
+    resourceProvider   = accounts[1];
+    appProvider        = accounts[2];
+    datasetProvider    = accounts[3];
+    dappUser           = accounts[4];
+    dappProvider       = accounts[5];
+    iExecCloudUser     = accounts[6];
     marketplaceCreator = accounts[7];
 
     return Extensions.makeSureAreUnlocked(

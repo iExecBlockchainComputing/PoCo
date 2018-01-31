@@ -1,51 +1,45 @@
-var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var AppHub = artifacts.require("./AppHub.sol");
-var DatasetHub = artifacts.require("./DatasetHub.sol");
+var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub       = artifacts.require("./IexecHub.sol");
+var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
+var AppHub         = artifacts.require("./AppHub.sol");
+var DatasetHub     = artifacts.require("./DatasetHub.sol");
 var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
-var WorkerPool = artifacts.require("./WorkerPool.sol");
+var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
-var App = artifacts.require("./App.sol");
-var TaskRequest = artifacts.require("./TaskRequest.sol");
-var Contributions = artifacts.require("./Contributions.sol");
+var App            = artifacts.require("./App.sol");
+var TaskRequest    = artifacts.require("./TaskRequest.sol");
+var Contributions  = artifacts.require("./Contributions.sol");
 
-
-const BN = require("bn");
-const keccak256 = require("solidity-sha3");
-const Promise = require("bluebird");
+const BN              = require("bn");
+const keccak256       = require("solidity-sha3");
+const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
+const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+
 addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.version, {
-  suffix: "Promise"
-});
-Promise.promisifyAll(web3.evm, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
   TaskRequest.TaskRequestStatusEnum = {
-    UNSET: 0,
-    PENDING: 1,
-    ACCEPTED: 2,
+    UNSET:     0,
+    PENDING:   1,
+    ACCEPTED:  2,
     CANCELLED: 3,
-    ABORTED: 4,
+    ABORTED:   4,
     COMPLETED: 5
   };
 
   Contributions.ConsensusStatusEnum = {
-    UNSET: 0,
+    UNSET:       0,
     IN_PROGRESS: 1,
-    REACHED: 2,
-    FAILLED: 3,
-    FINALIZED: 4
+    REACHED:     2,
+    FAILLED:     3,
+    FINALIZED:   4
   };
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
@@ -397,9 +391,8 @@ contract('IexecHub', function(accounts) {
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
-        const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
-        return aContributiuonsInstance.contribute(keccak256.sha3num(web3.sha3("1")), keccak256.sha3num("0x"+resultHash.xor(workerSalt).toString(16)), {
+        const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign, {
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -411,7 +404,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("scheduleProvider reveal consensus result", function() {
-    return aContributiuonsInstance.revealConsensus(keccak256.sha3num(web3.sha3("1")), {
+    return aContributiuonsInstance.revealConsensus(Extensions.hashResult("iExec the wanderer"), {
         from: scheduleProvider,
         gas: amountGazProvided
       }).then(txMined => {
@@ -419,8 +412,8 @@ contract('IexecHub', function(accounts) {
         return Extensions.getEventsPromise(aContributiuonsInstance.RevealConsensus({}));
       })
       .then(events => {
-        assert.strictEqual(events[0].args.consensus, '0x4aeff0db81e3146828378be230d377356e57b6d599286b4b517dbf8941b3e1b2', "check revealed Consensus ");
-        assert.strictEqual(events[0].args.consensus, keccak256.sha3num(web3.sha3("1")), "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
+        assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"),                          "check revealed Consensus ");
         return aContributiuonsInstance.m_status.call();
       })
       .then(m_statusCall => {

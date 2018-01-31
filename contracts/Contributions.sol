@@ -63,7 +63,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	event CallForContribution(address indexed worker, uint256 accurateContributions, uint256 faultyContributions);
 	event Contribute         (address indexed worker, bytes32 resultHash);
 	event RevealConsensus    (bytes32 consensus);
-	event Reveal             (address indexed worker, bytes32 result, WorkStatusEnum pocoStatus);
+	event Reveal             (address indexed worker, bytes32 result, WorkStatusEnum pocoStatus, bool validHash, bool validSign, bytes32 hash, bytes32 hashRecord, bytes32 sign, bytes32 signRecord);
 
 	/**
 	 * Members
@@ -167,7 +167,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function reveal(bytes32 _result, bytes32 _salt) public returns (bool)
+	function reveal(bytes32 _result) public returns (bool)
 	{
 		// msg.sender = a worker
 		require(m_status == ConsensusStatusEnum.REACHED);
@@ -175,12 +175,19 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.SUBMITTED);
 		require(_result != 0x0);
 
-		bool valid = keccak256(_result        ) == m_tasksContributions[msg.sender].resultHash
-		          && keccak256(_result ^ _salt) == m_tasksContributions[msg.sender].resultSign;
+		bool validHash = keccak256(_result                        ) == m_tasksContributions[msg.sender].resultHash;
+		bool validSign = keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[msg.sender].resultSign;
 
-		m_tasksContributions[msg.sender].status = valid ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
+		m_tasksContributions[msg.sender].status = (validHash && validSign) ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
 		m_revealCounter = m_revealCounter.add(1); // Why ?
-    Reveal(msg.sender, _result, m_tasksContributions[msg.sender].status); //TODO add WorkStatusEnum in LOG
+    Reveal(msg.sender, _result, m_tasksContributions[msg.sender].status,
+			validHash,
+			validSign,
+			keccak256(_result                        ),
+			m_tasksContributions[msg.sender].resultHash,
+			keccak256(_result ^ keccak256(msg.sender)),
+			m_tasksContributions[msg.sender].resultSign
+		); //TODO add WorkStatusEnum in LOG
 		return true;
 	}
 
