@@ -93,12 +93,13 @@ contract IexecHub
 	}
 
 	function createWorkerPool(
-		string _name)
+		string _name,
+		bool _sgxGuarantee)
 	public returns(address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
-		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
+		address newWorkerPool = workerPoolHub.createWorkerPool(_name,_sgxGuarantee);
 		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
@@ -275,21 +276,20 @@ contract IexecHub
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
-	function openWorkerPool(address _workerPool) public returns (bool)
+	function openCloseWorkerPool(address _workerPool,bool open) public returns (bool)
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.open());
-	  OpenWorkerPool(_workerPool);
-		return true;
-	}
-
-	function closeWorkerPool(address _workerPool) public returns (bool)
-	{
-		WorkerPool aPool = WorkerPool(_workerPool);
-		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.close());
-		CloseWorkerPool(_workerPool);
+		if(open)
+		{
+			require(aPool.switchOnOff(true));
+			OpenWorkerPool(_workerPool);
+		}
+		else
+		{
+			require(aPool.switchOnOff(false));
+			CloseWorkerPool(_workerPool);
+		}
 		return true;
 	}
 

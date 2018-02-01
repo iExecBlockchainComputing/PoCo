@@ -276,7 +276,7 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+        return aIexecHubInstance.createWorkerPool("myWorkerPool",false, {
           from: scheduleProvider
         });
       })
@@ -385,14 +385,14 @@ contract('IexecHub', function(accounts) {
       })
       .then(m_statusCall => {
         assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
-        return aContributiuonsInstance.callForContribution(resourceProvider, {
+        return aContributiuonsInstance.callForContribution(resourceProvider,0, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
       }).then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute(signed.hash, signed.sign, {
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign,0,0,0,{
           from: resourceProvider,
           gas: amountGazProvided
         });

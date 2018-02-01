@@ -22,7 +22,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	uint256             public m_revealDate;
 	uint256             public m_revealCounter;
 	uint256             public m_consensusTimout;
-
+	bool                public m_sgxGuarantee;
 
 	enum ConsensusStatusEnum
 	{
@@ -53,7 +53,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		WorkStatusEnum status;
 		bytes32        resultHash;
 		bytes32        resultSign; // change from salt to tx.origin based signature
-		int256         balance; //TO remove ? no getter on this.
+		address        sgxChallenge;
 	}
 
 	/**
@@ -83,7 +83,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		address _taskID,
 		uint256 _workersReward,
 		uint256 _schedulerReward,
-		uint256 _stakeAmount)
+		uint256 _stakeAmount,
+		bool    _sgxGuarantee)
 	OwnableOZ()// owner is WorkerPool contract
 	IexecHubAccessor(_iexecHubAddress)
 	public
@@ -95,6 +96,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_workersReward   = _workersReward;
 		m_schedulerReward = _schedulerReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		m_sgxGuarantee    = _sgxGuarantee;
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
 		// how  this m_stakeAmount  is used for ?
 		//require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_stakeAmount));
@@ -120,7 +122,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function callForContribution(address _worker) public onlyOwner /*=onlySheduler*/ returns (bool)
+	function callForContribution(address _worker, address _sgxChallenge) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 
@@ -131,20 +133,25 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		uint256 faultyContributions;
     (workerPool, accurateContributions, faultyContributions) = iexecHubInterface.getWorkerStatus(_worker);
 		require(workerPool == m_workerPool);
+		m_tasksContributions[_worker].sgxChallenge=_sgxChallenge;
 		require(m_tasksContributions[_worker].status == WorkStatusEnum.UNSET );
 		m_tasksContributions[_worker].status = WorkStatusEnum.REQUESTED;
 		CallForContribution(_worker, accurateContributions, faultyContributions);
 		return true;
 	}
 
-	function contribute(bytes32 _resultHash, bytes32 _resultSign) public returns (uint256 workerStake)
+	function contribute(bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		// msg.sender = a worker
 		// tx.origin= a worker
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.REQUESTED);
-		require(_resultHash != 0x0);
-		require(_resultSign != 0x0);
+		//require(_resultHash != 0x0); // remove because of gas economy
+		//require(_resultSign != 0x0);// remove because of gas economy
+		if (m_sgxGuarantee)
+		{
+				require( m_tasksContributions[msg.sender].sgxChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
+		}
 
 		m_tasksWorkers.push(msg.sender);
 		m_tasksContributions[msg.sender].status     = WorkStatusEnum.SUBMITTED;
@@ -158,8 +165,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function revealConsensus(bytes32 _consensus) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
-		require(m_status == ConsensusStatusEnum.IN_PROGRESS); //or state Locked to add ?
-		require(m_tasksWorkers.length >0);// you cannot revealConsensus if you do not have callForContribution and no worker have contribute
+		require(m_status == ConsensusStatusEnum.IN_PROGRESS && m_tasksWorkers.length >0); //or state Locked to add ?
+		//require(m_tasksWorkers.length >0);// you cannot revealConsensus if you do not have callForContribution and no worker have contribute
 		m_status     = ConsensusStatusEnum.REACHED;
 		m_consensus  = _consensus;
 		m_revealDate = REVEAL_PERIOD_DURATION.add(now);
@@ -173,7 +180,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(m_status == ConsensusStatusEnum.REACHED);
 		require(m_revealDate > now);
 		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.SUBMITTED);
-		require(_result != 0x0);
+		//require(_result != 0x0);// remove because of gas economy
 
 		bool validHash = keccak256(_result                        ) == m_tasksContributions[msg.sender].resultHash;
 		bool validSign = keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[msg.sender].resultSign;
@@ -240,14 +247,11 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
 				require(iexecHubInterface.unlockForTask(m_taskID, w, m_stakeAmount));//should failed if no locked ?
 				require(iexecHubInterface.rewardForTask(m_taskID, w, individualReward));
-				m_tasksContributions[w].balance = int256(individualReward);
 			}
 			else // WorkStatusEnum.POCO_REJECT
 			{
 				require(iexecHubInterface.seizeForTask(m_taskID, w, m_stakeAmount));
 				// No Reward
-				//TO remove ? no getter on this.
-				m_tasksContributions[w].balance = -int256(m_stakeAmount); // TODO: SafeMath
 			}
 		}
 	  return true;
