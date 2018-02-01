@@ -93,12 +93,12 @@ contract IexecHub
 	}
 
 	function createWorkerPool(
-		string _name)
+		string _name,bool _sgxGuarantee)
 	public returns(address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
-		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
+		address newWorkerPool = workerPoolHub.createWorkerPool(_name,_sgxGuarantee);
 		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
