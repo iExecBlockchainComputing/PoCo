@@ -276,7 +276,7 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
 
         console.log("transferOwnership of TaskRequestHub to IexecHub");
-        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+        return aIexecHubInstance.createWorkerPool("myWorkerPool",false, {
           from: scheduleProvider
         });
       })

@@ -22,7 +22,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	uint256             public m_revealDate;
 	uint256             public m_revealCounter;
 	uint256             public m_consensusTimout;
-
+	bool                public m_sgxGuarantee;
 
 	enum ConsensusStatusEnum
 	{
@@ -83,7 +83,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		address _taskID,
 		uint256 _workersReward,
 		uint256 _schedulerReward,
-		uint256 _stakeAmount)
+		uint256 _stakeAmount,
+		bool    _sgxGuarantee)
 	OwnableOZ()// owner is WorkerPool contract
 	IexecHubAccessor(_iexecHubAddress)
 	public
@@ -95,6 +96,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_workersReward   = _workersReward;
 		m_schedulerReward = _schedulerReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		m_sgxGuarantee    = _sgxGuarantee;
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
 		// how  this m_stakeAmount  is used for ?
 		//require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_stakeAmount));
@@ -137,14 +139,21 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function contribute(bytes32 _resultHash, bytes32 _resultSign) public returns (uint256 workerStake)
+	function contribute(bytes32 _resultHash, bytes32 _resultSign, bytes32 _sgxSign, uint8 v, bytes32 r, bytes32 s) public returns (uint256 workerStake)
 	{
 		// msg.sender = a worker
 		// tx.origin= a worker
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.REQUESTED);
-		require(_resultHash != 0x0);
-		require(_resultSign != 0x0);
+		//require(_resultHash != 0x0); // remove because of gas economy
+		//require(_resultSign != 0x0);// remove because of gas economy
+		if (m_sgxGuarantee)
+		{
+			//_sgxSign : signed in the worker enclave by the scheduler secret
+			// -> scheduler secret in the encryted zone of the scone application
+			// -> scone application image prepare by the scheduler for the worker. To be done by the scheduler before callForContribution.
+			require( m_owner/*scheduler*/  == ecrecover(_sgxSign,  v,  r,  s));
+		}
 
 		m_tasksWorkers.push(msg.sender);
 		m_tasksContributions[msg.sender].status     = WorkStatusEnum.SUBMITTED;

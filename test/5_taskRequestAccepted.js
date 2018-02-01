@@ -275,7 +275,7 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+        return aIexecHubInstance.createWorkerPool("myWorkerPool",false, {
           from: scheduleProvider
         });
       })

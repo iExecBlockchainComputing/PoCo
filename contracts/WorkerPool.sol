@@ -22,12 +22,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	uint256                                      public m_schedulerRewardRatioPolicy;
 	uint256                                      public m_stakeRatioPolicy;
 	uint256                                      public m_resultRetentionPolicy;
+	bool                                         public m_sgxGuarantee;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
 	// mapping(address=> index)
 	mapping(address => uint256)                  public m_workerIndex;
 	// mapping(taskID => TaskContributions address);
 	//mapping(address => address)                     public m_tasks;
+
 
 	address private m_workerPoolHubAddress;
 
@@ -49,7 +51,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	//constructor
 	function WorkerPool(
 		address _iexecHubAddress,
-		string  _name)
+		string  _name,
+		bool    _sgxGuarantee)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -64,6 +67,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_resultRetentionPolicy  = 7 days;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
+		m_sgxGuarantee =_sgxGuarantee;
 
 
 		/* cannot do the following AuthorizedList contracts creation because of :
@@ -163,7 +167,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		uint256 schedulerReward =_taskCost.mul(m_schedulerRewardRatioPolicy).div(100);
 		uint256 workersReward =_taskCost.mul(uint256(100).sub(m_schedulerRewardRatioPolicy)).div(100);
 		assert(schedulerReward.add(workersReward) == _taskCost);
-		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100));
+		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100),m_sgxGuarantee);
 		return newContributions;
 	}
 
