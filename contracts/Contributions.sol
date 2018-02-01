@@ -53,7 +53,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		WorkStatusEnum status;
 		bytes32        resultHash;
 		bytes32        resultSign; // change from salt to tx.origin based signature
-		bytes32        sgxChallenge;
+		address        sgxChallenge;
 	}
 
 	/**
@@ -122,7 +122,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function callForContribution(address _worker, bytes32 _sgxChallenge) public onlyOwner /*=onlySheduler*/ returns (bool)
+	function callForContribution(address _worker, address _sgxChallenge) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 
@@ -140,7 +140,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function contribute(bytes32 _resultHash, bytes32 _resultSign, bytes32 _sgxProof) public returns (uint256 workerStake)
+	function contribute(bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		// msg.sender = a worker
 		// tx.origin= a worker
@@ -150,7 +150,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		//require(_resultSign != 0x0);// remove because of gas economy
 		if (m_sgxGuarantee)
 		{
-			require(m_tasksContributions[msg.sender].sgxChallenge == keccak256(_sgxProof ^ keccak256(msg.sender))  );
+				require( m_tasksContributions[msg.sender].sgxChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
 		}
 
 		m_tasksWorkers.push(msg.sender);
@@ -165,8 +165,8 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	function revealConsensus(bytes32 _consensus) public onlyOwner /*=onlySheduler*/ returns (bool)
 	{
-		require(m_status == ConsensusStatusEnum.IN_PROGRESS); //or state Locked to add ?
-		require(m_tasksWorkers.length >0);// you cannot revealConsensus if you do not have callForContribution and no worker have contribute
+		require(m_status == ConsensusStatusEnum.IN_PROGRESS && m_tasksWorkers.length >0); //or state Locked to add ?
+		//require(m_tasksWorkers.length >0);// you cannot revealConsensus if you do not have callForContribution and no worker have contribute
 		m_status     = ConsensusStatusEnum.REACHED;
 		m_consensus  = _consensus;
 		m_revealDate = REVEAL_PERIOD_DURATION.add(now);
@@ -180,7 +180,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		require(m_status == ConsensusStatusEnum.REACHED);
 		require(m_revealDate > now);
 		require(m_tasksContributions[msg.sender].status == WorkStatusEnum.SUBMITTED);
-		require(_result != 0x0);
+		//require(_result != 0x0);// remove because of gas economy
 
 		bool validHash = keccak256(_result                        ) == m_tasksContributions[msg.sender].resultHash;
 		bool validSign = keccak256(_result ^ keccak256(msg.sender)) == m_tasksContributions[msg.sender].resultSign;

@@ -406,7 +406,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute.call(signed.hash, signed.sign,0, {
+        return aContributiuonsInstance.contribute.call(signed.hash, signed.sign,0,0,0, {
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -419,7 +419,7 @@ contract('IexecHub', function(accounts) {
         assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider");
         assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute(signed.hash, signed.sign,0, {
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign,0,0,0, {
           from: resourceProvider,
           gas: amountGazProvided
         });

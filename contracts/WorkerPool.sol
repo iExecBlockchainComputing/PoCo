@@ -13,7 +13,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy, uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
+  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy/*, uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy*/);
 
 	/**
 	 * Members
@@ -21,7 +21,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	string                                       public m_name;
 	uint256                                      public m_schedulerRewardRatioPolicy;
 	uint256                                      public m_stakeRatioPolicy;
-	uint256                                      public m_resultRetentionPolicy;
+	//uint256                                      public m_resultRetentionPolicy;
   bool                												 public m_sgxGuarantee;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
@@ -63,7 +63,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_name             = _name;
 		m_schedulerRewardRatioPolicy = 10; //% of the task reward going to scheduler vs workers reward
 		m_stakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
-		m_resultRetentionPolicy  = 7 days;
+		//m_resultRetentionPolicy  = 7 days;
 		m_sgxGuarantee = _sgxGuarantee;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
@@ -95,10 +95,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
+		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy/*,m_resultRetentionPolicy,_newResultRetentionPolicy*/);
 		m_stakeRatioPolicy = _newStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy =_newSchedulerRewardRatioPolicy;
-		m_resultRetentionPolicy = _newResultRetentionPolicy;
+		//m_resultRetentionPolicy = _newResultRetentionPolicy;
 	}
 
 	function getWorkerPoolOwner() public view returns (address)
@@ -142,18 +142,19 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	}
 
 	/************************* open / close mechanisms *************************/
-	function open() public onlyIexecHub /*for staking management*/ returns (bool)
+	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
-		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		if(onoff){
+			require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
+			m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		}
+		else{
+			require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
+			m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
+		}
 		return true;
 	}
-	function close() public onlyIexecHub /*for staking management*/ returns (bool)
-	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
-		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
-		return true;
-	}
+
 	function isOpen() public view returns (bool)
 	{
 		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;

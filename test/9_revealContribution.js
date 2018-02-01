@@ -402,7 +402,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute(signed.hash, signed.sign,0, {
+        return aContributiuonsInstance.contribute(signed.hash, signed.sign,0,0,0, {
           from: resourceProvider,
           gas: amountGazProvided
         });

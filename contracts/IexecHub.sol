@@ -276,21 +276,20 @@ contract IexecHub
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
-	function openWorkerPool(address _workerPool) public returns (bool)
+	function openCloseWorkerPool(address _workerPool,bool open) public returns (bool)
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.open());
-	  OpenWorkerPool(_workerPool);
-		return true;
-	}
-
-	function closeWorkerPool(address _workerPool) public returns (bool)
-	{
-		WorkerPool aPool = WorkerPool(_workerPool);
-		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.close());
-		CloseWorkerPool(_workerPool);
+		if(open)
+		{
+			require(aPool.switchOnOff(true));
+			OpenWorkerPool(_workerPool);
+		}
+		else
+		{
+			require(aPool.switchOnOff(false));
+			CloseWorkerPool(_workerPool);
+		}
 		return true;
 	}
 
