@@ -243,7 +243,7 @@ contract('IexecHub', function(accounts) {
 
   it("WorkerPool Ceation", function() {
     let workerPoolAddressFromLog;
-    return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+    return aIexecHubInstance.createWorkerPool("myWorkerPool",false, {
         from: scheduleProvider
       })
       .then(txMined => {

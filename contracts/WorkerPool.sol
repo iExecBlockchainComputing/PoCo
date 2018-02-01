@@ -22,6 +22,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	uint256                                      public m_schedulerRewardRatioPolicy;
 	uint256                                      public m_stakeRatioPolicy;
 	uint256                                      public m_resultRetentionPolicy;
+  bool                												 public m_sgxGuarantee;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
 	// mapping(address=> index)
@@ -49,7 +50,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	//constructor
 	function WorkerPool(
 		address _iexecHubAddress,
-		string  _name)
+		string  _name,
+		bool    _sgxGuarantee)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -62,6 +64,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_schedulerRewardRatioPolicy = 10; //% of the task reward going to scheduler vs workers reward
 		m_stakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
 		m_resultRetentionPolicy  = 7 days;
+		m_sgxGuarantee = _sgxGuarantee;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
 
@@ -163,7 +166,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		uint256 schedulerReward =_taskCost.mul(m_schedulerRewardRatioPolicy).div(100);
 		uint256 workersReward =_taskCost.mul(uint256(100).sub(m_schedulerRewardRatioPolicy)).div(100);
 		assert(schedulerReward.add(workersReward) == _taskCost);
-		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100));
+		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100),m_sgxGuarantee);
 		return newContributions;
 	}
 
