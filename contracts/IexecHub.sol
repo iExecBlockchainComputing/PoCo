@@ -295,8 +295,8 @@ contract IexecHub
 
 	function unsubscribeToPool(address _workerPool,address _worker) public returns(bool unsubscribed)
 	{
-		require(unlock(msg.sender,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
 		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
+		require(unlock(_worker,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
     WorkerPoolUnsubscription(_workerPool, _worker);
 		return true;
 	}
