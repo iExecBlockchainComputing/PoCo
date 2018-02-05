@@ -52,6 +52,7 @@ contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
+  let subscriptionStakePolicy =10;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;

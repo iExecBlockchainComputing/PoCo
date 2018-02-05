@@ -13,21 +13,20 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy, uint256 oldResultRetentionPolicyPolicy, uint256  newResultRetentionPolicyPolicy);
+  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy);
 
 	/**
 	 * Members
 	 */
 	string                                       public m_name;
 	uint256                                      public m_schedulerRewardRatioPolicy;
+	uint256                                      public m_subscriptionStakePolicy;
 	uint256                                      public m_stakeRatioPolicy;
-	uint256                                      public m_resultRetentionPolicy;
 	WorkerPoolStatusEnum                         public m_workerPoolStatus;
 	address[]                                    public m_workers;
 	// mapping(address=> index)
 	mapping(address => uint256)                  public m_workerIndex;
-	// mapping(taskID => TaskContributions address);
-	//mapping(address => address)                     public m_tasks;
+
 
 	address private m_workerPoolHubAddress;
 
@@ -49,7 +48,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	//constructor
 	function WorkerPool(
 		address _iexecHubAddress,
-		string  _name)
+		string  _name,
+		uint256 _subscriptionStakePolicy)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -61,10 +61,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_name             = _name;
 		m_schedulerRewardRatioPolicy = 10; //% of the task reward going to scheduler vs workers reward
 		m_stakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
-		m_resultRetentionPolicy  = 7 days;
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress =msg.sender;
-
+		m_subscriptionStakePolicy =_subscriptionStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
 
 		/* cannot do the following AuthorizedList contracts creation because of :
 		   VM Exception while processing transaction: out of gas at deploy.
@@ -92,10 +91,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy,m_resultRetentionPolicy,_newResultRetentionPolicy);
+		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy);
 		m_stakeRatioPolicy = _newStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy =_newSchedulerRewardRatioPolicy;
-		m_resultRetentionPolicy = _newResultRetentionPolicy;
 	}
 
 	function getWorkerPoolOwner() public view returns (address)
@@ -139,18 +137,34 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	}
 
 	/************************* open / close mechanisms *************************/
-	function open() public onlyIexecHub /*for staking management*/ returns (bool)
+		/*
+	function open() public onlyIexecHub returns (bool)
 	{
 		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
 		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		return true;
 	}
-	function close() public onlyIexecHub /*for staking management*/ returns (bool)
+
+	function close() public onlyIexecHub /*for staking management*//* returns (bool)
 	{
 		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
 		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
 		return true;
+	}*/
+
+	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
+	{
+		if(onoff){
+			require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
+			m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		}
+		else{
+			require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
+			m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
+		}
+		return true;
 	}
+
 	function isOpen() public view returns (bool)
 	{
 		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;

@@ -22,6 +22,7 @@ contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
+  let subscriptionStakePolicy =10;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -243,7 +244,7 @@ contract('IexecHub', function(accounts) {
 
   it("WorkerPool Ceation", function() {
     let workerPoolAddressFromLog;
-    return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+    return aIexecHubInstance.createWorkerPool("myWorkerPool",subscriptionStakePolicy, {
         from: scheduleProvider
       })
       .then(txMined => {

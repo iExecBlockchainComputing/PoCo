@@ -243,7 +243,7 @@ contract('IexecHub', function(accounts) {
 
   it("free App Ceation", function() {
     let appAddressFromLog;
-    return aIexecHubInstance.createApp("freeapp", 0, "freeapp_param", "freeapp_uri",{
+    return aIexecHubInstance.createAppOrDataset("freeapp", 0, "freeapp_param", "freeapp_uri",true,{
       from: appProvider
     })
     .then(txMined => {

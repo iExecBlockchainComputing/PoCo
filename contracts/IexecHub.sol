@@ -93,38 +93,34 @@ contract IexecHub
 	}
 
 	function createWorkerPool(
-		string _name)
+		string _name,
+		uint256 _subscriptionStakePolicy)
 	public returns(address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
-		address newWorkerPool = workerPoolHub.createWorkerPool(_name);
+		address newWorkerPool = workerPoolHub.createWorkerPool(_name,_subscriptionStakePolicy);
 		CreateWorkerPool(tx.origin,newWorkerPool,_name);
 		return newWorkerPool;
 	}
 
-	function createApp(
-		string  _appName,
-		uint256 _appPrice,
-		string  _appParam,
-		string  _appUri)
-	public returns(address createdApp)
+	function createAppOrDataset( // App + Dataset to function economy
+		string  _name,
+		uint256 _price,
+		string  _param,
+		string  _uri,
+		bool app)
+	public returns(address created)
 	{
 		//require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
-		address newApp = appHub.createApp(_appName,_appPrice,_appParam,_appUri);
-		return newApp;
-	}
-
-	function createDataset(
-		string  _datasetName,
-		uint256 _datasetPrice,
-		string  _datasetParam,
-		string  _datasetUri)
-	public returns(address createdDataset)
-	{
-		//require(lock(msg.sender,DATASET_CREATION_STAKE));		//prevent creation spam ?
-		address newDataset = datasetHub.createDataset( _datasetName, _datasetPrice, _datasetParam, _datasetUri);
-		return newDataset;
+		if(app){
+			address newApp = appHub.createApp(_name,_price,_param,_uri);
+			return newApp;
+		}
+		else{
+			address newDataset = datasetHub.createDataset(_name,_price,_param,_uri);
+			return newDataset;
+		}
 	}
 
 	function createTaskRequest(
@@ -230,9 +226,6 @@ contract IexecHub
 		Contributions aContributions = Contributions(m_taskContributionsAffectation[_taskID]);
 		require(aContributions.claimFailedConsensus());
 		require(reward(m_taskRequesterAffectation[_taskID],m_taskUserCost[_taskID]));
-		//where worker contribution stake and scheduler stake goes ?
-		// toto réponds : les stake vont au msg.sender entrainant une chasse aux sorcieres généralisées pour sniffer les workerpools
-		//                avec formations de milices organisée pour detecter cela et aussi des groupes de saboteurs. ahahah !
 	  require(taskRequestHub.setAborted(_taskID));
 		TaskAborted(_taskID,m_taskContributionsAffectation[_taskID]);
 		return true;
@@ -275,34 +268,34 @@ contract IexecHub
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
-	function openWorkerPool(address _workerPool) public returns (bool)
+	function openCloseWorkerPool(address _workerPool,bool open) public returns (bool)
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.open());
-	  OpenWorkerPool(_workerPool);
-		return true;
-	}
-
-	function closeWorkerPool(address _workerPool) public returns (bool)
-	{
-		WorkerPool aPool = WorkerPool(_workerPool);
-		require(aPool.getWorkerPoolOwner() == msg.sender);
-		require(aPool.close());
-		CloseWorkerPool(_workerPool);
+		if(open)
+		{
+			require(aPool.switchOnOff(true));
+			OpenWorkerPool(_workerPool);
+		}
+		else
+		{
+			require(aPool.switchOnOff(false));
+			CloseWorkerPool(_workerPool);
+		}
 		return true;
 	}
 
 	function subscribeToPool(address _workerPool) public returns(bool subscribed)
 	{
+		require(lock(msg.sender,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
 		require(workerPoolHub.subscribeToPool(_workerPool));
-	//	lock(msg.sender,WORKER_MEMBERSHIP_STAKE);
     WorkerPoolSubscription(_workerPool, tx.origin);
 		return true;
 	}
 
 	function unsubscribeToPool(address _workerPool,address _worker) public returns(bool unsubscribed)
 	{
+		require(unlock(msg.sender,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
 		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
     WorkerPoolUnsubscription(_workerPool, _worker);
 		return true;
@@ -319,6 +312,12 @@ contract IexecHub
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(lock(_user,_amount));
+		return true;
+	}
+
+	function lock( address _user, uint _amount) internal returns (bool)
+	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
 		return true;
@@ -327,6 +326,12 @@ contract IexecHub
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(unlock(_user,_amount));
+		return true;
+	}
+
+	function unlock( address _user, uint _amount) internal returns (bool)
+	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
 		return true;

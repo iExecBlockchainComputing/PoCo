@@ -57,11 +57,11 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByWorkerPool[_workerPool] != 0x0;
 	}
 
-	function createWorkerPool(string _name) public onlyOwner /*owner == IexecHub*/ returns(address createdWorkerPool)
+	function createWorkerPool(string _name,uint256 _subscriptionStakePolicy) public onlyOwner /*owner == IexecHub*/ returns(address createdWorkerPool)
 	{
 		// tx.origin == owner
 		// msg.sender == IexecHub
-		address newWorkerPool = new WorkerPool(msg.sender,_name);
+		address newWorkerPool = new WorkerPool(msg.sender,_name,_subscriptionStakePolicy);
 		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1);
 		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
 		m_ownerByWorkerPool[newWorkerPool] = tx.origin;

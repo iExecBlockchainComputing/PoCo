@@ -22,6 +22,7 @@ contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
+  let subscriptionStakePolicy =10;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -207,7 +208,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of TaskRequestHub to IexecHub")
-        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+        return aIexecHubInstance.createWorkerPool("myWorkerPool",subscriptionStakePolicy, {
           from: scheduleProvider
         });
       })
@@ -285,6 +286,13 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+            from: resourceProvider,
+            gas: amountGazProvided
+          });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
           from: resourceProvider,
           gas: amountGazProvided
@@ -296,13 +304,20 @@ contract('IexecHub', function(accounts) {
   });
 
   it("resourceProvider not white listed cannot Subscribe", function() {
-    return Extensions.expectedExceptionPromise(() => {
-        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
-          from: resourceProvider,
-          gas: amountGazProvided
-        });
-      },
-      amountGazProvided);
+      return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+        from: resourceProvider,
+        gas: amountGazProvided
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return Extensions.expectedExceptionPromise(() => {
+            return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+              from: resourceProvider,
+              gas: amountGazProvided
+            });
+          },
+          amountGazProvided);
+      });
   });
 
 

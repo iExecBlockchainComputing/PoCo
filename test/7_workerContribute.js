@@ -44,6 +44,7 @@ contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
+  let subscriptionStakePolicy =10;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -277,7 +278,7 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+        return aIexecHubInstance.createWorkerPool("myWorkerPool",subscriptionStakePolicy,{
           from: scheduleProvider
         });
       })
@@ -310,6 +311,13 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+        return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+            from: resourceProvider,
+            gas: amountGazProvided
+          });
+      })
+      .then(txMined => {
+        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
           from: resourceProvider,
           gas: amountGazProvided
@@ -317,7 +325,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createApp("hello-world-docker", 0, "docker", "hello-world", {
+        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world", true,{
           from: appProvider
         });
       })
@@ -416,8 +424,8 @@ contract('IexecHub', function(accounts) {
         return aIexecHubInstance.checkBalance.call(resourceProvider);
       })
       .then(checkBalance => {
-        assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider");
-        assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider");
+        assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider: 30");
+        assert.strictEqual(checkBalance[1].toNumber(), 10, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
         return aContributiuonsInstance.contribute(signed.hash, signed.sign, {
           from: resourceProvider,
@@ -434,7 +442,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(checkBalance => {
         assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
-        assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider");
+        assert.strictEqual(checkBalance[1].toNumber(), 40, "check stake locked of the resourceProvider : 30 + 10");
       });
   });
 
