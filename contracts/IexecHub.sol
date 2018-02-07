@@ -16,10 +16,10 @@ import "rlc-token/contracts/RLC.sol";
 contract IexecHub
 {
 	using SafeMathOZ for uint256;
-	//uint private constant WORKER_POOL_CREATION_STAKE = 5000; //updated by vote or super admin ?
-	//uint private constant APP_CREATION_STAKE         = 5000; //updated by vote or super admin ?
-	//uint private constant DATASET_CREATION_STAKE     = 5000; //updated by vote or super admin ?
-	//uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; //updated by vote or super admin ?
+	// uint private constant WORKER_POOL_CREATION_STAKE = 5000; // updated by vote or super admin ?
+	// uint private constant APP_CREATION_STAKE         = 5000; // updated by vote or super admin ?
+	// uint private constant DATASET_CREATION_STAKE     = 5000; // updated by vote or super admin ?
+	// uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; // updated by vote or super admin ?
 
 	struct Account
 	{
@@ -60,7 +60,7 @@ contract IexecHub
 	event TaskAborted(address taskID, address workContributions);
 	event TaskCompleted(address taskID, address workContributions);
 
-	event CreateWorkerPool(address indexed workerPoolOwner,address indexed workerPool,string  name);
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
 	event OpenWorkerPool(address indexed workerPool);
 	event CloseWorkerPool(address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
@@ -92,13 +92,20 @@ contract IexecHub
 
 	function createWorkerPool(
 		string _name,
-		uint256 _subscriptionStakePolicy)
-	public returns(address createdWorkerPool)
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
+	public returns (address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		//require(lock(msg.sender,WORKER_POOL_CREATION_STAKE)); ?
-		address newWorkerPool = workerPoolHub.createWorkerPool(_name,_subscriptionStakePolicy);
-		CreateWorkerPool(tx.origin,newWorkerPool,_name);
+		// require(lock(msg.sender, WORKER_POOL_CREATION_STAKE)); ?
+		address newWorkerPool = workerPoolHub.createWorkerPool(
+			_name,
+			_subscriptionLockStakePolicy,
+			_subscriptionMinimumStakePolicy,
+			_subscriptionMinimumScorePolicy
+		);
+		CreateWorkerPool(tx.origin, newWorkerPool, _name);
 		return newWorkerPool;
 	}
 
@@ -107,17 +114,17 @@ contract IexecHub
 		uint256 _price,
 		string  _param,
 		string  _uri,
-		bool app)
-	public returns(address created)
+		bool    _isApp)
+	public returns (address created)
 	{
-		//require(lock(msg.sender,APP_CREATION_STAKE));		//prevent creation spam ?
-		if(app){
-			address newApp = appHub.createApp(_name,_price,_param,_uri);
-			return newApp;
+		// require(lock(msg.sender, APP_CREATION_STAKE)); // prevent creation spam ?
+		if (_isApp)
+		{
+			return appHub.createApp(_name, _price, _param, _uri);
 		}
-		else{
-			address newDataset = datasetHub.createDataset(_name,_price,_param,_uri);
-			return newDataset;
+		else
+		{
+			return datasetHub.createDataset(_name, _price, _param, _uri);
 		}
 	}
 
@@ -129,13 +136,13 @@ contract IexecHub
 		uint    _taskCost,
 		uint    _askedTrust,
 		bool    _dappCallback)
-	public returns(address createdTaskRequest)
+	public returns (address createdTaskRequest)
 	{
 		// msg.sender = requester
 
 		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
 
-		//APP
+		// APP
 		require(appHub.isAppRegistred     (_app             ));
 		require(appHub.isOpen             (_app             ));
 		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
@@ -144,7 +151,7 @@ contract IexecHub
 		// userCost at least _taskCost
 		uint256 userCost = _taskCost;
 
-		//DATASET
+		// DATASET
 		if (_dataset != address(0))
 		{
 			require(datasetHub.isDatasetRegistred (_dataset             ));
@@ -159,14 +166,14 @@ contract IexecHub
 
 		}
 
-		//WORKER_POOL
+		// WORKER_POOL
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.isOpen());
 
 		// add optional appPrice  for userCost
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
-		//msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
+		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		if (m_accounts[msg.sender].stake < userCost)
 		{
 			require(deposit(userCost));
@@ -184,28 +191,24 @@ contract IexecHub
 			_dappCallback
 		);
 
-
-
 		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
 		m_taskAppAffectation[newTaskRequest]        = _app;
 		m_taskDatasetAffectation[newTaskRequest]    = _dataset;
 		m_taskRequesterAffectation[newTaskRequest]  = msg.sender;
 		m_taskUserCost[newTaskRequest]              = userCost;
 		// address newTaskRequest will the taskID
-		TaskRequest(newTaskRequest,_workerPool);
+		TaskRequest(newTaskRequest, _workerPool);
 		return newTaskRequest;
 	}
 
 	function acceptTask(address _taskID) public  returns (bool)
 	{
-
-		WorkerPool aPool = WorkerPool(m_taskWorkerPoolAffectation[_taskID]);
+		WorkerPool aPool                        = WorkerPool(m_taskWorkerPoolAffectation[_taskID]);
 		require(msg.sender == aPool.m_owner());
-		address contributions = aPool.acceptTask(_taskID,getTaskCost(_taskID));
-		m_taskContributionsAffectation[_taskID] = contributions;
-		m_acceptedTaskRequest[_taskID] = true;
+		m_taskContributionsAffectation[_taskID] = aPool.acceptTask(_taskID, getTaskCost(_taskID));
+		m_acceptedTaskRequest[_taskID]          = true;
 		require(taskRequestHub.setAccepted(_taskID));
-		TaskAccepted(_taskID,m_taskWorkerPoolAffectation[_taskID],contributions);
+		TaskAccepted(_taskID, m_taskWorkerPoolAffectation[_taskID], m_taskContributionsAffectation[_taskID]);
 		return true;
 	}
 
@@ -213,9 +216,9 @@ contract IexecHub
 	{
 		require(msg.sender == m_taskRequesterAffectation[_taskID]);
 		require(m_acceptedTaskRequest[_taskID] == false);
-		require(reward(msg.sender,m_taskUserCost[_taskID]));
+		require(reward(msg.sender, m_taskUserCost[_taskID]));
 		require(taskRequestHub.setCancelled(_taskID));
-		TaskCancelled(_taskID,m_taskWorkerPoolAffectation[_taskID]);
+		TaskCancelled(_taskID, m_taskWorkerPoolAffectation[_taskID]);
 		return true;
 	}
 
@@ -232,12 +235,12 @@ contract IexecHub
 	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(reward(tx.origin,_schedulerReward));
+		require(reward(tx.origin, _schedulerReward));
 		address appForTask = m_taskAppAffectation[_taskID];
 		uint256 appPrice   = appHub.getAppPrice(appForTask);
 		if (appPrice > 0)
 		{
-			require(reward(appHub.getAppOwner(appForTask),appPrice));
+			require(reward(appHub.getAppOwner(appForTask), appPrice));
 				// to unlock a stake ?
 		}
 		address datasetForTask = m_taskDatasetAffectation[_taskID];
@@ -246,11 +249,11 @@ contract IexecHub
 			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(datasetForTask),datasetPrice));
+				require(reward(datasetHub.getDatasetOwner(datasetForTask), datasetPrice));
 				// to unlock a stake ?
 			}
 		}
-    require(taskRequestHub.setResult(_taskID,_stdout,_stderr,_uri));
+    require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
 		TaskCompleted(_taskID, m_taskContributionsAffectation[_taskID]);
 		return true;
@@ -266,7 +269,7 @@ contract IexecHub
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
-	function openCloseWorkerPool(address _workerPool,bool open) public returns (bool)
+	function openCloseWorkerPool(address _workerPool, bool open) public returns (bool)
 	{
 		WorkerPool aPool = WorkerPool(_workerPool);
 		require(aPool.getWorkerPoolOwner() == msg.sender);
@@ -283,22 +286,21 @@ contract IexecHub
 		return true;
 	}
 
-	function subscribeToPool(address _workerPool) public returns(bool subscribed)
+	function subscribeToPool(address _workerPool) public returns (bool subscribed)
 	{
 		require(m_score[msg.sender]          >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
 		require(m_accounts[msg.sender].stake >= WorkerPool(_workerPool).m_subscriptionMinimumStakePolicy());
 		require(lock(msg.sender, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
-
 		require(workerPoolHub.subscribeToPool(_workerPool));
 		WorkerPoolSubscription(_workerPool, tx.origin);
 		return true;
 	}
 
-	// workerPoolHub.unsubscribeToPool checks tx.origin.
-	function unsubscribeToPool(address _workerPool, address _worker) public returns(bool unsubscribed)
+	function unsubscribeToPool(address _workerPool, address _worker) public returns (bool unsubscribed)
 	{
+		require(unlock(_worker, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
+		// workerPoolHub.unsubscribeToPool checks tx.origin (only worker and workerPool manager are allowed)
 		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
-		require(unlock(_worker, WorkerPool(_workerPool).m_subscriptionStakePolicy()));
 		WorkerPoolUnsubscription(_workerPool, _worker);
 		return true;
 	}
@@ -306,28 +308,14 @@ contract IexecHub
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(lock(_user,_amount));
-		return true;
-	}
-
-	function lock(address _user, uint _amount) internal returns (bool)
-	{
-		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
-		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
+		require(lock(_user, _amount));
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		require(unlock(_user,_amount));
-		return true;
-	}
-
-	function unlock(address _user, uint _amount) internal returns (bool)
-	{
-		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
-		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		require(unlock(_user, _amount));
 		return true;
 	}
 
@@ -354,6 +342,9 @@ contract IexecHub
 		return true;
 	}
 
+	/**
+	 * Wallet
+	 */
 	function deposit(uint256 _amount) public returns (bool)
 	{
 		// TODO: is the transferFrom cancel is SafeMath throws ?
@@ -380,7 +371,21 @@ contract IexecHub
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
-		Reward(_user,_amount);
+		Reward(_user, _amount);
+		return true;
+	}
+
+	function lock(address _user, uint _amount) internal returns (bool)
+	{
+		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
+		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
+		return true;
+	}
+
+	function unlock(address _user, uint _amount) internal returns (bool)
+	{
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
 		return true;
 	}
 

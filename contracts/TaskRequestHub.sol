@@ -49,7 +49,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		return m_taskRequestsCountByOwner[_owner];
 	}
 
-	function getTaskRequest(address _owner,uint256 _index) public view returns (address)
+	function getTaskRequest(address _owner, uint256 _index) public view returns (address)
 	{
 		return m_taskRequestByOwnerByIndex[_owner][_index];
 	}
@@ -73,7 +73,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		uint    _taskCost,
 		uint    _askedTrust,
 		bool    _dappCallback)
-	public onlyOwner /*owner == IexecHub*/ returns(address createdTaskRequest)
+	public onlyOwner /*owner == IexecHub*/ returns (address createdTaskRequest)
 	{
 		// _requester == owner of the task
 		// msg.sender == IexecHub
@@ -113,22 +113,22 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		return TaskRequest(_taskId).m_taskCost();
 	}
 
-	function setResult(address _taskId,string _stdout, string _stderr, string _uri)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	function setResult(address _taskId, string _stdout, string _stderr, string _uri) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
-		return TaskRequest(_taskId).setResult(_stdout,_stderr,_uri);
+		return TaskRequest(_taskId).setResult(_stdout, _stderr, _uri);
 	}
 
-	function setAccepted(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	function setAccepted(address _taskId) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
 		return TaskRequest(_taskId).setAccepted();
 	}
 
-	function setCancelled(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	function setCancelled(address _taskId) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
 		return TaskRequest(_taskId).setCancelled();
 	}
 
-	function setAborted(address _taskId)  onlyOwner /*owner == IexecHub*/ public returns (bool)
+	function setAborted(address _taskId) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
 		return TaskRequest(_taskId).setAborted();
 	}

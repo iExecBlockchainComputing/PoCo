@@ -7,7 +7,7 @@ import "./SafeMathOZ.sol";
 import "./AuthorizedList.sol";
 import "./Contributions.sol";
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 {
 	using SafeMathOZ for uint256;
 
@@ -30,7 +30,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	uint256                     public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
 	WorkerPoolStatusEnum        public m_workerPoolStatus;
 	address[]                   public m_workers;
-	// mapping(address=> index)
+	// mapping(address => index)
 	mapping(address => uint256) public m_workerIndex;
 	/**
 	 * Address of slave/related contracts
@@ -48,7 +48,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	 * Methods
 	 */
 
-	//constructor
+	// Constructor
 	function WorkerPool(
 		address _iexecHubAddress,
 		string  _name,
@@ -66,7 +66,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		m_name                           = _name;
 		m_stakeRatioPolicy               = 30; // % of the task price to stake → cf function SubmitTask
 		m_schedulerRewardRatioPolicy     = 1;  // % of the task reward going to scheduler vs workers reward
-		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy // only at creation. cannot be change to respect lock/unlock of worker stake
+		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
 		m_subscriptionMinimumStakePolicy = _subscriptionMinimumStakePolicy;
 		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
@@ -107,8 +107,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		);
 		m_stakeRatioPolicy               = _newStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy     = _newSchedulerRewardRatioPolicy;
-		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy
-		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy
+		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy;
+		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy;
 	}
 
 	function getWorkerPoolOwner() public view returns (address)
@@ -152,7 +152,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	}
 
 	/************************* open / close mechanisms *************************/
-		/*
+	/*
 	function open() public onlyIexecHub returns (bool)
 	{
 		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
@@ -160,12 +160,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		return true;
 	}
 
-	function close() public onlyIexecHub /*for staking management*//* returns (bool)
+	function close() public onlyIexecHub returns (bool)
 	{
 		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
 		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
 		return true;
-	}*/
+	}
+	*/
 
 	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
 	{

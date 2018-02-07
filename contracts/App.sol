@@ -4,7 +4,7 @@ import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
 import "./AuthorizedList.sol";
 
-contract App is OwnableOZ, IexecHubAccessor //Owned by a D(w){
+contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 {
 
 	enum AppStatusEnum { OPEN, CLOSE }
@@ -73,17 +73,17 @@ contract App is OwnableOZ, IexecHubAccessor //Owned by a D(w){
 
 	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
 	{
-		m_workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
+		m_workerPoolsAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
 	}
 
 	function attachDatasetsAuthorizedListContract(address _datasetsAuthorizedListAddress) public onlyOwner
 	{
-		m_datasetsAuthorizedListAddress =_datasetsAuthorizedListAddress;
+		m_datasetsAuthorizedListAddress = _datasetsAuthorizedListAddress;
 	}
 
 	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
 	{
-		m_requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
+		m_requestersAuthorizedListAddress = _requestersAuthorizedListAddress;
 	}
 
 	function isWorkerPoolAllowed(address _workerPool) public returns (bool)

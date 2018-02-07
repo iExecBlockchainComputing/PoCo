@@ -25,9 +25,9 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	address           public m_appsAuthorizedListAddress;
 	address           public m_requestersAuthorizedListAddress;
 
-	//TODO add OPEN and CLOSE STATUS for datasetUri maintenance
+	// TODO add OPEN and CLOSE STATUS for datasetUri maintenance
 
-	//constructor
+	// Constructor
 	function Dataset(
 		address _iexecHubAddress,
 		string _datasetName,
@@ -70,17 +70,17 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 
 	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
 	{
-		m_workerPoolsAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
+		m_workerPoolsAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
 	}
 
 	function attachAppsAuthorizedListContract(address _appsAuthorizedListAddress) public onlyOwner
 	{
-		m_appsAuthorizedListAddress =_appsAuthorizedListAddress;
+		m_appsAuthorizedListAddress = _appsAuthorizedListAddress;
 	}
 
 	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
 	{
-		m_requestersAuthorizedListAddress =_requestersAuthorizedListAddress;
+		m_requestersAuthorizedListAddress = _requestersAuthorizedListAddress;
 	}
 
 	function isWorkerPoolAllowed(address _workerPool) public returns (bool)

@@ -14,21 +14,21 @@ contract IexecHubInterface
 
 		function createWorkerPool(
 			string _name)
-		public returns(address createdWorkerPool);
+		public returns (address createdWorkerPool);
 
 		function createApp(
 			string _appName,
 			uint256 _appPrice,
 			string _appParam,
 			string _appUri)
-		public returns(address createdApp);
+		public returns (address createdApp);
 
 		function createDataset(
 			string _datasetName,
 			uint256 _datasetPrice,
 			string _datasetParam,
 			string _datasetUri)
-		public returns(address createdDataset);
+		public returns (address createdDataset);
 
 		function createTaskRequest(
 			address _workerPool,
@@ -38,7 +38,7 @@ contract IexecHubInterface
 			uint _taskCost,
 			uint _askedTrust,
 			bool _dappCallback)
-		public returns(address createdTaskRequest);
+		public returns (address createdTaskRequest);
 
 		function cancelTask(
 			address _taskID)
@@ -51,7 +51,7 @@ contract IexecHubInterface
 			string _uri,
 			uint256 _schedulerReward
 			)
-		public returns(bool);
+		public returns (bool);
 
 		function getTaskCost(
 			address _taskID)
@@ -59,56 +59,46 @@ contract IexecHubInterface
 
 		function getWorkerStatus(
 			address _worker)
-		public view returns (address workerPool,uint256 accurateContributions,uint256 faultyContributions);
+		public view returns (address workerPool, uint256 accurateContributions, uint256 faultyContributions);
 
 		function openPool(
 			address _workerPool)
-		public returns(bool);
+		public returns (bool);
 
 		function closePool(
 			address _workerPool)
-		public returns(bool);
+		public returns (bool);
 
 		function subscribeToPool(
 			address _workerPool)
-		public returns(bool subscribed);
+		public returns (bool subscribed);
 
 		function unsubscribeToPool(
 			address _workerPool)
-		public returns(bool unsubscribed);
-
-	 function addAccurateContribution(
-		 address _taskID,
-		 address _worker)
-	  public returns(bool added);
-
-		function addFaultyContribution(
-			address _taskID,
-			address _worker)
-		public returns(bool added);
+		public returns (bool unsubscribed);
 
 		function lockForTask(
 			address _taskID,
 			address _user,
 			uint _amount)
-		public returns(bool);
+		public returns (bool);
 
 		function unlockForTask(
 			address _taskID,
 			address _user,
 			uint _amount)
-		public returns(bool);
+		public returns (bool);
 
 		function rewardForTask(
 			address _taskID,
 			address _user,
 			uint _amount)
-		public returns(bool);
+		public returns (bool);
 
 		function seizeForTask(
 			address _taskID,
 			address _user,
 			uint _amount)
-		public returns(bool);
+		public returns (bool);
 
 	}
