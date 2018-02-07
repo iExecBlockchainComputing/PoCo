@@ -115,7 +115,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 			{
  				require(iexecHubInterface.unlockForTask(m_taskID, w, m_stakeAmount));
 			}
-			require(iexecHubInterface.addFaultyContribution(m_taskID, w)); // Hadrien: why ???
 		}
 		return true;
 	}

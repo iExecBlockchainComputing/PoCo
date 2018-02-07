@@ -27,9 +27,11 @@ contract IexecHub
 		uint256 locked;
 	}
 	/**
-	 * Internal data: address to account mapping
+	 * Internal data: address to account / score
 	 */
 	mapping(address => Account) public m_accounts;
+	mapping(address => uint256) public m_score;
+
 	/**
 	 * RLC contract for token transfers.
 	 */
@@ -48,10 +50,6 @@ contract IexecHub
 	mapping (address => uint256) m_taskUserCost;
 	mapping (address => bool)    m_acceptedTaskRequest;
 
-	//worker => AccurateContributionsCount
-	mapping(address => uint256)                  m_workerAccurateContributions;
-	//worker => FaultyContributionsCount
-	mapping(address => uint256)                  m_workerFaultyContributions;
 
 	/**
 	 * Events
@@ -63,10 +61,10 @@ contract IexecHub
 	event TaskCompleted(address taskID, address workContributions);
 
 	event CreateWorkerPool(address indexed workerPoolOwner,address indexed workerPool,string  name);
-  event OpenWorkerPool(address indexed workerPool);
+	event OpenWorkerPool(address indexed workerPool);
 	event CloseWorkerPool(address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
-  event WorkerPoolSubscription(address indexed workerPool, address worker);
+	event WorkerPoolSubscription(address indexed workerPool, address worker);
 
 	event FaultyContribution(address taskID, address indexed worker);
 	event AccurateContribution(address taskID, address indexed worker);
@@ -204,7 +202,7 @@ contract IexecHub
 		WorkerPool aPool = WorkerPool(m_taskWorkerPoolAffectation[_taskID]);
 		require(msg.sender == aPool.m_owner());
 		address contributions = aPool.acceptTask(_taskID,getTaskCost(_taskID));
-		m_taskContributionsAffectation[_taskID] =contributions;
+		m_taskContributionsAffectation[_taskID] = contributions;
 		m_acceptedTaskRequest[_taskID] = true;
 		require(taskRequestHub.setAccepted(_taskID));
 		TaskAccepted(_taskID,m_taskWorkerPoolAffectation[_taskID],contributions);
@@ -225,9 +223,9 @@ contract IexecHub
 	{
 		Contributions aContributions = Contributions(m_taskContributionsAffectation[_taskID]);
 		require(aContributions.claimFailedConsensus());
-		require(reward(m_taskRequesterAffectation[_taskID],m_taskUserCost[_taskID]));
+		require(reward(m_taskRequesterAffectation[_taskID], m_taskUserCost[_taskID]));
 	  require(taskRequestHub.setAborted(_taskID));
-		TaskAborted(_taskID,m_taskContributionsAffectation[_taskID]);
+		TaskAborted(_taskID, m_taskContributionsAffectation[_taskID]);
 		return true;
 	}
 
@@ -254,13 +252,13 @@ contract IexecHub
 		}
     require(taskRequestHub.setResult(_taskID,_stdout,_stderr,_uri));
 		// incremente app and dataset reputation too  ?
-		TaskCompleted(_taskID,m_taskContributionsAffectation[_taskID]);
+		TaskCompleted(_taskID, m_taskContributionsAffectation[_taskID]);
 		return true;
 	}
 
-	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 accurateContributions, uint256 faultyContributions)
+	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
-		return (workerPoolHub.getWorkerAffectation(_worker), m_workerAccurateContributions[_worker], m_workerFaultyContributions[_worker]);
+		return (workerPoolHub.getWorkerAffectation(_worker), m_score[_worker]);
 	}
 
 	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
@@ -287,25 +285,21 @@ contract IexecHub
 
 	function subscribeToPool(address _workerPool) public returns(bool subscribed)
 	{
-		require(lock(msg.sender,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
+		require(m_score[msg.sender]          >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
+		require(m_accounts[msg.sender].stake >= WorkerPool(_workerPool).m_subscriptionMinimumStakePolicy());
+		require(lock(msg.sender, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
+
 		require(workerPoolHub.subscribeToPool(_workerPool));
-    WorkerPoolSubscription(_workerPool, tx.origin);
+		WorkerPoolSubscription(_workerPool, tx.origin);
 		return true;
 	}
 
-	function unsubscribeToPool(address _workerPool,address _worker) public returns(bool unsubscribed)
+	// workerPoolHub.unsubscribeToPool checks tx.origin.
+	function unsubscribeToPool(address _workerPool, address _worker) public returns(bool unsubscribed)
 	{
 		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
-		require(unlock(_worker,WorkerPool(_workerPool).m_subscriptionStakePolicy()));
-    WorkerPoolUnsubscription(_workerPool, _worker);
-		return true;
-	}
-
-	function addFaultyContribution(address _taskID, address _worker) public returns(bool added)
-	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerFaultyContributions[_worker] = m_workerFaultyContributions[_worker].add(1);
-		FaultyContribution(_taskID, _worker);
+		require(unlock(_worker, WorkerPool(_workerPool).m_subscriptionStakePolicy()));
+		WorkerPoolUnsubscription(_workerPool, _worker);
 		return true;
 	}
 
@@ -316,7 +310,7 @@ contract IexecHub
 		return true;
 	}
 
-	function lock( address _user, uint _amount) internal returns (bool)
+	function lock(address _user, uint _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
@@ -330,7 +324,7 @@ contract IexecHub
 		return true;
 	}
 
-	function unlock( address _user, uint _amount) internal returns (bool)
+	function unlock(address _user, uint _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
@@ -340,16 +334,18 @@ contract IexecHub
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerAccurateContributions[_worker] = m_workerAccurateContributions[_worker].add(1);
+		m_score[_worker] = m_score[_worker].add(1);
 		AccurateContribution(_taskID, _worker);
+		// ----------------------- reward(address, uint256) -----------------------
 		require(reward(_worker, _amount));
+		// ------------------------------------------------------------------------
 		return true;
 	}
 
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_workerFaultyContributions[_worker] = m_workerFaultyContributions[_worker].add(1);
+		m_score[_worker] = m_score[_worker].sub(m_score[_worker].min256(50));
 		FaultyContribution(_taskID, _worker);
 		// ------------- code of seize(address, uint256) inlined here -------------
 		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);

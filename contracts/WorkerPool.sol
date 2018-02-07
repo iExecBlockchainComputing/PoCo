@@ -13,27 +13,30 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 
 	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
-  event WorkerPoolPolicyUpdate(uint256 oldStakeRatioPolicy, uint256 newStakeRatioPolicy,uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy);
+	event WorkerPoolPolicyUpdate(
+		uint256 oldStakeRatioPolicy,               uint256 newStakeRatioPolicy,
+		uint256 oldSchedulerRewardRatioPolicy,     uint256 newSchedulerRewardRatioPolicy,
+		uint256 oldSubscriptionMinimumStakePolicy, uint256 newSubscriptionMinimumStakePolicy,
+		uint256 oldSubscriptionMinimumScorePolicy, uint256 newSubscriptionMinimumScorePolicy);
 
 	/**
 	 * Members
 	 */
-	string                                       public m_name;
-	uint256                                      public m_schedulerRewardRatioPolicy;
-	uint256                                      public m_subscriptionStakePolicy;
-	uint256                                      public m_stakeRatioPolicy;
-	WorkerPoolStatusEnum                         public m_workerPoolStatus;
-	address[]                                    public m_workers;
+	string                      public m_name;
+	uint256                     public m_stakeRatioPolicy;               // % of reward to stake
+	uint256                     public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
+	uint256                     public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
+	uint256                     public m_subscriptionMinimumStakePolicy; // Minimum stake for subscribing
+	uint256                     public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
+	WorkerPoolStatusEnum        public m_workerPoolStatus;
+	address[]                   public m_workers;
 	// mapping(address=> index)
-	mapping(address => uint256)                  public m_workerIndex;
-
-
-	address private m_workerPoolHubAddress;
-
+	mapping(address => uint256) public m_workerIndex;
 	/**
-	 * Address of slave contracts
+	 * Address of slave/related contracts
 	 */
-	address public m_workersAuthorizedListAddress;
+	address                     public m_workersAuthorizedListAddress;
+	address                     private m_workerPoolHubAddress;
 
 	modifier onlyWorkerPoolHub()
 	{
@@ -49,21 +52,25 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	function WorkerPool(
 		address _iexecHubAddress,
 		string  _name,
-		uint256 _subscriptionStakePolicy)
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
 		// tx.origin == owner
 		// msg.sender ==  WorkerPoolHub
-		require(tx.origin != msg.sender );
+		require(tx.origin != msg.sender);
 		transferOwnership(tx.origin); // owner → tx.origin
 
-		m_name             = _name;
-		m_schedulerRewardRatioPolicy = 10; //% of the task reward going to scheduler vs workers reward
-		m_stakeRatioPolicy = 30; // % of the task price to stake → cf function SubmitTask
-		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
-		m_workerPoolHubAddress =msg.sender;
-		m_subscriptionStakePolicy =_subscriptionStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
+		m_name                           = _name;
+		m_stakeRatioPolicy               = 30; // % of the task price to stake → cf function SubmitTask
+		m_schedulerRewardRatioPolicy     = 1;  // % of the task reward going to scheduler vs workers reward
+		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy // only at creation. cannot be change to respect lock/unlock of worker stake
+		m_subscriptionMinimumStakePolicy = _subscriptionMinimumStakePolicy;
+		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;
+		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
+		m_workerPoolHubAddress           = msg.sender;
 
 		/* cannot do the following AuthorizedList contracts creation because of :
 		   VM Exception while processing transaction: out of gas at deploy.
@@ -79,21 +86,29 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 		*/
 	}
 
-
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner{
- 		m_workersAuthorizedListAddress =_workerPoolsAuthorizedListAddress;
+	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
+	{
+ 		m_workersAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
  	}
 
 	function changeWorkerPoolPolicy(
-	uint256 _newStakeRatioPolicy,
-	uint256 _newSchedulerRewardRatioPolicy,
-	uint256 _newResultRetentionPolicy
-	)
+		uint256 _newStakeRatioPolicy,
+		uint256 _newSchedulerRewardRatioPolicy,
+		uint256 _newResultRetentionPolicy,
+		uint256 _newSubscriptionMinimumStakePolicy,
+		uint256 _newSubscriptionMinimumScorePolicy)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(m_stakeRatioPolicy,_newStakeRatioPolicy,m_schedulerRewardRatioPolicy,_newSchedulerRewardRatioPolicy);
-		m_stakeRatioPolicy = _newStakeRatioPolicy;
-		m_schedulerRewardRatioPolicy =_newSchedulerRewardRatioPolicy;
+		WorkerPoolPolicyUpdate(
+			m_stakeRatioPolicy,               _newStakeRatioPolicy,
+			m_schedulerRewardRatioPolicy,     _newSchedulerRewardRatioPolicy,
+			m_subscriptionMinimumStakePolicy, _newSubscriptionMinimumStakePolicy,
+			m_subscriptionMinimumScorePolicy, _newSubscriptionMinimumScorePolicy
+		);
+		m_stakeRatioPolicy               = _newStakeRatioPolicy;
+		m_schedulerRewardRatioPolicy     = _newSchedulerRewardRatioPolicy;
+		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy
+		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy
 	}
 
 	function getWorkerPoolOwner() public view returns (address)
@@ -174,10 +189,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor//Owned by a S(w)
 	function acceptTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (address taskContributions)
 	{
 		// when 2 cannot be divide by 3 for ratio calculus ?
-		uint256 schedulerReward =_taskCost.mul(m_schedulerRewardRatioPolicy).div(100);
-		uint256 workersReward =_taskCost.mul(uint256(100).sub(m_schedulerRewardRatioPolicy)).div(100);
-		assert(schedulerReward.add(workersReward) == _taskCost);
-		address newContributions = new Contributions(iexecHubAddress,_taskID,workersReward,schedulerReward,_taskCost.mul(m_stakeRatioPolicy).div(100));
+		uint256 schedulerReward  = _taskCost.mul(m_schedulerRewardRatioPolicy).div(100);
+		uint256 workersReward    = _taskCost.sub(schedulerReward);
+		address newContributions = new Contributions(
+			iexecHubAddress,
+			_taskID,
+			workersReward,
+			schedulerReward,
+			_taskCost.mul(m_stakeRatioPolicy).div(100)
+		);
 		return newContributions;
 	}
 
