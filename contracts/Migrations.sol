@@ -7,7 +7,7 @@ contract Migrations
 
 	modifier restricted()
 	{
-		if (msg.sender == owner) _; //TODO: if → require
+		if (msg.sender == owner) _; // TODO: if → require
 	}
 
 	function Migrations() public

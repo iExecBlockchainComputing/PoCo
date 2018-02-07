@@ -21,7 +21,10 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-  let amountGazProvided = 4000000;
+  let amountGazProvided              = 4000000;
+  let subscriptionLockStakePolicy    = 0;
+  let subscriptionMinimumStakePolicy = 10;
+  let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -243,7 +246,12 @@ contract('IexecHub', function(accounts) {
 
   it("WorkerPool Ceation", function() {
     let workerPoolAddressFromLog;
-    return aIexecHubInstance.createWorkerPool("myWorkerPool", {
+    return aIexecHubInstance.createWorkerPool(
+      "myWorkerPool",
+      subscriptionLockStakePolicy,
+      subscriptionMinimumStakePolicy,
+      subscriptionMinimumScorePolicy,
+      {
         from: scheduleProvider
       })
       .then(txMined => {

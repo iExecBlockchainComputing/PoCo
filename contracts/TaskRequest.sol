@@ -62,16 +62,15 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	{
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
-		m_taskRequestHubAddress =msg.sender;
-
-		m_workerPoolRequested = _workerPool;
-		m_appRequested        = _app;
-		m_datasetRequested    = _dataset;
-		m_taskParam           = _taskParam;
-		m_taskCost            = _taskCost;
-		m_askedTrust          = _askedTrust;
-		m_dappCallback        = _dappCallback;
-		m_status =TaskRequestStatusEnum.PENDING;
+		m_taskRequestHubAddress = msg.sender;
+		m_workerPoolRequested   = _workerPool;
+		m_appRequested          = _app;
+		m_datasetRequested      = _dataset;
+		m_taskParam             = _taskParam;
+		m_taskCost              = _taskCost;
+		m_askedTrust            = _askedTrust;
+		m_dappCallback          = _dappCallback;
+		m_status                = TaskRequestStatusEnum.PENDING;
 	}
 
 	function setAccepted() onlytaskRequestHub public returns (bool)
@@ -98,8 +97,9 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		m_stderr = _stderr;
 		m_uri    = _uri;
 		m_status = TaskRequestStatusEnum.COMPLETED;
-		if(m_dappCallback){
-			//optional dappCallback call can be done
+		if(m_dappCallback)
+		{
+			// optional dappCallback call can be done
 			require(IexecAPI(m_owner).taskRequestCallback(
 				this,
 				_stdout,
