@@ -21,8 +21,10 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-  let amountGazProvided = 4000000;
-  let subscriptionStakePolicy =10;
+  let amountGazProvided              = 4000000;
+  let subscriptionLockStakePolicy    = 0;
+  let subscriptionMinimumStakePolicy = 0;
+  let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -208,9 +210,14 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of TaskRequestHub to IexecHub")
-        return aIexecHubInstance.createWorkerPool("myWorkerPool",subscriptionStakePolicy, {
-          from: scheduleProvider
-        });
+        return aIexecHubInstance.createWorkerPool(
+          "myWorkerPool",
+          subscriptionLockStakePolicy,
+          subscriptionMinimumStakePolicy,
+          subscriptionMinimumScorePolicy,
+          {
+            from: scheduleProvider
+          });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
@@ -286,7 +293,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+        return aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
             from: resourceProvider,
             gas: amountGazProvided
           });
@@ -304,7 +311,7 @@ contract('IexecHub', function(accounts) {
   });
 
   it("resourceProvider not white listed cannot Subscribe", function() {
-      return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+      return aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
         from: resourceProvider,
         gas: amountGazProvided
       })

@@ -43,8 +43,10 @@ contract('IexecHub', function(accounts) {
   };
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-  let amountGazProvided = 4000000;
-  let subscriptionStakePolicy =10;
+  let amountGazProvided              = 4000000;
+  let subscriptionLockStakePolicy    = 10;
+  let subscriptionMinimumStakePolicy = 0;
+  let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
   let testTimemout = 0;
   let aRLCInstance;
@@ -276,9 +278,14 @@ contract('IexecHub', function(accounts) {
         assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
         assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createWorkerPool("myWorkerPool",subscriptionStakePolicy,  {
-          from: scheduleProvider
-        });
+        return aIexecHubInstance.createWorkerPool(
+          "myWorkerPool",
+          subscriptionLockStakePolicy,
+          subscriptionMinimumStakePolicy,
+          subscriptionMinimumScorePolicy,
+          {
+            from: scheduleProvider
+          });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
@@ -309,7 +316,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.deposit(subscriptionStakePolicy, {
+        return aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
             from: resourceProvider,
             gas: amountGazProvided
           });
@@ -470,12 +477,12 @@ contract('IexecHub', function(accounts) {
         return aIexecHubInstance.checkBalance.call(resourceProvider);
       })
       .then(checkBalance => {
-        assert.strictEqual(checkBalance[0].toNumber(), 120, "check stake of the resourceProvider. won 90% of task price 90. (initial balance 30)");
+        assert.strictEqual(checkBalance[0].toNumber(), 129, "check stake of the resourceProvider. won 99% of task price (99). (initial balance 30)");
         assert.strictEqual(checkBalance[1].toNumber(), 10, "check stake locked of the resourceProvider: 10 form subscription lock ");
         return aIexecHubInstance.checkBalance.call(scheduleProvider);
       })
       .then(checkBalance => {
-        assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the scheduleProvider.won 10% of task price");
+        assert.strictEqual(checkBalance[0].toNumber(), 1, "check stake of the scheduleProvider. won 1% of task price");
         assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
       });
   });
