@@ -18,7 +18,6 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		COMPLETED
 	}
 
-
 	/**
 	 * Members
 	 */
@@ -29,7 +28,6 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		require(msg.sender == m_taskRequestHubAddress);
 		_;
 	}
-
 
 	address public m_workerPoolRequested;
 	address public m_appRequested;
