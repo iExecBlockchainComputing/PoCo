@@ -117,10 +117,11 @@ contract IexecHub
 	 * Factory
 	 */
 	function createWorkerPool(
-		string _name,
+		string  _name,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
+		uint256 _subscriptionMinimumScorePolicy,
+    bool    _enclaveGuarantee)
 	public returns (address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
@@ -129,7 +130,8 @@ contract IexecHub
 			_name,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
-			_subscriptionMinimumScorePolicy
+			_subscriptionMinimumScorePolicy,
+			_enclaveGuarantee
 		);
 		CreateWorkerPool(tx.origin, newWorkerPool, _name);
 		return newWorkerPool;

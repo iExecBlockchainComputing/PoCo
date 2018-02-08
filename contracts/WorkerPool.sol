@@ -28,6 +28,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	uint256                     public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
 	uint256                     public m_subscriptionMinimumStakePolicy; // Minimum stake for subscribing
 	uint256                     public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
+	bool                				public m_enclaveGuarantee;
 	WorkerPoolStatusEnum        public m_workerPoolStatus;
 	address[]                   public m_workers;
 	// mapping(address => index)
@@ -54,7 +55,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		string  _name,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
+		uint256 _subscriptionMinimumScorePolicy,
+		bool    _enclaveGuarantee)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -69,6 +71,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
 		m_subscriptionMinimumStakePolicy = _subscriptionMinimumStakePolicy;
 		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;
+		m_enclaveGuarantee               = _enclaveGuarantee;
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
@@ -197,7 +200,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			_taskID,
 			workersReward,
 			schedulerReward,
-			(_taskCost > 0 ) ? m_stakeRatioPolicy.percentage(_taskCost) : 0
+			(_taskCost > 0 ) ? m_stakeRatioPolicy.percentage(_taskCost) : 0,
+			m_enclaveGuarantee
 		);
 		return newContributions;
 	}

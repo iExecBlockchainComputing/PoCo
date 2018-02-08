@@ -284,6 +284,7 @@ contract('IexecHub', function(accounts) {
           subscriptionLockStakePolicy,
           subscriptionMinimumStakePolicy,
           subscriptionMinimumScorePolicy,
+          false,
           {
             from: scheduleProvider
           });
@@ -405,7 +406,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("scheduleProvider notify workers to work by calling the callForContribution function", function() {
-    return aContributiuonsInstance.callForContribution(resourceProvider, {
+    return aContributiuonsInstance.callForContribution(resourceProvider,0, {
       from: scheduleProvider,
       gas: amountGazProvided
     })
