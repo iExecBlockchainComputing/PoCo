@@ -282,6 +282,7 @@ contract IexecHub
 
 		require(msg.sender == taskinfo.contributionsAffectation);
 		require(reward(tx.origin, _schedulerReward));
+
 		address appForTask = taskinfo.appAffectation;
 		uint256 appPrice   = appHub.getAppPrice(appForTask);
 		if (appPrice > 0)
@@ -289,17 +290,18 @@ contract IexecHub
 			require(reward(appHub.getAppOwner(appForTask), appPrice));
 				// to unlock a stake ?
 		}
-		address datasetForTask = taskinfo.datasetAffectation;
-		if (datasetForTask != address(0))
+
+		if (taskinfo.datasetAffectation != address(0))
 		{
-			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
+			uint256 datasetPrice = datasetHub.getDatasetPrice(taskinfo.datasetAffectation);
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(datasetForTask), datasetPrice));
+				require(reward(datasetHub.getDatasetOwner(taskinfo.datasetAffectation), datasetPrice));
 				// to unlock a stake ?
 			}
 		}
-    require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
+
+		require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
 		TaskCompleted(_taskID, taskinfo.contributionsAffectation);
 		return true;
