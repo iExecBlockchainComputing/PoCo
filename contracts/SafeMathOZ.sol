@@ -49,4 +49,8 @@ library SafeMathOZ {
   function min256(uint256 a, uint256 b) internal pure returns (uint256) {
     return a < b ? a : b;
   }
+
+  function percentage(uint256 a, uint256 b) internal pure returns (uint256) {
+    return div(mul(a, 100), b);
+  }
 }

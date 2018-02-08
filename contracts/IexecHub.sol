@@ -26,11 +26,31 @@ contract IexecHub
 		uint256 stake;
 		uint256 locked;
 	}
+	/*
+	struct ContributionHistory
+	{
+		uint256 total;
+		uint256 failled;
+	}
+	*/
+	struct TaskInfo
+	{
+		address requesterAffectation;
+		address workerPoolAffectation;
+		address appAffectation;
+		address datasetAffectation;
+		address contributionsAffectation;
+		uint256 userCost;
+	}
+
 	/**
-	 * Internal data: address to account / score
+	 * Internal data
 	 */
-	mapping(address => Account) public m_accounts;
-	mapping(address => uint256) public m_score;
+	mapping(address => Account ) public m_accounts;  // user => stake
+	mapping(address => uint256 ) public m_scores;    // user => reputation
+	mapping(address => TaskInfo) public m_taskInfos; // task => metadata
+
+	/* ContributionHistory public m_contributionHistory; */
 
 	/**
 	 * RLC contract for token transfers.
@@ -41,15 +61,6 @@ contract IexecHub
 	AppHub         appHub;
 	DatasetHub     datasetHub;
 	TaskRequestHub taskRequestHub;
-
-	mapping (address => address) m_taskWorkerPoolAffectation;
-	mapping (address => address) m_taskContributionsAffectation;
-	mapping (address => address) m_taskAppAffectation;
-	mapping (address => address) m_taskDatasetAffectation;
-	mapping (address => address) m_taskRequesterAffectation;
-	mapping (address => uint256) m_taskUserCost;
-	mapping (address => bool)    m_acceptedTaskRequest;
-
 
 	/**
 	 * Events
@@ -84,10 +95,14 @@ contract IexecHub
 	public
 	{
 		rlc = RLC(_tokenAddress);
+
 		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
 		appHub         = AppHub        (_appHubAddress        );
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
 		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
+
+		/* m_contributionHistory.total   = 0; */
+		/* m_contributionHistory.failled = 0; */
 	}
 
 	function createWorkerPool(
@@ -176,9 +191,9 @@ contract IexecHub
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		if (m_accounts[msg.sender].stake < userCost)
 		{
-			require(deposit(userCost));
+			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
 		}
-		m_accounts[msg.sender].stake  = m_accounts[msg.sender].stake.sub(userCost);
+		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(userCost);
 
 		address newTaskRequest = taskRequestHub.createTaskRequest(
 			msg.sender, // requester
@@ -191,11 +206,11 @@ contract IexecHub
 			_dappCallback
 		);
 
-		m_taskWorkerPoolAffectation[newTaskRequest] = _workerPool;
-		m_taskAppAffectation[newTaskRequest]        = _app;
-		m_taskDatasetAffectation[newTaskRequest]    = _dataset;
-		m_taskRequesterAffectation[newTaskRequest]  = msg.sender;
-		m_taskUserCost[newTaskRequest]              = userCost;
+		m_taskInfos[newTaskRequest].requesterAffectation  = msg.sender;
+		m_taskInfos[newTaskRequest].appAffectation        = _app;
+		m_taskInfos[newTaskRequest].datasetAffectation    = _dataset;
+		m_taskInfos[newTaskRequest].workerPoolAffectation = _workerPool;
+		m_taskInfos[newTaskRequest].userCost              = userCost;
 		// address newTaskRequest will the taskID
 		TaskRequest(newTaskRequest, _workerPool);
 		return newTaskRequest;
@@ -203,47 +218,56 @@ contract IexecHub
 
 	function acceptTask(address _taskID) public  returns (bool)
 	{
-		WorkerPool aPool                        = WorkerPool(m_taskWorkerPoolAffectation[_taskID]);
+		WorkerPool aPool = WorkerPool(m_taskInfos[_taskID].workerPoolAffectation);
 		require(msg.sender == aPool.m_owner());
-		m_taskContributionsAffectation[_taskID] = aPool.acceptTask(_taskID, getTaskCost(_taskID));
-		m_acceptedTaskRequest[_taskID]          = true;
+		// require(lock(msg.sender, VALUE_TO_DETERMINE));
+
 		require(taskRequestHub.setAccepted(_taskID));
-		TaskAccepted(_taskID, m_taskWorkerPoolAffectation[_taskID], m_taskContributionsAffectation[_taskID]);
+		m_taskInfos[_taskID].contributionsAffectation = aPool.acceptTask(_taskID, getTaskCost(_taskID));
+
+		TaskAccepted(_taskID, m_taskInfos[_taskID].workerPoolAffectation, m_taskInfos[_taskID].contributionsAffectation);
 		return true;
 	}
 
 	function cancelTask(address _taskID) public returns (bool)
 	{
-		require(msg.sender == m_taskRequesterAffectation[_taskID]);
-		require(m_acceptedTaskRequest[_taskID] == false);
-		require(reward(msg.sender, m_taskUserCost[_taskID]));
+		// Why cancelled ? penalty ?
+		require(msg.sender == m_taskInfos[_taskID].requesterAffectation);
+		require(reward(msg.sender, m_taskInfos[_taskID].userCost));
+
 		require(taskRequestHub.setCancelled(_taskID));
-		TaskCancelled(_taskID, m_taskWorkerPoolAffectation[_taskID]);
+		// TODO: Something like aPool.cancelTask(_taskID); ?
+
+		TaskCancelled(_taskID, m_taskInfos[_taskID].workerPoolAffectation);
 		return true;
 	}
 
 	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
 	{
-		Contributions aContributions = Contributions(m_taskContributionsAffectation[_taskID]);
+		// Who ? contributor / client
+		Contributions aContributions = Contributions(m_taskInfos[_taskID].contributionsAffectation);
+
+		// TODO: cleanup / comment
+		require(reward(m_taskInfos[_taskID].requesterAffectation, m_taskInfos[_taskID].userCost));
+		require(taskRequestHub.setAborted(_taskID));
 		require(aContributions.claimFailedConsensus());
-		require(reward(m_taskRequesterAffectation[_taskID], m_taskUserCost[_taskID]));
-	  require(taskRequestHub.setAborted(_taskID));
-		TaskAborted(_taskID, m_taskContributionsAffectation[_taskID]);
+
+		TaskAborted(_taskID, m_taskInfos[_taskID].contributionsAffectation);
 		return true;
 	}
 
 	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
 	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
 		require(reward(tx.origin, _schedulerReward));
-		address appForTask = m_taskAppAffectation[_taskID];
+		address appForTask = m_taskInfos[_taskID].appAffectation;
 		uint256 appPrice   = appHub.getAppPrice(appForTask);
 		if (appPrice > 0)
 		{
 			require(reward(appHub.getAppOwner(appForTask), appPrice));
 				// to unlock a stake ?
 		}
-		address datasetForTask = m_taskDatasetAffectation[_taskID];
+		address datasetForTask = m_taskInfos[_taskID].datasetAffectation;
 		if (datasetForTask != address(0))
 		{
 			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
@@ -255,13 +279,13 @@ contract IexecHub
 		}
     require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
-		TaskCompleted(_taskID, m_taskContributionsAffectation[_taskID]);
+		TaskCompleted(_taskID, m_taskInfos[_taskID].contributionsAffectation);
 		return true;
 	}
 
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
-		return (workerPoolHub.getWorkerAffectation(_worker), m_score[_worker]);
+		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
 
 	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
@@ -288,7 +312,7 @@ contract IexecHub
 
 	function subscribeToPool(address _workerPool) public returns (bool subscribed)
 	{
-		require(m_score[msg.sender]          >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
+		require(m_scores[msg.sender]         >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
 		require(m_accounts[msg.sender].stake >= WorkerPool(_workerPool).m_subscriptionMinimumStakePolicy());
 		require(lock(msg.sender, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
 		require(workerPoolHub.subscribeToPool(_workerPool));
@@ -307,22 +331,22 @@ contract IexecHub
 
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
 		require(lock(_user, _amount));
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
+		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
 		require(unlock(_user, _amount));
 		return true;
 	}
 
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_score[_worker] = m_score[_worker].add(1);
+		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		m_scores[_worker] = m_scores[_worker].add(1);
 		AccurateContribution(_taskID, _worker);
 		// ----------------------- reward(address, uint256) -----------------------
 		require(reward(_worker, _amount));
@@ -332,8 +356,8 @@ contract IexecHub
 
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskContributionsAffectation[_taskID]);
-		m_score[_worker] = m_score[_worker].sub(m_score[_worker].min256(50));
+		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		FaultyContribution(_taskID, _worker);
 		// ------------- code of seize(address, uint256) inlined here -------------
 		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);
