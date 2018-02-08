@@ -190,14 +190,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function acceptTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (address taskContributions)
 	{
 		// when 2 cannot be divide by 3 for ratio calculus ?
-		uint256 schedulerReward  = _taskCost.percentage(m_schedulerRewardRatioPolicy);
+		uint256 schedulerReward  = ( _taskCost > 0 ) ? m_schedulerRewardRatioPolicy.percentage(_taskCost) : 0 ;
 		uint256 workersReward    = _taskCost.sub(schedulerReward);
 		address newContributions = new Contributions(
 			iexecHubAddress,
 			_taskID,
 			workersReward,
 			schedulerReward,
-			_taskCost.percentage(m_stakeRatioPolicy)
+			(_taskCost > 0 ) ? m_stakeRatioPolicy.percentage(_taskCost) : 0
 		);
 		return newContributions;
 	}
