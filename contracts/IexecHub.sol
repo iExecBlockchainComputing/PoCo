@@ -193,8 +193,7 @@ contract IexecHub
 		}
 
 		// WORKER_POOL
-		WorkerPool aPool = WorkerPool(_workerPool);
-		require(aPool.isOpen());
+		require(WorkerPool(_workerPool).isOpen());
 
 		// add optional appPrice  for userCost
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice

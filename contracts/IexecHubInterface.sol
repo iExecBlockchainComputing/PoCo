@@ -59,7 +59,7 @@ contract IexecHubInterface
 
 		function getWorkerStatus(
 			address _worker)
-		public view returns (address workerPool, uint256 accurateContributions, uint256 faultyContributions);
+		public view returns (address workerPool, uint256 workerScore);
 
 		function openPool(
 			address _workerPool)
