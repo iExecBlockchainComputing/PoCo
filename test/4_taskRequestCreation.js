@@ -360,7 +360,7 @@ contract('IexecHub', function(accounts) {
 
   it("Create a Hello World Task Request by iExecCloudUser", function() {
     let taskRequestAddressFromLog;
-    return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
+    return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false,iExecCloudUser, {
         from: iExecCloudUser
       })
       .then(txMined => {

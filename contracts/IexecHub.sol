@@ -161,7 +161,8 @@ contract IexecHub
 		string  _taskParam,
 		uint    _taskCost,
 		uint    _askedTrust,
-		bool    _dappCallback)
+		bool    _dappCallback,
+		address _beneficiary)
 	public returns (address createdTaskRequest)
 	{
 		// msg.sender = requester
@@ -213,7 +214,8 @@ contract IexecHub
 			_taskParam,
 			_taskCost,
 			_askedTrust,
-			_dappCallback
+			_dappCallback,
+			_beneficiary
 		);
 		TaskInfo storage taskinfo = m_taskInfos[newTaskRequest];
 		taskinfo.requesterAffectation  = msg.sender;

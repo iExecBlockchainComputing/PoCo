@@ -72,7 +72,8 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		string  _taskParam,
 		uint    _taskCost,
 		uint    _askedTrust,
-		bool    _dappCallback)
+		bool    _dappCallback,
+		address _beneficiary)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdTaskRequest)
 	{
 		// _requester == owner of the task
@@ -86,7 +87,8 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 			_taskParam,
 			_taskCost,
 			_askedTrust,
-			_dappCallback
+			_dappCallback,
+			_beneficiary
 		);
 
 		m_taskRequestsCountByOwner[_requester] = m_taskRequestsCountByOwner[_requester].add(1);
