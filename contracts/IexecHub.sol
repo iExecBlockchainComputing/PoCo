@@ -21,13 +21,16 @@ contract IexecHub
 	// uint private constant DATASET_CREATION_STAKE     = 5000; // updated by vote or super admin ?
 	// uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; // updated by vote or super admin ?
 
+	/**
+	 * Datatypes
+	 */
 	struct Account
 	{
 		uint256 stake;
 		uint256 locked;
 	}
 	/*
-	struct ContributionHistory
+	struct ContributionHistory // for credibility computation, f = failled/total
 	{
 		uint256 total;
 		uint256 failled;
@@ -44,23 +47,26 @@ contract IexecHub
 	}
 
 	/**
+	* RLC contract for token transfers.
+	*/
+	RLC public rlc;
+
+	/**
+	 * Slaves contracts
+	 */
+	WorkerPoolHub  workerPoolHub;
+	AppHub         appHub;
+	DatasetHub     datasetHub;
+	TaskRequestHub taskRequestHub;
+
+	/**
 	 * Internal data
 	 */
 	mapping(address => Account ) public m_accounts;  // user => stake
 	mapping(address => uint256 ) public m_scores;    // user => reputation
 	mapping(address => TaskInfo) public m_taskInfos; // task => metadata
-
 	/* ContributionHistory public m_contributionHistory; */
 
-	/**
-	 * RLC contract for token transfers.
-	 */
-	RLC public rlc;
-
-	WorkerPoolHub  workerPoolHub;
-	AppHub         appHub;
-	DatasetHub     datasetHub;
-	TaskRequestHub taskRequestHub;
 
 	/**
 	 * Events
@@ -85,7 +91,9 @@ contract IexecHub
 	event Reward(address user, uint256 amount);
 	event Seize(address user, uint256 amount);
 
-
+	/**
+	 * Constructor
+	 */
 	function IexecHub(
 		address _tokenAddress,
 		address _workerPoolHubAddress,
@@ -105,6 +113,9 @@ contract IexecHub
 		/* m_contributionHistory.failled = 0; */
 	}
 
+	/**
+	 * Factory
+	 */
 	function createWorkerPool(
 		string _name,
 		uint256 _subscriptionLockStakePolicy,
@@ -205,69 +216,80 @@ contract IexecHub
 			_askedTrust,
 			_dappCallback
 		);
-
-		m_taskInfos[newTaskRequest].requesterAffectation  = msg.sender;
-		m_taskInfos[newTaskRequest].appAffectation        = _app;
-		m_taskInfos[newTaskRequest].datasetAffectation    = _dataset;
-		m_taskInfos[newTaskRequest].workerPoolAffectation = _workerPool;
-		m_taskInfos[newTaskRequest].userCost              = userCost;
+		TaskInfo storage taskinfo = m_taskInfos[newTaskRequest];
+		taskinfo.requesterAffectation  = msg.sender;
+		taskinfo.appAffectation        = _app;
+		taskinfo.datasetAffectation    = _dataset;
+		taskinfo.workerPoolAffectation = _workerPool;
+		taskinfo.userCost              = userCost;
 		// address newTaskRequest will the taskID
 		TaskRequest(newTaskRequest, _workerPool);
 		return newTaskRequest;
 	}
 
+	/**
+	 * Task life cycle
+	 */
 	function acceptTask(address _taskID) public  returns (bool)
 	{
-		WorkerPool aPool = WorkerPool(m_taskInfos[_taskID].workerPoolAffectation);
-		require(msg.sender == aPool.m_owner());
+		TaskInfo storage taskinfo = m_taskInfos[_taskID];
+		WorkerPool       pool     = WorkerPool(taskinfo.workerPoolAffectation);
+
+		require(msg.sender == pool.m_owner());
 		// require(lock(msg.sender, VALUE_TO_DETERMINE));
 
 		require(taskRequestHub.setAccepted(_taskID));
-		m_taskInfos[_taskID].contributionsAffectation = aPool.acceptTask(_taskID, getTaskCost(_taskID));
+		taskinfo.contributionsAffectation = pool.acceptTask(_taskID, getTaskCost(_taskID));
 
-		TaskAccepted(_taskID, m_taskInfos[_taskID].workerPoolAffectation, m_taskInfos[_taskID].contributionsAffectation);
+		TaskAccepted(_taskID, taskinfo.workerPoolAffectation, taskinfo.contributionsAffectation);
 		return true;
 	}
 
 	function cancelTask(address _taskID) public returns (bool)
 	{
+		TaskInfo storage taskinfo = m_taskInfos[_taskID];
+
 		// Why cancelled ? penalty ?
-		require(msg.sender == m_taskInfos[_taskID].requesterAffectation);
-		require(reward(msg.sender, m_taskInfos[_taskID].userCost));
+		require(msg.sender == taskinfo.requesterAffectation);
+		require(reward(msg.sender, taskinfo.userCost));
 
 		require(taskRequestHub.setCancelled(_taskID));
-		// TODO: Something like aPool.cancelTask(_taskID); ?
+		// TODO: Something like pool.cancelTask(_taskID); ?
 
-		TaskCancelled(_taskID, m_taskInfos[_taskID].workerPoolAffectation);
+		TaskCancelled(_taskID, taskinfo.workerPoolAffectation);
 		return true;
 	}
 
 	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
 	{
+		TaskInfo storage taskinfo      = m_taskInfos[_taskID];
+		Contributions    contributions = Contributions(taskinfo.contributionsAffectation);
+
 		// Who ? contributor / client
-		Contributions aContributions = Contributions(m_taskInfos[_taskID].contributionsAffectation);
 
 		// TODO: cleanup / comment
-		require(reward(m_taskInfos[_taskID].requesterAffectation, m_taskInfos[_taskID].userCost));
+		require(reward(taskinfo.requesterAffectation, taskinfo.userCost));
 		require(taskRequestHub.setAborted(_taskID));
-		require(aContributions.claimFailedConsensus());
+		require(contributions.claimFailedConsensus());
 
-		TaskAborted(_taskID, m_taskInfos[_taskID].contributionsAffectation);
+		TaskAborted(_taskID, taskinfo.contributionsAffectation);
 		return true;
 	}
 
 	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		TaskInfo storage taskinfo = m_taskInfos[_taskID];
+
+		require(msg.sender == taskinfo.contributionsAffectation);
 		require(reward(tx.origin, _schedulerReward));
-		address appForTask = m_taskInfos[_taskID].appAffectation;
+		address appForTask = taskinfo.appAffectation;
 		uint256 appPrice   = appHub.getAppPrice(appForTask);
 		if (appPrice > 0)
 		{
 			require(reward(appHub.getAppOwner(appForTask), appPrice));
 				// to unlock a stake ?
 		}
-		address datasetForTask = m_taskInfos[_taskID].datasetAffectation;
+		address datasetForTask = taskinfo.datasetAffectation;
 		if (datasetForTask != address(0))
 		{
 			uint256 datasetPrice = datasetHub.getDatasetPrice(datasetForTask);
@@ -279,10 +301,13 @@ contract IexecHub
 		}
     require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
-		TaskCompleted(_taskID, m_taskInfos[_taskID].contributionsAffectation);
+		TaskCompleted(_taskID, taskinfo.contributionsAffectation);
 		return true;
 	}
 
+	/**
+	 * Views
+	 */
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
@@ -293,23 +318,29 @@ contract IexecHub
 		return taskRequestHub.getTaskCost(_taskID);
 	}
 
+	/**
+	 * WorkerPool management
+	 */
 	function openCloseWorkerPool(address _workerPool, bool open) public returns (bool)
 	{
-		WorkerPool aPool = WorkerPool(_workerPool);
-		require(aPool.getWorkerPoolOwner() == msg.sender);
+		WorkerPool pool = WorkerPool(_workerPool);
+		require(pool.getWorkerPoolOwner() == msg.sender);
 		if(open)
 		{
-			require(aPool.switchOnOff(true));
+			require(pool.switchOnOff(true));
 			OpenWorkerPool(_workerPool);
 		}
 		else
 		{
-			require(aPool.switchOnOff(false));
+			require(pool.switchOnOff(false));
 			CloseWorkerPool(_workerPool);
 		}
 		return true;
 	}
 
+	/**
+	 * Worker subscription
+	 */
 	function subscribeToPool(address _workerPool) public returns (bool subscribed)
 	{
 		require(m_scores[msg.sender]         >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
@@ -329,6 +360,9 @@ contract IexecHub
 		return true;
 	}
 
+	/**
+	 * Stake, reward and penalty functions
+	 */
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
@@ -367,7 +401,7 @@ contract IexecHub
 	}
 
 	/**
-	 * Wallet
+	 * Wallet methods: public
 	 */
 	function deposit(uint256 _amount) public returns (bool)
 	{
@@ -390,7 +424,7 @@ contract IexecHub
 		return (m_accounts[_owner].stake, m_accounts[_owner].locked);
 	}
 	/**
-	 * Internal function
+	 * Wallet methods: Internal
 	 */
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
@@ -398,7 +432,10 @@ contract IexecHub
 		Reward(_user, _amount);
 		return true;
 	}
-
+	/**
+	 * function seize(address _user, uint256 _amount) internal returns (bool)
+	 * has been inlined in seizeForTask (not called anywhere else)
+	 */
 	function lock(address _user, uint _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
