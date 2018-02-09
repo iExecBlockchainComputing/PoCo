@@ -284,7 +284,6 @@ contract('IexecHub', function(accounts) {
           subscriptionLockStakePolicy,
           subscriptionMinimumStakePolicy,
           subscriptionMinimumScorePolicy,
-          false,
           {
             from: scheduleProvider
           });
@@ -332,7 +331,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world",true, {
+        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world", true, {
           from: appProvider
         });
       })
@@ -406,7 +405,7 @@ contract('IexecHub', function(accounts) {
 
 
   it("scheduleProvider notify workers to work by calling the callForContribution function", function() {
-    return aContributiuonsInstance.callForContribution(resourceProvider,0, {
+    return aContributiuonsInstance.callForContribution(resourceProvider, 0, {
       from: scheduleProvider,
       gas: amountGazProvided
     })

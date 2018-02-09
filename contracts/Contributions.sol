@@ -22,8 +22,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	uint256             public m_revealDate;
 	uint256             public m_revealCounter;
 	uint256             public m_consensusTimout;
-	bool                public m_enclaveGuarantee;
-
 
 	enum ConsensusStatusEnum
 	{
@@ -85,8 +83,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		address _taskID,
 		uint256 _workersReward,
 		uint256 _schedulerReward,
-		uint256 _stakeAmount,
-		bool    _enclaveGuarantee)
+		uint256 _stakeAmount)
 	OwnableOZ() // owner is WorkerPool contract
 	IexecHubAccessor(_iexecHubAddress)
 	public
@@ -98,7 +95,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workersReward   = _workersReward;
 		m_schedulerReward = _schedulerReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
-		m_enclaveGuarantee    = _enclaveGuarantee;
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
 		// how this m_stakeAmount is used for ?
 		// require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_stakeAmount));
@@ -123,7 +119,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function callForContribution(address _worker,address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	function callForContribution(address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		Contribution storage contribution = m_tasksContributions[_worker];
@@ -152,11 +148,10 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		// tx.origin = a worker
 		require(_resultHash != 0x0);
 		require(_resultSign != 0x0);
-		if (m_enclaveGuarantee)
+		if (contribution.enclaveChallenge != address(0))
 		{
 				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
 		}
-
 
 		require(contribution.status == WorkStatusEnum.REQUESTED);
 		contribution.status     = WorkStatusEnum.SUBMITTED;
@@ -223,12 +218,10 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		 * totalReward is to be distributed amoung the winners relative to their
 		 * contribution. I believe that the weight should be someting like:
 		 *
-		 * w ~= 1+log(score.max256(1))
+		 * w ~= 1+log(score*bonus)
 		 *
-		 * But how to handle log in solidity ? Is it worth the gaz ?
+		 * Is it worth the gaz necessay to compute the log?
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-		 *
-		 * Current code shows a simple distribution (equal shares)
 		 */
 		uint256 workerBonus;
 		uint256 workerScore;

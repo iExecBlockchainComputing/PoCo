@@ -251,7 +251,6 @@ contract('IexecHub', function(accounts) {
       subscriptionLockStakePolicy,
       subscriptionMinimumStakePolicy,
       subscriptionMinimumScorePolicy,
-      false,
       {
         from: scheduleProvider
       })
@@ -261,7 +260,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(events => {
         assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
-        workerPoolAddressFromLog =events[0].args.workerPool;
+        workerPoolAddressFromLog = events[0].args.workerPool;
         assert.strictEqual(events[0].args.name, "myWorkerPool", "name");
         return aWorkerPoolHubInstance.getWorkerPoolsCount(scheduleProvider);
       })
