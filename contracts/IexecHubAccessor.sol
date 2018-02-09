@@ -4,7 +4,7 @@ import './IexecHubInterface.sol';
 
 contract IexecHubAccessor
 {
-	address           internal  iexecHubAddress;
+	address           internal iexecHubAddress;
 	IexecHubInterface internal iexecHubInterface;
 
 	/* event IexecHubTransferred(address indexed previousIexecHub, address indexed newIexecHub); */

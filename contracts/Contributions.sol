@@ -70,8 +70,9 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	 */
 
 	// mapping( worker address => Work);
-	mapping(address => Contribution) public m_tasksContributions;
-	address[]                        public m_tasksWorkers;
+	mapping(address => Contribution) public  m_tasksContributions;
+	address[]                        public  m_tasksWorkers;
+	mapping(address => uint256)      private m_workerWeights; // used by rewardTask
 
 	/**
 	 * Methods
@@ -135,7 +136,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 		require(contribution.status == WorkStatusEnum.UNSET );
 		contribution.status = WorkStatusEnum.REQUESTED;
-		contribution.enclaveChallenge=_enclaveChallenge;
+		contribution.enclaveChallenge = _enclaveChallenge;
 
 		CallForContribution(_worker, workerScore);
 		return true;
@@ -220,38 +221,46 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		 * totalReward is to be distributed amoung the winners relative to their
 		 * contribution. I believe that the weight should be someting like:
 		 *
-		 * w ~= 1+log(score.max256(1))
+		 * w ~= 1+log(score*bonus)
 		 *
-		 * But how to handle log in solidity ? Is it worth the gaz ?
+		 * Is it worth the gaz necessay to compute the log?
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-		 *
-		 * Current code shows a simple distribution (equal shares)
 		 */
-		uint256 cntWinners  = 0;
+		uint256 workerBonus;
+		uint256 workerScore;
+		uint256 workerWeight;
+		uint256 totalWeight;
+		uint256 workerReward;
 		uint256 totalReward = m_workersReward;
-		uint256 individualReward;
 		for (i = 0; i<m_tasksWorkers.length; ++i)
 		{
 			w = m_tasksWorkers[i];
 			if (m_tasksContributions[w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
-				cntWinners = cntWinners.add(1);
+				workerBonus        = (m_tasksContributions[w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
+				(,workerScore)     = iexecHubInterface.getWorkerStatus(w);
+				workerWeight       = 1 + workerScore.mul(workerBonus).log2();
+				totalWeight        = totalWeight.add(workerWeight);
+				m_workerWeights[w] = workerWeight; // store so we don't have to recompute
 			}
 			else // WorkStatusEnum.POCO_REJECT or WorkStatusEnum.SUBMITTED (not revealed)
 			{
 				totalReward = totalReward.add(m_stakeAmount);
 			}
 		}
-		require(cntWinners > 0);
 
-		individualReward = totalReward.div(cntWinners);
+		require(totalWeight > 0);
+		uint256 remainingReward = totalReward;
+
 		for (i = 0; i<m_tasksWorkers.length; ++i)
 		{
 			w = m_tasksWorkers[i];
 			if (m_tasksContributions[w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
+				workerReward    = totalReward.mulByFraction(m_workerWeights[w], totalWeight);
+				remainingReward = remainingReward.sub(workerReward);
 				require(iexecHubInterface.unlockForTask(m_taskID, w, m_stakeAmount)); // should failed if no locked ?
-				require(iexecHubInterface.rewardForTask(m_taskID, w, individualReward));
+				require(iexecHubInterface.rewardForTask(m_taskID, w, workerReward));
 			}
 			else // WorkStatusEnum.POCO_REJECT or WorkStatusEnum.SUBMITTED (not revealed)
 			{
@@ -259,6 +268,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				// No Reward
 			}
 		}
+		// We have remainingReward left for someone → who ?
 		return true;
 	}
 
