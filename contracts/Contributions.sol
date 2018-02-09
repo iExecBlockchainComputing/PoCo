@@ -137,7 +137,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 		require(contribution.status == WorkStatusEnum.UNSET );
 		contribution.status = WorkStatusEnum.REQUESTED;
-		contribution.enclaveChallenge=_enclaveChallenge;
+		contribution.enclaveChallenge = _enclaveChallenge;
 
 		CallForContribution(_worker, workerScore);
 		return true;
@@ -230,8 +230,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		 *
 		 * Current code shows a simple distribution (equal shares)
 		 */
-		/* uint256 cntWinners  = 0; */
-		/* uint256 individualReward; */
+		uint256 workerBonus;
 		uint256 workerScore;
 		uint256 workerWeight;
 		uint256 totalWeight;
@@ -242,8 +241,9 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			w = m_tasksWorkers[i];
 			if (m_tasksContributions[w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
+				workerBonus        = (m_tasksContributions[w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
 				(,workerScore)     = iexecHubInterface.getWorkerStatus(w);
-				workerWeight       = 1 + workerScore.log2();
+				workerWeight       = 1 + workerScore.mul(workerBonus).log2();
 				totalWeight        = totalWeight.add(workerWeight);
 				m_workerWeights[w] = workerWeight; // store so we don't have to recompute
 			}
