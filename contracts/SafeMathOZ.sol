@@ -51,6 +51,6 @@ library SafeMathOZ {
   }
 
   function percentage(uint256 a, uint256 b) internal pure returns (uint256) {
-    return div(mul(a, 100), b);
+    return div(mul(a, b), 100);
   }
 }
