@@ -223,12 +223,10 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		 * totalReward is to be distributed amoung the winners relative to their
 		 * contribution. I believe that the weight should be someting like:
 		 *
-		 * w ~= 1+log(score.max256(1))
+		 * w ~= 1+log(score*bonus)
 		 *
-		 * But how to handle log in solidity ? Is it worth the gaz ?
+		 * Is it worth the gaz necessay to compute the log?
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-		 *
-		 * Current code shows a simple distribution (equal shares)
 		 */
 		uint256 workerBonus;
 		uint256 workerScore;

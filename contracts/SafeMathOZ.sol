@@ -56,7 +56,7 @@ library SafeMathOZ {
   function percentage(uint256 a, uint256 b) internal pure returns (uint256) {
     return mulByFraction(a,b,100);
   }
-
+  // Source : https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity
   function log2(uint x) internal pure returns (uint y)
   {
     assembly
