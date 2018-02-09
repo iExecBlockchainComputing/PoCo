@@ -22,7 +22,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	uint256             public m_revealDate;
 	uint256             public m_revealCounter;
 	uint256             public m_consensusTimout;
-	bool                public m_enclaveGuarantee;
 
 	enum ConsensusStatusEnum
 	{
@@ -84,8 +83,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		address _taskID,
 		uint256 _workersReward,
 		uint256 _schedulerReward,
-		uint256 _stakeAmount,
-		bool    _enclaveGuarantee)
+		uint256 _stakeAmount)
 	OwnableOZ() // owner is WorkerPool contract
 	IexecHubAccessor(_iexecHubAddress)
 	public
@@ -97,7 +95,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workersReward   = _workersReward;
 		m_schedulerReward = _schedulerReward;
 		m_consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
-		m_enclaveGuarantee    = _enclaveGuarantee;
 		transferOwnership(tx.origin); // scheduler (tx.origin) become owner at this moment
 		// how this m_stakeAmount is used for ?
 		// require(iexecHubInterface.lockForTask(_taskID, tx.origin, m_stakeAmount));
