@@ -36,6 +36,7 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	uint256 public m_taskCost;
 	uint256 public m_askedTrust;
 	bool    public m_dappCallback;
+	address public m_beneficiary;
 
   TaskRequestStatusEnum  public m_status;
 	string  public m_stdout;
@@ -54,7 +55,8 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		string  _taskParam,
 		uint    _taskCost,
 		uint    _askedTrust,
-		bool    _dappCallback)
+		bool    _dappCallback,
+		address _beneficiary)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -68,6 +70,8 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 		m_taskCost              = _taskCost;
 		m_askedTrust            = _askedTrust;
 		m_dappCallback          = _dappCallback;
+		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract. 
+		m_beneficiary           = _beneficiary;
 		m_status                = TaskRequestStatusEnum.PENDING;
 	}
 

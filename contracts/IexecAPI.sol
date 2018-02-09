@@ -23,10 +23,11 @@ contract IexecAPI
 		string _taskParam,
 		uint   _taskCost,
 		uint   _askedTrust,
-		bool   _dappCallback)
+		bool   _dappCallback,
+		address _beneficiary)
 	public
 	{
-		iexecHub.createTaskRequest(_workerPool, _app, _dataset, _taskParam, _taskCost, _askedTrust, _dappCallback);
+		iexecHub.createTaskRequest(_workerPool, _app, _dataset, _taskParam, _taskCost, _askedTrust, _dappCallback,_beneficiary);
 	}
 
 	// TODO add cancel Task function

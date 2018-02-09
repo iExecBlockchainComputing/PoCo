@@ -292,6 +292,7 @@ contract('IexecHub', function(accounts) {
           subscriptionLockStakePolicy,
           subscriptionMinimumStakePolicy,
           subscriptionMinimumScorePolicy,
+          false,
           {
             from: scheduleProvider
           });
@@ -377,7 +378,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, {
+        return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, iExecCloudUser, {
           from: iExecCloudUser
         });
       })
@@ -408,6 +409,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(m_statusCall => {
         assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+        return aContributiuonsInstance.callForContribution(resourceProvider, 0, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
