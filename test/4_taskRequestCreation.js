@@ -317,7 +317,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world",true, {
+        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world", true, {
           from: appProvider
         });
       })
@@ -392,7 +392,7 @@ contract('IexecHub', function(accounts) {
         return aTaskRequestInstance.m_status.call();
       })
       .then(m_statusCall =>{
-          assert.strictEqual(m_statusCall.toNumber(),TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
+          assert.strictEqual(m_statusCall.toNumber(), TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
       });
   });
 

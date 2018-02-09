@@ -23,7 +23,6 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	uint256             public m_revealCounter;
 	uint256             public m_consensusTimout;
 
-
 	enum ConsensusStatusEnum
 	{
 		UNSET,
@@ -53,6 +52,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkStatusEnum status;
 		bytes32        resultHash;
 		bytes32        resultSign; // change from salt to tx.origin based signature
+		address        enclaveChallenge;
 	}
 
 	/**
@@ -118,7 +118,7 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function callForContribution(address _worker) public onlyOwner /*onlySheduler*/ returns (bool)
+	function callForContribution(address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		Contribution storage contribution = m_tasksContributions[_worker];
@@ -137,15 +137,19 @@ contract Contributions is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function contribute(bytes32 _resultHash, bytes32 _resultSign) public returns (uint256 workerStake)
+	function contribute(bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		require(m_status == ConsensusStatusEnum.IN_PROGRESS);
 		Contribution storage contribution = m_tasksContributions[msg.sender];
 
 		// msg.sender = a worker
 		// tx.origin = a worker
-		/* require(_resultHash != 0x0); */
-		/* require(_resultSign != 0x0); */
+		require(_resultHash != 0x0);
+		require(_resultSign != 0x0);
+		if (contribution.enclaveChallenge != address(0))
+		{
+				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
+		}
 
 		require(contribution.status == WorkStatusEnum.REQUESTED);
 		contribution.status     = WorkStatusEnum.SUBMITTED;
