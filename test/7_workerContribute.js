@@ -285,7 +285,6 @@ contract('IexecHub', function(accounts) {
           subscriptionLockStakePolicy,
           subscriptionMinimumStakePolicy,
           subscriptionMinimumScorePolicy,
-          false,
           {
             from: scheduleProvider
           });
