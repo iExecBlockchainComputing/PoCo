@@ -8,7 +8,6 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var TaskRequest    = artifacts.require("./TaskRequest.sol");
-var Contributions  = artifacts.require("./Contributions.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
@@ -34,7 +33,7 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum = {
+  WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
     IN_PROGRESS: 1,
     REACHED:     2,
@@ -42,7 +41,7 @@ contract('IexecHub', function(accounts) {
     FINALIZED:   4
   };
 
-  Contributions.WorkStatusEnum = {
+  WorkerPool.WorkStatusEnum = {
     UNSET:       0,
     REQUESTED:   1,
     SUBMITTED:   2,

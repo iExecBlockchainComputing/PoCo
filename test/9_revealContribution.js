@@ -8,7 +8,6 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var TaskRequest    = artifacts.require("./TaskRequest.sol");
-var Contributions  = artifacts.require("./Contributions.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
@@ -34,7 +33,7 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum = {
+  WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
     IN_PROGRESS: 1,
     REACHED:     2,
@@ -42,7 +41,7 @@ contract('IexecHub', function(accounts) {
     FINALIZED:   4
   };
 
-  Contributions.WorkStatusEnum = {
+  WorkerPool.WorkStatusEnum = {
     UNSET:       0,
     REQUESTED:   1,
     SUBMITTED:   2,
@@ -392,16 +391,12 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aIexecHubInstance.TaskAccepted({}));
+        return aWorkerPoolInstance.getWorkInfo.call(taskID);
       })
-      .then(events => Contributions.at(events[0].args.workContributions))
-      .then(instance => {
-        aContributiuonsInstance = instance;
-        return aContributiuonsInstance.m_status.call();
-      })
-      .then(m_statusCall => {
-        assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
-        return aContributiuonsInstance.callForContribution(resourceProvider, 0, {
+      .then(getWorkInfoCall => {
+        [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
+        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+        return aWorkerPoolInstance.callForContribution(taskID,resourceProvider, 0, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
@@ -409,7 +404,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute(signed.hash, signed.sign, 0, 0, 0, {
+        return aWorkerPoolInstance.contribute(taskID,signed.hash, signed.sign, 0, 0, 0, {
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -417,7 +412,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const hash = Extensions.hashResult("iExec the wanderer");
-        return aContributiuonsInstance.revealConsensus(hash, {
+        return aWorkerPoolInstance.revealConsensus(taskID,hash, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
@@ -430,19 +425,20 @@ contract('IexecHub', function(accounts) {
 
   it("resourceProvider reveal his work contribution", function() {
     const result = web3.sha3("iExec the wanderer");
-    return aContributiuonsInstance.reveal(result, {
+    return aWorkerPoolInstance.reveal(taskID,result, {
         from: resourceProvider,
         gas: amountGazProvided
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aContributiuonsInstance.Reveal({}));
+        return Extensions.getEventsPromise(aWorkerPoolInstance.Reveal({}));
       })
       .then(events => {
+        assert.strictEqual(events[0].args.taskID,                taskID,                                                               "taskID check");
         assert.strictEqual(events[0].args.worker,                resourceProvider,                                                     "check resourceProvider");
         assert.strictEqual(events[0].args.result,                '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
         assert.strictEqual(events[0].args.result,                web3.sha3("iExec the wanderer"),                                      "check revealed result by resourceProvider");
-        assert.strictEqual(events[0].args.pocoStatus.toNumber(), Contributions.WorkStatusEnum.POCO_ACCEPT,                             "POCO_ACCEPT !");
+        assert.strictEqual(events[0].args.pocoStatus.toNumber(), WorkerPool.WorkStatusEnum.POCO_ACCEPT,                                "POCO_ACCEPT !");
     });
   });
 

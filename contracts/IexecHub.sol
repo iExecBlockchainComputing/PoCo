@@ -3,7 +3,6 @@ pragma solidity ^0.4.18;
 import './AppHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
-import "./Contributions.sol";
 import './DatasetHub.sol';
 import './TaskRequestHub.sol';
 import "./SafeMathOZ.sol";
@@ -42,7 +41,6 @@ contract IexecHub
 		address workerPoolAffectation;
 		address appAffectation;
 		address datasetAffectation;
-		address contributionsAffectation;
 		uint256 userCost;
 	}
 
@@ -72,10 +70,10 @@ contract IexecHub
 	 * Events
 	 */
 	event TaskRequest(address taskID, address indexed workerPool);
-	event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
+	event TaskAccepted(address taskID, address indexed workerPool);
 	event TaskCancelled(address taskID, address indexed workerPool);
-	event TaskAborted(address taskID, address workContributions);
-	event TaskCompleted(address taskID, address workContributions);
+	event TaskAborted(address taskID, address workerPool);
+	event TaskCompleted(address taskID, address workerPool);
 
 	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
 	event OpenWorkerPool(address indexed workerPool);
@@ -240,9 +238,9 @@ contract IexecHub
 		// require(lock(msg.sender, VALUE_TO_DETERMINE));
 
 		require(taskRequestHub.setAccepted(_taskID));
-		taskinfo.contributionsAffectation = pool.acceptTask(_taskID, getTaskCost(_taskID));
+		require(pool.acceptTask(_taskID, getTaskCost(_taskID)));
 
-		TaskAccepted(_taskID, taskinfo.workerPoolAffectation, taskinfo.contributionsAffectation);
+		TaskAccepted(_taskID, taskinfo.workerPoolAffectation);
 		return true;
 	}
 
@@ -264,16 +262,16 @@ contract IexecHub
 	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
 	{
 		TaskInfo storage taskinfo      = m_taskInfos[_taskID];
-		Contributions    contributions = Contributions(taskinfo.contributionsAffectation);
+		WorkerPool pool                = WorkerPool(taskinfo.workerPoolAffectation);
 
 		// Who ? contributor / client
 
 		// TODO: cleanup / comment
 		require(reward(taskinfo.requesterAffectation, taskinfo.userCost));
 		require(taskRequestHub.setAborted(_taskID));
-		require(contributions.claimFailedConsensus());
+		require(pool.claimFailedConsensus(_taskID));
 
-		TaskAborted(_taskID, taskinfo.contributionsAffectation);
+		TaskAborted(_taskID, taskinfo.workerPoolAffectation);
 		return true;
 	}
 
@@ -281,7 +279,7 @@ contract IexecHub
 	{
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
 
-		require(msg.sender == taskinfo.contributionsAffectation);
+		require(msg.sender == taskinfo.workerPoolAffectation);
 		require(reward(tx.origin, _schedulerReward));
 
 		address appForTask = taskinfo.appAffectation;
@@ -304,7 +302,7 @@ contract IexecHub
 
 		require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
-		TaskCompleted(_taskID, taskinfo.contributionsAffectation);
+		TaskCompleted(_taskID, taskinfo.workerPoolAffectation);
 		return true;
 	}
 
@@ -368,21 +366,21 @@ contract IexecHub
 	 */
 	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(lock(_user, _amount));
 		return true;
 	}
 
 	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(unlock(_user, _amount));
 		return true;
 	}
 
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		m_scores[_worker] = m_scores[_worker].add(1);
 		AccurateContribution(_taskID, _worker);
 		// ----------------------- reward(address, uint256) -----------------------
@@ -393,7 +391,7 @@ contract IexecHub
 
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		FaultyContribution(_taskID, _worker);
 		// ------------- code of seize(address, uint256) inlined here -------------

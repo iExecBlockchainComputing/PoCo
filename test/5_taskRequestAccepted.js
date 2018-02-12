@@ -8,7 +8,7 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var TaskRequest    = artifacts.require("./TaskRequest.sol");
-var Contributions  = artifacts.require("./Contributions.sol");
+
 
 const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -32,7 +32,7 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum = {
+  WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
     IN_PROGRESS: 1,
     REACHED:     2,
@@ -387,26 +387,22 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider,
         gas: amountGazProvided
       })
-      .then(txMined => { //event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
+      .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.getEventsPromise(aIexecHubInstance.TaskAccepted({}));
       })
       .then(events => {
         assert.strictEqual(events[0].args.taskID, taskID, "taskID check");
         assert.strictEqual(events[0].args.workerPool, workerPoolAddress, "workerPool check");
-        contributionsAddress = events[0].args.workContributions;
         return aTaskRequestInstance.m_status.call();
       })
       .then(m_statusCall => {
         assert.strictEqual(m_statusCall.toNumber(), TaskRequest.TaskRequestStatusEnum.ACCEPTED, "check m_status ACCEPTED");
-        return Contributions.at(contributionsAddress);
+        return aWorkerPoolInstance.getWorkInfo.call(taskID);
       })
-      .then(instance => {
-        aContributiuonsInstance = instance;
-        return aContributiuonsInstance.m_status.call();
-      })
-      .then(m_statusCall => {
-        assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+      .then(getWorkInfoCall => {
+        [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
+        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
       });
   });
 

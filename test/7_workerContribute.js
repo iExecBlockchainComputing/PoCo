@@ -8,7 +8,6 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var TaskRequest    = artifacts.require("./TaskRequest.sol");
-var Contributions  = artifacts.require("./Contributions.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
@@ -34,7 +33,7 @@ contract('IexecHub', function(accounts) {
     COMPLETED: 5
   };
 
-  Contributions.ConsensusStatusEnum = {
+  WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
     IN_PROGRESS: 1,
     REACHED:     2,
@@ -385,16 +384,12 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aIexecHubInstance.TaskAccepted({}));
+        return aWorkerPoolInstance.getWorkInfo.call(taskID);
       })
-      .then(events => Contributions.at(events[0].args.workContributions))
-      .then(instance => {
-        aContributiuonsInstance = instance;
-        return aContributiuonsInstance.m_status.call();
-      })
-      .then(m_statusCall => {
-        assert.strictEqual(m_statusCall.toNumber(), Contributions.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
-        return aContributiuonsInstance.callForContribution(resourceProvider, 0, {
+      .then(getWorkInfoCall => {
+        [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
+        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+        return aWorkerPoolInstance.callForContribution(taskID,resourceProvider, 0, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
@@ -414,7 +409,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute.call(signed.hash, signed.sign, 0, 0, 0, {
+        return aWorkerPoolInstance.contribute.call(taskID,signed.hash, signed.sign, 0, 0, 0, {
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -427,16 +422,17 @@ contract('IexecHub', function(accounts) {
         assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider: 30");
         assert.strictEqual(checkBalance[1].toNumber(), 10, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
         const signed = Extensions.signResult("iExec the wanderer", resourceProvider);
-        return aContributiuonsInstance.contribute(signed.hash, signed.sign, 0, 0, 0, {
+        return aWorkerPoolInstance.contribute(taskID,signed.hash, signed.sign, 0, 0, 0, {
           from: resourceProvider,
           gas: amountGazProvided
         });
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aContributiuonsInstance.Contribute({}));
+        return Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({}));
       })
       .then(events => {
+        assert.strictEqual(events[0].args.taskID,taskID,"taskID check");
         assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
         return aIexecHubInstance.checkBalance.call(resourceProvider);
       })
