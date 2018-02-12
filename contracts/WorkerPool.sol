@@ -35,7 +35,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Address of slave/related contracts
 	 */
-	address                     public m_workersAuthorizedListAddress;
+	address                     public  m_workersAuthorizedListAddress;
 	address                     private m_workerPoolHubAddress;
 
 	modifier onlyWorkerPoolHub()
@@ -72,24 +72,21 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
-		/* cannot do the following AuthorizedList contracts creation because of :
+		/*
+		   cannot do the following AuthorizedList contracts creation because of :
 		   VM Exception while processing transaction: out of gas at deploy.
 		   use attach....AuthorizedListContract instead function
 		*/
-   /*
-	  workersAuthorizedListAddress = new AuthorizedList();
-	  AuthorizedList(workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+
+	  m_workersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+	  AuthorizedList(m_workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		/*
 		dappsAuthorizedListAddress = new AuthorizedList();
 		AuthorizedList(dappsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
 		requesterAuthorizedListAddress = new AuthorizedList();
 		AuthorizedList(requesterAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
 		*/
 	}
-
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
-	{
- 		m_workersAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
- 	}
 
 	function changeWorkerPoolPolicy(
 		uint256 _newStakeRatioPolicy,
@@ -167,6 +164,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 	*/
+
+
 
 	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
 	{

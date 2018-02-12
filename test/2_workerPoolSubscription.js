@@ -225,22 +225,15 @@ contract('IexecHub', function(accounts) {
       })
       .then(result => {
         workerPoolAddress = result;
-        return AuthorizedList.new(0, { //0 = whiteListPolicy
-          from: scheduleProvider
-        });
-      })
-      .then(instance => {
-        aWorkersAuthorizedListInstance = instance;
         return WorkerPool.at(workerPoolAddress);
       })
       .then(instance => {
         aWorkerPoolInstance = instance;
-        return aWorkerPoolInstance.attachWorkerPoolsAuthorizedListContract(aWorkersAuthorizedListInstance.address, {
-          from: scheduleProvider
-        });
+        return aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
       })
-      .then(txMined => {
-        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      .then( workersAuthorizedListAddress => AuthorizedList.at(workersAuthorizedListAddress))
+      .then(instance => {
+        aWorkersAuthorizedListInstance = instance;
         return Promise.all([
           aRLCInstance.approve(aIexecHubInstance.address, 100, {
             from: scheduleProvider,
