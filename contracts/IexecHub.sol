@@ -69,7 +69,7 @@ contract IexecHub
 	/**
 	 * Events
 	 */
-	event TaskRequest(address taskID, address indexed workerPool);
+	event TaskRequest(address taskID, address taskRequestOwner, address indexed workerPool, address indexed app, address indexed dataset);
 	event TaskAccepted(address taskID, address indexed workerPool);
 	event TaskCancelled(address taskID, address indexed workerPool);
 	event TaskAborted(address taskID, address workerPool);
@@ -191,8 +191,6 @@ contract IexecHub
 
 		}
 
-		// WORKER_POOL
-		require(WorkerPool(_workerPool).isOpen());
 
 		// add optional appPrice  for userCost
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
@@ -221,8 +219,12 @@ contract IexecHub
 		taskinfo.datasetAffectation    = _dataset;
 		taskinfo.workerPoolAffectation = _workerPool;
 		taskinfo.userCost              = userCost;
+
+		// WORKER_POOL
+		require(WorkerPool(_workerPool).receivedTask(newTaskRequest,_taskCost));
+
 		// address newTaskRequest will the taskID
-		TaskRequest(newTaskRequest, _workerPool);
+		TaskRequest(newTaskRequest,msg.sender, _workerPool,_app,_dataset);
 		return newTaskRequest;
 	}
 
@@ -231,14 +233,12 @@ contract IexecHub
 	 */
 	function acceptTask(address _taskID) public  returns (bool)
 	{
-		TaskInfo storage taskinfo = m_taskInfos[_taskID];
-		WorkerPool       pool     = WorkerPool(taskinfo.workerPoolAffectation);
 
-		require(msg.sender == pool.m_owner());
+		TaskInfo storage taskinfo = m_taskInfos[_taskID];
+		require(msg.sender == taskinfo.workerPoolAffectation);
 		// require(lock(msg.sender, VALUE_TO_DETERMINE));
 
 		require(taskRequestHub.setAccepted(_taskID));
-		require(pool.acceptTask(_taskID, getTaskCost(_taskID)));
 
 		TaskAccepted(_taskID, taskinfo.workerPoolAffectation);
 		return true;
@@ -253,8 +253,7 @@ contract IexecHub
 		require(reward(msg.sender, taskinfo.userCost));
 
 		require(taskRequestHub.setCancelled(_taskID));
-		// TODO: Something like pool.cancelTask(_taskID); ?
-
+		require(WorkerPool(taskinfo.workerPoolAffectation).cancelTask(_taskID));
 		TaskCancelled(_taskID, taskinfo.workerPoolAffectation);
 		return true;
 	}

@@ -35,10 +35,13 @@ contract('IexecHub', function(accounts) {
 
   WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
-    IN_PROGRESS: 1,
-    REACHED:     2,
-    FAILLED:     3,
-    FINALIZED:   4
+    PENDING:     1,
+    CANCELED:    2,
+    STARTED:     3,
+    IN_PROGRESS: 4,
+    REACHED:     5,
+    FAILLED:     6,
+    FINALIZED:   7
   };
 
   WorkerPool.WorkStatusEnum = {

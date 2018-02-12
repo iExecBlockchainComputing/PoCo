@@ -31,6 +31,17 @@ contract('IexecHub', function(accounts) {
 		COMPLETED: 5
   };
 
+  WorkerPool.ConsensusStatusEnum = {
+    UNSET:       0,
+    PENDING:     1,
+    CANCELED:    2,
+    STARTED:     3,
+    IN_PROGRESS: 4,
+    REACHED:     5,
+    FAILLED:     6,
+    FINALIZED:   7
+  };
+
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided              = 4000000;
   let subscriptionLockStakePolicy    = 0;
@@ -352,24 +363,27 @@ contract('IexecHub', function(accounts) {
   });
 
   it("Create a Hello World Task Request by iExecCloudUser", function() {
-    let taskRequestAddressFromLog;
+    let taskID;
     return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, iExecCloudUser, {
         from: iExecCloudUser
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return Extensions.getEventsPromise(aTaskRequestHubInstance.CreateTaskRequest({}));
+        return Extensions.getEventsPromise(aIexecHubInstance.TaskRequest({}));
       })
       .then(events => {
         assert.strictEqual(events[0].args.taskRequestOwner, iExecCloudUser, "taskRequestOwner");
-        taskRequestAddressFromLog = events[0].args.taskRequest;
+        taskID = events[0].args.taskID;
         assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "workerPool");
         assert.strictEqual(events[0].args.app, aAppInstance.address, "appPrice");
         assert.strictEqual(events[0].args.dataset, '0x0000000000000000000000000000000000000000', "dataset");
+
+
+        /*
         assert.strictEqual(events[0].args.taskParam, "noTaskParam", "taskParam");
         assert.strictEqual(events[0].args.taskCost.toNumber(), 0, "taskCost");
         assert.strictEqual(events[0].args.askedTrust.toNumber(), 1, "askedTrust");
-        assert.strictEqual(events[0].args.dappCallback, false, "dappCallback");
+        assert.strictEqual(events[0].args.dappCallback, false, "dappCallback");*/
         return aTaskRequestHubInstance.getTaskRequestsCount(iExecCloudUser);
       })
       .then(count => {
@@ -377,15 +391,43 @@ contract('IexecHub', function(accounts) {
         return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, count);
       })
       .then(taskId => {
-        assert.strictEqual(taskRequestAddressFromLog, taskId, "check taskId");
+        assert.strictEqual(taskID, taskId, "check taskId");
         return TaskRequest.at(taskId);
       })
       .then(instance => {
         aTaskRequestInstance =instance;
-        return aTaskRequestInstance.m_status.call();
+        return Promise.all([
+          aTaskRequestInstance.m_status.call(),
+          aTaskRequestInstance.m_workerPoolRequested.call(),
+          aTaskRequestInstance.m_appRequested.call(),
+          aTaskRequestInstance.m_datasetRequested.call(),
+          aTaskRequestInstance.m_taskParam.call(),
+          aTaskRequestInstance.m_taskCost.call(),
+          aTaskRequestInstance.m_askedTrust.call(),
+          aTaskRequestInstance.m_dappCallback.call(),
+          aTaskRequestInstance.m_beneficiary.call()
+        ]);
       })
-      .then(m_statusCall =>{
-          assert.strictEqual(m_statusCall.toNumber(), TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
+      .then(result =>{
+        [m_status,m_workerPoolRequested,m_appRequested,m_datasetRequested,m_taskParam,m_taskCost,m_askedTrust,m_dappCallback,m_beneficiary]=result;
+          assert.strictEqual(m_status.toNumber(), TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
+          assert.strictEqual(m_workerPoolRequested, aWorkerPoolInstance.address, "check m_workerPoolRequested");
+          assert.strictEqual(m_appRequested, aAppInstance.address, "check m_appRequested");
+          assert.strictEqual(m_datasetRequested, '0x0000000000000000000000000000000000000000', "check m_datasetRequested");
+          assert.strictEqual(m_taskParam, "noTaskParam", "check m_taskParam");
+          assert.strictEqual(m_taskCost.toNumber(),0, "check m_taskCost");
+          assert.strictEqual(m_askedTrust.toNumber(),1, "check m_askedTrust");
+          assert.strictEqual(m_dappCallback,false, "check m_dappCallback");
+          assert.strictEqual(m_beneficiary,iExecCloudUser, "check m_beneficiary");
+          return Extensions.getEventsPromise(aWorkerPoolInstance.TaskReceived({}));
+      })
+      .then(events => {
+        assert.strictEqual(events[0].args.taskID, taskID, "taskID received in workerpool");
+        return aWorkerPoolInstance.getWorkInfo.call(taskID);
+      })
+      .then(getWorkInfoCall => {
+        [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
+        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.PENDING, "check m_status PENDING");
       });
   });
 

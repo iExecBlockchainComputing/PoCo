@@ -58,20 +58,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	// mapping(taskID => WorkInfo)
 	mapping(address => WorkInfo) public m_WorkInfos;
-  //  address             public m_workerPool;
-	//address             public m_taskID;
-	//ConsensusStatusEnum public m_status;
-	//uint256             public m_schedulerReward;
-	//uint256             public m_workersReward;
-	//uint256             public m_stakeAmount;
-	//bytes32             public m_consensus;
-	//uint256             public m_revealDate;
-	//uint256             public m_revealCounter;
-	//uint256             public m_consensusTimout;
+
 
 	enum ConsensusStatusEnum
 	{
 		UNSET,
+		PENDING,
+		CANCELED,
+		STARTED,
 		IN_PROGRESS,
 		REACHED,
 		/**
@@ -104,7 +98,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Events
 	 */
-
+	event TaskReceived       (address indexed taskID);
+	event TaskAccepted       (address indexed taskID);
+	event TaskCanceled       (address indexed taskID);
 	event CallForContribution(address indexed taskID, address indexed worker, uint256 workerScore);
 	event Contribute         (address indexed taskID, address indexed worker, bytes32 resultHash);
 	event RevealConsensus    (address indexed taskID, bytes32 consensus);
@@ -270,7 +266,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;
 	}
 
-	function getWorkInfo(address _taskID) public returns (
+	function getWorkInfo(address _taskID) public view returns (
 		ConsensusStatusEnum status,
 		uint256             schedulerReward,
 		uint256             workersReward,
@@ -297,24 +293,43 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 
 	/**************************** tasks management *****************************/
-
-
-	function acceptTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (bool)
+	function receivedTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (bool)
 	{
-
+		require(isOpen());
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
-		workinfo.status = ConsensusStatusEnum.IN_PROGRESS;
+		workinfo.status = ConsensusStatusEnum.PENDING;
 		workinfo.schedulerReward = _taskCost.percentage(m_schedulerRewardRatioPolicy);
 		workinfo.workersReward = _taskCost.sub(workinfo.schedulerReward);
 		workinfo.stakeAmount = _taskCost.percentage(m_stakeRatioPolicy);
+		TaskReceived(_taskID);
+		return true;
+	}
+
+	function cancelTask(address _taskID) public onlyIexecHub returns (bool)
+	{
+		WorkInfo storage workinfo = m_WorkInfos[_taskID];
+		require(workinfo.status == ConsensusStatusEnum.PENDING);
+		workinfo.status = ConsensusStatusEnum.CANCELED;
+		TaskCanceled(_taskID);
+		return true;
+	}
+
+
+	function acceptTask(address _taskID) public onlyOwner returns (bool)
+	{
+		WorkInfo storage workinfo = m_WorkInfos[_taskID];
+		require(workinfo.status == ConsensusStatusEnum.PENDING);
+		require(iexecHubInterface.acceptTask(_taskID));
+		workinfo.status = ConsensusStatusEnum.STARTED;
 		workinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		TaskAccepted(_taskID);
 		return true;
 	}
 
 	function claimFailedConsensus(address _taskID) public onlyIexecHub returns (bool)
 	{
 	  WorkInfo storage workinfo = m_WorkInfos[_taskID];
-		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS);
+		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS || workinfo.status == ConsensusStatusEnum.STARTED);
 		require(now > workinfo.consensusTimout);
 		workinfo.status = ConsensusStatusEnum.FAILLED;
 		uint256 i;
@@ -333,7 +348,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function callForContribution(address _taskID, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
-		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS);
+		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS || workinfo.status == ConsensusStatusEnum.STARTED);
+		workinfo.status = ConsensusStatusEnum.IN_PROGRESS;
 		Contribution storage contribution = m_tasksContributions[_taskID][_worker];
 
 		// random worker selection ? :

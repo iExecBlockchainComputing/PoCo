@@ -44,6 +44,11 @@ contract IexecHubInterface
 			address _taskID)
 		public returns (bool);
 
+
+		function acceptTask(
+			address _taskID)
+	  public  returns (bool);
+
 		function finalizedTask(
 			address _taskID,
 			string _stdout,

@@ -33,10 +33,13 @@ contract('IexecHub', function(accounts) {
 
   WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
-    IN_PROGRESS: 1,
-    REACHED:     2,
-    FAILLED:     3,
-    FINALIZED:   4
+    PENDING:     1,
+    CANCELED:    2,
+    STARTED:     3,
+    IN_PROGRESS: 4,
+    REACHED:     5,
+    FAILLED:     6,
+    FINALIZED:   7
   };
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
@@ -376,7 +379,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(instance => {
         aTaskRequestInstance = instance;
-        return aIexecHubInstance.acceptTask(taskID, {
+        return aWorkerPoolInstance.acceptTask(taskID, {
           from: scheduleProvider,
           gas: amountGazProvided
         });
@@ -387,7 +390,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(getWorkInfoCall => {
         [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
-        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+        assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
       });;
   });
 
@@ -404,6 +407,11 @@ contract('IexecHub', function(accounts) {
     .then(events => {
       assert.strictEqual(events[0].args.taskID,taskID,"taskID check");
       assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
+      return aWorkerPoolInstance.getWorkInfo.call(taskID);
+    })
+    .then(getWorkInfoCall => {
+      [status,schedulerReward,workersReward,stakeAmount, consensus,revealDate, revealCounter, consensusTimout ] = getWorkInfoCall;
+      assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
     });
   });
 
