@@ -448,7 +448,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.REACHED);
 
-		require(workinfo.revealDate <= now || workinfo.revealCounter == workinfo.contributors.length);
+		require(workinfo.revealDate <= now || workinfo.revealCounter == workinfo.winnerCount);
 		workinfo.status = ConsensusStatusEnum.FINALIZED;
 
 		// add penalized to the call worker to contrubution and they never contribute ?
@@ -495,8 +495,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				totalReward = totalReward.add(_workinfo.stakeAmount);
 			}
 		}
-
 		require(totalWeight > 0);
+
+		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(m_schedulerRewardRatioPolicy));
 
 		for (i = 0; i<contributors.length; ++i)
