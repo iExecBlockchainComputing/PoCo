@@ -46,14 +46,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	struct WorkInfo
 	{
 		ConsensusStatusEnum status;
-		uint256             schedulerReward;
-		uint256             workersReward;
+		uint256             poolReward;
 		uint256             stakeAmount;
 		bytes32             consensus;
 		uint256             revealDate;
 		uint256             revealCounter;
 		uint256             consensusTimout;
 		address[]           contributors;
+		uint256             winnerCount;
 	}
 
 	// mapping(taskID => WorkInfo)
@@ -83,8 +83,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		UNSET,
 		REQUESTED,
 		SUBMITTED,
-		POCO_REJECT,
-		POCO_ACCEPT
+		POCO_ACCEPT,
+		REJECTED
 	}
 
 	struct Contribution
@@ -110,10 +110,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	 * Members
 	 */
 
-	// mapping( taksID => worker address => Contribution);
-	mapping( address => mapping ( address => Contribution ) ) public  m_tasksContributions;
-	//mapping( address => address[] )                           public  m_tasksWorkers;
-	mapping( address => uint256)      private m_workerWeights; // used by rewardTask
+	// mapping(taksID => worker address => Contribution);
+	// mapping(address => address[])                           public  m_tasksWorkers;
+	mapping(address => mapping(address => Contribution)) public  m_tasksContributions;
+	mapping(address => uint256)                          private m_workerWeights; // used by rewardTask
 
 
 
@@ -230,31 +230,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 	/************************* open / close mechanisms *************************/
-	/*
-	function open() public onlyIexecHub returns (bool)
-	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
-		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
-		return true;
-	}
-
-	function close() public onlyIexecHub returns (bool)
-	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
-		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
-		return true;
-	}
-	*/
-
-
-
 	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
 	{
-		if(onoff){
+		if (onoff)
+		{
 			require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
 			m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
 		}
-		else{
+		else
+		{
 			require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
 			m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
 		}
@@ -268,25 +252,23 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function getWorkInfo(address _taskID) public view returns (
 		ConsensusStatusEnum status,
-		uint256             schedulerReward,
-		uint256             workersReward,
+		uint256             poolReward,
 		uint256             stakeAmount,
 		bytes32             consensus,
 		uint256             revealDate,
 		uint256             revealCounter,
-		uint256             consensusTimout
-		) {
-		WorkInfo  workinfo = m_WorkInfos[_taskID];
+		uint256             consensusTimout)
+	{
+		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		return (
-		 workinfo.status,
-		 workinfo.schedulerReward,
-		 workinfo.workersReward,
-		 workinfo.stakeAmount,
-		 workinfo.consensus,
-		 workinfo.revealDate,
-		 workinfo.revealCounter,
-		 workinfo.consensusTimout
-		 );
+			workinfo.status,
+			workinfo.poolReward,
+			workinfo.stakeAmount,
+			workinfo.consensus,
+			workinfo.revealDate,
+			workinfo.revealCounter,
+			workinfo.consensusTimout
+		);
 	}
 
 
@@ -297,10 +279,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		require(isOpen());
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
-		workinfo.status = ConsensusStatusEnum.PENDING;
-		workinfo.schedulerReward = _taskCost.percentage(m_schedulerRewardRatioPolicy);
-		workinfo.workersReward = _taskCost.sub(workinfo.schedulerReward);
-		workinfo.stakeAmount = _taskCost.percentage(m_stakeRatioPolicy);
+		workinfo.status           = ConsensusStatusEnum.PENDING;
+		workinfo.poolReward       = _taskCost;
+		workinfo.stakeAmount      = _taskCost.percentage(m_stakeRatioPolicy);
 		TaskReceived(_taskID);
 		return true;
 	}
@@ -397,7 +378,21 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS); // or state Locked to add ?
-		require(workinfo.contributors.length > 0); // you cannot revealConsensus if you do not have callForContribution and no worker have contribute
+
+		workinfo.winnerCount = 0;
+
+		uint256 i;
+		address w;
+		for (i = 0; i<workinfo.contributors.length; ++i)
+		{
+			w = workinfo.contributors[i];
+			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
+			{
+				workinfo.winnerCount = workinfo.winnerCount.add(1);
+			}
+		}
+		require(workinfo.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
+
 		workinfo.status     = ConsensusStatusEnum.REACHED;
 		workinfo.consensus  = _consensus;
 		workinfo.revealDate = REVEAL_PERIOD_DURATION.add(now);
@@ -407,20 +402,43 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function reveal(address _taskID, bytes32 _result) public returns (bool)
 	{
-		WorkInfo storage workinfo = m_WorkInfos[_taskID];
-		require(workinfo.status == ConsensusStatusEnum.REACHED);
+		WorkInfo     storage workinfo     = m_WorkInfos[_taskID];
 		Contribution storage contribution = m_tasksContributions[_taskID][msg.sender];
+		require(workinfo.status == ConsensusStatusEnum.REACHED);
 
 		require(workinfo.revealDate > now);
 		require(contribution.status == WorkStatusEnum.SUBMITTED);
 
+		require(contribution.resultHash == workinfo.consensus);
 		bool validHash = keccak256(_result                        ) == contribution.resultHash;
 		bool validSign = keccak256(_result ^ keccak256(msg.sender)) == contribution.resultSign;
+		require(validHash && validSign); // Only valid result can reveal
 
-		contribution.status = (validHash && validSign) ? WorkStatusEnum.POCO_ACCEPT : WorkStatusEnum.POCO_REJECT;
+		contribution.status    = WorkStatusEnum.POCO_ACCEPT;
 		workinfo.revealCounter = workinfo.revealCounter.add(1);
 
 		Reveal(_taskID, msg.sender, _result, contribution.status); // TODO add WorkStatusEnum in LOG
+		return true;
+	}
+
+	function reopen(address _taskID) public returns (bool)
+	{
+		WorkInfo storage workinfo = m_WorkInfos[_taskID];
+		require(workinfo.status == ConsensusStatusEnum.REACHED);
+		require(workinfo.revealDate <= now && workinfo.revealCounter == 0);
+		workinfo.winnerCount = 0;
+
+		uint256 i;
+		address w;
+		for (i = 0; i<workinfo.contributors.length; ++i)
+		{
+			w = workinfo.contributors[i];
+			if (m_tasksContributions[_taskID][w].resultHash == workinfo.consensus)
+			{
+				m_tasksContributions[_taskID][w].status = WorkStatusEnum.REJECTED;
+			}
+		}
+		workinfo.status == ConsensusStatusEnum.IN_PROGRESS;
 		return true;
 	}
 
@@ -434,9 +452,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		workinfo.status = ConsensusStatusEnum.FINALIZED;
 
 		// add penalized to the call worker to contrubution and they never contribute ?
-		require(rewardTask(_taskID,workinfo));
+		require(rewardTask(_taskID, workinfo));
 
-		require(iexecHubInterface.finalizedTask(_taskID, _stdout, _stderr, _uri, workinfo.schedulerReward));
+		require(iexecHubInterface.finalizedTask(_taskID, _stdout, _stderr, _uri));
 		return true;
 	}
 
@@ -459,7 +477,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		uint256 workerWeight;
 		uint256 totalWeight;
 		uint256 workerReward;
-		uint256 totalReward = _workinfo.workersReward;
+		uint256 totalReward = _workinfo.poolReward;
 		address[] memory contributors = _workinfo.contributors;
 		for (i = 0; i<contributors.length; ++i)
 		{
@@ -479,16 +497,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		}
 
 		require(totalWeight > 0);
-		uint256 remainingReward = totalReward;
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(m_schedulerRewardRatioPolicy));
 
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
 			if (m_tasksContributions[_taskID][w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
-				workerReward    = totalReward.mulByFraction(m_workerWeights[w], totalWeight);
-				remainingReward = remainingReward.sub(workerReward);
-				require(iexecHubInterface.unlockForTask(_taskID, w, _workinfo.stakeAmount)); // should failed if no locked ?
+				workerReward = workersReward.mulByFraction(m_workerWeights[w], totalWeight);
+				totalReward  = totalReward.sub(workerReward);
+				require(iexecHubInterface.unlockForTask(_taskID, w, _workinfo.stakeAmount));
 				require(iexecHubInterface.rewardForTask(_taskID, w, workerReward));
 			}
 			else // WorkStatusEnum.POCO_REJECT or WorkStatusEnum.SUBMITTED (not revealed)
@@ -497,7 +515,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				// No Reward
 			}
 		}
-		// We have remainingReward left for someone → who ?
+		// totalReward now contains the scheduler share
+		require(iexecHubInterface.rewardForTask(_taskID, tx.origin, totalReward));
+
 		return true;
 	}
 

@@ -53,9 +53,7 @@ contract IexecHubInterface
 			address _taskID,
 			string _stdout,
 			string _stderr,
-			string _uri,
-			uint256 _schedulerReward
-			)
+			string _uri)
 		public returns (bool);
 
 		function getTaskCost(

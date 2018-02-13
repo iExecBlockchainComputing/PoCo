@@ -274,12 +274,15 @@ contract IexecHub
 		return true;
 	}
 
-	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
+	function finalizedTask(
+		address _taskID,
+		string _stdout,
+		string _stderr,
+		string _uri) public returns (bool)
 	{
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
 
 		require(msg.sender == taskinfo.workerPoolAffectation);
-		require(reward(tx.origin, _schedulerReward));
 
 		address appForTask = taskinfo.appAffectation;
 		uint256 appPrice   = appHub.getAppPrice(appForTask);
