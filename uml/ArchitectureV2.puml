@@ -48,11 +48,9 @@ component [DatasetRepository]
 
 cloud {
   [WorkerPool]
-  [Contributions]
 }
 
 component [WorkerPool]
-component [Contributions]
 component [iexec-scheduler]
 component [ResultRepository]
 
@@ -60,23 +58,17 @@ component [iexec-worker]
 
 cloud {
   [iExecHub]
-  [ProvidersScoring]
-  [ProvidersBalance]
 }
 
 cloud {
   [RLC Token]
 }
-component [ProvidersScoring]
+
 component [iExecHub]
-component [ProvidersBalance]
 component [RLC Token]
 
 
-[ProvidersBalance] <-right-> [RLC Token]
-
-[ProvidersBalance] <|-left-  [iExecHub]
-[ProvidersScoring] <|-right-  [iExecHub]
+[iExecHub] <-right-> [RLC Token]
 
 
 AppProvider -up-> [App]: owner
@@ -87,7 +79,7 @@ DatasetProvider -down-> DatasetRepository: expose
 
 ScheduleProvider -up-> [WorkerPool]: owner
 
-[WorkerPool] -right-> [Contributions] :create
+
 ScheduleProvider -down-> [iexec-scheduler]: control
 ScheduleProvider -down-> [ResultRepository]: control and expose
 ResultRepository <-left-> [iexec-scheduler]
@@ -97,11 +89,10 @@ ResultRepository <-left-> [iexec-scheduler]
 [App] <-up-> [iExecHub]
 
 [iExecHub] <-down-> [WorkerPool]
-[iExecHub] <-down-> [Contributions]
 [iExecHub] <-up-> [TaskRequest]
 
-[iexec-scheduler] <-up-> [Contributions]
-[iexec-worker] <-up-> [Contributions]
+[iexec-scheduler] <-up-> [WorkerPool]
+[iexec-worker] <-up-> [WorkerPool]
 
 [ResourceProvider] -right-> [iexec-worker]: control
 
@@ -111,9 +102,6 @@ ResultRepository <-left-> [iexec-scheduler]
 [iexec-worker] <-up-> [AppRepository]
 
 [iexec-worker] <-up-> [DatasetRepository]
-
-'missing link :  [AppRepository] <-> [iexec-worker] . add mannualy on img because i do not succeed to layout it
-
 
 
 @enduml

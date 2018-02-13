@@ -175,7 +175,7 @@ blockchain interaction :
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
-            <td>?</td>
+            <td>iexec-sdk</td>
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
     </tbody>
