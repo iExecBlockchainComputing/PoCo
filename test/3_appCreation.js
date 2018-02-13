@@ -31,6 +31,9 @@ contract('IexecHub', function(accounts) {
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
 
+  let DAPP_PARAMS_EXAMPLE ="{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
+
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider   = accounts[0];
@@ -243,7 +246,7 @@ contract('IexecHub', function(accounts) {
 
   it("free App Ceation", function() {
     let appAddressFromLog;
-    return aIexecHubInstance.createApp("freeapp", 0, "freeapp_param", "freeapp_uri",{
+    return aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE,{
       from: appProvider
     })
     .then(txMined => {
@@ -253,10 +256,9 @@ contract('IexecHub', function(accounts) {
     .then(events => {
       assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
       appAddressFromLog =events[0].args.app;
-      assert.strictEqual(events[0].args.appName, "freeapp", "appName");
+      assert.strictEqual(events[0].args.appName, "R Clifford Attractors", "appName");
       assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-      assert.strictEqual(events[0].args.appParam, "freeapp_param", "appParam");
-      assert.strictEqual(events[0].args.appUri, "freeapp_uri", "appUri");
+      assert.strictEqual(events[0].args.appParams, "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}", "appParams");
       return aAppHubInstance.getAppsCount(appProvider);
     })
     .then(count => {

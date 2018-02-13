@@ -43,6 +43,8 @@ contract('IexecHub', function(accounts) {
     FINALIZED:   7
   };
 
+  let DAPP_PARAMS_EXAMPLE ="{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided              = 4000000;
   let subscriptionLockStakePolicy    = 0;
@@ -326,7 +328,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createApp("hello-world-docker", 0, "docker", "hello-world", {
+        return aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE,{
           from: appProvider
         });
       })

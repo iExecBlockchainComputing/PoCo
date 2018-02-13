@@ -52,8 +52,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	function createDataset(
 		string _datasetName,
 		uint256 _datasetPrice,
-		string _datasetParam,
-		string _datasetUri)
+		string _datasetParams)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdDataset)
 	{
 		// tx.origin == owner
@@ -62,8 +61,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 			msg.sender,
 			_datasetName,
 			_datasetPrice,
-			_datasetParam,
-			_datasetUri
+			_datasetParams
 		);
 
 		m_datasetsCountByOwner[tx.origin] = m_datasetsCountByOwner[tx.origin].add(1);

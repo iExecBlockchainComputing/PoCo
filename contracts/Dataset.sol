@@ -14,8 +14,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	 */
 	string            public m_datasetName;
 	uint256           public m_datasetPrice;
-	string            public m_datasetParam;
-	string            public m_datasetUri;
+	string            public m_datasetParams;
 	DatasetStatusEnum public m_datasetStatus;
 
 	/**
@@ -32,8 +31,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		address _iexecHubAddress,
 		string _datasetName,
 		uint256 _datasetPrice,
-		string _datasetParam,
-		string _datasetUri)
+		string _datasetParams)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -44,8 +42,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 
 		m_datasetName   = _datasetName;
 		m_datasetPrice  = _datasetPrice;
-		m_datasetParam  = _datasetParam;
-		m_datasetUri    = _datasetUri;
+		m_datasetParams  = _datasetParams;
 		m_datasetStatus = DatasetStatusEnum.OPEN;
 	}
 
@@ -82,7 +79,5 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	{
 	  return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
-
-
 
 }

@@ -64,6 +64,14 @@ contract('IexecHub', function(accounts) {
   let aDatasetHubInstance;
   let aTaskRequestHubInstance;
 
+  let DAPP_PARAMS_EXAMPLE ="{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+  /*
+  minfreemassstorage
+  minmemory
+  mincpuspeed
+  neededpackages
+  envvars ....*/
+
   before("should prepare accounts and check TestRPC Mode", function() {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider   = accounts[0];

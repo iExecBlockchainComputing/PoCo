@@ -14,8 +14,7 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 	 */
 	string        public m_appName;
 	uint256       public m_appPrice;
-	string        public m_appParam;
-	string        public m_appUri;
+	string        public m_appParams;
 	AppStatusEnum public m_appStatus;
 
 	/**
@@ -32,8 +31,7 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		address _iexecHubAddress,
 		string  _appName,
 		uint256 _appPrice,
-		string  _appParam,
-		string  _appUri)
+		string  _appParams)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -44,8 +42,7 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 
 		m_appName   = _appName;
 		m_appPrice  = _appPrice;
-		m_appParam  = _appParam;
-		m_appUri    = _appUri;
+		m_appParams  = _appParams;
 		m_appStatus = AppStatusEnum.OPEN;
 		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin

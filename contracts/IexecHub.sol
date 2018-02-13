@@ -75,8 +75,8 @@ contract IexecHub
 	event TaskAborted(address taskID, address workerPool);
 	event TaskCompleted(address taskID, address workerPool);
 
-	event CreateApp(address indexed appOwner,address indexed app,string  appName,uint256 appPrice,string  appParam,string  appUri);
-	event CreateDataset(address indexed datasetOwner, address indexed dataset, string  datasetName, uint256 datasetPrice, string  datasetParam, string  datasetUri);
+	event CreateApp(address indexed appOwner,address indexed app,string  appName,uint256 appPrice,string  appParams);
+	event CreateDataset(address indexed datasetOwner, address indexed dataset, string  datasetName, uint256 datasetPrice, string  datasetParams);
 
 	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
 	event OpenWorkerPool(address indexed workerPool);
@@ -137,26 +137,24 @@ contract IexecHub
 	}
 
 	function createDataset(
-		string  _name,
-		uint256 _price,
-		string  _param,
-		string  _uri)
+		string  _datasetName,
+		uint256 _datasetPrice,
+		string  _datasetParams)
 	public returns (address createdDataset)
 	{
-		address newDataset =datasetHub.createDataset(_name, _price, _param, _uri);
-		CreateDataset(tx.origin,newDataset,_name,_price,_param,_uri);
+		address newDataset =datasetHub.createDataset(_datasetName, _datasetPrice, _datasetParams);
+		CreateDataset(tx.origin,newDataset,_datasetName,_datasetPrice,_datasetParams);
 		return newDataset;
 	}
 
 	function createApp(
-		string  _name,
-		uint256 _price,
-		string  _param,
-		string  _uri)
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParams)
 	public returns (address createdApp)
 	{
-		address newApp= appHub.createApp(_name, _price, _param, _uri);
-		CreateApp(tx.origin,newApp,_name,_price,_param,_uri);
+		address newApp= appHub.createApp(_appName, _appPrice, _appParams);
+		CreateApp(tx.origin,newApp,_appName,_appPrice,_appParams);
 		return newApp;
 	}
 

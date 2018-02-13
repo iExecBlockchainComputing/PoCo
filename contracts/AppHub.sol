@@ -54,8 +54,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	function createApp(
 		string  _appName,
 		uint256 _appPrice,
-		string  _appParam,
-		string  _appUri)
+		string  _appParams)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdApp)
 	{
 		// tx.origin == owner
@@ -64,8 +63,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 			msg.sender,
 			_appName,
 			_appPrice,
-			_appParam,
-			_appUri
+			_appParams
 		);
 
 		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1);
