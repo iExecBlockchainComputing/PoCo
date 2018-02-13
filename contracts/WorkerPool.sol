@@ -430,7 +430,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function reopen(address _taskID) public returns (bool)
+	function reopen(address _taskID) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.REACHED);
