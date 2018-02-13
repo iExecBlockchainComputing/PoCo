@@ -341,30 +341,6 @@ contract('IexecHub', function(accounts) {
       })
       .then(instance => {
         aAppInstance = instance;
-        return AuthorizedList.new(1, { //black list strategy
-          from: appProvider
-        });
-      })
-      .then(instance => {
-        aWorkerPoolsAuthorizedListInstance = instance;
-        return aAppInstance.attachWorkerPoolsAuthorizedListContract(aWorkerPoolsAuthorizedListInstance.address, {
-          from: appProvider
-        });
-      })
-      .then(txMined => {
-        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return AuthorizedList.new(1, { //black list strategy
-          from: appProvider
-        });
-      })
-      .then(instance => {
-        aRequestersAuthorizedListInstance = instance;
-        return aAppInstance.attachRequestersAuthorizedListContract(aRequestersAuthorizedListInstance.address, {
-          from: appProvider
-        });
-      })
-      .then(txMined => {
-        assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 100, 1, false, iExecCloudUser, {
           from: iExecCloudUser
         });
