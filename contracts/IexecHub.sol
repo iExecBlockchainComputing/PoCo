@@ -221,7 +221,7 @@ contract IexecHub
 		taskinfo.userCost              = userCost;
 
 		// WORKER_POOL
-		require(WorkerPool(_workerPool).receivedTask(newTaskRequest,_taskCost));
+		require(WorkerPool(_workerPool).receivedTask(newTaskRequest,_taskCost,_app,_dataset));
 
 		// address newTaskRequest will the taskID
 		TaskRequest(newTaskRequest,msg.sender, _workerPool,_app,_dataset);

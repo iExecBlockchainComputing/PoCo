@@ -35,6 +35,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	 * Address of slave/related contracts
 	 */
 	address                     public  m_workersAuthorizedListAddress;
+	address                     public  m_appsAuthorizedListAddress;
+	address                     public  m_datasetsAuthorizedListAddress;
 	address                     private m_workerPoolHubAddress;
 
 
@@ -153,20 +155,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
-		/*
-		   cannot do the following AuthorizedList contracts creation because of :
-		   VM Exception while processing transaction: out of gas at deploy.
-		   use attach....AuthorizedListContract instead function
-		*/
+
 
 	  m_workersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
 	  AuthorizedList(m_workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		/*
-		dappsAuthorizedListAddress = new AuthorizedList();
-		AuthorizedList(dappsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		requesterAuthorizedListAddress = new AuthorizedList();
-		AuthorizedList(requesterAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		*/
+		m_appsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_appsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		m_datasetsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_datasetsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+
 	}
 
 	function changeWorkerPoolPolicy(
@@ -198,6 +195,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function isWorkerAllowed(address _worker) public view returns (bool)
 	{
 		return AuthorizedList(m_workersAuthorizedListAddress).isActorAllowed(_worker);
+	}
+
+	function isDatasetAllowed(address _dataset) public view returns (bool)
+	{
+		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
+	}
+
+	function isAppAllowed(address _app) public returns (bool)
+	{
+	  return AuthorizedList(m_appsAuthorizedListAddress).isActorAllowed(_app);
 	}
 
 	function getWorkerAddress(uint _index) constant public returns (address)
@@ -275,9 +282,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 
 	/**************************** tasks management *****************************/
-	function receivedTask(address _taskID, uint256 _taskCost) public onlyIexecHub returns (bool)
+	function receivedTask(address _taskID, uint256 _taskCost, address _app, address _dataset) public onlyIexecHub returns (bool)
 	{
 		require(isOpen());
+		require(isAppAllowed(_app));
+		require(isDatasetAllowed(_dataset));
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		workinfo.status           = ConsensusStatusEnum.PENDING;
 		workinfo.poolReward       = _taskCost;

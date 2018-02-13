@@ -68,21 +68,6 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		return m_datasetStatus == DatasetStatusEnum.OPEN;
 	}
 
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
-	{
-		m_workerPoolsAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
-	}
-
-	function attachAppsAuthorizedListContract(address _appsAuthorizedListAddress) public onlyOwner
-	{
-		m_appsAuthorizedListAddress = _appsAuthorizedListAddress;
-	}
-
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
-	{
-		m_requestersAuthorizedListAddress = _requestersAuthorizedListAddress;
-	}
-
 	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
 	{
 		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
