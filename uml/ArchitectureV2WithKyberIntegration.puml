@@ -40,24 +40,16 @@ iExecCloudUser -down-> [TaskRequest]: owner
 
 cloud {
   [iExecHub]
-  [ProvidersScoring]
-  [ProvidersBalance]
 }
 
 cloud {
   [RLC Token]
 }
-component [ProvidersScoring]
 component [iExecHub]
-component [ProvidersBalance]
 component [RLC Token]
 
 
-[ProvidersBalance] <-right-> [RLC Token]
-
-[ProvidersBalance] <|-left-  [iExecHub]
-[ProvidersScoring] <|-right-  [iExecHub]
-
+[iExecHub] <-right-> [RLC Token]
 
 
 

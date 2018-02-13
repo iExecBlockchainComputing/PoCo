@@ -47,6 +47,12 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		m_appParam  = _appParam;
 		m_appUri    = _appUri;
 		m_appStatus = AppStatusEnum.OPEN;
+		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		m_datasetsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_datasetsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		m_requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_requestersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	/**
@@ -71,32 +77,17 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		return m_appStatus == AppStatusEnum.OPEN;
 	}
 
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
-	{
-		m_workerPoolsAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
-	}
-
-	function attachDatasetsAuthorizedListContract(address _datasetsAuthorizedListAddress) public onlyOwner
-	{
-		m_datasetsAuthorizedListAddress = _datasetsAuthorizedListAddress;
-	}
-
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
-	{
-		m_requestersAuthorizedListAddress = _requestersAuthorizedListAddress;
-	}
-
-	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
+	function isWorkerPoolAllowed(address _workerPool) public view returns (bool)
 	{
 		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
 	}
 
-	function isDatasetAllowed(address _dataset) public returns (bool)
+	function isDatasetAllowed(address _dataset) public view returns (bool)
 	{
 		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
 	}
 
-	function isRequesterAllowed(address _requester) public returns (bool)
+	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
 		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}

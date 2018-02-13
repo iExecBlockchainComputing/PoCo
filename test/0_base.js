@@ -48,8 +48,8 @@ contract('IexecHub', function(accounts) {
     UNSET:       0,
     REQUESTED:   1,
     SUBMITTED:   2,
-    POCO_REJECT: 3,
-    POCO_ACCEPT: 4
+    POCO_ACCEPT: 3,
+    REJECTED:    4
   };
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;

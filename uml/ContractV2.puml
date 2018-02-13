@@ -1,7 +1,7 @@
 @startuml
 object IexecAPI
 object MyDapp
-object Contributions
+
 IexecAPI <|-- MyDapp
 
 object App
@@ -16,16 +16,13 @@ object TaskRequestHub
 object WorkerPool
 object WorkerPoolHub
 
-object ProvidersBalance
-object ProvidersScoring
 object IexecHub
 
 AppHub <|-- IexecHub
 DatasetHub <|-- IexecHub
 WorkerPoolHub <|-- IexecHub
 TaskRequestHub <|-- IexecHub
-ProvidersBalance <|-- IexecHub
-ProvidersScoring <|-- IexecHub
+
 
 WorkerPool "n" *-- "0" WorkerPoolHub
 App "n" *-- "0" AppHub
@@ -35,6 +32,6 @@ TaskRequest "n" *-- "0" TaskRequestHub
 
 
 MyDapp --> TaskRequest: create
-Contributions  "n" *--"0" WorkerPool
+
 
 @enduml
