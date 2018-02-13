@@ -379,10 +379,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS); // or state Locked to add ?
 
-		workinfo.winnerCount = 0;
-
 		uint256 i;
 		address w;
+		workinfo.winnerCount = 0;
 		for (i = 0; i<workinfo.contributors.length; ++i)
 		{
 			w = workinfo.contributors[i];
@@ -404,15 +403,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		WorkInfo     storage workinfo     = m_WorkInfos[_taskID];
 		Contribution storage contribution = m_tasksContributions[_taskID][msg.sender];
-		require(workinfo.status == ConsensusStatusEnum.REACHED);
 
-		require(workinfo.revealDate > now);
-		require(contribution.status == WorkStatusEnum.SUBMITTED);
-
-		require(contribution.resultHash == workinfo.consensus);
-		bool validHash = keccak256(_result                        ) == contribution.resultHash;
-		bool validSign = keccak256(_result ^ keccak256(msg.sender)) == contribution.resultSign;
-		require(validHash && validSign); // Only valid result can reveal
+		require(workinfo.revealDate      > now                                       ); // Needed ?
+		require(workinfo.status         == ConsensusStatusEnum.REACHED               );
+		require(contribution.status     == WorkStatusEnum.SUBMITTED                  );
+		require(contribution.resultHash == workinfo.consensus                        );
+		require(contribution.resultHash == keccak256(_result                        ));
+		require(contribution.resultSign == keccak256(_result ^ keccak256(msg.sender)));
 
 		contribution.status    = WorkStatusEnum.POCO_ACCEPT;
 		workinfo.revealCounter = workinfo.revealCounter.add(1);
@@ -421,7 +418,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function reopen(address _taskID) public returns (bool)
+	function reopen(address _taskID) public onlyOwner returns (bool)
 	{
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.REACHED);
