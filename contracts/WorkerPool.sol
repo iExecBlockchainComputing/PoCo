@@ -448,7 +448,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.REACHED);
 
-		require(workinfo.revealDate <= now || workinfo.revealCounter == workinfo.winnerCount);
+		require((workinfo.revealDate <= now && workinfo.revealCounter > 0) || workinfo.revealCounter == workinfo.winnerCount);
 		workinfo.status = ConsensusStatusEnum.FINALIZED;
 
 		// add penalized to the call worker to contrubution and they never contribute ?
