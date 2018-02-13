@@ -326,7 +326,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.createAppOrDataset("hello-world-docker", 0, "docker", "hello-world", true, {
+        return aIexecHubInstance.createApp("hello-world-docker", 0, "docker", "hello-world",{
           from: appProvider
         });
       })

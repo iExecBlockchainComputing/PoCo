@@ -19,17 +19,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	//  app => owner
 	mapping(address => address)                     m_ownerByApp;
 
-	/**
-	 * Events
-	 */
-	event CreateApp(
-		address indexed appOwner,
-		address indexed app,
-		string  appName,
-		uint256 appPrice,
-		string  appParam,
-		string  appUri
-	);
+
 
 	/**
 	 * Constructor
@@ -81,16 +71,6 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1);
 		m_appByOwnerByIndex[tx.origin][m_appsCountByOwner[tx.origin]] = newApp;
 		m_ownerByApp[newApp] = tx.origin;
-
-		CreateApp(
-			tx.origin,
-			newApp,
-			_appName,
-			_appPrice,
-			_appParam,
-			_appUri
-		);
-
 		return newApp;
 	}
 

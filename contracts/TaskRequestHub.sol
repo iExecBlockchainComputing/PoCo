@@ -19,6 +19,20 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	//  taskRequest => owner
 	mapping(address => address)                  m_ownerByTaskRequest;
 
+	/**
+	 * Events
+	 */
+	event CreateTaskRequest(
+		address taskRequestOwner,
+		address taskRequest,
+		address indexed workerPool,
+		address indexed app,
+		address indexed dataset,
+		string  taskParam,
+		uint    taskCost,
+		uint    askedTrust,
+		bool    dappCallback
+	);
 
 	/**
 	 * Constructor
@@ -80,6 +94,19 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 		m_taskRequestsCountByOwner[_requester] = m_taskRequestsCountByOwner[_requester].add(1);
 		m_taskRequestByOwnerByIndex[_requester][m_taskRequestsCountByOwner[_requester]] = newTaskRequest;
 		m_ownerByTaskRequest[newTaskRequest] = _requester;
+
+
+		CreateTaskRequest(
+			_requester,
+			newTaskRequest,
+			_workerPool,
+			_app,
+			_dataset,
+			_taskParam,
+			_taskCost,
+			_askedTrust,
+			_dappCallback
+		);
 
 		return newTaskRequest;
 	}

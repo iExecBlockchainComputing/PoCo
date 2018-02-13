@@ -18,17 +18,6 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	//  dataset => owner
 	mapping(address => address)                     m_ownerByDataset;
 
-	/**
-	 * Events
-	 */
-	event CreateDataset(
-		address indexed datasetOwner,
-		address indexed dataset,
-		string  datasetName,
-		uint256 datasetPrice,
-		string  datasetParam,
-		string  datasetUri
-	);
 
 	/**
 	 * Constructor
@@ -80,16 +69,6 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		m_datasetsCountByOwner[tx.origin] = m_datasetsCountByOwner[tx.origin].add(1);
 		m_datasetByOwnerByIndex[tx.origin][m_datasetsCountByOwner[tx.origin]] = newDataset;
 		m_ownerByDataset[newDataset] = tx.origin;
-
-		CreateDataset(
-			tx.origin,
-			newDataset,
-			_datasetName,
-			_datasetPrice,
-			_datasetParam,
-			_datasetUri
-		);
-
 		return newDataset;
 	}
 

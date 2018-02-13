@@ -75,6 +75,9 @@ contract IexecHub
 	event TaskAborted(address taskID, address workerPool);
 	event TaskCompleted(address taskID, address workerPool);
 
+	event CreateApp(address indexed appOwner,address indexed app,string  appName,uint256 appPrice,string  appParam,string  appUri);
+	event CreateDataset(address indexed datasetOwner, address indexed dataset, string  datasetName, uint256 datasetPrice, string  datasetParam, string  datasetUri);
+
 	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
 	event OpenWorkerPool(address indexed workerPool);
 	event CloseWorkerPool(address indexed workerPool);
@@ -133,23 +136,28 @@ contract IexecHub
 		return newWorkerPool;
 	}
 
-	function createAppOrDataset( // App + Dataset to function economy
+	function createDataset(
 		string  _name,
 		uint256 _price,
 		string  _param,
-		string  _uri,
-		bool    _isApp)
-	public returns (address created)
+		string  _uri)
+	public returns (address createdDataset)
 	{
-		// require(lock(msg.sender, APP_CREATION_STAKE)); // prevent creation spam ?
-		if (_isApp)
-		{
-			return appHub.createApp(_name, _price, _param, _uri);
-		}
-		else
-		{
-			return datasetHub.createDataset(_name, _price, _param, _uri);
-		}
+		address newDataset =datasetHub.createDataset(_name, _price, _param, _uri);
+		CreateDataset(tx.origin,newDataset,_name,_price,_param,_uri);
+		return newDataset;
+	}
+
+	function createApp(
+		string  _name,
+		uint256 _price,
+		string  _param,
+		string  _uri)
+	public returns (address createdApp)
+	{
+		address newApp= appHub.createApp(_name, _price, _param, _uri);
+		CreateApp(tx.origin,newApp,_name,_price,_param,_uri);
+		return newApp;
 	}
 
 	function createTaskRequest(

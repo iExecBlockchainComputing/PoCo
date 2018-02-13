@@ -21,7 +21,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	//  workerPool => owner
 	mapping(address => address)                  m_ownerByWorkerPool;
 
-
 	/**
 	 * Constructor
 	 */

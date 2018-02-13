@@ -243,12 +243,12 @@ contract('IexecHub', function(accounts) {
 
   it("free App Ceation", function() {
     let appAddressFromLog;
-    return aIexecHubInstance.createAppOrDataset("freeapp", 0, "freeapp_param", "freeapp_uri", true, {
+    return aIexecHubInstance.createApp("freeapp", 0, "freeapp_param", "freeapp_uri",{
       from: appProvider
     })
     .then(txMined => {
       assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-      return Extensions.getEventsPromise(aAppHubInstance.CreateApp({}));
+      return Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
     })
     .then(events => {
       assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
