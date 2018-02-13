@@ -388,12 +388,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS); // or state Locked to add ?
 
-		uint256 i;
-		address w;
 		workinfo.winnerCount = 0;
-		for (i = 0; i<workinfo.contributors.length; ++i)
+		for (uint256 i = 0; i<workinfo.contributors.length; ++i)
 		{
-			w = workinfo.contributors[i];
+			address w = workinfo.contributors[i];
 			if (m_tasksContributions[_taskID][w].resultHash == _consensus)
 			{
 				workinfo.winnerCount = workinfo.winnerCount.add(1);
@@ -432,19 +430,22 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkInfo storage workinfo = m_WorkInfos[_taskID];
 		require(workinfo.status == ConsensusStatusEnum.REACHED);
 		require(workinfo.revealDate <= now && workinfo.revealCounter == 0);
-		workinfo.winnerCount = 0;
 
-		uint256 i;
-		address w;
-		for (i = 0; i<workinfo.contributors.length; ++i)
+		// Reset to status before revealConsensus
+		workinfo.winnerCount = 0;
+		workinfo.status      = ConsensusStatusEnum.IN_PROGRESS;
+		workinfo.consensus   = 0x0;
+		workinfo.revealDate  = 0;
+
+		for (uint256 i = 0; i<workinfo.contributors.length; ++i)
 		{
-			w = workinfo.contributors[i];
+			address w = workinfo.contributors[i];
 			if (m_tasksContributions[_taskID][w].resultHash == workinfo.consensus)
 			{
 				m_tasksContributions[_taskID][w].status = WorkStatusEnum.REJECTED;
 			}
 		}
-		workinfo.status == ConsensusStatusEnum.IN_PROGRESS;
+
 		return true;
 	}
 
