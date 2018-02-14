@@ -64,8 +64,8 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 			_datasetParams
 		);
 
+		m_datasetByOwnerByIndex[tx.origin].push(newDataset);
 		m_datasetsCountByOwner[tx.origin] = m_datasetsCountByOwner[tx.origin].add(1);
-		m_datasetByOwnerByIndex[tx.origin][m_datasetsCountByOwner[tx.origin]] = newDataset;
 		m_ownerByDataset[newDataset] = tx.origin;
 		return newDataset;
 	}

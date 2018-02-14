@@ -72,8 +72,8 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy
 		);
-		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1);
-		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
+		m_workerPoolByOwnerByIndex[tx.origin].push(newWorkerPool);
+		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1); // Needed ?
 		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
 		return newWorkerPool;
 	}

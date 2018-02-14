@@ -60,7 +60,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		address newApp = new App(msg.sender, _appName, _appPrice, _appParams);
 
 		m_appByOwnerByIndex[tx.origin].push(newApp); // returns index of newApp
-		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1); // Needed
+		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1); // Needed ?
 		m_ownerByApp[newApp] = tx.origin;
 		return newApp;
 	}

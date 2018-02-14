@@ -29,9 +29,9 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	// Constructor
 	function Dataset(
 		address _iexecHubAddress,
-		string _datasetName,
+		string  _datasetName,
 		uint256 _datasetPrice,
-		string _datasetParams)
+		string  _datasetParams)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -42,7 +42,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 
 		m_datasetName   = _datasetName;
 		m_datasetPrice  = _datasetPrice;
-		m_datasetParams  = _datasetParams;
+		m_datasetParams = _datasetParams;
 		m_datasetStatus = DatasetStatusEnum.OPEN;
 	}
 
