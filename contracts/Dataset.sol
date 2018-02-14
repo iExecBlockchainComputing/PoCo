@@ -44,6 +44,14 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		m_datasetPrice  = _datasetPrice;
 		m_datasetParams = _datasetParams;
 		m_datasetStatus = DatasetStatusEnum.OPEN;
+
+		m_appsAuthorizedListAddress        = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+		AuthorizedList(m_appsAuthorizedListAddress       ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_requestersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+
 	}
 
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)

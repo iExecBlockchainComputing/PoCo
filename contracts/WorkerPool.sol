@@ -152,14 +152,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
-
-
-	  m_workersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
-	  AuthorizedList(m_workersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		m_appsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		AuthorizedList(m_appsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		m_appsAuthorizedListAddress     = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		m_datasetsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_workersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+		AuthorizedList(m_appsAuthorizedListAddress    ).transferOwnership(tx.origin); // owner → tx.origin
 		AuthorizedList(m_datasetsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_workersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
 
 	}
 
