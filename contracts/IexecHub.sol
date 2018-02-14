@@ -80,6 +80,7 @@ contract IexecHub
 	event OpenWorkerPool(address indexed workerPool);
 	event CloseWorkerPool(address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
+	event WorkerPoolEviction(address indexed workerPool, address worker);
 	event WorkerPoolSubscription(address indexed workerPool, address worker);
 
 	event FaultyContribution(address taskID, address indexed worker);
@@ -386,12 +387,23 @@ contract IexecHub
 		return true;
 	}
 
-	function unsubscribeToPool(address _workerPool, address _worker) public returns (bool unsubscribed)
+	function unsubscribeToPool() public returns (bool unsubscribed)
 	{
-		require(unlock(_worker, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
-		// workerPoolHub.unsubscribeToPool checks tx.origin (only worker and workerPool manager are allowed)
-		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
-		WorkerPoolUnsubscription(_workerPool, _worker);
+		//msg.sender = workerPool
+		//tx.origin = worker
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.unsubscribeToPool(msg.sender, tx.origin));
+		require(unlock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		WorkerPoolUnsubscription(msg.sender, tx.origin);
+		return true;
+	}
+
+	function evictWorker(address _worker) public returns (bool unsubscribed)
+	{
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.unsubscribeToPool(msg.sender, _worker));
+		require(unlock(_worker, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		WorkerPoolEviction(msg.sender, _worker);
 		return true;
 	}
 

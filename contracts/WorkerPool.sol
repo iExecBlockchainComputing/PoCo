@@ -231,15 +231,22 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workerIndex[tx.origin] = index;
 		return true;
 	}
-	/*
-	function addWorker(address _worker) public onlyWorkerPoolHub  returns (bool)
-	{
-		uint index = m_workers.push(_worker);
-		m_workerIndex[_worker] = index;
+
+	function unsubscribeToPool() public  returns (bool){
+		//tx.origin = worker
+		require(iexecHubInterface.unsubscribeToPool());
+		require(removeWorker(tx.origin));
 		return true;
 	}
-	*/
-	function removeWorker(address _worker) public onlyWorkerPoolHub returns (bool)
+
+	function evictWorker(address _worker) public onlyOwner returns (bool){
+		//tx.origin = worker
+		require(iexecHubInterface.evictWorker(_worker));
+	  require(removeWorker(_worker));
+		return true;
+	}
+
+	function removeWorker(address _worker) internal returns (bool)
 	{
 		uint index = getWorkerIndex(_worker); // fails if worker not registered
 		m_workers[index] = m_workers[m_workers.length-1];

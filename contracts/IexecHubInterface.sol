@@ -75,7 +75,10 @@ contract IexecHubInterface
 		function subscribeToPool()
 		public returns (bool subscribed);
 
-		function unsubscribeToPool(
+		function unsubscribeToPool()
+		public returns (bool unsubscribed);
+
+		function evictWorker(
 			address _workerPool)
 		public returns (bool unsubscribed);
 

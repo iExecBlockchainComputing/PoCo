@@ -101,12 +101,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		WorkerPool pool = WorkerPool(_workerPool);
 		require(m_workerAffectation[_worker] == _workerPool );
 		m_workerAffectation[_worker] == 0x0;
-		if(_worker == tx.origin || m_ownerByWorkerPool[_workerPool] == tx.origin) // worker quit || scheduler expulse
-		{
-			require(pool.removeWorker(_worker));
-			return true;
-	 }
-		 return false;
+		return true;
 	}
 
 	function isOpen(address _workerPool) public view returns (bool)
