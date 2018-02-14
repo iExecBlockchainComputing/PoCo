@@ -45,11 +45,11 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		m_appParams = _appParams;
 		m_appStatus = AppStatusEnum.OPEN;
 		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_datasetsAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		m_datasetsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		AuthorizedList(m_datasetsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		m_requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		AuthorizedList(m_requestersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_datasetsAuthorizedListAddress   ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_requestersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	/**

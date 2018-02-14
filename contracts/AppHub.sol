@@ -19,8 +19,6 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	//  app => owner
 	mapping(address => address)                     m_ownerByApp;
 
-
-
 	/**
 	 * Constructor
 	 */
@@ -48,7 +46,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 
 	function isAppRegistred(address _app) public view returns (bool)
 	{
-		return m_ownerByApp[_app] != 0x0;
+		return m_ownerByApp[_app] != address(0);
 	}
 
 	function createApp(
@@ -59,15 +57,10 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	{
 		// tx.origin == owner
 		// msg.sender == IexecHub
-		address newApp = new App(
-			msg.sender,
-			_appName,
-			_appPrice,
-			_appParams
-		);
+		address newApp = new App(msg.sender, _appName, _appPrice, _appParams);
 
-		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1);
-		m_appByOwnerByIndex[tx.origin][m_appsCountByOwner[tx.origin]] = newApp;
+		m_appByOwnerByIndex[tx.origin].push(newApp); // returns index of newApp
+		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1); // Needed
 		m_ownerByApp[newApp] = tx.origin;
 		return newApp;
 	}
