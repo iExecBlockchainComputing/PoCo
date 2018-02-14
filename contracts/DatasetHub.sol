@@ -11,8 +11,6 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// owner => datasets count
-	mapping(address => uint256)   m_datasetsCountByOwner;
 	// owner => index => dataset
 	mapping(address => address[]) m_datasetByOwnerByIndex;
 	//  dataset => owner
@@ -31,7 +29,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getDatasetsCount(address _owner) public view returns (uint256)
 	{
-		return m_datasetsCountByOwner[_owner];
+		return m_datasetByOwnerByIndex[tx.origin].length;
 	}
 
 	function getDataset(address _owner, uint256 _index) public view returns (address)
@@ -65,7 +63,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		);
 
 		m_datasetByOwnerByIndex[tx.origin].push(newDataset);
-		m_datasetsCountByOwner[tx.origin] = m_datasetsCountByOwner[tx.origin].add(1);
+
 		m_ownerByDataset[newDataset] = tx.origin;
 		return newDataset;
 	}

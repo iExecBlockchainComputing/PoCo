@@ -14,8 +14,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 */
 	// worker => workerPool
 	mapping(address => address)   m_workerAffectation;
-	// owner => workerPools count
-	mapping(address => uint256)   m_workerPoolsCountByOwner;
 	// owner => index => workerPool
 	mapping(address => address[]) m_workerPoolByOwnerByIndex;
 	//  workerPool => owner
@@ -33,7 +31,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getWorkerPoolsCount(address _owner) public view returns (uint256)
 	{
-		return m_workerPoolsCountByOwner[_owner];
+		return m_workerPoolByOwnerByIndex[_owner].length;
 	}
 
 	function getWorkerPool(address _owner, uint256 _index) public view returns (address)
@@ -73,7 +71,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 			_subscriptionMinimumScorePolicy
 		);
 		m_workerPoolByOwnerByIndex[tx.origin].push(newWorkerPool);
-		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1); // Needed ?
 		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
 		return newWorkerPool;
 	}

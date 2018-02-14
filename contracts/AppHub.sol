@@ -13,8 +13,6 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// owner => apps count
-	// owner => index => app
-	mapping(address => uint256)   m_appsCountByOwner;
 	//  app => owner
 	mapping(address => address[]) m_appByOwnerByIndex;
 	mapping(address => address)   m_ownerByApp;
@@ -31,7 +29,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getAppsCount(address _owner) public view returns (uint256)
 	{
-		return m_appsCountByOwner[_owner];
+		return m_appByOwnerByIndex[_owner].length;
 	}
 
 	function getApp(address _owner, uint256 _index) public view returns (address)
@@ -60,7 +58,6 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		address newApp = new App(msg.sender, _appName, _appPrice, _appParams);
 
 		m_appByOwnerByIndex[tx.origin].push(newApp); // returns index of newApp
-		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1); // Needed ?
 		m_ownerByApp[newApp] = tx.origin;
 		return newApp;
 	}

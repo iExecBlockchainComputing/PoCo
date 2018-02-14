@@ -161,7 +161,7 @@ contract IexecHub
 		address _app,
 		address _dataset,
 		string  _taskParam,
-		uint    _taskCost,
+		uint    _taskReward,
 		uint    _askedTrust,
 		bool    _dappCallback,
 		address _beneficiary)
@@ -177,8 +177,11 @@ contract IexecHub
 		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
 		require(appHub.isRequesterAllowed (_app, msg.sender ));
 
-		// userCost at least _taskCost
-		uint256 userCost = _taskCost;
+		// userCost at least _taskReward
+		uint256 userCost = _taskReward;
+
+		// add optional appPrice  for userCost
+		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		// DATASET
 		if (_dataset != address(0))
@@ -192,19 +195,13 @@ contract IexecHub
 
 			// add optional datasetPrice for userCost
 			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
-
 		}
-
-
-		// add optional appPrice  for userCost
-		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		if (m_accounts[msg.sender].stake < userCost)
 		{
 			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
 		}
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(userCost);
 
 		address newTaskRequest = taskRequestHub.createTaskRequest(
 			msg.sender, // requester
@@ -212,7 +209,7 @@ contract IexecHub
 			_app,
 			_dataset,
 			_taskParam,
-			_taskCost,
+			_taskReward,
 			_askedTrust,
 			_dappCallback,
 			_beneficiary
@@ -224,11 +221,13 @@ contract IexecHub
 		taskinfo.workerPoolAffectation = _workerPool;
 		taskinfo.userCost              = userCost;
 
+		require(lock(taskinfo.requesterAffectation, taskinfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
+
 		// WORKER_POOL
-		require(WorkerPool(_workerPool).receivedTask(newTaskRequest,_taskCost,_app,_dataset));
+		require(WorkerPool(_workerPool).receivedTask(newTaskRequest, _taskReward, _app, _dataset));
 
 		// address newTaskRequest will the taskID
-		TaskRequest(newTaskRequest,msg.sender, _workerPool,_app,_dataset);
+		TaskRequest(newTaskRequest, msg.sender, _workerPool, _app, _dataset);
 		return newTaskRequest;
 	}
 
@@ -254,7 +253,7 @@ contract IexecHub
 
 		// Why cancelled ? penalty ?
 		require(msg.sender == taskinfo.requesterAffectation);
-		require(reward(msg.sender, taskinfo.userCost));
+		require(unlock(taskinfo.requesterAffectation, taskinfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
 		require(taskRequestHub.setCancelled(_taskID));
 		require(WorkerPool(taskinfo.workerPoolAffectation).cancelTask(_taskID));
@@ -269,8 +268,8 @@ contract IexecHub
 
 		// Who ? contributor / client
 
-		// TODO: cleanup / comment
-		require(reward(taskinfo.requesterAffectation, taskinfo.userCost));
+		require(unlock(taskinfo.requesterAffectation, taskinfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+
 		require(taskRequestHub.setAborted(_taskID));
 		require(pool.claimFailedConsensus(_taskID));
 
@@ -282,7 +281,8 @@ contract IexecHub
 		address _taskID,
 		string _stdout,
 		string _stderr,
-		string _uri) public returns (bool)
+		string _uri)
+	public returns (bool)
 	{
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
 
@@ -305,6 +305,8 @@ contract IexecHub
 				// to unlock a stake ?
 			}
 		}
+
+		require(seize(taskinfo.requesterAffectation, taskinfo.userCost)); // SEIZE THE FUNDS FOR PAIEMENT
 
 		require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
