@@ -86,12 +86,12 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 
 	function subscribeToPool(address _workerPool) public onlyOwner /*owner == IexecHub*/ returns (bool subscribed)
 	{
+		//tx.origin = worker
 		WorkerPool pool = WorkerPool(_workerPool);
 		// you must have no cuurent affectation on others worker Pool
 		require(m_workerAffectation[tx.origin] == 0x0);
 		// you must be on the white list of the worker pool to subscribe.
 		require(pool.isWorkerAllowed(tx.origin));
-		require(pool.addWorker(tx.origin));
 		m_workerAffectation[tx.origin] = _workerPool;
 		return true;
 	}

@@ -293,7 +293,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+        return aWorkerPoolInstance.subscribeToPool({
           from: resourceProvider,
           gas: amountGazProvided
         });
@@ -311,7 +311,7 @@ contract('IexecHub', function(accounts) {
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         return Extensions.expectedExceptionPromise(() => {
-            return aIexecHubInstance.subscribeToPool(workerPoolAddress, {
+            return aWorkerPoolInstance.subscribeToPool({
               from: resourceProvider,
               gas: amountGazProvided
             });

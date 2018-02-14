@@ -373,13 +373,16 @@ contract IexecHub
 	/**
 	 * Worker subscription
 	 */
-	function subscribeToPool(address _workerPool) public returns (bool subscribed)
+	function subscribeToPool() public returns (bool subscribed)
 	{
-		require(m_scores[msg.sender]         >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
-		require(m_accounts[msg.sender].stake >= WorkerPool(_workerPool).m_subscriptionMinimumStakePolicy());
-		require(lock(msg.sender, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
-		require(workerPoolHub.subscribeToPool(_workerPool));
-		WorkerPoolSubscription(_workerPool, tx.origin);
+		//msg.sender = workerPool
+		//tx.origin = worker
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
+		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
+		require(lock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		require(workerPoolHub.subscribeToPool(msg.sender));
+		WorkerPoolSubscription(msg.sender, tx.origin);
 		return true;
 	}
 

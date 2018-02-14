@@ -127,7 +127,7 @@ blockchain interaction :
         <tr>
             <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
-            <td>IexecHub</td>
+            <td>WorkerPool</td>
             <td>RessourceProvider</td>
             <td>iexec-worker</td>
         </tr>

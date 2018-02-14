@@ -72,8 +72,7 @@ contract IexecHubInterface
 			address _workerPool)
 		public returns (bool);
 
-		function subscribeToPool(
-			address _workerPool)
+		function subscribeToPool()
 		public returns (bool subscribed);
 
 		function unsubscribeToPool(
