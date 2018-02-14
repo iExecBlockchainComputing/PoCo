@@ -20,9 +20,9 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	/**
 	 * Address of slave contracts
 	 */
-	address           public m_workerPoolsAuthorizedListAddress;
 	address           public m_appsAuthorizedListAddress;
 	address           public m_requestersAuthorizedListAddress;
+	address           public m_workerPoolsAuthorizedListAddress;
 
 	// TODO add OPEN and CLOSE STATUS for datasetUri maintenance
 

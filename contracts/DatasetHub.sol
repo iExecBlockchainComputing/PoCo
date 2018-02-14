@@ -11,10 +11,9 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// owner => index => dataset
-	mapping(address => address[]) m_datasetByOwnerByIndex;
-	//  dataset => owner
-	mapping(address => address)   m_ownerByDataset;
+	mapping(address => uint256)                     m_datasetCountByOwner;
+	mapping(address => mapping(uint256 => address)) m_datasetByOwnerByIndex;
+	mapping(address => address)                     m_ownerByDataset;
 
 
 	/**
@@ -29,7 +28,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getDatasetsCount(address _owner) public view returns (uint256)
 	{
-		return m_datasetByOwnerByIndex[tx.origin].length;
+		return m_datasetCountByOwner[tx.origin];
 	}
 
 	function getDataset(address _owner, uint256 _index) public view returns (address)
@@ -47,6 +46,14 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByDataset[_dataset] != 0x0;
 	}
 
+	function addDataset(address _owner, address _dataset) internal
+	{
+		uint id = m_datasetCountByOwner[_owner];
+		m_datasetCountByOwner  [_owner]     = id.add(1);
+		m_datasetByOwnerByIndex[_owner][id] = _dataset;
+		m_ownerByDataset       [_dataset]   = _owner;
+	}
+
 	function createDataset(
 		string _datasetName,
 		uint256 _datasetPrice,
@@ -61,10 +68,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 			_datasetPrice,
 			_datasetParams
 		);
-
-		m_datasetByOwnerByIndex[tx.origin].push(newDataset);
-
-		m_ownerByDataset[newDataset] = tx.origin;
+		addDataset(tx.origin, newDataset);
 		return newDataset;
 	}
 
@@ -72,25 +76,21 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	{
 		return Dataset(_dataset).m_datasetPrice();
 	}
-
 	function isOpen(address _dataset) public view returns (bool)
 	{
 		return Dataset(_dataset).isOpen();
 	}
-
-	function isWorkerPoolAllowed(address _dataset, address _workerPool) public returns (bool)
-	{
-		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
-	}
-
 	function isAppAllowed(address _dataset, address _app) public returns (bool)
 	{
 		return Dataset(_dataset).isAppAllowed(_app);
 	}
-
 	function isRequesterAllowed(address _dataset, address _requester) public returns (bool)
 	{
-	  return Dataset(_dataset).isRequesterAllowed(_requester);
+		return Dataset(_dataset).isRequesterAllowed(_requester);
+	}
+	function isWorkerPoolAllowed(address _dataset, address _workerPool) public returns (bool)
+	{
+		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
 	}
 
 

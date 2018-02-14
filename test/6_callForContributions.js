@@ -294,7 +294,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
+        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
       })
       .then(result => {
         workerPoolAddress = result;
@@ -334,7 +334,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aAppHubInstance.getApp(appProvider, 1);
+        return aAppHubInstance.getApp(appProvider, 0);
       })
       .then(result => {
         appAddress = result;
@@ -348,7 +348,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 1);
+        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 0);
       })
       .then(result => {
         taskID = result;

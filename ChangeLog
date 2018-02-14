@@ -1,10 +1,1 @@
 # Potential changes
-
-contracts/AppHub.sol
-contracts/DatasetHub.sol
-contracts/WorkerPoolHub.sol
-> what is the purpouse of m_xxxCountByOwner ? not used anywhere.
-> replacable by m_xxxByOwnerByIndex[owner].length
-
-contracts/Dataset.sol
-> slave contracts (authorizedlist) are not set

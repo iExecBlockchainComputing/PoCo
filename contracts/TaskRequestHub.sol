@@ -12,11 +12,8 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// owner => taskRequests count
-	mapping(address => uint256)                  m_taskRequestsCountByOwner;
-	// owner => index => taskRequest
+	mapping(address => uint256)                  m_taskRequestCountByOwner;
 	mapping(address => mapping(uint => address)) m_taskRequestByOwnerByIndex;
-	//  taskRequest => owner
 	mapping(address => address)                  m_ownerByTaskRequest;
 
 	/**
@@ -46,7 +43,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getTaskRequestsCount(address _owner) public view returns (uint256)
 	{
-		return m_taskRequestsCountByOwner[_owner];
+		return m_taskRequestCountByOwner[_owner];
 	}
 
 	function getTaskRequest(address _owner, uint256 _index) public view returns (address)
@@ -62,6 +59,14 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 	function isTaskRequestRegistred(address _taskRequest) public view returns (bool)
 	{
 		return m_ownerByTaskRequest[_taskRequest] != 0x0;
+	}
+
+	function addTaskRequest(address _owner, address _taskRequest) internal
+	{
+		uint id = m_taskRequestCountByOwner[_owner];
+		m_taskRequestCountByOwner  [_owner]       = id.add(1);
+		m_taskRequestByOwnerByIndex[_owner][id]   = _taskRequest;
+		m_ownerByTaskRequest       [_taskRequest] = _owner;
 	}
 
 	function createTaskRequest(
@@ -90,11 +95,7 @@ contract TaskRequestHub is OwnableOZ // is Owned by IexecHub
 			_dappCallback,
 			_beneficiary
 		);
-
-		m_taskRequestsCountByOwner[_requester] = m_taskRequestsCountByOwner[_requester].add(1);
-		m_taskRequestByOwnerByIndex[_requester][m_taskRequestsCountByOwner[_requester]] = newTaskRequest;
-		m_ownerByTaskRequest[newTaskRequest] = _requester;
-
+		addTaskRequest(tx.origin, newTaskRequest);
 
 		CreateTaskRequest(
 			_requester,

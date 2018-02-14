@@ -13,11 +13,13 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// worker => workerPool
-	mapping(address => address)   m_workerAffectation;
+	mapping(address => address)                     m_workerAffectation;
+	// owner => index
+	mapping(address => uint256)                     m_workerPoolCountByOwner;
 	// owner => index => workerPool
-	mapping(address => address[]) m_workerPoolByOwnerByIndex;
+	mapping(address => mapping(uint256 => address)) m_workerPoolByOwnerByIndex;
 	//  workerPool => owner
-	mapping(address => address)   m_ownerByWorkerPool;
+	mapping(address => address)                     m_ownerByWorkerPool;
 
 	/**
 	 * Constructor
@@ -31,7 +33,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getWorkerPoolsCount(address _owner) public view returns (uint256)
 	{
-		return m_workerPoolByOwnerByIndex[_owner].length;
+		return m_workerPoolCountByOwner[_owner];
 	}
 
 	function getWorkerPool(address _owner, uint256 _index) public view returns (address)
@@ -54,6 +56,14 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByWorkerPool[_workerPool] != 0x0;
 	}
 
+	function addWorkerPool(address _owner, address _workerPool) internal
+	{
+		uint id = m_workerPoolCountByOwner[_owner];
+		m_workerPoolCountByOwner  [_owner]      = id.add(1);
+		m_workerPoolByOwnerByIndex[_owner][id]  = _workerPool;
+		m_ownerByWorkerPool       [_workerPool] = _owner;
+	}
+
 	function createWorkerPool(
 		string _name,
 		uint256 _subscriptionLockStakePolicy,
@@ -70,8 +80,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy
 		);
-		m_workerPoolByOwnerByIndex[tx.origin].push(newWorkerPool);
-		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
+		addWorkerPool(tx.origin, newWorkerPool);
 		return newWorkerPool;
 	}
 
@@ -99,6 +108,25 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 }
 		 return false;
 	}
+
+	function isOpen(address _workerPool) public view returns (bool)
+	{
+		return WorkerPool(_workerPool).isOpen();
+	}
+	function isAppAllowed(address _workerPool, address _app) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isAppAllowed(_app);
+	}
+	function isDatasetAllowed(address _workerPool, address _dataset) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isDatasetAllowed(_dataset);
+	}
+	/*
+	function isRequesterAllowed(address _workerPool, address _requester) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isRequesterAllowed(_requester);
+	}
+	*/
 
 
 }

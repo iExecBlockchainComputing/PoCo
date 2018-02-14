@@ -302,7 +302,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
+        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
       })
       .then(result => {
         workerPoolAddress = result;
@@ -342,7 +342,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aAppHubInstance.getApp(appProvider, 1);
+        return aAppHubInstance.getApp(appProvider, 0);
       })
       .then(result => {
         appAddress = result;
@@ -356,7 +356,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 1);
+        return aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 0);
       })
       .then(result => {
         taskID = result;
@@ -419,7 +419,6 @@ contract('IexecHub', function(accounts) {
         assert.strictEqual(events[0].args.worker,                resourceProvider,                                                     "check resourceProvider");
         assert.strictEqual(events[0].args.result,                '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
         assert.strictEqual(events[0].args.result,                web3.sha3("iExec the wanderer"),                                      "check revealed result by resourceProvider");
-        assert.strictEqual(events[0].args.pocoStatus.toNumber(), WorkerPool.WorkStatusEnum.POCO_ACCEPT,                                "POCO_ACCEPT !");
     });
   });
 

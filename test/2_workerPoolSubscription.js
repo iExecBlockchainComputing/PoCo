@@ -221,7 +221,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(txMined => {
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
+        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
       })
       .then(result => {
         workerPoolAddress = result;

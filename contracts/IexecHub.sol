@@ -50,10 +50,10 @@ contract IexecHub
 	/**
 	 * Slaves contracts
 	 */
-	WorkerPoolHub  workerPoolHub;
 	AppHub         appHub;
 	DatasetHub     datasetHub;
 	TaskRequestHub taskRequestHub;
+	WorkerPoolHub  workerPoolHub;
 
 	/**
 	 * Internal data
@@ -140,8 +140,12 @@ contract IexecHub
 		string  _datasetParams)
 	public returns (address createdDataset)
 	{
-		address newDataset =datasetHub.createDataset(_datasetName, _datasetPrice, _datasetParams);
-		CreateDataset(tx.origin,newDataset,_datasetName,_datasetPrice,_datasetParams);
+		address newDataset = datasetHub.createDataset(
+			_datasetName,
+			_datasetPrice,
+			_datasetParams
+		);
+		CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
 		return newDataset;
 	}
 
@@ -151,8 +155,12 @@ contract IexecHub
 		string  _appParams)
 	public returns (address createdApp)
 	{
-		address newApp= appHub.createApp(_appName, _appPrice, _appParams);
-		CreateApp(tx.origin,newApp,_appName,_appPrice,_appParams);
+		address newApp = appHub.createApp(
+			_appName,
+			_appPrice,
+			_appParams
+		);
+		CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
 		return newApp;
 	}
 
@@ -169,29 +177,35 @@ contract IexecHub
 	{
 		// msg.sender = requester
 
-		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
+		if (_workerPool != address(0)) // address(0) → any workerPool
+		{
+			require(workerPoolHub.isWorkerPoolRegistred(_workerPool            ));
+			require(workerPoolHub.isOpen               (_workerPool            ));
+			require(workerPoolHub.isAppAllowed         (_workerPool, _app      ));
+			require(workerPoolHub.isDatasetAllowed     (_workerPool, _dataset  ));
+			/* require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender)); */
+		}
 
 		// APP
 		require(appHub.isAppRegistred     (_app             ));
 		require(appHub.isOpen             (_app             ));
-		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
+		require(appHub.isDatasetAllowed   (_app, _dataset   ));
 		require(appHub.isRequesterAllowed (_app, msg.sender ));
+		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
 
-		// userCost at least _taskReward
+		// Price to pay by the user, initialized with reward
 		uint256 userCost = _taskReward;
-
-		// add optional appPrice  for userCost
+		// add optional appPrice to userCost
 		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		// DATASET
-		if (_dataset != address(0))
+		if (_dataset != address(0)) // address(0) → no dataset
 		{
 			require(datasetHub.isDatasetRegistred (_dataset             ));
 			require(datasetHub.isOpen             (_dataset             ));
-			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
 			require(datasetHub.isAppAllowed       (_dataset, _app       ));
 			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
-			require(appHub.isDatasetAllowed       (_app,     _dataset   ));
+			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
 
 			// add optional datasetPrice for userCost
 			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
@@ -238,10 +252,19 @@ contract IexecHub
 	{
 
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
-		require(msg.sender == taskinfo.workerPoolAffectation);
-		// require(lock(msg.sender, VALUE_TO_DETERMINE));
+		if (taskinfo.workerPoolAffectation == address(0))
+		{
+			taskinfo.workerPoolAffectation = msg.sender; // set the workerPoolAffectation in case 'any'
+			require(appHub.isWorkerPoolAllowed    (taskinfo.appAffectation,     taskinfo.workerPoolAffectation));
+			require(datasetHub.isWorkerPoolAllowed(taskinfo.datasetAffectation, taskinfo.workerPoolAffectation));
+		}
+		else
+		{
+			require(taskinfo.workerPoolAffectation == msg.sender);
+		}
 
 		require(taskRequestHub.setAccepted(_taskID));
+		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
 
 		TaskAccepted(_taskID, taskinfo.workerPoolAffectation);
 		return true;
@@ -390,6 +413,7 @@ contract IexecHub
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(reward(_scheduler, _amount));
+		return true;
 	}
 
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)

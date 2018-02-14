@@ -263,7 +263,7 @@ contract('IexecHub', function(accounts) {
     })
     .then(count => {
       assert.strictEqual(1, count.toNumber(), "appProvider must have 1 app now ");
-      return aAppHubInstance.getApp(appProvider, count);
+      return aAppHubInstance.getApp(appProvider, count-1);
     })
     .then(appAddress => {
       assert.strictEqual(appAddressFromLog, appAddress, "check appAddress");

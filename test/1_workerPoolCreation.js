@@ -266,7 +266,7 @@ contract('IexecHub', function(accounts) {
       })
       .then(count => {
         assert.strictEqual(1, count.toNumber(), "scheduleProvider must have 1 workerPool now ");
-        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, count);
+        return aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, count-1);
       })
       .then(workerPoolAddress => {
         assert.strictEqual(workerPoolAddressFromLog, workerPoolAddress, "check workerPoolAddress");

@@ -34,10 +34,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Address of slave/related contracts
 	 */
-	address                     public  m_workersAuthorizedListAddress;
+	address                     private m_workerPoolHubAddress;
 	address                     public  m_appsAuthorizedListAddress;
 	address                     public  m_datasetsAuthorizedListAddress;
-	address                     private m_workerPoolHubAddress;
+	/* address                     public  m_requestersAuthorizedListAddress; */
+	address                     public  m_workersAuthorizedListAddress;
 
 	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
 	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
@@ -152,13 +153,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
-		m_appsAuthorizedListAddress     = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		m_datasetsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		m_workersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
-		AuthorizedList(m_appsAuthorizedListAddress    ).transferOwnership(tx.origin); // owner → tx.origin
-		AuthorizedList(m_datasetsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
-		AuthorizedList(m_workersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
-
+		m_appsAuthorizedListAddress       = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_datasetsAuthorizedListAddress   = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		/* m_requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST); */
+		m_workersAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+		AuthorizedList(m_appsAuthorizedListAddress      ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_datasetsAuthorizedListAddress  ).transferOwnership(tx.origin); // owner → tx.origin
+		/* AuthorizedList(m_requestersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin */
+		AuthorizedList(m_workersAuthorizedListAddress   ).transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	function changeWorkerPoolPolicy(
@@ -187,20 +189,25 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 	/************************* worker list management **************************/
+	function isAppAllowed(address _app) public returns (bool)
+	{
+		return AuthorizedList(m_appsAuthorizedListAddress).isActorAllowed(_app);
+	}
+	function isDatasetAllowed(address _dataset) public view returns (bool)
+	{
+		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
+	}
+	/*
+	function isRequesterAllowed(address _requester) public view returns (bool)
+	{
+		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
+	}
+	*/
 	function isWorkerAllowed(address _worker) public view returns (bool)
 	{
 		return AuthorizedList(m_workersAuthorizedListAddress).isActorAllowed(_worker);
 	}
 
-	function isDatasetAllowed(address _dataset) public view returns (bool)
-	{
-		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
-	}
-
-	function isAppAllowed(address _app) public returns (bool)
-	{
-	  return AuthorizedList(m_appsAuthorizedListAddress).isActorAllowed(_app);
-	}
 
 	function getWorkerAddress(uint _index) constant public returns (address)
 	{
@@ -454,13 +461,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		workinfo.status = ConsensusStatusEnum.FINALIZED;
 
 		// add penalized to the call worker to contrubution and they never contribute ?
-		require(rewardTask(_taskID, workinfo));
+		require(distributeRewards(_taskID, workinfo));
 
 		require(iexecHubInterface.finalizedTask(_taskID, _stdout, _stderr, _uri));
 		return true;
 	}
 
-	function rewardTask(address _taskID, WorkInfo _workinfo) internal returns (bool)
+	function distributeRewards(address _taskID, WorkInfo _workinfo) internal returns (bool)
 	{
 		uint256 i;
 		address w;
@@ -520,7 +527,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		}
 		// totalReward now contains the scheduler share
 		require(iexecHubInterface.rewardForConsensus(_taskID, tx.origin, totalReward)); // tx.origin == m_owner
-
 		return true;
 	}
 
