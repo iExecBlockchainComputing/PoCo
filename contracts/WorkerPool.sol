@@ -39,9 +39,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	address                     public  m_datasetsAuthorizedListAddress;
 	address                     private m_workerPoolHubAddress;
 
-
-
-
 	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
 	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
 
@@ -106,7 +103,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	event CallForContribution(address indexed taskID, address indexed worker, uint256 workerScore);
 	event Contribute         (address indexed taskID, address indexed worker, bytes32 resultHash);
 	event RevealConsensus    (address indexed taskID, bytes32 consensus);
-	event Reveal             (address indexed taskID, address indexed worker, bytes32 result, WorkStatusEnum pocoStatus);
+	event Reveal             (address indexed taskID, address indexed worker, bytes32 result);
 
 	/**
 	 * Members
@@ -421,7 +418,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		contribution.status    = WorkStatusEnum.POCO_ACCEPT;
 		workinfo.revealCounter = workinfo.revealCounter.add(1);
 
-		Reveal(_taskID, msg.sender, _result, contribution.status); // TODO add WorkStatusEnum in LOG
+		Reveal(_taskID, msg.sender, _result); // TODO add WorkStatusEnum in LOG
 		return true;
 	}
 
@@ -528,11 +525,5 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 		return true;
 	}
-
-
-
-
-
-
 
 }

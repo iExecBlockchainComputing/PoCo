@@ -42,7 +42,7 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 
 		m_appName   = _appName;
 		m_appPrice  = _appPrice;
-		m_appParams  = _appParams;
+		m_appParams = _appParams;
 		m_appStatus = AppStatusEnum.OPEN;
 		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
