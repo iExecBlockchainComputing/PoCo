@@ -13,13 +13,13 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// worker => workerPool
-	mapping(address => address)                  m_workerAffectation;
+	mapping(address => address)   m_workerAffectation;
 	// owner => workerPools count
-	mapping(address => uint256)                  m_workerPoolsCountByOwner;
+	mapping(address => uint256)   m_workerPoolsCountByOwner;
 	// owner => index => workerPool
-	mapping(address => mapping(uint => address)) m_workerPoolByOwnerByIndex;
+	mapping(address => address[]) m_workerPoolByOwnerByIndex;
 	//  workerPool => owner
-	mapping(address => address)                  m_ownerByWorkerPool;
+	mapping(address => address)   m_ownerByWorkerPool;
 
 	/**
 	 * Constructor

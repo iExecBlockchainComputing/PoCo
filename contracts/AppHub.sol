@@ -13,11 +13,11 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// owner => apps count
-	mapping(address => uint256)                     m_appsCountByOwner;
 	// owner => index => app
-	mapping(address => mapping(uint256 => address)) m_appByOwnerByIndex;
+	mapping(address => uint256)   m_appsCountByOwner;
 	//  app => owner
-	mapping(address => address)                     m_ownerByApp;
+	mapping(address => address[]) m_appByOwnerByIndex;
+	mapping(address => address)   m_ownerByApp;
 
 	/**
 	 * Constructor

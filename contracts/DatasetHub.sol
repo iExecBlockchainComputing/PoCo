@@ -12,11 +12,11 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// owner => datasets count
-	mapping(address => uint256)                     m_datasetsCountByOwner;
+	mapping(address => uint256)   m_datasetsCountByOwner;
 	// owner => index => dataset
-	mapping(address => mapping(uint256 => address)) m_datasetByOwnerByIndex;
+	mapping(address => address[]) m_datasetByOwnerByIndex;
 	//  dataset => owner
-	mapping(address => address)                     m_ownerByDataset;
+	mapping(address => address)   m_ownerByDataset;
 
 
 	/**

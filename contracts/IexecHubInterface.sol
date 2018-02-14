@@ -94,7 +94,13 @@ contract IexecHubInterface
 
 		function rewardForTask(
 			address _taskID,
-			address _user,
+			address _worker,
+			uint _amount)
+		public returns (bool);
+
+		function rewardForConsensus(
+			address _taskID,
+			address _scheduler,
 			uint _amount)
 		public returns (bool);
 

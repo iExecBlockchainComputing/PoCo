@@ -332,10 +332,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function callForContribution(address _taskID, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
-		WorkInfo storage workinfo = m_WorkInfos[_taskID];
+		WorkInfo     storage workinfo     = m_WorkInfos[_taskID];
+		Contribution storage contribution = m_tasksContributions[_taskID][_worker];
 		require(workinfo.status == ConsensusStatusEnum.IN_PROGRESS || workinfo.status == ConsensusStatusEnum.STARTED);
 		workinfo.status = ConsensusStatusEnum.IN_PROGRESS;
-		Contribution storage contribution = m_tasksContributions[_taskID][_worker];
 
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
@@ -345,7 +345,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		require(workerPool == address(this));
 
 		require(contribution.status == WorkStatusEnum.UNSET );
-		contribution.status = WorkStatusEnum.REQUESTED;
+		contribution.status           = WorkStatusEnum.REQUESTED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
 		CallForContribution(_taskID,_worker, workerScore);
@@ -519,7 +519,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecHubInterface.rewardForTask(_taskID, tx.origin, totalReward));
+		require(iexecHubInterface.rewardForConsensus(_taskID, tx.origin, totalReward)); // tx.origin == m_owner
 
 		return true;
 	}

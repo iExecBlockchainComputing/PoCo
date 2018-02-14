@@ -28,13 +28,11 @@ contract IexecHub
 		uint256 stake;
 		uint256 locked;
 	}
-	/*
 	struct ContributionHistory // for credibility computation, f = failled/total
 	{
-		uint256 total;
+		uint256 success;
 		uint256 failled;
 	}
-	*/
 	struct TaskInfo
 	{
 		address requesterAffectation;
@@ -63,7 +61,7 @@ contract IexecHub
 	mapping(address => Account ) public m_accounts;  // user => stake
 	mapping(address => uint256 ) public m_scores;    // user => reputation
 	mapping(address => TaskInfo) public m_taskInfos; // task => metadata
-	/* ContributionHistory public m_contributionHistory; */
+	ContributionHistory          public m_contributionHistory;
 
 
 	/**
@@ -110,8 +108,8 @@ contract IexecHub
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
 		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
 
-		/* m_contributionHistory.total   = 0; */
-		/* m_contributionHistory.failled = 0; */
+		m_contributionHistory.success = 0;
+		m_contributionHistory.failled = 0;
 	}
 
 	/**
@@ -386,26 +384,33 @@ contract IexecHub
 		return true;
 	}
 
+	function rewardForConsensus(address _taskID, address _scheduler, uint _amount) public returns (bool) // reward scheduler
+	{
+		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
+		require(reward(_scheduler, _amount));
+	}
+
 	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
-		m_scores[_worker] = m_scores[_worker].add(1);
 		AccurateContribution(_taskID, _worker);
 		// ----------------------- reward(address, uint256) -----------------------
 		require(reward(_worker, _amount));
 		// ------------------------------------------------------------------------
+		m_contributionHistory.success = m_contributionHistory.success.add(1);
+		m_scores[_worker] = m_scores[_worker].add(1);
 		return true;
 	}
 
 	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
-		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		FaultyContribution(_taskID, _worker);
 		// ------------- code of seize(address, uint256) inlined here -------------
-		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);
-		Seize(_worker, _amount);
+		require(seize(_worker, _amount));
 		// ------------------------------------------------------------------------
+		m_contributionHistory.failled = m_contributionHistory.failled.add(1);
+		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		return true;
 	}
 
@@ -441,10 +446,12 @@ contract IexecHub
 		Reward(_user, _amount);
 		return true;
 	}
-	/**
-	 * function seize(address _user, uint256 _amount) internal returns (bool)
-	 * has been inlined in seizeForTask (not called anywhere else)
-	 */
+	function seize(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		Seize(_user, _amount);
+		return true;
+	}
 	function lock(address _user, uint _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
