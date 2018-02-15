@@ -135,21 +135,6 @@ contract IexecHub
 		return newWorkerPool;
 	}
 
-	function createDataset(
-		string  _datasetName,
-		uint256 _datasetPrice,
-		string  _datasetParams)
-	public returns (address createdDataset)
-	{
-		address newDataset = datasetHub.createDataset(
-			_datasetName,
-			_datasetPrice,
-			_datasetParams
-		);
-		CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
-		return newDataset;
-	}
-
 	function createApp(
 		string  _appName,
 		uint256 _appPrice,
@@ -165,13 +150,28 @@ contract IexecHub
 		return newApp;
 	}
 
+	function createDataset(
+		string  _datasetName,
+		uint256 _datasetPrice,
+		string  _datasetParams)
+		public returns (address createdDataset)
+		{
+			address newDataset = datasetHub.createDataset(
+				_datasetName,
+				_datasetPrice,
+				_datasetParams
+				);
+				CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
+				return newDataset;
+			}
+
 	function createTaskRequest(
 		address _workerPool,
 		address _app,
 		address _dataset,
 		string  _taskParam,
-		uint    _taskReward,
-		uint    _askedTrust,
+		uint256 _taskReward,
+		uint256 _askedTrust,
 		bool    _dappCallback,
 		address _beneficiary)
 	public returns (address createdTaskRequest)
@@ -249,7 +249,7 @@ contract IexecHub
 	/**
 	 * Task life cycle
 	 */
-	function acceptTask(address _taskID) public  returns (bool)
+	function acceptTask(address _taskID) public returns (bool)
 	{
 
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
@@ -303,9 +303,9 @@ contract IexecHub
 
 	function finalizedTask(
 		address _taskID,
-		string _stdout,
-		string _stderr,
-		string _uri)
+		string  _stdout,
+		string  _stderr,
+		string  _uri)
 	public returns (bool)
 	{
 		TaskInfo storage taskinfo = m_taskInfos[_taskID];
@@ -410,28 +410,28 @@ contract IexecHub
 	/**
 	 * Stake, reward and penalty functions
 	 */
-	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function lockForTask(address _taskID, address _user, uint256 _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(lock(_user, _amount));
 		return true;
 	}
 
-	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function unlockForTask(address _taskID, address _user, uint256 _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(unlock(_user, _amount));
 		return true;
 	}
 
-	function rewardForConsensus(address _taskID, address _scheduler, uint _amount) public returns (bool) // reward scheduler
+	function rewardForConsensus(address _taskID, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		require(reward(_scheduler, _amount));
 		return true;
 	}
 
-	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
+	function rewardForTask(address _taskID, address _worker, uint256 _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		AccurateContribution(_taskID, _worker);
@@ -443,7 +443,7 @@ contract IexecHub
 		return true;
 	}
 
-	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
+	function seizeForTask(address _taskID, address _worker, uint256 _amount) public returns (bool)
 	{
 		require(msg.sender == m_taskInfos[_taskID].workerPoolAffectation);
 		FaultyContribution(_taskID, _worker);
@@ -474,7 +474,7 @@ contract IexecHub
 		Withdraw(msg.sender, _amount);
 		return true;
 	}
-	function checkBalance(address _owner) public view returns (uint stake, uint locked)
+	function checkBalance(address _owner) public view returns (uint256 stake, uint256 locked)
 	{
 		return (m_accounts[_owner].stake, m_accounts[_owner].locked);
 	}
@@ -493,14 +493,14 @@ contract IexecHub
 		Seize(_user, _amount);
 		return true;
 	}
-	function lock(address _user, uint _amount) internal returns (bool)
+	function lock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
 		return true;
 	}
 
-	function unlock(address _user, uint _amount) internal returns (bool)
+	function unlock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
