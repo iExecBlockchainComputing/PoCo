@@ -354,6 +354,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
+	function callForContributions(address _taskID, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	{
+		for (uint i = 0; i < _workers.length; i++) {
+				require(callForContribution(_taskID,_workers[i], _enclaveChallenge));
+		}
+		return true;
+	}
+
 	function callForContribution(address _taskID, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkInfo     storage workinfo     = m_WorkInfos[_taskID];
