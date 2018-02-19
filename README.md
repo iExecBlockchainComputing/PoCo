@@ -61,16 +61,16 @@ Each WorkOrder affected in this WorkPool have a ConsensusStatus :
 - CANCELLED : a non accepted work order have been cancelled by the user U(w) (WorkOrder=CANCELLED)
 - STARTED : scheduler has called acceptWorkOrder function.(WorkOrder=ACCEPTED)
 - IN_PROGRESS :  scheduler has called at least on callForContribution (WorkOrder=ACCEPTED)
-- REACHED :scheduler has called at revealConsensus function (WorkOrder=ACCEPTED)
-- FAILLED : claimFailedConsensus has been called. (WorkOrder=ABORTED)
+- REACHED :scheduler has called revealConsensus function (WorkOrder=ACCEPTED)
+- FAILLED : claimFailedConsensus has been successfully called. (WorkOrder=ABORTED)
 - FINALIZED :finalizedWork has been successfully called (WorkOrder=COMPLETED)
 
 
 Each worker Contribution of an accepted WorkOrder has a WorkStatus :
-- REQUESTED :  this worker has callForContribution by the scheduler
+- REQUESTED :  this worker has been callForContribution by the scheduler
 - SUBMITTED : this worker has contribute
-- POCO_ACCEPT : this worker has reveal and is contribute is valid
-- REJECTED : this worker has reveal and is contribute is not valid
+- POCO_ACCEPT : this worker has reveal and his contribution is valid
+- REJECTED : this worker has reveal and his contribution is not valid
 
 
 
