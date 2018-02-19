@@ -4,11 +4,11 @@ import "./OwnableOZ.sol";
 import './IexecHubAccessor.sol';
 import './IexecAPI.sol';
 
-contract TaskRequest is OwnableOZ, IexecHubAccessor
+contract WorkOrder is OwnableOZ, IexecHubAccessor
 {
 
 
-	enum TaskRequestStatusEnum
+	enum WorkOrderStatusEnum
 	{
 		UNSET,
 		PENDING,
@@ -21,24 +21,25 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	/**
 	 * Members
 	 */
-	address private m_taskRequestHubAddress;
+	address private m_WorkOrderHubAddress;
 
-	modifier onlytaskRequestHub()
+	modifier onlyWorkOrderHub()
 	{
-		require(msg.sender == m_taskRequestHubAddress);
+		require(msg.sender == m_workOrderHubAddress);
 		_;
 	}
 
+  address private m_workOrderHubAddress;
 	address public m_workerPoolRequested;
 	address public m_appRequested;
 	address public m_datasetRequested;
-	string  public m_taskParam;
-	uint256 public m_taskCost;
+	string  public m_workOrderParam;
+	uint256 public m_workReward;
 	uint256 public m_askedTrust;
 	bool    public m_dappCallback;
 	address public m_beneficiary;
 
-  TaskRequestStatusEnum  public m_status;
+  WorkOrderStatusEnum  public m_status;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
@@ -46,14 +47,14 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	/**
 	 * Constructor
 	 */
-	function TaskRequest(
+	function WorkOrder(
 		address _iexecHubAddress,
 		address _requester,
 		address _workerPool,
 		address _app,
 		address _dataset,
-		string  _taskParam,
-		uint    _taskCost,
+		string  _workOrderParam,
+		uint    _workReward,
 		uint    _askedTrust,
 		bool    _dappCallback,
 		address _beneficiary)
@@ -62,47 +63,47 @@ contract TaskRequest is OwnableOZ, IexecHubAccessor
 	{
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
-		m_taskRequestHubAddress = msg.sender;
+		m_workOrderHubAddress = msg.sender;
 		m_workerPoolRequested   = _workerPool;
 		m_appRequested          = _app;
 		m_datasetRequested      = _dataset;
-		m_taskParam             = _taskParam;
-		m_taskCost              = _taskCost;
+		m_workOrderParam        = _workOrderParam;
+		m_workReward            = _workReward;
 		m_askedTrust            = _askedTrust;
 		m_dappCallback          = _dappCallback;
-		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract. 
+		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 		m_beneficiary           = _beneficiary;
-		m_status                = TaskRequestStatusEnum.PENDING;
+		m_status                = WorkOrderStatusEnum.PENDING;
 	}
 
-	function setAccepted() onlytaskRequestHub public returns (bool)
+	function setAccepted() onlyWorkOrderHub public returns (bool)
 	{
-		m_status = TaskRequestStatusEnum.ACCEPTED;
+		m_status = WorkOrderStatusEnum.ACCEPTED;
 		return true;
 	}
 
-	function setCancelled() onlytaskRequestHub  public returns (bool)
+	function setCancelled() onlyWorkOrderHub  public returns (bool)
 	{
-		m_status = TaskRequestStatusEnum.CANCELLED;
+		m_status = WorkOrderStatusEnum.CANCELLED;
 		return true;
 	}
 
-	function setAborted() onlytaskRequestHub  public returns (bool)
+	function setAborted() onlyWorkOrderHub  public returns (bool)
 	{
-		m_status = TaskRequestStatusEnum.ABORTED;
+		m_status = WorkOrderStatusEnum.ABORTED;
 		return true;
 	}
 
-	function setResult(string _stdout, string _stderr, string _uri) onlytaskRequestHub public returns (bool)
+	function setResult(string _stdout, string _stderr, string _uri) onlyWorkOrderHub public returns (bool)
 	{
 		m_stdout = _stdout;
 		m_stderr = _stderr;
 		m_uri    = _uri;
-		m_status = TaskRequestStatusEnum.COMPLETED;
+		m_status = WorkOrderStatusEnum.COMPLETED;
 		if(m_dappCallback)
 		{
 			// optional dappCallback call can be done
-			require(IexecAPI(m_owner).taskRequestCallback(
+			require(IexecAPI(m_owner).workOrderCallback(
 				this,
 				_stdout,
 				_stderr,

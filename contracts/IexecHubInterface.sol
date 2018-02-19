@@ -22,31 +22,31 @@ contract IexecHubInterface
 		string  _datasetParams)
 	public returns (address createdDataset);
 
-	function createTaskRequest(
+	function createWorkOrder(
 		address _workerPool,
 		address _app,
 		address _dataset,
-		string  _taskParam,
-		uint256 _taskReward,
+		string  _workOrderParam,
+		uint256 _workReward,
 		uint256 _askedTrust,
 		bool    _dappCallback,
 		address _beneficiary)
-	public returns (address createdTaskRequest);
+	public returns (address createdWorkOrder);
 
-	function acceptTask(
-		address _taskID)
+	function acceptWorkOrder(
+		address _woid)
 	public returns (bool);
 
-	function cancelTask(
-		address _taskID)
+	function cancelWorkOrder(
+		address _woid)
 	public returns (bool);
 
 	function claimFailedConsensus(
-		address _taskID)
+		address _woid)
 		public /*only who ? everybody ?*/ returns (bool);
 
-	function finalizedTask(
-		address _taskID,
+	function finalizedWorkOrder(
+		address _woid,
 		string  _stdout,
 		string  _stderr,
 		string  _uri)
@@ -56,9 +56,9 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
-	function getTaskCost(
-		address _taskID)
-	public view returns (uint256 taskCost);
+	function getWorkReward(
+		address _woid)
+	public view returns (uint256 workReward);
 
 	function openCloseWorkerPool(
 		address _workerPool, bool open)
@@ -74,32 +74,32 @@ contract IexecHubInterface
 		address _worker)
 	public returns (bool unsubscribed);
 
-	function lockForTask(
-		address _taskID,
+	function lockForWork(
+		address _woid,
 		address _user,
 		uint256 _amount)
 	public returns (bool);
 
-	function unlockForTask(
-		address _taskID,
+	function unlockForWork(
+		address _woid,
 		address _user,
 		uint256 _amount)
 	public returns (bool);
 
 	function rewardForConsensus(
-		address _taskID,
+		address _woid,
 		address _scheduler,
 		uint256 _amount)
 	public returns (bool);
 
-	function rewardForTask(
-		address _taskID,
+	function rewardForWork(
+		address _woid,
 		address _worker,
 		uint256 _amount)
 	public returns (bool);
 
-	function seizeForTask(
-		address _taskID,
+	function seizeForWork(
+		address _woid,
 		address _worker,
 		uint256 _amount)
 	public returns (bool);

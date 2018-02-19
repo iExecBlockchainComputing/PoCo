@@ -3,15 +3,14 @@
 
 
 
-
 # Actors :
 - (w) = an account with a wallet key pair
 - (s) = a smart contract created by (w)
 - (p) = application to start ( like java prog) on the responsability of (w) when used
 - (r) = a repository on the responsability of (w)
 
-## Marketplace Creator :
-create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [TaskRequestHub](./contracts/TaskRequestHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol). Once smart contract are created, Marketplace can be used by the following actors :
+## Actor : Marketplace Creator :
+create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [WorkOrderHub](./contracts/WorkOrderHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol). Once IexecHub smart contract is created by Marketplace Creator, Marketplace can be used by the others actors scheduler, workers, iExecCloudUser :
 
 blockchain interaction :
 <table>
@@ -39,15 +38,41 @@ blockchain interaction :
     </tbody>
 </table>
 
+## Actor : iExecCloudUser
+- iExecCloudUser = U(w)
+- U(s) =  a [WorkOrder](./contracts/WorkOrder.sol) smart contract owned by U(w)
+
+WorkOrder status are :
+- PENDING : workOrder not yet accepted by the scheduler of workerPool
+- ACCEPTED : accepted by the scheduler of workerPool
+- CANCELLED : a non accepted work order have been cancelled by the user U(w)
+- ABORTED : an accepted work order has never reach the consensus and claimFailedConsensus has been called. The status is set to ABORTED
+- COMPLETED : worker order is COMPLETED. finalizedWork function has been successfully called in the Workpool smart contract.
 
 
-
-
-## Scheduler :
+## Actor : Scheduler :
 - ScheduleProvider = S(w)
 - S(s) =  a [WorkerPool](./contracts/WorkerPool.sol) smart contract owned by S(w)
 - S(p) = iexec-scheduler = application that schedule a worker pool activity  on the responsability of S(w). (works, tasks, datas for result in xtremweb)
-- S(r) = ResultRepository = provide the task result for U(w) on the responsability of S(w)
+- S(r) = ResultRepository = provide the work result for U(w) on the responsability of S(w)
+
+Each WorkOrder affected in this WorkPool have a ConsensusStatus :
+- PENDING : scheduler have not accepted the work order yet. (WorkOrder=PENDING)
+- CANCELLED : a non accepted work order have been cancelled by the user U(w) (WorkOrder=CANCELLED)
+- STARTED : scheduler has called acceptWorkOrder function.(WorkOrder=ACCEPTED)
+- IN_PROGRESS :  scheduler has called at least on callForContribution (WorkOrder=ACCEPTED)
+- REACHED :scheduler has called at revealConsensus function (WorkOrder=ACCEPTED)
+- FAILLED : claimFailedConsensus has been called. (WorkOrder=ABORTED)
+- FINALIZED :finalizedWork has been successfully called (WorkOrder=COMPLETED)
+
+
+Each worker Contribution of an accepted WorkOrder has a WorkStatus :
+- REQUESTED :  this worker has callForContribution by the scheduler
+- SUBMITTED : this worker has contribute
+- POCO_ACCEPT : this worker has reveal and is contribute is valid
+- REJECTED : this worker has reveal and is contribute is not valid
+
+
 
 blockchain interaction :
 
@@ -72,8 +97,8 @@ blockchain interaction :
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
-            <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
-            <td>acceptTask</td>
+            <td><a href="./test/5_workOrderAccepted.js" target="_blank">5_workOrderAccepted.js</a></td>
+            <td>acceptWorkOrder</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
             <td>iexec-scheduler</td>
@@ -96,8 +121,8 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
-            <td>finalizedTask</td>
+            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
             <td>iexec-scheduler</td>
@@ -108,7 +133,7 @@ blockchain interaction :
 
 
 
-## Worker :
+## Actor : Worker :
 - W(w) = RessourceProvider =  RessourceProvider wallet
 - W(p) = iexec-worker = xtremweb worker application today
 
@@ -150,7 +175,7 @@ blockchain interaction :
 
 
 
-## App Provider
+## Actor : App Provider
 - A(w) = AppProvider = app Provider wallet
 - A(s) = [App](./contracts/App.sol) = app smart contract created by A(w) with the app characteristics
 - A(r) = AppRepository = provide app reference on the responsability of A(w). . (apps, datas for apps in xtremweb, docker hub for docker app etc ... ) for W(p) usage
@@ -181,7 +206,7 @@ blockchain interaction :
     </tbody>
 </table>
 
-## Dataset Provider
+## Actor : Dataset Provider
 - D(w) = DatasetProvider = dataset Provider wallet
 - D(s) = [Dataset](./contracts/Dataset.sol) = app smart contract created by D(w) with the dataset characteristics
 - D(r) = DatasetRepository = provide dataset reference on the responsability of D(w) for W(p) usage
@@ -235,16 +260,16 @@ TODO
         </tr>
         <tr>
             <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 4</a></td>
-            <td><a href="./test/4_taskRequestCreation.js" target="_blank">4_taskRequestCreation.js</a></td>
-            <td>createTaskRequest</td>
+            <td><a href="./test/4_workOrderCreation.js" target="_blank">4_workOrderCreation.js</a></td>
+            <td>createWorkOrder</td>
             <td>IexecHub</td>
             <td>iExecCloudUser (iexec-sdk)</td>
-            <td><a href="./contracts/TaskRequest.sol" target="_blank">TaskRequest</a></td>
+            <td><a href="./contracts/WorkOrder.sol" target="_blank">WorkOrder</a></td>
         </tr>
         <tr>
             <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 5</a></td>
-            <td><a href="./test/5_taskRequestAccepted.js" target="_blank">5_taskRequestAccepted.js</a></td>
-            <td>acceptTask</td>
+            <td><a href="./test/5_workOrderAccepted.js" target="_blank">5_workOrderAccepted.js</a></td>
+            <td>acceptWorkOrder</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>
@@ -283,8 +308,8 @@ TODO
         </tr>
         <tr>
             <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 10</a></td>
-            <td><a href="./test/10_finalizedTask.js" target="_blank">10_finalizedTask.js</a></td>
-            <td>finalizedTask</td>
+            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>

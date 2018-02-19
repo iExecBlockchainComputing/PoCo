@@ -3,11 +3,11 @@ var IexecHub       = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
 var AppHub         = artifacts.require("./AppHub.sol");
 var DatasetHub     = artifacts.require("./DatasetHub.sol");
-var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
-var TaskRequest    = artifacts.require("./TaskRequest.sol");
+var WorkOrder    = artifacts.require("./WorkOrder.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
@@ -24,7 +24,7 @@ Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
-  TaskRequest.TaskRequestStatusEnum = {
+  WorkOrder.WorkOrderStatusEnum = {
     UNSET:     0,
     PENDING:   1,
     ACCEPTED:  2,
@@ -36,7 +36,7 @@ contract('IexecHub', function(accounts) {
   WorkerPool.ConsensusStatusEnum = {
     UNSET:       0,
     PENDING:     1,
-    CANCELED:    2,
+    CANCELLED:   2,
     STARTED:     3,
     IN_PROGRESS: 4,
     REACHED:     5,
@@ -64,7 +64,7 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aTaskRequestHubInstance;
+  let aWorkOrderHubInstance;
 
   let DAPP_PARAMS_EXAMPLE ="{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
   /*
@@ -185,12 +185,12 @@ contract('IexecHub', function(accounts) {
         });
         console.log("aDatasetHubInstance.address is ");
         console.log(aDatasetHubInstance.address);
-        aTaskRequestHubInstance = await TaskRequestHub.new({
+        aWorkOrderHubInstance = await WorkOrderHub.new({
           from: marketplaceCreator
         });
-        console.log("aTaskRequestHubInstance.address is ");
-        console.log(aTaskRequestHubInstance.address);
-        aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address, {
+        console.log("aWorkOrderHubInstance.address is ");
+        console.log(aWorkOrderHubInstance.address);
+        aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address, {
           from: marketplaceCreator
         });
         console.log("aIexecHubInstance.address is ");
@@ -210,11 +210,11 @@ contract('IexecHub', function(accounts) {
         });
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
         console.log("transferOwnership of DatasetHub to IexecHub");
-        txMined = await aTaskRequestHubInstance.transferOwnership(aIexecHubInstance.address, {
+        txMined = await aWorkOrderHubInstance.transferOwnership(aIexecHubInstance.address, {
           from: marketplaceCreator
         });
         assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-        console.log("transferOwnership of TaskRequestHub to IexecHub");
+        console.log("transferOwnership of WorkOrderHub to IexecHub");
         //INIT RLC approval on IexecHub for all actors
         txsMined = await Promise.all([
           aRLCInstance.approve(aIexecHubInstance.address, 100, {

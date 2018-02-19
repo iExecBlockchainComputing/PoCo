@@ -2,7 +2,7 @@ var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
-var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 
 /**
@@ -16,7 +16,7 @@ module.exports = function(deployer) {
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aTaskRequestHubInstance;
+  let aWorkOrderHubInstance;
   let aIexecHub;
 
   return deployer.deploy(RLC)
@@ -54,13 +54,13 @@ module.exports = function(deployer) {
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address :" + instance.address);
-      return deployer.deploy(TaskRequestHub);
+      return deployer.deploy(WorkOrderHub);
     })
-    .then(() => TaskRequestHub.deployed())
+    .then(() => WorkOrderHub.deployed())
     .then(instance => {
-      aTaskRequestHubInstance = instance;
-      console.log("TaskRequestHub deployed at address :" + instance.address);
-      return deployer.deploy(IexecHub, aRLCInstance.address , aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
+      aWorkOrderHubInstance = instance;
+      console.log("WorkOrderHub deployed at address :" + instance.address);
+      return deployer.deploy(IexecHub, aRLCInstance.address , aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -78,9 +78,9 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("transferOwnership of DatasetHub to IexecHub");
-      return aTaskRequestHubInstance.transferOwnership(aIexecHub.address);
+      return aWorkOrderHubInstance.transferOwnership(aIexecHub.address);
     })
-    .then(() => console.log("transferOwnership of TaskRequestHub to IexecHub"));
+    .then(() => console.log("transferOwnership of WorkOrderHub to IexecHub"));
 };
 
 /**

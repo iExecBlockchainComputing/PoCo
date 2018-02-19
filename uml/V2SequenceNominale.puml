@@ -5,31 +5,31 @@ iExecCloudUser -> MyDapp
 box "Smart contracts"
 	participant MyDapp
 	participant IexecHub
-	participant TaskRequest
+	participant WorkOrder
   participant WorkerPool
 end box
 
 
 autonumber 4
 
-MyDapp --> IexecHub: createTaskRequest(app,dataset,workerpool)
+MyDapp --> IexecHub: createWorkOrder(app,dataset,workerpool)
 activate IexecHub
 note over IexecHub : check smart contract app, workerpool, dataset (optional) asked are well registered
-create TaskRequest
+create WorkOrder
 autonumber 4
-IexecHub --> TaskRequest: createTaskRequest
-note over TaskRequest :TaskRequestStatusEnum.PENDING
+IexecHub --> WorkOrder: createWorkOrder
+note over WorkOrder :WorkOrderStatusEnum.PENDING
 note over IexecHub : debit RLC user
-activate TaskRequest
+activate WorkOrder
 autonumber 4
 
-deactivate TaskRequest
-IexecHub <-- TaskRequest
+deactivate WorkOrder
+IexecHub <-- WorkOrder
 autonumber 4
-IexecHub --> WorkerPool :receivedTask
+IexecHub --> WorkerPool :receivedWorkOrder
 activate WorkerPool
 note over WorkerPool :ConsensusStatusEnum.PENDING
-note over WorkerPool :Log event TaskReceived(taskId)
+note over WorkerPool :Log event WorkOrderReceived(woid)
 autonumber 4
 IexecHub <-- WorkerPool
 deactivate WorkerPool
@@ -37,16 +37,16 @@ autonumber 4
 
 
 
-note over IexecHub :Log event TaskRequest(taskId,workerPool)
+note over IexecHub :Log event WorkOrder(woid,workerPool)
 autonumber 4
 MyDapp <-- IexecHub
 
 deactivate IexecHub
-WorkerPool o-> iexec_scheduler : watch TaskReceived(taskId) event
+WorkerPool o-> iexec_scheduler : watch WorkOrderReceived(woid) event
 
 activate iexec_scheduler
 
-iexec_scheduler -> iexec_scheduler : analyse asked task
+iexec_scheduler -> iexec_scheduler : analyse asked workeOrder
 
 box "Spring boot app" #LightBlue
 	participant iexec_scheduler
@@ -62,7 +62,7 @@ end box
 
 
 autonumber 5
-iexec_scheduler --> WorkerPool : acceptTask(taskId)
+iexec_scheduler --> WorkerPool : acceptWorkOrder(woid)
 activate WorkerPool
 autonumber 5
 
@@ -72,26 +72,26 @@ WorkerPool --> IexecHub
 activate IexecHub
 
 autonumber 5
-IexecHub --> TaskRequest
-note over IexecHub :Log event TaskAccepted(taskID);
+IexecHub --> WorkOrder
+note over IexecHub :Log event WorkOrderAccepted(woid);
 deactivate IexecHub
 
-note over TaskRequest :TaskRequestStatusEnum.ACCEPTED
+note over WorkOrder :WorkOrderStatusEnum.ACCEPTED
 
-note over WorkerPool :Log event TaskAccepted(taskID);
+note over WorkerPool :Log event WorkOrderAccepted(woid);
 autonumber 5
 
 
 deactivate iexec_scheduler
 autonumber 5
-WorkerPool o-> iexec_scheduler : watch TaskAccepted(taskID,workerPool,contributions) event
+WorkerPool o-> iexec_scheduler : watch WorkOrderAccepted(woid,workerPool) event
 deactivate WorkerPool
 autonumber 6
 activate iexec_scheduler
 iexec_scheduler -> iexec_scheduler : randonmy choose worker
 
 autonumber 6
-iexec_scheduler  --> WorkerPool : callForContribution(taskId,worker)
+iexec_scheduler  --> WorkerPool : callForContribution(woid,worker)
 activate WorkerPool
 note over WorkerPool :ConsensusStatusEnum.IN_PROGRESS
 note over WorkerPool :Log event CallForContribution(worker);
@@ -168,31 +168,31 @@ iexec_scheduler  <--> iexec_worker  : getResult
 note over iexec_scheduler : iexec_scheduler ask and retrived result on worker who has revealed a right contribution
 
 autonumber 10
-iexec_scheduler --> WorkerPool : finalizedTask(stdout,stderr,uri)
+iexec_scheduler --> WorkerPool : finalizedWork(stdout,stderr,uri)
 activate WorkerPool
 autonumber 10
 note over WorkerPool : ConsensusStatusEnum.FINALIZED
 autonumber 10
-WorkerPool --> IexecHub :finalizedTask
+WorkerPool --> IexecHub :finalizedWorkOrder
 autonumber 10
 activate IexecHub
 
-IexecHub --> TaskRequest :setResult(stdout,stderr,uri)
-activate TaskRequest
+IexecHub --> WorkOrder :setResult(stdout,stderr,uri)
+activate WorkOrder
 autonumber 10
-note over TaskRequest : TaskRequestStatusEnum.COMPLETED
-TaskRequest <--> MyDapp : taskRequestCallback
+note over WorkOrder : WorkOrderStatusEnum.COMPLETED
+WorkOrder <--> MyDapp : workOrderCallback
 autonumber 10
-TaskRequest -> IexecHub
+WorkOrder -> IexecHub
 
-deactivate TaskRequest
+deactivate WorkOrder
 note over IexecHub : RLC reward/seize for actors
 autonumber 10
 IexecHub --> WorkerPool
 deactivate IexecHub
 autonumber 10
-WorkerPool --> iexec_scheduler : finalizedTask
+WorkerPool --> iexec_scheduler : finalizedWork
 deactivate WorkerPool
 deactivate iexec_scheduler
-deactivate TaskRequest
+deactivate WorkOrder
 @enduml

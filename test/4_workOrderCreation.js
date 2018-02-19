@@ -3,11 +3,11 @@ var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
-var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
-var TaskRequest = artifacts.require("./TaskRequest.sol");
+var WorkOrder = artifacts.require("./WorkOrder.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -28,7 +28,7 @@ Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
-  TaskRequest.TaskRequestStatusEnum = {
+  WorkOrder.WorkOrderStatusEnum = {
     UNSET: 0,
     PENDING: 1,
     ACCEPTED: 2,
@@ -40,7 +40,7 @@ contract('IexecHub', function(accounts) {
   WorkerPool.ConsensusStatusEnum = {
     UNSET: 0,
     PENDING: 1,
-    CANCELED: 2,
+    CANCELLED: 2,
     STARTED: 3,
     IN_PROGRESS: 4,
     REACHED: 5,
@@ -66,7 +66,7 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aTaskRequestHubInstance;
+  let aWorkOrderHubInstance;
 
   //specific for test :
   let workerPoolAddress;
@@ -77,7 +77,7 @@ contract('IexecHub', function(accounts) {
   let aAppInstance;
   let aWorkerPoolsAuthorizedListInstance;
   let aRequestersAuthorizedListInstance;
-  let aTaskRequestInstance;
+  let aWorkOrderInstance;
 
 
 
@@ -190,12 +190,12 @@ contract('IexecHub', function(accounts) {
     });
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
-    aTaskRequestHubInstance = await TaskRequestHub.new({
+    aWorkOrderHubInstance = await WorkOrderHub.new({
       from: marketplaceCreator
     });
-    console.log("aTaskRequestHubInstance.address is ");
-    console.log(aTaskRequestHubInstance.address);
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address, {
+    console.log("aWorkOrderHubInstance.address is ");
+    console.log(aWorkOrderHubInstance.address);
+    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address, {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");
@@ -215,11 +215,11 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     console.log("transferOwnership of DatasetHub to IexecHub");
-    txMined = await aTaskRequestHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aWorkOrderHubInstance.transferOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    console.log("transferOwnership of TaskRequestHub to IexecHub");
+    console.log("transferOwnership of WorkOrderHub to IexecHub");
     //INIT RLC approval on IexecHub for all actors
     txsMined = await Promise.all([
       aRLCInstance.approve(aIexecHubInstance.address, 100, {
@@ -302,57 +302,52 @@ contract('IexecHub', function(accounts) {
   });
 
   it("Create a Hello World Task Request by iExecCloudUser", async function() {
-    let taskID;
-    txMined = await aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 0, 1, false, iExecCloudUser, {
+    let woid;
+    txMined = await aIexecHubInstance.createWorkOrder(aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, 1, false, iExecCloudUser, {
       from: iExecCloudUser
     });
 
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    events = await Extensions.getEventsPromise(aIexecHubInstance.TaskRequest({}));
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrder({}));
 
-    assert.strictEqual(events[0].args.taskRequestOwner, iExecCloudUser, "taskRequestOwner");
-    taskID = events[0].args.taskID;
+    assert.strictEqual(events[0].args.workOrderOwner, iExecCloudUser, "workOrderOwner");
+    woid = events[0].args.woid;
     assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "workerPool");
     assert.strictEqual(events[0].args.app, aAppInstance.address, "appPrice");
     assert.strictEqual(events[0].args.dataset, '0x0000000000000000000000000000000000000000', "dataset");
 
 
-    /*
-    assert.strictEqual(events[0].args.taskParam, "noTaskParam", "taskParam");
-    assert.strictEqual(events[0].args.taskCost.toNumber(), 0, "taskCost");
-    assert.strictEqual(events[0].args.askedTrust.toNumber(), 1, "askedTrust");
-    assert.strictEqual(events[0].args.dappCallback, false, "dappCallback");*/
-    let count = await aTaskRequestHubInstance.getTaskRequestsCount(iExecCloudUser);
+    let count = await aWorkOrderHubInstance.getWorkOrdersCount(iExecCloudUser);
 
-    assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 taskRequest now ");
-    let taskId = await aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, count - 1);
-    assert.strictEqual(taskID, taskId, "check taskId");
-    aTaskRequestInstance = await TaskRequest.at(taskId);
+    assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 workOrder now ");
+    let woidFromGetWorkOrder = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, count - 1);
+    assert.strictEqual(woid, woidFromGetWorkOrder, "check woid");
+    aWorkOrderInstance = await WorkOrder.at(woidFromGetWorkOrder);
 
     result = await Promise.all([
-      aTaskRequestInstance.m_status.call(),
-      aTaskRequestInstance.m_workerPoolRequested.call(),
-      aTaskRequestInstance.m_appRequested.call(),
-      aTaskRequestInstance.m_datasetRequested.call(),
-      aTaskRequestInstance.m_taskParam.call(),
-      aTaskRequestInstance.m_taskCost.call(),
-      aTaskRequestInstance.m_askedTrust.call(),
-      aTaskRequestInstance.m_dappCallback.call(),
-      aTaskRequestInstance.m_beneficiary.call()
+      aWorkOrderInstance.m_status.call(),
+      aWorkOrderInstance.m_workerPoolRequested.call(),
+      aWorkOrderInstance.m_appRequested.call(),
+      aWorkOrderInstance.m_datasetRequested.call(),
+      aWorkOrderInstance.m_workOrderParam.call(),
+      aWorkOrderInstance.m_workReward.call(),
+      aWorkOrderInstance.m_askedTrust.call(),
+      aWorkOrderInstance.m_dappCallback.call(),
+      aWorkOrderInstance.m_beneficiary.call()
     ]);
-    [m_status, m_workerPoolRequested, m_appRequested, m_datasetRequested, m_taskParam, m_taskCost, m_askedTrust, m_dappCallback, m_beneficiary] = result;
-    assert.strictEqual(m_status.toNumber(), TaskRequest.TaskRequestStatusEnum.PENDING, "check m_status");
+    [m_status, m_workerPoolRequested, m_appRequested, m_datasetRequested, m_workOrderParam, m_workReward, m_askedTrust, m_dappCallback, m_beneficiary] = result;
+    assert.strictEqual(m_status.toNumber(), WorkOrder.WorkOrderStatusEnum.PENDING, "check m_status");
     assert.strictEqual(m_workerPoolRequested, aWorkerPoolInstance.address, "check m_workerPoolRequested");
     assert.strictEqual(m_appRequested, aAppInstance.address, "check m_appRequested");
     assert.strictEqual(m_datasetRequested, '0x0000000000000000000000000000000000000000', "check m_datasetRequested");
-    assert.strictEqual(m_taskParam, "noTaskParam", "check m_taskParam");
-    assert.strictEqual(m_taskCost.toNumber(), 0, "check m_taskCost");
+    assert.strictEqual(m_workOrderParam, "noParam", "check m_workOrderParam");
+    assert.strictEqual(m_workReward.toNumber(), 0, "check m_workReward");
     assert.strictEqual(m_askedTrust.toNumber(), 1, "check m_askedTrust");
     assert.strictEqual(m_dappCallback, false, "check m_dappCallback");
     assert.strictEqual(m_beneficiary, iExecCloudUser, "check m_beneficiary");
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.TaskReceived({}));
-    assert.strictEqual(events[0].args.taskID, taskID, "taskID received in workerpool");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(taskID);
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderReceived({}));
+    assert.strictEqual(events[0].args.woid, woid, "woid received in workerpool");
+    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
     [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.PENDING, "check m_status PENDING");
   });

@@ -10,8 +10,8 @@ object AppHub
 object Dataset
 object DatasetHub
 
-object TaskRequest
-object TaskRequestHub
+object WorkOrder
+object WorkOrderHub
 
 object WorkerPool
 object WorkerPoolHub
@@ -21,17 +21,17 @@ object IexecHub
 AppHub <|-- IexecHub
 DatasetHub <|-- IexecHub
 WorkerPoolHub <|-- IexecHub
-TaskRequestHub <|-- IexecHub
+WorkOrderHub <|-- IexecHub
 
 
 WorkerPool "n" *-- "0" WorkerPoolHub
 App "n" *-- "0" AppHub
 Dataset "n" *-- "0" DatasetHub
-TaskRequest "n" *-- "0" TaskRequestHub
+WorkOrder "n" *-- "0" WorkOrderHub
 
 
 
-MyDapp --> TaskRequest: create
+MyDapp --> WorkOrder: create
 
 
 @enduml

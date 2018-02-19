@@ -23,14 +23,14 @@ DappUser -down-> [MyDapp]: use
 
 
 cloud {
-  [TaskRequest]
+  [WorkOrder]
 }
 
-component [TaskRequest]
+component [WorkOrder]
 
-MyDapp <-down-> [TaskRequest]: owner
+MyDapp <-down-> [WorkOrder]: owner
 
-iExecCloudUser -down-> [TaskRequest]: owner
+iExecCloudUser -down-> [WorkOrder]: owner
 
 cloud {
   [App]
@@ -89,7 +89,7 @@ ResultRepository <-left-> [iexec-scheduler]
 [App] <-up-> [iExecHub]
 
 [iExecHub] <-down-> [WorkerPool]
-[iExecHub] <-up-> [TaskRequest]
+[iExecHub] <-up-> [WorkOrder]
 
 [iexec-scheduler] <-up-> [WorkerPool]
 [iexec-worker] <-up-> [WorkerPool]

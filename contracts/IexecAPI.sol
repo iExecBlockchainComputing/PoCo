@@ -7,7 +7,7 @@ contract IexecAPI
 
 	address  private iexecHubAddress;
 	IexecHub private iexecHub;
-	event TaskRequestCallback(address taskId, string stdout, string stderr, string uri);
+	event WorkOrderCallback(address woid, string stdout, string stderr, string uri);
 
 	// Constructor
 	function IexecAPI(address _iexecHubAddress) public
@@ -20,27 +20,27 @@ contract IexecAPI
 		address _workerPool,
 		address _app,
 		address _dataset,
-		string _taskParam,
-		uint   _taskCost,
+		string _workOrderParam,
+		uint   _workReward,
 		uint   _askedTrust,
 		bool   _dappCallback,
 		address _beneficiary)
 	public
 	{
-		iexecHub.createTaskRequest(_workerPool, _app, _dataset, _taskParam, _taskCost, _askedTrust, _dappCallback,_beneficiary);
+		iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback,_beneficiary);
 	}
 
 	// TODO add cancel Task function
 
-	function taskRequestCallback(
-		address _taskId,
+	function workOrderCallback(
+		address _woid,
 		string  _stdout,
 		string  _stderr,
 		string  _uri)
 	public returns (bool)
 	{
-		require(msg.sender == _taskId);
-		TaskRequestCallback(_taskId, _stdout, _stderr, _uri);
+		require(msg.sender == _woid);
+		WorkOrderCallback(_woid, _stdout, _stderr, _uri);
 		return true;
 	}
 }

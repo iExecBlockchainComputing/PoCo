@@ -3,11 +3,11 @@ var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
-var TaskRequestHub = artifacts.require("./TaskRequestHub.sol");
+var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
-var TaskRequest = artifacts.require("./TaskRequest.sol");
+var WorkOrder = artifacts.require("./WorkOrder.sol");
 
 const BN = require("bn");
 const keccak256 = require("solidity-sha3");
@@ -30,7 +30,7 @@ Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
-  TaskRequest.TaskRequestStatusEnum = {
+  WorkOrder.WorkOrderStatusEnum = {
     UNSET: 0,
     PENDING: 1,
     ACCEPTED: 2,
@@ -42,7 +42,7 @@ contract('IexecHub', function(accounts) {
   WorkerPool.ConsensusStatusEnum = {
     UNSET: 0,
     PENDING: 1,
-    CANCELED: 2,
+    CANCELLED: 2,
     STARTED: 3,
     IN_PROGRESS: 4,
     REACHED: 5,
@@ -66,7 +66,7 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aTaskRequestHubInstance;
+  let aWorkOrderHubInstance;
 
   //specific for test :
   let workerPoolAddress;
@@ -77,8 +77,8 @@ contract('IexecHub', function(accounts) {
   let aAppInstance;
   let aWorkerPoolsAuthorizedListInstance;
   let aRequestersAuthorizedListInstance;
-  let aTaskRequestInstance;
-  let taskID;
+  let aWorkOrderInstance;
+  let woid;
 
   let aContributiuonsInstance;
 
@@ -194,12 +194,12 @@ contract('IexecHub', function(accounts) {
     });
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
-    aTaskRequestHubInstance = await TaskRequestHub.new({
+    aWorkOrderHubInstance = await WorkOrderHub.new({
       from: marketplaceCreator
     });
-    console.log("aTaskRequestHubInstance.address is ");
-    console.log(aTaskRequestHubInstance.address);
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address, {
+    console.log("aWorkOrderHubInstance.address is ");
+    console.log(aWorkOrderHubInstance.address);
+    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address, {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");
@@ -219,11 +219,11 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     console.log("transferOwnership of DatasetHub to IexecHub");
-    txMined = await aTaskRequestHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aWorkOrderHubInstance.transferOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    console.log("transferOwnership of TaskRequestHub to IexecHub");
+    console.log("transferOwnership of WorkOrderHub to IexecHub");
     //INIT RLC approval on IexecHub for all actors
     txsMined = await Promise.all([
       aRLCInstance.approve(aIexecHubInstance.address, 100, {
@@ -303,29 +303,29 @@ contract('IexecHub', function(accounts) {
     appAddress = await aAppHubInstance.getApp(appProvider, 0);
     aAppInstance = await App.at(appAddress);
     //CREATE A TASK REQUEST
-    txMined = await aIexecHubInstance.createTaskRequest(aWorkerPoolInstance.address, aAppInstance.address, 0, "noTaskParam", 100, 1, false, iExecCloudUser, {
+    txMined = await aIexecHubInstance.createWorkOrder(aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 100, 1, false, iExecCloudUser, {
       from: iExecCloudUser
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    taskID = await aTaskRequestHubInstance.getTaskRequest(iExecCloudUser, 0);
-    console.log("taskID is :" + taskID);
-    aTaskRequestInstance = await TaskRequest.at(taskID);
+    woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
+    console.log("woid is :" + woid);
+    aWorkOrderInstance = await WorkOrder.at(woid);
     // SCHEDULER ACCCEPT TASK
-    txMined = await aWorkerPoolInstance.acceptTask(taskID, {
+    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(taskID);
+    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
     [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
     // A worker is called For contribution
-    txMined = await aWorkerPoolInstance.callForContribution(taskID, resourceProvider, 0, {
+    txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(taskID);
+    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
     [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
     //Worker deposit for contribute staking
@@ -336,21 +336,21 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     //Worker  contribute
     const signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    txMined = await aWorkerPoolInstance.contribute(taskID, signed.hash, signed.sign, 0, 0, 0, {
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
       from: resourceProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     //Scheduler reveal consensus
     const hash = await Extensions.hashResult("iExec the wanderer");
-    txMined = await aWorkerPoolInstance.revealConsensus(taskID, hash, {
+    txMined = await aWorkerPoolInstance.revealConsensus(woid, hash, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     //Worker reveal his work
     const result = web3.sha3("iExec the wanderer");
-    txMined = await aWorkerPoolInstance.reveal(taskID, result, {
+    txMined = await aWorkerPoolInstance.reveal(woid, result, {
       from: resourceProvider,
       gas: amountGazProvided
     });
@@ -358,40 +358,40 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("scheduleProvider call finalizedTask", async function() {
-    txMined = await aWorkerPoolInstance.finalizedTask(taskID, "aStdout", "aStderr", "anUri", {
+  it("scheduleProvider call finalizedWork", async function() {
+    txMined = await aWorkerPoolInstance.finalizedWork(woid, "aStdout", "aStderr", "anUri", {
       from: scheduleProvider,
       gas: amountGazProvided
     });
 
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(taskID);
+    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
 
     [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.FINALIZED, "check m_status FINALIZED");
-    events = await Extensions.getEventsPromise(aIexecHubInstance.TaskCompleted({}));
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderCompleted({}));
 
-    assert.strictEqual(events[0].args.taskID, taskID, "taskID check");
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
     assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");
 
-    m_statusCall = await aTaskRequestInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), TaskRequest.TaskRequestStatusEnum.COMPLETED, "check m_status COMPLETED");
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.COMPLETED, "check m_status COMPLETED");
 
     result = await Promise.all([
-      aTaskRequestInstance.m_stdout.call(),
-      aTaskRequestInstance.m_stderr.call(),
-      aTaskRequestInstance.m_uri.call()
+      aWorkOrderInstance.m_stdout.call(),
+      aWorkOrderInstance.m_stderr.call(),
+      aWorkOrderInstance.m_uri.call()
     ]);
     assert.strictEqual(result[0], "aStdout", "check m_stdout");
     assert.strictEqual(result[1], "aStderr", "check m_stderr");
     assert.strictEqual(result[2], "anUri", "check m_uri");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 129, "check stake of the resourceProvider. won 99% of task price (99). (initial balance 30)");
+    assert.strictEqual(checkBalance[0].toNumber(), 129, "check stake of the resourceProvider. won 99% of price (99). (initial balance 30)");
     assert.strictEqual(checkBalance[1].toNumber(), 10, "check stake locked of the resourceProvider: 10 form subscription lock ");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 1, "check stake of the scheduleProvider. won 1% of task price");
+    assert.strictEqual(checkBalance[0].toNumber(), 1, "check stake of the scheduleProvider. won 1% of price");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
 
   });
