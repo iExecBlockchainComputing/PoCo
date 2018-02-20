@@ -74,7 +74,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		address[]           contributors;
 		uint256             winnerCount;
 	}
-	// mapping(woid => WorkInfo)
+	// mapping(woid => WorkOrderInfo)
 	mapping(address => WorkOrderInfo) public m_workOrderInfos;
 
 	/**
@@ -305,6 +305,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		workorderinfo.poolReward  = _workReward;
 		workorderinfo.stakeAmount = _workReward.percentage(m_stakeRatioPolicy);
 		WorkOrderReceived(_woid);
+		return true;
+	}
+
+	function acceptMarketWorkOrder(address _woid, uint256 _workReward, address _app, address _dataset) public onlyIexecHub returns (bool)
+	{
+		require(receivedWorkOrder(_woid,_workReward,_app,_dataset));
+		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
+		require(workorderinfo.status == ConsensusStatusEnum.PENDING);
+		workorderinfo.status = ConsensusStatusEnum.STARTED;
+		workorderinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		WorkOrderAccepted(_woid);
 		return true;
 	}
 

@@ -185,6 +185,7 @@ contract IexecHub
 			require(workerPoolHub.isAppAllowed         (_workerPool, _app      ));
 			require(workerPoolHub.isDatasetAllowed     (_workerPool, _dataset  ));
 			/* require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender)); */
+			require(appHub.isWorkerPoolAllowed(_app, _workerPool));
 		}
 
 		// APP
@@ -192,7 +193,7 @@ contract IexecHub
 		require(appHub.isOpen             (_app             ));
 		require(appHub.isDatasetAllowed   (_app, _dataset   ));
 		require(appHub.isRequesterAllowed (_app, msg.sender ));
-		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
+
 
 		// Price to pay by the user, initialized with reward
 		uint256 userCost = _workReward;
@@ -206,7 +207,10 @@ contract IexecHub
 			require(datasetHub.isOpen             (_dataset             ));
 			require(datasetHub.isAppAllowed       (_dataset, _app       ));
 			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
-			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
+			if (_workerPool != address(0)) // address(0) → any workerPool
+			{
+				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
+		  }
 
 			// add optional datasetPrice for userCost
 			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
@@ -239,7 +243,10 @@ contract IexecHub
 		require(lock(woInfo.requesterAffectation, woInfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
 
 		// WORKER_POOL
-		require(WorkerPool(_workerPool).receivedWorkOrder(newWorkOrder, _workReward, _app, _dataset));
+		if (_workerPool != address(0)) // address(0) → any workerPool
+		{
+			require(WorkerPool(_workerPool).receivedWorkOrder(newWorkOrder, _workReward, _app, _dataset));
+		}
 
 		// address newWorkOrder will the woid
 		WorkOrder(newWorkOrder, msg.sender, _workerPool, _app, _dataset);
@@ -251,13 +258,14 @@ contract IexecHub
 	 */
 	function acceptWorkOrder(address _woid) public returns (bool)
 	{
-
+		require(workOrderHub.isWorkOrderRegistred(_woid));
 		WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		if (woInfo.workerPoolAffectation == address(0))
 		{
-			woInfo.workerPoolAffectation = msg.sender; // set the workerPoolAffectation in case 'any'
-			require(appHub.isWorkerPoolAllowed    (woInfo.appAffectation,     woInfo.workerPoolAffectation));
-			require(datasetHub.isWorkerPoolAllowed(woInfo.datasetAffectation, woInfo.workerPoolAffectation));
+			// set the workerPoolAffectation in case 'any'
+			woInfo.workerPoolAffectation = msg.sender;
+			require(workerPoolHub.isWorkerPoolRegistred(woInfo.workerPoolAffectation));
+			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation));
 		}
 		else
 		{
