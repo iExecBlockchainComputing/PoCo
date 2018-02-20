@@ -34,19 +34,10 @@ contract('IexecHub', function(accounts) {
     PENDING: 1,
     ACCEPTED: 2,
     CANCELLED: 3,
-    ABORTED: 4,
-    COMPLETED: 5
-  };
-
-  WorkerPool.ConsensusStatusEnum = {
-    UNSET: 0,
-    PENDING: 1,
-    CANCELLED: 2,
-    STARTED: 3,
-    IN_PROGRESS: 4,
-    REACHED: 5,
-    FAILLED: 6,
-    FINALIZED: 7
+    SCHEDULED: 4,
+    REVEALING: 5,
+    CLAIMED: 6,
+    COMPLETED: 7
   };
 
   let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
@@ -324,9 +315,6 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.workerPool, workerPoolAddress, "workerPool check");
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
-    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
-    assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
     //TODO check ratio price
   });
 

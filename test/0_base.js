@@ -25,23 +25,14 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
   WorkOrder.WorkOrderStatusEnum = {
-    UNSET:     0,
-    PENDING:   1,
-    ACCEPTED:  2,
+    UNSET: 0,
+    PENDING: 1,
+    ACCEPTED: 2,
     CANCELLED: 3,
-    ABORTED:   4,
-    COMPLETED: 5
-  };
-
-  WorkerPool.ConsensusStatusEnum = {
-    UNSET:       0,
-    PENDING:     1,
-    CANCELLED:   2,
-    STARTED:     3,
-    IN_PROGRESS: 4,
-    REACHED:     5,
-    FAILLED:     6,
-    FINALIZED:   7
+    SCHEDULED: 4,
+    REVEALING: 5,
+    CLAIMED: 6,
+    COMPLETED: 7
   };
 
   WorkerPool.WorkStatusEnum = {

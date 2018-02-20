@@ -3,20 +3,10 @@ pragma solidity ^0.4.18;
 import "./OwnableOZ.sol";
 import './IexecHubAccessor.sol';
 import './IexecAPI.sol';
+import './IexecLib.sol';
 
 contract WorkOrder is OwnableOZ, IexecHubAccessor
 {
-
-
-	enum WorkOrderStatusEnum
-	{
-		UNSET,
-		PENDING,
-		ACCEPTED,
-		CANCELLED,
-		ABORTED,
-		COMPLETED
-	}
 
 	/**
 	 * Members
@@ -39,7 +29,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	bool    public m_dappCallback;
 	address public m_beneficiary;
 
-  WorkOrderStatusEnum  public m_status;
+  IexecLib.WorkOrderStatusEnum  public m_status;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
@@ -73,24 +63,36 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		m_dappCallback          = _dappCallback;
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 		m_beneficiary           = _beneficiary;
-		m_status                = WorkOrderStatusEnum.PENDING;
+		m_status                = IexecLib.WorkOrderStatusEnum.PENDING;
 	}
 
 	function setAccepted() onlyWorkOrderHub public returns (bool)
 	{
-		m_status = WorkOrderStatusEnum.ACCEPTED;
+		m_status = IexecLib.WorkOrderStatusEnum.ACCEPTED;
 		return true;
 	}
 
 	function setCancelled() onlyWorkOrderHub  public returns (bool)
 	{
-		m_status = WorkOrderStatusEnum.CANCELLED;
+		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
 		return true;
 	}
 
-	function setAborted() onlyWorkOrderHub  public returns (bool)
+	function setClaimed() onlyWorkOrderHub  public returns (bool)
 	{
-		m_status = WorkOrderStatusEnum.ABORTED;
+		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
+		return true;
+	}
+
+	function setScheduled() onlyWorkOrderHub public returns (bool)
+	{
+		m_status = IexecLib.WorkOrderStatusEnum.SCHEDULED;
+		return true;
+	}
+
+	function setRevealing() onlyWorkOrderHub public returns (bool)
+	{
+		m_status = IexecLib.WorkOrderStatusEnum.REVEALING;
 		return true;
 	}
 
@@ -99,7 +101,8 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		m_stdout = _stdout;
 		m_stderr = _stderr;
 		m_uri    = _uri;
-		m_status = WorkOrderStatusEnum.COMPLETED;
+		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
+		m_status = IexecLib.WorkOrderStatusEnum.COMPLETED;
 		if(m_dappCallback)
 		{
 			// optional dappCallback call can be done

@@ -112,9 +112,14 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		return newWorkOrder;
 	}
 
-	function getWorkReward(address _woid) public view returns (uint256)
+	function getWorkReward(address _woid) public view returns (uint256 workReward)
 	{
 		return WorkOrder(_woid).m_workReward();
+	}
+
+	function getStatus(address _woid) public view returns (IexecLib.WorkOrderStatusEnum status)
+	{
+		return WorkOrder(_woid).m_status();
 	}
 
 	function setResult(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*owner == IexecHub*/ returns (bool)
@@ -127,14 +132,24 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		return WorkOrder(_woid).setAccepted();
 	}
 
+	function setScheduled(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
+	{
+		return WorkOrder(_woid).setScheduled();
+	}
+
+	function setRevealing(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
+	{
+		return WorkOrder(_woid).setRevealing();
+	}
+
 	function setCancelled(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
 		return WorkOrder(_woid).setCancelled();
 	}
 
-	function setAborted(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
+	function setClaimed(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
-		return WorkOrder(_woid).setAborted();
+		return WorkOrder(_woid).setClaimed();
 	}
 
 

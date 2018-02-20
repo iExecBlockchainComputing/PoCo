@@ -5,6 +5,7 @@ import './IexecHubAccessor.sol';
 import './IexecHub.sol';
 import "./SafeMathOZ.sol";
 import "./AuthorizedList.sol";
+import './IexecLib.sol';
 
 contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 {
@@ -46,7 +47,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Meta info about work-orders
 	 */
-	enum ConsensusStatusEnum
+	/*enum ConsensusStatusEnum
 	{
 		UNSET,
 		PENDING,
@@ -59,12 +60,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		* After sometime, if the consensus is not reach, anyone with stake in
 		* it can abort the consensus and unlock all stake
 		*/
-		FAILLED,
+	/*	FAILLED,
 		FINALIZED
-	}
+	}*/
 	struct WorkOrderInfo
 	{
-		ConsensusStatusEnum status;
 		uint256             poolReward;
 		uint256             stakeAmount;
 		bytes32             consensus;
@@ -271,7 +271,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 	function getWorkOrderInfo(address _woid) public view returns (
-		ConsensusStatusEnum status,
 		uint256             poolReward,
 		uint256             stakeAmount,
 		bytes32             consensus,
@@ -281,7 +280,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		return (
-			workorderinfo.status,
 			workorderinfo.poolReward,
 			workorderinfo.stakeAmount,
 			workorderinfo.consensus,
@@ -301,7 +299,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		require(isAppAllowed(_app));
 		require(isDatasetAllowed(_dataset));
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		workorderinfo.status      = ConsensusStatusEnum.PENDING;
 		workorderinfo.poolReward  = _workReward;
 		workorderinfo.stakeAmount = _workReward.percentage(m_stakeRatioPolicy);
 		WorkOrderReceived(_woid);
@@ -312,8 +309,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		require(receivedWorkOrder(_woid,_workReward,_app,_dataset));
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.PENDING);
-		workorderinfo.status = ConsensusStatusEnum.STARTED;
 		workorderinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 		WorkOrderAccepted(_woid);
 		return true;
@@ -321,9 +316,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function cancelWorkOrder(address _woid) public onlyIexecHub returns (bool)
 	{
-		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.PENDING);
-		workorderinfo.status = ConsensusStatusEnum.CANCELLED;
 		WorkOrderCanceled(_woid);
 		return true;
 	}
@@ -332,9 +324,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function acceptWorkOrder(address _woid) public onlyOwner returns (bool)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.PENDING);
 		require(iexecHubInterface.acceptWorkOrder(_woid));
-		workorderinfo.status = ConsensusStatusEnum.STARTED;
 		workorderinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 		WorkOrderAccepted(_woid);
 		return true;
@@ -343,9 +333,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function claimFailedConsensus(address _woid) public onlyIexecHub returns (bool)
 	{
 	  WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.IN_PROGRESS || workorderinfo.status == ConsensusStatusEnum.STARTED);
 		require(now > workorderinfo.consensusTimout);
-		workorderinfo.status = ConsensusStatusEnum.FAILLED;
 		uint256 i;
 		address w;
 		for (i = 0; i<workorderinfo.contributors.length; ++i)
@@ -371,8 +359,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		Contribution  storage contribution  = m_contributions[_woid][_worker];
-		require(workorderinfo.status == ConsensusStatusEnum.IN_PROGRESS || workorderinfo.status == ConsensusStatusEnum.STARTED);
-		workorderinfo.status = ConsensusStatusEnum.IN_PROGRESS;
+
+    require(iexecHubInterface.scheduleWorkOrder(_woid));
 
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
@@ -392,7 +380,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.IN_PROGRESS);
 		Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
@@ -404,7 +391,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
 		}
 
-		require(contribution.status == WorkStatusEnum.REQUESTED);
+		require(contribution.status == WorkStatusEnum.REQUESTED); // and we are IexecLib.WorkOrderStatusEnum.SCHEDULED if this require is ok
 		contribution.status     = WorkStatusEnum.SUBMITTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
@@ -418,7 +405,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function revealConsensus(address _woid, bytes32 _consensus) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.IN_PROGRESS); // or state Locked to add ?
+
+		require(iexecHubInterface.setRevealingStatus(_woid));
 
 		workorderinfo.winnerCount = 0;
 		for (uint256 i = 0; i<workorderinfo.contributors.length; ++i)
@@ -431,7 +419,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		}
 		require(workorderinfo.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
-		workorderinfo.status     = ConsensusStatusEnum.REACHED;
 		workorderinfo.consensus  = _consensus;
 		workorderinfo.revealDate = REVEAL_PERIOD_DURATION.add(now);
 		RevealConsensus(_woid, _consensus);
@@ -443,12 +430,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		Contribution  storage contribution  = m_contributions[_woid][msg.sender];
 
-		require(workorderinfo.revealDate  > now                                       ); // Needed ?
-		require(workorderinfo.status     == ConsensusStatusEnum.REACHED               );
-		require(contribution.status      == WorkStatusEnum.SUBMITTED                  );
-		require(contribution.resultHash  == workorderinfo.consensus                   );
-		require(contribution.resultHash  == keccak256(_result                        ));
-		require(contribution.resultSign  == keccak256(_result ^ keccak256(msg.sender)));
+		require(workorderinfo.revealDate           >  now                                       ); // Needed ?
+		require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.REVEALING    );
+		require(contribution.status                == WorkStatusEnum.SUBMITTED                  );
+		require(contribution.resultHash            == workorderinfo.consensus                   );
+		require(contribution.resultHash            == keccak256(_result                        ));
+		require(contribution.resultSign            == keccak256(_result ^ keccak256(msg.sender)));
 
 		contribution.status         = WorkStatusEnum.POCO_ACCEPT;
 		workorderinfo.revealCounter = workorderinfo.revealCounter.add(1);
@@ -460,12 +447,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function reopen(address _woid) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.REACHED);
 		require(workorderinfo.revealDate <= now && workorderinfo.revealCounter == 0);
-
+		require(iexecHubInterface.reopen(_woid));
 		// Reset to status before revealConsensus
 		workorderinfo.winnerCount = 0;
-		workorderinfo.status      = ConsensusStatusEnum.IN_PROGRESS;
 		workorderinfo.consensus   = 0x0;
 		workorderinfo.revealDate  = 0;
 
@@ -477,7 +462,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				m_contributions[_woid][w].status = WorkStatusEnum.REJECTED;
 			}
 		}
-
 		return true;
 	}
 
@@ -485,10 +469,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function finalizedWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		require(workorderinfo.status == ConsensusStatusEnum.REACHED);
-
 		require((workorderinfo.revealDate <= now && workorderinfo.revealCounter > 0) || workorderinfo.revealCounter == workorderinfo.winnerCount);
-		workorderinfo.status = ConsensusStatusEnum.FINALIZED;
 
 		// add penalized to the call worker to contrubution and they never contribute ?
 		require(distributeRewards(_woid, workorderinfo));

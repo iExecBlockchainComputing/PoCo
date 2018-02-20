@@ -35,19 +35,10 @@ contract('IexecHub', function(accounts) {
     PENDING: 1,
     ACCEPTED: 2,
     CANCELLED: 3,
-    ABORTED: 4,
-    COMPLETED: 5
-  };
-
-  WorkerPool.ConsensusStatusEnum = {
-    UNSET: 0,
-    PENDING: 1,
-    CANCELLED: 2,
-    STARTED: 3,
-    IN_PROGRESS: 4,
-    REACHED: 5,
-    FAILLED: 6,
-    FINALIZED: 7
+    SCHEDULED: 4,
+    REVEALING: 5,
+    CLAIMED: 6,
+    COMPLETED: 7
   };
 
   WorkerPool.WorkStatusEnum = {
@@ -324,18 +315,16 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
-    assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
     // A worker is called For contribution
     txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
-    assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.SCHEDULED, "check m_status SCHEDULED");
     //Worker deposit for contribute staking
     txMined = await aIexecHubInstance.deposit(30, {
       from: resourceProvider,
@@ -372,6 +361,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider");
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
   });
 

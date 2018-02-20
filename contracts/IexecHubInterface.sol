@@ -1,5 +1,5 @@
 pragma solidity ^0.4.18;
-
+import './IexecLib.sol';
 contract IexecHubInterface
 {
 
@@ -37,6 +37,18 @@ contract IexecHubInterface
 		address _woid)
 	public returns (bool);
 
+	function scheduleWorkOrder(
+		address _woid)
+	public returns (bool);
+
+	function reopen(
+		address _woid)
+	public returns (bool);
+
+	function setRevealingStatus(
+		address _woid)
+	public returns (bool);
+
 	function cancelWorkOrder(
 		address _woid)
 	public returns (bool);
@@ -55,6 +67,10 @@ contract IexecHubInterface
 	function getWorkerStatus(
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
+
+	function getWorkOrderStatus(
+		address _woid)
+	public view returns (IexecLib.WorkOrderStatusEnum status);
 
 	function getWorkReward(
 		address _woid)
