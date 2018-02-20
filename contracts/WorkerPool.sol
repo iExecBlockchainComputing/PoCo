@@ -422,7 +422,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		require(contribution.resultHash            == keccak256(_result                        ));
 		require(contribution.resultSign            == keccak256(_result ^ keccak256(msg.sender)));
 
-		contribution.status         = ContributionStatusEnum.REJECTED;
+		contribution.status         = ContributionStatusEnum.PROVED;
 		workorderinfo.revealCounter = workorderinfo.revealCounter.add(1);
 
 		Reveal(_woid, msg.sender, _result); // TODO add WorkStatusEnum in LOG
@@ -487,7 +487,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == ContributionStatusEnum.REJECTED)
+			if (m_contributions[_woid][w].status == ContributionStatusEnum.PROVED)
 			{
 				workerBonus                      = (m_contributions[_woid][w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
 				(,workerScore)                   = iexecHubInterface.getWorkerStatus(w);
@@ -508,7 +508,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == ContributionStatusEnum.REJECTED)
+			if (m_contributions[_woid][w].status == ContributionStatusEnum.PROVED)
 			{
 				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
