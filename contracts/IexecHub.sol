@@ -256,22 +256,28 @@ contract IexecHub
 	/**
 	 * WorkOrder life cycle
 	 */
+
+	function acceptMarketWorkOrder(address _woid, address _workerPool) public returns (bool)
+ 	{
+			require(workOrderHub.isWorkOrderRegistred(_woid));
+			require(workerPoolHub.getWorkerPoolOwner(msg.sender) == _workerPool);
+		  WorkOrderInfo storage woInfo = m_woInfos[_woid];
+			require(woInfo.workerPoolAffectation == address(0));
+			woInfo.workerPoolAffectation = _workerPool;
+			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation));
+			require(workOrderHub.setAccepted(_woid));
+			// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
+			WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
+			return true;
+
+	}
+
+
 	function acceptWorkOrder(address _woid) public returns (bool)
 	{
-		require(workOrderHub.isWorkOrderRegistred(_woid));
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		if (woInfo.workerPoolAffectation == address(0))
-		{
-			// set the workerPoolAffectation in case 'any'
-			woInfo.workerPoolAffectation = msg.sender;
-			require(workerPoolHub.isWorkerPoolRegistred(woInfo.workerPoolAffectation));
-			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation));
-		}
-		else
-		{
-			require(woInfo.workerPoolAffectation == msg.sender);
-		}
 
+		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		require(woInfo.workerPoolAffectation == msg.sender);
 		require(workOrderHub.setAccepted(_woid));
 		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
 
