@@ -21,16 +21,19 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Members
 	 */
+	WorkerPoolStatusEnum        public m_workerPoolStatus;
 	string                      public m_name;
 	uint256                     public m_stakeRatioPolicy;               // % of reward to stake
 	uint256                     public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
 	uint256                     public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
 	uint256                     public m_subscriptionMinimumStakePolicy; // Minimum stake for subscribing
 	uint256                     public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
-	WorkerPoolStatusEnum        public m_workerPoolStatus;
 	address[]                   public m_workers;
-	// mapping(address => index)
 	mapping(address => uint256) public m_workerIndex;
+
+	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
+	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
+
 	/**
 	 * Address of slave/related contracts
 	 */
@@ -40,9 +43,25 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/* address                     public  m_requestersAuthorizedListAddress; */
 	address                     public  m_workersAuthorizedListAddress;
 
-	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
-	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
-
+	/**
+	 * Meta info about work-orders
+	 */
+	enum ConsensusStatusEnum
+	{
+		UNSET,
+		PENDING,
+		CANCELLED,
+		STARTED,
+		IN_PROGRESS,
+		REACHED,
+		/**
+		* FAILLED:
+		* After sometime, if the consensus is not reach, anyone with stake in
+		* it can abort the consensus and unlock all stake
+		*/
+		FAILLED,
+		FINALIZED
+	}
 	struct WorkOrderInfo
 	{
 		ConsensusStatusEnum status;
@@ -55,29 +74,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		address[]           contributors;
 		uint256             winnerCount;
 	}
-
 	// mapping(woid => WorkInfo)
 	mapping(address => WorkOrderInfo) public m_workOrderInfos;
 
-
-	enum ConsensusStatusEnum
-	{
-		UNSET,
-		PENDING,
-		CANCELLED,
-		STARTED,
-		IN_PROGRESS,
-		REACHED,
-		/**
-		 * FAILLED:
-		 * After sometime, if the consensus is not reach, anyone with stake in
-		 * it can abort the consensus and unlock all stake
-		 */
-		FAILLED,
-		FINALIZED
-	}
-
-
+	/**
+	 * Contribution entries
+	 */
 	enum WorkStatusEnum
 	{
 		UNSET,
@@ -86,14 +88,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		POCO_ACCEPT,
 		REJECTED
 	}
-
 	struct Contribution
 	{
 		WorkStatusEnum status;
 		bytes32        resultHash;
 		bytes32        resultSign; // change from salt to tx.origin based signature
 		address        enclaveChallenge;
+		uint256        weight;
 	}
+	// mapping(woid => worker address => Contribution);
+	mapping(address => mapping(address => Contribution)) public m_contributions;
 
 	/**
 	 * Events
@@ -107,17 +111,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	event Reveal             (address indexed woid, address indexed worker, bytes32 result);
 
 	/**
-	 * Members
+	 * Modifiers
 	 */
-
-	// mapping(woid => worker address => Contribution);
-	mapping(address => mapping(address => Contribution)) public  m_contributions;
-	mapping(address => uint256)                          private m_workerWeights; // used by distributeRewards
-
-
-
-
-
 	modifier onlyWorkerPoolHub()
 	{
 		require(msg.sender == m_workerPoolHubAddress);
@@ -517,11 +512,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			w = contributors[i];
 			if (m_contributions[_woid][w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
-				workerBonus        = (m_contributions[_woid][w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
-				(,workerScore)     = iexecHubInterface.getWorkerStatus(w);
-				workerWeight       = 1 + workerScore.mul(workerBonus).log2();
-				totalWeight        = totalWeight.add(workerWeight);
-				m_workerWeights[w] = workerWeight; // store so we don't have to recompute
+				workerBonus                      = (m_contributions[_woid][w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
+				(,workerScore)                   = iexecHubInterface.getWorkerStatus(w);
+				workerWeight                     = 1 + workerScore.mul(workerBonus).log2();
+				totalWeight                      = totalWeight.add(workerWeight);
+				m_contributions[_woid][w].weight = workerWeight; // store so we don't have to recompute
 			}
 			else // WorkStatusEnum.POCO_REJECT or WorkStatusEnum.SUBMITTED (not revealed)
 			{
@@ -538,7 +533,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			w = contributors[i];
 			if (m_contributions[_woid][w].status == WorkStatusEnum.POCO_ACCEPT)
 			{
-				workerReward = workersReward.mulByFraction(m_workerWeights[w], totalWeight);
+				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _workorderinfo.stakeAmount));
 				require(iexecHubInterface.rewardForWork(_woid, w, workerReward));
