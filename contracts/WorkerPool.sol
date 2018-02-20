@@ -305,11 +305,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return true;
 	}
 
-	function acceptMarketWorkOrder(address _woid, uint256 _workReward, address _app, address _dataset) public onlyIexecHub returns (bool)
+	function acceptMarketWorkOrder(address _woid, uint256 _workReward, address _app, address _dataset, address[] _workers, address _enclaveChallenge) public onlyIexecHub returns (bool)
 	{
 		require(receivedWorkOrder(_woid,_workReward,_app,_dataset));
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		workorderinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		require(callForContributions(_woid,_workers,_enclaveChallenge));
 		WorkOrderAccepted(_woid);
 		return true;
 	}
@@ -321,11 +322,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 
-	function acceptWorkOrder(address _woid) public onlyOwner returns (bool)
+	function acceptWorkOrder(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner returns (bool)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		require(iexecHubInterface.acceptWorkOrder(_woid));
 		workorderinfo.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		require(callForContributions(_woid,_workers,_enclaveChallenge));
 		WorkOrderAccepted(_woid);
 		return true;
 	}
@@ -357,10 +359,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.SCHEDULED  );
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
 		Contribution  storage contribution  = m_contributions[_woid][_worker];
-
-    require(iexecHubInterface.scheduleWorkOrder(_woid));
 
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.

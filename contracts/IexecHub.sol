@@ -68,7 +68,6 @@ contract IexecHub
 	 * Events
 	 */
 	event WorkOrder(address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset);
-	event WorkOrderAccepted(address woid, address indexed workerPool);
 	event WorkOrderScheduled(address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
 	event WorkOrderCancelled(address woid, address indexed workerPool);
@@ -259,7 +258,7 @@ contract IexecHub
 	 * WorkOrder life cycle
 	 */
 
-	function acceptMarketWorkOrder(address _woid, address _workerPool) public returns (bool)
+	function acceptMarketWorkOrder(address _woid, address _workerPool, address[] _workers, address _enclaveChallenge) public returns (bool)
  	{
 			require(workOrderHub.isWorkOrderRegistred(_woid));
 			require(workerPoolHub.getWorkerPoolOwner(msg.sender) == _workerPool);
@@ -267,10 +266,10 @@ contract IexecHub
 			require(woInfo.workerPoolAffectation == address(0));
 			woInfo.workerPoolAffectation = _workerPool;
 			require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation));
-			require(workOrderHub.setAccepted(_woid));
+			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation,_workers,_enclaveChallenge));
+			require(workOrderHub.setScheduled(_woid));
 			// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-			WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
+			WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
 			return true;
 
 	}
@@ -282,25 +281,12 @@ contract IexecHub
 		WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
 		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-		require(workOrderHub.setAccepted(_woid));
+		require(workOrderHub.setScheduled(_woid));
 		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-
-		WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
+		WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
 		return true;
 	}
 
-	function scheduleWorkOrder(address _woid) public returns (bool)
-	{
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		require(woInfo.workerPoolAffectation == msg.sender);
-		IexecLib.WorkOrderStatusEnum currentStatus =getWorkOrderStatus(_woid);
-		require(currentStatus  == IexecLib.WorkOrderStatusEnum.ACCEPTED  || currentStatus  == IexecLib.WorkOrderStatusEnum.SCHEDULED);
-		if(currentStatus  == IexecLib.WorkOrderStatusEnum.ACCEPTED){
-			require(workOrderHub.setScheduled(_woid));
-			WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
-		}
-		return true;
-	}
 
 	function setRevealingStatus(address _woid) public returns (bool)
 	{
@@ -341,7 +327,7 @@ contract IexecHub
 		WorkOrderInfo storage woInfo      = m_woInfos[_woid];
 		WorkerPool pool                = WorkerPool(woInfo.workerPoolAffectation);
 		IexecLib.WorkOrderStatusEnum currentStatus =getWorkOrderStatus(_woid);
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACCEPTED || currentStatus == IexecLib.WorkOrderStatusEnum.SCHEDULED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.SCHEDULED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		require(pool.claimFailedConsensus(_woid));
 		// Who ? contributor / client
 		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT

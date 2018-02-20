@@ -66,12 +66,6 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		m_status                = IexecLib.WorkOrderStatusEnum.PENDING;
 	}
 
-	function setAccepted() onlyWorkOrderHub public returns (bool)
-	{
-		m_status = IexecLib.WorkOrderStatusEnum.ACCEPTED;
-		return true;
-	}
-
 	function setCancelled() onlyWorkOrderHub  public returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;

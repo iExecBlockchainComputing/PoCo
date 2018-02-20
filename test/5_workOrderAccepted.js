@@ -32,12 +32,11 @@ contract('IexecHub', function(accounts) {
   WorkOrder.WorkOrderStatusEnum = {
     UNSET: 0,
     PENDING: 1,
-    ACCEPTED: 2,
-    CANCELLED: 3,
-    SCHEDULED: 4,
-    REVEALING: 5,
-    CLAIMED: 6,
-    COMPLETED: 7
+    CANCELLED: 2,
+    SCHEDULED: 3,
+    REVEALING: 4,
+    CLAIMED: 5,
+    COMPLETED: 6
   };
 
   let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
@@ -303,18 +302,23 @@ contract('IexecHub', function(accounts) {
 
   it("scheduleProvider accept Pending workOrder", async function() {
     let contributionsAddress;
-    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid, {
+    let workers = [];
+    workers.push(resourceProvider);
+    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid,workers,0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderAccepted({}));
     assert.strictEqual(events[0].args.woid, woid, "woid check");
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderAccepted({}));
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderScheduled({}));
     assert.strictEqual(events[0].args.woid, woid, "woid check");
     assert.strictEqual(events[0].args.workerPool, workerPoolAddress, "workerPool check");
     m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.SCHEDULED, "check m_status SCHEDULED");
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.CallForContribution({}));
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
     //TODO check ratio price
   });
 

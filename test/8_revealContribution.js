@@ -33,15 +33,23 @@ contract('IexecHub', function(accounts) {
   WorkOrder.WorkOrderStatusEnum = {
     UNSET: 0,
     PENDING: 1,
-    ACCEPTED: 2,
-    CANCELLED: 3,
-    SCHEDULED: 4,
-    REVEALING: 5,
-    CLAIMED: 6,
-    COMPLETED: 7
+    CANCELLED: 2,
+    SCHEDULED: 3,
+    REVEALING: 4,
+    CLAIMED: 5,
+    COMPLETED: 6
+  };
+
+  WorkerPool.WorkStatusEnum = {
+    UNSET: 0,
+    REQUESTED: 1,
+    SUBMITTED: 2,
+    POCO_ACCEPT: 3,
+    REJECTED: 4
   };
 
   let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
@@ -49,6 +57,8 @@ contract('IexecHub', function(accounts) {
   let subscriptionMinimumStakePolicy = 0;
   let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
+  let txMined;
+  let txsMined;
   let testTimemout = 0;
   let aRLCInstance;
   let aIexecHubInstance;
@@ -298,14 +308,10 @@ contract('IexecHub', function(accounts) {
     woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
     console.log("woid is :" + woid);
     aWorkOrderInstance = await WorkOrder.at(woid);
-    // SCHEDULER ACCCEPT TASK
-    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid, {
-      from: scheduleProvider,
-      gas: amountGazProvided
-    });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    // A worker is called For contribution
-    txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+    // SCHEDULER ACCCEPT TASK and A worker is called For contribution
+    let workers = [];
+    workers.push(resourceProvider);
+    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid,workers,0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
@@ -325,26 +331,37 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-  });
-
-
-  it("scheduleProvider reveal consensus result", async() => {
-    txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+    //Scheduler reveal consensus
+    const hash = await Extensions.hashResult("iExec the wanderer");
+    txMined = await aWorkerPoolInstance.revealConsensus(woid, hash, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
-
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.RevealConsensus({}));
+  });
+
+
+  it("resourceProvider reveal his work contribution", async function() {
+    const result = web3.sha3("iExec the wanderer");
+    txMined = await aWorkerPoolInstance.reveal(woid, result, {
+      from: resourceProvider,
+      gas: amountGazProvided
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.Reveal({}));
 
     assert.strictEqual(events[0].args.woid, woid, "woid check");
-    assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
-    assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
+    assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider");
+    assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
+    assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
   });
 
+
+  //TODO check m_revealCounter
+  //TODO check m_contributions content
 
 
 });

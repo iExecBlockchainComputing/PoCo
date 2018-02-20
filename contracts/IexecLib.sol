@@ -6,10 +6,9 @@ library IexecLib{
     	{
     		UNSET,
     		PENDING,
-    		ACCEPTED,
     		CANCELLED,
     	  SCHEDULED,
-    		REVEALING,// or RUNNING ?
+    		REVEALING,
     		CLAIMED,
     		COMPLETED
     	}

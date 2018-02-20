@@ -127,11 +127,6 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		return WorkOrder(_woid).setResult(_stdout, _stderr, _uri);
 	}
 
-	function setAccepted(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setAccepted();
-	}
-
 	function setScheduled(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
 		return WorkOrder(_woid).setScheduled();

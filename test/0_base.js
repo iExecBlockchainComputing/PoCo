@@ -27,12 +27,11 @@ contract('IexecHub', function(accounts) {
   WorkOrder.WorkOrderStatusEnum = {
     UNSET: 0,
     PENDING: 1,
-    ACCEPTED: 2,
-    CANCELLED: 3,
-    SCHEDULED: 4,
-    REVEALING: 5,
-    CLAIMED: 6,
-    COMPLETED: 7
+    CANCELLED: 2,
+    SCHEDULED: 3,
+    REVEALING: 4,
+    CLAIMED: 5,
+    COMPLETED: 6
   };
 
   WorkerPool.WorkStatusEnum = {
