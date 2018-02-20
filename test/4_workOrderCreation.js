@@ -347,8 +347,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(m_beneficiary, iExecCloudUser, "check m_beneficiary");
     events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderReceived({}));
     assert.strictEqual(events[0].args.woid, woid, "woid received in workerpool");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.PENDING, "check m_status PENDING");
   });
 

@@ -316,8 +316,8 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
     // A worker is called For contribution
     txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
@@ -325,8 +325,8 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
     //Worker deposit for contribute staking
     txMined = await aIexecHubInstance.deposit(30, {
@@ -365,9 +365,9 @@ contract('IexecHub', function(accounts) {
     });
 
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
 
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.FINALIZED, "check m_status FINALIZED");
     events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderCompleted({}));
 

@@ -313,8 +313,8 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.STARTED, "check m_status STARTED");
     // A worker is called For contribution
     txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
@@ -322,8 +322,8 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.IN_PROGRESS, "check m_status IN_PROGRESS");
     //Worker deposit for contribute staking
     txMined = await aIexecHubInstance.deposit(30, {
@@ -353,9 +353,9 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.woid, woid, "woid check");
     assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
     assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
-    getWorkInfoCall = await aWorkerPoolInstance.getWorkInfo.call(woid);
+    getWorkOrderInfoCall = await aWorkerPoolInstance.getWorkOrderInfo.call(woid);
 
-    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkInfoCall;
+    [status, schedulerReward, workersReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout] = getWorkOrderInfoCall;
     assert.strictEqual(status.toNumber(), WorkerPool.ConsensusStatusEnum.REACHED, "check m_status REACHED");
 
   });
