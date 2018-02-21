@@ -55,7 +55,7 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 	{
 		return m_ownerByWorkOrder[_workOrder];
 	}
-
+	// TODO: used ?
 	function isWorkOrderRegistred(address _workOrder) public view returns (bool)
 	{
 		return m_ownerByWorkOrder[_workOrder] != 0x0;
@@ -64,8 +64,8 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 	function addWorkOrder(address _owner, address _workOrder) internal
 	{
 		uint id = m_workOrderCountByOwner[_owner];
-		m_workOrderCountByOwner  [_owner]       = id.add(1);
-		m_workOrderByOwnerByIndex[_owner][id]   = _workOrder;
+		m_workOrderCountByOwner  [_owner]     = id.add(1);
+		m_workOrderByOwnerByIndex[_owner][id] = _workOrder;
 		m_ownerByWorkOrder       [_workOrder] = _owner;
 	}
 
@@ -127,9 +127,9 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		return WorkOrder(_woid).setResult(_stdout, _stderr, _uri);
 	}
 
-	function setScheduled(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
+	function setAccepted(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
 	{
-		return WorkOrder(_woid).setScheduled();
+		return WorkOrder(_woid).setAccepted();
 	}
 
 	function setRevealing(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)

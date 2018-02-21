@@ -34,7 +34,7 @@ contract('IexecHub', function(accounts) {
     UNSET: 0,
     PENDING: 1,
     CANCELLED: 2,
-    SCHEDULED: 3,
+    ACCEPTED: 3,
     REVEALING: 4,
     CLAIMED: 5,
     COMPLETED: 6
@@ -309,15 +309,21 @@ contract('IexecHub', function(accounts) {
     console.log("woid is :" + woid);
     aWorkOrderInstance = await WorkOrder.at(woid);
     // SCHEDULER ACCCEPT TASK and A worker is called For contribution
+    txMined = await aIexecHubInstance.acceptWorkOrder(woid, workerPoolAddress, {
+      from: scheduleProvider,
+      gas: amountGazProvided
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    // CALL FOR CONTRIBUTION
     let workers = [];
     workers.push(resourceProvider);
-    txMined = await aWorkerPoolInstance.acceptWorkOrder(woid,workers,0, {
+    txMined = await aWorkerPoolInstance.callForContribution(woid, workers, 0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.SCHEDULED, "check m_status SCHEDULED");
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
     //Worker deposit for contribute staking
     txMined = await aIexecHubInstance.deposit(30, {
       from: resourceProvider,

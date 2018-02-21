@@ -19,6 +19,8 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		_;
 	}
 
+	IexecLib.WorkOrderStatusEnum public m_status;
+
 	address public m_workerPoolRequested;
 	address public m_appRequested;
 	address public m_datasetRequested;
@@ -28,7 +30,6 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	bool    public m_dappCallback;
 	address public m_beneficiary;
 
-	IexecLib.WorkOrderStatusEnum public m_status;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
@@ -58,37 +59,37 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
 		m_workOrderHubAddress = msg.sender;
-		m_workerPoolRequested   = _workerPool;
-		m_appRequested          = _app;
-		m_datasetRequested      = _dataset;
-		m_workOrderParam        = _workOrderParam;
-		m_workReward            = _workReward;
-		m_askedTrust            = _askedTrust;
-		m_dappCallback          = _dappCallback;
+		m_workerPoolRequested = _workerPool;
+		m_appRequested        = _app;
+		m_datasetRequested    = _dataset;
+		m_workOrderParam      = _workOrderParam;
+		m_workReward          = _workReward;
+		m_askedTrust          = _askedTrust;
+		m_dappCallback        = _dappCallback;
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
-		m_beneficiary           = _beneficiary;
-		m_status                = IexecLib.WorkOrderStatusEnum.PENDING;
+		m_beneficiary         = _beneficiary;
+		m_status              = IexecLib.WorkOrderStatusEnum.PENDING;
 	}
 
-	function setCancelled() onlyWorkOrderHub  public returns (bool)
+	function setCancelled() public onlyWorkOrderHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
 		return true;
 	}
 
-	function setClaimed() onlyWorkOrderHub  public returns (bool)
+	function setClaimed() public onlyWorkOrderHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
 		return true;
 	}
 
-	function setScheduled() onlyWorkOrderHub public returns (bool)
+	function setAccepted() public onlyWorkOrderHub returns (bool)
 	{
-		m_status = IexecLib.WorkOrderStatusEnum.SCHEDULED;
+		m_status = IexecLib.WorkOrderStatusEnum.ACCEPTED;
 		return true;
 	}
 
-	function setRevealing() onlyWorkOrderHub public returns (bool)
+	function setRevealing() public onlyWorkOrderHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.REVEALING;
 		return true;

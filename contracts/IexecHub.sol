@@ -3,9 +3,8 @@ pragma solidity ^0.4.18;
 import "rlc-token/contracts/RLC.sol";
 
 import './AppHub.sol';
-import './WorkerPoolHub.sol';
-import './WorkerPool.sol';
 import './DatasetHub.sol';
+import './WorkerPoolHub.sol';
 import './WorkOrderHub.sol';
 import "./SafeMathOZ.sol";
 import './IexecLib.sol';
@@ -60,11 +59,11 @@ contract IexecHub
 	/**
 	 * Events
 	 */
-	event WorkOrder(address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset);
-	event WorkOrderScheduled(address woid, address indexed workerPool);
+	event WorkOrder         (address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset);
+	event WorkOrderAccepted (address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
 	event WorkOrderCancelled(address woid, address indexed workerPool);
-	event WorkOrderAborted(address woid, address workerPool);
+	event WorkOrderAborted  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
 	event CreateApp(address indexed appOwner,address indexed app,string  appName,uint256 appPrice,string  appParams);
@@ -234,10 +233,12 @@ contract IexecHub
 		require(lock(woInfo.requesterAffectation, woInfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
 
 		// WORKER_POOL
+		/*
 		if (_workerPool != address(0)) // address(0) → any workerPool
 		{
 			require(WorkerPool(_workerPool).receivedWorkOrder(newWorkOrder, _workReward, _app, _dataset));
 		}
+		*/
 
 		// address newWorkOrder will the woid
 		WorkOrder(newWorkOrder, msg.sender, _workerPool, _app, _dataset);
@@ -248,41 +249,36 @@ contract IexecHub
 	 * WorkOrder life cycle
 	 */
 
-	function acceptMarketWorkOrder(address _woid, address _workerPool, address[] _workers, address _enclaveChallenge) public returns (bool)
- 	{
-			require(workOrderHub.isWorkOrderRegistred(_woid));
-			require(workerPoolHub.getWorkerPoolOwner(msg.sender) == _workerPool);
-		  IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-			require(woInfo.workerPoolAffectation == address(0));
-			woInfo.workerPoolAffectation = _workerPool;
-			require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-			require(WorkerPool(woInfo.workerPoolAffectation).acceptMarketWorkOrder(_woid,workOrderHub.getWorkReward(_woid),woInfo.appAffectation,woInfo.datasetAffectation,_workers,_enclaveChallenge));
-			require(workOrderHub.setScheduled(_woid));
-			// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-			WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
-			return true;
 
-	}
-
-
-	function acceptWorkOrder(address _woid) public returns (bool)
+	function acceptWorkOrder(address _woid, address _workerPool) public returns (bool)
 	{
-
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		require(woInfo.workerPoolAffectation == msg.sender);
+		// sender must own _workerpool
+		require(workerPoolHub.getWorkerPoolOwner(_workerPool) == msg.sender);
+		// workorder must be pending
 		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-		require(workOrderHub.setScheduled(_woid));
+
+		// Check worker pool affectation is compatible
+		IexecLib.WorkOrderInfo storage workorderinfo = m_woInfos[_woid];
+		require(workorderinfo.workerPoolAffectation == address(0) || workorderinfo.workerPoolAffectation == _workerPool);
+		workorderinfo.workerPoolAffectation = _workerPool;
+
+		require(WorkerPool(_workerPool).acceptWorkOrder(
+			_woid,
+			getWorkOrderWorkReward(_woid),
+			workorderinfo.appAffectation,
+			workorderinfo.datasetAffectation
+		));
+		require(workOrderHub.setAccepted(_woid));
 		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-		WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
+		WorkOrderAccepted(_woid, _workerPool);
 		return true;
 	}
-
 
 	function setRevealingStatus(address _woid) public returns (bool)
 	{
 		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
-		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.SCHEDULED);
+		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.ACCEPTED);
 		require(workOrderHub.setRevealing(_woid));
 		WorkOrderRevealing(_woid, woInfo.workerPoolAffectation);
 		return true;
@@ -293,8 +289,8 @@ contract IexecHub
 		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
 		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(workOrderHub.setScheduled(_woid));
-		WorkOrderScheduled(_woid, woInfo.workerPoolAffectation);
+		require(workOrderHub.setAccepted(_woid));
+		WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
 		return true;
 	}
 
@@ -306,7 +302,7 @@ contract IexecHub
 		require(msg.sender == woInfo.requesterAffectation);
 		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-		require(WorkerPool(woInfo.workerPoolAffectation).cancelWorkOrder(_woid));
+		/* require(WorkerPool(woInfo.workerPoolAffectation).cancelWorkOrder(_woid)); */
 		require(workOrderHub.setCancelled(_woid));
 		WorkOrderCancelled(_woid, woInfo.workerPoolAffectation);
 		return true;
@@ -316,8 +312,9 @@ contract IexecHub
 	{
 		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		WorkerPool                     pool   = WorkerPool(woInfo.workerPoolAffectation);
-		IexecLib.WorkOrderStatusEnum currentStatus =getWorkOrderStatus(_woid);
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.SCHEDULED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
+
+		IexecLib.WorkOrderStatusEnum currentStatus = getWorkOrderStatus(_woid);
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACCEPTED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		require(pool.claimFailedConsensus(_woid));
 		// Who ? contributor / client
 		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
@@ -371,7 +368,7 @@ contract IexecHub
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
 
-	function getWorkReward(address _woid) public view returns (uint256 workReward)
+	function getWorkOrderWorkReward(address _woid) public view returns (uint256 workReward)
 	{
 		return workOrderHub.getWorkReward(_woid);
 	}

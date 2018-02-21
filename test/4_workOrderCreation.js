@@ -32,7 +32,7 @@ contract('IexecHub', function(accounts) {
     UNSET: 0,
     PENDING: 1,
     CANCELLED: 2,
-    SCHEDULED: 3,
+    ACCEPTED: 3,
     REVEALING: 4,
     CLAIMED: 5,
     COMPLETED: 6
@@ -336,8 +336,6 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(m_askedTrust.toNumber(), 1, "check m_askedTrust");
     assert.strictEqual(m_dappCallback, false, "check m_dappCallback");
     assert.strictEqual(m_beneficiary, iExecCloudUser, "check m_beneficiary");
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderReceived({}));
-    assert.strictEqual(events[0].args.woid, woid, "woid received in workerpool");
   });
 
 });

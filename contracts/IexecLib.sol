@@ -10,24 +10,37 @@ library IexecLib
 		UNSET,     // Work order not yet initialized (invalid address)
 		PENDING,   // Work order submited by user
 		CANCELLED, // Work order cancelled by user (before acceptance by a scheduler)
-		SCHEDULED,
-		REVEALING,
-		CLAIMED,
-		COMPLETED
+		ACCEPTED,  // Work accepted by scheduler
+		REVEALING, // Starting consensus reveal
+		CLAIMED,   // Failled consensus
+		COMPLETED  // Concensus achieved
 	}
 
 	enum ContributionStatusEnum
 	{
 		UNSET,
-		SCHEDULED,
+		AUTHORIZED,
 		CONTRIBUTED,
 		PROVED,
 		REJECTED
 	}
 
 	/***************************************************************************/
-	/*                                Strcutres                                */
+	/*                               Structures                                */
 	/***************************************************************************/
+
+	/**
+	 * Meta info about workorders
+	 * used by IexecHub.sol
+	 */
+	struct WorkOrderInfo
+	{
+		address appAffectation;
+		address datasetAffectation;
+		address requesterAffectation;
+		address workerPoolAffectation;
+		uint256 userCost;
+	}
 
 	/**
 	 * Meta info about consensus
@@ -35,14 +48,14 @@ library IexecLib
 	 */
 	struct ConsensusInfo
 	{
-		uint256             poolReward;
-		uint256             stakeAmount;
-		bytes32             consensus;
-		uint256             revealDate;
-		uint256             revealCounter;
-		uint256             consensusTimout;
-		address[]           contributors;
-		uint256             winnerCount;
+		uint256 poolReward;
+		uint256 stakeAmount;
+		bytes32 consensus;
+		uint256 revealDate;
+		uint256 revealCounter;
+		uint256 consensusTimout;
+		uint256 winnerCount;
+		address[] contributors;
 	}
 
 	/**
@@ -52,25 +65,10 @@ library IexecLib
 	struct Contribution
 	{
 		ContributionStatusEnum status;
-		bytes32                resultHash;
-		bytes32                resultSign; // change from salt to tx.origin based signature
-		address                enclaveChallenge;
-		uint256                weight;
+		bytes32 resultHash;
+		bytes32 resultSign; // change from salt to tx.origin based signature
+		address enclaveChallenge;
+		uint256 weight;
 	}
-
-	/**
-	 * Meta info about workorders
-	 * used by IexecHub.sol
-	 */
-	struct WorkOrderInfo
-	{
-		address requesterAffectation;
-		address workerPoolAffectation;
-		address appAffectation;
-		address datasetAffectation;
-		uint256 userCost;
-	}
-
-
 
 }
