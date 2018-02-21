@@ -2,6 +2,8 @@ pragma solidity ^0.4.18;
 
 import "rlc-token/contracts/RLC.sol";
 
+import './WorkOrder.sol';
+
 import './AppHub.sol';
 import './DatasetHub.sol';
 import './WorkerPoolHub.sol';
@@ -22,20 +24,6 @@ contract IexecHub
 	// uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; // updated by vote or super admin ?
 
 	/**
-	 * Datatypes
-	 */
-	struct Account
-	{
-		uint256 stake;
-		uint256 locked;
-	}
-	struct ContributionHistory // for credibility computation, f = failled/total
-	{
-		uint256 success;
-		uint256 failled;
-	}
-
-	/**
 	* RLC contract for token transfers.
 	*/
 	RLC public rlc;
@@ -49,17 +37,35 @@ contract IexecHub
 	WorkerPoolHub  workerPoolHub;
 
 	/**
-	 * Internal data
+	 * Escrow
 	 */
-	mapping(address => Account               ) public m_accounts; // user => stake
-	mapping(address => uint256               ) public m_scores;   // user => reputation
-	mapping(address => IexecLib.WorkOrderInfo) public m_woInfos;  // workorder => metadata
-	ContributionHistory                        public m_contributionHistory;
+	mapping(address => IexecLib.Account) public m_accounts;
+
+	/**
+	 * Reputation for PoCo
+	 */
+	mapping(address => uint256)  public m_scores;
+	IexecLib.ContributionHistory public m_contributionHistory;
+
+	/**
+	 * Marketplace
+	 */
+	IexecLib.Position[] public m_orderBook;
 
 	/**
 	 * Events
 	 */
-	event WorkOrder         (address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset);
+	/* event PositionBid */
+	/* event PositionBidCanceled */
+	/* event PositionBidMarketed */
+	// event PositionAsk
+	// event PositionMarketedAsk (Accepted)
+	// event WorkOrder // needed ?
+	// event WorkOrderRevealing
+	// event WorkOrderAborted
+	// event WorkOrderCompleted
+
+	/* event WorkOrder         (address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset); */
 	event WorkOrderAccepted (address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
 	event WorkOrderCancelled(address woid, address indexed workerPool);
@@ -72,9 +78,9 @@ contract IexecHub
 
 	event OpenWorkerPool          (address indexed workerPool);
 	event CloseWorkerPool         (address indexed workerPool);
+	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
 	event WorkerPoolEviction      (address indexed workerPool, address worker);
-	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 
 	event AccurateContribution(address woid, address indexed worker);
 	event FaultyContribution  (address woid, address indexed worker);
@@ -97,10 +103,10 @@ contract IexecHub
 	{
 		rlc = RLC(_tokenAddress);
 
-		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
-		appHub         = AppHub        (_appHubAddress        );
-		datasetHub     = DatasetHub    (_datasetHubAddress    );
-		workOrderHub = WorkOrderHub(_workOrderHubAddress);
+		workerPoolHub = WorkerPoolHub(_workerPoolHubAddress );
+		appHub        = AppHub       (_appHubAddress        );
+		datasetHub    = DatasetHub   (_datasetHubAddress    );
+		workOrderHub  = WorkOrderHub (_workOrderHubAddress);
 
 		m_contributionHistory.success = 0;
 		m_contributionHistory.failled = 0;
@@ -147,17 +153,172 @@ contract IexecHub
 		string  _datasetName,
 		uint256 _datasetPrice,
 		string  _datasetParams)
-		public returns (address createdDataset)
-		{
-			address newDataset = datasetHub.createDataset(
-				_datasetName,
-				_datasetPrice,
-				_datasetParams
-				);
-				CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
-				return newDataset;
-			}
+	public returns (address createdDataset)
+	{
+		address newDataset = datasetHub.createDataset(
+			_datasetName,
+			_datasetPrice,
+			_datasetParams
+			);
+		CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
+		return newDataset;
+	}
 
+	function createPositionBid(
+		uint256 _category,
+		uint256 _trust,
+		uint256 _value,
+		address _app,
+		address _dataset,
+		address _workerpool,
+		string  _woParams,
+		address _woBeneficiary,
+		bool    _woCallback)
+	public returns (uint)
+	{
+		// msg.sender = requester
+
+		// APP
+		require(appHub.isAppRegistred    (_app            ));
+		require(appHub.isOpen            (_app            ));
+		require(appHub.isDatasetAllowed  (_app, _dataset  ));
+		require(appHub.isRequesterAllowed(_app, msg.sender));
+		// Price to pay by the user, initialized with reward + dapp Price
+		uint256 userCost = _value.add(appHub.getAppPrice(_app));
+
+		// DATASET
+		if (_dataset != address(0)) // address(0) → no dataset
+		{
+			require(datasetHub.isDatasetRegistred(_dataset            ));
+			require(datasetHub.isOpen            (_dataset            ));
+			require(datasetHub.isAppAllowed      (_dataset, _app      ));
+			require(datasetHub.isRequesterAllowed(_dataset, msg.sender));
+			if (_workerpool != address(0)) // address(0) → any workerpool
+			{
+				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
+			}
+			// add optional datasetPrice for userCost
+			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
+		}
+
+		// WORKERPOOL
+		if (_workerpool != address(0)) // address(0) → any workerPool
+		{
+			require(workerPoolHub.isWorkerPoolRegistred(_workerpool            ));
+			require(workerPoolHub.isOpen               (_workerpool            ));
+			require(workerPoolHub.isAppAllowed         (_workerpool, _app      ));
+			require(workerPoolHub.isDatasetAllowed     (_workerpool, _dataset  ));
+			// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
+			require(appHub.isWorkerPoolAllowed(_app, _workerpool));
+		}
+
+		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
+		if (m_accounts[msg.sender].stake < userCost)
+		{
+			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
+		}
+		require(lock(msg.sender, userCost)); // LOCK THE FUNDS FOR PAYMENT
+
+		uint256                   positionIdx = m_orderBook.length;
+		IexecLib.Position storage position    = m_orderBook[positionIdx];
+		position.positionType  = IexecLib.PositionTypeEnum.BID;
+		position.categorie     = _category;
+		position.trust         = _trust;
+		position.value         = _value;
+		position.quantity      = 1;
+		position.requester     = msg.sender;
+		position.app           = _app;
+		position.dataset       = _dataset;
+		position.workerpool    = _workerpool;
+		position.woParams      = _woParams;
+		position.woBeneficiary = _woBeneficiary;
+		position.woCallback    = _woCallback;
+		position.locked        = userCost;
+		position.workorder     =	address(0);
+
+		// PositionBid(); // TODO create event
+		return positionIdx;
+	}
+
+	function cancelPositionBid(uint256 _idx) public returns (bool)
+	{
+		IexecLib.Position storage position = m_orderBook[_idx];
+
+		// sender must be requester
+		require(position.requester == msg.sender);
+
+		// position must still be active
+		require(position.positionType == IexecLib.PositionTypeEnum.BID);
+		position.positionType == IexecLib.PositionTypeEnum.CANCELED;
+
+		require(unlock(position.requester, position.locked));
+
+		// PositionBidCanceled(); // TODO create event
+		return true;
+	}
+
+	function answerPositionBid(uint256 _positionIdx, address _workerpool) public returns (address)
+	{
+		IexecLib.Position storage position = m_orderBook[_positionIdx];
+
+		// sender must own _workerpool
+		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+
+		// position must be active
+		require(position.positionType == IexecLib.PositionTypeEnum.BID);
+		position.positionType = IexecLib.PositionTypeEnum.MARKETED;
+
+		// Check worker pool affectation is compatible
+		require(position.workerpool == address(0) || position.workerpool == _workerpool);
+		position.workerpool == _workerpool;
+
+		position.workorder = workOrderHub.createWorkOrder(
+			_positionIdx,
+			position.requester,
+			position.app,
+			position.dataset,
+			_workerpool,
+			position.value,
+			position.trust,
+			position.woParams,
+			position.woBeneficiary,
+			position.woCallback
+		);
+		require(WorkOrder(position.workorder).setActive());
+		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
+		require(WorkerPool(_workerpool).answerPositionBid(position.workorder));
+
+		// PositionBidMarketed(); // TODO create event
+		return position.workorder;
+	}
+
+
+
+
+
+
+
+
+
+
+
+/*
+	function createPositionAsk() public returns (uint256)
+	{
+		return 0;
+	}
+	function cancelPositionAsk() public returns (uint256)
+	{
+		return 0;
+	}
+	function answerPositionAsk() public returns (address)
+	{
+		return 0;
+	}
+*/
+
+
+	/*
 	function createWorkOrder(
 		address _workerPool,
 		address _app,
@@ -177,7 +338,7 @@ contract IexecHub
 			require(workerPoolHub.isOpen               (_workerPool            ));
 			require(workerPoolHub.isAppAllowed         (_workerPool, _app      ));
 			require(workerPoolHub.isDatasetAllowed     (_workerPool, _dataset  ));
-			/* require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender)); */
+			// require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender));
 			require(appHub.isWorkerPoolAllowed(_app, _workerPool));
 		}
 
@@ -232,24 +393,17 @@ contract IexecHub
 
 		require(lock(woInfo.requesterAffectation, woInfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
 
-		// WORKER_POOL
-		/*
-		if (_workerPool != address(0)) // address(0) → any workerPool
-		{
-			require(WorkerPool(_workerPool).receivedWorkOrder(newWorkOrder, _workReward, _app, _dataset));
-		}
-		*/
-
 		// address newWorkOrder will the woid
 		WorkOrder(newWorkOrder, msg.sender, _workerPool, _app, _dataset);
 		return newWorkOrder;
 	}
+	*/
 
 	/**
 	 * WorkOrder life cycle
 	 */
 
-
+	/*
 	function acceptWorkOrder(address _woid, address _workerPool) public returns (bool)
 	{
 		// sender must own _workerpool
@@ -273,55 +427,43 @@ contract IexecHub
 		WorkOrderAccepted(_woid, _workerPool);
 		return true;
 	}
+	*/
 
 	function setRevealingStatus(address _woid) public returns (bool)
 	{
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		require(woInfo.workerPoolAffectation == msg.sender);
-		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.ACCEPTED);
-		require(workOrderHub.setRevealing(_woid));
-		WorkOrderRevealing(_woid, woInfo.workerPoolAffectation);
+		WorkOrder workorder = WorkOrder(_woid);
+		require(workorder.m_workerpool() == msg.sender);
+		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.ACTIVE);
+		require(workorder.setRevealing());
+		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
 		return true;
 	}
 
 	function reopen(address _woid) public returns (bool)
 	{
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		require(woInfo.workerPoolAffectation == msg.sender);
-		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(workOrderHub.setAccepted(_woid));
-		WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
+		WorkOrder workorder = WorkOrder(_woid);
+		require(workorder.m_workerpool() == msg.sender);
+		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(workorder.setActive());
+		WorkOrderAccepted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
-	function cancelWorkOrder(address _woid) public returns (bool)
+	// TODO: who ? everybody ?
+	function claimFailedConsensus(address _woid) public returns (bool)
 	{
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		WorkOrder workorder = WorkOrder(_woid);
 
-		// Why cancelled ? penalty ?
-		require(msg.sender == woInfo.requesterAffectation);
-		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
-		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-		/* require(WorkerPool(woInfo.workerPoolAffectation).cancelWorkOrder(_woid)); */
-		require(workOrderHub.setCancelled(_woid));
-		WorkOrderCancelled(_woid, woInfo.workerPoolAffectation);
-		return true;
-	}
-
-	function claimFailedConsensus(address _woid) public /*only who ? everybody ?*/ returns (bool)
-	{
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		WorkerPool                     pool   = WorkerPool(woInfo.workerPoolAffectation);
-
-		IexecLib.WorkOrderStatusEnum currentStatus = getWorkOrderStatus(_woid);
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACCEPTED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(pool.claimFailedConsensus(_woid));
+		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(WorkerPool(workorder.m_workerpool()).claimFailedConsensus(_woid));
 		// Who ? contributor / client
-		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(workorder.setClaimed());
 
-		require(workOrderHub.setClaimed(_woid));
+		IexecLib.Position storage position = m_orderBook[workorder.m_positionIdx()];
+		require(unlock(position.requester, position.locked)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
-		WorkOrderAborted(_woid, woInfo.workerPoolAffectation);
+		WorkOrderAborted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -332,31 +474,40 @@ contract IexecHub
 		string  _uri)
 	public returns (bool)
 	{
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
-		require(msg.sender == woInfo.workerPoolAffectation);
-		address appForWorkOrder= woInfo.appAffectation;
-		uint256 appPrice   = appHub.getAppPrice(appForWorkOrder);
+		WorkOrder workorder = WorkOrder(_woid);
+		require(workorder.m_workerpool() == msg.sender);
+		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
+
+		IexecLib.Position storage position = m_orderBook[workorder.m_positionIdx()];
+
+		// reward app
+		uint256 appPrice = appHub.getAppPrice(position.app);
 		if (appPrice > 0)
 		{
-			require(reward(appHub.getAppOwner(appForWorkOrder), appPrice));
-				// to unlock a stake ?
+			require(reward(appHub.getAppOwner(position.app), appPrice));
+			// TODO: to unlock a stake ?
 		}
-
-		if (woInfo.datasetAffectation != address(0))
+		// incremente app reputation?
+		// reward dataset
+		if (position.dataset != address(0))
 		{
-			uint256 datasetPrice = datasetHub.getDatasetPrice(woInfo.datasetAffectation);
+			uint256 datasetPrice = datasetHub.getDatasetPrice(position.dataset);
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(woInfo.datasetAffectation), datasetPrice));
-				// to unlock a stake ?
+				require(reward(datasetHub.getDatasetOwner(position.dataset), datasetPrice));
+				// TODO: to unlock a stake ?
 			}
+			// incremente dataset reputation?
 		}
 
-		require(seize(woInfo.requesterAffectation, woInfo.userCost)); // SEIZE THE FUNDS FOR PAIEMENT
+		// take funds from requester
+		require(seize(position.requester, position.locked)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
-		require(workOrderHub.setResult(_woid, _stdout, _stderr, _uri));
-		// incremente app and dataset reputation too  ?
-		WorkOrderCompleted(_woid, woInfo.workerPoolAffectation);
+		// write results
+		require(workorder.setResult(_stdout, _stderr, _uri));
+
+
+		WorkOrderCompleted(_woid, position.workerpool);
 		return true;
 	}
 
@@ -367,7 +518,7 @@ contract IexecHub
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
-
+	/*
 	function getWorkOrderWorkReward(address _woid) public view returns (uint256 workReward)
 	{
 		return workOrderHub.getWorkReward(_woid);
@@ -377,7 +528,7 @@ contract IexecHub
 	{
 		return workOrderHub.getStatus(_woid);
 	}
-
+	*/
 	/**
 	 * WorkerPool management
 	 */
@@ -437,30 +588,31 @@ contract IexecHub
 	/**
 	 * Stake, reward and penalty functions
 	 */
+
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
 		return true;
 	}
 
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
 
 	function rewardForConsensus(address _woid, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
 	{
-		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(reward(_scheduler, _amount));
 		return true;
 	}
 
 	function rewardForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		AccurateContribution(_woid, _worker);
 		// ----------------------- reward(address, uint256) -----------------------
 		require(reward(_worker, _amount));
@@ -472,7 +624,7 @@ contract IexecHub
 
 	function seizeForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		FaultyContribution(_woid, _worker);
 		// ------------- code of seize(address, uint256) inlined here -------------
 		require(seize(_worker, _amount));

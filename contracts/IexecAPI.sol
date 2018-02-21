@@ -27,7 +27,8 @@ contract IexecAPI
 		address _beneficiary)
 	public
 	{
-		iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback, _beneficiary);
+		throw; // TODO: what are we suppose to do ?
+		/* iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback, _beneficiary); */
 	}
 
 	// TODO add cancel Task function

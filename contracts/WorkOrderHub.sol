@@ -70,33 +70,36 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 	}
 
 	function createWorkOrder(
+		uint256 _positionIdx,
 		address _requester,
-		address _workerPool,
 		address _app,
 		address _dataset,
-		string  _workOrderParam,
-		uint    _workReward,
-		uint    _askedTrust,
-		bool    _dappCallback,
-		address _beneficiary)
+		address _workerpool,
+		uint256 _reward,
+		uint256 _trust,
+		string  _woParams,
+		address _woBeneficiary,
+		bool    _woCallback)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdWorkOrder)
 	{
 		// _requester == owner of the WorkOrder
 		// msg.sender == IexecHub
 		address newWorkOrder = new WorkOrder(
-			msg.sender,
-			_requester,
-			_workerPool,
-			_app,
-			_dataset,
-			_workOrderParam,
-			_workReward,
-			_askedTrust,
-			_dappCallback,
-			_beneficiary
+			msg.sender,     // iexecHubAddress
+			_positionIdx,   // positionIdx
+			_requester,     // requester
+			_app,           // app
+			_dataset,       // dataset
+			_workerpool,    // workerpool
+			_reward,        // reward
+			_trust,         // trust
+			_woParams,      // woParams
+			_woBeneficiary, // woBeneficiary
+			_woCallback     // woCallback
 		);
 		addWorkOrder(tx.origin, newWorkOrder);
 
+		/*
 		CreateWorkOrder(
 			_requester,
 			newWorkOrder,
@@ -108,10 +111,11 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 			_askedTrust,
 			_dappCallback
 		);
+		*/
 
 		return newWorkOrder;
 	}
-
+	/*
 	function getWorkReward(address _woid) public view returns (uint256 workReward)
 	{
 		return WorkOrder(_woid).m_workReward();
@@ -121,31 +125,5 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 	{
 		return WorkOrder(_woid).m_status();
 	}
-
-	function setResult(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setResult(_stdout, _stderr, _uri);
-	}
-
-	function setAccepted(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setAccepted();
-	}
-
-	function setRevealing(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setRevealing();
-	}
-
-	function setCancelled(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setCancelled();
-	}
-
-	function setClaimed(address _woid) public onlyOwner /*owner == IexecHub*/ returns (bool)
-	{
-		return WorkOrder(_woid).setClaimed();
-	}
-
-
+	*/
 }

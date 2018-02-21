@@ -11,101 +11,93 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	/**
 	 * Members
 	 */
-	address private m_WorkOrderHubAddress;
-
-	modifier onlyWorkOrderHub()
-	{
-		require(msg.sender == m_workOrderHubAddress);
-		_;
-	}
-
 	IexecLib.WorkOrderStatusEnum public m_status;
 
-	address public m_workerPoolRequested;
-	address public m_appRequested;
-	address public m_datasetRequested;
-	string  public m_workOrderParam;
-	uint256 public m_workReward;
-	uint256 public m_askedTrust;
-	bool    public m_dappCallback;
+	uint256 public m_positionIdx;
+
+	address public m_app;
+	address public m_dataset;
+	address public m_workerpool;
+
+	uint256 public m_reward;
+	uint256 public m_trust;
+	string  public m_params;
 	address public m_beneficiary;
+	bool    public m_callback;
 
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
 
 	/**
-	 * Address of slave/related contracts
-	 */
-	address private m_workOrderHubAddress;
-
-	/**
 	 * Constructor
 	 */
 	function WorkOrder(
 		address _iexecHubAddress,
+		uint256 _positionIdx,
 		address _requester,
-		address _workerPool,
 		address _app,
 		address _dataset,
-		string  _workOrderParam,
-		uint    _workReward,
-		uint    _askedTrust,
-		bool    _dappCallback,
-		address _beneficiary)
+		address _workerpool,
+		uint256 _reward,
+		uint256 _trust,
+		string  _woParams,
+		address _woBeneficiary,
+		bool    _woCallback)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
+		// owner = msg.sender = workOrderHub
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
-		m_workOrderHubAddress = msg.sender;
-		m_workerPoolRequested = _workerPool;
-		m_appRequested        = _app;
-		m_datasetRequested    = _dataset;
-		m_workOrderParam      = _workOrderParam;
-		m_workReward          = _workReward;
-		m_askedTrust          = _askedTrust;
-		m_dappCallback        = _dappCallback;
+		m_status      = IexecLib.WorkOrderStatusEnum.PENDING;
+		m_positionIdx = _positionIdx;
+		m_app         = _app;
+		m_dataset     = _dataset;
+		m_workerpool  = _workerpool;
+		m_reward      = _reward;
+		m_trust       = _trust;
+		m_params      = _woParams;
+		m_beneficiary = _woBeneficiary;
+		m_callback    = _woCallback;
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
-		m_beneficiary         = _beneficiary;
-		m_status              = IexecLib.WorkOrderStatusEnum.PENDING;
 	}
 
-	function setCancelled() public onlyWorkOrderHub returns (bool)
+	function setCancelled() public onlyIexecHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
 		return true;
 	}
 
-	function setClaimed() public onlyWorkOrderHub returns (bool)
+	function setClaimed() public onlyIexecHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
 		return true;
 	}
 
-	function setAccepted() public onlyWorkOrderHub returns (bool)
+	function setActive() public onlyIexecHub returns (bool)
 	{
-		m_status = IexecLib.WorkOrderStatusEnum.ACCEPTED;
+		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
 		return true;
 	}
 
-	function setRevealing() public onlyWorkOrderHub returns (bool)
+	function setRevealing() public onlyIexecHub returns (bool)
 	{
 		m_status = IexecLib.WorkOrderStatusEnum.REVEALING;
 		return true;
 	}
 
-	function setResult(string _stdout, string _stderr, string _uri) onlyWorkOrderHub public returns (bool)
+	function setResult(string _stdout, string _stderr, string _uri) onlyIexecHub public returns (bool)
 	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
+		m_status = IexecLib.WorkOrderStatusEnum.COMPLETED;
 		m_stdout = _stdout;
 		m_stderr = _stderr;
 		m_uri    = _uri;
-		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
-		m_status = IexecLib.WorkOrderStatusEnum.COMPLETED;
-		if(m_dappCallback)
+		if(m_callback)
 		{
 			// optional dappCallback call can be done
-			require(IexecAPI(m_owner).workOrderCallback(
+			require(IexecAPI(m_owner).workOrderCallback( //TODO: m_owner is creator → workOrderHub
 				this,
 				_stdout,
 				_stderr,
