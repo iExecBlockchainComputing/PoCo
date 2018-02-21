@@ -1,12 +1,14 @@
 pragma solidity ^0.4.18;
 
+import "rlc-token/contracts/RLC.sol";
+
 import './AppHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkerPool.sol';
 import './DatasetHub.sol';
 import './WorkOrderHub.sol';
 import "./SafeMathOZ.sol";
-import "rlc-token/contracts/RLC.sol";
+import './IexecLib.sol';
 
 /**
  * @title IexecHub
@@ -33,14 +35,6 @@ contract IexecHub
 		uint256 success;
 		uint256 failled;
 	}
-	struct WorkOrderInfo
-	{
-		address requesterAffectation;
-		address workerPoolAffectation;
-		address appAffectation;
-		address datasetAffectation;
-		uint256 userCost;
-	}
 
 	/**
 	* RLC contract for token transfers.
@@ -58,11 +52,10 @@ contract IexecHub
 	/**
 	 * Internal data
 	 */
-	mapping(address => Account ) public m_accounts;  // user => stake
-	mapping(address => uint256 ) public m_scores;    // user => reputation
-	mapping(address => WorkOrderInfo) public m_woInfos; // workorder => metadata
-	ContributionHistory          public m_contributionHistory;
-
+	mapping(address => Account               ) public m_accounts; // user => stake
+	mapping(address => uint256               ) public m_scores;   // user => reputation
+	mapping(address => IexecLib.WorkOrderInfo) public m_woInfos;  // workorder => metadata
+	ContributionHistory                        public m_contributionHistory;
 
 	/**
 	 * Events
@@ -231,7 +224,7 @@ contract IexecHub
 			_dappCallback,
 			_beneficiary
 		);
-		WorkOrderInfo storage woInfo = m_woInfos[newWorkOrder];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[newWorkOrder];
 		woInfo.requesterAffectation  = msg.sender;
 		woInfo.appAffectation        = _app;
 		woInfo.datasetAffectation    = _dataset;
@@ -259,7 +252,7 @@ contract IexecHub
  	{
 			require(workOrderHub.isWorkOrderRegistred(_woid));
 			require(workerPoolHub.getWorkerPoolOwner(msg.sender) == _workerPool);
-		  WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		  IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 			require(woInfo.workerPoolAffectation == address(0));
 			woInfo.workerPoolAffectation = _workerPool;
 			require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
@@ -275,7 +268,7 @@ contract IexecHub
 	function acceptWorkOrder(address _woid) public returns (bool)
 	{
 
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
 		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
 		require(workOrderHub.setScheduled(_woid));
@@ -287,7 +280,7 @@ contract IexecHub
 
 	function setRevealingStatus(address _woid) public returns (bool)
 	{
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
 		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.SCHEDULED);
 		require(workOrderHub.setRevealing(_woid));
@@ -297,7 +290,7 @@ contract IexecHub
 
 	function reopen(address _woid) public returns (bool)
 	{
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(woInfo.workerPoolAffectation == msg.sender);
 		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.REVEALING);
 		require(workOrderHub.setScheduled(_woid));
@@ -307,7 +300,7 @@ contract IexecHub
 
 	function cancelWorkOrder(address _woid) public returns (bool)
 	{
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 
 		// Why cancelled ? penalty ?
 		require(msg.sender == woInfo.requesterAffectation);
@@ -321,8 +314,8 @@ contract IexecHub
 
 	function claimFailedConsensus(address _woid) public /*only who ? everybody ?*/ returns (bool)
 	{
-		WorkOrderInfo storage woInfo      = m_woInfos[_woid];
-		WorkerPool pool                = WorkerPool(woInfo.workerPoolAffectation);
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		WorkerPool                     pool   = WorkerPool(woInfo.workerPoolAffectation);
 		IexecLib.WorkOrderStatusEnum currentStatus =getWorkOrderStatus(_woid);
 		require(currentStatus == IexecLib.WorkOrderStatusEnum.SCHEDULED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		require(pool.claimFailedConsensus(_woid));
@@ -342,7 +335,7 @@ contract IexecHub
 		string  _uri)
 	public returns (bool)
 	{
-		WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 		require(msg.sender == woInfo.workerPoolAffectation);
 		address appForWorkOrder= woInfo.appAffectation;
 		uint256 appPrice   = appHub.getAppPrice(appForWorkOrder);

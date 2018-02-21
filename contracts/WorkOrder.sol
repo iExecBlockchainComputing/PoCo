@@ -28,7 +28,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	bool    public m_dappCallback;
 	address public m_beneficiary;
 
-	IexecLib.WorkOrderStatusEnum  public m_status;
+	IexecLib.WorkOrderStatusEnum public m_status;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
