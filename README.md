@@ -29,11 +29,11 @@
             <td>A WorkOrder, not yet accepted by a scheduler, can be cancelled by the creator of this WorkOrder</td>
         </tr>
         <tr>
-            <td>SCHEDULED</td>
-            <td>acceptMarketWorkOrder or acceptWorkOrder</td>
-            <td>IexecHub (WorkOrder not affected) or WorkOrderPool (WorkOrder affected to specific WorkOrderPool) </td>
+            <td>ACCEPTED</td>
+            <td>acceptWorkOrder</td>
+            <td>IexecHub</td>
             <td>scheduler</td>
-            <td>WorkOrder accepted by the scheduler</td>
+            <td>WorkOrder accepted by the scheduler (assigned to it if "any scheduler")</td>
         </tr>
         <tr>
             <td>REVEALING</td>
@@ -43,25 +43,18 @@
             <td>scheduler call revealConsensus. Workers can now call reveal function on WorkOrderPool </td>
         </tr>
         <tr>
-            <td>SCHEDULED</td>
-            <td>reopen</td>
-            <td>WorkOrderPool</td>
-            <td>scheduler</td>
-            <td>If NO workers has reveal. shceduler can reopen a SCHEDULED period and call others workers to work</td>
-        </tr>
-        <tr>
             <td>CLAIMED</td>
             <td>claimFailedConsensus</td>
             <td>IexecHub/td>
             <td>iExecCloudUser or any ?</td>
-            <td>if a WordeORder is in SCHEDULED or REVEALING for too long.iExecCloudUser can get a refund by calling claimFailedConsensus</td>
+            <td>if a WordeORder is in ACCEPTED or REVEALING for too long, iExecCloudUser can get a refund by calling claimFailedConsensus</td>
         </tr>
         <tr>
             <td>COMPLETED</td>
             <td>finalizedWork</td>
             <td>WorkOrderPool/td>
             <td>scheduler</td>
-            <td>Consensus reached, at least one worker has reveal, reveal period ended, scheduler can call finalizedWork function. This call distributeRewards and set result and status in WorkOrder</td>
+            <td>Consensus reached, at least one worker has reveal and reveal period ended or all workers (with positive contributions) have revealed, scheduler can call finalizedWork function. This call distributeRewards and set result and status in WorkOrder</td>
         </tr>
     </tbody>
 </table>
@@ -79,25 +72,25 @@
     </thead>
     <tbody>
         <tr>
-            <td>SCHEDULED</td>
+            <td>AUTHORIZED</td>
             <td>callForContribution</td>
             <td>WorkOrderPool</td>
             <td>scheduler</td>
-            <td>A Worker has been called for contribution on a WorkOrder.</td>
+            <td>Scheduler has commited to the WorkOrder (ACCEPTED) and workers can contribute when called in.</td>
         </tr>
         <tr>
             <td>CONTRIBUTED</td>
             <td>contribute</td>
             <td>WorkOrderPool</td>
             <td>worker</td>
-            <td>A Worker has contribute to a WorkOrder. his resultHash, resultSign  are stored. his stake is locked too</td>
+            <td>A Worker has contribute to a WorkOrder. his resultHash, resultSign are stored. his stake is locked too</td>
         </tr>
         <tr>
             <td>PROVED</td>
             <td>reveal</td>
             <td>WorkOrderPool</td>
             <td>worker</td>
-            <td>After scheduler has call revealConsensus, worker can call reveal function. If their revalation is correct. Contribution status is set to PROVED=> POCO => ProofOfContribution </td>
+            <td>After scheduler has call revealConsensus, worker can call reveal function. If their revalation is correct. Contribution status is set to PROVED => POCO => ProofOfContribution </td>
         </tr>
         <tr>
             <td>REJECTED</td>
