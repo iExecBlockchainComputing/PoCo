@@ -19,7 +19,6 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		_;
 	}
 
-  address private m_workOrderHubAddress;
 	address public m_workerPoolRequested;
 	address public m_appRequested;
 	address public m_datasetRequested;
@@ -29,10 +28,15 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	bool    public m_dappCallback;
 	address public m_beneficiary;
 
-  IexecLib.WorkOrderStatusEnum  public m_status;
+	IexecLib.WorkOrderStatusEnum  public m_status;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
+
+	/**
+	 * Address of slave/related contracts
+	 */
+	address private m_workOrderHubAddress;
 
 	/**
 	 * Constructor

@@ -64,21 +64,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	/**
 	 * Contribution entries
 	 */
-	enum ContributionStatusEnum
-	{
-		UNSET,
-		SCHEDULED,
-		CONTRIBUTED,
-		PROVED,
-		REJECTED
-	}
 	struct Contribution
 	{
-		ContributionStatusEnum status;
-		bytes32        				 resultHash;
-		bytes32                resultSign; // change from salt to tx.origin based signature
-		address                enclaveChallenge;
-		uint256                weight;
+		IexecLib.ContributionStatusEnum status;
+		bytes32 resultHash;
+		bytes32 resultSign; // change from salt to tx.origin based signature
+		address enclaveChallenge;
+		uint256 weight;
 	}
 	// mapping(woid => worker address => Contribution);
 	mapping(address => mapping(address => Contribution)) public m_contributions;
@@ -325,7 +317,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		for (i = 0; i<workorderinfo.contributors.length; ++i)
 		{
 			w = workorderinfo.contributors[i];
-			if (m_contributions[_woid][w].status != ContributionStatusEnum.SCHEDULED)
+			if (m_contributions[_woid][w].status != IexecLib.ContributionStatusEnum.SCHEDULED)
 			{
  				require(iexecHubInterface.unlockForWork(_woid, w, workorderinfo.stakeAmount));
 			}
@@ -354,8 +346,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		(workerPool, workerScore) = iexecHubInterface.getWorkerStatus(_worker); // workerPool, workerScore
 		require(workerPool == address(this));
 
-		require(contribution.status == ContributionStatusEnum.UNSET );
-		contribution.status           = ContributionStatusEnum.SCHEDULED;
+		require(contribution.status == IexecLib.ContributionStatusEnum.UNSET);
+		contribution.status           = IexecLib.ContributionStatusEnum.SCHEDULED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
 		CallForContribution(_woid,_worker, workerScore);
@@ -365,7 +357,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		WorkOrderInfo storage workorderinfo = m_workOrderInfos[_woid];
-		Contribution storage contribution = m_contributions[_woid][msg.sender];
+		Contribution  storage contribution  = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
 		// tx.origin = a worker
@@ -376,8 +368,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
 		}
 
-		require(contribution.status == ContributionStatusEnum.SCHEDULED);
-		contribution.status     = ContributionStatusEnum.CONTRIBUTED;
+		require(contribution.status == IexecLib.ContributionStatusEnum.SCHEDULED);
+		contribution.status     = IexecLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
 		workorderinfo.contributors.push(msg.sender);
@@ -417,12 +409,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 		require(workorderinfo.revealDate           >  now                                       ); // Needed ?
 		require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.REVEALING    );
-		require(contribution.status                == ContributionStatusEnum.CONTRIBUTED                  );
+		require(contribution.status                == IexecLib.ContributionStatusEnum.CONTRIBUTED                  );
 		require(contribution.resultHash            == workorderinfo.consensus                   );
 		require(contribution.resultHash            == keccak256(_result                        ));
 		require(contribution.resultSign            == keccak256(_result ^ keccak256(msg.sender)));
 
-		contribution.status         = ContributionStatusEnum.PROVED;
+		contribution.status         = IexecLib.ContributionStatusEnum.PROVED;
 		workorderinfo.revealCounter = workorderinfo.revealCounter.add(1);
 
 		Reveal(_woid, msg.sender, _result); // TODO add WorkStatusEnum in LOG
@@ -444,7 +436,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 			address w = workorderinfo.contributors[i];
 			if (m_contributions[_woid][w].resultHash == workorderinfo.consensus)
 			{
-				m_contributions[_woid][w].status = ContributionStatusEnum.REJECTED;
+				m_contributions[_woid][w].status = IexecLib.ContributionStatusEnum.REJECTED;
 			}
 		}
 		return true;
@@ -487,7 +479,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
 			{
 				workerBonus                      = (m_contributions[_woid][w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
 				(,workerScore)                   = iexecHubInterface.getWorkerStatus(w);
@@ -495,7 +487,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 				totalWeight                      = totalWeight.add(workerWeight);
 				m_contributions[_woid][w].weight = workerWeight; // store so we don't have to recompute
 			}
-			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
+			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				totalReward = totalReward.add(_workorderinfo.stakeAmount);
 			}
@@ -508,7 +500,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
 			{
 				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
