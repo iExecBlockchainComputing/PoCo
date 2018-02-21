@@ -306,7 +306,7 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
-    console.log("woid is :" + woid);
+    console.log("woid is: " + woid);
     aWorkOrderInstance = await WorkOrder.at(woid);
     // SCHEDULER ACCCEPT TASK and A worker is called For contribution
     txMined = await aIexecHubInstance.acceptWorkOrder(woid, workerPoolAddress, {

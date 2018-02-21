@@ -229,7 +229,7 @@ contract('IexecHub', function(accounts) {
       let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
       assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
       workerPoolAddressFromLog = events[0].args.workerPool;
-      assert.strictEqual(events[0].args.name, "myWorkerPool", "name");
+      assert.strictEqual(events[0].args.workerPoolName, "myWorkerPool", "name");
       let count = await aWorkerPoolHubInstance.getWorkerPoolsCount(scheduleProvider);
       assert.strictEqual(1, count.toNumber(), "scheduleProvider must have 1 workerPool now ");
       let workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, count-1);

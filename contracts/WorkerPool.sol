@@ -300,7 +300,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		CallForContribution(_woid,_worker, workerScore);
+		CallForContribution(_woid, _worker, workerScore);
 		return true;
 	}
 

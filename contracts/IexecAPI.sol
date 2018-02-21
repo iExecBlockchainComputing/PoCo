@@ -20,14 +20,14 @@ contract IexecAPI
 		address _workerPool,
 		address _app,
 		address _dataset,
-		string _workOrderParam,
-		uint   _workReward,
-		uint   _askedTrust,
-		bool   _dappCallback,
+		string  _workOrderParam,
+		uint256 _workReward,
+		uint256 _askedTrust,
+		bool    _dappCallback,
 		address _beneficiary)
 	public
 	{
-		iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback,_beneficiary);
+		iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback, _beneficiary);
 	}
 
 	// TODO add cancel Task function

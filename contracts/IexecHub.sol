@@ -66,23 +66,23 @@ contract IexecHub
 	event WorkOrderAborted  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
-	event CreateApp(address indexed appOwner,address indexed app,string  appName,uint256 appPrice,string  appParams);
-	event CreateDataset(address indexed datasetOwner, address indexed dataset, string  datasetName, uint256 datasetPrice, string  datasetParams);
+	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
+	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolName                                         );
 
-	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
-	event OpenWorkerPool(address indexed workerPool);
-	event CloseWorkerPool(address indexed workerPool);
+	event OpenWorkerPool          (address indexed workerPool);
+	event CloseWorkerPool         (address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
-	event WorkerPoolEviction(address indexed workerPool, address worker);
-	event WorkerPoolSubscription(address indexed workerPool, address worker);
+	event WorkerPoolEviction      (address indexed workerPool, address worker);
+	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 
-	event FaultyContribution(address woid, address indexed worker);
 	event AccurateContribution(address woid, address indexed worker);
+	event FaultyContribution  (address woid, address indexed worker);
 
-	event Deposit(address owner, uint256 amount);
+	event Deposit (address owner, uint256 amount);
 	event Withdraw(address owner, uint256 amount);
-	event Reward(address user, uint256 amount);
-	event Seize(address user, uint256 amount);
+	event Reward  (address user,  uint256 amount);
+	event Seize   (address user,  uint256 amount);
 
 	/**
 	 * Constructor

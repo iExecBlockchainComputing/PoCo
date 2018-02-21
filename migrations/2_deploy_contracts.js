@@ -23,7 +23,7 @@ module.exports = function(deployer) {
     .then(() => RLC.deployed())
     .then(instance => {
       aRLCInstance = instance;
-      console.log("RLC deployed at address :" + instance.address);
+      console.log("RLC deployed at address: " + instance.address);
       return aRLCInstance.unlock();
     })
     .then(() => {
@@ -41,31 +41,31 @@ module.exports = function(deployer) {
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
-      console.log("WorkerPoolHub deployed at address :" + instance.address);
+      console.log("WorkerPoolHub deployed at address: " + instance.address);
       return deployer.deploy(AppHub);
     })
     .then(() => AppHub.deployed())
     .then(instance => {
       aAppHubInstance = instance;
-      console.log("AppHub deployed at address :" + instance.address);
+      console.log("AppHub deployed at address: " + instance.address);
       return deployer.deploy(DatasetHub);
     })
     .then(() => DatasetHub.deployed())
     .then(instance => {
       aDatasetHubInstance = instance;
-      console.log("DatasetHub deployed at address :" + instance.address);
+      console.log("DatasetHub deployed at address: " + instance.address);
       return deployer.deploy(WorkOrderHub);
     })
     .then(() => WorkOrderHub.deployed())
     .then(instance => {
       aWorkOrderHubInstance = instance;
-      console.log("WorkOrderHub deployed at address :" + instance.address);
+      console.log("WorkOrderHub deployed at address: " + instance.address);
       return deployer.deploy(IexecHub, aRLCInstance.address , aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
       aIexecHub = instance;
-      console.log("IexecHub deployed at address :" + aIexecHub.address);
+      console.log("IexecHub deployed at address: " + aIexecHub.address);
       return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
     })
     .then(() => {
@@ -86,7 +86,7 @@ module.exports = function(deployer) {
 /**
 
 //DEPLOY on existing network having RLC token
-//RLC TOKEN address :
+//RLC TOKEN address:
 //kovan   = '0xc57538846ec405ea25deb00e0f9b29a432d53507'
 //rinkeby = '0xf1e6ad3a7ef0c86c915f0fedf80ed851809bea90'
 //ropsten = '0x7314dc4d7794b5e7894212ca1556ae8e3de58621'
@@ -102,31 +102,31 @@ module.exports = function(deployer) {
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
-      console.log("WorkerPoolHub deployed at address :" + instance.address);
+      console.log("WorkerPoolHub deployed at address: " + instance.address);
       return deployer.deploy(AppHub);
     })
     .then(() => AppHub.deployed())
     .then(instance => {
       aAppHubInstance = instance;
-      console.log("AppHub deployed at address :" + instance.address);
+      console.log("AppHub deployed at address: " + instance.address);
       return deployer.deploy(DatasetHub);
     })
     .then(() => DatasetHub.deployed())
     .then(instance => {
       aDatasetHubInstance = instance;
-      console.log("DatasetHub deployed at address :" + instance.address);
+      console.log("DatasetHub deployed at address: " + instance.address);
       return deployer.deploy(TaskRequestHub);
     })
     .then(() => TaskRequestHub.deployed())
     .then(instance => {
       aTaskRequestHubInstance = instance;
-      console.log("TaskRequestHub deployed at address :" + instance.address);
+      console.log("TaskRequestHub deployed at address: " + instance.address);
       return deployer.deploy(IexecHub, '0x7314dc4d7794b5e7894212ca1556ae8e3de58621', aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
       aIexecHub = instance;
-      console.log("IexecHub deployed at address :" + aIexecHub.address);
+      console.log("IexecHub deployed at address: " + aIexecHub.address);
       return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
     })
     .then(() => {
