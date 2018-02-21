@@ -182,7 +182,15 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/7_revealConsensus.js" target="_blank">7_revealConsensus.js</a></td>
+            <td><a href="./test/6_callForContribution.js" target="_blank">6_callForContribution.js</a></td>
+            <td>callForContribution</td>
+            <td>WorkerPool</td>
+            <td>ScheduleProvider</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
@@ -190,7 +198,7 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/9_finalizedWork.js" target="_blank">9_finalizedWork.js</a></td>
+            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
@@ -226,14 +234,14 @@ blockchain interaction :
             <td>iexec-worker</td>
         </tr>
         <tr>
-            <td><a href="./test/6_workerContribute.js" target="_blank">6_workerContribute.js</a></td>
+            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>RessourceProvider</td>
             <td>iexec-worker</td>
         </tr>
         <tr>
-            <td><a href="./test/8_revealContribution.js" target="_blank">8_revealContribution.js</a></td>
+            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>RessourceProvider</td>
@@ -344,32 +352,32 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 6</a></td>
-            <td><a href="./test/6_workerContribute.js" target="_blank">6_workerContribute.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
+            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
-            <td><a href="./test/7_revealConsensus.js" target="_blank">7_revealConsensus.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
+            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
-            <td><a href="./test/8_revealContribution.js" target="_blank">8_revealContribution.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
+            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
-            <td><a href="./test/9_finalizedWork.js" target="_blank">9_finalizedWork.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 10</a></td>
+            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>

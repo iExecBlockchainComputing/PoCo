@@ -304,53 +304,42 @@ contract('IexecHub', function(accounts) {
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    // CALL FOR CONTRIBUTION
-    let workers = [];
-    workers.push(resourceProvider);
-    txMined = await aWorkerPoolInstance.callForContribution(woid, workers, 0, {
-      from: scheduleProvider,
-      gas: amountGazProvided
-    });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
   });
 
-  it("resourceProvider contribution", async function() {
-    // const resultHash = new BN.BigInteger(web3.sha3("1").replace('0x', ''), 16);
-    // const workerSalt = new BN.BigInteger(web3.sha3("salt").replace('0x', ''), 16);
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: amountGazProvided
+/*
+    it("scheduleProvider notify workers to work by calling the callForContributions function", async function() {
+      // CALL FOR CONTRIBUTION
+      let workers = [];
+      workers.push(resourceProvider);
+      txMined = await aWorkerPoolInstance.callForContributions(woid, workers, 0, {
+        from: scheduleProvider,
+        gas: amountGazProvided
+      });
+      assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      events = await Extensions.getEventsPromise(aWorkerPoolInstance.CallForContribution({}));
+      assert.strictEqual(events[0].args.woid, woid, "woid check");
+      assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
+      m_statusCall = await aWorkOrderInstance.m_status.call();
+      assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
     });
+*/
+    it("scheduleProvider notify workers to work by calling the callForContribution function", async function() {
+      // CALL FOR CONTRIBUTION
 
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    m_workerStake = await aWorkerPoolInstance.contribute.call(woid, signed.hash, signed.sign, 0, 0, 0, {
-      from: resourceProvider,
-      gas: amountGazProvided
+      txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+        from: scheduleProvider,
+        gas: amountGazProvided
+      });
+      assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      events = await Extensions.getEventsPromise(aWorkerPoolInstance.CallForContribution({}));
+      assert.strictEqual(events[0].args.woid, woid, "woid check");
+      assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
+      m_statusCall = await aWorkOrderInstance.m_status.call();
+      assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
     });
-
-    assert.strictEqual(m_workerStake.toNumber(), 30, "30% of 100 (price) = 30 will be lock for resourceProvider");
-    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-
-    assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider: 30");
-    assert.strictEqual(checkBalance[1].toNumber(), 10, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-      from: resourceProvider,
-      gas: amountGazProvided
-    });
-
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({}));
-    assert.strictEqual(events[0].args.woid, woid, "woid check");
-    assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
-    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 40, "check stake locked of the resourceProvider : 30 + 10");
-
-  });
 
 
 
