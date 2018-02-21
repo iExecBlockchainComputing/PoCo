@@ -2,6 +2,113 @@
 
 
 
+#  WorkOrderStatusEnum
+<table>
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>status after function call</th>
+            <th>on contract</th>
+            <th>by Actor</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>PENDING</td>
+            <td>createWorkOrder</td>
+            <td>IexecHub</td>
+            <td>iExecCloudUser</td>
+            <td>A WorkOrder has been created and not yet accepted by a scheduler.</td>
+        </tr>
+        <tr>
+            <td>CANCELLED</td>
+            <td>cancelWorkOrder</td>
+            <td>IexecHub</td>
+            <td>iExecCloudUser</td>
+            <td>A WorkOrder, not yet accepted by a scheduler, can be cancelled by the creator of this WorkOrder</td>
+        </tr>
+        <tr>
+            <td>SCHEDULED</td>
+            <td>acceptMarketWorkOrder or acceptWorkOrder</td>
+            <td>IexecHub (WorkOrder not affected) or WorkOrderPool (WorkOrder affected to specific WorkOrderPool) </td>
+            <td>scheduler</td>
+            <td>WorkOrder accepted by the scheduler</td>
+        </tr>
+        <tr>
+            <td>REVEALING</td>
+            <td>revealConsensus</td>
+            <td>WorkOrderPool/td>
+            <td>scheduler</td>
+            <td>scheduler call revealConsensus. Workers can now call reveal function on WorkOrderPool </td>
+        </tr>
+        <tr>
+            <td>SCHEDULED</td>
+            <td>reopen</td>
+            <td>WorkOrderPool</td>
+            <td>scheduler</td>
+            <td>If NO workers has reveal. shceduler can reopen a SCHEDULED period and call others workers to work</td>
+        </tr>
+        <tr>
+            <td>CLAIMED</td>
+            <td>claimFailedConsensus</td>
+            <td>IexecHub/td>
+            <td>iExecCloudUser or any ?</td>
+            <td>if a WordeORder is in SCHEDULED or REVEALING for too long.iExecCloudUser can get a refund by calling claimFailedConsensus</td>
+        </tr>
+        <tr>
+            <td>COMPLETED</td>
+            <td>finalizedWork</td>
+            <td>WorkOrderPool/td>
+            <td>scheduler</td>
+            <td>Consensus reached, at least one worker has reveal, reveal period ended, scheduler can call finalizedWork function. This call distributeRewards and set result and status in WorkOrder</td>
+        </tr>
+    </tbody>
+</table>
+
+#  ContributionStatusEnum
+<table>
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>status after function call</th>
+            <th>on contract</th>
+            <th>by Actor</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>SCHEDULED</td>
+            <td>callForContribution</td>
+            <td>WorkOrderPool</td>
+            <td>scheduler</td>
+            <td>A Worker has been called for contribution on a WorkOrder.</td>
+        </tr>
+        <tr>
+            <td>CONTRIBUTED</td>
+            <td>contribute</td>
+            <td>WorkOrderPool</td>
+            <td>worker</td>
+            <td>A Worker has contribute to a WorkOrder. his resultHash, resultSign  are stored. his stake is locked too</td>
+        </tr>
+        <tr>
+            <td>PROVED</td>
+            <td>reveal</td>
+            <td>WorkOrderPool</td>
+            <td>worker</td>
+            <td>After scheduler has call revealConsensus, worker can call reveal function. If their revalation is correct. Contribution status is set to PROVED=> POCO => ProofOfContribution </td>
+        </tr>
+        <tr>
+            <td>REJECTED</td>
+            <td>reopen</td>
+            <td>WorkOrderPool</td>
+            <td>scheduler</td>
+            <td>If NO worker has revealed, scheduler call reopen function and all previous contribution are tag REJECTED  in order to reopen a new callForContribution round</td>
+        </tr>
+    </tbody>
+</table>
+
 
 # Actors :
 - (w) = an account with a wallet key pair
@@ -42,35 +149,12 @@ blockchain interaction :
 - iExecCloudUser = U(w)
 - U(s) =  a [WorkOrder](./contracts/WorkOrder.sol) smart contract owned by U(w)
 
-WorkOrder status are :
-- PENDING : workOrder not yet accepted by the scheduler of workerPool
-- ACCEPTED : accepted by the scheduler of workerPool
-- CANCELLED : a non accepted work order have been cancelled by the user U(w)
-- ABORTED : an accepted work order has never reach the consensus and claimFailedConsensus has been called. The status is set to ABORTED
-- COMPLETED : worker order is COMPLETED. finalizedWork function has been successfully called in the Workpool smart contract.
-
 
 ## Actor : Scheduler :
 - ScheduleProvider = S(w)
 - S(s) =  a [WorkerPool](./contracts/WorkerPool.sol) smart contract owned by S(w)
 - S(p) = iexec-scheduler = application that schedule a worker pool activity  on the responsability of S(w). (works, tasks, datas for result in xtremweb)
 - S(r) = ResultRepository = provide the work result for U(w) on the responsability of S(w)
-
-Each WorkOrder affected in this WorkPool have a ConsensusStatus :
-- PENDING : scheduler have not accepted the work order yet. (WorkOrder=PENDING)
-- CANCELLED : a non accepted work order have been cancelled by the user U(w) (WorkOrder=CANCELLED)
-- STARTED : scheduler has called acceptWorkOrder function.(WorkOrder=ACCEPTED)
-- IN_PROGRESS :  scheduler has called at least on callForContribution (WorkOrder=ACCEPTED)
-- REACHED :scheduler has called revealConsensus function (WorkOrder=ACCEPTED)
-- FAILLED : claimFailedConsensus has been successfully called. (WorkOrder=ABORTED)
-- FINALIZED :finalizedWork has been successfully called (WorkOrder=COMPLETED)
-
-
-Each worker Contribution of an accepted WorkOrder has a WorkStatus :
-- REQUESTED :  this worker has been callForContribution by the scheduler
-- SUBMITTED : this worker has contribute
-- POCO_ACCEPT : this worker has reveal and his contribution is valid
-- REJECTED : this worker has reveal and his contribution is not valid
 
 
 
@@ -105,15 +189,7 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
-            <td>callForContribution</td>
-            <td>WorkerPool</td>
-            <td>ScheduleProvider</td>
-            <td>iexec-scheduler</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
+            <td><a href="./test/7_revealConsensus.js" target="_blank">7_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
@@ -121,7 +197,7 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td><a href="./test/9_finalizedWork.js" target="_blank">9_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
@@ -157,14 +233,14 @@ blockchain interaction :
             <td>iexec-worker</td>
         </tr>
         <tr>
-            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
+            <td><a href="./test/6_workerContribute.js" target="_blank">6_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>RessourceProvider</td>
             <td>iexec-worker</td>
         </tr>
         <tr>
-            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
+            <td><a href="./test/8_revealContribution.js" target="_blank">8_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>RessourceProvider</td>
@@ -276,39 +352,31 @@ TODO
         </tr>
         <tr>
             <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 6</a></td>
-            <td><a href="./test/6_callForContributions.js" target="_blank">6_callForContributions.js</a></td>
-            <td>callForContribution</td>
-            <td>WorkerPool</td>
-            <td>iexec-scheduler</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
-            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
+            <td><a href="./test/6_workerContribute.js" target="_blank">6_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
-            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
+            <td><a href="./test/7_revealConsensus.js" target="_blank">7_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
-            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
+            <td><a href="./test/8_revealContribution.js" target="_blank">8_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 10</a></td>
-            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
+            <td><a href="./test/9_finalizedWork.js" target="_blank">9_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
