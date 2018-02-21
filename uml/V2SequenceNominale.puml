@@ -28,7 +28,6 @@ IexecHub <-- WorkOrder
 autonumber 4
 IexecHub --> WorkerPool :receivedWorkOrder
 activate WorkerPool
-note over WorkerPool :ConsensusStatusEnum.PENDING
 note over WorkerPool :Log event WorkOrderReceived(woid)
 autonumber 4
 IexecHub <-- WorkerPool
@@ -62,11 +61,10 @@ end box
 
 
 autonumber 5
-iexec_scheduler --> WorkerPool : acceptWorkOrder(woid)
+iexec_scheduler --> WorkerPool : acceptWorkOrder(woid,workers)
 activate WorkerPool
 autonumber 5
 
-note over WorkerPool :ConsensusStatusEnum.STARTED
 autonumber 5
 WorkerPool --> IexecHub
 activate IexecHub
@@ -76,7 +74,7 @@ IexecHub --> WorkOrder
 note over IexecHub :Log event WorkOrderAccepted(woid);
 deactivate IexecHub
 
-note over WorkOrder :WorkOrderStatusEnum.ACCEPTED
+note over WorkOrder :WorkOrderStatusEnum.SCHEDULED
 
 note over WorkerPool :Log event WorkOrderAccepted(woid);
 autonumber 5
@@ -91,9 +89,8 @@ activate iexec_scheduler
 iexec_scheduler -> iexec_scheduler : randonmy choose worker
 
 autonumber 6
-iexec_scheduler  --> WorkerPool : callForContribution(woid,worker)
+iexec_scheduler  --> WorkerPool : callForContribution(woid,workers)
 activate WorkerPool
-note over WorkerPool :ConsensusStatusEnum.IN_PROGRESS
 note over WorkerPool :Log event CallForContribution(worker);
 autonumber 6
 WorkerPool --> iexec_scheduler
@@ -136,7 +133,7 @@ iexec_scheduler -> iexec_scheduler: check if consensus on resultHash is reached
 autonumber 8
 iexec_scheduler --> WorkerPool : revealConsensus
 activate WorkerPool
-note over WorkerPool :ConsensusStatusEnum.REACHED
+note over WorkOrder :WorkOrderStatusEnum.REVEALING
 note over WorkerPool :consensus on resultHash is revealed
 note over WorkerPool : a limited REVEAL_PERIOD is start in the smart contract
 note over WorkerPool :Log event RevealConsensus(consensus)
@@ -170,8 +167,6 @@ note over iexec_scheduler : iexec_scheduler ask and retrived result on worker wh
 autonumber 10
 iexec_scheduler --> WorkerPool : finalizedWork(stdout,stderr,uri)
 activate WorkerPool
-autonumber 10
-note over WorkerPool : ConsensusStatusEnum.FINALIZED
 autonumber 10
 WorkerPool --> IexecHub :finalizedWorkOrder
 autonumber 10
