@@ -1,13 +1,13 @@
 pragma solidity ^0.4.18;
 
-import './AppHub.sol';
-import './WorkerPoolHub.sol';
-import './WorkerPool.sol';
-import "./Contributions.sol";
-import './DatasetHub.sol';
-import './TaskRequestHub.sol';
-import "./SafeMathOZ.sol";
 import "rlc-token/contracts/RLC.sol";
+
+import './AppHub.sol';
+import './DatasetHub.sol';
+import './WorkerPoolHub.sol';
+import './WorkOrderHub.sol';
+import "./SafeMathOZ.sol";
+import './IexecLib.sol';
 
 /**
  * @title IexecHub
@@ -29,21 +29,10 @@ contract IexecHub
 		uint256 stake;
 		uint256 locked;
 	}
-	/*
 	struct ContributionHistory // for credibility computation, f = failled/total
 	{
-		uint256 total;
+		uint256 success;
 		uint256 failled;
-	}
-	*/
-	struct TaskInfo
-	{
-		address requesterAffectation;
-		address workerPoolAffectation;
-		address appAffectation;
-		address datasetAffectation;
-		address contributionsAffectation;
-		uint256 userCost;
 	}
 
 	/**
@@ -54,42 +43,46 @@ contract IexecHub
 	/**
 	 * Slaves contracts
 	 */
-	WorkerPoolHub  workerPoolHub;
 	AppHub         appHub;
 	DatasetHub     datasetHub;
-	TaskRequestHub taskRequestHub;
+	WorkOrderHub   workOrderHub;
+	WorkerPoolHub  workerPoolHub;
 
 	/**
 	 * Internal data
 	 */
-	mapping(address => Account ) public m_accounts;  // user => stake
-	mapping(address => uint256 ) public m_scores;    // user => reputation
-	mapping(address => TaskInfo) public m_taskInfos; // task => metadata
-	/* ContributionHistory public m_contributionHistory; */
-
+	mapping(address => Account               ) public m_accounts; // user => stake
+	mapping(address => uint256               ) public m_scores;   // user => reputation
+	mapping(address => IexecLib.WorkOrderInfo) public m_woInfos;  // workorder => metadata
+	ContributionHistory                        public m_contributionHistory;
 
 	/**
 	 * Events
 	 */
-	event TaskRequest(address taskID, address indexed workerPool);
-	event TaskAccepted(address taskID, address indexed workerPool, address workContributions);
-	event TaskCancelled(address taskID, address indexed workerPool);
-	event TaskAborted(address taskID, address workContributions);
-	event TaskCompleted(address taskID, address workContributions);
+	event WorkOrder         (address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset);
+	event WorkOrderAccepted (address woid, address indexed workerPool);
+	event WorkOrderRevealing(address woid, address indexed workerPool);
+	event WorkOrderCancelled(address woid, address indexed workerPool);
+	event WorkOrderAborted  (address woid, address workerPool);
+	event WorkOrderCompleted(address woid, address workerPool);
 
-	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string name);
-	event OpenWorkerPool(address indexed workerPool);
-	event CloseWorkerPool(address indexed workerPool);
+	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
+	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolName                                         );
+
+	event OpenWorkerPool          (address indexed workerPool);
+	event CloseWorkerPool         (address indexed workerPool);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
-	event WorkerPoolSubscription(address indexed workerPool, address worker);
+	event WorkerPoolEviction      (address indexed workerPool, address worker);
+	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 
-	event FaultyContribution(address taskID, address indexed worker);
-	event AccurateContribution(address taskID, address indexed worker);
+	event AccurateContribution(address woid, address indexed worker);
+	event FaultyContribution  (address woid, address indexed worker);
 
-	event Deposit(address owner, uint256 amount);
+	event Deposit (address owner, uint256 amount);
 	event Withdraw(address owner, uint256 amount);
-	event Reward(address user, uint256 amount);
-	event Seize(address user, uint256 amount);
+	event Reward  (address user,  uint256 amount);
+	event Seize   (address user,  uint256 amount);
 
 	/**
 	 * Constructor
@@ -99,7 +92,7 @@ contract IexecHub
 		address _workerPoolHubAddress,
 		address _appHubAddress,
 		address _datasetHubAddress,
-		address _taskRequestHubAddress)
+		address _workOrderHubAddress)
 	public
 	{
 		rlc = RLC(_tokenAddress);
@@ -107,10 +100,10 @@ contract IexecHub
 		workerPoolHub  = WorkerPoolHub (_workerPoolHubAddress );
 		appHub         = AppHub        (_appHubAddress        );
 		datasetHub     = DatasetHub    (_datasetHubAddress    );
-		taskRequestHub = TaskRequestHub(_taskRequestHubAddress);
+		workOrderHub = WorkOrderHub(_workOrderHubAddress);
 
-		/* m_contributionHistory.total   = 0; */
-		/* m_contributionHistory.failled = 0; */
+		m_contributionHistory.success = 0;
+		m_contributionHistory.failled = 0;
 	}
 
 	/**
@@ -135,176 +128,235 @@ contract IexecHub
 		return newWorkerPool;
 	}
 
-	function createAppOrDataset( // App + Dataset to function economy
-		string  _name,
-		uint256 _price,
-		string  _param,
-		string  _uri,
-		bool    _isApp)
-	public returns (address created)
+	function createApp(
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParams)
+	public returns (address createdApp)
 	{
-		// require(lock(msg.sender, APP_CREATION_STAKE)); // prevent creation spam ?
-		if (_isApp)
-		{
-			return appHub.createApp(_name, _price, _param, _uri);
-		}
-		else
-		{
-			return datasetHub.createDataset(_name, _price, _param, _uri);
-		}
+		address newApp = appHub.createApp(
+			_appName,
+			_appPrice,
+			_appParams
+		);
+		CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
+		return newApp;
 	}
 
-	function createTaskRequest(
+	function createDataset(
+		string  _datasetName,
+		uint256 _datasetPrice,
+		string  _datasetParams)
+		public returns (address createdDataset)
+		{
+			address newDataset = datasetHub.createDataset(
+				_datasetName,
+				_datasetPrice,
+				_datasetParams
+				);
+				CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
+				return newDataset;
+			}
+
+	function createWorkOrder(
 		address _workerPool,
 		address _app,
 		address _dataset,
-		string  _taskParam,
-		uint    _taskCost,
-		uint    _askedTrust,
+		string  _workOrderParam,
+		uint256 _workReward,
+		uint256 _askedTrust,
 		bool    _dappCallback,
 		address _beneficiary)
-	public returns (address createdTaskRequest)
+	public returns (address createdWorkOrder)
 	{
 		// msg.sender = requester
 
-		require(workerPoolHub.isWorkerPoolRegistred(_workerPool));
+		if (_workerPool != address(0)) // address(0) → any workerPool
+		{
+			require(workerPoolHub.isWorkerPoolRegistred(_workerPool            ));
+			require(workerPoolHub.isOpen               (_workerPool            ));
+			require(workerPoolHub.isAppAllowed         (_workerPool, _app      ));
+			require(workerPoolHub.isDatasetAllowed     (_workerPool, _dataset  ));
+			/* require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender)); */
+			require(appHub.isWorkerPoolAllowed(_app, _workerPool));
+		}
 
 		// APP
-		require(appHub.isAppRegistred     (_app             ));
-		require(appHub.isOpen             (_app             ));
-		require(appHub.isWorkerPoolAllowed(_app, _workerPool));
-		require(appHub.isRequesterAllowed (_app, msg.sender ));
+		require(appHub.isAppRegistred    (_app            ));
+		require(appHub.isOpen            (_app            ));
+		require(appHub.isDatasetAllowed  (_app, _dataset  ));
+		require(appHub.isRequesterAllowed(_app, msg.sender));
 
-		// userCost at least _taskCost
-		uint256 userCost = _taskCost;
+		// Price to pay by the user, initialized with reward + dapp Price
+		uint256 userCost = _workReward.add(appHub.getAppPrice(_app));
 
 		// DATASET
-		if (_dataset != address(0))
+		if (_dataset != address(0)) // address(0) → no dataset
 		{
-			require(datasetHub.isDatasetRegistred (_dataset             ));
-			require(datasetHub.isOpen             (_dataset             ));
-			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
-			require(datasetHub.isAppAllowed       (_dataset, _app       ));
-			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
-			require(appHub.isDatasetAllowed       (_app,     _dataset   ));
+			require(datasetHub.isDatasetRegistred(_dataset            ));
+			require(datasetHub.isOpen            (_dataset            ));
+			require(datasetHub.isAppAllowed      (_dataset, _app      ));
+			require(datasetHub.isRequesterAllowed(_dataset, msg.sender));
+			if (_workerPool != address(0)) // address(0) → any workerPool
+			{
+				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
+			}
 
 			// add optional datasetPrice for userCost
 			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
-
 		}
-
-		// WORKER_POOL
-		require(WorkerPool(_workerPool).isOpen());
-
-		// add optional appPrice  for userCost
-		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
 
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		if (m_accounts[msg.sender].stake < userCost)
 		{
 			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
 		}
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(userCost);
 
-		address newTaskRequest = taskRequestHub.createTaskRequest(
+		address newWorkOrder = workOrderHub.createWorkOrder(
 			msg.sender, // requester
 			_workerPool,
 			_app,
 			_dataset,
-			_taskParam,
-			_taskCost,
+			_workOrderParam,
+			_workReward,
 			_askedTrust,
 			_dappCallback,
 			_beneficiary
 		);
-		TaskInfo storage taskinfo = m_taskInfos[newTaskRequest];
-		taskinfo.requesterAffectation  = msg.sender;
-		taskinfo.appAffectation        = _app;
-		taskinfo.datasetAffectation    = _dataset;
-		taskinfo.workerPoolAffectation = _workerPool;
-		taskinfo.userCost              = userCost;
-		// address newTaskRequest will the taskID
-		TaskRequest(newTaskRequest, _workerPool);
-		return newTaskRequest;
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[newWorkOrder];
+		woInfo.requesterAffectation  = msg.sender;
+		woInfo.appAffectation        = _app;
+		woInfo.datasetAffectation    = _dataset;
+		woInfo.workerPoolAffectation = _workerPool;
+		woInfo.userCost              = userCost;
+
+		require(lock(woInfo.requesterAffectation, woInfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
+
+		// WORKER_POOL
+		/*
+		if (_workerPool != address(0)) // address(0) → any workerPool
+		{
+			require(WorkerPool(_workerPool).receivedWorkOrder(newWorkOrder, _workReward, _app, _dataset));
+		}
+		*/
+
+		// address newWorkOrder will the woid
+		WorkOrder(newWorkOrder, msg.sender, _workerPool, _app, _dataset);
+		return newWorkOrder;
 	}
 
 	/**
-	 * Task life cycle
+	 * WorkOrder life cycle
 	 */
-	function acceptTask(address _taskID) public  returns (bool)
+
+
+	function acceptWorkOrder(address _woid, address _workerPool) public returns (bool)
 	{
-		TaskInfo storage taskinfo = m_taskInfos[_taskID];
-		WorkerPool       pool     = WorkerPool(taskinfo.workerPoolAffectation);
+		// sender must own _workerpool
+		require(workerPoolHub.getWorkerPoolOwner(_workerPool) == msg.sender);
+		// workorder must be pending
+		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
 
-		require(msg.sender == pool.m_owner());
-		// require(lock(msg.sender, VALUE_TO_DETERMINE));
+		// Check worker pool affectation is compatible
+		IexecLib.WorkOrderInfo storage workorderinfo = m_woInfos[_woid];
+		require(workorderinfo.workerPoolAffectation == address(0) || workorderinfo.workerPoolAffectation == _workerPool);
+		workorderinfo.workerPoolAffectation = _workerPool;
 
-		require(taskRequestHub.setAccepted(_taskID));
-		taskinfo.contributionsAffectation = pool.acceptTask(_taskID, getTaskCost(_taskID));
-
-		TaskAccepted(_taskID, taskinfo.workerPoolAffectation, taskinfo.contributionsAffectation);
+		require(WorkerPool(_workerPool).acceptWorkOrder(
+			_woid,
+			getWorkOrderWorkReward(_woid),
+			workorderinfo.appAffectation,
+			workorderinfo.datasetAffectation
+		));
+		require(workOrderHub.setAccepted(_woid));
+		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
+		WorkOrderAccepted(_woid, _workerPool);
 		return true;
 	}
 
-	function cancelTask(address _taskID) public returns (bool)
+	function setRevealingStatus(address _woid) public returns (bool)
 	{
-		TaskInfo storage taskinfo = m_taskInfos[_taskID];
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		require(woInfo.workerPoolAffectation == msg.sender);
+		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.ACCEPTED);
+		require(workOrderHub.setRevealing(_woid));
+		WorkOrderRevealing(_woid, woInfo.workerPoolAffectation);
+		return true;
+	}
+
+	function reopen(address _woid) public returns (bool)
+	{
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		require(woInfo.workerPoolAffectation == msg.sender);
+		require(getWorkOrderStatus(_woid)  == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(workOrderHub.setAccepted(_woid));
+		WorkOrderAccepted(_woid, woInfo.workerPoolAffectation);
+		return true;
+	}
+
+	function cancelWorkOrder(address _woid) public returns (bool)
+	{
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
 
 		// Why cancelled ? penalty ?
-		require(msg.sender == taskinfo.requesterAffectation);
-		require(reward(msg.sender, taskinfo.userCost));
-
-		require(taskRequestHub.setCancelled(_taskID));
-		// TODO: Something like pool.cancelTask(_taskID); ?
-
-		TaskCancelled(_taskID, taskinfo.workerPoolAffectation);
+		require(msg.sender == woInfo.requesterAffectation);
+		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
+		/* require(WorkerPool(woInfo.workerPoolAffectation).cancelWorkOrder(_woid)); */
+		require(workOrderHub.setCancelled(_woid));
+		WorkOrderCancelled(_woid, woInfo.workerPoolAffectation);
 		return true;
 	}
 
-	function claimFailedConsensus(address _taskID) public /*only who ? everybody ?*/ returns (bool)
+	function claimFailedConsensus(address _woid) public /*only who ? everybody ?*/ returns (bool)
 	{
-		TaskInfo storage taskinfo      = m_taskInfos[_taskID];
-		Contributions    contributions = Contributions(taskinfo.contributionsAffectation);
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		WorkerPool                     pool   = WorkerPool(woInfo.workerPoolAffectation);
 
+		IexecLib.WorkOrderStatusEnum currentStatus = getWorkOrderStatus(_woid);
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACCEPTED || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(pool.claimFailedConsensus(_woid));
 		// Who ? contributor / client
+		require(unlock(woInfo.requesterAffectation, woInfo.userCost)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
-		// TODO: cleanup / comment
-		require(reward(taskinfo.requesterAffectation, taskinfo.userCost));
-		require(taskRequestHub.setAborted(_taskID));
-		require(contributions.claimFailedConsensus());
+		require(workOrderHub.setClaimed(_woid));
 
-		TaskAborted(_taskID, taskinfo.contributionsAffectation);
+		WorkOrderAborted(_woid, woInfo.workerPoolAffectation);
 		return true;
 	}
 
-	function finalizedTask(address _taskID, string _stdout, string _stderr, string _uri, uint256 _schedulerReward) public returns (bool)
+	function finalizedWorkOrder(
+		address _woid,
+		string  _stdout,
+		string  _stderr,
+		string  _uri)
+	public returns (bool)
 	{
-		TaskInfo storage taskinfo = m_taskInfos[_taskID];
-
-		require(msg.sender == taskinfo.contributionsAffectation);
-		require(reward(tx.origin, _schedulerReward));
-
-		address appForTask = taskinfo.appAffectation;
-		uint256 appPrice   = appHub.getAppPrice(appForTask);
+		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[_woid];
+		require(msg.sender == woInfo.workerPoolAffectation);
+		address appForWorkOrder= woInfo.appAffectation;
+		uint256 appPrice   = appHub.getAppPrice(appForWorkOrder);
 		if (appPrice > 0)
 		{
-			require(reward(appHub.getAppOwner(appForTask), appPrice));
+			require(reward(appHub.getAppOwner(appForWorkOrder), appPrice));
 				// to unlock a stake ?
 		}
 
-		if (taskinfo.datasetAffectation != address(0))
+		if (woInfo.datasetAffectation != address(0))
 		{
-			uint256 datasetPrice = datasetHub.getDatasetPrice(taskinfo.datasetAffectation);
+			uint256 datasetPrice = datasetHub.getDatasetPrice(woInfo.datasetAffectation);
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(taskinfo.datasetAffectation), datasetPrice));
+				require(reward(datasetHub.getDatasetOwner(woInfo.datasetAffectation), datasetPrice));
 				// to unlock a stake ?
 			}
 		}
 
-		require(taskRequestHub.setResult(_taskID, _stdout, _stderr, _uri));
+		require(seize(woInfo.requesterAffectation, woInfo.userCost)); // SEIZE THE FUNDS FOR PAIEMENT
+
+		require(workOrderHub.setResult(_woid, _stdout, _stderr, _uri));
 		// incremente app and dataset reputation too  ?
-		TaskCompleted(_taskID, taskinfo.contributionsAffectation);
+		WorkOrderCompleted(_woid, woInfo.workerPoolAffectation);
 		return true;
 	}
 
@@ -316,9 +368,14 @@ contract IexecHub
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
 
-	function getTaskCost(address _taskID) public view returns (uint256 taskCost)
+	function getWorkOrderWorkReward(address _woid) public view returns (uint256 workReward)
 	{
-		return taskRequestHub.getTaskCost(_taskID);
+		return workOrderHub.getWorkReward(_woid);
+	}
+
+	function getWorkOrderStatus(address _woid) public view returns (IexecLib.WorkOrderStatusEnum status)
+	{
+		return workOrderHub.getStatus(_woid);
 	}
 
 	/**
@@ -344,62 +401,84 @@ contract IexecHub
 	/**
 	 * Worker subscription
 	 */
-	function subscribeToPool(address _workerPool) public returns (bool subscribed)
+	function subscribeToPool() public returns (bool subscribed)
 	{
-		require(m_scores[msg.sender]         >= WorkerPool(_workerPool).m_subscriptionMinimumScorePolicy());
-		require(m_accounts[msg.sender].stake >= WorkerPool(_workerPool).m_subscriptionMinimumStakePolicy());
-		require(lock(msg.sender, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
-		require(workerPoolHub.subscribeToPool(_workerPool));
-		WorkerPoolSubscription(_workerPool, tx.origin);
+		//msg.sender = workerPool
+		//tx.origin = worker
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
+		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
+		require(lock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		require(workerPoolHub.subscribeToPool(msg.sender));
+		WorkerPoolSubscription(msg.sender, tx.origin);
 		return true;
 	}
 
-	function unsubscribeToPool(address _workerPool, address _worker) public returns (bool unsubscribed)
+	function unsubscribeToPool() public returns (bool unsubscribed)
 	{
-		require(unlock(_worker, WorkerPool(_workerPool).m_subscriptionLockStakePolicy()));
-		// workerPoolHub.unsubscribeToPool checks tx.origin (only worker and workerPool manager are allowed)
-		require(workerPoolHub.unsubscribeToPool(_workerPool, _worker));
-		WorkerPoolUnsubscription(_workerPool, _worker);
+		//msg.sender = workerPool
+		//tx.origin = worker
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.unsubscribeToPool(msg.sender, tx.origin));
+		require(unlock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		WorkerPoolUnsubscription(msg.sender, tx.origin);
+		return true;
+	}
+
+	function evictWorker(address _worker) public returns (bool unsubscribed)
+	{
+		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.unsubscribeToPool(msg.sender, _worker));
+		require(unlock(_worker, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		WorkerPoolEviction(msg.sender, _worker);
 		return true;
 	}
 
 	/**
 	 * Stake, reward and penalty functions
 	 */
-	function lockForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
 		require(lock(_user, _amount));
 		return true;
 	}
 
-	function unlockForTask(address _taskID, address _user, uint _amount) public returns (bool)
+	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
+		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
 		require(unlock(_user, _amount));
 		return true;
 	}
 
-	function rewardForTask(address _taskID, address _worker, uint _amount) public returns (bool)
+	function rewardForConsensus(address _woid, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
-		m_scores[_worker] = m_scores[_worker].add(1);
-		AccurateContribution(_taskID, _worker);
-		// ----------------------- reward(address, uint256) -----------------------
-		require(reward(_worker, _amount));
-		// ------------------------------------------------------------------------
+		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		require(reward(_scheduler, _amount));
 		return true;
 	}
 
-	function seizeForTask(address _taskID, address _worker, uint _amount) public returns (bool)
+	function rewardForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
 	{
-		require(msg.sender == m_taskInfos[_taskID].contributionsAffectation);
-		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
-		FaultyContribution(_taskID, _worker);
-		// ------------- code of seize(address, uint256) inlined here -------------
-		m_accounts[_worker].locked = m_accounts[_worker].locked.sub(_amount);
-		Seize(_worker, _amount);
+		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		AccurateContribution(_woid, _worker);
+		// ----------------------- reward(address, uint256) -----------------------
+		require(reward(_worker, _amount));
 		// ------------------------------------------------------------------------
+		m_contributionHistory.success = m_contributionHistory.success.add(1);
+		m_scores[_worker] = m_scores[_worker].add(1);
+		return true;
+	}
+
+	function seizeForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
+	{
+		require(msg.sender == m_woInfos[_woid].workerPoolAffectation);
+		FaultyContribution(_woid, _worker);
+		// ------------- code of seize(address, uint256) inlined here -------------
+		require(seize(_worker, _amount));
+		// ------------------------------------------------------------------------
+		m_contributionHistory.failled = m_contributionHistory.failled.add(1);
+		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		return true;
 	}
 
@@ -422,7 +501,7 @@ contract IexecHub
 		Withdraw(msg.sender, _amount);
 		return true;
 	}
-	function checkBalance(address _owner) public view returns (uint stake, uint locked)
+	function checkBalance(address _owner) public view returns (uint256 stake, uint256 locked)
 	{
 		return (m_accounts[_owner].stake, m_accounts[_owner].locked);
 	}
@@ -435,18 +514,20 @@ contract IexecHub
 		Reward(_user, _amount);
 		return true;
 	}
-	/**
-	 * function seize(address _user, uint256 _amount) internal returns (bool)
-	 * has been inlined in seizeForTask (not called anywhere else)
-	 */
-	function lock(address _user, uint _amount) internal returns (bool)
+	function seize(address _user, uint256 _amount) internal returns (bool)
+	{
+		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
+		Seize(_user, _amount);
+		return true;
+	}
+	function lock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
 		return true;
 	}
 
-	function unlock(address _user, uint _amount) internal returns (bool)
+	function unlock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);

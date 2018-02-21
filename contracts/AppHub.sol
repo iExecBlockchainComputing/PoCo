@@ -12,24 +12,9 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// owner => apps count
-	mapping(address => uint256)                     m_appsCountByOwner;
-	// owner => index => app
+	mapping(address => uint256)                     m_appCountByOwner;
 	mapping(address => mapping(uint256 => address)) m_appByOwnerByIndex;
-	//  app => owner
 	mapping(address => address)                     m_ownerByApp;
-
-	/**
-	 * Events
-	 */
-	event CreateApp(
-		address indexed appOwner,
-		address indexed app,
-		string  appName,
-		uint256 appPrice,
-		string  appParam,
-		string  appUri
-	);
 
 	/**
 	 * Constructor
@@ -43,7 +28,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getAppsCount(address _owner) public view returns (uint256)
 	{
-		return m_appsCountByOwner[_owner];
+		return m_appCountByOwner[_owner];
 	}
 
 	function getApp(address _owner, uint256 _index) public view returns (address)
@@ -58,14 +43,22 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 
 	function isAppRegistred(address _app) public view returns (bool)
 	{
-		return m_ownerByApp[_app] != 0x0;
+		return m_ownerByApp[_app] != address(0);
 	}
+
+	function addApp(address _owner, address _app) internal
+	{
+		uint id = m_appCountByOwner[_owner];
+		m_appCountByOwner  [_owner]      = id.add(1);
+		m_appByOwnerByIndex[_owner][id]  = _app;
+		m_ownerByApp       [_app]        = _owner;
+	}
+
 
 	function createApp(
 		string  _appName,
 		uint256 _appPrice,
-		string  _appParam,
-		string  _appUri)
+		string  _appParams)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdApp)
 	{
 		// tx.origin == owner
@@ -74,23 +67,9 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 			msg.sender,
 			_appName,
 			_appPrice,
-			_appParam,
-			_appUri
+			_appParams
 		);
-
-		m_appsCountByOwner[tx.origin] = m_appsCountByOwner[tx.origin].add(1);
-		m_appByOwnerByIndex[tx.origin][m_appsCountByOwner[tx.origin]] = newApp;
-		m_ownerByApp[newApp] = tx.origin;
-
-		CreateApp(
-			tx.origin,
-			newApp,
-			_appName,
-			_appPrice,
-			_appParam,
-			_appUri
-		);
-
+		addApp(tx.origin, newApp);
 		return newApp;
 	}
 
@@ -98,25 +77,21 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	{
 		return App(_app).m_appPrice();
 	}
-
 	function isOpen(address _app) public view returns (bool)
 	{
 		return App(_app).isOpen();
 	}
-
-	function isWorkerPoolAllowed(address _app, address _workerPool) public returns (bool)
-	{
-		return App(_app).isWorkerPoolAllowed(_workerPool);
-	}
-
 	function isDatasetAllowed(address _app, address _dataset) public returns (bool)
 	{
 		return App(_app).isDatasetAllowed(_dataset);
 	}
-
 	function isRequesterAllowed(address _app, address _requester) public returns (bool)
 	{
 		return App(_app).isRequesterAllowed(_requester);
+	}
+	function isWorkerPoolAllowed(address _app, address _workerPool) public returns (bool)
+	{
+		return App(_app).isWorkerPoolAllowed(_workerPool);
 	}
 
 

@@ -1,104 +1,135 @@
 pragma solidity ^0.4.18;
-
+import './IexecLib.sol';
 contract IexecHubInterface
 {
-		/*
-		function IexecHub(
-			address _tokenAddress,
-			address _workerPoolHubAddress,
-			address _appHubAddress,
-			address _datasetHubAddress,
-			address _taskRequestHubAddress)
-		public;
-		*/
 
-		function createWorkerPool(
-			string _name)
-		public returns (address createdWorkerPool);
+	function createWorkerPool(
+		string  _name,
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
+	public returns (address createdWorkerPool);
 
-		function createApp(
-			string _appName,
-			uint256 _appPrice,
-			string _appParam,
-			string _appUri)
+	function createApp(
+		string  _appName,
+		uint256 _appPrice,
+		string  _appParams)
 		public returns (address createdApp);
 
-		function createDataset(
-			string _datasetName,
-			uint256 _datasetPrice,
-			string _datasetParam,
-			string _datasetUri)
-		public returns (address createdDataset);
+	function createDataset(
+		string  _datasetName,
+		uint256 _datasetPrice,
+		string  _datasetParams)
+	public returns (address createdDataset);
 
-		function createTaskRequest(
-			address _workerPool,
-			address _app,
-			address _dataset,
-			string _taskParam,
-			uint _taskCost,
-			uint _askedTrust,
-			bool _dappCallback)
-		public returns (address createdTaskRequest);
+	function createWorkOrder(
+		address _workerPool,
+		address _app,
+		address _dataset,
+		string  _workOrderParam,
+		uint256 _workReward,
+		uint256 _askedTrust,
+		bool    _dappCallback,
+		address _beneficiary)
+	public returns (address createdWorkOrder);
 
-		function cancelTask(
-			address _taskID)
-		public returns (bool);
+	function acceptWorkOrder(
+		address _woid)
+	public returns (bool);
 
-		function finalizedTask(
-			address _taskID,
-			string _stdout,
-			string _stderr,
-			string _uri,
-			uint256 _schedulerReward
-			)
-		public returns (bool);
+	function scheduleWorkOrder(
+		address _woid)
+	public returns (bool);
 
-		function getTaskCost(
-			address _taskID)
-		public view returns (uint256 taskCost);
+	function reopen(
+		address _woid)
+	public returns (bool);
 
-		function getWorkerStatus(
-			address _worker)
-		public view returns (address workerPool, uint256 workerScore);
+	function setRevealingStatus(
+		address _woid)
+	public returns (bool);
 
-		function openPool(
-			address _workerPool)
-		public returns (bool);
+	function cancelWorkOrder(
+		address _woid)
+	public returns (bool);
 
-		function closePool(
-			address _workerPool)
-		public returns (bool);
+	function claimFailedConsensus(
+		address _woid)
+		public /*only who ? everybody ?*/ returns (bool);
 
-		function subscribeToPool(
-			address _workerPool)
-		public returns (bool subscribed);
+	function finalizedWorkOrder(
+		address _woid,
+		string  _stdout,
+		string  _stderr,
+		string  _uri)
+	public returns (bool);
 
-		function unsubscribeToPool(
-			address _workerPool)
-		public returns (bool unsubscribed);
+	function getWorkerStatus(
+		address _worker)
+	public view returns (address workerPool, uint256 workerScore);
 
-		function lockForTask(
-			address _taskID,
-			address _user,
-			uint _amount)
-		public returns (bool);
+	function getWorkOrderStatus(
+		address _woid)
+	public view returns (IexecLib.WorkOrderStatusEnum status);
 
-		function unlockForTask(
-			address _taskID,
-			address _user,
-			uint _amount)
-		public returns (bool);
+	function getWorkReward(
+		address _woid)
+	public view returns (uint256 workReward);
 
-		function rewardForTask(
-			address _taskID,
-			address _user,
-			uint _amount)
-		public returns (bool);
+	function openCloseWorkerPool(
+		address _workerPool, bool open)
+	public returns (bool);
 
-		function seizeForTask(
-			address _taskID,
-			address _user,
-			uint _amount)
-		public returns (bool);
+	function subscribeToPool()
+	public returns (bool subscribed);
 
-	}
+	function unsubscribeToPool()
+	public returns (bool unsubscribed);
+
+	function evictWorker(
+		address _worker)
+	public returns (bool unsubscribed);
+
+	function lockForWork(
+		address _woid,
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
+	function unlockForWork(
+		address _woid,
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
+	function rewardForConsensus(
+		address _woid,
+		address _scheduler,
+		uint256 _amount)
+	public returns (bool);
+
+	function rewardForWork(
+		address _woid,
+		address _worker,
+		uint256 _amount)
+	public returns (bool);
+
+	function seizeForWork(
+		address _woid,
+		address _worker,
+		uint256 _amount)
+	public returns (bool);
+
+	function deposit(
+		uint256 _amount)
+	public returns (bool);
+
+	function withdraw(
+		uint256 _amount)
+	public returns (bool);
+
+	function checkBalance(
+		address _owner)
+	public view returns (uint256 stake, uint256 locked);
+
+}

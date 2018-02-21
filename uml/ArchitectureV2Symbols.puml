@@ -23,14 +23,14 @@ DappUser -down-> [MyDapp]: use
 
 
 cloud {
-  [TaskRequest]
+  [WorkOrder]
 }
 
-component [TaskRequest]
+component [WorkOrder]
 
-MyDapp <-down-> [TaskRequest]: owner
+MyDapp <-down-> [WorkOrder]: owner
 
-iExecCloudUser -down-> [TaskRequest]: owner
+iExecCloudUser -down-> [WorkOrder]: owner
 
 cloud {
   [App]
@@ -48,11 +48,9 @@ component [DatasetRepository]
 
 cloud {
   [Ss]
-  [Contributions]
 }
 
 component [Ss]
-component [Contributions]
 component [Sp]
 component [Sr]
 
@@ -60,23 +58,16 @@ component [Wp]
 
 cloud {
   [iExecHub]
-  [ProvidersScoring]
-  [ProvidersBalance]
 }
 
 cloud {
   [RLC Token]
 }
-component [ProvidersScoring]
 component [iExecHub]
-component [ProvidersBalance]
 component [RLC Token]
 
 
-[ProvidersBalance] <-right-> [RLC Token]
-
-[ProvidersBalance] <|-left-  [iExecHub]
-[ProvidersScoring] <|-right-  [iExecHub]
+[iExecHub] <-right-> [RLC Token]
 
 
 AppProvider -up-> [App]: owner
@@ -87,7 +78,7 @@ DatasetProvider -down-> DatasetRepository: expose
 
 Sw -up-> [Ss]: owner
 
-[Ss] -right-> [Contributions] :create
+
 Sw -down-> [Sp]: control
 Sw -down-> [Sr]: control and expose
 Sr <-left-> [Sp]
@@ -97,11 +88,10 @@ Sr <-left-> [Sp]
 [App] <-up-> [iExecHub]
 
 [iExecHub] <-down-> [Ss]
-[iExecHub] <-down-> [Contributions]
-[iExecHub] <-up-> [TaskRequest]
+[iExecHub] <-up-> [WorkOrder]
 
-[Sp] <-up-> [Contributions]
-[Wp] <-up-> [Contributions]
+[Sp] <-up-> [Ss]
+[Wp] <-up-> [Ss]
 
 [Ww] -right-> [Wp]: control
 
@@ -111,8 +101,6 @@ Sr <-left-> [Sp]
 [Wp] <-up-> [AppRepository]
 
 [Wp] <-up-> [DatasetRepository]
-
-'missing link :  [AppRepository] <-> [Wp] . add mannualy on img because i do not succeed to layout it
 
 
 

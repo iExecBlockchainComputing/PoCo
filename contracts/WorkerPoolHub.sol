@@ -13,14 +13,13 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 * Members
 	 */
 	// worker => workerPool
-	mapping(address => address)                  m_workerAffectation;
-	// owner => workerPools count
-	mapping(address => uint256)                  m_workerPoolsCountByOwner;
+	mapping(address => address)                     m_workerAffectation;
+	// owner => index
+	mapping(address => uint256)                     m_workerPoolCountByOwner;
 	// owner => index => workerPool
-	mapping(address => mapping(uint => address)) m_workerPoolByOwnerByIndex;
+	mapping(address => mapping(uint256 => address)) m_workerPoolByOwnerByIndex;
 	//  workerPool => owner
-	mapping(address => address)                  m_ownerByWorkerPool;
-
+	mapping(address => address)                     m_ownerByWorkerPool;
 
 	/**
 	 * Constructor
@@ -34,7 +33,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getWorkerPoolsCount(address _owner) public view returns (uint256)
 	{
-		return m_workerPoolsCountByOwner[_owner];
+		return m_workerPoolCountByOwner[_owner];
 	}
 
 	function getWorkerPool(address _owner, uint256 _index) public view returns (address)
@@ -57,6 +56,14 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByWorkerPool[_workerPool] != 0x0;
 	}
 
+	function addWorkerPool(address _owner, address _workerPool) internal
+	{
+		uint id = m_workerPoolCountByOwner[_owner];
+		m_workerPoolCountByOwner  [_owner]      = id.add(1);
+		m_workerPoolByOwnerByIndex[_owner][id]  = _workerPool;
+		m_ownerByWorkerPool       [_workerPool] = _owner;
+	}
+
 	function createWorkerPool(
 		string _name,
 		uint256 _subscriptionLockStakePolicy,
@@ -73,20 +80,18 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy
 		);
-		m_workerPoolsCountByOwner[tx.origin] = m_workerPoolsCountByOwner[tx.origin].add(1);
-		m_workerPoolByOwnerByIndex[tx.origin][m_workerPoolsCountByOwner[tx.origin]] = newWorkerPool;
-		m_ownerByWorkerPool[newWorkerPool] = tx.origin;
+		addWorkerPool(tx.origin, newWorkerPool);
 		return newWorkerPool;
 	}
 
 	function subscribeToPool(address _workerPool) public onlyOwner /*owner == IexecHub*/ returns (bool subscribed)
 	{
+		//tx.origin = worker
 		WorkerPool pool = WorkerPool(_workerPool);
 		// you must have no cuurent affectation on others worker Pool
 		require(m_workerAffectation[tx.origin] == 0x0);
 		// you must be on the white list of the worker pool to subscribe.
 		require(pool.isWorkerAllowed(tx.origin));
-		require(pool.addWorker(tx.origin));
 		m_workerAffectation[tx.origin] = _workerPool;
 		return true;
 	}
@@ -96,13 +101,27 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		WorkerPool pool = WorkerPool(_workerPool);
 		require(m_workerAffectation[_worker] == _workerPool );
 		m_workerAffectation[_worker] == 0x0;
-		if(_worker == tx.origin || m_ownerByWorkerPool[_workerPool] == tx.origin) // worker quit || scheduler expulse
-		{
-			require(pool.removeWorker(_worker));
-			return true;
-	 }
-		 return false;
+		return true;
 	}
+
+	function isOpen(address _workerPool) public view returns (bool)
+	{
+		return WorkerPool(_workerPool).isOpen();
+	}
+	function isAppAllowed(address _workerPool, address _app) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isAppAllowed(_app);
+	}
+	function isDatasetAllowed(address _workerPool, address _dataset) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isDatasetAllowed(_dataset);
+	}
+	/*
+	function isRequesterAllowed(address _workerPool, address _requester) public returns (bool)
+	{
+		return WorkerPool(_workerPool).isRequesterAllowed(_requester);
+	}
+	*/
 
 
 }

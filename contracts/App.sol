@@ -14,16 +14,15 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 	 */
 	string        public m_appName;
 	uint256       public m_appPrice;
-	string        public m_appParam;
-	string        public m_appUri;
+	string        public m_appParams;
 	AppStatusEnum public m_appStatus;
 
 	/**
 	 * Address of slave contracts
 	 */
-	address       public m_workerPoolsAuthorizedListAddress;
 	address       public m_datasetsAuthorizedListAddress;
 	address       public m_requestersAuthorizedListAddress;
+	address       public m_workerPoolsAuthorizedListAddress;
 
 	/**
 	 * Constructor
@@ -32,8 +31,7 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		address _iexecHubAddress,
 		string  _appName,
 		uint256 _appPrice,
-		string  _appParam,
-		string  _appUri)
+		string  _appParams)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -44,9 +42,14 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 
 		m_appName   = _appName;
 		m_appPrice  = _appPrice;
-		m_appParam  = _appParam;
-		m_appUri    = _appUri;
+		m_appParams = _appParams;
 		m_appStatus = AppStatusEnum.OPEN;
+		m_datasetsAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		AuthorizedList(m_datasetsAuthorizedListAddress   ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_requestersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
+		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	/**
@@ -71,32 +74,17 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		return m_appStatus == AppStatusEnum.OPEN;
 	}
 
-	function attachWorkerPoolsAuthorizedListContract(address _workerPoolsAuthorizedListAddress) public onlyOwner
-	{
-		m_workerPoolsAuthorizedListAddress = _workerPoolsAuthorizedListAddress;
-	}
-
-	function attachDatasetsAuthorizedListContract(address _datasetsAuthorizedListAddress) public onlyOwner
-	{
-		m_datasetsAuthorizedListAddress = _datasetsAuthorizedListAddress;
-	}
-
-	function attachRequestersAuthorizedListContract(address _requestersAuthorizedListAddress) public onlyOwner
-	{
-		m_requestersAuthorizedListAddress = _requestersAuthorizedListAddress;
-	}
-
-	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
+	function isWorkerPoolAllowed(address _workerPool) public view returns (bool)
 	{
 		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
 	}
 
-	function isDatasetAllowed(address _dataset) public returns (bool)
+	function isDatasetAllowed(address _dataset) public view returns (bool)
 	{
 		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
 	}
 
-	function isRequesterAllowed(address _requester) public returns (bool)
+	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
 		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}

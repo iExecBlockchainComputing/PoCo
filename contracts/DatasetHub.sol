@@ -11,24 +11,10 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Members
 	 */
-	// owner => datasets count
-	mapping(address => uint256)                     m_datasetsCountByOwner;
-	// owner => index => dataset
+	mapping(address => uint256)                     m_datasetCountByOwner;
 	mapping(address => mapping(uint256 => address)) m_datasetByOwnerByIndex;
-	//  dataset => owner
 	mapping(address => address)                     m_ownerByDataset;
 
-	/**
-	 * Events
-	 */
-	event CreateDataset(
-		address indexed datasetOwner,
-		address indexed dataset,
-		string  datasetName,
-		uint256 datasetPrice,
-		string  datasetParam,
-		string  datasetUri
-	);
 
 	/**
 	 * Constructor
@@ -42,7 +28,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	 */
 	function getDatasetsCount(address _owner) public view returns (uint256)
 	{
-		return m_datasetsCountByOwner[_owner];
+		return m_datasetCountByOwner[tx.origin];
 	}
 
 	function getDataset(address _owner, uint256 _index) public view returns (address)
@@ -60,11 +46,18 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByDataset[_dataset] != 0x0;
 	}
 
+	function addDataset(address _owner, address _dataset) internal
+	{
+		uint id = m_datasetCountByOwner[_owner];
+		m_datasetCountByOwner  [_owner]     = id.add(1);
+		m_datasetByOwnerByIndex[_owner][id] = _dataset;
+		m_ownerByDataset       [_dataset]   = _owner;
+	}
+
 	function createDataset(
 		string _datasetName,
 		uint256 _datasetPrice,
-		string _datasetParam,
-		string _datasetUri)
+		string _datasetParams)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdDataset)
 	{
 		// tx.origin == owner
@@ -73,23 +66,9 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 			msg.sender,
 			_datasetName,
 			_datasetPrice,
-			_datasetParam,
-			_datasetUri
+			_datasetParams
 		);
-
-		m_datasetsCountByOwner[tx.origin] = m_datasetsCountByOwner[tx.origin].add(1);
-		m_datasetByOwnerByIndex[tx.origin][m_datasetsCountByOwner[tx.origin]] = newDataset;
-		m_ownerByDataset[newDataset] = tx.origin;
-
-		CreateDataset(
-			tx.origin,
-			newDataset,
-			_datasetName,
-			_datasetPrice,
-			_datasetParam,
-			_datasetUri
-		);
-
+		addDataset(tx.origin, newDataset);
 		return newDataset;
 	}
 
@@ -97,25 +76,21 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	{
 		return Dataset(_dataset).m_datasetPrice();
 	}
-
 	function isOpen(address _dataset) public view returns (bool)
 	{
 		return Dataset(_dataset).isOpen();
 	}
-
-	function isWorkerPoolAllowed(address _dataset, address _workerPool) public returns (bool)
-	{
-		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
-	}
-
 	function isAppAllowed(address _dataset, address _app) public returns (bool)
 	{
 		return Dataset(_dataset).isAppAllowed(_app);
 	}
-
 	function isRequesterAllowed(address _dataset, address _requester) public returns (bool)
 	{
-	  return Dataset(_dataset).isRequesterAllowed(_requester);
+		return Dataset(_dataset).isRequesterAllowed(_requester);
+	}
+	function isWorkerPoolAllowed(address _dataset, address _workerPool) public returns (bool)
+	{
+		return Dataset(_dataset).isWorkerPoolAllowed(_workerPool);
 	}
 
 

@@ -6,6 +6,8 @@ var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
+var App = artifacts.require("./App.sol");
+var WorkOrder = artifacts.require("./WorkOrder.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -26,6 +28,21 @@ Extensions.init(web3, assert);
 
 contract('IexecHub', function(accounts) {
 
+  WorkOrder.WorkOrderStatusEnum = {
+    UNSET: 0,
+    PENDING: 1,
+    CANCELLED: 2,
+    ACCEPTED: 3,
+    REVEALING: 4,
+    CLAIMED: 5,
+    COMPLETED: 6
+  };
+
+
+  let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
+
+
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
   let subscriptionLockStakePolicy = 0;
@@ -42,11 +59,16 @@ contract('IexecHub', function(accounts) {
   let aDatasetHubInstance;
   let aWorkOrderHubInstance;
 
-
   //specific for test :
   let workerPoolAddress;
   let aWorkerPoolInstance;
   let aWorkersAuthorizedListInstance
+
+  let appAddress;
+  let aAppInstance;
+  let aWorkerPoolsAuthorizedListInstance;
+  let aRequestersAuthorizedListInstance;
+  let aWorkOrderInstance;
 
 
 
@@ -60,7 +82,6 @@ contract('IexecHub', function(accounts) {
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
     marketplaceCreator = accounts[7];
-
 
     await Extensions.makeSureAreUnlocked(
       [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
@@ -229,6 +250,7 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
     assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
 
+    // INIT CREATE A WORKER POOL
     txMined = await aIexecHubInstance.createWorkerPool(
       "myWorkerPool",
       subscriptionLockStakePolicy,
@@ -239,47 +261,81 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
     aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
+
+    // WHITELIST A WORKER IN A WORKER POOL
     workersAuthorizedListAddress = await aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
     aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
-  });
-
-
-  it("TestRPC mode example : test only launch when testrpc is used", async function() {
-    if (!isTestRPC) this.skip("This test is only for TestRPC");
-  });
-
-  it("a white listed  resourceProvider can Subscribe", async function() {
     txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
+    // WORKER ADD deposit to respect workerpool policy
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
       from: resourceProvider,
       gas: amountGazProvided
     });
+    // WORKER SUBSCRIBE TO POOL
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
       gas: amountGazProvided
     });
+    // CREATE AN APP
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-  });
-
-  it("resourceProvider not white listed cannot Subscribe", async function() {
-    txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
-      from: resourceProvider,
-      gas: amountGazProvided
+    txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE, {
+      from: appProvider
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.subscribeToPool({
-          from: resourceProvider,
-          gas: amountGazProvided
-        });
-      },
-      amountGazProvided);
+    appAddress = await aAppHubInstance.getApp(appProvider, 0);
+    aAppInstance = await App.at(appAddress);
+
   });
 
+  it("Create a Hello World Task Request by iExecCloudUser", async function() {
+    let woid;
+    txMined = await aIexecHubInstance.createWorkOrder(aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, 1, false, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrder({}));
+
+    assert.strictEqual(events[0].args.workOrderOwner, iExecCloudUser, "workOrderOwner");
+    woid = events[0].args.woid;
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "workerPool");
+    assert.strictEqual(events[0].args.app, aAppInstance.address, "appPrice");
+    assert.strictEqual(events[0].args.dataset, '0x0000000000000000000000000000000000000000', "dataset");
+
+
+    let count = await aWorkOrderHubInstance.getWorkOrdersCount(iExecCloudUser);
+
+    assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 workOrder now ");
+    let woidFromGetWorkOrder = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, count - 1);
+    assert.strictEqual(woid, woidFromGetWorkOrder, "check woid");
+    aWorkOrderInstance = await WorkOrder.at(woidFromGetWorkOrder);
+
+    result = await Promise.all([
+      aWorkOrderInstance.m_status.call(),
+      aWorkOrderInstance.m_workerPoolRequested.call(),
+      aWorkOrderInstance.m_appRequested.call(),
+      aWorkOrderInstance.m_datasetRequested.call(),
+      aWorkOrderInstance.m_workOrderParam.call(),
+      aWorkOrderInstance.m_workReward.call(),
+      aWorkOrderInstance.m_askedTrust.call(),
+      aWorkOrderInstance.m_dappCallback.call(),
+      aWorkOrderInstance.m_beneficiary.call()
+    ]);
+    [m_status, m_workerPoolRequested, m_appRequested, m_datasetRequested, m_workOrderParam, m_workReward, m_askedTrust, m_dappCallback, m_beneficiary] = result;
+    assert.strictEqual(m_status.toNumber(), WorkOrder.WorkOrderStatusEnum.PENDING, "check m_status");
+    assert.strictEqual(m_workerPoolRequested, aWorkerPoolInstance.address, "check m_workerPoolRequested");
+    assert.strictEqual(m_appRequested, aAppInstance.address, "check m_appRequested");
+    assert.strictEqual(m_datasetRequested, '0x0000000000000000000000000000000000000000', "check m_datasetRequested");
+    assert.strictEqual(m_workOrderParam, "noParam", "check m_workOrderParam");
+    assert.strictEqual(m_workReward.toNumber(), 0, "check m_workReward");
+    assert.strictEqual(m_askedTrust.toNumber(), 1, "check m_askedTrust");
+    assert.strictEqual(m_dappCallback, false, "check m_dappCallback");
+    assert.strictEqual(m_beneficiary, iExecCloudUser, "check m_beneficiary");
+  });
 
 });

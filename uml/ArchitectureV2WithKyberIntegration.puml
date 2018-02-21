@@ -25,14 +25,14 @@ KyberProxy <-up- [KyberNetwork]: get RLC TOKEN
 DappUser -down-> [MyDapp]: use ERC20 or ETH
 
 cloud {
-  [TaskRequest]
+  [WorkOrder]
 }
 
-component [TaskRequest]
+component [WorkOrder]
 
-MyDapp <-down-> [TaskRequest]: owner
+MyDapp <-down-> [WorkOrder]: owner
 
-iExecCloudUser -down-> [TaskRequest]: owner
+iExecCloudUser -down-> [WorkOrder]: owner
 
 
 
@@ -40,28 +40,20 @@ iExecCloudUser -down-> [TaskRequest]: owner
 
 cloud {
   [iExecHub]
-  [ProvidersScoring]
-  [ProvidersBalance]
 }
 
 cloud {
   [RLC Token]
 }
-component [ProvidersScoring]
 component [iExecHub]
-component [ProvidersBalance]
 component [RLC Token]
 
 
-[ProvidersBalance] <-right-> [RLC Token]
-
-[ProvidersBalance] <|-left-  [iExecHub]
-[ProvidersScoring] <|-right-  [iExecHub]
+[iExecHub] <-right-> [RLC Token]
 
 
 
-
-[iExecHub] <-up-> [TaskRequest]: only RLC Token accepted here ( can be obtain thanks to KyberProxy )
+[iExecHub] <-up-> [WorkOrder]: only RLC Token accepted here ( can be obtain thanks to KyberProxy )
 
 
 
