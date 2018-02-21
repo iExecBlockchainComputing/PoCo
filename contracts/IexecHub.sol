@@ -190,28 +190,25 @@ contract IexecHub
 		}
 
 		// APP
-		require(appHub.isAppRegistred     (_app             ));
-		require(appHub.isOpen             (_app             ));
-		require(appHub.isDatasetAllowed   (_app, _dataset   ));
-		require(appHub.isRequesterAllowed (_app, msg.sender ));
+		require(appHub.isAppRegistred    (_app            ));
+		require(appHub.isOpen            (_app            ));
+		require(appHub.isDatasetAllowed  (_app, _dataset  ));
+		require(appHub.isRequesterAllowed(_app, msg.sender));
 
-
-		// Price to pay by the user, initialized with reward
-		uint256 userCost = _workReward;
-		// add optional appPrice to userCost
-		userCost = userCost.add(appHub.getAppPrice(_app)); // dappPrice
+		// Price to pay by the user, initialized with reward + dapp Price
+		uint256 userCost = _workReward.add(appHub.getAppPrice(_app));
 
 		// DATASET
 		if (_dataset != address(0)) // address(0) → no dataset
 		{
-			require(datasetHub.isDatasetRegistred (_dataset             ));
-			require(datasetHub.isOpen             (_dataset             ));
-			require(datasetHub.isAppAllowed       (_dataset, _app       ));
-			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
+			require(datasetHub.isDatasetRegistred(_dataset            ));
+			require(datasetHub.isOpen            (_dataset            ));
+			require(datasetHub.isAppAllowed      (_dataset, _app      ));
+			require(datasetHub.isRequesterAllowed(_dataset, msg.sender));
 			if (_workerPool != address(0)) // address(0) → any workerPool
 			{
 				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
-		  }
+			}
 
 			// add optional datasetPrice for userCost
 			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
