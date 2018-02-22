@@ -175,6 +175,7 @@ contract IexecHub
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,
+		uint256 _deadline,
 		uint256 _value,
 		address _workerpool,
 		uint256 _volume)
@@ -186,6 +187,7 @@ contract IexecHub
 		marketorder.direction = _direction;
 		marketorder.category  = _category;
 		marketorder.trust     = _trust;
+		marketorder.deadline  = _deadline;
 		marketorder.value     = _value;
 		marketorder.volume    = _volume;
 		marketorder.remaining = _volume;
@@ -237,6 +239,7 @@ contract IexecHub
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 
 		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID);
+		require(marketorder.deadline  >  now);
 
 		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
 		require(marketorder.workerpool == address(0) || marketorder.workerpool == marketorder.workerpool);
@@ -259,6 +262,7 @@ contract IexecHub
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 
 		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK);
+		require(marketorder.deadline  >  now);
 
 		_quantity.min256(marketorder.remaining);
 		marketorder.remaining = marketorder.remaining.sub(_quantity);
@@ -272,6 +276,46 @@ contract IexecHub
 
 		// TODO: create event
 		return _quantity;
+	}
+
+	function redeamAsset(uint _marketorderIdx, address _user, address _workerpool) public returns (bool)
+	{
+		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+		require(marketorder.deadline <= now);
+
+		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
+		uint value    = marketorder.value.mul(quantity);
+
+		m_assetBook[_marketorderIdx][_user][_workerpool] = 0; // delete asset
+
+		require(seize (_user,      value)); // Take the locked funds from the user
+		require(reward(msg.sender, value)); // Give the funds to the workerpool owner
+
+		// TODO: create event
+		return true;
+	}
+
+	function transferAsset(uint _marketorderIdx, address _user, address _workerpool, address _newowner) public returns (bool)
+	{
+		require(_user == msg.sender);
+
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+		require(marketorder.deadline > now);
+
+		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
+		uint value    = marketorder.value.mul(quantity);
+
+		m_assetBook[_marketorderIdx][_newowner][_workerpool] = m_assetBook[_marketorderIdx][_newowner][_workerpool].add(quantity); // give asset to new owner
+		m_assetBook[_marketorderIdx][_user    ][_workerpool] = 0; // remove asset from old user
+
+		require(seize (_user,      value)); // Take the locked funds from the user
+		require(reward(_newowner, value));  // Give the funds to the new owner ...
+		require(lock  (_newowner, value));  // ... and lock them
+
+		// TODO: create event
+		return true;
 	}
 
 	/**
@@ -293,6 +337,7 @@ contract IexecHub
 		m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
 
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+		require(marketorder.deadline > now);
 
 		// APP
 		require(appHub.isAppRegistred     (_app             ));
