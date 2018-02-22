@@ -283,7 +283,7 @@ contract IexecHub
 		address _app,
 		address _dataset,
 		string  _params,
-		bool    _callback,
+		address _callback,
 		address _beneficiary)
 	public returns (address)
 	{
@@ -341,7 +341,7 @@ contract IexecHub
 			_callback,
 			_beneficiary
 		);
-		workorder.setActive(); // TO be done by the scheduler within X days ?
+		workorder.setActive(); // TODO: done by the scheduler within X days?
 		//WorkOrderHub.addWorkOrder(msg.sender, woid); // TODO: move to WorkOrderHub → IexecHub
 
 		WorkOrderActivate(workorder, _workerpool);

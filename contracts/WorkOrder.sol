@@ -24,7 +24,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	uint256 public m_emitcost;
 	uint256 public m_trust;
 	string  public m_params;
-	bool    public m_callback;
+	address public m_callback;
 	address public m_beneficiary;
 
 	string  public m_stdout;
@@ -45,7 +45,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		uint256 _emitcost,
 		uint256 _trust,
 		string  _params,
-		bool    _callback,
+		address _callback,
 		address _beneficiary)
 	IexecHubAccessor(_iexecHubAddress)
 	public
@@ -92,17 +92,17 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		return true;
 	}
 
-	function setResult(string _stdout, string _stderr, string _uri) onlyIexecHub public returns (bool)
+	function setResult(string _stdout, string _stderr, string _uri) public onlyIexecHub returns (bool)
 	{
 		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
 		m_status = IexecLib.WorkOrderStatusEnum.COMPLETED;
 		m_stdout = _stdout;
 		m_stderr = _stderr;
 		m_uri    = _uri;
-		if(m_callback)
+		if (m_callback != address(0))
 		{
 			// optional dappCallback call can be done
-			require(IexecAPI(m_owner).workOrderCallback( //TODO: m_owner is creator → workOrderHub
+			require(IexecAPI(m_callback).workOrderCallback(
 				this,
 				_stdout,
 				_stderr,
@@ -111,8 +111,5 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		}
 		return true;
 	}
-
-
-
 
 }

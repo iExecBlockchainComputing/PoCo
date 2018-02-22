@@ -275,7 +275,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		for (uint i = 0; i < _workers.length; ++i)
 		{
-			require(callForContribution(_woid,_workers[i], _enclaveChallenge));
+			require(callForContribution(_woid, _workers[i], _enclaveChallenge));
 		}
 		return true;
 	}
