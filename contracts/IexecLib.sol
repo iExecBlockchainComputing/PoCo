@@ -34,7 +34,7 @@ library IexecLib
 		uint256 category;       // runtime selection
 		uint256 trust;          // for PoCo
 		uint256 marketDeadline; // deadline for market making
-		uint256 workDeadline;   // deadline for work submission
+		uint256 assetDeadline;  // deadline for work submission
 		uint256 value;          // value/cost/price
 		uint256 volume;         // quantity of instances (total)
 		uint256 remaining;      // remaining instances
@@ -78,11 +78,6 @@ library IexecLib
 		address enclaveChallenge;
 		uint256 weight;
 	}
-
-
-
-
-
 
 	struct Account
 	{
