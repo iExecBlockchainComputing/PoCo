@@ -8,13 +8,12 @@ var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
 var WorkOrder = artifacts.require("./WorkOrder.sol");
+var IexecLib = artifacts.require("./IexecLib.sol");
 
-const BN = require("bn");
-const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
-const addEvmFunctions = require("../utils/evmFunctions.js");
+const Extensions = require("../../utils/extensions.js");
+const addEvmFunctions = require("../../utils/evmFunctions.js");
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth, {
@@ -34,20 +33,33 @@ contract('IexecHub', function(accounts) {
     UNSET: 0,
     PENDING: 1,
     CANCELLED: 2,
-    ACCEPTED: 3,
+    ACTIVE: 3,
     REVEALING: 4,
     CLAIMED: 5,
     COMPLETED: 6
   };
 
+
+  IexecLib.MarketOrderDirectionEnum = {
+    UNSET  : 0,
+    BID    : 1,
+    ASK    : 2,
+    CLOSED : 3
+  };
+
+
   let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
+
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
-  let subscriptionLockStakePolicy = 0;
+  let subscriptionLockStakePolicy = 10;
   let subscriptionMinimumStakePolicy = 0;
   let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
+  let txMined;
+  let txsMined;
   let testTimemout = 0;
   let aRLCInstance;
   let aIexecHubInstance;
@@ -66,9 +78,9 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolsAuthorizedListInstance;
   let aRequestersAuthorizedListInstance;
   let aWorkOrderInstance;
+
   let woid;
 
-  let aContributiuonsInstance;
 
 
   before("should prepare accounts and check TestRPC Mode", async() => {
@@ -81,7 +93,6 @@ contract('IexecHub', function(accounts) {
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
     marketplaceCreator = accounts[7];
-
 
     await Extensions.makeSureAreUnlocked(
       [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
@@ -275,8 +286,8 @@ contract('IexecHub', function(accounts) {
       from: resourceProvider,
       gas: amountGazProvided
     });
-    // WORKER SUBSCRIBE TO POOL
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
       gas: amountGazProvided
@@ -289,47 +300,68 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     appAddress = await aAppHubInstance.getApp(appProvider, 0);
     aAppInstance = await App.at(appAddress);
-    //CREATE A TASK REQUEST
-    txMined = await aIexecHubInstance.createWorkOrder(aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 100, 1, false, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
-    console.log("woid is: " + woid);
-    aWorkOrderInstance = await WorkOrder.at(woid);
-    // SCHEDULER ACCCEPT TASK and A worker is called For contribution
-    txMined = await aIexecHubInstance.acceptWorkOrder(woid, workerPoolAddress, {
-      from: scheduleProvider,
+
+    //emitMarketOrder BID
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    // CALL FOR CONTRIBUTION
-    let workers = [];
-    workers.push(resourceProvider);
-    txMined = await aWorkerPoolInstance.callForContribution(woid, workers, 0, {
+    txMined = await aIexecHubInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/,0/*_trust*/, 99999999999/* _marketDeadline*/,99999999999 /*_assetDeadline*/,100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
+      from: iExecCloudUser
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderEmitted({}));
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+    //answerBidOrder by scheduleProvider
+    txMined = await aIexecHubInstance.answerBidOrder(1/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
+      from: scheduleProvider
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderBidAnswered({}));
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "check marketorderIdx");
+
+    //emitWorkOrder
+    txMined = await aIexecHubInstance.emitWorkOrder(1/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
+    woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    console.log("woid is: " + woid);
+    aWorkOrderInstance = await WorkOrder.at(woid);
+
+    //callForContribution
+    txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
       from: scheduleProvider,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
-    //Worker deposit for contribute staking
+    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
+
+    //workerContribute
     txMined = await aIexecHubInstance.deposit(30, {
       from: resourceProvider,
       gas: amountGazProvided
     });
+
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    //Worker  contribute
-    const signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
     txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
       from: resourceProvider,
       gas: amountGazProvided
     });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 40, "check stake locked of the resourceProvider : 30 + 10");
+
   });
 
 
-  it("scheduleProvider reveal consensus result", async() => {
+  it("revealConsensus", async function() {
+
     txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
       from: scheduleProvider,
       gas: amountGazProvided
@@ -345,7 +377,5 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
   });
-
-
 
 });

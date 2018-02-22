@@ -45,7 +45,7 @@ contract IexecHubInterface
 		address _woid)
 	public returns (bool);
 
-	function setRevealingStatus(
+	function startRevealingPhase(
 		address _woid)
 	public returns (bool);
 

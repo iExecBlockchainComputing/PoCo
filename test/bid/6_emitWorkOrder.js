@@ -8,12 +8,12 @@ var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
 var WorkOrder = artifacts.require("./WorkOrder.sol");
-
+var IexecLib = artifacts.require("./IexecLib.sol");
 
 const Promise = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../utils/extensions.js");
-const addEvmFunctions = require("../utils/evmFunctions.js");
+const Extensions = require("../../utils/extensions.js");
+const addEvmFunctions = require("../../utils/evmFunctions.js");
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth, {
@@ -33,13 +33,23 @@ contract('IexecHub', function(accounts) {
     UNSET: 0,
     PENDING: 1,
     CANCELLED: 2,
-    ACCEPTED: 3,
+    ACTIVE: 3,
     REVEALING: 4,
     CLAIMED: 5,
     COMPLETED: 6
   };
 
+  IexecLib.MarketOrderDirectionEnum = {
+    UNSET  : 0,
+    BID    : 1,
+    ASK    : 2,
+    CLOSED : 3
+  };
+
+
   let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
+
+
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
   let amountGazProvided = 4000000;
@@ -67,9 +77,7 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolsAuthorizedListInstance;
   let aRequestersAuthorizedListInstance;
   let aWorkOrderInstance;
-  let woid;
 
-  let aContributiuonsInstance;
 
 
   before("should prepare accounts and check TestRPC Mode", async() => {
@@ -82,7 +90,6 @@ contract('IexecHub', function(accounts) {
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
     marketplaceCreator = accounts[7];
-
 
     await Extensions.makeSureAreUnlocked(
       [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
@@ -276,8 +283,8 @@ contract('IexecHub', function(accounts) {
       from: resourceProvider,
       gas: amountGazProvided
     });
-    // WORKER SUBSCRIBE TO POOL
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
       gas: amountGazProvided
@@ -290,33 +297,46 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
     appAddress = await aAppHubInstance.getApp(appProvider, 0);
     aAppInstance = await App.at(appAddress);
-    //CREATE A TASK REQUEST
-    txMined = await aIexecHubInstance.createWorkOrder(aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, 1, false, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
-    console.log("woid is: " + woid);
-    aWorkOrderInstance = await WorkOrder.at(woid);
-  });
 
-  it("scheduleProvider accept Pending workOrder", async function() {
-    let contributionsAddress;
-    txMined = await aIexecHubInstance.acceptWorkOrder(woid, workerPoolAddress, {
-      from: scheduleProvider,
+    //emitMarketOrder BID
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
       gas: amountGazProvided
     });
     assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderAccepted({}));
-    assert.strictEqual(events[0].args.woid, woid, "woid check");
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderAccepted({}));
-    assert.strictEqual(events[0].args.woid, woid, "woid check");
-    assert.strictEqual(events[0].args.workerPool, workerPoolAddress, "workerPool check");
-    m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACCEPTED, "check m_status ACCEPTED");
-    //TODO check ratio price
+    txMined = await aIexecHubInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/,0/*_trust*/, 99999999999/* _marketDeadline*/,99999999999 /*_assetDeadline*/,100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
+      from: iExecCloudUser
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderEmitted({}));
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+    //answerBidOrder by scheduleProvider
+    txMined = await aIexecHubInstance.answerBidOrder(1/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
+      from: scheduleProvider
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderBidAnswered({}));
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "check marketorderIdx");
+
+
   });
 
 
+
+  it("emitWorkOrder by iExecCloudUser", async function() {
+      let woid;
+      txMined = await aIexecHubInstance.emitWorkOrder(1/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+        from: iExecCloudUser
+      });
+      assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+      events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
+      woid = events[0].args.woid;
+      assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+      let count = await aWorkOrderHubInstance.getWorkOrdersCount(iExecCloudUser);
+      assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 workOrder now ");
+      let woidFromGetWorkOrder = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, count - 1);
+      assert.strictEqual(woid, woidFromGetWorkOrder, "check woid");
+
+  });
 
 });

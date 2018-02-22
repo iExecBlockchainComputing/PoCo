@@ -237,7 +237,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 	/**************************** Works management *****************************/
-	function answerPositionBid(address _woid) public onlyIexecHub returns (bool)
+	function emitWorkOrder(address _woid) public onlyIexecHub returns (bool)
 	{
 		require(isOpen          ()                            );
 		require(isAppAllowed    (WorkOrder(_woid).m_app()    ));
@@ -282,7 +282,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
-		require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.ACTIVE);
+	require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 
@@ -330,7 +330,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 
-		require(iexecHubInterface.setRevealingStatus(_woid));
+		require(iexecHubInterface.startRevealingPhase(_woid));
 
 		consensus.winnerCount = 0;
 		for (uint256 i = 0; i<consensus.contributors.length; ++i)

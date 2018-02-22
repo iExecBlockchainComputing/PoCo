@@ -56,12 +56,12 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		return m_ownerByWorkOrder[_workOrder];
 	}
 	// TODO: used ?
-	function isWorkOrderRegistred(address _workOrder) public view returns (bool)
+	/*function isWorkOrderRegistred(address _workOrder) public view returns (bool)
 	{
 		return m_ownerByWorkOrder[_workOrder] != 0x0;
-	}
+	}*/
 
-	function addWorkOrder(address _owner, address _workOrder) internal
+	function addWorkOrder(address _owner, address _workOrder) public onlyOwner /*owner == IexecHub*/
 	{
 		uint id = m_workOrderCountByOwner[_owner];
 		m_workOrderCountByOwner  [_owner]     = id.add(1);
@@ -74,10 +74,10 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 	{
 		return WorkOrder(_woid).m_workReward();
 	}
-
+*/
 	function getStatus(address _woid) public view returns (IexecLib.WorkOrderStatusEnum status)
 	{
 		return WorkOrder(_woid).m_status();
 	}
-	*/
+
 }
