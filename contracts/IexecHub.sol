@@ -175,7 +175,8 @@ contract IexecHub
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,
-		uint256 _deadline,
+		uint256 _marketDeadline,
+		uint256 _workDeadline,
 		uint256 _value,
 		address _workerpool,
 		uint256 _volume)
@@ -184,13 +185,14 @@ contract IexecHub
 		uint256                      marketorderIdx = m_orderBook.length;
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
 
-		marketorder.direction = _direction;
-		marketorder.category  = _category;
-		marketorder.trust     = _trust;
-		marketorder.deadline  = _deadline;
-		marketorder.value     = _value;
-		marketorder.volume    = _volume;
-		marketorder.remaining = _volume;
+		marketorder.direction      = _direction;
+		marketorder.category       = _category;
+		marketorder.trust          = _trust;
+		marketorder.marketDeadline = _marketDeadline;
+		marketorder.workDeadline   = _workDeadline;
+		marketorder.value          = _value;
+		marketorder.volume         = _volume;
+		marketorder.remaining      = _volume;
 
 		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
 		{
@@ -239,7 +241,7 @@ contract IexecHub
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 
 		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID);
-		require(marketorder.deadline  >  now);
+		require(marketorder.marketDeadline  > now);
 
 		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
 		require(marketorder.workerpool == address(0) || marketorder.workerpool == marketorder.workerpool);
@@ -262,7 +264,7 @@ contract IexecHub
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 
 		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK);
-		require(marketorder.deadline  >  now);
+		require(marketorder.marketDeadline  >  now);
 
 		_quantity.min256(marketorder.remaining);
 		marketorder.remaining = marketorder.remaining.sub(_quantity);
@@ -283,7 +285,7 @@ contract IexecHub
 		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
 
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.deadline <= now);
+		require(marketorder.workDeadline <= now);
 
 		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
 		uint value    = marketorder.value.mul(quantity);
@@ -296,13 +298,13 @@ contract IexecHub
 		// TODO: create event
 		return true;
 	}
-
+/*
 	function transferAsset(uint _marketorderIdx, address _user, address _workerpool, address _newowner) public returns (bool)
 	{
 		require(_user == msg.sender);
 
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.deadline > now);
+		require(marketorder.workDeadline > now);
 
 		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
 		uint value    = marketorder.value.mul(quantity);
@@ -317,7 +319,7 @@ contract IexecHub
 		// TODO: create event
 		return true;
 	}
-
+*/
 	/**
 	 * WorkOrder life cycle
 	 */
@@ -337,7 +339,7 @@ contract IexecHub
 		m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
 
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.deadline > now);
+		require(marketorder.workDeadline > now);
 
 		// APP
 		require(appHub.isAppRegistred     (_app             ));

@@ -31,14 +31,15 @@ library IexecLib
 	struct MarketOrder
 	{
 		MarketOrderDirectionEnum direction;
-		uint256 category;   // runtime selection
-		uint256 trust;      // for PoCo
-		uint256 deadline;
-		uint256 value;      // value/cost/price
-		uint256 volume;     // quantity of instances (total)
-		uint256 remaining;  // remaining instances
-		address requester;  // null for ASK
-		address workerpool; // BID can use null for any
+		uint256 category;       // runtime selection
+		uint256 trust;          // for PoCo
+		uint256 marketDeadline; // deadline for market making
+		uint256 workDeadline;   // deadline for work submission
+		uint256 value;          // value/cost/price
+		uint256 volume;         // quantity of instances (total)
+		uint256 remaining;      // remaining instances
+		address requester;      // null for ASK
+		address workerpool;     // BID can use null for any
 	}
 
 	/**
