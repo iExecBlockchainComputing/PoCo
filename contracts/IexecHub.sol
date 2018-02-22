@@ -327,7 +327,7 @@ contract IexecHub
 		}
 		require(lock(msg.sender, emitcost)); // Lock funds for app + dataset payment
 
-		WorkOrder woid = new WorkOrder(
+		WorkOrder workorder = new WorkOrder(
 			this,
 			_marketorderIdx,
 			msg.sender,
@@ -341,10 +341,11 @@ contract IexecHub
 			_callback,
 			_beneficiary
 		);
+		workorder.setActive(); // TO be done by the scheduler within X days ?
 		//WorkOrderHub.addWorkOrder(msg.sender, woid); // TODO: move to WorkOrderHub → IexecHub
 
-		WorkOrderActivate(woid, _workerpool);
-		return woid;
+		WorkOrderActivate(workorder, _workerpool);
+		return workorder;
 	}
 
 	function startRevealingPhase(address _woid) public returns (bool)
