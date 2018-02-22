@@ -50,17 +50,21 @@ contract IexecHub
 	/**
 	 * Marketplace
 	 */
-	IexecLib.Position[] public m_orderBook;
+	// Array of positions
+	IexecLib.MarketOrder[]                                        public m_orderBook;
+	// marketorderIdx => user => workerpool => quantity
+	mapping(uint => mapping(address => mapping(address => uint))) public m_assetBook;
 
 	/**
 	 * Events
 	 */
 	/* event PositionBid */
-	/* event PositionBidCanceled */
+	/* event PositionBidClosed */
 	/* event PositionBidMarketed */
 	// event PositionAsk
-	// event PositionMarketedAsk (Accepted)
-	// event WorkOrder // needed ?
+	// event PositionAskClosed (Accepted)
+	// event PositionAskMarketed (Accepted)
+	// event WorkOrderSubmit
 	// event WorkOrderRevealing
 	// event WorkOrderAborted
 	// event WorkOrderCompleted
@@ -164,28 +168,137 @@ contract IexecHub
 		return newDataset;
 	}
 
-	function createPositionBid(
+	/**
+	 * Marketplace
+	 */
+	function emitMarketOrder(
+		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,
 		uint256 _value,
-		address _app,
-		address _dataset,
 		address _workerpool,
-		string  _woParams,
-		address _woBeneficiary,
-		bool    _woCallback)
+		uint256 _volume)
 	public returns (uint)
 	{
-		// msg.sender = requester
+		uint256                      marketorderIdx = m_orderBook.length;
+		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
 
+		marketorder.direction = _direction;
+		marketorder.category  = _category;
+		marketorder.trust     = _trust;
+		marketorder.value     = _value;
+		marketorder.volume    = _volume;
+		marketorder.remaining = _volume;
+
+		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
+		{
+			require(lock(msg.sender, _value.mul(_volume)));
+			marketorder.requester  = msg.sender;
+			marketorder.workerpool = _workerpool;
+		}
+		else if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
+		{
+			require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+			marketorder.requester  = address(0);
+			marketorder.workerpool = _workerpool;
+		}
+		else
+		{
+			revert();
+		}
+		// MarketOrderEmitted(); // TODO create event
+		return marketorderIdx;
+	}
+	function closeMarketOrder(uint256 _marketorderIdx) public returns (bool)
+	{
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+
+		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID)
+		{
+			require(marketorder.requester == msg.sender);
+		}
+		else if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
+		{
+			require(workerPoolHub.getWorkerPoolOwner(marketorder.workerpool) == msg.sender);
+		}
+		else
+		{
+			revert();
+		}
+
+		marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
+		// MarketOrderClosed(); // TODO create event
+		return true;
+	}
+
+	function answerBidOrder(uint256 _marketorderIdx, uint256 _quantity, address _workerpool) public returns (uint256)
+	{
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+
+		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID);
+
+		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+		require(marketorder.workerpool == address(0) || marketorder.workerpool == marketorder.workerpool);
+
+		_quantity.min256(marketorder.remaining);
+		marketorder.remaining = marketorder.remaining.sub(_quantity);
+		if (marketorder.remaining == 0)
+		{
+			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
+		}
+		// marketorderIdx => user => workerpool => quantity
+		m_assetBook[_marketorderIdx][marketorder.requester][_workerpool] = m_assetBook[_marketorderIdx][marketorder.requester][_workerpool].add(_quantity);
+
+		// TODO: create event
+		return _quantity;
+	}
+
+	function answerAskOrder(uint _marketorderIdx, uint256 _quantity) public returns (uint256)
+	{
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+
+		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK);
+
+		_quantity.min256(marketorder.remaining);
+		marketorder.remaining = marketorder.remaining.sub(_quantity);
+		if (marketorder.remaining == 0)
+		{
+			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
+		}
+		require(lock(msg.sender, marketorder.value.mul(_quantity)));
+
+		m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool] = m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool].add(_quantity);
+
+		// TODO: create event
+		return _quantity;
+	}
+
+
+
+
+	function emitWorkOrder(
+		uint256 _marketorderIdx,
+		address _workerpool,
+		address _app,
+		address _dataset,
+		string  _params,
+		bool    _callback,
+		address _beneficiary)
+	public returns (address)
+	{
+		require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
+		m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
+
+		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+
+		// msg.sender = requester
 		// APP
 		require(appHub.isAppRegistred    (_app            ));
 		require(appHub.isOpen            (_app            ));
 		require(appHub.isDatasetAllowed  (_app, _dataset  ));
 		require(appHub.isRequesterAllowed(_app, msg.sender));
 		// Price to pay by the user, initialized with reward + dapp Price
-		uint256 userCost = _value.add(appHub.getAppPrice(_app));
-
+		uint256 emitcost = appHub.getAppPrice(_app);
 		// DATASET
 		if (_dataset != address(0)) // address(0) → no dataset
 		{
@@ -198,9 +311,8 @@ contract IexecHub
 				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
 			}
 			// add optional datasetPrice for userCost
-			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
+			emitcost = emitcost.add(datasetHub.getDatasetPrice(_dataset));
 		}
-
 		// WORKERPOOL
 		if (_workerpool != address(0)) // address(0) → any workerPool
 		{
@@ -211,194 +323,27 @@ contract IexecHub
 			// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
 			require(appHub.isWorkerPoolAllowed(_app, _workerpool));
 		}
-
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		if (m_accounts[msg.sender].stake < userCost)
+		if (m_accounts[msg.sender].stake < emitcost)
 		{
-			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
+			require(deposit(emitcost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
 		}
-		require(lock(msg.sender, userCost)); // LOCK THE FUNDS FOR PAYMENT
+		require(lock(msg.sender, emitcost)); // Lock funds for app + dataset payment
 
-		uint256                   positionIdx = m_orderBook.length;
-		IexecLib.Position storage position    = m_orderBook[positionIdx];
-		position.positionType  = IexecLib.PositionTypeEnum.BID;
-		position.categorie     = _category;
-		position.trust         = _trust;
-		position.value         = _value;
-		position.quantity      = 1;
-		position.requester     = msg.sender;
-		position.app           = _app;
-		position.dataset       = _dataset;
-		position.workerpool    = _workerpool;
-		position.woParams      = _woParams;
-		position.woBeneficiary = _woBeneficiary;
-		position.woCallback    = _woCallback;
-		position.locked        = userCost;
-		position.workorder     =	address(0);
-
-		// PositionBid(); // TODO create event
-		return positionIdx;
-	}
-
-	function cancelPositionBid(uint256 _idx) public returns (bool)
-	{
-		IexecLib.Position storage position = m_orderBook[_idx];
-
-		// sender must be requester
-		require(position.requester == msg.sender);
-
-		// position must still be active
-		require(position.positionType == IexecLib.PositionTypeEnum.BID);
-		position.positionType == IexecLib.PositionTypeEnum.CANCELED;
-
-		require(unlock(position.requester, position.locked));
-
-		// PositionBidCanceled(); // TODO create event
-		return true;
-	}
-
-	function answerPositionBid(uint256 _positionIdx, address _workerpool) public returns (address)
-	{
-		IexecLib.Position storage position = m_orderBook[_positionIdx];
-
-		// sender must own _workerpool
-		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
-
-		// position must be active
-		require(position.positionType == IexecLib.PositionTypeEnum.BID);
-		position.positionType = IexecLib.PositionTypeEnum.MARKETED;
-
-		// Check worker pool affectation is compatible
-		require(position.workerpool == address(0) || position.workerpool == _workerpool);
-		position.workerpool == _workerpool;
-
-		position.workorder = workOrderHub.createWorkOrder(
-			_positionIdx,
-			position.requester,
-			position.app,
-			position.dataset,
-			_workerpool,
-			position.value,
-			position.trust,
-			position.woParams,
-			position.woBeneficiary,
-			position.woCallback
-		);
-		require(WorkOrder(position.workorder).setActive());
-		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-		require(WorkerPool(_workerpool).answerPositionBid(position.workorder));
-
-		// PositionBidMarketed(); // TODO create event
-		return position.workorder;
-	}
-
-
-
-
-
-
-
-
-
-
-
-/*
-	function createPositionAsk() public returns (uint256)
-	{
-		return 0;
-	}
-	function cancelPositionAsk() public returns (uint256)
-	{
-		return 0;
-	}
-	function answerPositionAsk() public returns (address)
-	{
-		return 0;
-	}
-*/
-
-
-	/*
-	function createWorkOrder(
-		address _workerPool,
-		address _app,
-		address _dataset,
-		string  _workOrderParam,
-		uint256 _workReward,
-		uint256 _askedTrust,
-		bool    _dappCallback,
-		address _beneficiary)
-	public returns (address createdWorkOrder)
-	{
-		// msg.sender = requester
-
-		if (_workerPool != address(0)) // address(0) → any workerPool
-		{
-			require(workerPoolHub.isWorkerPoolRegistred(_workerPool            ));
-			require(workerPoolHub.isOpen               (_workerPool            ));
-			require(workerPoolHub.isAppAllowed         (_workerPool, _app      ));
-			require(workerPoolHub.isDatasetAllowed     (_workerPool, _dataset  ));
-			// require(workerPoolHub.isRequesterAllowed   (_workerPool, msg.sender));
-			require(appHub.isWorkerPoolAllowed(_app, _workerPool));
-		}
-
-		// APP
-		require(appHub.isAppRegistred    (_app            ));
-		require(appHub.isOpen            (_app            ));
-		require(appHub.isDatasetAllowed  (_app, _dataset  ));
-		require(appHub.isRequesterAllowed(_app, msg.sender));
-
-		// Price to pay by the user, initialized with reward + dapp Price
-		uint256 userCost = _workReward.add(appHub.getAppPrice(_app));
-
-		// DATASET
-		if (_dataset != address(0)) // address(0) → no dataset
-		{
-			require(datasetHub.isDatasetRegistred(_dataset            ));
-			require(datasetHub.isOpen            (_dataset            ));
-			require(datasetHub.isAppAllowed      (_dataset, _app      ));
-			require(datasetHub.isRequesterAllowed(_dataset, msg.sender));
-			if (_workerPool != address(0)) // address(0) → any workerPool
-			{
-				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerPool));
-			}
-
-			// add optional datasetPrice for userCost
-			userCost = userCost.add(datasetHub.getDatasetPrice(_dataset));
-		}
-
-		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		if (m_accounts[msg.sender].stake < userCost)
-		{
-			require(deposit(userCost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
-		}
-
-		address newWorkOrder = workOrderHub.createWorkOrder(
-			msg.sender, // requester
-			_workerPool,
+		workOrderHub.createWorkOrder(
+			_marketorderIdx,
+			msg.sender,
 			_app,
 			_dataset,
-			_workOrderParam,
-			_workReward,
-			_askedTrust,
-			_dappCallback,
+			_workerpool,
+			marketorder.value,
+			emitcost,
+			marketorder.trust,
+			_params,
+			_callback,
 			_beneficiary
 		);
-		IexecLib.WorkOrderInfo storage woInfo = m_woInfos[newWorkOrder];
-		woInfo.requesterAffectation  = msg.sender;
-		woInfo.appAffectation        = _app;
-		woInfo.datasetAffectation    = _dataset;
-		woInfo.workerPoolAffectation = _workerPool;
-		woInfo.userCost              = userCost;
-
-		require(lock(woInfo.requesterAffectation, woInfo.userCost)); // LOCK THE FUNDS FOR PAYMENT
-
-		// address newWorkOrder will the woid
-		WorkOrder(newWorkOrder, msg.sender, _workerPool, _app, _dataset);
-		return newWorkOrder;
 	}
-	*/
-
 	/**
 	 * WorkOrder life cycle
 	 */
@@ -428,7 +373,7 @@ contract IexecHub
 		return true;
 	}
 	*/
-
+	/*
 	function setRevealingStatus(address _woid) public returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);

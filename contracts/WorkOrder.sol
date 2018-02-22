@@ -20,10 +20,11 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	address public m_workerpool;
 
 	uint256 public m_reward;
+	uint256 public m_emitcost;
 	uint256 public m_trust;
 	string  public m_params;
-	address public m_beneficiary;
 	bool    public m_callback;
+	address public m_beneficiary;
 
 	string  public m_stdout;
 	string  public m_stderr;
@@ -40,10 +41,11 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		address _dataset,
 		address _workerpool,
 		uint256 _reward,
+		uint256 _emitcost,
 		uint256 _trust,
-		string  _woParams,
-		address _woBeneficiary,
-		bool    _woCallback)
+		string  _params,
+		bool    _callback,
+		address _beneficiary)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
@@ -56,10 +58,11 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		m_dataset     = _dataset;
 		m_workerpool  = _workerpool;
 		m_reward      = _reward;
+		m_emitcost    = _emitcost;
 		m_trust       = _trust;
-		m_params      = _woParams;
-		m_beneficiary = _woBeneficiary;
-		m_callback    = _woCallback;
+		m_params      = _params;
+		m_callback    = _callback;
+		m_beneficiary = _beneficiary;
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 	}
 

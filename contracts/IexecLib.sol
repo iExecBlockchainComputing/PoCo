@@ -15,47 +15,55 @@ library IexecLib
 		CLAIMED,   // Failled consensus
 		COMPLETED  // Concensus achieved
 	}
-
-	enum ContributionStatusEnum
-	{
-		UNSET,
-		AUTHORIZED,
-		CONTRIBUTED,
-		PROVED,
-		REJECTED
-	}
-
 	/***************************************************************************/
 	/*                               Structures                                */
 	/***************************************************************************/
-
 	/**
 	 * used by IexecHub.sol
 	 */
-	enum PositionTypeEnum { UNSET, BID, ASK, CANCELED, MARKETED }
-	struct Position
+	enum MarketOrderDirectionEnum
 	{
-		PositionTypeEnum positionType;
-		uint256          categorie;     // runtime selection
-		uint256          trust;         // for PoCo
-		uint256          value;         // value/cost/price
-		uint256          quantity;      // ASK only
-		address          requester;     // null for ASK
-		address          app;           // null for ASK
-		address          dataset;       // null for ASK or is no dataset
-		address          workerpool;    // BID can use null for any
-		string           woParams;      // workorder param (BID only)
-		address          woBeneficiary; // (BID only)
-		bool             woCallback;    // (BID only)
-		uint256          locked;        // (BID only)
-		address          workorder;     // (BID only)
+		UNSET,
+		BID,
+		ASK,
+		CLOSED
 	}
+	struct MarketOrder
+	{
+		MarketOrderDirectionEnum direction;
+		uint256 category;   // runtime selection
+		uint256 trust;      // for PoCo
+		uint256 value;      // value/cost/price
+		uint256 volume;     // quantity of instances (total)
+		uint256 remaining;  // remaining instances
+		address requester;  // null for ASK
+		address workerpool; // BID can use null for any
+	}
+
+	/*
+	struct Asset
+	{
+		uint256 category;   // runtime selection
+		uint256 trust;      // for PoCo
+		uint256 value;      // value/cost/price
+		uint256 quantity;   // quantity
+		address user;       // user
+		address workerpool; // workerpool
+	}
+	*/
+	// address          app;           // null for ASK
+	// address          dataset;       // null for ASK or is no dataset
+	// string           woParams;      // workorder param (BID only)
+	// address          woBeneficiary; // (BID only)
+	// bool             woCallback;    // (BID only)
+	// uint256          locked;        // (BID only)
+	// address          workorder;     // (BID only)
 
 	/**
 	 * Meta info about consensus
 	 * used in WorkerPool.sol
 	 */
-	struct ConsensusInfo
+	struct Consensus
 	{
 		uint256 poolReward;
 		uint256 stakeAmount;
@@ -71,6 +79,14 @@ library IexecLib
 	 * Contribution entry
 	 * used by WorkerPool.sol
 	 */
+	enum ContributionStatusEnum
+	{
+		UNSET,
+		AUTHORIZED,
+		CONTRIBUTED,
+		PROVED,
+		REJECTED
+	}
 	struct Contribution
 	{
 		ContributionStatusEnum status;

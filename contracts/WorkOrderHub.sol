@@ -76,26 +76,28 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		address _dataset,
 		address _workerpool,
 		uint256 _reward,
+		uint256 _emitcost,
 		uint256 _trust,
-		string  _woParams,
-		address _woBeneficiary,
-		bool    _woCallback)
+		string  _params,
+		bool    _callback,
+		address _beneficiary)
 	public onlyOwner /*owner == IexecHub*/ returns (address createdWorkOrder)
 	{
 		// _requester == owner of the WorkOrder
 		// msg.sender == IexecHub
 		address newWorkOrder = new WorkOrder(
-			msg.sender,     // iexecHubAddress
-			_positionIdx,   // positionIdx
-			_requester,     // requester
-			_app,           // app
-			_dataset,       // dataset
-			_workerpool,    // workerpool
-			_reward,        // reward
-			_trust,         // trust
-			_woParams,      // woParams
-			_woBeneficiary, // woBeneficiary
-			_woCallback     // woCallback
+			msg.sender,   // iexecHubAddress
+			_positionIdx, // positionIdx
+			_requester,   // requester
+			_app,         // app
+			_dataset,     // dataset
+			_workerpool,  // workerpool
+			_reward,      // reward
+			_emitcost,
+			_trust,       // trust
+			_params,      // woParams
+			_callback,    // woCallback
+			_beneficiary  // woBeneficiary
 		);
 		addWorkOrder(tx.origin, newWorkOrder);
 
