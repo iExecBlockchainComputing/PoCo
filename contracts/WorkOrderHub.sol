@@ -69,54 +69,6 @@ contract WorkOrderHub is OwnableOZ // is Owned by IexecHub
 		m_ownerByWorkOrder       [_workOrder] = _owner;
 	}
 
-	function createWorkOrder(
-		uint256 _positionIdx,
-		address _requester,
-		address _app,
-		address _dataset,
-		address _workerpool,
-		uint256 _reward,
-		uint256 _emitcost,
-		uint256 _trust,
-		string  _params,
-		bool    _callback,
-		address _beneficiary)
-	public onlyOwner /*owner == IexecHub*/ returns (address createdWorkOrder)
-	{
-		// _requester == owner of the WorkOrder
-		// msg.sender == IexecHub
-		address newWorkOrder = new WorkOrder(
-			msg.sender,   // iexecHubAddress
-			_positionIdx, // positionIdx
-			_requester,   // requester
-			_app,         // app
-			_dataset,     // dataset
-			_workerpool,  // workerpool
-			_reward,      // reward
-			_emitcost,
-			_trust,       // trust
-			_params,      // woParams
-			_callback,    // woCallback
-			_beneficiary  // woBeneficiary
-		);
-		addWorkOrder(tx.origin, newWorkOrder);
-
-		/*
-		CreateWorkOrder(
-			_requester,
-			newWorkOrder,
-			_workerPool,
-			_app,
-			_dataset,
-			_workOrderParam,
-			_workReward,
-			_askedTrust,
-			_dappCallback
-		);
-		*/
-
-		return newWorkOrder;
-	}
 	/*
 	function getWorkReward(address _woid) public view returns (uint256 workReward)
 	{

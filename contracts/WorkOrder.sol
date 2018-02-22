@@ -13,11 +13,12 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	 */
 	IexecLib.WorkOrderStatusEnum public m_status;
 
-	uint256 public m_positionIdx;
+	uint256 public m_marketorderIdx;
 
 	address public m_app;
 	address public m_dataset;
 	address public m_workerpool;
+	address public m_requester;
 
 	uint256 public m_reward;
 	uint256 public m_emitcost;
@@ -35,7 +36,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	 */
 	function WorkOrder(
 		address _iexecHubAddress,
-		uint256 _positionIdx,
+		uint256 _marketorderIdx,
 		address _requester,
 		address _app,
 		address _dataset,
@@ -52,17 +53,18 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		// owner = msg.sender = workOrderHub
 		require(_requester != address(0));
 		transferOwnership(_requester); // owner → tx.origin
-		m_status      = IexecLib.WorkOrderStatusEnum.PENDING;
-		m_positionIdx = _positionIdx;
-		m_app         = _app;
-		m_dataset     = _dataset;
-		m_workerpool  = _workerpool;
-		m_reward      = _reward;
-		m_emitcost    = _emitcost;
-		m_trust       = _trust;
-		m_params      = _params;
-		m_callback    = _callback;
-		m_beneficiary = _beneficiary;
+		m_status         = IexecLib.WorkOrderStatusEnum.PENDING;
+		m_marketorderIdx = _marketorderIdx;
+		m_app            = _app;
+		m_dataset        = _dataset;
+		m_workerpool     = _workerpool;
+		m_requester      = _requester;
+		m_reward         = _reward;
+		m_emitcost       = _emitcost;
+		m_trust          = _trust;
+		m_params         = _params;
+		m_callback       = _callback;
+		m_beneficiary    = _beneficiary;
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 	}
 

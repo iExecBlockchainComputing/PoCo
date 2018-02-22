@@ -70,7 +70,7 @@ contract IexecHub
 	// event WorkOrderCompleted
 
 	/* event WorkOrder         (address woid, address workOrderOwner, address indexed workerPool, address indexed app, address indexed dataset); */
-	event WorkOrderAccepted (address woid, address indexed workerPool);
+	event WorkOrderActivate (address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
 	event WorkOrderCancelled(address woid, address indexed workerPool);
 	event WorkOrderAborted  (address woid, address workerPool);
@@ -216,6 +216,7 @@ contract IexecHub
 		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID)
 		{
 			require(marketorder.requester == msg.sender);
+			require(unlock(msg.sender, marketorder.value.mul(marketorder.remaining)));
 		}
 		else if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
@@ -273,9 +274,9 @@ contract IexecHub
 		return _quantity;
 	}
 
-
-
-
+	/**
+	 * WorkOrder life cycle
+	 */
 	function emitWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
@@ -286,43 +287,39 @@ contract IexecHub
 		address _beneficiary)
 	public returns (address)
 	{
+		// msg.sender = requester
+
 		require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
 		m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
 
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 
-		// msg.sender = requester
 		// APP
-		require(appHub.isAppRegistred    (_app            ));
-		require(appHub.isOpen            (_app            ));
-		require(appHub.isDatasetAllowed  (_app, _dataset  ));
-		require(appHub.isRequesterAllowed(_app, msg.sender));
+		require(appHub.isAppRegistred     (_app             ));
+		require(appHub.isOpen             (_app             ));
+		require(appHub.isDatasetAllowed   (_app, _dataset   ));
+		require(appHub.isRequesterAllowed (_app, msg.sender ));
+		require(appHub.isWorkerPoolAllowed(_app, _workerpool));
 		// Price to pay by the user, initialized with reward + dapp Price
 		uint256 emitcost = appHub.getAppPrice(_app);
 		// DATASET
 		if (_dataset != address(0)) // address(0) → no dataset
 		{
-			require(datasetHub.isDatasetRegistred(_dataset            ));
-			require(datasetHub.isOpen            (_dataset            ));
-			require(datasetHub.isAppAllowed      (_dataset, _app      ));
-			require(datasetHub.isRequesterAllowed(_dataset, msg.sender));
-			if (_workerpool != address(0)) // address(0) → any workerpool
-			{
-				require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
-			}
+			require(datasetHub.isDatasetRegistred (_dataset             ));
+			require(datasetHub.isOpen             (_dataset             ));
+			require(datasetHub.isAppAllowed       (_dataset, _app       ));
+			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
+			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
 			// add optional datasetPrice for userCost
 			emitcost = emitcost.add(datasetHub.getDatasetPrice(_dataset));
 		}
 		// WORKERPOOL
-		if (_workerpool != address(0)) // address(0) → any workerPool
-		{
-			require(workerPoolHub.isWorkerPoolRegistred(_workerpool            ));
-			require(workerPoolHub.isOpen               (_workerpool            ));
-			require(workerPoolHub.isAppAllowed         (_workerpool, _app      ));
-			require(workerPoolHub.isDatasetAllowed     (_workerpool, _dataset  ));
-			// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
-			require(appHub.isWorkerPoolAllowed(_app, _workerpool));
-		}
+		require(workerPoolHub.isWorkerPoolRegistred(_workerpool            ));
+		require(workerPoolHub.isOpen               (_workerpool            ));
+		require(workerPoolHub.isAppAllowed         (_workerpool, _app      ));
+		require(workerPoolHub.isDatasetAllowed     (_workerpool, _dataset  ));
+		// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
+
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		if (m_accounts[msg.sender].stake < emitcost)
 		{
@@ -330,7 +327,8 @@ contract IexecHub
 		}
 		require(lock(msg.sender, emitcost)); // Lock funds for app + dataset payment
 
-		workOrderHub.createWorkOrder(
+		WorkOrder woid = new WorkOrder(
+			this,
 			_marketorderIdx,
 			msg.sender,
 			_app,
@@ -343,38 +341,13 @@ contract IexecHub
 			_callback,
 			_beneficiary
 		);
+		//WorkOrderHub.addWorkOrder(msg.sender, woid); // TODO: move to WorkOrderHub → IexecHub
+
+		WorkOrderActivate(woid, _workerpool);
+		return woid;
 	}
-	/**
-	 * WorkOrder life cycle
-	 */
 
-	/*
-	function acceptWorkOrder(address _woid, address _workerPool) public returns (bool)
-	{
-		// sender must own _workerpool
-		require(workerPoolHub.getWorkerPoolOwner(_workerPool) == msg.sender);
-		// workorder must be pending
-		require(getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.PENDING);
-
-		// Check worker pool affectation is compatible
-		IexecLib.WorkOrderInfo storage workorderinfo = m_woInfos[_woid];
-		require(workorderinfo.workerPoolAffectation == address(0) || workorderinfo.workerPoolAffectation == _workerPool);
-		workorderinfo.workerPoolAffectation = _workerPool;
-
-		require(WorkerPool(_workerPool).acceptWorkOrder(
-			_woid,
-			getWorkOrderWorkReward(_woid),
-			workorderinfo.appAffectation,
-			workorderinfo.datasetAffectation
-		));
-		require(workOrderHub.setAccepted(_woid));
-		// require(lock(msg.sender, VALUE_TO_DETERMINE)); // TODO: scheduler stake
-		WorkOrderAccepted(_woid, _workerPool);
-		return true;
-	}
-	*/
-	/*
-	function setRevealingStatus(address _woid) public returns (bool)
+	function startRevealingPhase(address _woid) public returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
@@ -384,13 +357,13 @@ contract IexecHub
 		return true;
 	}
 
-	function reopen(address _woid) public returns (bool)
+	function reActivate(address _woid) public returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 		require(workorder.setActive());
-		WorkOrderAccepted(_woid, workorder.m_workerpool());
+		WorkOrderActivate(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -405,8 +378,8 @@ contract IexecHub
 		// Who ? contributor / client
 		require(workorder.setClaimed());
 
-		IexecLib.Position storage position = m_orderBook[workorder.m_positionIdx()];
-		require(unlock(position.requester, position.locked)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		uint claim = workorder.m_reward().add(workorder.m_emitcost());
+		require(unlock(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
 		WorkOrderAborted(_woid, workorder.m_workerpool());
 		return true;
@@ -423,36 +396,43 @@ contract IexecHub
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
-		IexecLib.Position storage position = m_orderBook[workorder.m_positionIdx()];
-
 		// reward app
-		uint256 appPrice = appHub.getAppPrice(position.app);
+		address app      = workorder.m_app();
+		uint256 appPrice = appHub.getAppPrice(app);
 		if (appPrice > 0)
 		{
-			require(reward(appHub.getAppOwner(position.app), appPrice));
+			require(reward(appHub.getAppOwner(app), appPrice));
 			// TODO: to unlock a stake ?
 		}
 		// incremente app reputation?
 		// reward dataset
-		if (position.dataset != address(0))
+		address dataset = workorder.m_dataset();
+		if (dataset != address(0))
 		{
-			uint256 datasetPrice = datasetHub.getDatasetPrice(position.dataset);
+			uint256 datasetPrice = datasetHub.getDatasetPrice(dataset);
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(position.dataset), datasetPrice));
+				require(reward(datasetHub.getDatasetOwner(dataset), datasetPrice));
 				// TODO: to unlock a stake ?
 			}
 			// incremente dataset reputation?
 		}
 
-		// take funds from requester
-		require(seize(position.requester, position.locked)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		// TODO: reward the workerpool
+
+		/**
+		 * seize stacked funds from requester.
+		 * reward = value: was locked at market making
+		 * emitcost: was locked at when emiting the workorder
+		 */
+		uint claim = workorder.m_reward().add(workorder.m_emitcost());
+		require(seize(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
 		// write results
 		require(workorder.setResult(_stdout, _stderr, _uri));
 
 
-		WorkOrderCompleted(_woid, position.workerpool);
+		WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
