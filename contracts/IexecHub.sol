@@ -200,7 +200,8 @@ contract IexecHub
 		}
 		else if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
-			require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+
+			require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
 			marketorder.requester  = address(0);
 			marketorder.workerpool = _workerpool;
 		}
@@ -273,7 +274,7 @@ contract IexecHub
 		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID);
 		require(marketorder.marketDeadline > now);
 
-		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
+	  require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
 		require(marketorder.workerpool == address(0) || marketorder.workerpool == _workerpool);
 
 		_quantity.min256(marketorder.remaining);
@@ -313,8 +314,7 @@ contract IexecHub
 
 	function redeamUnusedAssets(uint _marketorderIdx, address _user, address _workerpool) public returns (bool)
 	{
-		require(workerPoolHub.getWorkerPoolOwner(_workerpool) == msg.sender);
-
+		require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		require(marketorder.assetDeadline <= now);
 

@@ -40,12 +40,12 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	{
 		return m_workerPoolByOwnerByIndex[_owner][_index];
 	}
-
+/*
 	function getWorkerPoolOwner(address _workerPool) public view returns (address)
 	{
 		return m_ownerByWorkerPool[_workerPool];
 	}
-
+*/
 	function getWorkerAffectation(address _worker) public view returns (address workerPool)
 	{
 		return m_workerAffectation[_worker];
