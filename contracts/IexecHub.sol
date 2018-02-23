@@ -3,13 +3,14 @@ pragma solidity ^0.4.18;
 import "rlc-token/contracts/RLC.sol";
 
 import './WorkOrder.sol';
-
+import './Marketplace.sol';
 import './AppHub.sol';
 import './DatasetHub.sol';
 import './WorkerPoolHub.sol';
 import './WorkOrderHub.sol';
 import "./SafeMathOZ.sol";
 import './IexecLib.sol';
+
 
 /**
  * @title IexecHub
@@ -35,6 +36,9 @@ contract IexecHub
 	DatasetHub     datasetHub;
 	WorkOrderHub   workOrderHub;
 	WorkerPoolHub  workerPoolHub;
+	bool           public marketplaceCreated;
+	address        public marketplaceAddress;
+	Marketplace    marketplace;
 
 	/**
 	 * Escrow
@@ -47,26 +51,7 @@ contract IexecHub
 	mapping(address => uint256)  public m_scores;
 	IexecLib.ContributionHistory public m_contributionHistory;
 
-	/**
-	 * Marketplace
-	 */
-	// Array of positions
-	uint                                  public m_orderCount;
-	mapping(uint => IexecLib.MarketOrder) public m_orderBook;
 
-
-	// marketorderIdx => user => workerpool => quantity
-	mapping(uint => mapping(address => mapping(address => uint))) public m_assetBook;
-
-	/**
-	 * Events
-	 */
-	event MarketOrderEmitted(uint marketorderIdx);
-	/* event MarketOrderClosed */
-	event MarketOrderBidAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity);
-	event MarketOrderAskAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity);
-	/* event UnusedAssetsClaimed */
-	/* event AssetTransfered */
 	/* event WorkOrderEmit */
 	event WorkOrderActivated(address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
@@ -92,6 +77,12 @@ contract IexecHub
 	event Reward  (address user,  uint256 amount);
 	event Seize   (address user,  uint256 amount);
 
+	modifier onlyMarketplace()
+	{
+		require(msg.sender == marketplaceAddress);
+		_;
+	}
+
 	/**
 	 * Constructor
 	 */
@@ -100,18 +91,28 @@ contract IexecHub
 		address _workerPoolHubAddress,
 		address _appHubAddress,
 		address _datasetHubAddress,
-		address _workOrderHubAddress)
+		address _workOrderHubAddress
+	)
 	public
 	{
 		rlc = RLC(_tokenAddress);
 
-		workerPoolHub = WorkerPoolHub(_workerPoolHubAddress );
-		appHub        = AppHub       (_appHubAddress        );
-		datasetHub    = DatasetHub   (_datasetHubAddress    );
-		workOrderHub  = WorkOrderHub (_workOrderHubAddress);
+		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress );
+		appHub             = AppHub       (_appHubAddress        );
+		datasetHub         = DatasetHub   (_datasetHubAddress    );
+		workOrderHub       = WorkOrderHub (_workOrderHubAddress);
+		//marketplaceAddress = new Marketplace(this); //too much gas
+		//marketplace        = Marketplace(marketplaceAddress); //too much gas
 
 		m_contributionHistory.success = 0;
 		m_contributionHistory.failled = 0;
+	}
+
+	function attachMarketplace(address _marketplaceAddress){
+		require(!marketplaceCreated);
+		marketplaceAddress        = _marketplaceAddress;//new Marketplace(this);
+		marketplace =  Marketplace (marketplaceAddress);
+		marketplaceCreated = true;
 	}
 
 	/**
@@ -130,7 +131,8 @@ contract IexecHub
 			_name,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
-			_subscriptionMinimumScorePolicy
+			_subscriptionMinimumScorePolicy,
+			marketplaceAddress
 		);
 		CreateWorkerPool(tx.origin, newWorkerPool, _name);
 		return newWorkerPool;
@@ -167,191 +169,6 @@ contract IexecHub
 	}
 
 	/**
-	 * Marketplace
-	 */
-	function emitMarketOrder(
-		IexecLib.MarketOrderDirectionEnum _direction,
-		uint256 _category,
-		uint256 _trust,
-		uint256 _marketDeadline,
-		uint256 _assetDeadline,
-		uint256 _value,
-		address _workerpool,
-		uint256 _volume)
-	public returns (uint)
-	{
-		uint256                      marketorderIdx = m_orderCount;
-		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
-
-		marketorder.direction      = _direction;
-		marketorder.category       = _category;
-		marketorder.trust          = _trust;
-		marketorder.marketDeadline = _marketDeadline;
-		marketorder.assetDeadline  = _assetDeadline;
-		marketorder.value          = _value;
-		marketorder.volume         = _volume;
-		marketorder.remaining      = _volume;
-
-		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
-		{
-			require(lock(msg.sender, _value.mul(_volume))); //call deposit() auto  if not ?
-			marketorder.requester  = msg.sender;
-			marketorder.workerpool = _workerpool;
-		}
-		else if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
-		{
-
-			require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
-			marketorder.requester  = address(0);
-			marketorder.workerpool = _workerpool;
-		}
-		else
-		{
-			revert();
-		}
-
-		m_orderCount = m_orderCount.add(1);
-
-		MarketOrderEmitted(marketorderIdx); // TODO create event
-		return marketorderIdx;
-	}
-
-	 function getMarketOrder(uint _marketorderIdx) public view returns(
-		IexecLib.MarketOrderDirectionEnum direction,
- 		uint256 category,       // runtime selection
- 		uint256 trust,          // for PoCo
- 		uint256 marketDeadline, // deadline for market making
- 		uint256 assetDeadline,  // deadline for work submission
- 		uint256 value,         // value/cost/price
- 		uint256 volume,         // quantity of instances (total)
- 		uint256 remaining,      // remaining instances
- 		address requester,      // null for ASK
- 		address workerpool     // BID can use null for any
-		){
-	  IexecLib.MarketOrder storage marketorder    = m_orderBook[_marketorderIdx];
-		return (
-			marketorder.direction,
-			marketorder.category,
-			marketorder.trust,
-			marketorder.marketDeadline,
-			marketorder.assetDeadline,
-			marketorder.value,
-			marketorder.volume,
-			marketorder.remaining,
-			marketorder.requester,
-			marketorder.workerpool
-		);
-	 }
-/*
-	COMMENT because of out of gas at deploy
-	function closeMarketOrder(uint256 _marketorderIdx) public returns (bool)
-	{
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-
-		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID)
-		{
-			require(marketorder.requester == msg.sender);
-			require(unlock(msg.sender, marketorder.value.mul(marketorder.remaining)));
-		}
-		else if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
-		{
-			require(workerPoolHub.getWorkerPoolOwner(marketorder.workerpool) == msg.sender);
-		}
-		else
-		{
-			revert();
-		}
-
-		marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
-		// MarketOrderClosed(); // TODO create event
-		return true;
-	}
-*/
-	function answerBidOrder(uint256 _marketorderIdx, uint256 _quantity, address _workerpool) public returns (uint256)
-	{
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-
-		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID);
-		require(marketorder.marketDeadline > now);
-
-	  require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
-		require(marketorder.workerpool == address(0) || marketorder.workerpool == _workerpool);
-
-		_quantity.min256(marketorder.remaining);
-		marketorder.remaining = marketorder.remaining.sub(_quantity);
-		if (marketorder.remaining == 0)
-		{
-			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
-		}
-		// marketorderIdx => user => workerpool => quantity
-		m_assetBook[_marketorderIdx][marketorder.requester][_workerpool] = m_assetBook[_marketorderIdx][marketorder.requester][_workerpool].add(_quantity);
-
-		// TODO: create event
-		MarketOrderBidAnswered(_marketorderIdx,marketorder.requester,_workerpool,_quantity);
-		return _quantity;
-	}
-
-	function answerAskOrder(uint _marketorderIdx, uint256 _quantity) public returns (uint256)
-	{
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-
-		require(marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK);
-		require(marketorder.marketDeadline > now);
-
-		_quantity.min256(marketorder.remaining);
-		marketorder.remaining = marketorder.remaining.sub(_quantity);
-		if (marketorder.remaining == 0)
-		{
-			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
-		}
-		require(lock(msg.sender, marketorder.value.mul(_quantity)));
-
-		m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool] = m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool].add(_quantity);
-
-		MarketOrderAskAnswered(_marketorderIdx,msg.sender,marketorder.workerpool,_quantity);
-		return _quantity;
-	}
-
-	function redeamUnusedAssets(uint _marketorderIdx, address _user, address _workerpool) public returns (bool)
-	{
-		require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.assetDeadline <= now);
-
-		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
-		uint value    = marketorder.value.mul(quantity);
-
-		m_assetBook[_marketorderIdx][_user][_workerpool] = 0; // delete asset
-
-		require(seize (_user,      value)); // Take the locked funds from the user
-		require(reward(msg.sender, value)); // Give the funds to the workerpool owner
-
-		// TODO: create event
-		return true;
-	}
-/*
-	function transferAsset(uint _marketorderIdx, address _user, address _workerpool, address _newowner) public returns (bool)
-	{
-		require(_user == msg.sender);
-
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.assetDeadline > now);
-
-		uint quantity = m_assetBook[_marketorderIdx][_user][_workerpool];
-		uint value    = marketorder.value.mul(quantity);
-
-		m_assetBook[_marketorderIdx][_newowner][_workerpool] = m_assetBook[_marketorderIdx][_newowner][_workerpool].add(quantity); // give asset to new owner
-		m_assetBook[_marketorderIdx][_user    ][_workerpool] = 0; // remove asset from old user
-
-		require(seize (_user,      value)); // Take the locked funds from the user
-		require(reward(_newowner, value));  // Give the funds to the new owner ...
-		require(lock  (_newowner, value));  // ... and lock them
-
-		// TODO: create event
-		return true;
-	}
-*/
-	/**
 	 * WorkOrder life cycle
 	 */
 	function emitWorkOrder(
@@ -366,11 +183,10 @@ contract IexecHub
 	{
 		// msg.sender = requester
 
-		require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
-		m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
-
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.assetDeadline > now);
+		//require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
+		//m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
+		//IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+		require(marketplace.consumMarketOrder(_marketorderIdx,msg.sender,_workerpool));
 
 		// APP
 		require(appHub.isAppRegistred     (_app             ));
@@ -412,16 +228,16 @@ contract IexecHub
 			_app,
 			_dataset,
 			_workerpool,
-			marketorder.value,
+			//marketplace.getMarketOrderValue(_marketorderIdx), Stack too deep, try removing local variables
 			emitcost,
-			marketorder.trust,
+		//	marketplace.getMarketOrderTrust(_marketorderIdx),Stack too deep, try removing local variables
 			_params,
 			_callback,
 			_beneficiary
 		);
 		workorder.setActive(); // TODO: done by the scheduler within X days?
 		workOrderHub.addWorkOrder(msg.sender, workorder); // TODO: move to WorkOrderHub → IexecHub
-		require(WorkerPool(_workerpool).emitWorkOrder(workorder));
+		require(WorkerPool(_workerpool).emitWorkOrder(workorder,_marketorderIdx));
 
 		WorkOrderActivated(workorder, _workerpool);
 		return workorder;
@@ -436,8 +252,7 @@ contract IexecHub
 		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
 		return true;
 	}
-/*
-COMMENT because of out of gas at deploy
+
 	function reActivate(address _woid) public returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);
@@ -447,8 +262,6 @@ COMMENT because of out of gas at deploy
 		WorkOrderActivated(_woid, workorder.m_workerpool());
 		return true;
 	}
-
-	*/
 
 	// TODO: who ? everybody ?
 	function claimFailedConsensus(address _woid) public returns (bool)
@@ -461,7 +274,7 @@ COMMENT because of out of gas at deploy
 		// Who ? contributor / client
 		require(workorder.setClaimed());
 
-		uint claim = workorder.m_reward().add(workorder.m_emitcost());
+		uint claim = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()).add(workorder.m_emitcost());
 		require(unlock(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
 		WorkOrderAborted(_woid, workorder.m_workerpool());
@@ -508,7 +321,10 @@ COMMENT because of out of gas at deploy
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint claim = workorder.m_reward().add(workorder.m_emitcost());
+
+
+
+		uint claim = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()).add(workorder.m_emitcost());
 		require(seize(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
 
 		// write results
@@ -598,6 +414,31 @@ COMMENT because of out of gas at deploy
 	/**
 	 * Stake, reward and penalty functions
 	 */
+
+
+	function lockForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
+	{
+		require(lock(_user, _amount));
+		return true;
+	}
+
+	function unlockForOrder(address _user, uint256 _amount) public  onlyMarketplace returns (bool)
+	{
+		require(unlock(_user, _amount));
+		return true;
+	}
+
+	function seizeForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
+	{
+		require(seize(_user,_amount));
+		return true;
+	}
+
+	function rewardForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
+	{
+		require(reward(_user,_amount));
+		return true;
+	}
 
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{

@@ -8,6 +8,7 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var WorkOrder      = artifacts.require("./WorkOrder.sol");
+var Marketplace    = artifacts.require("./Marketplace.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
@@ -57,6 +58,7 @@ contract('IexecHub', function(accounts) {
 	let aAppHubInstance;
 	let aDatasetHubInstance;
 	let aWorkOrderHubInstance;
+	let aMarketplaceInstance;
 
 	let DAPP_PARAMS_EXAMPLE ="{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 	/*
@@ -168,25 +170,37 @@ contract('IexecHub', function(accounts) {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
 		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+
 		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
 		console.log("transferOwnership of AppHub to IexecHub");
+
 		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
 		console.log("transferOwnership of DatasetHub to IexecHub");
+
 		txMined = await aWorkOrderHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		console.log("transferOwnership of WorkOrderHub to IexecHub");
+
+		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
+			from: marketplaceCreator
+		});
+		console.log("aMarketplaceInstance.address is ");
+		console.log(aMarketplaceInstance.address);
+
+		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+			from: marketplaceCreator
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		console.log("attachMarketplace to IexecHub");
 
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([

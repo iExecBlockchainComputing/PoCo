@@ -20,9 +20,9 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	address public m_workerpool;
 	address public m_requester;
 
-	uint256 public m_reward;
+	//uint256 public m_reward;
 	uint256 public m_emitcost;
-	uint256 public m_trust;
+	//uint256 public m_trust;
 	string  public m_params;
 	address public m_callback;
 	address public m_beneficiary;
@@ -41,9 +41,9 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		address _app,
 		address _dataset,
 		address _workerpool,
-		uint256 _reward,
+	//	uint256 _reward,
 		uint256 _emitcost,
-		uint256 _trust,
+	//	uint256 _trust,
 		string  _params,
 		address _callback,
 		address _beneficiary)
@@ -59,9 +59,9 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		m_dataset        = _dataset;
 		m_workerpool     = _workerpool;
 		m_requester      = _requester;
-		m_reward         = _reward;
-		m_emitcost       = _emitcost;
-		m_trust          = _trust;
+		//m_reward         = _reward;//Stack too deep, try removing local variables
+		m_emitcost       = _emitcost;//Stack too deep, try removing local variables
+		//m_trust          = _trust;
 		m_params         = _params;
 		m_callback       = _callback;
 		m_beneficiary    = _beneficiary;

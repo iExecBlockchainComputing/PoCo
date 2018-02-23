@@ -2,13 +2,15 @@ pragma solidity ^0.4.18;
 
 import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
+import './MarketplaceAccessor.sol';
 import './IexecHub.sol';
 import "./SafeMathOZ.sol";
 import "./AuthorizedList.sol";
 import "./WorkOrder.sol";
+import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
 {
 	using SafeMathOZ for uint256;
 
@@ -77,8 +79,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		string  _name,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
+		uint256 _subscriptionMinimumScorePolicy,
+		address _marketplaceAddress)
 	IexecHubAccessor(_iexecHubAddress)
+	MarketplaceAccessor(_marketplaceAddress)
 	public
 	{
 		// tx.origin == owner
@@ -237,7 +241,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 	}
 
 	/**************************** Works management *****************************/
-	function emitWorkOrder(address _woid) public onlyIexecHub returns (bool)
+	function emitWorkOrder(address _woid,uint256 _marketorderIdx) public onlyIexecHub returns (bool)
 	{
 		require(isOpen          ()                            );
 		require(isAppAllowed    (WorkOrder(_woid).m_app()    ));
@@ -245,9 +249,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 
-		uint256 reward = WorkOrder(_woid).m_reward();
-		consensus.poolReward      = reward;
-		consensus.stakeAmount     = reward.percentage(m_stakeRatioPolicy);
+		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
+		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
 		consensus.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
 
 		WorkOrderActive(_woid);

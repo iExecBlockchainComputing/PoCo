@@ -96,8 +96,18 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
+	function lockForOrder(
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
 	function unlockForWork(
 		address _woid,
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
+	function unlockForOrder(
 		address _user,
 		uint256 _amount)
 	public returns (bool);
@@ -114,8 +124,18 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
+	function rewardForOrder(
+		address _worker,
+		uint256 _amount)
+	public returns (bool);
+
 	function seizeForWork(
 		address _woid,
+		address _worker,
+		uint256 _amount)
+	public returns (bool);
+
+	function seizeForOrder(
 		address _worker,
 		uint256 _amount)
 	public returns (bool);

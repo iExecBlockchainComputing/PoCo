@@ -9,6 +9,7 @@ var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var WorkOrder      = artifacts.require("./WorkOrder.sol");
 var IexecLib       = artifacts.require("./IexecLib.sol");
+var Marketplace    = artifacts.require("./Marketplace.sol");
 
 const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
@@ -56,6 +57,7 @@ contract('IexecHub', function(accounts) {
 	let aAppHubInstance;
 	let aDatasetHubInstance;
 	let aWorkOrderHubInstance;
+	let aMarketplaceInstance;
 
 	//specific for test :
 	let workerPoolAddress;
@@ -194,6 +196,18 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		console.log("transferOwnership of WorkOrderHub to IexecHub");
 
+    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
+			from: marketplaceCreator
+		});
+		console.log("aMarketplaceInstance.address is ");
+		console.log(aMarketplaceInstance.address);
+
+    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+      from: marketplaceCreator
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    console.log("attachMarketplace to IexecHub");
+
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([
 			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: scheduleProvider, gas: amountGazProvided }),
@@ -258,19 +272,19 @@ contract('IexecHub', function(accounts) {
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		txMined = await aIexecHubInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderEmitted({}));
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
 
 		//answerBidOrder by scheduleProvider
-		txMined = await aIexecHubInstance.answerBidOrder(0/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
+		txMined = await aMarketplaceInstance.answerBidOrder(0/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
 			from: scheduleProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aIexecHubInstance.MarketOrderBidAnswered({}));
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderBidAnswered({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
 
 		//emitWorkOrder
