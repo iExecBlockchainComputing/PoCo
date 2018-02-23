@@ -51,8 +51,8 @@ contract IexecHub
 	 * Marketplace
 	 */
 	// Array of positions
-	uint                                                         public m_orderCount;
-	mapping(uint =>IexecLib.MarketOrder)                          public m_orderBook;
+	uint                                  public m_orderCount;
+	mapping(uint => IexecLib.MarketOrder) public m_orderBook;
 
 
 	// marketorderIdx => user => workerpool => quantity
@@ -180,10 +180,9 @@ contract IexecHub
 		uint256 _volume)
 	public returns (uint)
 	{
-
-		m_orderCount = m_orderCount.add(1);
 		uint256                      marketorderIdx = m_orderCount;
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
+
 		marketorder.direction      = _direction;
 		marketorder.category       = _category;
 		marketorder.trust          = _trust;
@@ -209,7 +208,10 @@ contract IexecHub
 		{
 			revert();
 		}
-		 MarketOrderEmitted(marketorderIdx); // TODO create event
+
+		m_orderCount = m_orderCount.add(1);
+
+		MarketOrderEmitted(marketorderIdx); // TODO create event
 		return marketorderIdx;
 	}
 
@@ -562,12 +564,12 @@ COMMENT because of out of gas at deploy
 	 */
 	function subscribeToPool() public returns (bool subscribed)
 	{
-		//msg.sender = workerPool
-		//tx.origin = worker
+		// msg.sender = workerPool
+		// tx.origin = worker
 		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
-		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
-		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
 		require(lock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
+		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
 		require(workerPoolHub.subscribeToPool(msg.sender));
 		WorkerPoolSubscription(msg.sender, tx.origin);
 		return true;

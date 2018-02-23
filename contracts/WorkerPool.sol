@@ -165,7 +165,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor // Owned by a S(w)
 		return m_workers.length;
 	}
 
-	function subscribeToPool() public  returns (bool){
+	function subscribeToPool() public returns (bool){
 		//tx.origin = worker
 	  require(iexecHubInterface.subscribeToPool());
 		uint index = m_workers.push(tx.origin);
