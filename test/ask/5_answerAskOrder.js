@@ -266,6 +266,7 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 0);
 		aAppInstance = await App.at(appAddress);
 
+		console.log(">>>>>>>>>>>#-1");
 		//Create ask Marker Order by scheduler
 		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
@@ -277,16 +278,19 @@ contract('IexecHub', function(accounts) {
 	});
 
 	it("answerAskOrder", async function() {
+		console.log(">>>>>>>>>>>#1");
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
+		console.log(">>>>>>>>>>>#2");
 		txMined = await aMarketplaceInstance.answerAskOrder(0/*_marketorderIdx*/, 1 /*_quantity*/, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		console.log(">>>>>>>>>>>#3");
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0,                 "check marketorderIdx");
 		assert.strictEqual(events[0].args.requester,                 iExecCloudUser,    "check iExecCloudUser");

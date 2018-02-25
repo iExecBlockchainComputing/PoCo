@@ -36,9 +36,17 @@ contract IexecHub
 	DatasetHub     datasetHub;
 	WorkOrderHub   workOrderHub;
 	WorkerPoolHub  workerPoolHub;
-	bool           public marketplaceCreated;
-	address        public marketplaceAddress;
-	Marketplace    marketplace;
+
+	/**
+	 * Market place
+	 */
+	Marketplace marketplace;
+	address     public marketplaceAddress;
+	modifier onlyMarketplace()
+	{
+		require(msg.sender == marketplaceAddress);
+		_;
+	}
 
 	/**
 	 * Escrow
@@ -77,12 +85,6 @@ contract IexecHub
 	event Reward  (address user,  uint256 amount);
 	event Seize   (address user,  uint256 amount);
 
-	modifier onlyMarketplace()
-	{
-		require(msg.sender == marketplaceAddress);
-		_;
-	}
-
 	/**
 	 * Constructor
 	 */
@@ -97,22 +99,23 @@ contract IexecHub
 	{
 		rlc = RLC(_tokenAddress);
 
-		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress );
-		appHub             = AppHub       (_appHubAddress        );
-		datasetHub         = DatasetHub   (_datasetHubAddress    );
-		workOrderHub       = WorkOrderHub (_workOrderHubAddress);
-		//marketplaceAddress = new Marketplace(this); //too much gas
-		//marketplace        = Marketplace(marketplaceAddress); //too much gas
+		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
+		appHub             = AppHub       (_appHubAddress       );
+		datasetHub         = DatasetHub   (_datasetHubAddress   );
+		workOrderHub       = WorkOrderHub (_workOrderHubAddress );
+		// marketplace        = Marketplace(marketplaceAddress); //too much gas
+		// marketplaceAddress = new Marketplace(this); //too much gas
+		marketplaceAddress = address(0);
 
 		m_contributionHistory.success = 0;
 		m_contributionHistory.failled = 0;
 	}
 
-	function attachMarketplace(address _marketplaceAddress){
-		require(!marketplaceCreated);
-		marketplaceAddress        = _marketplaceAddress;//new Marketplace(this);
-		marketplace =  Marketplace (marketplaceAddress);
-		marketplaceCreated = true;
+	function attachMarketplace(address _marketplaceAddress)
+	{
+		require(marketplaceAddress == address(0));
+		marketplaceAddress = _marketplaceAddress;//new Marketplace(this);
+		marketplace        =  Marketplace(_marketplaceAddress);
 	}
 
 	/**
@@ -186,7 +189,7 @@ contract IexecHub
 		//require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
 		//m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
 		//IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketplace.consumMarketOrder(_marketorderIdx,msg.sender,_workerpool));
+		require(marketplace.consumAsset(_marketorderIdx,msg.sender,_workerpool));
 
 		// APP
 		require(appHub.isAppRegistred     (_app             ));
@@ -215,11 +218,7 @@ contract IexecHub
 		// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
 
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		if (m_accounts[msg.sender].stake < emitcost)
-		{
-			require(deposit(emitcost.sub(m_accounts[msg.sender].stake))); // Only require the deposit of what is missing
-		}
-		require(lock(msg.sender, emitcost)); // Lock funds for app + dataset payment
+		require(lockDeposit(msg.sender, emitcost)); // Lock funds for app + dataset payment
 
 		WorkOrder workorder = new WorkOrder(
 			this,
@@ -228,9 +227,9 @@ contract IexecHub
 			_app,
 			_dataset,
 			_workerpool,
-			//marketplace.getMarketOrderValue(_marketorderIdx), Stack too deep, try removing local variables
+			// marketplace.getMarketOrderValue(_marketorderIdx), Stack too deep, try removing local variables
 			emitcost,
-		//	marketplace.getMarketOrderTrust(_marketorderIdx),Stack too deep, try removing local variables
+			// marketplace.getMarketOrderTrust(_marketorderIdx),Stack too deep, try removing local variables
 			_params,
 			_callback,
 			_beneficiary
@@ -414,53 +413,51 @@ contract IexecHub
 	/**
 	 * Stake, reward and penalty functions
 	 */
-
-
+	/* Marketplace */
 	function lockForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(lock(_user, _amount));
 		return true;
 	}
-
+	/* Marketplace */
+	function lockDepositForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
+	{
+		require(lockDeposit(_user, _amount));
+		return true;
+	}
+	/* Marketplace */
 	function unlockForOrder(address _user, uint256 _amount) public  onlyMarketplace returns (bool)
 	{
 		require(unlock(_user, _amount));
 		return true;
 	}
-
+	/* Marketplace */
 	function seizeForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(seize(_user,_amount));
 		return true;
 	}
-
+	/* Marketplace */
 	function rewardForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(reward(_user,_amount));
 		return true;
 	}
-
+	/* Work */
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
 		return true;
 	}
-
+	/* Work */
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
-
-	function rewardForConsensus(address _woid, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
-	{
-		require(WorkOrder(_woid).m_workerpool() == msg.sender);
-		require(reward(_scheduler, _amount));
-		return true;
-	}
-
+	/* Work */
 	function rewardForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
@@ -472,7 +469,7 @@ contract IexecHub
 		m_scores[_worker] = m_scores[_worker].add(1);
 		return true;
 	}
-
+	/* Work */
 	function seizeForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
@@ -484,22 +481,27 @@ contract IexecHub
 		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
 		return true;
 	}
+	/* Consensus */
+	function rewardForConsensus(address _woid, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
+	{
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
+		require(reward(_scheduler, _amount));
+		return true;
+	}
 
 	/**
 	 * Wallet methods: public
 	 */
-	function deposit(uint256 _amount) public returns (bool)
+	function deposit(uint256 _amount) external returns (bool)
 	{
-		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		Deposit(msg.sender, _amount);
 		return true;
 	}
-	function withdraw(uint256 _amount) public returns (bool)
+	function withdraw(uint256 _amount) external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		// TODO: is the transferFrom cancel is SafeMath throws ?
 		require(rlc.transfer(msg.sender, _amount));
 		Withdraw(msg.sender, _amount);
 		return true;
@@ -529,11 +531,22 @@ contract IexecHub
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
 		return true;
 	}
-
 	function unlock(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		return true;
+	}
+	function lockDeposit(address _user, uint256 _amount) internal returns (bool)
+	{
+		if (m_accounts[_user].stake < _amount)
+		{
+			uint delta = _amount.sub(m_accounts[_user].stake);
+			require(rlc.transferFrom(_user, address(this), delta));
+			m_accounts[_user].stake = m_accounts[_user].stake.add(delta);
+			Deposit(_user, delta);
+		}
+		require(lock(_user, _amount));
 		return true;
 	}
 

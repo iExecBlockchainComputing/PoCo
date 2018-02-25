@@ -112,6 +112,11 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
+	function lockDepositForOrder(
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
 	function rewardForConsensus(
 		address _woid,
 		address _scheduler,
@@ -142,11 +147,11 @@ contract IexecHubInterface
 
 	function deposit(
 		uint256 _amount)
-	public returns (bool);
+	external returns (bool);
 
 	function withdraw(
 		uint256 _amount)
-	public returns (bool);
+	external returns (bool);
 
 	function checkBalance(
 		address _owner)

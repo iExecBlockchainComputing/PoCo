@@ -91,7 +91,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		//tx.origin = worker
 		WorkerPool pool = WorkerPool(_workerPool);
 		// you must have no cuurent affectation on others worker Pool
-		require(m_workerAffectation[tx.origin] == 0x0);
+		require(m_workerAffectation[tx.origin] == address(0));
 		// you must be on the white list of the worker pool to subscribe.
 		require(pool.isWorkerAllowed(tx.origin));
 		m_workerAffectation[tx.origin] = _workerPool;
@@ -101,8 +101,8 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	function unsubscribeToPool(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool unsubscribed)
 	{
 		WorkerPool pool = WorkerPool(_workerPool);
-		require(m_workerAffectation[_worker] == _workerPool );
-		m_workerAffectation[_worker] == 0x0;
+		require(m_workerAffectation[_worker] == _workerPool);
+		m_workerAffectation[_worker] == address(0);
 		return true;
 	}
 
@@ -110,11 +110,11 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	{
 		return WorkerPool(_workerPool).isOpen();
 	}
-	function isAppAllowed(address _workerPool, address _app) public returns (bool)
+	function isAppAllowed(address _workerPool, address _app) public view returns (bool)
 	{
 		return WorkerPool(_workerPool).isAppAllowed(_app);
 	}
-	function isDatasetAllowed(address _workerPool, address _dataset) public returns (bool)
+	function isDatasetAllowed(address _workerPool, address _dataset) public view returns (bool)
 	{
 		return WorkerPool(_workerPool).isDatasetAllowed(_dataset);
 	}
