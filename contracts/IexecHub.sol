@@ -174,7 +174,7 @@ contract IexecHub
 	/**
 	 * WorkOrder life cycle
 	 */
-	function emitWorkOrder(
+	function answerEmitWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
 		address _app,
@@ -184,18 +184,57 @@ contract IexecHub
 		address _beneficiary)
 	public returns (address)
 	{
-		// msg.sender = requester
+		require(marketplace.answerConsume(_marketorderIdx, msg.sender, _workerpool));
+		return emitWorkOrder(
+			_marketorderIdx,
+			msg.sender,
+			_workerpool,
+			_app,
+			_dataset,
+			_params,
+			_callback,
+			_beneficiary
+		);
+	}
+	function consumeEmitWorkOrder(
+		uint256 _marketorderIdx,
+		address _workerpool,
+		address _app,
+		address _dataset,
+		string  _params,
+		address _callback,
+		address _beneficiary)
+	public returns (address)
+	{
+		require(marketplace.useConsume(_marketorderIdx, msg.sender, _workerpool));
+		return emitWorkOrder(
+			_marketorderIdx,
+			msg.sender,
+			_workerpool,
+			_app,
+			_dataset,
+			_params,
+			_callback,
+			_beneficiary
+		);
+	}
 
-		//require(m_assetBook[_marketorderIdx][msg.sender][_workerpool] > 0);
-		//m_assetBook[_marketorderIdx][msg.sender][_workerpool] = m_assetBook[_marketorderIdx][msg.sender][_workerpool].sub(1);
-		//IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketplace.consumAsset(_marketorderIdx,msg.sender,_workerpool));
-
+	function emitWorkOrder(
+		uint256 _marketorderIdx,
+		address _requester,
+		address _workerpool,
+		address _app,
+		address _dataset,
+		string  _params,
+		address _callback,
+		address _beneficiary)
+	internal returns (address)
+	{
 		// APP
 		require(appHub.isAppRegistred     (_app             ));
 		require(appHub.isOpen             (_app             ));
 		require(appHub.isDatasetAllowed   (_app, _dataset   ));
-		require(appHub.isRequesterAllowed (_app, msg.sender ));
+		require(appHub.isRequesterAllowed (_app, _requester ));
 		require(appHub.isWorkerPoolAllowed(_app, _workerpool));
 		// Price to pay by the user, initialized with reward + dapp Price
 		uint256 emitcost = appHub.getAppPrice(_app);
@@ -205,7 +244,7 @@ contract IexecHub
 			require(datasetHub.isDatasetRegistred (_dataset             ));
 			require(datasetHub.isOpen             (_dataset             ));
 			require(datasetHub.isAppAllowed       (_dataset, _app       ));
-			require(datasetHub.isRequesterAllowed (_dataset, msg.sender ));
+			require(datasetHub.isRequesterAllowed (_dataset, _requester ));
 			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
 			// add optional datasetPrice for userCost
 			emitcost = emitcost.add(datasetHub.getDatasetPrice(_dataset));
@@ -218,25 +257,25 @@ contract IexecHub
 		// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
 
 		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
-		require(lockDeposit(msg.sender, emitcost)); // Lock funds for app + dataset payment
+		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
 
 		WorkOrder workorder = new WorkOrder(
 			this,
 			_marketorderIdx,
-			msg.sender,
+			_requester,
 			_app,
 			_dataset,
 			_workerpool,
 			// marketplace.getMarketOrderValue(_marketorderIdx), Stack too deep, try removing local variables
 			emitcost,
-			// marketplace.getMarketOrderTrust(_marketorderIdx),Stack too deep, try removing local variables
+			// marketplace.getMarketOrderTrust(_marketorderIdx), Stack too deep, try removing local variables
 			_params,
 			_callback,
 			_beneficiary
 		);
 		workorder.setActive(); // TODO: done by the scheduler within X days?
-		workOrderHub.addWorkOrder(msg.sender, workorder); // TODO: move to WorkOrderHub → IexecHub
-		require(WorkerPool(_workerpool).emitWorkOrder(workorder,_marketorderIdx));
+		workOrderHub.addWorkOrder(_requester, workorder); // TODO: move to WorkOrderHub → IexecHub
+		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
 		WorkOrderActivated(workorder, _workerpool);
 		return workorder;
@@ -313,22 +352,18 @@ contract IexecHub
 			// incremente dataset reputation?
 		}
 
-		// TODO: reward the workerpool
+		// TODO: reward the workerpool → done by the callser itself
 
 		/**
 		 * seize stacked funds from requester.
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-
-
-
 		uint claim = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()).add(workorder.m_emitcost());
-		require(seize(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(seize(workorder.m_requester(), claim)); // seize funds for payment
 
 		// write results
 		require(workorder.setResult(_stdout, _stderr, _uri));
-
 
 		WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
@@ -541,7 +576,7 @@ contract IexecHub
 	{
 		if (m_accounts[_user].stake < _amount)
 		{
-			uint delta = _amount.sub(m_accounts[_user].stake);
+			uint256 delta = _amount.sub(m_accounts[_user].stake);
 			require(rlc.transferFrom(_user, address(this), delta));
 			m_accounts[_user].stake = m_accounts[_user].stake.add(delta);
 			Deposit(_user, delta);

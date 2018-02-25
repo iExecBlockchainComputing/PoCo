@@ -196,17 +196,17 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		console.log("transferOwnership of WorkOrderHub to IexecHub");
 
-    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
+		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator
 		});
 		console.log("aMarketplaceInstance.address is ");
 		console.log(aMarketplaceInstance.address);
 
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-    console.log("attachMarketplace to IexecHub");
+		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+			from: marketplaceCreator
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		console.log("attachMarketplace to IexecHub");
 
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([
@@ -271,8 +271,12 @@ contract('IexecHub', function(accounts) {
 			from: scheduleProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
+		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
 
-		//answerAskOrder
+	});
+
+	it("answerAskOrder", async function() {
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: amountGazProvided
@@ -284,66 +288,10 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
-
-		//emitWorkOrder
-		txMined = await aIexecHubInstance.emitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-			from: iExecCloudUser
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
-		woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
-		assert.strictEqual(events[0].args.woid, woid, "woid check");
-		console.log("woid is: " + woid);
-		aWorkOrderInstance = await WorkOrder.at(woid);
-
-		//callForContribution
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
-			from: scheduleProvider,
-			gas: amountGazProvided
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
-	});
-
-	it("workerContribute", async function() {
-		assert.strictEqual(subscriptionMinimumStakePolicy, 10, "check stake sanity before contribution");
-		assert.strictEqual(subscriptionLockStakePolicy,    0,  "check stake sanity before contribution");
-
-		txMined = await aIexecHubInstance.deposit(30, {
-			from: resourceProvider,
-			gas: amountGazProvided
-		});
-		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 40 (30 + 10 earlier)");
-		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 0");
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
-		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-		m_workerStake = await aWorkerPoolInstance.contribute.call(woid, signed.hash, signed.sign, 0, 0, 0, {
-			from: resourceProvider,
-			gas: amountGazProvided
-		});
-		assert.strictEqual(m_workerStake.toNumber(), 30, "30% of 100 (price) = 30 will be lock for resourceProvider");
-
-		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 30 (including 10 of initial stake)");
-		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
-		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-		txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-			from: resourceProvider,
-			gas: amountGazProvided
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
-		events = await Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({}));
-		assert.strictEqual(events[0].args.woid, woid, "woid check");
-		assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
-
-		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the resourceProvider");
-		assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider : 30 + 10");
+		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0,                 "check marketorderIdx");
+		assert.strictEqual(events[0].args.requester,                 iExecCloudUser,    "check iExecCloudUser");
+		assert.strictEqual(events[0].args.workerpool,                workerPoolAddress, "check workerPoolAddress");
+		assert.strictEqual(events[0].args.quantity.toNumber(),       1,                 "check quantity");
 	});
 
 });

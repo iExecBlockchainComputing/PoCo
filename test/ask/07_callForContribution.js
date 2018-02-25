@@ -287,7 +287,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
 
 		//emitWorkOrder
-		txMined = await aIexecHubInstance.emitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.consumeEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");

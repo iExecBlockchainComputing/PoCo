@@ -197,10 +197,10 @@ contract('IexecHub', function(accounts) {
 		console.log("transferOwnership of WorkOrderHub to IexecHub");
 
     aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
-      from: marketplaceCreator
-    });
-    console.log("aMarketplaceInstance.address is ");
-    console.log(aMarketplaceInstance.address);
+			from: marketplaceCreator
+		});
+		console.log("aMarketplaceInstance.address is ");
+		console.log(aMarketplaceInstance.address);
 
     txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
       from: marketplaceCreator
@@ -266,30 +266,32 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 0);
 		aAppInstance = await App.at(appAddress);
 
-		//Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
-			from: scheduleProvider
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
-		//answerAskOrder
+		//emitMarketOrder BID
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
-		txMined = await aMarketplaceInstance.answerAskOrder(0/*_marketorderIdx*/, 1 /*_quantity*/, {
+		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
+		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
+
+		//answerBidOrder by scheduleProvider
+		txMined = await aMarketplaceInstance.answerBidOrder(0/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
+			from: scheduleProvider
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderBidAnswered({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
+
 	});
 
-	it("emitWorkOrder", async function() {
+	it("emitWorkOrder by iExecCloudUser", async function() {
 		let woid;
-		txMined = await aIexecHubInstance.emitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.consumeEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");

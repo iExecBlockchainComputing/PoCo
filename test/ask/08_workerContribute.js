@@ -266,42 +266,84 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 0);
 		aAppInstance = await App.at(appAddress);
 
-		//emitMarketOrder BID
+		//Create ask Marker Order by scheduler
+		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+			from: scheduleProvider
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+
+		//answerAskOrder
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.BID, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, 0/*_workerpool any*/, 1/*_volume*/, {
+
+		txMined = await aMarketplaceInstance.answerAskOrder(0/*_marketorderIdx*/, 1 /*_quantity*/, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
-
-		//answerBidOrder by scheduleProvider
-		txMined = await aMarketplaceInstance.answerBidOrder(0/*_marketorderIdx*/, 1 /*_quantity*/,workerPoolAddress/*_workerpool*/, {
-			from: scheduleProvider
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderBidAnswered({}));
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
 
-	});
-
-	it("emitWorkOrder by iExecCloudUser", async function() {
-		let woid;
-		txMined = await aIexecHubInstance.emitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		//emitWorkOrder
+		txMined = await aIexecHubInstance.consumeEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
-		woid = events[0].args.woid;
-		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-		let count = await aWorkOrderHubInstance.getWorkOrdersCount(iExecCloudUser);
-		assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 workOrder now ");
-		let woidFromGetWorkOrder = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, count - 1);
-		assert.strictEqual(woid, woidFromGetWorkOrder, "check woid");
+		woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
+		assert.strictEqual(events[0].args.woid, woid, "woid check");
+		console.log("woid is: " + woid);
+		aWorkOrderInstance = await WorkOrder.at(woid);
+
+		//callForContribution
+		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+			from: scheduleProvider,
+			gas: amountGazProvided
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		m_statusCall = await aWorkOrderInstance.m_status.call();
+		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
+	});
+
+	it("workerContribute", async function() {
+		assert.strictEqual(subscriptionMinimumStakePolicy, 10, "check stake sanity before contribution");
+		assert.strictEqual(subscriptionLockStakePolicy,    0,  "check stake sanity before contribution");
+
+		txMined = await aIexecHubInstance.deposit(30, {
+			from: resourceProvider,
+			gas: amountGazProvided
+		});
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 40 (30 + 10 earlier)");
+		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 0");
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+
+		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+		m_workerStake = await aWorkerPoolInstance.contribute.call(woid, signed.hash, signed.sign, 0, 0, 0, {
+			from: resourceProvider,
+			gas: amountGazProvided
+		});
+		assert.strictEqual(m_workerStake.toNumber(), 30, "30% of 100 (price) = 30 will be lock for resourceProvider");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 30 (including 10 of initial stake)");
+		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
+		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+		txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+			from: resourceProvider,
+			gas: amountGazProvided
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+
+		events = await Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({}));
+		assert.strictEqual(events[0].args.woid, woid, "woid check");
+		assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the resourceProvider");
+		assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider : 30 + 10");
 	});
 
 });

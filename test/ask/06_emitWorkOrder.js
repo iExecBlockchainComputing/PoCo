@@ -196,17 +196,17 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		console.log("transferOwnership of WorkOrderHub to IexecHub");
 
-		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
-			from: marketplaceCreator
-		});
-		console.log("aMarketplaceInstance.address is ");
-		console.log(aMarketplaceInstance.address);
+    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
+      from: marketplaceCreator
+    });
+    console.log("aMarketplaceInstance.address is ");
+    console.log(aMarketplaceInstance.address);
 
-		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
-			from: marketplaceCreator
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		console.log("attachMarketplace to IexecHub");
+    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+      from: marketplaceCreator
+    });
+    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    console.log("attachMarketplace to IexecHub");
 
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([
@@ -266,36 +266,40 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 0);
 		aAppInstance = await App.at(appAddress);
 
-		console.log(">>>>>>>>>>>#-1");
 		//Create ask Marker Order by scheduler
 		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 99999999999/* _marketDeadline*/, 99999999999 /*_assetDeadline*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
 
-	});
-
-	it("answerAskOrder", async function() {
-		console.log(">>>>>>>>>>>#1");
+		//answerAskOrder
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-		console.log(">>>>>>>>>>>#2");
 		txMined = await aMarketplaceInstance.answerAskOrder(0/*_marketorderIdx*/, 1 /*_quantity*/, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		console.log(">>>>>>>>>>>#3");
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0,                 "check marketorderIdx");
-		assert.strictEqual(events[0].args.requester,                 iExecCloudUser,    "check iExecCloudUser");
-		assert.strictEqual(events[0].args.workerpool,                workerPoolAddress, "check workerPoolAddress");
-		assert.strictEqual(events[0].args.quantity.toNumber(),       1,                 "check quantity");
+		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
+	});
+
+	it("emitWorkOrder", async function() {
+		let woid;
+		txMined = await aIexecHubInstance.consumeEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+			from: iExecCloudUser
+		});
+		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
+		woid = events[0].args.woid;
+		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+		let count = await aWorkOrderHubInstance.getWorkOrdersCount(iExecCloudUser);
+		assert.strictEqual(1, count.toNumber(), "iExecCloudUser must have 1 workOrder now ");
+		let woidFromGetWorkOrder = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, count - 1);
+		assert.strictEqual(woid, woidFromGetWorkOrder, "check woid");
 	});
 
 });
