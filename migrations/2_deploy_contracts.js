@@ -3,6 +3,7 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
+var Marketplace = artifacts.require("./Marketplace.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 
 /**
@@ -18,6 +19,7 @@ module.exports = function(deployer) {
   let aDatasetHubInstance;
   let aWorkOrderHubInstance;
   let aIexecHub;
+  let aMarketplaceInstance;
 
   return deployer.deploy(RLC)
     .then(() => RLC.deployed())
@@ -31,11 +33,11 @@ module.exports = function(deployer) {
       return aRLCInstance.owner.call();
     })
     .then(owner => {
-      console.log("RLC faucet wallet is "+owner);
+      console.log("RLC faucet wallet is " + owner);
       return aRLCInstance.balanceOf.call(owner);
     })
     .then(faucetSupply => {
-      console.log("RLC faucet supply is "+faucetSupply.toNumber());
+      console.log("RLC faucet supply is " + faucetSupply.toNumber());
       return deployer.deploy(WorkerPoolHub);
     })
     .then(() => WorkerPoolHub.deployed())
@@ -60,7 +62,7 @@ module.exports = function(deployer) {
     .then(instance => {
       aWorkOrderHubInstance = instance;
       console.log("WorkOrderHub deployed at address: " + instance.address);
-      return deployer.deploy(IexecHub, aRLCInstance.address , aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address);
+      return deployer.deploy(IexecHub, aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -80,7 +82,19 @@ module.exports = function(deployer) {
       console.log("transferOwnership of DatasetHub to IexecHub");
       return aWorkOrderHubInstance.transferOwnership(aIexecHub.address);
     })
-    .then(() => console.log("transferOwnership of WorkOrderHub to IexecHub"));
+    .then(() => {
+      console.log("transferOwnership of WorkOrderHub to IexecHub");
+      return deployer.deploy(Marketplace, aIexecHub.address);
+    })
+    .then(() => Marketplace.deployed())
+    .then(instance => {
+      aMarketplaceInstance = instance;
+      console.log("Marketplace deployed at address: " + instance.address);
+      return aIexecHub.attachMarketplace(instance.address);
+    })
+    .then(() => {
+      console.log("attach Marketplace to IexecHub done");
+    });
 };
 
 /**

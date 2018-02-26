@@ -45,7 +45,7 @@ contract IexecHubInterface
 		address _woid)
 	public returns (bool);
 
-	function setRevealingStatus(
+	function startRevealingPhase(
 		address _woid)
 	public returns (bool);
 
@@ -96,8 +96,23 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
+	function lockForOrder(
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
 	function unlockForWork(
 		address _woid,
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
+	function unlockForOrder(
+		address _user,
+		uint256 _amount)
+	public returns (bool);
+
+	function lockDepositForOrder(
 		address _user,
 		uint256 _amount)
 	public returns (bool);
@@ -114,19 +129,29 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
+	function rewardForOrder(
+		address _worker,
+		uint256 _amount)
+	public returns (bool);
+
 	function seizeForWork(
 		address _woid,
 		address _worker,
 		uint256 _amount)
 	public returns (bool);
 
-	function deposit(
+	function seizeForOrder(
+		address _worker,
 		uint256 _amount)
 	public returns (bool);
 
+	function deposit(
+		uint256 _amount)
+	external returns (bool);
+
 	function withdraw(
 		uint256 _amount)
-	public returns (bool);
+	external returns (bool);
 
 	function checkBalance(
 		address _owner)
