@@ -290,11 +290,11 @@ blockchain interaction :
 
 blockchain interaction :
 TODO
-## Nominal use case :
+## Optimized Ask Use Case :
 <table>
     <thead>
         <tr>
-            <th>Sequence Diagram</th>
+            <th>Phase</th>
             <th>Truffle Test</th>
             <th>Fonction</th>
             <th align="center">on Contract</th>
@@ -304,80 +304,88 @@ TODO
     </thead>
     <tbody>
         <tr>
-            <td></td>
-            <td><a href="./test/0_base.js" target="_blank">0_base.js</a></td>
+            <td>Initialization Markeplace</td>
+            <td><a href="./test/00_base.js" target="_blank">00_base.js</a></td>
             <td></td>
             <td></td>
             <td>Marketplace Creator</td>
-            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a></td>
+            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a>,<a href="./contracts/Marketplace.sol" target="_blank">Marketplace</a></td>
         </tr>
         <tr>
-            <td></td>
-            <td><a href="./test/1_workerPoolCreation.js" target="_blank">1_workerPoolCreation.js</a></td>
+            <td>Initialization WorkerPool</td>
+            <td><a href="./test/01_workerPoolCreation.js" target="_blank">01_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
             <td>iexec-scheduler</td>
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
-            <td></td>
-            <td><a href="./test/2_workerPoolSubscription.js" target="_blank">2_workerPoolSubscription.js</a></td>
+            <td>Initialization Worker in WorkerPool</td>
+            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">02_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td></td>
-            <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
+            <td>Initialization App</td>
+            <td><a href="./test/03_appCreation.js" target="_blank">03_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 4</a></td>
-            <td><a href="./test/4_workOrderCreation.js" target="_blank">4_workOrderCreation.js</a></td>
-            <td>createWorkOrder</td>
+            <td>Market Matching</td>
+            <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">04_emitMarketOrderAsk.js</a></td>
+            <td>emitMarketOrder</td>
+            <td>Marketplace</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Market Matching+Trigger WorkOrder</td>
+            <td><a href="./test/ask/05_answerAndemitWorkOrder.js" target="_blank">05_answerAndemitWorkOrder.js</a></td>
+            <td>answerEmitWorkOrder</td>
             <td>IexecHub</td>
-            <td>iExecCloudUser (iexec-sdk)</td>
+            <td>iExecCloudUser</td>
             <td><a href="./contracts/WorkOrder.sol" target="_blank">WorkOrder</a></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 5</a></td>
-            <td><a href="./test/5_workOrderAccepted.js" target="_blank">5_workOrderAccepted.js</a></td>
-            <td>acceptWorkOrder</td>
+            <td>POCO</td>
+            <td><a href="./test/ask/06_callForContribution.js" target="_blank">06_callForContribution.js</a></td>
+            <td>callForContribution</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 7</a></td>
-            <td><a href="./test/7_workerContribute.js" target="_blank">7_workerContribute.js</a></td>
+            <td>POCO</td>
+            <td><a href="./test/ask/07_workerContribute.js" target="_blank">07_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 8</a></td>
-            <td><a href="./test/8_revealConsensus.js" target="_blank">8_revealConsensus.js</a></td>
+            <td>POCO</td>
+            <td><a href="./test/ask/8_revealConsensus.js" target="_blank">08_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 9</a></td>
-            <td><a href="./test/9_revealContribution.js" target="_blank">9_revealContribution.js</a></td>
+            <td>POCO</td>
+            <td><a href="./test/ask/09_revealContribution.js" target="_blank">09_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
             <td></td>
         </tr>
         <tr>
-            <td><a href="./uml/V2SequenceNominale.pdf" target="_blank">transaction 10</a></td>
-            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td>POCO</td>
+            <td><a href="./test/ask/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
