@@ -304,7 +304,7 @@ TODO
     </thead>
     <tbody>
         <tr>
-            <td>Initialization Markeplace</td>
+            <td><span style="color:blue">Initialization Markeplace</span></td>
             <td><a href="./test/00_base.js" target="_blank">00_base.js</a></td>
             <td></td>
             <td></td>
