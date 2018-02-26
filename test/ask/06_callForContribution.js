@@ -279,18 +279,11 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-		txMined = await aMarketplaceInstance.answerAskOrder(0/*_marketorderIdx*/, 1 /*_quantity*/, {
+		txMined = await aIexecHubInstance.answerEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskAnswered({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "check marketorderIdx");
 
-		//emitWorkOrder
-		txMined = await aIexecHubInstance.consumeEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-			from: iExecCloudUser
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
 		woid = await aWorkOrderHubInstance.getWorkOrder(iExecCloudUser, 0);
 		assert.strictEqual(events[0].args.woid, woid, "woid check");
