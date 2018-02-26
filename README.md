@@ -305,7 +305,7 @@ TODO
     <tbody>
         <tr>
             <td>A - Initialization Markeplace</td>
-            <td><a href="./test/00_base.js" target="_blank">00_base.js</a></td>
+            <td><a href="./test/00_base.js" target="_blank">./test/00_base.js</a></td>
             <td></td>
             <td></td>
             <td>Marketplace Creator</td>
@@ -313,7 +313,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization WorkerPool</td>
-            <td><a href="./test/01_workerPoolCreation.js" target="_blank">01_workerPoolCreation.js</a></td>
+            <td><a href="./test/01_workerPoolCreation.js" target="_blank">./test/01_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
             <td>iexec-scheduler</td>
@@ -321,7 +321,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization Worker in WorkerPool</td>
-            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">02_workerPoolSubscription.js</a></td>
+            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">./test/02_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
             <td>iexec-worker</td>
@@ -329,7 +329,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization App</td>
-            <td><a href="./test/03_appCreation.js" target="_blank">03_appCreation.js</a></td>
+            <td><a href="./test/03_appCreation.js" target="_blank">./test/03_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
@@ -337,7 +337,7 @@ TODO
         </tr>
         <tr>
             <td>B - Market Matching</td>
-            <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">04_emitMarketOrderAsk.js</a></td>
+            <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">./test/ask/04_emitMarketOrderAsk.js</a></td>
             <td>emitMarketOrder</td>
             <td>Marketplace</td>
             <td>iexec-scheduler</td>
@@ -345,7 +345,7 @@ TODO
         </tr>
         <tr>
             <td>B + C - Market Matching+Trigger WorkOrder</td>
-            <td><a href="./test/ask/05_answerAndemitWorkOrder.js" target="_blank">05_answerAndemitWorkOrder.js</a></td>
+            <td><a href="./test/ask/05_answerAndemitWorkOrder.js" target="_blank">./test/ask/05_answerAndemitWorkOrder.js</a></td>
             <td>answerEmitWorkOrder</td>
             <td>IexecHub</td>
             <td>iExecCloudUser</td>
@@ -353,7 +353,7 @@ TODO
         </tr>
         <tr>
             <td>D - POCO</td>
-            <td><a href="./test/ask/06_callForContribution.js" target="_blank">06_callForContribution.js</a></td>
+            <td><a href="./test/ask/06_callForContribution.js" target="_blank">./test/ask/06_callForContribution.js</a></td>
             <td>callForContribution</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
@@ -361,7 +361,7 @@ TODO
         </tr>
         <tr>
             <td>D - POCO</td>
-            <td><a href="./test/ask/07_workerContribute.js" target="_blank">07_workerContribute.js</a></td>
+            <td><a href="./test/ask/07_workerContribute.js" target="_blank">./test/ask/07_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
@@ -369,7 +369,7 @@ TODO
         </tr>
         <tr>
             <td>D - POCO</td>
-            <td><a href="./test/ask/08_revealConsensus.js" target="_blank">08_revealConsensus.js</a></td>
+            <td><a href="./test/ask/08_revealConsensus.js" target="_blank">./test/ask/08_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
@@ -377,7 +377,7 @@ TODO
         </tr>
         <tr>
             <td>D - POCO</td>
-            <td><a href="./test/ask/09_revealContribution.js" target="_blank">09_revealContribution.js</a></td>
+            <td><a href="./test/ask/09_revealContribution.js" target="_blank">./test/ask/09_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
@@ -385,7 +385,7 @@ TODO
         </tr>
         <tr>
             <td>D - POCO</td>
-            <td><a href="./test/ask/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
+            <td><a href="./test/ask/10_finalizedWork.js" target="_blank">./test/ask/0_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
@@ -409,7 +409,7 @@ TODO
     <tbody>
         <tr>
             <td>A - Initialization Markeplace</td>
-            <td><a href="./test/00_base.js" target="_blank">00_base.js</a></td>
+            <td><a href="./test/00_base.js" target="_blank">./test/00_base.js</a></td>
             <td></td>
             <td></td>
             <td>Marketplace Creator</td>
@@ -417,7 +417,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization WorkerPool</td>
-            <td><a href="./test/01_workerPoolCreation.js" target="_blank">01_workerPoolCreation.js</a></td>
+            <td><a href="./test/01_workerPoolCreation.js" target="_blank">./test/01_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
             <td>iexec-scheduler</td>
@@ -425,7 +425,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization Worker in WorkerPool</td>
-            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">02_workerPoolSubscription.js</a></td>
+            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">./test/02_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
             <td>iexec-worker</td>
@@ -433,7 +433,7 @@ TODO
         </tr>
         <tr>
             <td>A - Initialization App</td>
-            <td><a href="./test/03_appCreation.js" target="_blank">03_appCreation.js</a></td>
+            <td><a href="./test/03_appCreation.js" target="_blank">./test/03_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
@@ -441,7 +441,7 @@ TODO
         </tr>
         <tr>
             <td>B - Market Matching</td>
-            <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">04_emitMarketOrderAsk.js</a></td>
+            <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">./test/ask/04_emitMarketOrderAsk.js</a></td>
             <td>emitMarketOrder</td>
             <td>Marketplace</td>
             <td>iexec-scheduler</td>
@@ -449,7 +449,7 @@ TODO
         </tr>
         <tr>
             <td>B - Market Matching</td>
-            <td><a href="./test/ask/answerThenEmit/05_answerAskOrder.js" target="_blank">05_answerAskOrder.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/05_answerAskOrder.js" target="_blank">./test/ask/answerThenEmit/05_answerAskOrder.js</a></td>
             <td>answerAskOrder</td>
             <td>Marketplace</td>
             <td>iExecCloudUser</td>
@@ -457,7 +457,7 @@ TODO
         </tr>
         <tr>
             <td>C - Trigger WorkOrder</td>
-            <td><a href="./test/ask/answerThenEmit/06_emitWorkOrder.js" target="_blank">06_emitWorkOrder.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/06_emitWorkOrder.js" target="_blank">./test/ask/answerThenEmit/06_emitWorkOrder.js</a></td>
             <td>consumeEmitWorkOrder</td>
             <td>IexecHub</td>
             <td>iExecCloudUser</td>
@@ -465,7 +465,7 @@ TODO
         </tr>
         <tr>
             <td>C - POCO</td>
-            <td><a href="./test/ask/answerThenEmit/07_callForContribution.js" target="_blank">07_callForContribution.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/07_callForContribution.js" target="_blank">./test/ask/answerThenEmit/07_callForContribution.js</a></td>
             <td>callForContribution</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
@@ -473,7 +473,7 @@ TODO
         </tr>
         <tr>
             <td>C - POCO</td>
-            <td><a href="./test/ask/answerThenEmit/08_workerContribute.js" target="_blank">08_workerContribute.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/08_workerContribute.js" target="_blank">./test/ask/answerThenEmit/08_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
@@ -481,7 +481,7 @@ TODO
         </tr>
         <tr>
             <td>C - POCO</td>
-            <td><a href="./test/ask/answerThenEmit/09_revealConsensus.js" target="_blank">09_revealConsensus.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/09_revealConsensus.js" target="_blank">./test/ask/answerThenEmit/09_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
@@ -489,7 +489,7 @@ TODO
         </tr>
         <tr>
             <td>C - POCO</td>
-            <td><a href="./test/ask/answerThenEmit/10_revealContribution.js" target="_blank">10_revealContribution.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/10_revealContribution.js" target="_blank">./test/ask/answerThenEmit/10_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
             <td>iexec-worker</td>
@@ -497,7 +497,120 @@ TODO
         </tr>
         <tr>
             <td>C - POCO</td>
-            <td><a href="./test/ask/answerThenEmit/11_finalizedWork.js" target="_blank">11_finalizedWork.js</a></td>
+            <td><a href="./test/ask/answerThenEmit/11_finalizedWork.js" target="_blank">./test/ask/answerThenEmit/11_finalizedWork.js</a></td>
+            <td>finalizedWork</td>
+            <td>WorkerPool</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+
+## Bid Use Case :
+<table>
+    <thead>
+        <tr>
+            <th>Phase</th>
+            <th>Truffle Test</th>
+            <th>Fonction</th>
+            <th align="center">on Contract</th>
+            <th align="right">by Actor through program</th>
+            <th align="center">Contract created</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>A - Initialization Markeplace</td>
+            <td><a href="./test/00_base.js" target="_blank">./test/00_base.js</a></td>
+            <td></td>
+            <td></td>
+            <td>Marketplace Creator</td>
+            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a>,<a href="./contracts/Marketplace.sol" target="_blank">Marketplace</a></td>
+        </tr>
+        <tr>
+            <td>A - Initialization WorkerPool</td>
+            <td><a href="./test/01_workerPoolCreation.js" target="_blank">./test/01_workerPoolCreation.js</a></td>
+            <td>createWorkerPool</td>
+            <td>IexecHub</td>
+            <td>iexec-scheduler</td>
+            <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
+        </tr>
+        <tr>
+            <td>A - Initialization Worker in WorkerPool</td>
+            <td><a href="./test/02_workerPoolSubscription.js" target="_blank">./test/02_workerPoolSubscription.js</a></td>
+            <td>subscribeToPool</td>
+            <td>IexecHub</td>
+            <td>iexec-worker</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>A - Initialization App</td>
+            <td><a href="./test/03_appCreation.js" target="_blank">./test/03_appCreation.js</a></td>
+            <td>createApp</td>
+            <td>IexecHub</td>
+            <td>appProvider</td>
+            <td><a href="./contracts/App.sol" target="_blank">App</a></td>
+        </tr>
+        <tr>
+            <td>B - Market Matching</td>
+            <td><a href="./test/bid/04_emitMarketOrderBid.js" target="_blank">./test/bid/04_emitMarketOrderBid.js</a></td>
+            <td>emitMarketOrder</td>
+            <td>Marketplace</td>
+            <td>iExecCloudUser</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>B - Market Matching</td>
+            <td><a href="./test/bid/05_answerBidOrder.js" target="_blank">./test/bid/05_answerBidOrder.js</a></td>
+            <td>answerBidOrder</td>
+            <td>Marketplace</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>C - Trigger WorkOrder</td>
+            <td><a href="./test/bid/06_emitWorkOrder.js" target="_blank">./test/bid/06_emitWorkOrder.js</a></td>
+            <td>consumeEmitWorkOrder</td>
+            <td>IexecHub</td>
+            <td>iExecCloudUser</td>
+            <td><a href="./contracts/WorkOrder.sol" target="_blank">WorkOrder</a></td>
+        </tr>
+        <tr>
+            <td>C - POCO</td>
+            <td><a href="./test/bid/07_callForContribution.js" target="_blank">./test/bid/07_callForContribution.js</a></td>
+            <td>callForContribution</td>
+            <td>WorkerPool</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>C - POCO</td>
+            <td><a href="./test/bid/08_workerContribute.js" target="_blank">./test/bid/08_workerContribute.js</a></td>
+            <td>contribute</td>
+            <td>WorkerPool</td>
+            <td>iexec-worker</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>C - POCO</td>
+            <td><a href="./test/bid/09_revealConsensus.js" target="_blank">./test/bid/09_revealConsensus.js</a></td>
+            <td>revealConsensus</td>
+            <td>WorkerPool</td>
+            <td>iexec-scheduler</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>C - POCO</td>
+            <td><a href="./test/bid/10_revealContribution.js" target="_blank">./test/bid/10_revealContribution.js</a></td>
+            <td>reveal</td>
+            <td>WorkerPool</td>
+            <td>iexec-worker</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>C - POCO</td>
+            <td><a href="./test/bid/11_finalizedWork.js" target="_blank">./test/bid/11_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
             <td>iexec-scheduler</td>
