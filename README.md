@@ -304,7 +304,7 @@ TODO
     </thead>
     <tbody>
         <tr>
-            <td><span style="color:blue">Initialization Markeplace</span></td>
+            <td>A - Initialization Markeplace</td>
             <td><a href="./test/00_base.js" target="_blank">00_base.js</a></td>
             <td></td>
             <td></td>
@@ -312,7 +312,7 @@ TODO
             <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a>,<a href="./contracts/Marketplace.sol" target="_blank">Marketplace</a></td>
         </tr>
         <tr>
-            <td>Initialization WorkerPool</td>
+            <td>A - Initialization WorkerPool</td>
             <td><a href="./test/01_workerPoolCreation.js" target="_blank">01_workerPoolCreation.js</a></td>
             <td>createWorkerPool</td>
             <td>IexecHub</td>
@@ -320,7 +320,7 @@ TODO
             <td><a href="./contracts/WorkerPool.sol" target="_blank">WorkerPool</a></td>
         </tr>
         <tr>
-            <td>Initialization Worker in WorkerPool</td>
+            <td>A - Initialization Worker in WorkerPool</td>
             <td><a href="./test/02_workerPoolSubscription.js" target="_blank">02_workerPoolSubscription.js</a></td>
             <td>subscribeToPool</td>
             <td>IexecHub</td>
@@ -328,7 +328,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>Initialization App</td>
+            <td>A - Initialization App</td>
             <td><a href="./test/03_appCreation.js" target="_blank">03_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
@@ -336,7 +336,7 @@ TODO
             <td><a href="./contracts/App.sol" target="_blank">App</a></td>
         </tr>
         <tr>
-            <td>Market Matching</td>
+            <td>B - Market Matching</td>
             <td><a href="./test/ask/04_emitMarketOrderAsk.js" target="_blank">04_emitMarketOrderAsk.js</a></td>
             <td>emitMarketOrder</td>
             <td>Marketplace</td>
@@ -344,7 +344,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>Market Matching+Trigger WorkOrder</td>
+            <td>B + C - Market Matching+Trigger WorkOrder</td>
             <td><a href="./test/ask/05_answerAndemitWorkOrder.js" target="_blank">05_answerAndemitWorkOrder.js</a></td>
             <td>answerEmitWorkOrder</td>
             <td>IexecHub</td>
@@ -352,7 +352,7 @@ TODO
             <td><a href="./contracts/WorkOrder.sol" target="_blank">WorkOrder</a></td>
         </tr>
         <tr>
-            <td>POCO</td>
+            <td>C - POCO</td>
             <td><a href="./test/ask/06_callForContribution.js" target="_blank">06_callForContribution.js</a></td>
             <td>callForContribution</td>
             <td>WorkerPool</td>
@@ -360,7 +360,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>POCO</td>
+            <td>C - POCO</td>
             <td><a href="./test/ask/07_workerContribute.js" target="_blank">07_workerContribute.js</a></td>
             <td>contribute</td>
             <td>WorkerPool</td>
@@ -368,7 +368,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>POCO</td>
+            <td>C - POCO</td>
             <td><a href="./test/ask/8_revealConsensus.js" target="_blank">08_revealConsensus.js</a></td>
             <td>revealConsensus</td>
             <td>WorkerPool</td>
@@ -376,7 +376,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>POCO</td>
+            <td>C - POCO</td>
             <td><a href="./test/ask/09_revealContribution.js" target="_blank">09_revealContribution.js</a></td>
             <td>reveal</td>
             <td>WorkerPool</td>
@@ -384,7 +384,7 @@ TODO
             <td></td>
         </tr>
         <tr>
-            <td>POCO</td>
+            <td>C - POCO</td>
             <td><a href="./test/ask/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
             <td>finalizedWork</td>
             <td>WorkerPool</td>
