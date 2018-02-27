@@ -18,6 +18,16 @@ module.exports = {
               } else {
                 resolve(receipt);
               }
+            })
+            .catch(function(e) {
+              if ((e + "").indexOf("Error: unknown transaction") > -1) {//new error to catch with geth 1.8.1
+                setTimeout(function() {
+                  transactionReceiptAsync(txnHash, resolve, reject);
+                }, interval);
+              }
+              else {
+                throw e;
+              }
             });
         } catch (e) {
           reject(e);
