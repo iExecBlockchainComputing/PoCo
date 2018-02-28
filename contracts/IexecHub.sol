@@ -296,7 +296,6 @@ contract IexecHub
 		require(workerPoolHub.isDatasetAllowed     (_workerpool, _dataset  ));
 		// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
 
-		// msg.sender wanted here. not tx.origin. we can imagine a smart contract have RLC loaded and user can benefit from it.
 		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
 
 		WorkOrder workorder = new WorkOrder(
@@ -306,16 +305,12 @@ contract IexecHub
 			_app,
 			_dataset,
 			_workerpool,
-			// marketplace.getMarketOrderValue(_marketorderIdx), Stack too deep, try removing local variables
 			emitcost,
-			// marketplace.getMarketOrderTrust(_marketorderIdx), Stack too deep, try removing local variables
 			_params,
 			_callback,
 			_beneficiary
 		);
 		workorder.setActive(); // TODO: done by the scheduler within X days?
-		// REPLACE ?
-		/* workOrderHub.addWorkOrder(_requester, workorder); // TODO: move to WorkOrderHub → IexecHub */
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
 		WorkOrderActivated(workorder, _workerpool);
@@ -372,7 +367,7 @@ contract IexecHub
 	{
 		WorkOrder  workorder  = WorkOrder(_woid);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
-		
+
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
@@ -419,9 +414,9 @@ contract IexecHub
 	 * Views
 	 */
 
-	function getCategoryWorkClockTimeRef(uint256 catid) public view returns (uint256 workClockTimeRef)
+	function getCategoryWorkClockTimeRef(uint256 _catId) public view returns (uint256 workClockTimeRef)
 	{
-		return m_categories[catid].workClockTimeRef;
+		return m_categories[_catId].workClockTimeRef;
 	}
 
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)

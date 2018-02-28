@@ -234,11 +234,15 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Views
 	 */
-	function getMarketOrderValue(uint256 _marketorderIdx) public view returns (uint256 value)
+	function getMarketOrderValue(uint256 _marketorderIdx) public view returns (uint256)
 	{
 		return m_orderBook[_marketorderIdx].value;
 	}
-	function getMarketOrderTrust(uint256 _marketorderIdx) public view returns (uint256 value)
+	function getMarketOrderCategory(uint256 _marketorderIdx) public view returns (uint256)
+	{
+		return m_orderBook[_marketorderIdx].category;
+	}
+	function getMarketOrderTrust(uint256 _marketorderIdx) public view returns (uint256)
 	{
 		return m_orderBook[_marketorderIdx].trust;
 	}

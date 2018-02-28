@@ -19,10 +19,15 @@ contract MarketplaceInterface
 
 	function getMarketOrderValue(
 		uint256 _marketorderIdx)
-	public view returns(uint256 value);
+	public view returns(uint256);
+
+	function getMarketOrderCategory(
+		uint256 _marketorderIdx)
+	public view returns (uint256);
+
 	function getMarketOrderTrust(
 		uint256 _marketorderIdx)
-	public view returns(uint256 value);
+	public view returns(uint256);
 
 	function getMarketOrder(
 		uint256 _marketorderIdx)

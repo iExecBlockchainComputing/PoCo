@@ -64,6 +64,10 @@ contract IexecHubInterface
 		string  _uri)
 	public returns (bool);
 
+	function getCategoryWorkClockTimeRef(
+		uint256 _catId)
+	public view returns (uint256 workClockTimeRef);
+
 	function getWorkerStatus(
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);

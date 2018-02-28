@@ -35,7 +35,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	mapping(address => mapping(address => IexecLib.Contribution)) public m_contributions;
 
 	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
-	uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426
+	uint256 public constant CONSENSUS_DURATION_RATIO = 5;
+	/* uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426 */
 
 	/**
 	 * Address of slave/related contracts
@@ -242,11 +243,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(isAppAllowed    (WorkOrder(_woid).m_app()    ));
 		require(isDatasetAllowed(WorkOrder(_woid).m_dataset()));
 
-		IexecLib.Consensus storage consensus = m_consensus[_woid];
+		uint256 catid   = marketplaceInterface.getMarketOrderCategory(_marketorderIdx);
+		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);
+		/* uint256 timeout = CONSENSUS_DURATION_LIMIT.add(now); */
 
+		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
-		consensus.consensusTimout = CONSENSUS_DURATION_LIMIT.add(now);
+		consensus.consensusTimout = timeout;
 
 		WorkOrderActive(_woid);
 		return true;
