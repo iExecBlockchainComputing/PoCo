@@ -12,8 +12,8 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 
 const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions      = require("../../utils/extensions.js");
-const addEvmFunctions = require("../../utils/evmFunctions.js");
+const Extensions      = require("../utils/extensions.js");
+const addEvmFunctions = require("../utils/evmFunctions.js");
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -262,8 +262,6 @@ contract('IexecHub', function(accounts) {
 			IexecLib.MarketOrderDirectionEnum.ASK,
 			1 /*_category*/,
 			0/*_trust*/,
-			99999999999/* _marketDeadline*/,
-			99999999999 /*_assetDeadline*/,
 			100/*_value*/,
 			workerPoolAddress/*_workerpool of sheduler*/,
 			1/*_volume*/,
@@ -274,19 +272,14 @@ contract('IexecHub', function(accounts) {
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
 
-		[direction,category,trust,marketDeadline,assetDeadline,value,volume,remaining,requester,workerpool] = await aMarketplaceInstance.getMarketOrder.call(0);
+		[direction,category,trust,value,volume,remaining,workerpool] = await aMarketplaceInstance.getMarketOrder.call(0);
 		assert.strictEqual(direction.toNumber(),      IexecLib.MarketOrderDirectionEnum.ASK,        "check IexecLib.MarketOrderDirectionEnum.ASK");
 		assert.strictEqual(category.toNumber(),       1,                                            "check category");
 		assert.strictEqual(trust.toNumber(),          0,                                            "check trust");
-		assert.strictEqual(marketDeadline.toNumber(), 99999999999,                                  "check marketDeadline");
-		assert.strictEqual(assetDeadline.toNumber(),  99999999999,                                  "check assetDeadline");
 		assert.strictEqual(value.toNumber(),          100,                                          "check value");
 		assert.strictEqual(volume.toNumber(),         1,                                            "check volume");
 		assert.strictEqual(remaining.toNumber(),      1,                                            "check remaining");
-		assert.strictEqual(requester,                 '0x0000000000000000000000000000000000000000', "check no requester");
 		assert.strictEqual(workerpool,                workerPoolAddress,                            "check workerpool");
-
-
 
 	});
 

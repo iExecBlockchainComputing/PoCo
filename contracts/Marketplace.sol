@@ -17,15 +17,15 @@ contract Marketplace is IexecHubAccessor
 
 
 	// marketorderIdx => user => workerpool => quantity
-	mapping(uint => mapping(address => mapping(address => uint))) public m_assetBook;
+	// mapping(uint => mapping(address => mapping(address => uint))) public m_assetBook;
 
 	/**
 	 * Events
 	 */
 	event MarketOrderEmitted(uint marketorderIdx);
 	/* event MarketOrderClosed */
-	event MarketOrderBidAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity);
-	event MarketOrderAskAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity);
+	/* event MarketOrderBidAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity); */
+	/* event MarketOrderAskAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity); */
 	/* event UnusedAssetsClaimed */
 	/* event AssetTransfered */
 
@@ -46,36 +46,41 @@ contract Marketplace is IexecHubAccessor
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,
-		uint256 _marketDeadline,
-		uint256 _assetDeadline,
+		/* uint256 _marketDeadline, */
+		/* uint256 _assetDeadline, */
 		uint256 _value,
 		address _workerpool,
 		uint256 _volume)
 	public returns (uint)
 	{
-		require(_assetDeadline >= _marketDeadline);
+		/* require(_assetDeadline >= _marketDeadline); */
 		uint256                      marketorderIdx = m_orderCount;
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
 		marketorder.direction      = _direction;
 		marketorder.category       = _category;
 		marketorder.trust          = _trust;
-		marketorder.marketDeadline = _marketDeadline;
-		marketorder.assetDeadline  = _assetDeadline;
+		/* marketorder.marketDeadline = _marketDeadline; */
+		/* marketorder.assetDeadline  = _assetDeadline; */
 		marketorder.value          = _value;
 		marketorder.volume         = _volume;
 		marketorder.remaining      = _volume;
 
+
+		/*
 		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
 		{
 			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume))); //call deposit() auto  if not ?
 			marketorder.requester  = msg.sender;
 			marketorder.workerpool = _workerpool;
 		}
-		else if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
+		else
+		*/
+		if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
-			marketorder.requester  = address(0);
+			/* marketorder.requester  = address(0); */
 			marketorder.workerpool = _workerpool;
+			// lock scheduler funds
 		}
 		else
 		{
@@ -89,24 +94,27 @@ contract Marketplace is IexecHubAccessor
 	function closeMarketOrder(uint256 _marketorderIdx) public returns (bool)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
+		/*
 		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.BID)
 		{
 			require(marketorder.requester == msg.sender);
 			require(iexecHubInterface.unlockForOrder(msg.sender, marketorder.value.mul(marketorder.remaining)));
 		}
-		else if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
+		else
+		*/
+		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(WorkerPool(marketorder.workerpool).getWorkerPoolOwner() == msg.sender);
+			// unlock scheduler funds
 		}
 		else
 		{
 			revert();
 		}
 		marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
-		// MarketOrderClosed(); // TODO create event
 		return true;
 	}
-
+	/*
 	function answerBidOrder(uint256 _marketorderIdx, uint256 _quantity, address _workerpool) public returns (uint256)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
@@ -126,7 +134,6 @@ contract Marketplace is IexecHubAccessor
 		MarketOrderBidAnswered(_marketorderIdx,marketorder.requester,_workerpool,_quantity);
 		return _quantity;
 	}
-
 	function answerAskOrder(uint _marketorderIdx, uint256 _quantity) public returns (uint256)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
@@ -144,6 +151,7 @@ contract Marketplace is IexecHubAccessor
 		MarketOrderAskAnswered(_marketorderIdx, msg.sender, marketorder.workerpool,_quantity);
 		return _quantity;
 	}
+	*/
 
 	/**
 	 * Assets consumption
@@ -156,7 +164,7 @@ contract Marketplace is IexecHubAccessor
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		require(marketorder.direction      == IexecLib.MarketOrderDirectionEnum.ASK);
-		require(marketorder.marketDeadline >  now); // assetDeadline > marketdeadline > now
+		/* require(marketorder.marketDeadline >  now); // assetDeadline > marketdeadline > now */
 		require(marketorder.remaining      >  0);
 		require(marketorder.workerpool     == _workerpool);
 
@@ -169,7 +177,7 @@ contract Marketplace is IexecHubAccessor
 		// TODO: create event
 		return true;
 	}
-
+	/*
 	function useConsume(
 		uint256 _marketorderIdx,
 		address _requester,
@@ -184,10 +192,12 @@ contract Marketplace is IexecHubAccessor
 		return true;
 		//   return m_orderBook[_marketorderIdx];// issue :https://github.com/ethereum/solidity/issues/3516
 	}
+	*/
 
 	/**
 	 * Assets management
 	 */
+	/*
 	function redeamUnusedAssets(uint _marketorderIdx, address _user, address _workerpool) public returns (bool)
 	{
 		require(WorkerPool(_workerpool).getWorkerPoolOwner() == msg.sender);
@@ -217,6 +227,7 @@ contract Marketplace is IexecHubAccessor
 		// TODO: create event
 		return true;
 	}
+	*/
 
 	/**
 	 * Views
@@ -234,13 +245,13 @@ contract Marketplace is IexecHubAccessor
 		IexecLib.MarketOrderDirectionEnum direction,
 		uint256 category,       // runtime selection
 		uint256 trust,          // for PoCo
-		uint256 marketDeadline, // deadline for market making
-		uint256 assetDeadline,  // deadline for work submission
-		uint256 value,         // value/cost/price
+		/* uint256 marketDeadline, // deadline for market making */
+		/* uint256 assetDeadline,  // deadline for work submission */
+		uint256 value,          // value/cost/price
 		uint256 volume,         // quantity of instances (total)
 		uint256 remaining,      // remaining instances
-		address requester,      // null for ASK
-		address workerpool     // BID can use null for any
+		/* address requester,      // null for ASK */
+		address workerpool      // BID can use null for any
 	)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
@@ -248,12 +259,12 @@ contract Marketplace is IexecHubAccessor
 			marketorder.direction,
 			marketorder.category,
 			marketorder.trust,
-			marketorder.marketDeadline,
-			marketorder.assetDeadline,
+			/* marketorder.marketDeadline, */
+			/* marketorder.assetDeadline, */
 			marketorder.value,
 			marketorder.volume,
 			marketorder.remaining,
-			marketorder.requester,
+			/* marketorder.requester, */
 			marketorder.workerpool
 		);
 	}

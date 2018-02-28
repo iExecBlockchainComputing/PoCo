@@ -192,6 +192,7 @@ contract IexecHub
 			_beneficiary
 		);
 	}
+	/*
 	function consumeEmitWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
@@ -214,7 +215,7 @@ contract IexecHub
 			_beneficiary
 		);
 	}
-
+	*/
 	function emitWorkOrder(
 		uint256 _marketorderIdx,
 		address _requester,
