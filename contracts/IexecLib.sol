@@ -90,4 +90,13 @@ library IexecLib
 		uint256 failled;
 	}
 
+	struct Category
+	{
+		uint256 catid;
+		string  name;
+		string  description;
+		uint256 workClockTimeRef;
+	}
+
+
 }

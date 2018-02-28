@@ -46,10 +46,25 @@ contract IexecHub
 		_;
 	}
 
+
 	/**
 	 * Escrow
 	 */
 	mapping(address => IexecLib.Account) public m_accounts;
+
+
+	/**
+	 * Categories
+	 */
+	 mapping(uint256 => IexecLib.Category) public  m_categories;
+	 uint256                               public  m_categoriesCount;
+	 address                               private m_categoriesCreator;
+
+	 modifier onlyCategoriesCreator()
+	 {
+		 require(msg.sender == m_categoriesCreator);
+		 _;
+	 }
 
 	/**
 	 * Reputation for PoCo
@@ -68,6 +83,8 @@ contract IexecHub
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
 	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
 	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolName                                         );
+
+	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
 	event OpenWorkerPool          (address indexed workerPool);
 	event CloseWorkerPool         (address indexed workerPool);
@@ -102,9 +119,17 @@ contract IexecHub
 		// marketplace        = Marketplace(marketplaceAddress); //too much gas
 		// marketplaceAddress = new Marketplace(this); //too much gas
 		marketplaceAddress = address(0);
+		m_categoriesCreator = address(0);
 
 		m_contributionHistory.success = 0;
 		m_contributionHistory.failled = 0;
+
+	}
+
+	function setCategoriesCreator(address _categoriesCreator)
+	{
+		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
+		m_categoriesCreator = _categoriesCreator;
 	}
 
 	function attachMarketplace(address _marketplaceAddress)
@@ -117,6 +142,24 @@ contract IexecHub
 	/**
 	 * Factory
 	 */
+
+	 function createCategory(
+		 string  _name,
+		 string  _description,
+		 uint256 _workClockTimeRef)
+	 public onlyCategoriesCreator returns (uint256 catid)
+	 {
+		 uint256                      newCatid = m_categoriesCount;
+ 		 IexecLib.Category storage category = m_categories[newCatid];
+		 category.catid                     = newCatid;
+		 category.name                      = _name;
+		 category.description               = _description;
+		 category.workClockTimeRef          = _workClockTimeRef;
+		 CreateCategory(newCatid,_name,_description,_workClockTimeRef);
+		 m_categoriesCount                  = m_categoriesCount.add(1);
+		 return newCatid;
+	 }
+
 	function createWorkerPool(
 		string  _name,
 		uint256 _subscriptionLockStakePolicy,
@@ -375,6 +418,12 @@ contract IexecHub
 	/**
 	 * Views
 	 */
+
+	function getCategoryWorkClockTimeRef(uint256 catid) public view returns (uint256 workClockTimeRef)
+	{
+		return m_categories[catid].workClockTimeRef;
+	}
+
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
