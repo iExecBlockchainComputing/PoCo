@@ -129,11 +129,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy;
 	}
 
-	function getWorkerPoolOwner() public view returns (address)
-	{
-		return m_owner;
-	}
-
 	/************************* worker list management **************************/
 	function isAppAllowed(address _app) public returns (bool)
 	{
@@ -201,7 +196,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	}
 
 	/************************* open / close mechanisms *************************/
-	function switchOnOff(bool onoff) public onlyIexecHub /*for staking management*/ returns (bool)
+	function switchOnOff(bool onoff) public onlyOwner returns (bool)
 	{
 		if (onoff)
 		{
@@ -241,7 +236,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	}
 
 	/**************************** Works management *****************************/
-	function emitWorkOrder(address _woid,uint256 _marketorderIdx) public onlyIexecHub returns (bool)
+	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
 	{
 		require(isOpen          ()                            );
 		require(isAppAllowed    (WorkOrder(_woid).m_app()    ));
@@ -454,16 +449,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _consensus.stakeAmount));
-				require(iexecHubInterface.rewardForWork(_woid, w, workerReward));
+				require(iexecHubInterface.rewardForWork(_woid, w, workerReward, true));
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
-				require(iexecHubInterface.seizeForWork(_woid, w, _consensus.stakeAmount));
+				require(iexecHubInterface.seizeForWork(_woid, w, _consensus.stakeAmount, true));
 				// No Reward
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecHubInterface.rewardForConsensus(_woid, tx.origin, totalReward)); // tx.origin == m_owner
+		require(iexecHubInterface.rewardForWork(_woid, m_owner, totalReward, false));
+
 		return true;
 	}
 

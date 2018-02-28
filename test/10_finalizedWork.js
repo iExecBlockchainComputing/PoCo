@@ -325,6 +325,10 @@ contract('IexecHub', function(accounts) {
 	});
 
 	it("scheduleProvider call finalizedWork", async function() {
+		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+		assert.strictEqual(checkBalance[0].toNumber(),   0, "check balance : stake");
+		assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+
 		txMined = await aWorkerPoolInstance.finalizedWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,
 			gas: amountGazProvided
@@ -352,8 +356,8 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(checkBalance[1].toNumber(), 0,   "check stake locked of the resourceProvider: 10 form subscription lock ");
 
 		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 1, "check stake of the scheduleProvider. won 1% of price");
-		assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
+		assert.strictEqual(checkBalance[0].toNumber(), 101, "check stake of the scheduleProvider. 100 unlocked + won 1% of price");
+		assert.strictEqual(checkBalance[1].toNumber(),   0, "check stake locked of the scheduleProvider");
 	});
 
 });

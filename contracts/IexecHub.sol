@@ -178,7 +178,7 @@ contract IexecHub
 		string  _params,
 		address _callback,
 		address _beneficiary)
-	public returns (address)
+	external returns (address)
 	{
 		require(marketplace.answerConsume(_marketorderIdx, msg.sender, _workerpool));
 		return emitWorkOrder(
@@ -302,16 +302,19 @@ contract IexecHub
 	// TODO: who ? everybody ?
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
-		WorkOrder workorder = WorkOrder(_woid);
+		WorkOrder  workorder  = WorkOrder(_woid);
+		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
 		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(WorkerPool(workorder.m_workerpool()).claimFailedConsensus(_woid));
-		// Who ? contributor / client
+		// Unlock stakes for all workers
+		require(workerpool.claimFailedConsensus(_woid));
 		require(workorder.setClaimed());
 
-		uint claim = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()).add(workorder.m_emitcost());
-		require(unlock(workorder.m_requester(), claim)); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		uint value = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());
+		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(seize (workerpool.m_owner(),    value));
+		// IMPORTANT TODO: who do we give the extra value comming from the sheduler ?
 
 		WorkOrderAborted(_woid, workorder.m_workerpool());
 		return true;
@@ -324,7 +327,9 @@ contract IexecHub
 		string  _uri)
 	public returns (bool)
 	{
-		WorkOrder workorder = WorkOrder(_woid);
+		WorkOrder  workorder  = WorkOrder(_woid);
+		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
+		
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
@@ -349,7 +354,6 @@ contract IexecHub
 			}
 			// incremente dataset reputation?
 		}
-
 		// TODO: reward the workerpool → done by the callser itself
 
 		/**
@@ -357,8 +361,9 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint claim = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()).add(workorder.m_emitcost());
-		require(seize(workorder.m_requester(), claim)); // seize funds for payment
+		uint value = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());
+		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
+		require(unlock(workerpool.m_owner(),    value));                             // unlock scheduler stake
 
 		// write results
 		require(workorder.setResult(_stdout, _stderr, _uri));
@@ -373,25 +378,6 @@ contract IexecHub
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
-	}
-	/**
-	 * WorkerPool management
-	 */
-	function openCloseWorkerPool(address _workerPool, bool open) public returns (bool)
-	{
-		WorkerPool pool = WorkerPool(_workerPool);
-		require(pool.getWorkerPoolOwner() == msg.sender);
-		if (open)
-		{
-			require(pool.switchOnOff(true));
-			OpenWorkerPool(_workerPool);
-		}
-		else
-		{
-			require(pool.switchOnOff(false));
-			CloseWorkerPool(_workerPool);
-		}
-		return true;
 	}
 
 	/**
@@ -439,25 +425,21 @@ contract IexecHub
 		require(lock(_user, _amount));
 		return true;
 	}
-	/* Marketplace */
 	function lockDepositForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(lockDeposit(_user, _amount));
 		return true;
 	}
-	/* Marketplace */
 	function unlockForOrder(address _user, uint256 _amount) public  onlyMarketplace returns (bool)
 	{
 		require(unlock(_user, _amount));
 		return true;
 	}
-	/* Marketplace */
 	function seizeForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(seize(_user,_amount));
 		return true;
 	}
-	/* Marketplace */
 	function rewardForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
 	{
 		require(reward(_user,_amount));
@@ -470,45 +452,44 @@ contract IexecHub
 		require(lock(_user, _amount));
 		return true;
 	}
-	/* Work */
+	function lockDepositForWork(address _woid, address _user, uint256 _amount) public returns (bool)
+	{
+		require(WorkOrder(_woid).m_workerpool() == msg.sender);
+		require(lockDeposit(_user, _amount));
+		return true;
+	}
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
-	/* Work */
-	function rewardForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
+	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
-		AccurateContribution(_woid, _worker);
-		// ----------------------- reward(address, uint256) -----------------------
 		require(reward(_worker, _amount));
 		// ------------------------------------------------------------------------
-		m_contributionHistory.success = m_contributionHistory.success.add(1);
-		m_scores[_worker] = m_scores[_worker].add(1);
+		if (_reputation)
+		{
+			AccurateContribution(_woid, _worker);
+			m_contributionHistory.success = m_contributionHistory.success.add(1);
+			m_scores[_worker] = m_scores[_worker].add(1);
+		}
 		return true;
 	}
-	/* Work */
-	function seizeForWork(address _woid, address _worker, uint256 _amount) public returns (bool)
+	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
-		FaultyContribution(_woid, _worker);
-		// ------------- code of seize(address, uint256) inlined here -------------
 		require(seize(_worker, _amount));
 		// ------------------------------------------------------------------------
-		m_contributionHistory.failled = m_contributionHistory.failled.add(1);
-		m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
+		if (_reputation)
+		{
+			FaultyContribution(_woid, _worker);
+			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
+			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
+		}
 		return true;
 	}
-	/* Consensus */
-	function rewardForConsensus(address _woid, address _scheduler, uint256 _amount) public returns (bool) // reward scheduler
-	{
-		require(WorkOrder(_woid).m_workerpool() == msg.sender);
-		require(reward(_scheduler, _amount));
-		return true;
-	}
-
 	/**
 	 * Wallet methods: public
 	 */

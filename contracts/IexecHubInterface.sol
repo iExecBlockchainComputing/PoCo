@@ -113,16 +113,11 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
-	function rewardForConsensus(
-		address _woid,
-		address _scheduler,
-		uint256 _amount)
-	public returns (bool);
-
 	function rewardForWork(
 		address _woid,
 		address _worker,
-		uint256 _amount)
+		uint256 _amount,
+		bool    _reputation)
 	public returns (bool);
 
 	function rewardForOrder(
@@ -133,7 +128,8 @@ contract IexecHubInterface
 	function seizeForWork(
 		address _woid,
 		address _worker,
-		uint256 _amount)
+		uint256 _amount,
+		bool    _reputation)
 	public returns (bool);
 
 	function seizeForOrder(
