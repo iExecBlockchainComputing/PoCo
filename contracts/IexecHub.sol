@@ -7,7 +7,6 @@ import './Marketplace.sol';
 import './AppHub.sol';
 import './DatasetHub.sol';
 import './WorkerPoolHub.sol';
-import './WorkOrderHub.sol';
 import "./SafeMathOZ.sol";
 import './IexecLib.sol';
 
@@ -32,10 +31,9 @@ contract IexecHub
 	/**
 	 * Slaves contracts
 	 */
-	AppHub         appHub;
-	DatasetHub     datasetHub;
-	WorkOrderHub   workOrderHub;
-	WorkerPoolHub  workerPoolHub;
+	AppHub        appHub;
+	DatasetHub    datasetHub;
+	WorkerPoolHub workerPoolHub;
 
 	/**
 	 * Market place
@@ -92,8 +90,7 @@ contract IexecHub
 		address _tokenAddress,
 		address _workerPoolHubAddress,
 		address _appHubAddress,
-		address _datasetHubAddress,
-		address _workOrderHubAddress
+		address _datasetHubAddress
 	)
 	public
 	{
@@ -102,7 +99,6 @@ contract IexecHub
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
-		workOrderHub       = WorkOrderHub (_workOrderHubAddress );
 		// marketplace        = Marketplace(marketplaceAddress); //too much gas
 		// marketplaceAddress = new Marketplace(this); //too much gas
 		marketplaceAddress = address(0);
@@ -274,7 +270,8 @@ contract IexecHub
 			_beneficiary
 		);
 		workorder.setActive(); // TODO: done by the scheduler within X days?
-		workOrderHub.addWorkOrder(_requester, workorder); // TODO: move to WorkOrderHub → IexecHub
+		// REPLACE ?
+		/* workOrderHub.addWorkOrder(_requester, workorder); // TODO: move to WorkOrderHub → IexecHub */
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
 		WorkOrderActivated(workorder, _workerpool);
@@ -369,8 +366,6 @@ contract IexecHub
 		return true;
 	}
 
-
-
 	/**
 	 * Views
 	 */
@@ -378,17 +373,6 @@ contract IexecHub
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
-	/*
-	function getWorkOrderWorkReward(address _woid) public view returns (uint256 workReward)
-	{
-		return workOrderHub.getWorkReward(_woid);
-	}
-	*/
-	function getWorkOrderStatus(address _woid) public view returns (IexecLib.WorkOrderStatusEnum status)
-	{
-		return workOrderHub.getStatus(_woid);
-	}
-
 	/**
 	 * WorkerPool management
 	 */

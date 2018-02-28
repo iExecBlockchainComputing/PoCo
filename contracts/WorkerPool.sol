@@ -285,10 +285,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
-	require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.ACTIVE);
+		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
-
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
 		address workerPool;
@@ -357,12 +356,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
-		require(iexecHubInterface.getWorkOrderStatus(_woid) == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(consensus.revealDate     >  now                                        ); // Needed ?
-		require(contribution.status      == IexecLib.ContributionStatusEnum.CONTRIBUTED);
-		require(contribution.resultHash  == consensus.consensus                        );
-		require(contribution.resultHash  == keccak256(_result                        ) );
-		require(contribution.resultSign  == keccak256(_result ^ keccak256(msg.sender)) );
+		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
+		require(consensus.revealDate        >  now                                        ); // Needed ?
+		require(contribution.status         == IexecLib.ContributionStatusEnum.CONTRIBUTED);
+		require(contribution.resultHash     == consensus.consensus                        );
+		require(contribution.resultHash     == keccak256(_result                        ) );
+		require(contribution.resultSign     == keccak256(_result ^ keccak256(msg.sender)) );
 
 		contribution.status     = IexecLib.ContributionStatusEnum.PROVED;
 		consensus.revealCounter = consensus.revealCounter.add(1);

@@ -3,7 +3,6 @@ var IexecHub       = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
 var AppHub         = artifacts.require("./AppHub.sol");
 var DatasetHub     = artifacts.require("./DatasetHub.sol");
-var WorkOrderHub   = artifacts.require("./WorkOrderHub.sol");
 var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
@@ -56,7 +55,6 @@ contract('IexecHub', function(accounts) {
 	let aWorkerPoolHubInstance;
 	let aAppHubInstance;
 	let aDatasetHubInstance;
-	let aWorkOrderHubInstance;
 	let aMarketplaceInstance;
 
 	//specific for test :
@@ -160,13 +158,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aDatasetHubInstance.address is ");
 		console.log(aDatasetHubInstance.address);
 
-		aWorkOrderHubInstance = await WorkOrderHub.new({
-			from: marketplaceCreator
-		});
-		console.log("aWorkOrderHubInstance.address is ");
-		console.log(aWorkOrderHubInstance.address);
-
-		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address, {
+		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
 			from: marketplaceCreator
 		});
 		console.log("aIexecHubInstance.address is ");
@@ -189,12 +181,6 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		console.log("transferOwnership of DatasetHub to IexecHub");
-
-		txMined = await aWorkOrderHubInstance.transferOwnership(aIexecHubInstance.address, {
-			from: marketplaceCreator
-		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		console.log("transferOwnership of WorkOrderHub to IexecHub");
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator

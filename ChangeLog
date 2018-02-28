@@ -1,7 +1,10 @@
 # Potential changes
 
+# Code audit
+Check functions modifiers (non-payable / pure / view)
+Check all usage of msg.sender → all fonction with that should have protection against unwanted calls
 
-# Test to do
+# Tests
 MarketOrderAskAnswered
 MarketOrderBidAnswered
 - buying more then available → should buy all remaining

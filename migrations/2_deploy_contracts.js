@@ -2,7 +2,6 @@ var IexecHub = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
-var WorkOrderHub = artifacts.require("./WorkOrderHub.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 
@@ -17,7 +16,6 @@ module.exports = function(deployer) {
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aWorkOrderHubInstance;
   let aIexecHub;
   let aMarketplaceInstance;
 
@@ -56,13 +54,7 @@ module.exports = function(deployer) {
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address: " + instance.address);
-      return deployer.deploy(WorkOrderHub);
-    })
-    .then(() => WorkOrderHub.deployed())
-    .then(instance => {
-      aWorkOrderHubInstance = instance;
-      console.log("WorkOrderHub deployed at address: " + instance.address);
-      return deployer.deploy(IexecHub, aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aWorkOrderHubInstance.address);
+      return deployer.deploy(IexecHub, aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -80,10 +72,6 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("transferOwnership of DatasetHub to IexecHub");
-      return aWorkOrderHubInstance.transferOwnership(aIexecHub.address);
-    })
-    .then(() => {
-      console.log("transferOwnership of WorkOrderHub to IexecHub");
       return deployer.deploy(Marketplace, aIexecHub.address);
     })
     .then(() => Marketplace.deployed())

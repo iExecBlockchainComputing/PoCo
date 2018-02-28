@@ -68,10 +68,6 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
-	function getWorkOrderStatus(
-		address _woid)
-	public view returns (IexecLib.WorkOrderStatusEnum status);
-
 	function getWorkReward(
 		address _woid)
 	public view returns (uint256 workReward);
