@@ -13,11 +13,6 @@ https://ethgasstation.info/
 
 ## All transactions details
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
 
 | spendBy          | when        | function      | gas        | cost (gwei)| dollars  |
 | ---------------- |:-----------:| -------------:|-----------:|-----------:|-----------:|
@@ -48,7 +43,7 @@ https://ethgasstation.info/
 ## Initilization gas cost by actors
 
 |spendBy|when|gas|cost (gwei)  |dollars|
-| ------------ |  -----------: |-----------: |
+| ---------------- |:-----------:| -------------:|-----------:|-----------:|
 |marketplaceCreator|init|10581893|105818930|127,93$
 |scheduleProvider|init|3962178|39621780|33,68$
 |resourceProvider|init|219609|2196090|1,87$
@@ -63,7 +58,7 @@ Gas usage by actors and functions for Initilization :
 ## Ask workflow gas cost by actors
 
 |spendBy|when|gas|cost (gwei)  |dollars|
-| ------------ |  -----------: |-----------: |
+| ---------------- |:-----------:| -------------:|-----------:|-----------:|
 |iExecCloudUser|askWorkflow|1091274|10912740|9,28$
 |scheduleProvider|askWorkflow|633844|6338440|5,39$
 |resourceProvider|askWorkflow|257182|2571820|2,19$
