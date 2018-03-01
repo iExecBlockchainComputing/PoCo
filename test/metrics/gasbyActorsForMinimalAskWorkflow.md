@@ -19,9 +19,9 @@ https://ethgasstation.info/
 | col 2 is      | centered      |   $12 |
 | zebra stripes | are neat      |    $1 |
 
-| spendBy  | when | function| gas   | cost (gwei) | dollars  |
-| ------------ | :-----------: | -----------: |-----------: |
-|marketplaceCreator|init|newWorkerPoolHub|4468567|44685670|37,98$
+| spendBy          | when        | function      | gas        | cost (gwei)| dollars  |
+| ---------------- |:-----------:| -------------:|-----------:|-----------:|-----------:|
+|marketplaceCreator|init     |newWorkerPoolHub|4468567|44685670|37,98$
 |marketplaceCreator|init|newAppHub|1962021|19620210|16,67$
 |marketplaceCreator|init|newDatasetHub|1962749|19627490|16,68$
 |marketplaceCreator|init|newIexecHub|5822730|58227300|49,49$
