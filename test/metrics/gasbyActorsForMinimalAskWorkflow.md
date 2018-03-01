@@ -1,4 +1,4 @@
-# Gas cost analyse
+# Gas cost analysis
 
 - gas usage are extract from a truffle test : [gasbyActorsForMinimalAskWorkflow.js](./gasbyActorsForMinimalAskWorkflow.js)
 - This test covers the creation from scratch of the market place (init) and the a nominal ask workflow is done on it (askWorkflow).
