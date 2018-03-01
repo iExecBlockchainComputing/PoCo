@@ -13,6 +13,12 @@ https://ethgasstation.info/
 
 ## All transactions details
 
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
 | spendBy  | when | function| gas   | cost (gwei) | dollars  |
 | ------------ | :-----------: | -----------: |-----------: |
 |marketplaceCreator|init|newWorkerPoolHub|4468567|44685670|37,98$
