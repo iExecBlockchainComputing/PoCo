@@ -11,6 +11,37 @@ https://ethgasstation.info/
 
 - 1 eth = 1000000000 gwei = <b> 850 $</b> today
 
+## Ask workflow gas cost by actors
+
+|spendBy|when|gas|cost (gwei)  |dollars|
+| ---------------- |:-----------:| -------------:|-----------:|-----------:|
+|iExecCloudUser|askWorkflow|1091274|10912740|9,28$
+|scheduleProvider|askWorkflow|633844|6338440|5,39$
+|resourceProvider|askWorkflow|257182|2571820|2,19$
+
+Total gas cost by actors for Ask Workflow :
+![dollarsbyActorsForAskWorkflow](./dollarsbyActorsForAskWorkflow.png)
+
+Gas usage by actors and functions for Ask Workflow :
+![AlluvialDiagramAskWorkflow](./AlluvialDiagramAskWorkflow.png)
+
+
+## MarketPlace Initilization gas cost by actors
+
+|spendBy|when|gas|cost (gwei)  |dollars|
+| ---------------- |:-----------:| -------------:|-----------:|-----------:|
+|marketplaceCreator|init|10581893|105818930|127,93$
+|scheduleProvider|init|3962178|39621780|33,68$
+|resourceProvider|init|219609|2196090|1,87$
+|appProvider|init|2046942|20469420|17,40$
+
+Total gas cost by actors for Initilization :
+![dollarsbyActorsForInitialization](./dollarsbyActorsForInitialization.png)
+
+Gas usage by actors and functions for Initilization :
+![AlluvialDiagramInitialization](./AlluvialDiagramInitialization.png)
+
+
 ## All transactions details
 
 
@@ -40,31 +71,4 @@ https://ethgasstation.info/
 |resourceProvider|askWorkflow|reveal|57477|574770|0,48$
 |scheduleProvider|askWorkflow|finalizedWork|241290|2412900|2,05$
 
-## Initilization gas cost by actors
 
-|spendBy|when|gas|cost (gwei)  |dollars|
-| ---------------- |:-----------:| -------------:|-----------:|-----------:|
-|marketplaceCreator|init|10581893|105818930|127,93$
-|scheduleProvider|init|3962178|39621780|33,68$
-|resourceProvider|init|219609|2196090|1,87$
-|appProvider|init|2046942|20469420|17,40$
-
-Total gas cost by actors for Initilization :
-![dollarsbyActorsForInitialization](./dollarsbyActorsForInitialization.png)
-
-Gas usage by actors and functions for Initilization :
-![AlluvialDiagramInitialization](./AlluvialDiagramInitialization.png)
-
-## Ask workflow gas cost by actors
-
-|spendBy|when|gas|cost (gwei)  |dollars|
-| ---------------- |:-----------:| -------------:|-----------:|-----------:|
-|iExecCloudUser|askWorkflow|1091274|10912740|9,28$
-|scheduleProvider|askWorkflow|633844|6338440|5,39$
-|resourceProvider|askWorkflow|257182|2571820|2,19$
-
-Total gas cost by actors for Ask Workflow :
-![dollarsbyActorsForAskWorkflow](./dollarsbyActorsForAskWorkflow.png)
-
-Gas usage by actors and functions for Ask Workflow :
-![AlluvialDiagramAskWorkflow](./AlluvialDiagramAskWorkflow.png)
