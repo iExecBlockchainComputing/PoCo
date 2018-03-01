@@ -6,7 +6,7 @@
 [asktransactionsCostTab.json](./asktransactionsCostTab.json),
 [inittransactionsCostTab.json](./inittransactionsCostTab.json)
 
-- We take the Median Gas Price to <b>10 gwei</b>. See here :
+- We take <b> the Median Gas Price from  Last 1,500 blocks : 10 gwei</b>. See here :
 https://ethgasstation.info/
 
 - 1 eth = 1000000000 gwei = <b> 850 $</b> today
