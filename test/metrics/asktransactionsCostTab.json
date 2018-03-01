@@ -1,0 +1,58 @@
+{
+    "Ask Workflow Gas cost transactions": [
+        {
+            "spendBy": "scheduleProvider",
+            "when": "askWorkflow",
+            "function": "emitMarketOrder",
+            "gas": 218803
+        },
+        {
+            "spendBy": "iExecCloudUser",
+            "when": "askWorkflow",
+            "function": "deposit",
+            "gas": 50992
+        },
+        {
+            "spendBy": "iExecCloudUser",
+            "when": "askWorkflow",
+            "function": "answerEmitWorkOrder",
+            "gas": 1040282
+        },
+        {
+            "spendBy": "scheduleProvider",
+            "when": "askWorkflow",
+            "function": "callForContribution-1-worker",
+            "gas": 62179
+        },
+        {
+            "spendBy": "resourceProvider",
+            "when": "askWorkflow",
+            "function": "deposit",
+            "gas": 50992
+        },
+        {
+            "spendBy": "resourceProvider",
+            "when": "askWorkflow",
+            "function": "contribute",
+            "gas": 148713
+        },
+        {
+            "spendBy": "scheduleProvider",
+            "when": "askWorkflow",
+            "function": "revealConsensus",
+            "gas": 111572
+        },
+        {
+            "spendBy": "resourceProvider",
+            "when": "askWorkflow",
+            "function": "reveal",
+            "gas": 57477
+        },
+        {
+            "spendBy": "scheduleProvider",
+            "when": "askWorkflow",
+            "function": "finalizedWork",
+            "gas": 241290
+        }
+    ]
+}

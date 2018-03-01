@@ -1,0 +1,88 @@
+{
+    "init Gas cost transactions": [
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "newWorkerPoolHub",
+            "gas": 4468567
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "newAppHub",
+            "gas": 1962021
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "newDatasetHub",
+            "gas": 1962749
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "newIexecHub",
+            "gas": 5822730
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "WorkerPoolHubTransferOwnership",
+            "gas": 30707
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "AppHubTransferOwnership",
+            "gas": 30685
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "DatasetHubTransferOwnership",
+            "gas": 30729
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "newMarketplace",
+            "gas": 678361
+        },
+        {
+            "spendBy": "marketplaceCreator",
+            "when": "init",
+            "function": "attachMarketplace",
+            "gas": 63911
+        },
+        {
+            "spendBy": "scheduleProvider",
+            "when": "init",
+            "function": "createWorkerPool",
+            "gas": 3916971
+        },
+        {
+            "spendBy": "scheduleProvider",
+            "when": "init",
+            "function": "updateWhitelist",
+            "gas": 45207
+        },
+        {
+            "spendBy": "resourceProvider",
+            "when": "init",
+            "function": "deposit",
+            "gas": 80992
+        },
+        {
+            "spendBy": "resourceProvider",
+            "when": "init",
+            "function": "subscribeToPool",
+            "gas": 138617
+        },
+        {
+            "spendBy": "appProvider",
+            "when": "init",
+            "function": "newApp",
+            "gas": 2046942
+        }
+    ]
+}
