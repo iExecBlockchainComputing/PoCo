@@ -132,8 +132,7 @@ contract Marketplace is IexecHubAccessor
 		}
 		// marketorderIdx => user => workerpool => quantity
 		m_assetBook[_marketorderIdx][marketorder.requester][_workerpool] = m_assetBook[_marketorderIdx][marketorder.requester][_workerpool].add(_quantity);
-		// TODO: create event
-		MarketOrderBidAnswered(_marketorderIdx,marketorder.requester,_workerpool,_quantity);
+		MarketOrderBidAnswered(_marketorderIdx, marketorder.requester, _workerpool, _quantity);
 		return _quantity;
 	}
 	function answerAskOrder(uint _marketorderIdx, uint256 _quantity) public returns (uint256)
@@ -150,7 +149,7 @@ contract Marketplace is IexecHubAccessor
 		require(iexecHubInterface.lockDepositForOrder(msg.sender, marketorder.value.mul(_quantity)));
 		// marketorderIdx => user => workerpool => quantity
 		m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool] = m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool].add(_quantity);
-		MarketOrderAskAnswered(_marketorderIdx, msg.sender, marketorder.workerpool,_quantity);
+		MarketOrderAskAnswered(_marketorderIdx, msg.sender, marketorder.workerpool, _quantity);
 		return _quantity;
 	}
 	*/
@@ -165,10 +164,10 @@ contract Marketplace is IexecHubAccessor
 	public onlyIexecHub returns (bool)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.direction      == IexecLib.MarketOrderDirectionEnum.ASK);
+		require(marketorder.direction  == IexecLib.MarketOrderDirectionEnum.ASK);
+		require(marketorder.remaining  >  0);
+		require(marketorder.workerpool == _workerpool);
 		/* require(marketorder.marketDeadline >  now); // assetDeadline > marketdeadline > now */
-		require(marketorder.remaining      >  0);
-		require(marketorder.workerpool     == _workerpool);
 
 		marketorder.remaining = marketorder.remaining.sub(1);
 		if (marketorder.remaining == 0)

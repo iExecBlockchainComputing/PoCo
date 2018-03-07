@@ -76,6 +76,7 @@ library IexecLib
 		bytes32 resultHash;
 		bytes32 resultSign; // change from salt to tx.origin based signature
 		address enclaveChallenge;
+		uint256 score;
 		uint256 weight;
 	}
 

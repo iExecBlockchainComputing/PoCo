@@ -20,7 +20,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	 * Members
 	 */
 	WorkerPoolStatusEnum        public m_workerPoolStatus;
-	string                      public m_name;
+	string                      public m_description;
 	uint256                     public m_stakeRatioPolicy;               // % of reward to stake
 	uint256                     public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
 	uint256                     public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
@@ -77,7 +77,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	// Constructor
 	function WorkerPool(
 		address _iexecHubAddress,
-		string  _name,
+		string  _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy,
@@ -91,7 +91,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(tx.origin != msg.sender);
 		transferOwnership(tx.origin); // owner → tx.origin
 
-		m_name                           = _name;
+		m_description                    = _description;
 		m_stakeRatioPolicy               = 30; // % of the work order price to stake
 		m_schedulerRewardRatioPolicy     = 1;  // % of the work reward going to scheduler vs workers reward
 		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
@@ -165,7 +165,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		return m_workers.length;
 	}
 
-	function subscribeToPool() public returns (bool){
+	function subscribeToPool() public returns (bool)
+	{
 		//tx.origin = worker
 	  require(iexecHubInterface.subscribeToPool());
 		uint index = m_workers.push(tx.origin);
@@ -320,6 +321,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
+		(,contribution.score)   = iexecHubInterface.getWorkerStatus(msg.sender);
 		consensus.contributors.push(msg.sender);
 
 		require(iexecHubInterface.lockForWork(_woid, msg.sender, consensus.stakeAmount));
@@ -407,6 +409,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint256 i;
 		address w;
+		IexecLib.Contribution storage c;
 		/**
 		 * Reward distribution:
 		 * totalReward is to be distributed amoung the winners relative to their
@@ -418,7 +421,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
 		 */
 		uint256 workerBonus;
-		uint256 workerScore;
 		uint256 workerWeight;
 		uint256 totalWeight;
 		uint256 workerReward;
@@ -427,13 +429,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
+			c = m_contributions[_woid][w];
+			if (c.status == IexecLib.ContributionStatusEnum.PROVED)
 			{
-				workerBonus                      = (m_contributions[_woid][w].enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
-				(,workerScore)                   = iexecHubInterface.getWorkerStatus(w);
-				workerWeight                     = 1 + workerScore.mul(workerBonus).log2();
-				totalWeight                      = totalWeight.add(workerWeight);
-				m_contributions[_woid][w].weight = workerWeight; // store so we don't have to recompute
+				workerBonus  = (c.enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
+				workerWeight = 1 + c.score.mul(workerBonus).log2();
+				totalWeight  = totalWeight.add(workerWeight);
+				c.weight     = workerWeight; // store so we don't have to recompute
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -448,9 +450,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
+			c = m_contributions[_woid][w];
+			if (c.status == IexecLib.ContributionStatusEnum.PROVED)
 			{
-				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
+				workerReward = workersReward.mulByFraction(c.weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _consensus.stakeAmount));
 				require(iexecHubInterface.rewardForWork(_woid, w, workerReward, true));
