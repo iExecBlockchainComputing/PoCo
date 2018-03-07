@@ -358,7 +358,7 @@ contract IexecHub
 		return true;
 	}
 
-	function finalizedWorkOrder(
+	function finalizeWorkOrder(
 		address _woid,
 		string  _stdout,
 		string  _stderr,

@@ -69,6 +69,4 @@ Gas usage by actors and functions for Initilization :
 |resourceProvider|askWorkflow|contribute|148713|1487130|1,26$
 |scheduleProvider|askWorkflow|revealConsensus|111572|1115720|0,94$
 |resourceProvider|askWorkflow|reveal|57477|574770|0,48$
-|scheduleProvider|askWorkflow|finalizedWork|241290|2412900|2,05$
-
-
+|scheduleProvider|askWorkflow|finalizeWork|241290|2412900|2,05$

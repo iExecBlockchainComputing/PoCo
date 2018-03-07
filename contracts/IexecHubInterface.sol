@@ -57,7 +57,7 @@ contract IexecHubInterface
 		address _woid)
 		public /*only who ? everybody ?*/ returns (bool);
 
-	function finalizedWorkOrder(
+	function finalizeWorkOrder(
 		address _woid,
 		string  _stdout,
 		string  _stderr,

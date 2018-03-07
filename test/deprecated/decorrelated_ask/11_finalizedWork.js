@@ -330,8 +330,8 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 	});
 
-	it("scheduleProvider call finalizedWork", async function() {
-		txMined = await aWorkerPoolInstance.finalizedWork(woid, "aStdout", "aStderr", "anUri", {
+	it("scheduleProvider call finalizeWork", async function() {
+		txMined = await aWorkerPoolInstance.finalizeWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,
 			gas: amountGazProvided
 		});

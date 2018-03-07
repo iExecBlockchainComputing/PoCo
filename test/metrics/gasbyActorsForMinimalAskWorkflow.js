@@ -122,7 +122,7 @@ contract('IexecHub', function(accounts) {
 	let dataTxContribute;
 	let dataTxRevealConsensus;
 	let dataTxReveal;
-	let dataTxFinalizedWork;
+	let dataTxFinalizeWork;
 
 	before("should prepare accounts and check TestRPC Mode", async() => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -481,19 +481,19 @@ contract('IexecHub', function(accounts) {
 	});
 
 
-	it("scheduleProvider call finalizedWork", async function() {
+	it("scheduleProvider call finalizeWork", async function() {
 		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
 		assert.strictEqual(checkBalance[0].toNumber(),   0, "check balance : stake");
 		assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
 
-		txMined = await aWorkerPoolInstance.finalizedWork(woid, "aStdout", "aStderr", "anUri", {
+		txMined = await aWorkerPoolInstance.finalizeWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,
 			gas: amountGazProvided
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxFinalizedWork= {spendBy:"scheduleProvider", when:"askWorkflow", function:"finalizedWork", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxFinalizeWork= {spendBy:"scheduleProvider", when:"askWorkflow", function:"finalizeWork", gas: txMined.receipt.cumulativeGasUsed};
 		// <-- GAS ANALYSE
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderCompleted({}));
@@ -544,7 +544,7 @@ contract('IexecHub', function(accounts) {
 				dataTxContribute,
 				dataTxRevealConsensus,
 				dataTxReveal,
-				dataTxFinalizedWork
+				dataTxFinalizeWork
 			]
 		};
 
@@ -577,7 +577,7 @@ contract('IexecHub', function(accounts) {
 				dataTxContribute,
 				dataTxRevealConsensus,
 				dataTxReveal,
-				dataTxFinalizedWork
+				dataTxFinalizeWork
 			]
 		};
 

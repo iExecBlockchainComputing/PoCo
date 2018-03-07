@@ -393,7 +393,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	}
 
 	// if sheduler never call finalized ? no incetive to do that. schedulermust be pay also at this time
-	function finalizedWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
+	function finalizeWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require((consensus.revealDate <= now && consensus.revealCounter > 0) || consensus.revealCounter == consensus.winnerCount);
@@ -401,7 +401,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		// add penalized to the call worker to contrubution and they never contribute ?
 		require(distributeRewards(_woid, consensus));
 
-		require(iexecHubInterface.finalizedWorkOrder(_woid, _stdout, _stderr, _uri));
+		require(iexecHubInterface.finalizeWorkOrder(_woid, _stdout, _stderr, _uri));
 		return true;
 	}
 
