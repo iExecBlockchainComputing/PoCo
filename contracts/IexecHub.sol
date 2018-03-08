@@ -143,22 +143,22 @@ contract IexecHub
 	 * Factory
 	 */
 
-	 function createCategory(
-		 string  _name,
-		 string  _description,
-		 uint256 _workClockTimeRef)
-	 public onlyCategoriesCreator returns (uint256 catid)
-	 {
-		 uint256                      newCatid = m_categoriesCount;
- 		 IexecLib.Category storage category = m_categories[newCatid];
-		 category.catid                     = newCatid;
-		 category.name                      = _name;
-		 category.description               = _description;
-		 category.workClockTimeRef          = _workClockTimeRef;
-		 CreateCategory(newCatid,_name,_description,_workClockTimeRef);
-		 m_categoriesCount                  = m_categoriesCount.add(1);
-		 return newCatid;
-	 }
+	function createCategory(
+		string  _name,
+		string  _description,
+		uint256 _workClockTimeRef)
+	public onlyCategoriesCreator returns (uint256 catid)
+	{
+		m_categoriesCount                  = m_categoriesCount.add(1);
+		uint256                   newCatid = m_categoriesCount;
+ 		IexecLib.Category storage category = m_categories[newCatid];
+		category.catid                     = newCatid;
+		category.name                      = _name;
+		category.description               = _description;
+		category.workClockTimeRef          = _workClockTimeRef;
+		CreateCategory(newCatid,_name,_description,_workClockTimeRef);
+		return newCatid;
+	}
 
 	function createWorkerPool(
 		string  _name,
@@ -223,10 +223,11 @@ contract IexecHub
 		address _beneficiary)
 	external returns (address)
 	{
-		require(marketplace.answerConsume(_marketorderIdx, msg.sender, _workerpool));
+		address requester = msg.sender;
+		require(marketplace.answerConsume(_marketorderIdx, requester, _workerpool));
 		return emitWorkOrder(
 			_marketorderIdx,
-			msg.sender,
+			requester,
 			_workerpool,
 			_app,
 			_dataset,
@@ -310,7 +311,7 @@ contract IexecHub
 			_callback,
 			_beneficiary
 		);
-		workorder.setActive(); // TODO: done by the scheduler within X days?
+		require(workorder.activate());
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
 		WorkOrderActivated(workorder, _workerpool);
@@ -321,8 +322,7 @@ contract IexecHub
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
-		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.setRevealing());
+		require(workorder.reveal());
 		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
 		return true;
 	}
@@ -331,8 +331,7 @@ contract IexecHub
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
-		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.setActive());
+		require(workorder.reactivate());
 		WorkOrderActivated(_woid, workorder.m_workerpool());
 		return true;
 	}
@@ -347,7 +346,7 @@ contract IexecHub
 		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
-		require(workorder.setClaimed());
+		require(workorder.claim());
 
 		uint value = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());
 		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT

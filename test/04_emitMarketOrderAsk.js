@@ -270,9 +270,9 @@ contract('IexecHub', function(accounts) {
 			});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 0, "marketorderIdx");
+		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
-		[direction,category,trust,value,volume,remaining,workerpool] = await aMarketplaceInstance.getMarketOrder.call(0);
+		[direction,category,trust,value,volume,remaining,workerpool] = await aMarketplaceInstance.getMarketOrder.call(1);
 		assert.strictEqual(direction.toNumber(),      IexecLib.MarketOrderDirectionEnum.ASK,        "check IexecLib.MarketOrderDirectionEnum.ASK");
 		assert.strictEqual(category.toNumber(),       1,                                            "check category");
 		assert.strictEqual(trust.toNumber(),          0,                                            "check trust");

@@ -55,6 +55,7 @@ contract Marketplace is IexecHubAccessor
 	public returns (uint)
 	{
 		/* require(_assetDeadline >= _marketDeadline); */
+		m_orderCount = m_orderCount.add(1);
 		uint256                      marketorderIdx = m_orderCount;
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
 		marketorder.direction      = _direction;
@@ -87,7 +88,6 @@ contract Marketplace is IexecHubAccessor
 		{
 			revert();
 		}
-		m_orderCount = m_orderCount.add(1);
 		MarketOrderEmitted(marketorderIdx);
 		return marketorderIdx;
 	}

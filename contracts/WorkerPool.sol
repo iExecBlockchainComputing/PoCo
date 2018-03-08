@@ -409,7 +409,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint256 i;
 		address w;
-		IexecLib.Contribution storage c;
 		/**
 		 * Reward distribution:
 		 * totalReward is to be distributed amoung the winners relative to their
@@ -429,7 +428,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			c = m_contributions[_woid][w];
+			IexecLib.Contribution storage c = m_contributions[_woid][w];
 			if (c.status == IexecLib.ContributionStatusEnum.PROVED)
 			{
 				workerBonus  = (c.enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
@@ -450,10 +449,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
-			c = m_contributions[_woid][w];
-			if (c.status == IexecLib.ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
 			{
-				workerReward = workersReward.mulByFraction(c.weight, totalWeight);
+				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
 				totalReward  = totalReward.sub(workerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _consensus.stakeAmount));
 				require(iexecHubInterface.rewardForWork(_woid, w, workerReward, true));

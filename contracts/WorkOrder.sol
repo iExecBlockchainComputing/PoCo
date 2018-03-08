@@ -68,27 +68,38 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 	}
 
-	function setCancelled() public onlyIexecHub returns (bool)
+	function activate() public onlyIexecHub returns (bool)
 	{
-		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
-		return true;
-	}
-
-	function setClaimed() public onlyIexecHub returns (bool)
-	{
-		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
-		return true;
-	}
-
-	function setActive() public onlyIexecHub returns (bool)
-	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.PENDING);
 		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
 		return true;
 	}
 
-	function setRevealing() public onlyIexecHub returns (bool)
+	function cancel() public onlyIexecHub returns (bool)
 	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.PENDING);
+		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
+		return true;
+	}
+
+	function reveal() public onlyIexecHub returns (bool)
+	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		m_status = IexecLib.WorkOrderStatusEnum.REVEALING;
+		return true;
+	}
+
+	function claim() public onlyIexecHub returns (bool)
+	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE);
+		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
+		return true;
+	}
+
+	function reactivate() public onlyIexecHub returns (bool)
+	{
+		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
+		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
 		return true;
 	}
 
