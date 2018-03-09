@@ -18,18 +18,12 @@ function print_style
 	printf "$STARTCOLOR%b$ENDCOLOR" "$2";
 }
 
-
-
-
-
-
-
-
 function initialize
 {
+	mkdir -p logs
 	# starting testrpc
 	print_style 'info' "Starting testrpc daemon in a tmux session\n"
-	tmux new-session -s testrpc -d script -f /tmp/testrpc.$date.log -c testrpc || exit 1
+	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c testrpc || exit 1
 }
 function finalize
 {
@@ -48,7 +42,7 @@ function catch
 function runCompile
 {
 	# compile contracts
-	logcompile="log/compile.$date.log"
+	logcompile="logs/compile.$date.log"
 	printf "Compiling ... "
 	truffle compile > $logcompile 2>&1
 	if [[ $? -ne 0 ]];
@@ -64,7 +58,7 @@ function runCompile
 function runDeploy
 {
 	# try deploying contracts
-	logdeploy="log/deploy.$date.log"
+	logdeploy="logs/deploy.$date.log"
 	printf "Deploying ... "
 	truffle deploy > $logdeploy 2>&1
 	if [[ $? -ne 0 ]];
@@ -83,7 +77,7 @@ function runTests
 	for filepath in `find test/ -maxdepth 1 -type f -name "*.js" -print | sort`
 	do
 		filename=$(basename $filepath)
-		logfile="log/${filename%.*}.$date.log"
+		logfile="logs/${filename%.*}.$date.log"
 
 		if [ "$1" \> "$filename" ]; then continue; fi
 
