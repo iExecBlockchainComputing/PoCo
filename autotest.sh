@@ -2,9 +2,6 @@
 
 trap catch INT
 
-date=$(date --utc +"%Y-%m-%dT%H:%M:%S")
-
-
 function print_style
 {
 	if   [ "$1" == "info"    ]; then COLOR="96m";
@@ -42,32 +39,34 @@ function catch
 function runCompile
 {
 	# compile contracts
-	logcompile="logs/compile.$date.log"
+	logfile="logs/compile.$date.log"
 	printf "Compiling ... "
-	truffle compile > $logcompile 2>&1
+	truffle compile > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
-		print_style 'danger'  "failure\n"
-		print_style 'warning' "Full report is available at $logcompile\n"
-		break
+		print_style 'danger' "failure\n"
+		print_style 'danger' "Full report is available at $logfile\n"
+		catch
 	else
 		print_style 'success' "success\n"
+		rm $logfile
 	fi
 }
 
 function runDeploy
 {
 	# try deploying contracts
-	logdeploy="logs/deploy.$date.log"
+	logfile="logs/deploy.$date.log"
 	printf "Deploying ... "
-	truffle deploy > $logdeploy 2>&1
+	truffle deploy > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
-		print_style 'danger'  "failure\n"
-		print_style 'warning' "Full report is available at $logcompile\n"
-		break
+		print_style 'danger' "failure\n"
+		print_style 'danger' "Full report is available at $logfile\n"
+		catch
 	else
 		print_style 'success' "success\n"
+		rm $logfile
 	fi
 }
 
@@ -79,24 +78,28 @@ function runTests
 		filename=$(basename $filepath)
 		logfile="logs/${filename%.*}.$date.log"
 
-		if [ "$1" \> "$filename" ]; then continue; fi
+		if [ "$checkpoint" \> "$filename" ]; then continue; fi
 
 		printf "Starting test ${filename%.*} ... "
 		truffle test $filepath > $logfile 2>&1
 		if [[ $? -ne 0 ]];
 		then
-			print_style 'danger'  "failure\n"
-			print_style 'warning' "Full report is available at $logcompile\n"
-			break
+			print_style 'danger' "failure\n"
+			print_style 'danger' "Full report is available at $logcompile\n"
+			catch
 		else
 			print_style 'success' "success\n"
+			rm $logfile
 		fi
 	done
 }
+
+date=$(date --utc +"%Y-%m-%dT%H:%M:%S")
+checkpoint="$1"
 
 # MAIN
 initialize
 runCompile
 runDeploy
-runTests "$1"
+runTests
 finalize
