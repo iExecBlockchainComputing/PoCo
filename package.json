@@ -4,7 +4,9 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "sleep 5 && ./node_modules/.bin/truffle test test/*",
+    "pretest": "./node_modules/.bin/testrpc > /dev/null &",
+    "posttest": "kill $(ps aux | grep testrpc |grep node|awk '{print $2}')"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "truffle": "^4.0.7",
     "truffle-contract": "3.0.4",
     "truffle-hdwallet-provider": "0.0.3",
-    "web3": "0.20.2"
+    "web3": "0.20.2",
+    "ethereumjs-testrpc": "6.0.3"
   }
 }
