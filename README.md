@@ -1,5 +1,5 @@
 
-
+[![Build Status](https://drone.iex.ec//api/badges/iExecBlockchainComputing/poco/status.svg)](https://drone.iex.ec/iExecBlockchainComputing/poco)
 
 
 #  WorkOrderStatusEnum
