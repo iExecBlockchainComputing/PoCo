@@ -202,7 +202,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		return true;
 	}
 
-	function evictWorker(address _worker) public onlyOwner returns (bool){
+	function evictWorker(address _worker) public onlyOwner returns (bool)
+	{
 		//tx.origin = worker
 		require(iexecHubInterface.evictWorker(_worker));
 	  require(removeWorker(_worker));

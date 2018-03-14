@@ -82,7 +82,8 @@ contract Marketplace is IexecHubAccessor
 			require(WorkerPool(_workerpool).m_owner() == msg.sender);
 			require(iexecHubInterface.lockDepositForOrder(msg.sender, _value.mul(_volume)));
 			/* marketorder.requester  = address(0); */
-			marketorder.workerpool = _workerpool;
+			marketorder.workerpool      = _workerpool;
+			marketorder.workerpoolOwner = msg.sender;
 		}
 		else
 		{
@@ -105,8 +106,8 @@ contract Marketplace is IexecHubAccessor
 		*/
 		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
-			require(WorkerPool(marketorder.workerpool).m_owner() == msg.sender);
-			require(iexecHubInterface.unlockForOrder(msg.sender, marketorder.value.mul(marketorder.remaining)));
+			require(marketorder.workerpoolOwner == msg.sender);
+			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.mul(marketorder.remaining)));
 		}
 		else
 		{
@@ -256,8 +257,8 @@ contract Marketplace is IexecHubAccessor
 		uint256 volume,         // quantity of instances (total)
 		uint256 remaining,      // remaining instances
 		/* address requester,      // null for ASK */
-		address workerpool      // BID can use null for any
-	)
+		address workerpool,      // BID can use null for any
+		address workerpoolOwner)
 	{
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		return (
@@ -270,7 +271,8 @@ contract Marketplace is IexecHubAccessor
 			marketorder.volume,
 			marketorder.remaining,
 			/* marketorder.requester, */
-			marketorder.workerpool
+			marketorder.workerpool,
+			marketorder.workerpoolOwner
 		);
 	}
 }

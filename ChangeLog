@@ -4,7 +4,5 @@
 Check functions modifiers (non-payable / pure / view)
 Check all usage of msg.sender → all fonction with that should have protection against unwanted calls
 
-# Tests
-MarketOrderAskAnswered
-MarketOrderBidAnswered
-- buying more then available → should buy all remaining
+# Possible issues
+WorkerPool owner change between lock and unlock

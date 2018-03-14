@@ -361,9 +361,12 @@ contract IexecHub
 		require(workerpool.claimFailedConsensus(_woid));
 		require(workorder.claim());
 
-		uint value = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());
+		uint    value;
+		address workerpoolOwner;
+		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+
 		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
-		require(seize (workerpool.m_owner(),    value));
+		require(seize (workerpoolOwner,         value                            ));
 		// IMPORTANT TODO: who do we give the extra value comming from the sheduler ?
 
 		WorkOrderAborted(_woid, workorder.m_workerpool());
@@ -411,9 +414,12 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint value = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());
+		uint    value;
+ 		address workerpoolOwner;
+ 		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
-		require(unlock(workerpool.m_owner(),    value));                             // unlock scheduler stake
+		require(unlock(workerpoolOwner,         value));                             // unlock scheduler stake
 
 		// write results
 		require(workorder.setResult(_stdout, _stderr, _uri));
