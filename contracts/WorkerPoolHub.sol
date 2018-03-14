@@ -18,8 +18,9 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	mapping(address => uint256)                     m_workerPoolCountByOwner;
 	// owner => index => workerPool
 	mapping(address => mapping(uint256 => address)) m_workerPoolByOwnerByIndex;
-	//  workerPool => owner
-	mapping(address => address)                     m_ownerByWorkerPool;
+	//  workerPool => owner // stored in the workerPool
+	/* mapping(address => address)                     m_ownerByWorkerPool; */
+	mapping(address => bool)                        m_workerPoolRegistered;
 
 	/**
 	 * Constructor
@@ -31,37 +32,29 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Methods
 	 */
+	function isWorkerPoolRegistered(address _workerPool) public view returns (bool)
+	{
+		return m_workerPoolRegistered[_workerPool];
+	}
 	function getWorkerPoolsCount(address _owner) public view returns (uint256)
 	{
 		return m_workerPoolCountByOwner[_owner];
 	}
-
 	function getWorkerPool(address _owner, uint256 _index) public view returns (address)
 	{
 		return m_workerPoolByOwnerByIndex[_owner][_index];
 	}
-/*
-	function getWorkerPoolOwner(address _workerPool) public view returns (address)
-	{
-		return m_ownerByWorkerPool[_workerPool];
-	}
-*/
 	function getWorkerAffectation(address _worker) public view returns (address workerPool)
 	{
 		return m_workerAffectation[_worker];
 	}
 
-	function isWorkerPoolRegistred(address _workerPool) public view returns (bool)
-	{
-		return m_ownerByWorkerPool[_workerPool] != 0x0;
-	}
-
 	function addWorkerPool(address _owner, address _workerPool) internal
 	{
-		uint id = m_workerPoolCountByOwner[_owner];
-		m_workerPoolCountByOwner  [_owner]      = id.add(1);
+		uint id = m_workerPoolCountByOwner[_owner].add(1);
+		m_workerPoolCountByOwner  [_owner]      = id;
 		m_workerPoolByOwnerByIndex[_owner][id]  = _workerPool;
-		m_ownerByWorkerPool       [_workerPool] = _owner;
+		m_workerPoolRegistered    [_workerPool] = true;
 	}
 
 	function createWorkerPool(
@@ -70,12 +63,13 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy,
 		address _marketplaceAddress)
-		public onlyOwner /*owner == IexecHub*/ returns (address createdWorkerPool)
+	external onlyOwner /*owner == IexecHub*/ returns (address createdWorkerPool)
 	{
 		// tx.origin == owner
 		// msg.sender == IexecHub
+		// At creating ownership is transfered to tx.origin
 		address newWorkerPool = new WorkerPool(
-			msg.sender,
+			msg.sender, // iexecHubAddress
 			_name,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
@@ -105,25 +99,4 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		m_workerAffectation[_worker] == address(0);
 		return true;
 	}
-
-	function isOpen(address _workerPool) public view returns (bool)
-	{
-		return WorkerPool(_workerPool).isOpen();
-	}
-	function isAppAllowed(address _workerPool, address _app) public view returns (bool)
-	{
-		return WorkerPool(_workerPool).isAppAllowed(_app);
-	}
-	function isDatasetAllowed(address _workerPool, address _dataset) public view returns (bool)
-	{
-		return WorkerPool(_workerPool).isDatasetAllowed(_dataset);
-	}
-	/*
-	function isRequesterAllowed(address _workerPool, address _requester) public returns (bool)
-	{
-		return WorkerPool(_workerPool).isRequesterAllowed(_requester);
-	}
-	*/
-
-
 }

@@ -46,12 +46,10 @@ contract IexecHub
 		_;
 	}
 
-
 	/**
 	 * Escrow
 	 */
 	mapping(address => IexecLib.Account) public m_accounts;
-
 
 	/**
 	 * Categories
@@ -118,7 +116,7 @@ contract IexecHub
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
 		// marketplace        = Marketplace(marketplaceAddress); //too much gas
 		// marketplaceAddress = new Marketplace(this); //too much gas
-		marketplaceAddress = address(0);
+		marketplaceAddress  = address(0);
 		m_categoriesCreator = address(0);
 
 		m_contributionHistory.success = 0;
@@ -126,17 +124,17 @@ contract IexecHub
 
 	}
 
-	function setCategoriesCreator(address _categoriesCreator)
-	{
-		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
-		m_categoriesCreator = _categoriesCreator;
-	}
-
 	function attachMarketplace(address _marketplaceAddress)
 	{
 		require(marketplaceAddress == address(0));
 		marketplaceAddress = _marketplaceAddress;//new Marketplace(this);
 		marketplace        =  Marketplace(_marketplaceAddress);
+	}
+
+	function setCategoriesCreator(address _categoriesCreator)
+	{
+		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
+		m_categoriesCreator = _categoriesCreator;
 	}
 
 	/**
@@ -150,14 +148,13 @@ contract IexecHub
 	public onlyCategoriesCreator returns (uint256 catid)
 	{
 		m_categoriesCount                  = m_categoriesCount.add(1);
-		uint256                   newCatid = m_categoriesCount;
- 		IexecLib.Category storage category = m_categories[newCatid];
-		category.catid                     = newCatid;
+		IexecLib.Category storage category = m_categories[m_categoriesCount];
+		category.catid                     = m_categoriesCount;
 		category.name                      = _name;
 		category.description               = _description;
 		category.workClockTimeRef          = _workClockTimeRef;
-		CreateCategory(newCatid,_name,_description,_workClockTimeRef);
-		return newCatid;
+		CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
+		return m_categoriesCount;
 	}
 
 	function createWorkerPool(
@@ -260,44 +257,60 @@ contract IexecHub
 		);
 	}
 	*/
+
+	function lockWorkOrderCost(
+		address _requester,
+		address _workerpool, // Address of a smartcontract
+		address _app,        // Address of a smartcontract
+		address _dataset)    // Address of a smartcontract
+	internal returns (uint256)
+	{
+		// APP
+		App app = App(_app);
+		require(appHub.isAppRegistered  (_app       ));
+		require(app.isOpen             (           ));
+		require(app.isDatasetAllowed   (_dataset   ));
+		require(app.isRequesterAllowed (_requester ));
+		require(app.isWorkerPoolAllowed(_workerpool));
+
+		uint256 emitcost = app.m_appPrice();
+		// DATASET
+		if (_dataset != address(0)) // address(0) → no dataset
+		{
+			Dataset dataset = Dataset(_dataset);
+			require(datasetHub.isDatasetRegistred(_dataset   ));
+			require(dataset.isOpen               (           ));
+			require(dataset.isAppAllowed         (_app       ));
+			require(dataset.isRequesterAllowed   (_requester ));
+			require(dataset.isWorkerPoolAllowed  (_workerpool));
+			// add optional datasetPrice for userCost
+			emitcost = emitcost.add(dataset.m_datasetPrice());
+		}
+		// WORKERPOOL
+		WorkerPool workerpool = WorkerPool(_workerpool);
+		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
+		require(workerpool.isOpen                   (          ));
+		require(workerpool.isAppAllowed             (_app      ));
+		require(workerpool.isDatasetAllowed         (_dataset  ));
+		/* require(workerpool.isRequesterAllowed       (msg.sender)); */
+
+		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
+
+		return emitcost;
+	}
+
 	function emitWorkOrder(
 		uint256 _marketorderIdx,
 		address _requester,
-		address _workerpool,
-		address _app,
-		address _dataset,
+		address _workerpool, // Address of a smartcontract
+		address _app,        // Address of a smartcontract
+		address _dataset,    // Address of a smartcontract
 		string  _params,
 		address _callback,
 		address _beneficiary)
 	internal returns (address)
 	{
-		// APP
-		require(appHub.isAppRegistred     (_app             ));
-		require(appHub.isOpen             (_app             ));
-		require(appHub.isDatasetAllowed   (_app, _dataset   ));
-		require(appHub.isRequesterAllowed (_app, _requester ));
-		require(appHub.isWorkerPoolAllowed(_app, _workerpool));
-		// Price to pay by the user, initialized with reward + dapp Price
-		uint256 emitcost = appHub.getAppPrice(_app);
-		// DATASET
-		if (_dataset != address(0)) // address(0) → no dataset
-		{
-			require(datasetHub.isDatasetRegistred (_dataset             ));
-			require(datasetHub.isOpen             (_dataset             ));
-			require(datasetHub.isAppAllowed       (_dataset, _app       ));
-			require(datasetHub.isRequesterAllowed (_dataset, _requester ));
-			require(datasetHub.isWorkerPoolAllowed(_dataset, _workerpool));
-			// add optional datasetPrice for userCost
-			emitcost = emitcost.add(datasetHub.getDatasetPrice(_dataset));
-		}
-		// WORKERPOOL
-		require(workerPoolHub.isWorkerPoolRegistred(_workerpool            ));
-		require(workerPoolHub.isOpen               (_workerpool            ));
-		require(workerPoolHub.isAppAllowed         (_workerpool, _app      ));
-		require(workerPoolHub.isDatasetAllowed     (_workerpool, _dataset  ));
-		// require(workerPoolHub.isRequesterAllowed   (_workerpool, msg.sender));
-
-		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
+		uint256 emitcost = lockWorkOrderCost(_requester, _workerpool, _app, _dataset);
 
 		WorkOrder workorder = new WorkOrder(
 			this,
@@ -371,22 +384,22 @@ contract IexecHub
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
 		// reward app
-		address app      = workorder.m_app();
-		uint256 appPrice = appHub.getAppPrice(app);
+		App app = App(workorder.m_app());
+		uint256 appPrice = app.m_appPrice();
 		if (appPrice > 0)
 		{
-			require(reward(appHub.getAppOwner(app), appPrice));
+			require(reward(app.m_owner(), appPrice));
 			// TODO: to unlock a stake ?
 		}
 		// incremente app reputation?
 		// reward dataset
-		address dataset = workorder.m_dataset();
+		Dataset dataset = Dataset(workorder.m_dataset());
 		if (dataset != address(0))
 		{
-			uint256 datasetPrice = datasetHub.getDatasetPrice(dataset);
+			uint256 datasetPrice = dataset.m_datasetPrice();
 			if (datasetPrice > 0)
 			{
-				require(reward(datasetHub.getDatasetOwner(dataset), datasetPrice));
+				require(reward(dataset.m_owner(), datasetPrice));
 				// TODO: to unlock a stake ?
 			}
 			// incremente dataset reputation?
@@ -430,7 +443,7 @@ contract IexecHub
 	{
 		// msg.sender = workerPool
 		// tx.origin = worker
-		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		require(lock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
 		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
 		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
@@ -443,7 +456,7 @@ contract IexecHub
 	{
 		//msg.sender = workerPool
 		//tx.origin = worker
-		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		require(workerPoolHub.unsubscribeToPool(msg.sender, tx.origin));
 		require(unlock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
 		WorkerPoolUnsubscription(msg.sender, tx.origin);
@@ -452,7 +465,7 @@ contract IexecHub
 
 	function evictWorker(address _worker) public returns (bool unsubscribed)
 	{
-		require(workerPoolHub.isWorkerPoolRegistred(msg.sender));
+		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		require(workerPoolHub.unsubscribeToPool(msg.sender, _worker));
 		require(unlock(_worker, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
 		WorkerPoolEviction(msg.sender, _worker);

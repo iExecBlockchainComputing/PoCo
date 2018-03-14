@@ -150,17 +150,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		return AuthorizedList(m_workersAuthorizedListAddress).isActorAllowed(_worker);
 	}
 
-	function getWorkerAddress(uint _index) constant public returns (address)
+	function getWorkerAddress(uint _index) public view returns (address)
 	{
 		return m_workers[_index];
 	}
-	function getWorkerIndex(address _worker) constant public returns (uint)
+	function getWorkerIndex(address _worker) public view returns (uint)
 	{
 		uint index = m_workerIndex[_worker];
 		require(m_workers[index] == _worker);
 		return index;
 	}
-	function getWorkersCount() constant public returns (uint)
+	function getWorkersCount() public view returns (uint)
 	{
 		return m_workers.length;
 	}

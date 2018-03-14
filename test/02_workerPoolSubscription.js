@@ -194,7 +194,7 @@ contract('IexecHub', function(accounts) {
 				from: scheduleProvider
 			});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
+		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 		workersAuthorizedListAddress = await aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
 		aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);

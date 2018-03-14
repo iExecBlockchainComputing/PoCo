@@ -27,6 +27,7 @@ function finalize
 	# stopping testrpc
 	print_style 'info' "Stoping testrpc daemon\n"
 	tmux kill-session -t testrpc || exit 1
+	rm logs/testrpc.$date.log
 }
 
 function catch
@@ -85,7 +86,7 @@ function runTests
 		if [[ $? -ne 0 ]];
 		then
 			print_style 'danger' "failure\n"
-			print_style 'danger' "Full report is available at $logcompile\n"
+			print_style 'danger' "Full report is available at $logfile\n"
 			catch
 		else
 			print_style 'success' "success\n"

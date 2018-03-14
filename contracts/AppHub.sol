@@ -14,7 +14,7 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	 */
 	mapping(address => uint256)                     m_appCountByOwner;
 	mapping(address => mapping(uint256 => address)) m_appByOwnerByIndex;
-	mapping(address => address)                     m_ownerByApp;
+	mapping(address => bool)                        m_appRegistered;
 
 	/**
 	 * Constructor
@@ -26,24 +26,17 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 	/**
 	 * Methods
 	 */
+	function isAppRegistered(address _app) public view returns (bool)
+	{
+		return m_appRegistered[_app];
+	}
 	function getAppsCount(address _owner) public view returns (uint256)
 	{
 		return m_appCountByOwner[_owner];
 	}
-
 	function getApp(address _owner, uint256 _index) public view returns (address)
 	{
 		return m_appByOwnerByIndex[_owner][_index];
-	}
-
-	function getAppOwner(address _app) public view returns (address)
-	{
-		return m_ownerByApp[_app];
-	}
-
-	function isAppRegistred(address _app) public view returns (bool)
-	{
-		return m_ownerByApp[_app] != address(0);
 	}
 
 	function addApp(address _owner, address _app) internal
@@ -51,9 +44,8 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		uint id = m_appCountByOwner[_owner];
 		m_appCountByOwner  [_owner]      = id.add(1);
 		m_appByOwnerByIndex[_owner][id]  = _app;
-		m_ownerByApp       [_app]        = _owner;
+		m_appRegistered    [_app]        = true;
 	}
-
 
 	function createApp(
 		string  _appName,
@@ -72,28 +64,5 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 		addApp(tx.origin, newApp);
 		return newApp;
 	}
-
-	function getAppPrice(address _app) public view returns (uint256 appPrice)
-	{
-		return App(_app).m_appPrice();
-	}
-	function isOpen(address _app) public view returns (bool)
-	{
-		return App(_app).isOpen();
-	}
-	function isDatasetAllowed(address _app, address _dataset) public returns (bool)
-	{
-		return App(_app).isDatasetAllowed(_dataset);
-	}
-	function isRequesterAllowed(address _app, address _requester) public returns (bool)
-	{
-		return App(_app).isRequesterAllowed(_requester);
-	}
-	function isWorkerPoolAllowed(address _app, address _workerPool) public returns (bool)
-	{
-		return App(_app).isWorkerPoolAllowed(_workerPool);
-	}
-
-
 
 }

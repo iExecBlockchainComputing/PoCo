@@ -195,7 +195,7 @@ contract('IexecHub', function(accounts) {
 			assert.strictEqual(events[0].args.workerPoolName, "myWorkerPool", "name");
 			let count = await aWorkerPoolHubInstance.getWorkerPoolsCount(scheduleProvider);
 			assert.strictEqual(1, count.toNumber(), "scheduleProvider must have 1 workerPool now ");
-			let workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, count-1);
+			let workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, count);
 			assert.strictEqual(workerPoolAddressFromLog, workerPoolAddress, "check workerPoolAddress");
 	});
 
