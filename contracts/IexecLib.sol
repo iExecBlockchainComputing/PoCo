@@ -3,24 +3,8 @@ pragma solidity ^0.4.18;
 library IexecLib
 {
 	/***************************************************************************/
-	/*                              Status Enums                               */
+	/*                              Market Order                               */
 	/***************************************************************************/
-	enum WorkOrderStatusEnum
-	{
-		UNSET,     // Work order not yet initialized (invalid address)
-		PENDING,   // Work order submited by user
-		CANCELLED, // Work order cancelled by user (before acceptance by a scheduler)
-		ACTIVE,    // Marketed → constributions are open
-		REVEALING, // Starting consensus reveal
-		CLAIMED,   // Failled consensus
-		COMPLETED  // Concensus achieved
-	}
-	/***************************************************************************/
-	/*                               Structures                                */
-	/***************************************************************************/
-	/**
-	 * used by IexecHub.sol
-	 */
 	enum MarketOrderDirectionEnum
 	{
 		UNSET,
@@ -43,10 +27,25 @@ library IexecLib
 		address workerpoolOwner; // BID can use null for any
 	}
 
-	/**
-	 * Meta info about consensus
-	 * used in WorkerPool.sol
-	 */
+	/***************************************************************************/
+	/*                               Work Order                                */
+	/***************************************************************************/
+	enum WorkOrderStatusEnum
+	{
+		UNSET,     // Work order not yet initialized (invalid address)
+		PENDING,   // Work order submited by user
+		CANCELLED, // Work order cancelled by user (before acceptance by a scheduler)
+		ACTIVE,    // Marketed → constributions are open
+		REVEALING, // Starting consensus reveal
+		CLAIMED,   // Failled consensus
+		COMPLETED  // Concensus achieved
+	}
+
+	/***************************************************************************/
+	/*                                Consensus                                */
+	/*                                   ---                                   */
+	/*                         used in WorkerPool.sol                          */
+	/***************************************************************************/
 	struct Consensus
 	{
 		uint256 poolReward;
@@ -59,10 +58,11 @@ library IexecLib
 		address[] contributors;
 	}
 
-	/**
-	 * Contribution entry
-	 * used by WorkerPool.sol
-	 */
+	/***************************************************************************/
+	/*                              Contribution                               */
+	/*                                   ---                                   */
+	/*                         used in WorkerPool.sol                          */
+	/***************************************************************************/
 	enum ContributionStatusEnum
 	{
 		UNSET,
@@ -75,17 +75,23 @@ library IexecLib
 	{
 		ContributionStatusEnum status;
 		bytes32 resultHash;
-		bytes32 resultSign; // change from salt to tx.origin based signature
+		bytes32 resultSign;
 		address enclaveChallenge;
 		uint256 score;
 		uint256 weight;
 	}
 
+	/***************************************************************************/
+	/*                Account / ContributionHistory / Category                 */
+	/*                                   ---                                   */
+	/*                          used in IexecHub.sol                           */
+	/***************************************************************************/
 	struct Account
 	{
 		uint256 stake;
 		uint256 locked;
 	}
+
 	struct ContributionHistory // for credibility computation, f = failled/total
 	{
 		uint256 success;
@@ -99,6 +105,5 @@ library IexecLib
 		string  description;
 		uint256 workClockTimeRef;
 	}
-
 
 }

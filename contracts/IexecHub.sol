@@ -45,24 +45,22 @@ contract IexecHub
 		require(msg.sender == marketplaceAddress);
 		_;
 	}
+	/**
+	 * Categories
+	 */
+	mapping(uint256 => IexecLib.Category) public m_categories;
+	uint256                               public m_categoriesCount;
+	address                               public m_categoriesCreator;
+	modifier onlyCategoriesCreator()
+	{
+		require(msg.sender == m_categoriesCreator);
+		_;
+	}
 
 	/**
 	 * Escrow
 	 */
 	mapping(address => IexecLib.Account) public m_accounts;
-
-	/**
-	 * Categories
-	 */
-	 mapping(uint256 => IexecLib.Category) public  m_categories;
-	 uint256                               public  m_categoriesCount;
-	 address                               private m_categoriesCreator;
-
-	 modifier onlyCategoriesCreator()
-	 {
-		 require(msg.sender == m_categoriesCreator);
-		 _;
-	 }
 
 	/**
 	 * Reputation for PoCo
@@ -240,7 +238,6 @@ contract IexecHub
 		WorkOrderActivated(workorder, _workerpool);
 
 		return workorder;
-
 	}
 
 	function emitWorkOrder(
@@ -374,8 +371,8 @@ contract IexecHub
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
-		// reward app
-		App app = App(workorder.m_app());
+		// APP
+		App     app      = App(workorder.m_app());
 		uint256 appPrice = app.m_appPrice();
 		if (appPrice > 0)
 		{
@@ -383,7 +380,8 @@ contract IexecHub
 			// TODO: to unlock a stake ?
 		}
 		// incremente app reputation?
-		// reward dataset
+
+		// DATASET
 		Dataset dataset = Dataset(workorder.m_dataset());
 		if (dataset != address(0))
 		{
@@ -395,14 +393,15 @@ contract IexecHub
 			}
 			// incremente dataset reputation?
 		}
-		// TODO: reward the workerpool → done by the callser itself
+
+		// WORKERPOOL → rewarding done by the caller itself
 
 		/**
 		 * seize stacked funds from requester.
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint    value;
+		uint256 value;
  		address workerpoolOwner;
  		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
 
@@ -419,7 +418,6 @@ contract IexecHub
 	/**
 	 * Views
 	 */
-
 	function getCategoryWorkClockTimeRef(uint256 _catId) public view returns (uint256 workClockTimeRef)
 	{
 		return m_categories[_catId].workClockTimeRef;
@@ -433,7 +431,7 @@ contract IexecHub
 	/**
 	 * Worker subscription
 	 */
-	function subscribeToPool() public returns (bool subscribed)
+	function registerToPool() public returns (bool subscribed)
 	// msg.sender = workerPool && tx.origin = worker
 	{
 		WorkerPool workerpool = WorkerPool(msg.sender);
@@ -451,7 +449,7 @@ contract IexecHub
 		return true;
 	}
 
-	function unsubscribeToPool() public returns (bool unsubscribed)
+	function unregisterFromPool() public returns (bool unsubscribed)
 	// msg.sender = workerPool && tx.origin = worker
 	{
 		WorkerPool workerpool = WorkerPool(msg.sender);
@@ -474,7 +472,7 @@ contract IexecHub
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		require(workerPoolHub.getWorkerAffectation(_worker) == msg.sender);
 		// Unlick worker stake
-		require(unlock(_worker, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		require(unlock(_worker, workerpool.m_subscriptionLockStakePolicy()));
 		// Update affectation
 		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice

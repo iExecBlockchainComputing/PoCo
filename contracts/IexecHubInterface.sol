@@ -2,60 +2,80 @@ pragma solidity ^0.4.18;
 import './IexecLib.sol';
 contract IexecHubInterface
 {
+	function attachMarketplace(
+		address _marketplaceAddress)
+	public;
+
+	function setCategoriesCreator(
+		address _categoriesCreator)
+	public;
+
+
+
+	function createCategory(
+		string  _name,
+		string  _description,
+		uint256 _workClockTimeRef)
+	public /* onlyCategoriesCreator */ returns (uint256 catid);
 
 	function createWorkerPool(
 		string  _name,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy)
-	public returns (address createdWorkerPool);
+	external returns (address createdWorkerPool);
 
 	function createApp(
 		string  _appName,
 		uint256 _appPrice,
 		string  _appParams)
-		public returns (address createdApp);
+	external returns (address createdApp);
 
 	function createDataset(
 		string  _datasetName,
 		uint256 _datasetPrice,
 		string  _datasetParams)
-	public returns (address createdDataset);
+	external returns (address createdDataset);
 
-	function createWorkOrder(
-		address _workerPool,
+	function answerEmitWorkOrder(
+		uint256 _marketorderIdx,
+		address _workerpool,
 		address _app,
 		address _dataset,
-		string  _workOrderParam,
-		uint256 _workReward,
-		uint256 _askedTrust,
-		bool    _dappCallback,
+		string  _params,
+		address _callback,
 		address _beneficiary)
-	public returns (address createdWorkOrder);
+	external returns (address);
 
-	function acceptWorkOrder(
-		address _woid)
-	public returns (bool);
+	function emitWorkOrder(
+		uint256 _marketorderIdx,
+		address _requester,
+		address _workerpool, // Address of a smartcontract
+		address _app,        // Address of a smartcontract
+		address _dataset,    // Address of a smartcontract
+		string  _params,
+		address _callback,
+		address _beneficiary)
+	internal returns (address);
 
-	function scheduleWorkOrder(
-		address _woid)
-	public returns (bool);
-
-	function reopen(
-		address _woid)
-	public returns (bool);
+	function lockWorkOrderCost(
+		address _requester,
+		address _workerpool, // Address of a smartcontract
+		address _app,        // Address of a smartcontract
+		address _dataset)    // Address of a smartcontract
+	internal returns (uint256);
 
 	function startRevealingPhase(
 		address _woid)
 	public returns (bool);
 
-	function cancelWorkOrder(
+	function reActivate(
 		address _woid)
 	public returns (bool);
 
 	function claimFailedConsensus(
 		address _woid)
-		public /*only who ? everybody ?*/ returns (bool);
+	public returns (bool);
 
 	function finalizeWorkOrder(
 		address _woid,
@@ -72,23 +92,40 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
-	function getWorkReward(
-		address _woid)
-	public view returns (uint256 workReward);
-
-	function openCloseWorkerPool(
-		address _workerPool, bool open)
-	public returns (bool);
-
-	function subscribeToPool()
+	function registerToPool()
 	public returns (bool subscribed);
 
-	function unsubscribeToPool()
+	function unregisterFromPool()
 	public returns (bool unsubscribed);
 
 	function evictWorker(
 		address _worker)
 	public returns (bool unsubscribed);
+
+	function lockForOrder(
+		address _user,
+		uint256 _amount)
+	public /* onlyMarketplace */ returns (bool);
+
+	function lockDepositForOrder(
+		address _user,
+		uint256 _amount)
+	public /* onlyMarketplace */ returns (bool);
+
+	function unlockForOrder(
+		address _user,
+		uint256 _amount)
+	public /* onlyMarketplace */ returns (bool);
+
+	function seizeForOrder(
+		address _user,
+		uint256 _amount)
+	public /* onlyMarketplace */ returns (bool);
+
+	function rewardForOrder(
+		address _user,
+		uint256 _amount)
+	public /* onlyMarketplace */ returns (bool);
 
 	function lockForWork(
 		address _woid,
@@ -96,23 +133,14 @@ contract IexecHubInterface
 		uint256 _amount)
 	public returns (bool);
 
-	function lockForOrder(
+	function lockDepositForWork(
+		address _woid,
 		address _user,
 		uint256 _amount)
 	public returns (bool);
 
 	function unlockForWork(
 		address _woid,
-		address _user,
-		uint256 _amount)
-	public returns (bool);
-
-	function unlockForOrder(
-		address _user,
-		uint256 _amount)
-	public returns (bool);
-
-	function lockDepositForOrder(
 		address _user,
 		uint256 _amount)
 	public returns (bool);
@@ -124,21 +152,11 @@ contract IexecHubInterface
 		bool    _reputation)
 	public returns (bool);
 
-	function rewardForOrder(
-		address _worker,
-		uint256 _amount)
-	public returns (bool);
-
 	function seizeForWork(
 		address _woid,
 		address _worker,
 		uint256 _amount,
 		bool    _reputation)
-	public returns (bool);
-
-	function seizeForOrder(
-		address _worker,
-		uint256 _amount)
 	public returns (bool);
 
 	function deposit(
@@ -152,5 +170,30 @@ contract IexecHubInterface
 	function checkBalance(
 		address _owner)
 	public view returns (uint256 stake, uint256 locked);
+
+	function reward(
+		address _user,
+		uint256 _amount)
+	internal returns (bool);
+
+	function seize(
+		address _user,
+		uint256 _amount)
+	internal returns (bool);
+
+	function lock(
+		address _user,
+		uint256 _amount)
+	internal returns (bool);
+
+	function unlock(
+		address _user,
+		uint256 _amount)
+	internal returns (bool);
+
+	function lockDeposit(
+		address _user,
+		uint256 _amount)
+	internal returns (bool);
 
 }

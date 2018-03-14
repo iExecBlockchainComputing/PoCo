@@ -188,16 +188,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function subscribeToPool() public returns (bool)
 	{
 		//tx.origin = worker
-		require(iexecHubInterface.subscribeToPool());
+		require(iexecHubInterface.registerToPool());
 		uint index = m_workers.push(tx.origin);
 		m_workerIndex[tx.origin] = index;
 		return true;
 	}
 
-	function unsubscribeToPool() public  returns (bool)
+	function unsubscribeFromPool() public  returns (bool)
 	{
 		//tx.origin = worker
-		require(iexecHubInterface.unsubscribeToPool());
+		require(iexecHubInterface.unregisterFromPool());
 		require(removeWorker(tx.origin));
 		return true;
 	}
@@ -379,7 +379,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
-		require(iexecHubInterface.reopen(_woid));
+		require(iexecHubInterface.reActivate(_woid));
 		// Reset to status before revealConsensus
 		consensus.winnerCount = 0;
 		consensus.consensus   = 0x0;

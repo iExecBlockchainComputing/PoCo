@@ -14,13 +14,6 @@ contract IexecHubAccessor
 		require(msg.sender == iexecHubAddress);
 		_;
 	}
-	// TODO: need owner to change hub address → IexecHubInterface is Ownable ?
-	/* function changeIexecHubAddress(address _newIexecHubAddress)
-	{
-		require(_newIexecHubAddress != address(0));
-		iexecHubAddress   = _newIexecHubAddress;
-		iexecHubInterface = IexecHubInterface(_newIexecHubAddress);
-	} */
 
 	function IexecHubAccessor(address _iexecHubAddress) public
 	{
@@ -28,4 +21,15 @@ contract IexecHubAccessor
 		iexecHubAddress   = _iexecHubAddress;
 		iexecHubInterface = IexecHubInterface(_iexecHubAddress);
 	}
+
+	// TODO: need owner to change hub address → IexecHubInterface is Ownable ?
+	/*
+	function changeIexecHubAddress(address _newIexecHubAddress)
+	{
+		require(_newIexecHubAddress != address(0));
+		iexecHubAddress   = _newIexecHubAddress;
+		iexecHubInterface = IexecHubInterface(_newIexecHubAddress);
+	}
+	*/
+
 }
