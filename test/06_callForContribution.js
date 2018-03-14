@@ -225,7 +225,7 @@ contract('IexecHub', function(accounts) {
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
 		// WHITELIST A WORKER IN A WORKER POOL
-		workersAuthorizedListAddress = await aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
+		workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
 		aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
 		txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
 			from: scheduleProvider,

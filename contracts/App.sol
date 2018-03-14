@@ -20,9 +20,9 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 	/**
 	 * Address of slave contracts
 	 */
-	address       public m_datasetsAuthorizedListAddress;
-	address       public m_requestersAuthorizedListAddress;
-	address       public m_workerPoolsAuthorizedListAddress;
+	AuthorizedList public datasetsAuthorizedListAddress;
+	AuthorizedList public requestersAuthorizedListAddress;
+	AuthorizedList public workerPoolsAuthorizedListAddress;
 
 	/**
 	 * Constructor
@@ -44,49 +44,45 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		m_appPrice  = _appPrice;
 		m_appParams = _appParams;
 		m_appStatus = AppStatusEnum.OPEN;
-		m_datasetsAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		m_requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		m_workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		AuthorizedList(m_datasetsAuthorizedListAddress   ).transferOwnership(tx.origin); // owner → tx.origin
-		AuthorizedList(m_requestersAuthorizedListAddress ).transferOwnership(tx.origin); // owner → tx.origin
-		AuthorizedList(m_workerPoolsAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin
+
+		datasetsAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		datasetsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
+		requestersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
+		workerPoolsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
 	}
 
-	/**
-	 * Methods
-	 */
+	/************************ AuthorizedList accessors *************************/
+	function isWorkerPoolAllowed(address _workerPool) public view returns (bool)
+	{
+		return workerPoolsAuthorizedListAddress.isActorAllowed(_workerPool);
+	}
+	function isDatasetAllowed(address _dataset) public view returns (bool)
+	{
+		return datasetsAuthorizedListAddress.isActorAllowed(_dataset);
+	}
+	function isRequesterAllowed(address _requester) public view returns (bool)
+	{
+		return requestersAuthorizedListAddress.isActorAllowed(_requester);
+	}
+
+	/************************* open / close mechanisms *************************/
+	function isOpen() public view returns (bool)
+	{
+		return m_appStatus == AppStatusEnum.OPEN;
+	}
 	function open() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
 		require(m_appStatus == AppStatusEnum.CLOSE);
 		m_appStatus = AppStatusEnum.OPEN;
 		return true;
 	}
-
 	function close() public onlyIexecHub /*for staking management*/ returns (bool)
 	{
 		require(m_appStatus == AppStatusEnum.OPEN);
 		m_appStatus = AppStatusEnum.CLOSE;
 		return true;
-	}
-
-	function isOpen() public view returns (bool)
-	{
-		return m_appStatus == AppStatusEnum.OPEN;
-	}
-
-	function isWorkerPoolAllowed(address _workerPool) public view returns (bool)
-	{
-		return AuthorizedList(m_workerPoolsAuthorizedListAddress).isActorAllowed(_workerPool);
-	}
-
-	function isDatasetAllowed(address _dataset) public view returns (bool)
-	{
-		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
-	}
-
-	function isRequesterAllowed(address _requester) public view returns (bool)
-	{
-		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
 	}
 
 }

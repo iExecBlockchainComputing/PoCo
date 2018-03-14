@@ -41,11 +41,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	/**
 	 * Address of slave/related contracts
 	 */
-	address private m_workerPoolHubAddress;
-	address public  m_appsAuthorizedListAddress;
-	address public  m_datasetsAuthorizedListAddress;
-	/* address public  m_requestersAuthorizedListAddress; */
-	address public  m_workersAuthorizedListAddress;
+	address        private m_workerPoolHubAddress;
+	AuthorizedList public  appsAuthorizedListAddress;
+	AuthorizedList public  datasetsAuthorizedListAddress;
+	/* AuthorizedList public  requestersAuthorizedListAddress; */
+	AuthorizedList public  workersAuthorizedListAddress;
 
 	/**
 	 * Events
@@ -100,14 +100,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
-		m_appsAuthorizedListAddress       = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		m_datasetsAuthorizedListAddress   = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		/* m_requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST); */
-		m_workersAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
-		AuthorizedList(m_appsAuthorizedListAddress      ).transferOwnership(tx.origin); // owner → tx.origin
-		AuthorizedList(m_datasetsAuthorizedListAddress  ).transferOwnership(tx.origin); // owner → tx.origin
-		/* AuthorizedList(m_requestersAuthorizedListAddress).transferOwnership(tx.origin); // owner → tx.origin */
-		AuthorizedList(m_workersAuthorizedListAddress   ).transferOwnership(tx.origin); // owner → tx.origin
+		appsAuthorizedListAddress       = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		datasetsAuthorizedListAddress   = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
+		/* requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST); */
+		workersAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+		appsAuthorizedListAddress .transferOwnership(tx.origin); // owner → tx.origin
+		datasetsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
+		/* requestersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin */
+		workersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	function changeWorkerPoolPolicy(
@@ -130,26 +130,46 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy;
 	}
 
-	/************************* worker list management **************************/
+	/************************ AuthorizedList accessors *************************/
 	function isAppAllowed(address _app) public returns (bool)
 	{
-		return AuthorizedList(m_appsAuthorizedListAddress).isActorAllowed(_app);
+		return appsAuthorizedListAddress.isActorAllowed(_app);
 	}
 	function isDatasetAllowed(address _dataset) public view returns (bool)
 	{
-		return AuthorizedList(m_datasetsAuthorizedListAddress).isActorAllowed(_dataset);
+		return datasetsAuthorizedListAddress.isActorAllowed(_dataset);
 	}
 	/*
 	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
-		return AuthorizedList(m_requestersAuthorizedListAddress).isActorAllowed(_requester);
+		return requestersAuthorizedListAddress.isActorAllowed(_requester);
 	}
 	*/
 	function isWorkerAllowed(address _worker) public view returns (bool)
 	{
-		return AuthorizedList(m_workersAuthorizedListAddress).isActorAllowed(_worker);
+		return workersAuthorizedListAddress.isActorAllowed(_worker);
 	}
 
+	/************************* open / close mechanisms *************************/
+	function isOpen() public view returns (bool)
+	{
+		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;
+	}
+
+	function open() public onlyOwner returns (bool)
+	{
+		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
+		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
+		return true;
+	}
+	function close() public onlyOwner returns (bool)
+	{
+		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
+		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
+		return true;
+	}
+
+	/************************* worker list management **************************/
 	function getWorkerAddress(uint _index) public view returns (address)
 	{
 		return m_workers[_index];
@@ -174,7 +194,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		return true;
 	}
 
-	function unsubscribeToPool() public  returns (bool){
+	function unsubscribeToPool() public  returns (bool)
+	{
 		//tx.origin = worker
 		require(iexecHubInterface.unsubscribeToPool());
 		require(removeWorker(tx.origin));
@@ -195,27 +216,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		delete m_workers[m_workers.length-1];
 		m_workers.length--;
 		return true;
-	}
-
-	/************************* open / close mechanisms *************************/
-	function switchOnOff(bool onoff) public onlyOwner returns (bool)
-	{
-		if (onoff)
-		{
-			require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
-			m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
-		}
-		else
-		{
-			require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
-			m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
-		}
-		return true;
-	}
-
-	function isOpen() public view returns (bool)
-	{
-		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;
 	}
 
 	function getConsensusDetails(address _woid) public view returns (

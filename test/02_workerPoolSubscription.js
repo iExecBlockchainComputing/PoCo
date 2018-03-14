@@ -196,7 +196,7 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
-		workersAuthorizedListAddress = await aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
+		workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
 		aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
 	});
 
@@ -205,7 +205,7 @@ contract('IexecHub', function(accounts) {
 		if (!isTestRPC) this.skip("This test is only for TestRPC");
 	});
 
-	it("a white listed  resourceProvider can Subscribe", async function() {
+	it("a white listed resourceProvider can Subscribe", async function() {
 		txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
 			from: scheduleProvider,
 			gas: amountGazProvided

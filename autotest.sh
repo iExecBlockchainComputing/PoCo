@@ -27,7 +27,7 @@ function finalize
 	# stopping testrpc
 	print_style 'info' "Stoping testrpc daemon\n"
 	tmux kill-session -t testrpc || exit 1
-	rm logs/testrpc.$date.log
+	rm -f logs/testrpc.$date.log
 }
 
 function catch
@@ -50,7 +50,7 @@ function runCompile
 		catch
 	else
 		print_style 'success' "success\n"
-		rm $logfile
+		rm -f $logfile
 	fi
 }
 
@@ -67,7 +67,7 @@ function runDeploy
 		catch
 	else
 		print_style 'success' "success\n"
-		rm $logfile
+		rm -f $logfile
 	fi
 }
 
@@ -90,7 +90,7 @@ function runTests
 			catch
 		else
 			print_style 'success' "success\n"
-			rm $logfile
+			rm -f $logfile
 		fi
 	done
 }
