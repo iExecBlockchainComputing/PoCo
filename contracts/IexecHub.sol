@@ -434,34 +434,50 @@ contract IexecHub
 	 * Worker subscription
 	 */
 	function subscribeToPool() public returns (bool subscribed)
+	// msg.sender = workerPool && tx.origin = worker
 	{
-		// msg.sender = workerPool
-		// tx.origin = worker
+		WorkerPool workerpool = WorkerPool(msg.sender);
+		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
-		require(lock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
-		require(m_accounts[tx.origin].stake >= WorkerPool(msg.sender).m_subscriptionMinimumStakePolicy());
-		require(m_scores[tx.origin]         >= WorkerPool(msg.sender).m_subscriptionMinimumScorePolicy());
-		require(workerPoolHub.subscribeToPool(msg.sender));
+		// Lock worker deposit
+		require(lockDeposit(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
+		// Check subscription policy
+		require(m_accounts[tx.origin].stake >= workerpool.m_subscriptionMinimumStakePolicy());
+		require(m_scores[tx.origin]         >= workerpool.m_subscriptionMinimumScorePolicy());
+		// Update affectation
+		require(workerPoolHub.registerWorkerAffectation(msg.sender, tx.origin));
+		// Trigger event notice
 		WorkerPoolSubscription(msg.sender, tx.origin);
 		return true;
 	}
 
 	function unsubscribeToPool() public returns (bool unsubscribed)
+	// msg.sender = workerPool && tx.origin = worker
 	{
-		//msg.sender = workerPool
-		//tx.origin = worker
+		WorkerPool workerpool = WorkerPool(msg.sender);
+		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
-		require(workerPoolHub.unsubscribeToPool(msg.sender, tx.origin));
-		require(unlock(tx.origin, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		// Unlock worker stake
+		require(unlock(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
+		// Update affectation
+		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, tx.origin));
+		// Trigger event notice
 		WorkerPoolUnsubscription(msg.sender, tx.origin);
 		return true;
 	}
 
 	function evictWorker(address _worker) public returns (bool unsubscribed)
+	// msg.sender = workerpool && _worker = worker
 	{
+		WorkerPool workerpool = WorkerPool(msg.sender);
+		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
-		require(workerPoolHub.unsubscribeToPool(msg.sender, _worker));
+		require(workerPoolHub.getWorkerAffectation(_worker) == msg.sender);
+		// Unlick worker stake
 		require(unlock(_worker, WorkerPool(msg.sender).m_subscriptionLockStakePolicy()));
+		// Update affectation
+		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, _worker));
+		// Trigger event notice
 		WorkerPoolEviction(msg.sender, _worker);
 		return true;
 	}

@@ -80,19 +80,19 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		return newWorkerPool;
 	}
 
-	function subscribeToPool(address _workerPool) public onlyOwner /*owner == IexecHub*/ returns (bool subscribed)
+	function registerWorkerAffectation(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool subscribed)
 	{
-		//tx.origin = worker
+		// tx.origin = worker
 		WorkerPool pool = WorkerPool(_workerPool);
 		// you must have no cuurent affectation on others worker Pool
-		require(m_workerAffectation[tx.origin] == address(0));
+		require(m_workerAffectation[_worker] == address(0));
 		// you must be on the white list of the worker pool to subscribe.
-		require(pool.isWorkerAllowed(tx.origin));
-		m_workerAffectation[tx.origin] = _workerPool;
+		require(pool.isWorkerAllowed(_worker));
+		m_workerAffectation[_worker] = _workerPool;
 		return true;
 	}
 
-	function unsubscribeToPool(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool unsubscribed)
+	function unregisterWorkerAffectation(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool unsubscribed)
 	{
 		require(m_workerAffectation[_worker] == _workerPool);
 		m_workerAffectation[_worker] == address(0);

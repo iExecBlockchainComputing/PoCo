@@ -188,7 +188,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function subscribeToPool() public returns (bool)
 	{
 		//tx.origin = worker
-	  require(iexecHubInterface.subscribeToPool());
+		require(iexecHubInterface.subscribeToPool());
 		uint index = m_workers.push(tx.origin);
 		m_workerIndex[tx.origin] = index;
 		return true;
@@ -206,14 +206,18 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		//tx.origin = worker
 		require(iexecHubInterface.evictWorker(_worker));
-	  require(removeWorker(_worker));
+		require(removeWorker(_worker));
 		return true;
 	}
 
 	function removeWorker(address _worker) internal returns (bool)
 	{
 		uint index = getWorkerIndex(_worker); // fails if worker not registered
-		m_workers[index] = m_workers[m_workers.length-1];
+
+		address lastWorker = m_workers[m_workers.length-1];
+		m_workers    [index     ] = lastWorker;
+		m_workerIndex[lastWorker] = index;
+
 		delete m_workers[m_workers.length-1];
 		m_workers.length--;
 		return true;
