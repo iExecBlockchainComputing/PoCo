@@ -94,7 +94,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 
 	function unsubscribeToPool(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool unsubscribed)
 	{
-		WorkerPool pool = WorkerPool(_workerPool);
 		require(m_workerAffectation[_worker] == _workerPool);
 		m_workerAffectation[_worker] == address(0);
 		return true;

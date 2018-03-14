@@ -113,7 +113,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function changeWorkerPoolPolicy(
 		uint256 _newStakeRatioPolicy,
 		uint256 _newSchedulerRewardRatioPolicy,
-		uint256 _newResultRetentionPolicy,
+		/* uint256 _newResultRetentionPolicy, // Usage? */
 		uint256 _newSubscriptionMinimumStakePolicy,
 		uint256 _newSubscriptionMinimumScorePolicy)
 	public onlyOwner
@@ -131,7 +131,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	}
 
 	/************************ AuthorizedList accessors *************************/
-	function isAppAllowed(address _app) public returns (bool)
+	function isAppAllowed(address _app) public view returns (bool)
 	{
 		return appsAuthorizedListAddress.isActorAllowed(_app);
 	}
@@ -287,7 +287,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
-		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		// random worker selection ? :
 		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
@@ -433,7 +432,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			if (c.status == IexecLib.ContributionStatusEnum.PROVED)
 			{
 				workerBonus  = (c.enclaveChallenge != address(0)) ? 3 : 1; // TODO: bonus sgx = 3 ?
-				workerWeight = 1 + c.score.mul(workerBonus).log2();
+				workerWeight = 1 + c.score.mul(workerBonus).log();
 				totalWeight  = totalWeight.add(workerWeight);
 				c.weight     = workerWeight; // store so we don't have to recompute
 			}

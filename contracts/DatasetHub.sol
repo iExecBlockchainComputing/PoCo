@@ -32,7 +32,7 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	}
 	function getDatasetsCount(address _owner) public view returns (uint256)
 	{
-		return m_datasetCountByOwner[tx.origin];
+		return m_datasetCountByOwner[_owner];
 	}
 	function getDataset(address _owner, uint256 _index) public view returns (address)
 	{

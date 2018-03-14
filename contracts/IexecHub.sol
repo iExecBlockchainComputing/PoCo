@@ -18,10 +18,10 @@ import './IexecLib.sol';
 contract IexecHub
 {
 	using SafeMathOZ for uint256;
-	// uint private constant WORKER_POOL_CREATION_STAKE = 5000; // updated by vote or super admin ?
-	// uint private constant APP_CREATION_STAKE         = 5000; // updated by vote or super admin ?
-	// uint private constant DATASET_CREATION_STAKE     = 5000; // updated by vote or super admin ?
-	// uint private constant WORKER_MEMBERSHIP_STAKE    = 5000; // updated by vote or super admin ?
+	// uint private constant WORKERPOOL_CREATION_STAKE = 5000; // updated by vote or super admin ?
+	// uint private constant APP_CREATION_STAKE        = 5000; // updated by vote or super admin ?
+	// uint private constant DATASET_CREATION_STAKE    = 5000; // updated by vote or super admin ?
+	// uint private constant WORKER_MEMBERSHIP_STAKE   = 5000; // updated by vote or super admin ?
 
 	/**
 	* RLC contract for token transfers.
@@ -124,14 +124,14 @@ contract IexecHub
 
 	}
 
-	function attachMarketplace(address _marketplaceAddress)
+	function attachMarketplace(address _marketplaceAddress) public
 	{
 		require(marketplaceAddress == address(0));
-		marketplaceAddress = _marketplaceAddress;//new Marketplace(this);
+		marketplaceAddress = _marketplaceAddress; //new Marketplace(this);
 		marketplace        =  Marketplace(_marketplaceAddress);
 	}
 
-	function setCategoriesCreator(address _categoriesCreator)
+	function setCategoriesCreator(address _categoriesCreator) public
 	{
 		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
 		m_categoriesCreator = _categoriesCreator;
@@ -162,10 +162,10 @@ contract IexecHub
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy)
-	public returns (address createdWorkerPool)
+	external returns (address createdWorkerPool)
 	{
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		// require(lock(msg.sender, WORKER_POOL_CREATION_STAKE)); ?
+		// require(lock(msg.sender, WORKERPOOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(
 			_name,
 			_subscriptionLockStakePolicy,
@@ -181,8 +181,9 @@ contract IexecHub
 		string  _appName,
 		uint256 _appPrice,
 		string  _appParams)
-	public returns (address createdApp)
+	external returns (address createdApp)
 	{
+		// require(lock(msg.sender, APP_CREATION_STAKE)); ?
 		address newApp = appHub.createApp(
 			_appName,
 			_appPrice,
@@ -196,8 +197,9 @@ contract IexecHub
 		string  _datasetName,
 		uint256 _datasetPrice,
 		string  _datasetParams)
-	public returns (address createdDataset)
+	external returns (address createdDataset)
 	{
+		// require(lock(msg.sender, DATASET_CREATION_STAKE)); ?
 		address newDataset = datasetHub.createDataset(
 			_datasetName,
 			_datasetPrice,
@@ -208,7 +210,7 @@ contract IexecHub
 	}
 
 	/**
-	 * WorkOrder life cycle
+	 * WorkOrder Emission
 	 */
 	function answerEmitWorkOrder(
 		uint256 _marketorderIdx,
@@ -222,7 +224,8 @@ contract IexecHub
 	{
 		address requester = msg.sender;
 		require(marketplace.answerConsume(_marketorderIdx, requester, _workerpool));
-		return emitWorkOrder(
+
+		WorkOrder workorder = WorkOrder(emitWorkOrder(
 			_marketorderIdx,
 			requester,
 			_workerpool,
@@ -231,72 +234,13 @@ contract IexecHub
 			_params,
 			_callback,
 			_beneficiary
-		);
-	}
-	/*
-	function consumeEmitWorkOrder(
-		uint256 _marketorderIdx,
-		address _workerpool,
-		address _app,
-		address _dataset,
-		string  _params,
-		address _callback,
-		address _beneficiary)
-	public returns (address)
-	{
-		require(marketplace.useConsume(_marketorderIdx, msg.sender, _workerpool));
-		return emitWorkOrder(
-			_marketorderIdx,
-			msg.sender,
-			_workerpool,
-			_app,
-			_dataset,
-			_params,
-			_callback,
-			_beneficiary
-		);
-	}
-	*/
+		));
 
-	function lockWorkOrderCost(
-		address _requester,
-		address _workerpool, // Address of a smartcontract
-		address _app,        // Address of a smartcontract
-		address _dataset)    // Address of a smartcontract
-	internal returns (uint256)
-	{
-		// APP
-		App app = App(_app);
-		require(appHub.isAppRegistered  (_app       ));
-		require(app.isOpen             (           ));
-		require(app.isDatasetAllowed   (_dataset   ));
-		require(app.isRequesterAllowed (_requester ));
-		require(app.isWorkerPoolAllowed(_workerpool));
+		workorder.activate(); // revert on error
+		WorkOrderActivated(workorder, _workerpool);
 
-		uint256 emitcost = app.m_appPrice();
-		// DATASET
-		if (_dataset != address(0)) // address(0) → no dataset
-		{
-			Dataset dataset = Dataset(_dataset);
-			require(datasetHub.isDatasetRegistred(_dataset   ));
-			require(dataset.isOpen               (           ));
-			require(dataset.isAppAllowed         (_app       ));
-			require(dataset.isRequesterAllowed   (_requester ));
-			require(dataset.isWorkerPoolAllowed  (_workerpool));
-			// add optional datasetPrice for userCost
-			emitcost = emitcost.add(dataset.m_datasetPrice());
-		}
-		// WORKERPOOL
-		WorkerPool workerpool = WorkerPool(_workerpool);
-		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
-		require(workerpool.isOpen                   (          ));
-		require(workerpool.isAppAllowed             (_app      ));
-		require(workerpool.isDatasetAllowed         (_dataset  ));
-		/* require(workerpool.isRequesterAllowed       (msg.sender)); */
+		return workorder;
 
-		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
-
-		return emitcost;
 	}
 
 	function emitWorkOrder(
@@ -324,18 +268,63 @@ contract IexecHub
 			_callback,
 			_beneficiary
 		);
-		require(workorder.activate());
+
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
-		WorkOrderActivated(workorder, _workerpool);
 		return workorder;
 	}
 
+	function lockWorkOrderCost(
+		address _requester,
+		address _workerpool, // Address of a smartcontract
+		address _app,        // Address of a smartcontract
+		address _dataset)    // Address of a smartcontract
+	internal returns (uint256)
+	{
+		// APP
+		App app = App(_app);
+		require(appHub.isAppRegistered (_app       ));
+		require(app.isOpen             (           ));
+		require(app.isDatasetAllowed   (_dataset   ));
+		require(app.isRequesterAllowed (_requester ));
+		require(app.isWorkerPoolAllowed(_workerpool));
+		// initialize usercost with dapp price
+		uint256 emitcost = app.m_appPrice();
+
+		// DATASET
+		if (_dataset != address(0)) // address(0) → no dataset
+		{
+			Dataset dataset = Dataset(_dataset);
+			require(datasetHub.isDatasetRegistred(_dataset   ));
+			require(dataset.isOpen               (           ));
+			require(dataset.isAppAllowed         (_app       ));
+			require(dataset.isRequesterAllowed   (_requester ));
+			require(dataset.isWorkerPoolAllowed  (_workerpool));
+			// add optional datasetPrice for userCost
+			emitcost = emitcost.add(dataset.m_datasetPrice());
+		}
+
+		// WORKERPOOL
+		WorkerPool workerpool = WorkerPool(_workerpool);
+		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
+		require(workerpool.isOpen                   (           ));
+		require(workerpool.isAppAllowed             (_app       ));
+		require(workerpool.isDatasetAllowed         (_dataset   ));
+		/* require(workerpool.isRequesterAllowed       (msg.sender )); */
+
+		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
+
+		return emitcost;
+	}
+
+	/**
+	 * WorkOrder life cycle
+	 */
 	function startRevealingPhase(address _woid) public returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
-		require(workorder.reveal());
+		workorder.reveal(); // revert on error
 		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
 		return true;
 	}
@@ -344,7 +333,7 @@ contract IexecHub
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
-		require(workorder.reactivate());
+		workorder.reactivate();  // revert on error
 		WorkOrderActivated(_woid, workorder.m_workerpool());
 		return true;
 	}
@@ -359,7 +348,7 @@ contract IexecHub
 		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
-		require(workorder.claim());
+		workorder.claim(); // revert on error
 
 		uint    value;
 		address workerpoolOwner;
@@ -380,8 +369,7 @@ contract IexecHub
 		string  _uri)
 	public returns (bool)
 	{
-		WorkOrder  workorder  = WorkOrder(_woid);
-		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
+		WorkOrder workorder = WorkOrder(_woid);
 
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
@@ -422,7 +410,7 @@ contract IexecHub
 		require(unlock(workerpoolOwner,         value));                             // unlock scheduler stake
 
 		// write results
-		require(workorder.setResult(_stdout, _stderr, _uri));
+		workorder.setResult(_stdout, _stderr, _uri); // revert on error
 
 		WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
@@ -548,7 +536,7 @@ contract IexecHub
 		{
 			FaultyContribution(_woid, _worker);
 			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
-			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min256(50));
+			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(50));
 		}
 		return true;
 	}

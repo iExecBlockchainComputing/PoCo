@@ -5,15 +5,15 @@ import "./IexecHub.sol";
 contract IexecAPI
 {
 
-	address  private iexecHubAddress;
 	IexecHub private iexecHub;
+	address  private iexecHubAddress;
 	event WorkOrderCallback(address woid, string stdout, string stderr, string uri);
 
 	// Constructor
 	function IexecAPI(address _iexecHubAddress) public
 	{
 		iexecHubAddress = _iexecHubAddress;
-		iexecHub = IexecHub(iexecHubAddress);
+		iexecHub        = IexecHub(iexecHubAddress);
 	}
 
 	function createTaskRequest(
@@ -27,7 +27,7 @@ contract IexecAPI
 		address _beneficiary)
 	public
 	{
-		throw; // TODO: what are we suppose to do ?
+		revert(); // TODO: what are we suppose to do ?
 		/* iexecHub.createWorkOrder(_workerPool, _app, _dataset, _workOrderParam, _workReward, _askedTrust, _dappCallback, _beneficiary); */
 	}
 

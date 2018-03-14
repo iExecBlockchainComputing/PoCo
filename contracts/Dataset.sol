@@ -54,15 +54,15 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	}
 
 	/************************ AuthorizedList accessors *************************/
-	function isWorkerPoolAllowed(address _workerPool) public returns (bool)
+	function isWorkerPoolAllowed(address _workerPool) public view returns (bool)
 	{
 		return workerPoolsAuthorizedListAddress.isActorAllowed(_workerPool);
 	}
-	function isAppAllowed(address _app) public returns (bool)
+	function isAppAllowed(address _app) public view returns (bool)
 	{
 	  return appsAuthorizedListAddress.isActorAllowed(_app);
 	}
-	function isRequesterAllowed(address _requester) public returns (bool)
+	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
 	  return requestersAuthorizedListAddress.isActorAllowed(_requester);
 	}
