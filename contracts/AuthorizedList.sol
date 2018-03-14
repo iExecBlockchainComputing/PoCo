@@ -32,6 +32,7 @@ contract AuthorizedList is OwnableOZ
 	/**
 	 * Modifiers
 	 */
+	/*
 	modifier checkWhitelist(address _actor)
 	{
 		require(m_policy == ListPolicyEnum.BLACKLIST || m_whitelist[_actor] == true);
@@ -43,6 +44,7 @@ contract AuthorizedList is OwnableOZ
 		require(m_policy == ListPolicyEnum.WHITELIST || m_blacklist[_actor] == false);
 		_;
 	}
+	*/
 
 	/**
 	* Methods
@@ -80,7 +82,7 @@ contract AuthorizedList is OwnableOZ
 			updateBlacklist(_actors[i], _isBlacklisted);
 		}
 	}
-
+/*
 	function isWhitelisted(address _actor) public view returns (bool)
 	{
 		return m_whitelist[_actor];
@@ -90,16 +92,16 @@ contract AuthorizedList is OwnableOZ
 	{
 		return m_blacklist[_actor];
 	}
-
+*/
 	function isActorAllowed(address _actor) public view returns (bool)
 	{
 		if (m_policy == ListPolicyEnum.WHITELIST)
 		{
-			return isWhitelisted(_actor);
+			return m_whitelist[_actor];
 		}
 		else
 		{
-			return !isblacklisted(_actor);
+			return !m_blacklist[_actor];
 		}
 	}
 }
