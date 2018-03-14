@@ -4,12 +4,15 @@ var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-
+const fs              = require("fs-extra");
+const Promise         = require("bluebird");
+const readFileAsync = Promise.promisify(fs.readFile);
 /**
 
 // Contracts FULL DEV DEPLOY with new RLC token created
 
 **/
+
 
 module.exports = function(deployer) {
   let aRLCInstance;
@@ -18,6 +21,7 @@ module.exports = function(deployer) {
   let aDatasetHubInstance;
   let aIexecHub;
   let aMarketplaceInstance;
+  let creator;
 
   return deployer.deploy(RLC)
     .then(() => RLC.deployed())
@@ -32,6 +36,7 @@ module.exports = function(deployer) {
     })
     .then(owner => {
       console.log("RLC faucet wallet is " + owner);
+      creator = owner;
       return aRLCInstance.balanceOf.call(owner);
     })
     .then(faucetSupply => {
@@ -82,7 +87,26 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("attach Marketplace to IexecHub done");
-    });
+      return aIexecHub.setCategoriesCreator(creator);
+    })
+    .then(() => {
+      console.log("setCategoriesCreator to "+creator);
+      return readFileAsync("./config/categories.json");
+    })
+    .then(categories => {
+      var categoriesConfigFileJson = JSON.parse(categories);
+      catagoriesPromises = [];
+      for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+        console.log("create category : "+categoriesConfigFileJson.categories[i].name);
+        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef));
+      }
+      return Promise.all(catagoriesPromises);
+    })
+    .then(categoriesCreated => {
+      return aIexecHub.m_categoriesCount.call()
+    })
+    .then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
+    ;
 };
 
 /**
