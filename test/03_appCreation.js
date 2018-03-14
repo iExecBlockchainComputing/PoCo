@@ -197,7 +197,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(events[0].args.appParams, "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}", "appParams");
 		let count = await aAppHubInstance.getAppsCount(appProvider);
 		assert.strictEqual(1, count.toNumber(), "appProvider must have 1 app now ");
-		let appAddress = await aAppHubInstance.getApp(appProvider, 0);
+		let appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		assert.strictEqual(appAddressFromLog, appAddress, "check appAddress");
 	});
 

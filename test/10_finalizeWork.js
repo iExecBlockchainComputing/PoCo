@@ -249,7 +249,7 @@ contract('IexecHub', function(accounts) {
 			from: appProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		appAddress = await aAppHubInstance.getApp(appProvider, 0);
+		appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		aAppInstance = await App.at(appAddress);
 
 		//Create ask Marker Order by scheduler

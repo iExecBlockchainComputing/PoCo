@@ -15,7 +15,6 @@ contract Marketplace is IexecHubAccessor
 	uint                                 public m_orderCount;
 	mapping(uint =>IexecLib.MarketOrder) public m_orderBook;
 
-
 	// marketorderIdx => user => workerpool => quantity
 	/* mapping(uint => mapping(address => mapping(address => uint))) public m_assetBook; */
 
@@ -29,7 +28,6 @@ contract Marketplace is IexecHubAccessor
 	/* event MarketOrderAskAnswered(uint marketorderIdx, address requester, address workerpool, uint256 quantity); */
 	/* event UnusedAssetsClaimed */
 	/* event AssetTransfered */
-
 
 	/**
 	 * Constructor
@@ -56,8 +54,8 @@ contract Marketplace is IexecHubAccessor
 	{
 		/* require(_assetDeadline >= _marketDeadline); */
 		m_orderCount = m_orderCount.add(1);
-		uint256                      marketorderIdx = m_orderCount;
-		IexecLib.MarketOrder storage marketorder    = m_orderBook[marketorderIdx];
+		// marketorderIdx = m_orderCount;
+		IexecLib.MarketOrder storage marketorder    = m_orderBook[m_orderCount];
 		marketorder.direction      = _direction;
 		marketorder.category       = _category;
 		marketorder.trust          = _trust;
@@ -66,7 +64,6 @@ contract Marketplace is IexecHubAccessor
 		marketorder.value          = _value;
 		marketorder.volume         = _volume;
 		marketorder.remaining      = _volume;
-
 
 		/*
 		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
@@ -89,8 +86,8 @@ contract Marketplace is IexecHubAccessor
 		{
 			revert();
 		}
-		MarketOrderEmitted(marketorderIdx);
-		return marketorderIdx;
+		MarketOrderEmitted(m_orderCount);
+		return m_orderCount;
 	}
 
 	function closeMarketOrder(uint256 _marketorderIdx) public returns (bool)
@@ -275,4 +272,5 @@ contract Marketplace is IexecHubAccessor
 			marketorder.workerpoolOwner
 		);
 	}
+
 }

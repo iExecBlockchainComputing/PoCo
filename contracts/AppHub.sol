@@ -41,8 +41,8 @@ contract AppHub is OwnableOZ // is Owned by IexecHub
 
 	function addApp(address _owner, address _app) internal
 	{
-		uint id = m_appCountByOwner[_owner];
-		m_appCountByOwner  [_owner]      = id.add(1);
+		uint id = m_appCountByOwner[_owner].add(1);
+		m_appCountByOwner  [_owner]      = id;
 		m_appByOwnerByIndex[_owner][id]  = _app;
 		m_appRegistered    [_app]        = true;
 	}
