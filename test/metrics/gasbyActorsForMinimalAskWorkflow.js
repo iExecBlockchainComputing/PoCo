@@ -22,11 +22,6 @@ const writeAsync = Promise.promisify(fs.write);
 const readFileAsync = Promise.promisify(fs.readFile);
 const writeFileAsync = Promise.promisify(fs.writeFile);
 
-const Json2csvTransform = require('json2csv').Transform;
-
-
-
-
 
 
 
@@ -205,7 +200,7 @@ contract('IexecHub', function(accounts) {
 
 		//GAS ANALYSE -->
 		receipt=	await web3.eth.getTransactionReceiptMined(aWorkerPoolHubInstance.transactionHash);
-		dataTxCreateWorkerPoolHub = {spendBy:"marketplaceCreator", when:"init",function:"newWorkerPoolHub", gas: receipt.cumulativeGasUsed};
+		dataTxCreateWorkerPoolHub = {spendBy:"marketplaceCreator", when:"init",function:"newWorkerPoolHub", gas: receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		aAppHubInstance = await AppHub.new({
@@ -216,7 +211,7 @@ contract('IexecHub', function(accounts) {
 
 		//GAS ANALYSE -->
 		receipt=	await web3.eth.getTransactionReceiptMined(aAppHubInstance.transactionHash);
-		dataTxCreateAppHub= {spendBy:"marketplaceCreator", when:"init", function:"newAppHub", gas: receipt.cumulativeGasUsed};
+		dataTxCreateAppHub= {spendBy:"marketplaceCreator", when:"init", function:"newAppHub", gas: receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		aDatasetHubInstance = await DatasetHub.new({
@@ -227,7 +222,7 @@ contract('IexecHub', function(accounts) {
 
 		//GAS ANALYSE -->
 		receipt=	await web3.eth.getTransactionReceiptMined(aDatasetHubInstance.transactionHash);
-		dataTxCreateDatasetHub= {spendBy:"marketplaceCreator", when:"init", function:"newDatasetHub", gas: receipt.cumulativeGasUsed};
+		dataTxCreateDatasetHub= {spendBy:"marketplaceCreator", when:"init", function:"newDatasetHub", gas: receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
@@ -238,7 +233,7 @@ contract('IexecHub', function(accounts) {
 
 		//GAS ANALYSE -->
 		receipt=	await web3.eth.getTransactionReceiptMined(aIexecHubInstance.transactionHash);
-		dataTxCreateIexecHub= {spendBy:"marketplaceCreator", when:"init", function:"newIexecHub", gas: receipt.cumulativeGasUsed};
+		dataTxCreateIexecHub= {spendBy:"marketplaceCreator", when:"init", function:"newIexecHub", gas: receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
@@ -248,7 +243,7 @@ contract('IexecHub', function(accounts) {
 		console.log("transferOwnership of WorkerPoolHub to IexecHub");
 
 		//GAS ANALYSE -->
-		dataTxTransferOwnershipWorkerPoolHub= {spendBy:"marketplaceCreator", when:"init", function:"WorkerPoolHubTransferOwnership", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxTransferOwnershipWorkerPoolHub= {spendBy:"marketplaceCreator", when:"init", function:"WorkerPoolHubTransferOwnership", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
@@ -258,7 +253,7 @@ contract('IexecHub', function(accounts) {
 		console.log("transferOwnership of AppHub to IexecHub");
 
 		//GAS ANALYSE -->
-		dataTxTransferOwnershipAppHub= {spendBy:"marketplaceCreator", when:"init", function:"AppHubTransferOwnership", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxTransferOwnershipAppHub= {spendBy:"marketplaceCreator", when:"init", function:"AppHubTransferOwnership", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
@@ -268,7 +263,7 @@ contract('IexecHub', function(accounts) {
 		console.log("transferOwnership of DatasetHub to IexecHub");
 
 		//GAS ANALYSE -->
-		dataTxTransferOwnershipDatasetHub= {spendBy:"marketplaceCreator", when:"init", function:"DatasetHubTransferOwnership", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxTransferOwnershipDatasetHub= {spendBy:"marketplaceCreator", when:"init", function:"DatasetHubTransferOwnership", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
@@ -279,7 +274,7 @@ contract('IexecHub', function(accounts) {
 
 		//GAS ANALYSE -->
 		receipt=	await web3.eth.getTransactionReceiptMined(aMarketplaceInstance.transactionHash);
-		dataTxCreateMarketplace= {spendBy:"marketplaceCreator", when:"init", function:"newMarketplace", gas: receipt.cumulativeGasUsed};
+		dataTxCreateMarketplace= {spendBy:"marketplaceCreator", when:"init", function:"newMarketplace", gas: receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
@@ -289,7 +284,7 @@ contract('IexecHub', function(accounts) {
 		console.log("attachMarketplace to IexecHub");
 
 		//GAS ANALYSE -->
-		dataTxAttachMarketplace= {spendBy:"marketplaceCreator", when:"init", function:"attachMarketplace", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxAttachMarketplace= {spendBy:"marketplaceCreator", when:"init", function:"attachMarketplace", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//INIT RLC approval on IexecHub for all actors
@@ -322,21 +317,22 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxCreateWorkerPool= {spendBy:"scheduleProvider", when:"init", function:"createWorkerPool", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxCreateWorkerPool= {spendBy:"scheduleProvider", when:"init", function:"createWorkerPool", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
-		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 0);
+		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
+
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
 		// WHITELIST A WORKER IN A WORKER POOL
-		workersAuthorizedListAddress = await aWorkerPoolInstance.m_workersAuthorizedListAddress.call();
+		workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
 		aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
 		txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
 			from: scheduleProvider,
 			gas: amountGazProvided
 		});
 		//GAS ANALYSE -->
-		dataTxUpdateWhitelist= {spendBy:"scheduleProvider", when:"init", function:"updateWhitelist", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxUpdateWhitelist= {spendBy:"scheduleProvider", when:"init", function:"updateWhitelist", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		// WORKER ADD deposit to respect workerpool policy
@@ -348,7 +344,7 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxResourceProviderDeposit= {spendBy:"resourceProvider", when:"init", function:"deposit", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxResourceProviderDeposit= {spendBy:"resourceProvider", when:"init", function:"deposit", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		// WORKER SUBSCRIBE TO POOL
@@ -357,9 +353,9 @@ contract('IexecHub', function(accounts) {
 			gas: amountGazProvided
 		});
 		//GAS ANALYSE -->
-		dataTxSubscribeToPool= {spendBy:"resourceProvider", when:"init", function:"subscribeToPool", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxSubscribeToPool= {spendBy:"resourceProvider", when:"init", function:"subscribeToPool", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
-
+  console.log("coucou1");
 		// CREATE AN APP
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE, {
@@ -367,9 +363,9 @@ contract('IexecHub', function(accounts) {
 		});
 
 		//GAS ANALYSE -->
-		dataTxAppCreate= {spendBy:"appProvider", when:"init", function:"newApp", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxAppCreate= {spendBy:"appProvider", when:"init", function:"newApp", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
-
+  console.log("coucou2");
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		appAddress = await aAppHubInstance.getApp(appProvider, 0);
 		aAppInstance = await App.at(appAddress);
@@ -380,9 +376,9 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-
+  console.log("coucou3");
 		//GAS ANALYSE -->
-		dataTxEmitMarketOrder= {spendBy:"scheduleProvider", when:"askWorkflow", function:"emitMarketOrder", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxEmitMarketOrder= {spendBy:"scheduleProvider", when:"askWorkflow", function:"emitMarketOrder", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//answerAskOrder
@@ -393,16 +389,16 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxIExecCloudUserDeposit= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"deposit", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxIExecCloudUserDeposit= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"deposit", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
-
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(0/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+  console.log("coucou4");
+		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-
+  console.log("coucou5");
 		//GAS ANALYSE -->
-		dataTxAnswerEmitWorkOrder= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"answerEmitWorkOrder", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxAnswerEmitWorkOrder= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"answerEmitWorkOrder", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
@@ -420,7 +416,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
 
 		//GAS ANALYSE -->
-		dataTxCallForContribution= {spendBy:"scheduleProvider", when:"askWorkflow", function:"callForContribution-1-worker", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxCallForContribution= {spendBy:"scheduleProvider", when:"askWorkflow", function:"callForContribution-1-worker", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//workerContribute
@@ -433,7 +429,7 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxResourceProviderDepositAsk= {spendBy:"resourceProvider", when:"askWorkflow", function:"deposit", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxResourceProviderDepositAsk= {spendBy:"resourceProvider", when:"askWorkflow", function:"deposit", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
@@ -445,7 +441,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the resourceProvider");
 		assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider : 30 + 10");
 		//GAS ANALYSE -->
-		dataTxContribute= {spendBy:"resourceProvider", when:"askWorkflow", function:"contribute", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxContribute= {spendBy:"resourceProvider", when:"askWorkflow", function:"contribute", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 
@@ -461,7 +457,7 @@ contract('IexecHub', function(accounts) {
 
 
 		//GAS ANALYSE -->
-		dataTxRevealConsensus= {spendBy:"scheduleProvider", when:"askWorkflow", function:"revealConsensus", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxRevealConsensus= {spendBy:"scheduleProvider", when:"askWorkflow", function:"revealConsensus", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//revealContribution
@@ -475,7 +471,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
 		//GAS ANALYSE -->
-		dataTxReveal= {spendBy:"resourceProvider", when:"askWorkflow", function:"reveal", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxReveal= {spendBy:"resourceProvider", when:"askWorkflow", function:"reveal", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 	});
@@ -493,7 +489,7 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//GAS ANALYSE -->
-		dataTxFinalizeWork= {spendBy:"scheduleProvider", when:"askWorkflow", function:"finalizeWork", gas: txMined.receipt.cumulativeGasUsed};
+		dataTxFinalizeWork= {spendBy:"scheduleProvider", when:"askWorkflow", function:"finalizeWork", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderCompleted({}));

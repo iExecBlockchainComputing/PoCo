@@ -680,3 +680,13 @@ Your local geth network  is ready, you can launch your truffle action
 ```
 ./node_modules/.bin/truffle test
 ```
+
+# how to launch solidity-coverage analyse
+
+```
+npm run coverage
+```
+or
+```
+./node_modules/.bin/solidity-coverage
+```

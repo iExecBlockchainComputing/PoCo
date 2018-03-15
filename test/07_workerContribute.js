@@ -42,7 +42,7 @@ contract('IexecHub', function(accounts) {
 	let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 4000000;
+	let amountGazProvided              = 5000000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -221,7 +221,6 @@ contract('IexecHub', function(accounts) {
 			subscriptionMinimumScorePolicy, {
 				from: scheduleProvider
 			});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
@@ -249,7 +248,6 @@ contract('IexecHub', function(accounts) {
 		txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE, {
 			from: appProvider
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		aAppInstance = await App.at(appAddress);
 
@@ -257,7 +255,6 @@ contract('IexecHub', function(accounts) {
 		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		//answerAskOrder
 		txMined = await aIexecHubInstance.deposit(100, {
@@ -269,7 +266,6 @@ contract('IexecHub', function(accounts) {
 		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
 		woid = events[0].args.woid;

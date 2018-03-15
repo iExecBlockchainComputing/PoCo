@@ -21,7 +21,7 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 4000000;
+	let amountGazProvided              = 5000000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -188,7 +188,6 @@ contract('IexecHub', function(accounts) {
 		txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 0, DAPP_PARAMS_EXAMPLE, {
 			from: appProvider
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
 		assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
 		appAddressFromLog = events[0].args.app;

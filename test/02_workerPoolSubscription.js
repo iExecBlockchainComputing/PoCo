@@ -21,7 +21,7 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 4000000;
+	let amountGazProvided              = 5000000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -193,7 +193,6 @@ contract('IexecHub', function(accounts) {
 			{
 				from: scheduleProvider
 			});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 		workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
