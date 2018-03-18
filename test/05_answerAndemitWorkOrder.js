@@ -42,7 +42,8 @@ contract('IexecHub', function(accounts) {
 	let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 5000000;
+	let amountGazProvided              = 4500000;
+	let EVENT_WAIT_TIMEOUT             = 100000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -268,7 +269,7 @@ contract('IexecHub', function(accounts) {
 		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
-		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
+		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
 //		assert(false, "test should be updated to test values that used to be in the workOrderHub");

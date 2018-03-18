@@ -21,7 +21,8 @@ Extensions.init(web3, assert);
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 5000000;
+	let amountGazProvided              = 4500000;
+	let EVENT_WAIT_TIMEOUT             = 100000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;

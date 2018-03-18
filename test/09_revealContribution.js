@@ -42,7 +42,8 @@ contract('IexecHub', function(accounts) {
 	let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 5000000;
+	let amountGazProvided              = 4500000;
+	let EVENT_WAIT_TIMEOUT             = 100000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -267,7 +268,7 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
+		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;
 		console.log("woid is: " + woid);
 		aWorkOrderInstance = await WorkOrder.at(woid);
@@ -318,7 +319,7 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(aWorkerPoolInstance.Reveal({}));
+		events = await Extensions.getEventsPromise(aWorkerPoolInstance.Reveal({}),1,EVENT_WAIT_TIMEOUT);
 		assert.strictEqual(events[0].args.woid, woid, "woid check");
 		assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider");
 		assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");

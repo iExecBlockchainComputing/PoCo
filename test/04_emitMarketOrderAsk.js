@@ -42,7 +42,8 @@ contract('IexecHub', function(accounts) {
 	let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 5000000;
+	let amountGazProvided              = 4500000;
+	let EVENT_WAIT_TIMEOUT             = 100000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -266,7 +267,8 @@ contract('IexecHub', function(accounts) {
 			{
 				from: scheduleProvider
 			});
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}));
+
+		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}),1,EVENT_WAIT_TIMEOUT);
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
 		[direction,category,trust,value,volume,remaining,workerpool] = await aMarketplaceInstance.getMarketOrder.call(1);
