@@ -50,7 +50,7 @@ contract('IexecHub', function(accounts) {
   let aMarketplaceInstance;
 
 
-  before("should prepare accounts and check TestRPC Mode", async() => {
+  beforeEach("should prepare accounts and check TestRPC Mode", async() => {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider = accounts[0];
     resourceProvider = accounts[1];

@@ -7,10 +7,14 @@ var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 
+const BN = require("bn");
+const keccak256 = require("solidity-sha3");
 const Promise = require("bluebird");
+const fs = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions = require("../../../utils/extensions.js");
 const addEvmFunctions = require("../../../utils/evmFunctions.js");
+const readFileAsync = Promise.promisify(fs.readFile);
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth, {
@@ -39,7 +43,7 @@ contract('IexecHub', function(accounts) {
   let aDatasetHubInstance;
   let aMarketplaceInstance;
 
-  before("should prepare accounts and check TestRPC Mode", async() => {
+  beforeEach("should prepare accounts and check TestRPC Mode", async() => {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider = accounts[0];
     resourceProvider = accounts[1];
@@ -237,9 +241,7 @@ contract('IexecHub', function(accounts) {
       subscriptionMinimumStakePolicy,
       subscriptionMinimumScorePolicy, {
         from: scheduleProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
       });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
     assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
@@ -268,10 +270,8 @@ contract('IexecHub', function(accounts) {
       subscriptionLockStakePolicy,
       subscriptionMinimumStakePolicy,
       subscriptionMinimumScorePolicy, {
-        from: scheduleProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
+        from: scheduleProvider
       });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
     assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
@@ -283,10 +283,8 @@ contract('IexecHub', function(accounts) {
       subscriptionLockStakePolicy,
       subscriptionMinimumStakePolicy,
       subscriptionMinimumScorePolicy, {
-        from: scheduleProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
+        from: scheduleProvider
       });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
     assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
@@ -295,37 +293,35 @@ contract('IexecHub', function(accounts) {
 
   });
 
-	it("createWorkerPool_03 : every body can create WorkerPool by calling createWorkerPool with 0 as policy", async function() {
-		let workerPoolAddressFromLog;
-		let subscriptionLockStakePolicy = 0;
-		let subscriptionMinimumStakePolicy = 0;
-		let subscriptionMinimumScorePolicy = 0;
-		txMined = await aIexecHubInstance.createWorkerPool(
-			"myWorkerPool 0 policy",
-			subscriptionLockStakePolicy,
-			subscriptionMinimumStakePolicy,
-			subscriptionMinimumScorePolicy, {
-				from: scheduleProvider,
-				gas: constants.AMOUNT_GAS_PROVIDED
-			});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+  it("createWorkerPool_03 : every body can create WorkerPool by calling createWorkerPool with 0 as policy", async function() {
+    let workerPoolAddressFromLog;
+    let subscriptionLockStakePolicy = 0;
+    let subscriptionMinimumStakePolicy = 0;
+    let subscriptionMinimumScorePolicy = 0;
+    txMined = await aIexecHubInstance.createWorkerPool(
+      "myWorkerPool 0 policy",
+      subscriptionLockStakePolicy,
+      subscriptionMinimumStakePolicy,
+      subscriptionMinimumScorePolicy, {
+        from: scheduleProvider
+      });
 
-		let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
-		assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
-		assert.strictEqual(events[0].args.workerPoolDescription, "myWorkerPool 0 policy", "workerPoolDescription");
-		workerPoolAddressFromLog = events[0].args.workerPool;
-		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddressFromLog);
+    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateWorkerPool({}));
+    assert.strictEqual(events[0].args.workerPoolOwner, scheduleProvider, "workerPoolOwner");
+    assert.strictEqual(events[0].args.workerPoolDescription, "myWorkerPool 0 policy", "workerPoolDescription");
+    workerPoolAddressFromLog = events[0].args.workerPool;
+    aWorkerPoolInstance = await WorkerPool.at(workerPoolAddressFromLog);
 
-		let m_subscriptionLockStakePolicyCall = await aWorkerPoolInstance.m_subscriptionLockStakePolicy.call();
-		assert.strictEqual(m_subscriptionLockStakePolicyCall.toNumber(), subscriptionLockStakePolicy, "check m_subscriptionLockStakePolicyCall");
+    let m_subscriptionLockStakePolicyCall = await aWorkerPoolInstance.m_subscriptionLockStakePolicy.call();
+    assert.strictEqual(m_subscriptionLockStakePolicyCall.toNumber(), subscriptionLockStakePolicy, "check m_subscriptionLockStakePolicyCall");
 
-		let m_subscriptionMinimumStakePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumStakePolicy.call();
-		assert.strictEqual(m_subscriptionMinimumStakePolicyCall.toNumber(), subscriptionMinimumStakePolicy, "check m_subscriptionMinimumStakePolicyCall");
+    let m_subscriptionMinimumStakePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumStakePolicy.call();
+    assert.strictEqual(m_subscriptionMinimumStakePolicyCall.toNumber(), subscriptionMinimumStakePolicy, "check m_subscriptionMinimumStakePolicyCall");
 
-		let m_subscriptionMinimumScorePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumScorePolicy.call();
-		assert.strictEqual(m_subscriptionMinimumScorePolicyCall.toNumber(), subscriptionMinimumScorePolicy, "check m_subscriptionMinimumScorePolicy");
+    let m_subscriptionMinimumScorePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumScorePolicy.call();
+    assert.strictEqual(m_subscriptionMinimumScorePolicyCall.toNumber(), subscriptionMinimumScorePolicy, "check m_subscriptionMinimumScorePolicy");
 
-	});
+  });
 
 
 

@@ -50,7 +50,7 @@ contract('IexecHub', function(accounts) {
   let aMarketplaceInstance;
 
 
-  before("should prepare accounts and check TestRPC Mode", async() => {
+  beforeEach("should prepare accounts and check TestRPC Mode", async() => {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider = accounts[0];
     resourceProvider = accounts[1];
@@ -262,7 +262,7 @@ contract('IexecHub', function(accounts) {
         constants.AMOUNT_GAS_PROVIDED);
     }
     let m_categoriesCountCall = await aIexecHubInstance.m_categoriesCount.call();
-    assert.strictEqual(m_categoriesCountCall.toNumber(), categoriesConfigFileJson.categories.length, "check m_categoriesCountCall to 6 as categories count here config/categories.json");
+    assert.strictEqual(m_categoriesCountCall.toNumber(), 0, "nothing created");
   });
 
 });
