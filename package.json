@@ -4,7 +4,7 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "test": "sleep 5 && ./node_modules/.bin/truffle test test/*",
+    "test": "sleep 5 && ./node_modules/.bin/truffle test",
     "pretest": "./node_modules/.bin/testrpc > /dev/null &",
     "posttest": "kill $(ps aux | grep testrpc |grep node|awk '{print $2}')",
     "coverage": "./node_modules/.bin/solidity-coverage"
