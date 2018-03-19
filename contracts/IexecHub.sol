@@ -420,7 +420,19 @@ contract IexecHub
 	 */
 	function getCategoryWorkClockTimeRef(uint256 _catId) public view returns (uint256 workClockTimeRef)
 	{
+		require(m_categories[_catId].catid > 0);
 		return m_categories[_catId].workClockTimeRef;
+	}
+
+	function getCategory(uint256 _catId) public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef)
+	{
+		require(m_categories[_catId].catid > 0);
+		return (
+		m_categories[_catId].catid,
+		m_categories[_catId].name,
+		m_categories[_catId].description,
+		m_categories[_catId].workClockTimeRef
+		);
 	}
 
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
