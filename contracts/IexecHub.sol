@@ -31,9 +31,9 @@ contract IexecHub
 	/**
 	 * Slaves contracts
 	 */
-	AppHub        appHub;
-	DatasetHub    datasetHub;
-	WorkerPoolHub workerPoolHub;
+	AppHub        public appHub;
+	DatasetHub    public datasetHub;
+	WorkerPoolHub public workerPoolHub;
 
 	/**
 	 * Market place
@@ -78,7 +78,7 @@ contract IexecHub
 
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
 	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
-	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolName                                         );
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolDescription                                        );
 
 	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
@@ -156,7 +156,7 @@ contract IexecHub
 	}
 
 	function createWorkerPool(
-		string  _name,
+		string  _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy)
@@ -165,13 +165,13 @@ contract IexecHub
 		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
 		// require(lock(msg.sender, WORKERPOOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(
-			_name,
+			_description,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy,
 			marketplaceAddress
 		);
-		CreateWorkerPool(tx.origin, newWorkerPool, _name);
+		CreateWorkerPool(tx.origin, newWorkerPool, _description);
 		return newWorkerPool;
 	}
 

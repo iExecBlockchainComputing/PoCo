@@ -11,9 +11,12 @@ var IexecLib       = artifacts.require("./IexecLib.sol");
 var Marketplace    = artifacts.require("./Marketplace.sol");
 
 const Promise         = require("bluebird");
+const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
+const readFileAsync = Promise.promisify(fs.readFile);
+
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -176,6 +179,25 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("attachMarketplace to IexecHub");
+
+		// INIT categories in MARKETPLACE
+		txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
+			from: marketplaceCreator
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("setCategoriesCreator  to marketplaceCreator");
+		var categoriesConfigFile = await readFileAsync("./config/categories.json");
+		var categoriesConfigFileJson = JSON.parse(categoriesConfigFile);
+		for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+			console.log("created category:");
+			console.log(categoriesConfigFileJson.categories[i].name);
+			console.log(JSON.stringify(categoriesConfigFileJson.categories[i].description));
+			console.log(categoriesConfigFileJson.categories[i].workClockTimeRef);
+			txMined = await aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef, {
+				from: marketplaceCreator
+			});
+			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		}
 
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([

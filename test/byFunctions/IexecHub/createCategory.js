@@ -19,7 +19,6 @@ const addEvmFunctions = require("../../../utils/evmFunctions.js");
 const readFileAsync = Promise.promisify(fs.readFile);
 
 addEvmFunctions(web3);
-addFilterObservableToWeb3(web3);
 
 Promise.promisifyAll(web3.eth, {
   suffix: "Promise"

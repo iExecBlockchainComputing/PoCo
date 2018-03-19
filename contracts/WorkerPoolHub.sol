@@ -58,7 +58,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	}
 
 	function createWorkerPool(
-		string _name,
+		string _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy,
@@ -70,7 +70,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		// At creating ownership is transfered to tx.origin
 		address newWorkerPool = new WorkerPool(
 			msg.sender, // iexecHubAddress
-			_name,
+			_description,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy,
