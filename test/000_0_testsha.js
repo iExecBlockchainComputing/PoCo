@@ -11,11 +11,11 @@ Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
 Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
+var constants = require("./constants");
 
 contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-  let amountGazProvided = 4000000;
   let isTestRPC;
   let testTimemout = 0;
   let aTestShaInstance;
@@ -56,7 +56,7 @@ contract('IexecHub', function(accounts) {
 
   it("testSolidityKeccak256FromString", async function() {
     let txMined = await aTestShaInstance.testSolidityKeccak256FromString("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6");
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     let events = await Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromString({}));
     assert.strictEqual(events[0].args.input,                   ("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
     assert.strictEqual(events[0].args.result, web3.sha3        ("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6"), "check input");
@@ -66,7 +66,7 @@ contract('IexecHub', function(accounts) {
 
   it("testSolidityKeccak256FromBytes", async function() {
     let txMined = await aTestShaInstance.testSolidityKeccak256FromBytes("0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6");
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     let events= await Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromBytes({}));
     assert.strictEqual(events[0].args.input,                    "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6",                     "check input");
     assert.strictEqual(events[0].args.result, web3.sha3(        "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6", {encoding: 'hex'}), "check input");
@@ -77,7 +77,7 @@ contract('IexecHub', function(accounts) {
 
   it("testSolidityKeccak256FromAddress", async function() {
     let txMined = await aTestShaInstance.testSolidityKeccak256FromAddress(marketplaceCreator);
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     let events = await Extensions.getEventsPromise(aTestShaInstance.SolidityKeccak256FromAddress({}));
     assert.strictEqual(events[0].args.input,           (marketplaceCreator                   ), "test fail, Address 0");
     assert.strictEqual(events[0].args.result, web3.sha3(marketplaceCreator, {encoding: 'hex'}), "test fail, Address 1");
@@ -90,7 +90,7 @@ contract('IexecHub', function(accounts) {
     const result  = web3.sha3("tagazok"); // bytes32 signature of the returned value
     const address = accounts[0];
     let txMined = await aTestShaInstance.testSignedVote(result, {from: address});
-    assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     let events = await Extensions.getEventsPromise(aTestShaInstance.SignedVote({}));
     const signed = Extensions.signResult("tagazok", address);
     assert.strictEqual(events[0].args.input, result,                                                                "test fail, SignedVote 0 (input)");

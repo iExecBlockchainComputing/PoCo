@@ -17,12 +17,11 @@ Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
 Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
+var constants = require("./constants");
 
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let amountGazProvided              = 4500000;
-	let EVENT_WAIT_TIMEOUT             = 100000;
 	let subscriptionLockStakePolicy    = 0;
 	let subscriptionMinimumStakePolicy = 10;
 	let subscriptionMinimumScorePolicy = 0;
@@ -71,31 +70,31 @@ contract('IexecHub', function(accounts) {
 		// INIT RLC
 		aRLCInstance = await RLC.new({
 			from: marketplaceCreator,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		console.log("aRLCInstance.address is ");
 		console.log(aRLCInstance.address);
 		let txMined = await aRLCInstance.unlock({
 			from: marketplaceCreator,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txsMined = await Promise.all([
-			aRLCInstance.transfer(scheduleProvider, 1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(resourceProvider, 1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(appProvider,      1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(datasetProvider,  1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(dappUser,         1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(dappProvider,     1000, { from: marketplaceCreator, gas: amountGazProvided }),
-			aRLCInstance.transfer(iExecCloudUser,   1000, { from: marketplaceCreator, gas: amountGazProvided })
+			aRLCInstance.transfer(scheduleProvider, 1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(resourceProvider, 1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(appProvider,      1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(datasetProvider,  1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(dappUser,         1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(dappProvider,     1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.transfer(iExecCloudUser,   1000, { from: marketplaceCreator, gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		let balances = await Promise.all([
 			aRLCInstance.balanceOf(scheduleProvider),
 			aRLCInstance.balanceOf(resourceProvider),
@@ -141,19 +140,19 @@ contract('IexecHub', function(accounts) {
 		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of WorkerPoolHub to IexecHub");
 
 		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of AppHub to IexecHub");
 
 		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of DatasetHub to IexecHub");
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
@@ -165,26 +164,26 @@ contract('IexecHub', function(accounts) {
 		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
 			from: marketplaceCreator
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("attachMarketplace to IexecHub");
 
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: scheduleProvider, gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: resourceProvider, gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: appProvider,      gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: datasetProvider,  gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: dappUser,         gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: dappProvider,     gas: amountGazProvided }),
-			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: iExecCloudUser,   gas: amountGazProvided })
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: scheduleProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: resourceProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: appProvider,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: datasetProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: dappUser,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: dappProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: iExecCloudUser,   gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, amountGazProvided, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txMined = await aIexecHubInstance.createWorkerPool(
 			"myWorkerPool",
@@ -208,34 +207,34 @@ contract('IexecHub', function(accounts) {
 	it("a white listed resourceProvider can Subscribe", async function() {
 		txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
 			from: scheduleProvider,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
 			from: resourceProvider,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txMined = await aWorkerPoolInstance.subscribeToPool({
 			from: resourceProvider,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	it("resourceProvider not white listed cannot Subscribe", async function() {
 		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
 			from: resourceProvider,
-			gas: amountGazProvided
+			gas: constants.AMOUNT_GAS_PROVIDED
 		});
-		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		await Extensions.expectedExceptionPromise(() => {
 				return aWorkerPoolInstance.subscribeToPool({
 					from: resourceProvider,
-					gas: amountGazProvided
+					gas: constants.AMOUNT_GAS_PROVIDED
 				});
 			},
-			amountGazProvided);
+			constants.AMOUNT_GAS_PROVIDED);
 	});
 
 
