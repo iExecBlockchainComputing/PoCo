@@ -142,153 +142,15 @@ contract('IexecHub', function(accounts) {
     console.log("aWorkerPoolHubInstance.address is ");
     console.log(aWorkerPoolHubInstance.address);
 
-    aAppHubInstance = await AppHub.new({
-      from: marketplaceCreator
-    });
-    console.log("aAppHubInstance.address is ");
-    console.log(aAppHubInstance.address);
-
-    aDatasetHubInstance = await DatasetHub.new({
-      from: marketplaceCreator
-    });
-    console.log("aDatasetHubInstance.address is ");
-    console.log(aDatasetHubInstance.address);
-
-
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
-      from: marketplaceCreator
-    });
-    console.log("aIexecHubInstance.address is ");
-    console.log(aIexecHubInstance.address);
-
-    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    console.log("aMarketplaceInstance.address is ");
-    console.log(aMarketplaceInstance.address);
-
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("attachMarketplace to IexecHub");
-
-    // USE marketplaceCreator as owner for test. In real deployement ownership is :
-    /*
-        txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
-          from: marketplaceCreator
-        });
-    */
 
   });
 
 
-  it("createWorkerPool_01 : the owner of ( here marketplaceCreator ) can call createWorkerPool and create several pools", async function() {
-    let workerPoolAddressFromLog;
-    let subscriptionLockStakePolicy = 1;
-    let subscriptionMinimumStakePolicy = 2;
-    let subscriptionMinimumScorePolicy = 3;
-
-    let createdWorkerPool = await aWorkerPoolHubInstance.createWorkerPool.call(
-      "myWorkerPool 1",
-      subscriptionLockStakePolicy,
-      subscriptionMinimumStakePolicy,
-      subscriptionMinimumScorePolicy,
-      aMarketplaceInstance.address, {
-        from: marketplaceCreator
-      });
-
-
-    let isWorkerPoolRegistered = await aWorkerPoolHubInstance.isWorkerPoolRegistered.call(createdWorkerPool);
-    assert.isFalse(isWorkerPoolRegistered, "check isWorkerPoolRegistered false");
-
-    let getWorkerPoolsCount = await aWorkerPoolHubInstance.getWorkerPoolsCount.call(marketplaceCreator);
-    assert.strictEqual(getWorkerPoolsCount.toNumber(), 0, "check getWorkerPoolsCount");
-
-    let getWorkerPool = await aWorkerPoolHubInstance.getWorkerPool.call(marketplaceCreator, 1);
-    assert.notEqual(getWorkerPool, createdWorkerPool, "check getWorkerPool");
-
-
-    txMined = await aWorkerPoolHubInstance.createWorkerPool(
-      "myWorkerPool 1",
-      subscriptionLockStakePolicy,
-      subscriptionMinimumStakePolicy,
-      subscriptionMinimumScorePolicy,
-      aMarketplaceInstance.address, {
-        from: marketplaceCreator
-      });
-
-    aWorkerPoolInstance = await WorkerPool.at(createdWorkerPool);
-
-    let m_subscriptionLockStakePolicyCall = await aWorkerPoolInstance.m_subscriptionLockStakePolicy.call();
-    assert.strictEqual(m_subscriptionLockStakePolicyCall.toNumber(), subscriptionLockStakePolicy, "check m_subscriptionLockStakePolicyCall");
-
-    let m_subscriptionMinimumStakePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumStakePolicy.call();
-    assert.strictEqual(m_subscriptionMinimumStakePolicyCall.toNumber(), subscriptionMinimumStakePolicy, "check m_subscriptionMinimumStakePolicyCall");
-
-    let m_subscriptionMinimumScorePolicyCall = await aWorkerPoolInstance.m_subscriptionMinimumScorePolicy.call();
-    assert.strictEqual(m_subscriptionMinimumScorePolicyCall.toNumber(), subscriptionMinimumScorePolicy, "check m_subscriptionMinimumScorePolicy");
-
-
-    isWorkerPoolRegistered = await aWorkerPoolHubInstance.isWorkerPoolRegistered.call(createdWorkerPool);
-    assert.isTrue(isWorkerPoolRegistered, "check isWorkerPoolRegistered");
-
-    getWorkerPoolsCount = await aWorkerPoolHubInstance.getWorkerPoolsCount.call(marketplaceCreator);
-    assert.strictEqual(getWorkerPoolsCount.toNumber(), 1, "check getWorkerPoolsCount");
-
-    getWorkerPool = await aWorkerPoolHubInstance.getWorkerPool.call(marketplaceCreator, 1);
-    assert.strictEqual(getWorkerPool, createdWorkerPool, "check getWorkerPool");
-
-    let createdWorkerPool2 = await aWorkerPoolHubInstance.createWorkerPool.call(
-      "myWorkerPool 2",
-      subscriptionLockStakePolicy,
-      subscriptionMinimumStakePolicy,
-      subscriptionMinimumScorePolicy,
-      aMarketplaceInstance.address, {
-        from: marketplaceCreator
-      });
-
-    txMined = await aWorkerPoolHubInstance.createWorkerPool(
-      "myWorkerPool 2",
-      subscriptionLockStakePolicy,
-      subscriptionMinimumStakePolicy,
-      subscriptionMinimumScorePolicy,
-      aMarketplaceInstance.address, {
-        from: marketplaceCreator
-      });
-
-    isWorkerPoolRegistered = await aWorkerPoolHubInstance.isWorkerPoolRegistered.call(createdWorkerPool2);
-    assert.isTrue(isWorkerPoolRegistered, "check isWorkerPoolRegistered");
-
-    getWorkerPoolsCount = await aWorkerPoolHubInstance.getWorkerPoolsCount.call(marketplaceCreator);
-    assert.strictEqual(getWorkerPoolsCount.toNumber(), 2, "check getWorkerPoolsCount");
-
-    getWorkerPool = await aWorkerPoolHubInstance.getWorkerPool.call(marketplaceCreator, 2);
-    assert.strictEqual(getWorkerPool, createdWorkerPool2, "check getWorkerPool 2");
-
+  it("addWorkerPool_01 : nobody can call addWorkerPool : addWorkerPool internal function", async function() {
+    assert.strictEqual(aWorkerPoolHubInstance.contract.addWorkerPool, undefined, "expected addWorkerPool internal");
   });
 
 
-  it("createWorkerPool_02 : a non owner can't call createWorkerPool", async function() {
-    let workerPoolAddressFromLog;
-    let subscriptionLockStakePolicy = 1;
-    let subscriptionMinimumStakePolicy = 2;
-    let subscriptionMinimumScorePolicy = 3;
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolHubInstance.createWorkerPool(
-          "myWorkerPool 1",
-          subscriptionLockStakePolicy,
-          subscriptionMinimumStakePolicy,
-          subscriptionMinimumScorePolicy,
-          aMarketplaceInstance.address, {
-            from: iExecCloudUser,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
 
 
 
