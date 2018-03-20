@@ -202,7 +202,7 @@ contract('IexecHub', function(accounts) {
     let getWorkerPool = await aWorkerPoolHubInstance.getWorkerPool.call(marketplaceCreator, 1, {
       from: iExecCloudUser
     });
-    console.log(getWorkerPool);
+
     assert.notEqual(getWorkerPool, createdWorkerPool, "check getWorkerPool");
     assert.strictEqual(getWorkerPool, '0x0000000000000000000000000000000000000000', "check 0x0000000000000000000000000000000000000000");
 

@@ -6,7 +6,7 @@ var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
-var App            = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
 
 const BN = require("bn");
 const keccak256 = require("solidity-sha3");
@@ -231,68 +231,67 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
   });
 
-  it("createApp_01 : every body can create free App by calling createApp", async function() {
-    let appAddressFromLog;
+  it("createDataset_01 : every body can create free Dataset by calling createDataset", async function() {
+    let datasetAddressFromLog;
 
-    txMined = await aIexecHubInstance.createApp(
-      "app Name",
+    txMined = await aIexecHubInstance.createDataset(
+      "dataset Name",
       0,
-      "app Params", {
-        from: appProvider,
+      "dataset Params", {
+        from: datasetProvider,
       });
 
-    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params", "appParams");
-    appAddressFromLog = events[0].args.app;
-    anAppInstance = await App.at(appAddressFromLog);
+    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateDataset({}));
+    assert.strictEqual(events[0].args.datasetOwner, datasetProvider, "datasetProvider");
+    assert.strictEqual(events[0].args.datasetName, "dataset Name", "datasetName");
+    assert.strictEqual(events[0].args.datasetPrice.toNumber(), 0, "datasetPrice");
+    assert.strictEqual(events[0].args.datasetParams, "dataset Params", "datasetParams");
+    datasetAddressFromLog = events[0].args.dataset;
+    aDatasetInstance = await Dataset.at(datasetAddressFromLog);
 
-    let m_appName = await anAppInstance.m_appName.call();
-    assert.strictEqual(m_appName, events[0].args.appName, "check m_appName");
+    let m_datasetName = await aDatasetInstance.m_datasetName.call();
+    assert.strictEqual(m_datasetName, events[0].args.datasetName, "check m_datasetName");
 
-    let m_appPrice = await anAppInstance.m_appPrice.call();
-    assert.strictEqual(m_appPrice.toNumber(), events[0].args.appPrice.toNumber(), "check m_appPrice");
+    let m_datasetPrice = await aDatasetInstance.m_datasetPrice.call();
+    assert.strictEqual(m_datasetPrice.toNumber(), events[0].args.datasetPrice.toNumber(), "check m_datasetPrice");
 
-    let m_appParams = await anAppInstance.m_appParams.call();
-    assert.strictEqual(m_appParams, events[0].args.appParams, "check m_appParams");
+    let m_datasetParams = await aDatasetInstance.m_datasetParams.call();
+    assert.strictEqual(m_datasetParams, events[0].args.datasetParams, "check m_datasetParams");
 
   });
 
-  it("createApp_02 : every body can create several App by calling createApp", async function() {
-    let appAddressFromLog;
+  it("createDataset_02 : every body can create several Dataset by calling createDataset", async function() {
+    let datasetAddressFromLog;
 
-    txMined = await aIexecHubInstance.createApp(
-      "app Name",
+    txMined = await aIexecHubInstance.createDataset(
+      "dataset Name",
       0,
-      "app Params", {
-        from: appProvider,
+      "dataset Params", {
+        from: datasetProvider,
       });
 
-    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params", "appParams");
-    appAddressFromLog = events[0].args.app;
+    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateDataset({}));
+    assert.strictEqual(events[0].args.datasetOwner, datasetProvider, "datasetProvider");
+    assert.strictEqual(events[0].args.datasetName, "dataset Name", "datasetName");
+    assert.strictEqual(events[0].args.datasetPrice.toNumber(), 0, "datasetPrice");
+    assert.strictEqual(events[0].args.datasetParams, "dataset Params", "datasetParams");
+    datasetAddressFromLog = events[0].args.dataset;
 
-    txMined = await aIexecHubInstance.createApp(
-      "app Name 2",
+    txMined = await aIexecHubInstance.createDataset(
+      "dataset Name 2",
       1,
-      "app Params 2", {
-        from: appProvider,
+      "dataset Params 2", {
+        from: datasetProvider,
       });
-    events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name 2", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 1, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params 2", "appParams");
+    events = await Extensions.getEventsPromise(aIexecHubInstance.CreateDataset({}));
+    assert.strictEqual(events[0].args.datasetOwner, datasetProvider, "datasetProvider");
+    assert.strictEqual(events[0].args.datasetName, "dataset Name 2", "datasetName");
+    assert.strictEqual(events[0].args.datasetPrice.toNumber(), 1, "datasetPrice");
+    assert.strictEqual(events[0].args.datasetParams, "dataset Params 2", "datasetParams");
 
-    assert.notEqual(events[0].args.app, appAddressFromLog, "new app for the appProvider");
+    assert.notEqual(events[0].args.app, datasetAddressFromLog, "new dataset for the datasetProvider");
 
   });
-
 
 
 

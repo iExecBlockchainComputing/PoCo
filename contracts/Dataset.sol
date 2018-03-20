@@ -47,7 +47,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 
 		appsAuthorizedListAddress        = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
+		workerPoolsAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		appsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
 		requestersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
 		workerPoolsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin

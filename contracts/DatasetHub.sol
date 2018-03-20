@@ -41,8 +41,8 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 
 	function addDataset(address _owner, address _dataset) internal
 	{
-		uint id = m_datasetCountByOwner[_owner];
-		m_datasetCountByOwner  [_owner]     = id.add(1);
+		uint id = m_datasetCountByOwner[_owner].add(1);
+		m_datasetCountByOwner  [_owner]     = id;
 		m_datasetByOwnerByIndex[_owner][id] = _dataset;
 		m_datasetRegistered    [_dataset]   = true;
 	}

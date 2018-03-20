@@ -6,7 +6,7 @@ var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
-var App            = artifacts.require("./App.sol");
+var Dataset = artifacts.require("./Dataset.sol");
 
 const BN = require("bn");
 const keccak256 = require("solidity-sha3");
@@ -143,157 +143,77 @@ contract('IexecHub', function(accounts) {
     console.log("aWorkerPoolHubInstance.address is ");
     console.log(aWorkerPoolHubInstance.address);
 
-    aAppHubInstance = await AppHub.new({
-      from: marketplaceCreator
-    });
-    console.log("aAppHubInstance.address is ");
-    console.log(aAppHubInstance.address);
-
     aDatasetHubInstance = await DatasetHub.new({
       from: marketplaceCreator
     });
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
-      from: marketplaceCreator
-    });
-    console.log("aIexecHubInstance.address is ");
-    console.log(aIexecHubInstance.address);
 
-    txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of WorkerPoolHub to IexecHub");
-
-    txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of AppHub to IexecHub");
-
+    // USE marketplaceCreator as owner for test. In real deployement ownership is :
+    /*
     txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of DatasetHub to IexecHub");
+			from: marketplaceCreator
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("transferOwnership of DatasetHub to IexecHub");
 
-    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    console.log("aMarketplaceInstance.address is ");
-    console.log(aMarketplaceInstance.address);
+    */
 
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("attachMarketplace to IexecHub");
 
-    //INIT RLC approval on IexecHub for all actors
-    txsMined = await Promise.all([
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: scheduleProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: resourceProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: appProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: datasetProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: dappUser,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: dappProvider,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
-        from: iExecCloudUser,
-        gas: constants.AMOUNT_GAS_PROVIDED
-      })
-    ]);
-    assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-  });
-
-  it("createApp_01 : every body can create free App by calling createApp", async function() {
-    let appAddressFromLog;
-
-    txMined = await aIexecHubInstance.createApp(
-      "app Name",
-      0,
-      "app Params", {
-        from: appProvider,
-      });
-
-    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params", "appParams");
-    appAddressFromLog = events[0].args.app;
-    anAppInstance = await App.at(appAddressFromLog);
-
-    let m_appName = await anAppInstance.m_appName.call();
-    assert.strictEqual(m_appName, events[0].args.appName, "check m_appName");
-
-    let m_appPrice = await anAppInstance.m_appPrice.call();
-    assert.strictEqual(m_appPrice.toNumber(), events[0].args.appPrice.toNumber(), "check m_appPrice");
-
-    let m_appParams = await anAppInstance.m_appParams.call();
-    assert.strictEqual(m_appParams, events[0].args.appParams, "check m_appParams");
 
   });
 
-  it("createApp_02 : every body can create several App by calling createApp", async function() {
-    let appAddressFromLog;
 
-    txMined = await aIexecHubInstance.createApp(
-      "app Name",
+
+  it("getDatasetsCount_01 :is a public function returning the dataset count by owner address", async function() {
+
+    let createdDataset = await aDatasetHubInstance.createDataset.call(
+      "dataset Name",
       0,
-      "app Params", {
-        from: appProvider,
+      "dataset Params", {
+        from: marketplaceCreator,
       });
 
-    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 0, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params", "appParams");
-    appAddressFromLog = events[0].args.app;
+    getDatasetsCount = await aDatasetHubInstance.getDatasetsCount.call(marketplaceCreator, {
+      from: iExecCloudUser
+    });
+    assert.strictEqual(getDatasetsCount.toNumber(), 0, "check getDatasetsCount");
 
-    txMined = await aIexecHubInstance.createApp(
-      "app Name 2",
+
+    txMined = await aDatasetHubInstance.createDataset(
+      "dataset Name",
+      0,
+      "dataset Params", {
+        from: marketplaceCreator,
+      });
+
+
+    getDatasetsCount = await aDatasetHubInstance.getDatasetsCount.call(marketplaceCreator, {
+      from: iExecCloudUser
+    });
+    assert.strictEqual(getDatasetsCount.toNumber(), 1, "check getDatasetsCount");
+
+    let createdDataset2 = await aDatasetHubInstance.createDataset.call(
+      "dataset Name 2",
       1,
-      "app Params 2", {
-        from: appProvider,
+      "dataset Params 2", {
+        from: marketplaceCreator,
       });
-    events = await Extensions.getEventsPromise(aIexecHubInstance.CreateApp({}));
-    assert.strictEqual(events[0].args.appOwner, appProvider, "appOwner");
-    assert.strictEqual(events[0].args.appName, "app Name 2", "appName");
-    assert.strictEqual(events[0].args.appPrice.toNumber(), 1, "appPrice");
-    assert.strictEqual(events[0].args.appParams, "app Params 2", "appParams");
 
-    assert.notEqual(events[0].args.app, appAddressFromLog, "new app for the appProvider");
+    txMined = await aDatasetHubInstance.createDataset(
+      "dataset Name 2",
+      1,
+      "dataset Params 2", {
+        from: marketplaceCreator,
+      });
+
+    getDatasetsCount = await aDatasetHubInstance.getDatasetsCount.call(marketplaceCreator, {
+      from: iExecCloudUser
+    });
+    assert.strictEqual(getDatasetsCount.toNumber(), 2, "check getDatasetsCount");
 
   });
-
-
 
 
 });
