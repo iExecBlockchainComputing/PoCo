@@ -34,6 +34,11 @@ define("WorkerPoolStatusEnum",{
   CLOSE : 1
 });
 
+define("AppStatusEnum",{
+  OPEN  : 0,
+  CLOSE : 1
+});
+
 define("ListPolicyEnum",{
   WHITELIST  : 0,
   BLACKLIST : 1
