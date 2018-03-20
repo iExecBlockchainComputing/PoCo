@@ -41,7 +41,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	/**
 	 * Address of slave/related contracts
 	 */
-	address        private m_workerPoolHubAddress;
+	address        public  m_workerPoolHubAddress;
 	AuthorizedList public  appsAuthorizedListAddress;
 	AuthorizedList public  datasetsAuthorizedListAddress;
 	/* AuthorizedList public  requestersAuthorizedListAddress; */
