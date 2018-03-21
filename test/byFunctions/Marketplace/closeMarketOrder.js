@@ -310,7 +310,7 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order on an existing category", async function() {
+  it("closeMarketOrder_01 : a owner (scheduleProvider) of worker pool can close a market order he has emitted", async function() {
 
     txMined = await aMarketplaceInstance.emitMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
@@ -321,6 +321,186 @@ contract('IexecHub', function(accounts) {
       1 /*_volume*/ , {
         from: scheduleProvider
       });
+
+    //check lock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+
+    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
+    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
+    assert.strictEqual(category.toNumber(), 1, "check category");
+    assert.strictEqual(trust.toNumber(), 0, "check trust");
+    assert.strictEqual(value.toNumber(), 100, "check value");
+    assert.strictEqual(volume.toNumber(), 1, "check volume");
+    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
+    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
+    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
+
+    txMined = await aMarketplaceInstance.closeMarketOrder(
+      1//marketorderIdx
+      , {
+        from: scheduleProvider
+      });
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderClosed({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+
+    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
+    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.CLOSED, "check constants.MarketOrderDirectionEnum.CLOSED");
+    assert.strictEqual(category.toNumber(), 1, "check category");
+    assert.strictEqual(trust.toNumber(), 0, "check trust");
+    assert.strictEqual(value.toNumber(), 100, "check value");
+    assert.strictEqual(volume.toNumber(), 1, "check volume");
+    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
+    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
+    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
+    //check unlock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+  });
+
+
+
+
+  it("closeMarketOrder_02 : only the owner (scheduleProvider) can close a market order he has emitted", async function() {
+
+    txMined = await aMarketplaceInstance.emitMarketOrder(
+      constants.MarketOrderDirectionEnum.ASK,
+      1 /*_category*/ ,
+      0 /*_trust*/ ,
+      100 /*_value*/ ,
+      workerPoolAddress /*_workerpool of scheduler*/ ,
+      1 /*_volume*/ , {
+        from: scheduleProvider
+      });
+
+    //check lock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+
+    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
+    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
+    assert.strictEqual(category.toNumber(), 1, "check category");
+    assert.strictEqual(trust.toNumber(), 0, "check trust");
+    assert.strictEqual(value.toNumber(), 100, "check value");
+    assert.strictEqual(volume.toNumber(), 1, "check volume");
+    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
+    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
+    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aMarketplaceInstance.closeMarketOrder(
+          1//marketorderIdx
+          , {
+            from: iExecCloudUser,
+            gas: constants.AMOUNT_GAS_PROVIDED
+          });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+  it("closeMarketOrder_03 : closeMarketOrder twice must revert the second time", async function() {
+
+    txMined = await aMarketplaceInstance.emitMarketOrder(
+      constants.MarketOrderDirectionEnum.ASK,
+      1 /*_category*/ ,
+      0 /*_trust*/ ,
+      100 /*_value*/ ,
+      workerPoolAddress /*_workerpool of scheduler*/ ,
+      1 /*_volume*/ , {
+        from: scheduleProvider
+      });
+
+    //check lock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+
+    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
+    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
+    assert.strictEqual(category.toNumber(), 1, "check category");
+    assert.strictEqual(trust.toNumber(), 0, "check trust");
+    assert.strictEqual(value.toNumber(), 100, "check value");
+    assert.strictEqual(volume.toNumber(), 1, "check volume");
+    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
+    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
+    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
+
+    txMined = await aMarketplaceInstance.closeMarketOrder(
+      1//marketorderIdx
+      , {
+        from: scheduleProvider
+      });
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderClosed({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
+
+    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
+    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.CLOSED, "check constants.MarketOrderDirectionEnum.CLOSED");
+    assert.strictEqual(category.toNumber(), 1, "check category");
+    assert.strictEqual(trust.toNumber(), 0, "check trust");
+    assert.strictEqual(value.toNumber(), 100, "check value");
+    assert.strictEqual(volume.toNumber(), 1, "check volume");
+    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
+    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
+    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
+    //check unlock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aMarketplaceInstance.closeMarketOrder(
+          1//marketorderIdx
+          , {
+            from: scheduleProvider,
+            gas:constants.AMOUNT_GAS_PROVIDED
+          });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("closeMarketOrder_04 : a owner (scheduleProvider) of worker pool can't close non existing marketorderIdx", async function() {
+
+    txMined = await aMarketplaceInstance.emitMarketOrder(
+      constants.MarketOrderDirectionEnum.ASK,
+      1 /*_category*/ ,
+      0 /*_trust*/ ,
+      100 /*_value*/ ,
+      workerPoolAddress /*_workerpool of scheduler*/ ,
+      1 /*_volume*/ , {
+        from: scheduleProvider
+      });
+
+    //check lock ok :
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 
     events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
@@ -336,281 +516,23 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
 
 
-  });
-
-
-  it("emitMarketOrder_02 : a non owner of worker pool can't emit a ASK Market Order on an existing category", async function() {
-
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.ASK,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
-            from: iExecCloudUser,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-  it("emitMarketOrder_03 : if cataegory do not exist the ask order must not be emitted", async function() {
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.ASK,
-          0 /*_category 0 do not exist. must revert*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
+        return aMarketplaceInstance.closeMarketOrder(
+          2// wrong marketorderIdx
+          , {
             from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
+            gas:constants.AMOUNT_GAS_PROVIDED
           });
       },
       constants.AMOUNT_GAS_PROVIDED);
 
   });
 
-
-  it("emitMarketOrder_04 : BID not yet implemented", async function() {
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.BID,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-  });
-
-  it("emitMarketOrder_05 : can't emitMarketOrder with MarketOrderDirectionEnum to CLOSED", async function() {
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.CLOSED,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-  });
-
-  it("emitMarketOrder_06 : MarketOrderDirectionEnum must be set", async function() {
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.UNSET,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-  });
-
-
-  it("emitMarketOrder_07 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order of value 101 if he has only deposit 100", async function() {
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.ASK,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          101 /*_value*/ , // only deposit 100 so must revert.
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          1 /*_volume*/ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-  it("emitMarketOrder_08 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order if deposit >= value * volume", async function() {
-    // 100 RLC deposit <= volume (2) * value (50)
-
-    txMined = await aMarketplaceInstance.emitMarketOrder(
-      constants.MarketOrderDirectionEnum.ASK,
-      1 /*_category*/ ,
-      0 /*_trust*/ ,
-      50 /*_value*/ ,
-      workerPoolAddress /*_workerpool of scheduler*/ ,
-      2 /*_volume*/ , {
-        from: scheduleProvider
-      });
-
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
-
-    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
-    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
-    assert.strictEqual(category.toNumber(), 1, "check category");
-    assert.strictEqual(trust.toNumber(), 0, "check trust");
-    assert.strictEqual(value.toNumber(), 50, "check value");
-    assert.strictEqual(volume.toNumber(), 2, "check volume");
-    assert.strictEqual(remaining.toNumber(), 2, "check remaining");
-    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
-    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
-
-  });
-
-  it("emitMarketOrder_09 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order if deposit < value * volume", async function() {
-    // 100 RLC deposit < volume (2) * value (51)
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.ASK,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          51 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          2 /*_volume*/ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-  it("emitMarketOrder_10 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order with volume = 0", async function() {
-    await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
-          constants.MarketOrderDirectionEnum.ASK,
-          1 /*_category*/ ,
-          0 /*_trust*/ ,
-          100 /*_value*/ ,
-          workerPoolAddress /*_workerpool of scheduler*/ ,
-          0 /*_volume = 0 => revert */ , {
-            from: scheduleProvider,
-            gas: constants.AMOUNT_GAS_PROVIDED
-          });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-  it("emitMarketOrder_11 : a owner (scheduleProvider) of worker pool can emit several ASK Market Orders if enought deposit ", async function() {
-
-    txMined = await aRLCInstance.approve(aIexecHubInstance.address, 100, {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 200, "check stake of the scheduleProvider");
-		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    txMined = await aMarketplaceInstance.emitMarketOrder(
-      constants.MarketOrderDirectionEnum.ASK,
-      1 /*_category*/ ,
-      0 /*_trust*/ ,
-      50 /*_value*/ ,
-      workerPoolAddress /*_workerpool of scheduler*/ ,
-      2 /*_volume*/ , {
-        from: scheduleProvider
-      });
-
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
-
-    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
-    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
-    assert.strictEqual(category.toNumber(), 1, "check category");
-    assert.strictEqual(trust.toNumber(), 0, "check trust");
-    assert.strictEqual(value.toNumber(), 50, "check value");
-    assert.strictEqual(volume.toNumber(), 2, "check volume");
-    assert.strictEqual(remaining.toNumber(), 2, "check remaining");
-    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
-    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
-
-
-    txMined = await aMarketplaceInstance.emitMarketOrder(
-      constants.MarketOrderDirectionEnum.ASK,
-      2 /*_category*/ ,
-      0 /*_trust*/ ,
-      25 /*_value*/ ,
-      workerPoolAddress /*_workerpool of scheduler*/ ,
-      4 /*_volume*/ , {
-        from: scheduleProvider
-      });
-
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 2, "marketorderIdx");
-
-    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(2);
-    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
-    assert.strictEqual(category.toNumber(), 2, "check category");
-    assert.strictEqual(trust.toNumber(), 0, "check trust");
-    assert.strictEqual(value.toNumber(), 25, "check value");
-    assert.strictEqual(volume.toNumber(), 4, "check volume");
-    assert.strictEqual(remaining.toNumber(), 4, "check remaining");
-    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
-    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  200, "check stake locked of the scheduleProvider");
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-
-  });
-
-  it("emitMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order for free = value 0", async function() {
-
-    txMined = await aMarketplaceInstance.emitMarketOrder(
-      constants.MarketOrderDirectionEnum.ASK,
-      1 /*_category*/ ,
-      0 /*_trust*/ ,
-      0 /*_value*/ ,
-      workerPoolAddress /*_workerpool of scheduler*/ ,
-      1 /*_volume*/ , {
-        from: scheduleProvider
-      });
-
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
-
-    [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
-    assert.strictEqual(direction.toNumber(), constants.MarketOrderDirectionEnum.ASK, "check constants.MarketOrderDirectionEnum.ASK");
-    assert.strictEqual(category.toNumber(), 1, "check category");
-    assert.strictEqual(trust.toNumber(), 0, "check trust");
-    assert.strictEqual(value.toNumber(), 0, "check value");
-    assert.strictEqual(volume.toNumber(), 1, "check volume");
-    assert.strictEqual(remaining.toNumber(), 1, "check remaining");
-    assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
-    assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
-
-
-  });
 
   /*
-  TODO trust value tests ?
+  TODO : Test remaining value when a ask has been consumed by a iExecCloudUser
   */
+
 
 
 });
