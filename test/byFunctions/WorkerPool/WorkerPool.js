@@ -271,8 +271,8 @@ contract('IexecHub', function(accounts) {
     let m_schedulerRewardRatioPolicy = await aWorkerPoolInstance.m_schedulerRewardRatioPolicy.call();
     assert.strictEqual(m_schedulerRewardRatioPolicy.toNumber(),1, "check m_schedulerRewardRatioPolicy");
 
-    let m_workerPoolStatus = await aWorkerPoolInstance.m_workerPoolStatus.call();
-    assert.strictEqual(m_workerPoolStatus.toNumber(),constants.WorkerPoolStatusEnum.OPEN, "check m_workerPoolStatus");
+    let m_openingStatus = await aWorkerPoolInstance.m_openingStatus.call();
+    assert.strictEqual(m_openingStatus.toNumber(),constants.OpeningStatusEnum.OPEN, "check m_openingStatus");
 
     let m_workerPoolHubAddress = await aWorkerPoolInstance.m_workerPoolHubAddress.call();
     assert.strictEqual(m_workerPoolHubAddress,aWorkerPoolHubInstance.address, "check m_workerPoolHubAddress");

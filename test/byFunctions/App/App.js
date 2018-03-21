@@ -261,8 +261,8 @@ contract('IexecHub', function(accounts) {
     let m_appParams = await anAppInstance.m_appParams.call();
     assert.strictEqual(m_appParams, events[0].args.appParams, "check m_appParams");
 
-    let m_appStatus = await anAppInstance.m_appStatus.call();
-    assert.strictEqual(m_appStatus.toNumber(), constants.AppStatusEnum.OPEN, "check m_appStatus");
+    let m_openingStatus = await anAppInstance.m_openingStatus.call();
+    assert.strictEqual(m_openingStatus.toNumber(), constants.OpeningStatusEnum.OPEN, "check m_openingStatus");
 
     let datasetsAuthorizedListAddress = await anAppInstance.datasetsAuthorizedListAddress.call();
     let datasetsAuthorizedListInstance = await AuthorizedList.at(datasetsAuthorizedListAddress);

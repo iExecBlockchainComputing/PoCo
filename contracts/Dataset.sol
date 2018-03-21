@@ -1,13 +1,11 @@
 pragma solidity ^0.4.18;
 
-import './OwnableOZ.sol';
+import './Closable.sol';
 import './IexecHubAccessor.sol';
 import "./AuthorizedList.sol";
 
-contract Dataset is OwnableOZ, IexecHubAccessor
+contract Dataset is Closable, IexecHubAccessor
 {
-
-	enum DatasetStatusEnum { OPEN, CLOSE }
 
 	/**
 	 * Members
@@ -15,7 +13,6 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	string            public m_datasetName;
 	uint256           public m_datasetPrice;
 	string            public m_datasetParams;
-	DatasetStatusEnum public m_datasetStatus;
 
 	/**
 	 * Address of slave contracts
@@ -43,7 +40,6 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		m_datasetName   = _datasetName;
 		m_datasetPrice  = _datasetPrice;
 		m_datasetParams = _datasetParams;
-		m_datasetStatus = DatasetStatusEnum.OPEN;
 
 		appsAuthorizedListAddress        = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
@@ -65,24 +61,6 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
 	  return requestersAuthorizedListAddress.isActorAllowed(_requester);
-	}
-
-	/************************* open / close mechanisms *************************/
-	function isOpen() public view returns (bool)
-	{
-		return m_datasetStatus == DatasetStatusEnum.OPEN;
-	}
-	function open() public onlyIexecHub /*for staking management*/ returns (bool)
-	{
-		require(m_datasetStatus == DatasetStatusEnum.CLOSE);
-		m_datasetStatus = DatasetStatusEnum.OPEN;
-		return true;
-	}
-	function close() public onlyIexecHub /*for staking management*/ returns (bool)
-	{
-		require(m_datasetStatus == DatasetStatusEnum.OPEN);
-		m_datasetStatus = DatasetStatusEnum.CLOSE;
-		return true;
 	}
 
 }

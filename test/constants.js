@@ -29,17 +29,7 @@ define("MarketOrderDirectionEnum",{
 
 define("DAPP_PARAMS_EXAMPLE","{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}");
 
-define("WorkerPoolStatusEnum",{
-  OPEN  : 0,
-  CLOSE : 1
-});
-
-define("AppStatusEnum",{
-  OPEN  : 0,
-  CLOSE : 1
-});
-
-define("DatasetStatusEnum",{
+define("OpeningStatusEnum",{
   OPEN  : 0,
   CLOSE : 1
 });

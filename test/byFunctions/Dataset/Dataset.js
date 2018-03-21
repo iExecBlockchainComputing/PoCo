@@ -261,8 +261,8 @@ contract('IexecHub', function(accounts) {
     let m_datasetParams = await aDatasetInstance.m_datasetParams.call();
     assert.strictEqual(m_datasetParams, events[0].args.datasetParams, "check m_datasetParams");
 
-    let m_datasetStatus = await aDatasetInstance.m_datasetStatus.call();
-    assert.strictEqual(m_datasetStatus.toNumber(), constants.DatasetStatusEnum.OPEN, "check m_datasetStatus");
+    let m_openingStatus = await aDatasetInstance.m_openingStatus.call();
+    assert.strictEqual(m_openingStatus.toNumber(), constants.OpeningStatusEnum.OPEN, "check m_openingStatus");
 
     let workerPoolsAuthorizedListAddress = await aDatasetInstance.workerPoolsAuthorizedListAddress.call();
     let workerPoolsAuthorizedListInstance = await AuthorizedList.at(workerPoolsAuthorizedListAddress);

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import './OwnableOZ.sol';
+import './Closable.sol';
 import './IexecHubAccessor.sol';
 import './MarketplaceAccessor.sol';
 import './IexecHub.sol';
@@ -10,16 +10,14 @@ import "./WorkOrder.sol";
 import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
+contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
 {
 	using SafeMathOZ for uint256;
 
-	enum WorkerPoolStatusEnum { OPEN, CLOSE }
 
 	/**
 	 * Members
 	 */
-	WorkerPoolStatusEnum        public m_workerPoolStatus;
 	string                      public m_description;
 	uint256                     public m_stakeRatioPolicy;               // % of reward to stake
 	uint256                     public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
@@ -97,7 +95,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy; // only at creation. cannot be change to respect lock/unlock of worker stake
 		m_subscriptionMinimumStakePolicy = _subscriptionMinimumStakePolicy;
 		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;
-		m_workerPoolStatus               = WorkerPoolStatusEnum.OPEN;
 		m_workerPoolHubAddress           = msg.sender;
 
 		appsAuthorizedListAddress       = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
@@ -148,25 +145,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function isWorkerAllowed(address _worker) public view returns (bool)
 	{
 		return workersAuthorizedListAddress.isActorAllowed(_worker);
-	}
-
-	/************************* open / close mechanisms *************************/
-	function isOpen() public view returns (bool)
-	{
-		return m_workerPoolStatus == WorkerPoolStatusEnum.OPEN;
-	}
-
-	function open() public onlyOwner returns (bool)
-	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.CLOSE);
-		m_workerPoolStatus = WorkerPoolStatusEnum.OPEN;
-		return true;
-	}
-	function close() public onlyOwner returns (bool)
-	{
-		require(m_workerPoolStatus == WorkerPoolStatusEnum.OPEN);
-		m_workerPoolStatus = WorkerPoolStatusEnum.CLOSE;
-		return true;
 	}
 
 	/************************* worker list management **************************/

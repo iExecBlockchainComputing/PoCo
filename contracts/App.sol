@@ -1,13 +1,11 @@
 pragma solidity ^0.4.18;
 
-import './OwnableOZ.sol';
+import './Closable.sol';
 import './IexecHubAccessor.sol';
 import "./AuthorizedList.sol";
 
-contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
+contract App is Closable, IexecHubAccessor // Owned by a D(w)
 {
-
-	enum AppStatusEnum { OPEN, CLOSE }
 
 	/**
 	 * Members
@@ -15,7 +13,6 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 	string        public m_appName;
 	uint256       public m_appPrice;
 	string        public m_appParams;
-	AppStatusEnum public m_appStatus;
 
 	/**
 	 * Address of slave contracts
@@ -43,7 +40,6 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 		m_appName   = _appName;
 		m_appPrice  = _appPrice;
 		m_appParams = _appParams;
-		m_appStatus = AppStatusEnum.OPEN;
 
 		datasetsAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
 		requestersAuthorizedListAddress  = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
@@ -65,24 +61,6 @@ contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
 	function isRequesterAllowed(address _requester) public view returns (bool)
 	{
 		return requestersAuthorizedListAddress.isActorAllowed(_requester);
-	}
-
-	/************************* open / close mechanisms *************************/
-	function isOpen() public view returns (bool)
-	{
-		return m_appStatus == AppStatusEnum.OPEN;
-	}
-	function open() public onlyIexecHub /*for staking management*/ returns (bool)
-	{
-		require(m_appStatus == AppStatusEnum.CLOSE);
-		m_appStatus = AppStatusEnum.OPEN;
-		return true;
-	}
-	function close() public onlyIexecHub /*for staking management*/ returns (bool)
-	{
-		require(m_appStatus == AppStatusEnum.OPEN);
-		m_appStatus = AppStatusEnum.CLOSE;
-		return true;
 	}
 
 }
