@@ -52,6 +52,8 @@ contract Marketplace is IexecHubAccessor
 		uint256 _volume)
 	public returns (uint)
 	{
+		require(iexecHubInterface.existingCategory(_category));
+		require(_volume >0);
 		/* require(_assetDeadline >= _marketDeadline); */
 		m_orderCount = m_orderCount.add(1);
 		// marketorderIdx = m_orderCount;
@@ -68,7 +70,7 @@ contract Marketplace is IexecHubAccessor
 		/*
 		if (_direction == IexecLib.MarketOrderDirectionEnum.BID)
 		{
-			require(iexecHubInterface.lockDepositForOrder(msg.sender, _value.mul(_volume)));
+			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume)));
 			marketorder.requester  = msg.sender;
 			marketorder.workerpool = _workerpool;
 		}
@@ -77,7 +79,7 @@ contract Marketplace is IexecHubAccessor
 		if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(WorkerPool(_workerpool).m_owner() == msg.sender);
-			require(iexecHubInterface.lockDepositForOrder(msg.sender, _value.mul(_volume)));
+			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume)));
 			/* marketorder.requester  = address(0); */
 			marketorder.workerpool      = _workerpool;
 			marketorder.workerpoolOwner = msg.sender;
@@ -144,7 +146,7 @@ contract Marketplace is IexecHubAccessor
 		{
 			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
 		}
-		require(iexecHubInterface.lockDepositForOrder(msg.sender, marketorder.value.mul(_quantity)));
+		require(iexecHubInterface.lockForOrder(msg.sender, marketorder.value.mul(_quantity)));
 		// marketorderIdx => user => workerpool => quantity
 		m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool] = m_assetBook[_marketorderIdx][msg.sender][marketorder.workerpool].add(_quantity);
 		MarketOrderAskAnswered(_marketorderIdx, msg.sender, marketorder.workerpool, _quantity);
@@ -172,7 +174,7 @@ contract Marketplace is IexecHubAccessor
 		{
 			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
 		}
-		require(iexecHubInterface.lockDepositForOrder(_requester, marketorder.value));
+		require(iexecHubInterface.lockForOrder(_requester, marketorder.value));
 		MarketOrderAskConsume(_marketorderIdx, _requester);
 		return true;
 	}

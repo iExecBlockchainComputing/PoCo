@@ -88,6 +88,14 @@ contract IexecHubInterface
 		uint256 _catId)
 	public view returns (uint256 workClockTimeRef);
 
+	function existingCategory(
+		uint256 _catId)
+	public view  returns (bool categoryExist);
+
+	function getCategory(
+		uint256 _catId)
+	public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef);
+
 	function getWorkerStatus(
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
@@ -103,11 +111,6 @@ contract IexecHubInterface
 	public returns (bool unsubscribed);
 
 	function lockForOrder(
-		address _user,
-		uint256 _amount)
-	public /* onlyMarketplace */ returns (bool);
-
-	function lockDepositForOrder(
 		address _user,
 		uint256 _amount)
 	public /* onlyMarketplace */ returns (bool);
@@ -128,12 +131,6 @@ contract IexecHubInterface
 	public /* onlyMarketplace */ returns (bool);
 
 	function lockForWork(
-		address _woid,
-		address _user,
-		uint256 _amount)
-	public returns (bool);
-
-	function lockDepositForWork(
 		address _woid,
 		address _user,
 		uint256 _amount)
@@ -191,9 +188,5 @@ contract IexecHubInterface
 		uint256 _amount)
 	internal returns (bool);
 
-	function lockDeposit(
-		address _user,
-		uint256 _amount)
-	internal returns (bool);
 
 }

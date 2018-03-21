@@ -309,7 +309,7 @@ contract IexecHub
 		require(workerpool.isDatasetAllowed         (_dataset   ));
 		/* require(workerpool.isRequesterAllowed       (msg.sender )); */
 
-		require(lockDeposit(_requester, emitcost)); // Lock funds for app + dataset payment
+		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
 
 		return emitcost;
 	}
@@ -420,13 +420,17 @@ contract IexecHub
 	 */
 	function getCategoryWorkClockTimeRef(uint256 _catId) public view returns (uint256 workClockTimeRef)
 	{
-		require(m_categories[_catId].catid > 0);
+		require(existingCategory(_catId));
 		return m_categories[_catId].workClockTimeRef;
+	}
+
+	function existingCategory(uint256 _catId) public view  returns (bool categoryExist){
+		return m_categories[_catId].catid > 0;
 	}
 
 	function getCategory(uint256 _catId) public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef)
 	{
-		require(m_categories[_catId].catid > 0);
+		require(existingCategory(_catId));
 		return (
 		m_categories[_catId].catid,
 		m_categories[_catId].name,
@@ -450,7 +454,7 @@ contract IexecHub
 		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		// Lock worker deposit
-		require(lockDeposit(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
+		require(lock(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
 		// Check subscription policy
 		require(m_accounts[tx.origin].stake >= workerpool.m_subscriptionMinimumStakePolicy());
 		require(m_scores[tx.origin]         >= workerpool.m_subscriptionMinimumScorePolicy());
@@ -501,11 +505,6 @@ contract IexecHub
 		require(lock(_user, _amount));
 		return true;
 	}
-	function lockDepositForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
-	{
-		require(lockDeposit(_user, _amount));
-		return true;
-	}
 	function unlockForOrder(address _user, uint256 _amount) public  onlyMarketplace returns (bool)
 	{
 		require(unlock(_user, _amount));
@@ -526,12 +525,6 @@ contract IexecHub
 	{
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
-		return true;
-	}
-	function lockDepositForWork(address _woid, address _user, uint256 _amount) public returns (bool)
-	{
-		require(WorkOrder(_woid).m_workerpool() == msg.sender);
-		require(lockDeposit(_user, _amount));
 		return true;
 	}
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
@@ -614,17 +607,4 @@ contract IexecHub
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
 		return true;
 	}
-	function lockDeposit(address _user, uint256 _amount) internal returns (bool)
-	{
-		if (m_accounts[_user].stake < _amount)
-		{
-			uint256 delta = _amount.sub(m_accounts[_user].stake);
-			require(rlc.transferFrom(_user, address(this), delta));
-			m_accounts[_user].stake = m_accounts[_user].stake.add(delta);
-			Deposit(_user, delta);
-		}
-		require(lock(_user, _amount));
-		return true;
-	}
-
 }

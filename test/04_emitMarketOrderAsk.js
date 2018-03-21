@@ -260,6 +260,15 @@ contract('IexecHub', function(accounts) {
 
 	it("Create ask Marker Order by scheduler", async function() {
 
+		txMined = await aIexecHubInstance.deposit(100, {
+			from: scheduleProvider,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the scheduleProvider");
+		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 		txMined = await aMarketplaceInstance.emitMarketOrder(
 			constants.MarketOrderDirectionEnum.ASK,
 			1 /*_category*/,
@@ -274,7 +283,7 @@ contract('IexecHub', function(accounts) {
 		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}),1,constants.EVENT_WAIT_TIMEOUT);
 		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
-		[direction,category,trust,value,volume,remaining,workerpool] = await aMarketplaceInstance.getMarketOrder.call(1);
+		[direction,category,trust,value,volume,remaining,workerpool,workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
 		assert.strictEqual(direction.toNumber(),      constants.MarketOrderDirectionEnum.ASK,        "check constants.MarketOrderDirectionEnum.ASK");
 		assert.strictEqual(category.toNumber(),       1,                                            "check category");
 		assert.strictEqual(trust.toNumber(),          0,                                            "check trust");
@@ -282,6 +291,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(volume.toNumber(),         1,                                            "check volume");
 		assert.strictEqual(remaining.toNumber(),      1,                                            "check remaining");
 		assert.strictEqual(workerpool,                workerPoolAddress,                            "check workerpool");
+		assert.strictEqual(workerpoolOwner,           scheduleProvider,                             "check workerpoolOwner");
 
 	});
 

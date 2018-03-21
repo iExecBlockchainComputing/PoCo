@@ -176,9 +176,6 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(aIexecHubInstance.contract.unlock, undefined, "expected unlock internal");
   });
 
-	it("lockDeposit : nobody can call lockDeposit : lockDeposit internal function", async function() {
-    assert.strictEqual(aIexecHubInstance.contract.lockDeposit, undefined, "expected lockDeposit internal");
-  });
 
 	it("emitWorkOrder : nobody can call emitWorkOrder : emitWorkOrder internal function", async function() {
     assert.strictEqual(aIexecHubInstance.contract.emitWorkOrder, undefined, "expected emitWorkOrder internal");
