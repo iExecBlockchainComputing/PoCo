@@ -13,8 +13,8 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions      = require("../utils/extensions.js");
-const addEvmFunctions = require("../utils/evmFunctions.js");
+const Extensions = require("../../../utils/extensions.js");
+const addEvmFunctions = require("../../../utils/evmFunctions.js");
 const readFileAsync = Promise.promisify(fs.readFile);
 
 addEvmFunctions(web3);
@@ -22,7 +22,7 @@ Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
 Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
-var constants = require("./constants");
+var constants = require("../../constants");
 
 contract('IexecHub', function(accounts) {
 
@@ -247,7 +247,7 @@ contract('IexecHub', function(accounts) {
 		});
 		// CREATE AN APP
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 0, constants.DAPP_PARAMS_EXAMPLE, {
+		txMined = await aIexecHubInstance.createApp("R Clifford Attractors", 5, constants.DAPP_PARAMS_EXAMPLE, {
 			from: appProvider
 		});
 		appAddress = await aAppHubInstance.getApp(appProvider, 1);
@@ -260,29 +260,82 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		//Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 50/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 
 	});
 
 
-	it(" answerAndemitWorkOrder", async function() {
+	it("WorkOrder_01 : test initial state after constructor execution of WorkOrder contract. ASK case (status never pending)", async function() {
 		let woid;
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
+
+
+    let datasetAddressFromLog;
+    txMined = await aIexecHubInstance.createDataset(
+      "dataset Name",
+      5,
+      "dataset Params", {
+        from: datasetProvider,
+      });
+
+    let events = await Extensions.getEventsPromise(aIexecHubInstance.CreateDataset({}));
+    datasetAddressFromLog = events[0].args.dataset;
+
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, datasetAddressFromLog, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-		aWorkOrderInstance = await WorkOrder.at(woid);
-    let status = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
+
+   aWorkOrderInstance = await WorkOrder.at(woid);
+
+   let m_status = await aWorkOrderInstance.m_status.call();
+   assert.strictEqual(m_status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
+
+   let m_marketorderIdx = await aWorkOrderInstance.m_marketorderIdx.call();
+   assert.strictEqual(m_marketorderIdx.toNumber(), 1, "check m_marketorderIdx");
+
+   let m_app = await aWorkOrderInstance.m_app.call();
+   assert.strictEqual(m_app, aAppInstance.address, "check m_app");
+
+   let m_dataset = await aWorkOrderInstance.m_dataset.call();
+   assert.strictEqual(m_dataset, datasetAddressFromLog, "check m_dataset");
+
+   let m_workerpool = await aWorkOrderInstance.m_workerpool.call();
+   assert.strictEqual(m_workerpool, aWorkerPoolInstance.address, "check m_workerpool");
+
+   let m_requester = await aWorkOrderInstance.m_requester.call();
+   assert.strictEqual(m_requester, iExecCloudUser, "check m_requester");
+
+
+   let m_emitcost = await aWorkOrderInstance.m_emitcost.call();
+   assert.strictEqual(m_emitcost.toNumber(), 10, "check m_emitcost = dappPrice 5 + datasetPrice 5 =10");
+
+
+   checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+   assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the iExecCloudUser");
+   assert.strictEqual(checkBalance[1].toNumber(),  60, "check stake locked of the iExecCloudUser");
+
+   let m_params = await aWorkOrderInstance.m_params.call();
+   assert.strictEqual(m_params, "noParam", "check m_params");
+
+   let m_callback = await aWorkOrderInstance.m_callback.call();
+   assert.strictEqual(m_callback, '0x0000000000000000000000000000000000000000', "check m_callback");
+
+    let m_beneficiary = await aWorkOrderInstance.m_beneficiary.call();
+    assert.strictEqual(m_beneficiary, iExecCloudUser, "check m_beneficiary");
+
+    let m_iexecHubAddress = await aWorkOrderInstance.m_iexecHubAddress.call();
+    assert.strictEqual(m_iexecHubAddress, aIexecHubInstance.address, "check m_iexecHubAddress");
+
 	});
+
 
 });

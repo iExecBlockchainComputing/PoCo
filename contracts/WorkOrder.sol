@@ -29,11 +29,11 @@ contract WorkOrder
 	string  public m_stderr;
 	string  public m_uri;
 
-	address public iexecHubAddress;
+	address public m_iexecHubAddress;
 
 	modifier onlyIexecHub()
 	{
-		require(msg.sender == iexecHubAddress);
+		require(msg.sender == m_iexecHubAddress);
 		_;
 	}
 
@@ -54,9 +54,8 @@ contract WorkOrder
 		address _beneficiary)
 	public
 	{
-		iexecHubAddress = msg.sender;
+		m_iexecHubAddress = msg.sender;
 		require(_requester != address(0));
-//		transferOwnership(_requester); // owner → tx.origin
 		m_status         = IexecLib.WorkOrderStatusEnum.PENDING;
 		m_marketorderIdx = _marketorderIdx;
 		m_app            = _app;
