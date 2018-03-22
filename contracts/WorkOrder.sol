@@ -1,12 +1,10 @@
 pragma solidity ^0.4.18;
 
-import "./OwnableOZ.sol";
-import './IexecHubAccessor.sol';
 import './IexecAPI.sol';
 import './IexecLib.sol';
-
-contract WorkOrder is OwnableOZ, IexecHubAccessor
+contract WorkOrder
 {
+
 
 	/**
 	 * Members
@@ -31,11 +29,18 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 	string  public m_stderr;
 	string  public m_uri;
 
+	address public iexecHubAddress;
+
+	modifier onlyIexecHub()
+	{
+		require(msg.sender == iexecHubAddress);
+		_;
+	}
+
 	/**
 	 * Constructor
 	 */
 	function WorkOrder(
-		address _iexecHubAddress,
 		uint256 _marketorderIdx,
 		address _requester,
 		address _app,
@@ -47,12 +52,11 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 		string  _params,
 		address _callback,
 		address _beneficiary)
-	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
-		// owner = msg.sender = workOrderHub
+		iexecHubAddress = msg.sender;
 		require(_requester != address(0));
-		transferOwnership(_requester); // owner → tx.origin
+//		transferOwnership(_requester); // owner → tx.origin
 		m_status         = IexecLib.WorkOrderStatusEnum.PENDING;
 		m_marketorderIdx = _marketorderIdx;
 		m_app            = _app;
@@ -88,7 +92,7 @@ contract WorkOrder is OwnableOZ, IexecHubAccessor
 
 	function claim() public onlyIexecHub
 	{
-		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE);
+		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE); // or REVEALING ?
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
 	}
 

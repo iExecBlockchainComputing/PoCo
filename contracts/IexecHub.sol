@@ -254,7 +254,6 @@ contract IexecHub
 		uint256 emitcost = lockWorkOrderCost(_requester, _workerpool, _app, _dataset);
 
 		WorkOrder workorder = new WorkOrder(
-			this,
 			_marketorderIdx,
 			_requester,
 			_app,
@@ -335,14 +334,14 @@ contract IexecHub
 		return true;
 	}
 
-	// TODO: who ? everybody ?
+	// TODO: msg.sender = requester or _beneficiary
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
 		WorkOrder  workorder  = WorkOrder(_woid);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);//to remove 
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
