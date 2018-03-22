@@ -172,7 +172,7 @@ contract Marketplace is IexecHubAccessor
 		marketorder.remaining = marketorder.remaining.sub(1);
 		if (marketorder.remaining == 0)
 		{
-			marketorder.direction == IexecLib.MarketOrderDirectionEnum.CLOSED;
+			marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
 		}
 		require(iexecHubInterface.lockForOrder(_requester, marketorder.value));
 		MarketOrderAskConsume(_marketorderIdx, _requester);
