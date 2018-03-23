@@ -28,8 +28,3 @@ define("MarketOrderDirectionEnum",{
 });
 
 define("DAPP_PARAMS_EXAMPLE","{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}");
-
-define("OpeningStatusEnum",{
-  OPEN  : 0,
-  CLOSE : 1
-});

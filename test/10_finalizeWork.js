@@ -224,7 +224,6 @@ contract('IexecHub', function(accounts) {
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
 		// WORKER ADD deposit to respect workerpool policy
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
 			from: resourceProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
