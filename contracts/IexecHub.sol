@@ -281,9 +281,6 @@ contract IexecHub
 		App app = App(_app);
 		require(appHub.isAppRegistered (_app       ));
 		require(app.isOpen             (           ));
-		require(app.isDatasetAllowed   (_dataset   ));
-		require(app.isRequesterAllowed (_requester ));
-		require(app.isWorkerPoolAllowed(_workerpool));
 		// initialize usercost with dapp price
 		uint256 emitcost = app.m_appPrice();
 
@@ -293,9 +290,6 @@ contract IexecHub
 			Dataset dataset = Dataset(_dataset);
 			require(datasetHub.isDatasetRegistred(_dataset   ));
 			require(dataset.isOpen               (           ));
-			require(dataset.isAppAllowed         (_app       ));
-			require(dataset.isRequesterAllowed   (_requester ));
-			require(dataset.isWorkerPoolAllowed  (_workerpool));
 			// add optional datasetPrice for userCost
 			emitcost = emitcost.add(dataset.m_datasetPrice());
 		}
@@ -304,9 +298,6 @@ contract IexecHub
 		WorkerPool workerpool = WorkerPool(_workerpool);
 		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
 		require(workerpool.isOpen                   (           ));
-		require(workerpool.isAppAllowed             (_app       ));
-		require(workerpool.isDatasetAllowed         (_dataset   ));
-		/* require(workerpool.isRequesterAllowed       (msg.sender )); */
 
 		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
 
@@ -341,7 +332,7 @@ contract IexecHub
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);//to remove 
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);//to remove
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error

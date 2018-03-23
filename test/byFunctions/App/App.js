@@ -4,7 +4,6 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
-var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var App = artifacts.require("./App.sol");
 
@@ -264,26 +263,6 @@ contract('IexecHub', function(accounts) {
     let m_openingStatus = await anAppInstance.m_openingStatus.call();
     assert.strictEqual(m_openingStatus.toNumber(), constants.OpeningStatusEnum.OPEN, "check m_openingStatus");
 
-    let datasetsAuthorizedListAddress = await anAppInstance.datasetsAuthorizedListAddress.call();
-    let datasetsAuthorizedListInstance = await AuthorizedList.at(datasetsAuthorizedListAddress);
-    m_policy = await datasetsAuthorizedListInstance.m_policy.call();
-    assert.strictEqual(m_policy.toNumber(), constants.ListPolicyEnum.BLACKLIST, "check m_policy datasetsAuthorizedListInstance");
-    m_owner = await datasetsAuthorizedListInstance.m_owner.call();
-    assert.strictEqual(m_owner, appProvider, "check m_owner datasetsAuthorizedListInstance");
-
-    let workerPoolsAuthorizedListAddress = await anAppInstance.workerPoolsAuthorizedListAddress.call();
-    let workerPoolsAuthorizedListInstance = await AuthorizedList.at(workerPoolsAuthorizedListAddress);
-    m_policy = await workerPoolsAuthorizedListInstance.m_policy.call();
-    assert.strictEqual(m_policy.toNumber(), constants.ListPolicyEnum.BLACKLIST, "check m_policy workerPoolsAuthorizedListInstance");
-    m_owner = await workerPoolsAuthorizedListInstance.m_owner.call();
-    assert.strictEqual(m_owner, appProvider, "check m_owner workerPoolsAuthorizedListInstance");
-
-    let requestersAuthorizedListAddress = await anAppInstance.requestersAuthorizedListAddress.call();
-    let requestersAuthorizedListInstance = await AuthorizedList.at(requestersAuthorizedListAddress);
-    m_policy = await requestersAuthorizedListInstance.m_policy.call();
-    assert.strictEqual(m_policy.toNumber(), constants.ListPolicyEnum.BLACKLIST, "check m_policy requestersAuthorizedListInstance");
-    m_owner = await requestersAuthorizedListInstance.m_owner.call();
-    assert.strictEqual(m_owner, appProvider, "check m_owner requestersAuthorizedListInstance");
 
   });
 

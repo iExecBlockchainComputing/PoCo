@@ -4,7 +4,6 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
-var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App = artifacts.require("./App.sol");
 var WorkOrder = artifacts.require("./WorkOrder.sol");
 var IexecLib = artifacts.require("./IexecLib.sol");
@@ -51,12 +50,9 @@ contract('IexecHub', function(accounts) {
   //specific for test :
   let workerPoolAddress;
   let aWorkerPoolInstance;
-  let aWorkersAuthorizedListInstance
 
   let appAddress;
   let aAppInstance;
-  let aWorkerPoolsAuthorizedListInstance;
-  let aRequestersAuthorizedListInstance;
   let aWorkOrderInstance;
 
   beforeEach("should prepare accounts and check TestRPC Mode", async() => {
@@ -275,13 +271,6 @@ contract('IexecHub', function(accounts) {
     workerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 1);
     aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
-    // WHITELIST A WORKER IN A WORKER POOL
-    workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
-    aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
-    txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
     // WORKER ADD deposit to respect workerpool policy
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {

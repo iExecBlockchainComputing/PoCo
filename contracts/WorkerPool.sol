@@ -5,7 +5,6 @@ import './IexecHubAccessor.sol';
 import './MarketplaceAccessor.sol';
 import './IexecHub.sol';
 import "./SafeMathOZ.sol";
-import "./AuthorizedList.sol";
 import "./WorkOrder.sol";
 import "./Marketplace.sol";
 import './IexecLib.sol';
@@ -40,10 +39,7 @@ contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned 
 	 * Address of slave/related contracts
 	 */
 	address        public  m_workerPoolHubAddress;
-	AuthorizedList public  appsAuthorizedListAddress;
-	AuthorizedList public  datasetsAuthorizedListAddress;
-	/* AuthorizedList public  requestersAuthorizedListAddress; */
-	AuthorizedList public  workersAuthorizedListAddress;
+
 
 	/**
 	 * Events
@@ -97,14 +93,6 @@ contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned 
 		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;
 		m_workerPoolHubAddress           = msg.sender;
 
-		appsAuthorizedListAddress       = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		datasetsAuthorizedListAddress   = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST);
-		/* requestersAuthorizedListAddress = new AuthorizedList(AuthorizedList.ListPolicyEnum.BLACKLIST); */
-		workersAuthorizedListAddress    = new AuthorizedList(AuthorizedList.ListPolicyEnum.WHITELIST);
-		appsAuthorizedListAddress .transferOwnership(tx.origin); // owner → tx.origin
-		datasetsAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
-		/* requestersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin */
-		workersAuthorizedListAddress.transferOwnership(tx.origin); // owner → tx.origin
 	}
 
 	function changeWorkerPoolPolicy(
@@ -125,26 +113,6 @@ contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned 
 		m_schedulerRewardRatioPolicy     = _newSchedulerRewardRatioPolicy;
 		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy;
 		m_subscriptionMinimumScorePolicy = _newSubscriptionMinimumScorePolicy;
-	}
-
-	/************************ AuthorizedList accessors *************************/
-	function isAppAllowed(address _app) public view returns (bool)
-	{
-		return appsAuthorizedListAddress.isActorAllowed(_app);
-	}
-	function isDatasetAllowed(address _dataset) public view returns (bool)
-	{
-		return datasetsAuthorizedListAddress.isActorAllowed(_dataset);
-	}
-	/*
-	function isRequesterAllowed(address _requester) public view returns (bool)
-	{
-		return requestersAuthorizedListAddress.isActorAllowed(_requester);
-	}
-	*/
-	function isWorkerAllowed(address _worker) public view returns (bool)
-	{
-		return workersAuthorizedListAddress.isActorAllowed(_worker);
 	}
 
 	/************************* worker list management **************************/
@@ -224,8 +192,6 @@ contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned 
 	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
 	{
 		require(isOpen          ()                            );
-		require(isAppAllowed    (WorkOrder(_woid).m_app()    ));
-		require(isDatasetAllowed(WorkOrder(_woid).m_dataset()));
 
 		uint256 catid   = marketplaceInterface.getMarketOrderCategory(_marketorderIdx);
 		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);

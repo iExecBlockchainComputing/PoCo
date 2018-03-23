@@ -33,8 +33,3 @@ define("OpeningStatusEnum",{
   OPEN  : 0,
   CLOSE : 1
 });
-
-define("ListPolicyEnum",{
-  WHITELIST  : 0,
-  BLACKLIST : 1
-});
