@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import './Closable.sol';
+import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
 import './MarketplaceAccessor.sol';
 import './IexecHub.sol';
@@ -9,7 +9,7 @@ import "./WorkOrder.sol";
 import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
 {
 	using SafeMathOZ for uint256;
 
@@ -191,8 +191,6 @@ contract WorkerPool is Closable, IexecHubAccessor, MarketplaceAccessor // Owned 
 	/**************************** Works management *****************************/
 	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
 	{
-		require(isOpen          ()                            );
-
 		uint256 catid   = marketplaceInterface.getMarketOrderCategory(_marketorderIdx);
 		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);
 		/* uint256 timeout = CONSENSUS_DURATION_LIMIT.add(now); */

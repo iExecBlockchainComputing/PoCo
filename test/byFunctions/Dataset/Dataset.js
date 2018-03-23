@@ -260,10 +260,6 @@ contract('IexecHub', function(accounts) {
     let m_datasetParams = await aDatasetInstance.m_datasetParams.call();
     assert.strictEqual(m_datasetParams, events[0].args.datasetParams, "check m_datasetParams");
 
-    let m_openingStatus = await aDatasetInstance.m_openingStatus.call();
-    assert.strictEqual(m_openingStatus.toNumber(), constants.OpeningStatusEnum.OPEN, "check m_openingStatus");
-
-
   });
 
 

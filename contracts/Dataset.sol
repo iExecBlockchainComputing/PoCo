@@ -1,9 +1,9 @@
 pragma solidity ^0.4.18;
 
-import './Closable.sol';
+import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
 
-contract Dataset is Closable, IexecHubAccessor
+contract Dataset is OwnableOZ, IexecHubAccessor
 {
 
 	/**

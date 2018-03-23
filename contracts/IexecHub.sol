@@ -280,7 +280,6 @@ contract IexecHub
 		// APP
 		App app = App(_app);
 		require(appHub.isAppRegistered (_app       ));
-		require(app.isOpen             (           ));
 		// initialize usercost with dapp price
 		uint256 emitcost = app.m_appPrice();
 
@@ -289,7 +288,6 @@ contract IexecHub
 		{
 			Dataset dataset = Dataset(_dataset);
 			require(datasetHub.isDatasetRegistred(_dataset   ));
-			require(dataset.isOpen               (           ));
 			// add optional datasetPrice for userCost
 			emitcost = emitcost.add(dataset.m_datasetPrice());
 		}
@@ -297,7 +295,6 @@ contract IexecHub
 		// WORKERPOOL
 		WorkerPool workerpool = WorkerPool(_workerpool);
 		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
-		require(workerpool.isOpen                   (           ));
 
 		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
 
