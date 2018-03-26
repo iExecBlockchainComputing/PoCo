@@ -26,8 +26,8 @@ var constants = require("../../constants");
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let subscriptionLockStakePolicy    = 0;
-	let subscriptionMinimumStakePolicy = 10;
+  let subscriptionLockStakePolicy    = 2;
+	let subscriptionMinimumStakePolicy = 3;
 	let subscriptionMinimumScorePolicy = 0;
 	let isTestRPC;
 	let txMined;
@@ -252,57 +252,90 @@ contract('IexecHub', function(accounts) {
 	});
 
 
-	it("emitWorkOrder_01: check WorkOrderActive event genereated and check getConsensusDetails well valorized", async function() {
+	it("changeWorkerPoolPolicy_01: owner of WorkerPool  can call  changeWorkerPoolPolicy. check event WorkerPoolPolicyUpdate", async function() {
 
-    //Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
-			from: scheduleProvider
-		});
-
-  	let woid;
-		txMined = await aIexecHubInstance.deposit(100, {
-			from: iExecCloudUser,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-			from: iExecCloudUser
-		});
-
-    timestamp = await Extensions.getCurrentBlockTime();
-
-		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
-		woid = events[0].args.woid;
-		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}),1,constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid,{
+    let m_stakeRatioPolicy = await aWorkerPoolInstance.m_stakeRatioPolicy.call({
       from: iExecCloudUser,
       gas:constants.AMOUNT_GAS_PROVIDED
     });
 
-    assert.strictEqual(poolReward.toNumber(), 100, "check poolReward");
-    assert.strictEqual(stakeAmount.toNumber(), 30, "check stakeAmount");//consensus.poolReward.percentage(m_stakeRatioPolicy)
-    assert.strictEqual(consensus, '0x0000000000000000000000000000000000000000000000000000000000000000', "check no consensus");
-    assert.strictEqual(revealDate.toNumber(), 0, "check no revealDate");
-    assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter");
-
-    let getCategoryWorkClockTimeRefCall = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1,{
+    let m_schedulerRewardRatioPolicy = await aWorkerPoolInstance.m_schedulerRewardRatioPolicy.call({
       from: iExecCloudUser,
       gas:constants.AMOUNT_GAS_PROVIDED
     });
-    assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 120, "check getCategoryWorkClockTimeRef for cat 1 =120 sec");
 
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), timestamp+600, "consensusTimout =  blocktime + 120 *5");
-    //console.log(timestamp+600);
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), consensusTimout.toNumber(), "consensusTimout =  blocktime + 120 *5");
+    let m_subscriptionMinimumStakePolicy = await aWorkerPoolInstance.m_subscriptionMinimumStakePolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
 
-    assert.strictEqual(winnerCount.toNumber(), 0, "check no winnerCount");
+    let m_subscriptionMinimumScorePolicy = await aWorkerPoolInstance.m_subscriptionMinimumScorePolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
 
+    assert.strictEqual(m_stakeRatioPolicy.toNumber(), 30, "check default m_stakeRatioPolicy");
+    assert.strictEqual(m_schedulerRewardRatioPolicy.toNumber(), 1, "check default m_schedulerRewardRatioPolicy");
+    assert.strictEqual(m_subscriptionMinimumStakePolicy.toNumber(), 3, "check default m_subscriptionMinimumStakePolicy");
+    assert.strictEqual(m_subscriptionMinimumScorePolicy.toNumber(), 0, "check default m_subscriptionMinimumScorePolicy");
+
+
+    txMined =  await aWorkerPoolInstance.changeWorkerPoolPolicy(50/*_newStakeRatioPolicy*/,2/*_newSchedulerRewardRatioPolicy*/,4/*_newSubscriptionMinimumStakePolicy*/,5/*_newSubscriptionMinimumScorePolicy*/,{
+      from: scheduleProvider,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    newStakeRatioPolicy = await aWorkerPoolInstance.m_stakeRatioPolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+
+    newSchedulerRewardRatioPolicy = await aWorkerPoolInstance.m_schedulerRewardRatioPolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+
+    newSubscriptionMinimumStakePolicy = await aWorkerPoolInstance.m_subscriptionMinimumStakePolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+
+    newSubscriptionMinimumScorePolicy = await aWorkerPoolInstance.m_subscriptionMinimumScorePolicy.call({
+      from: iExecCloudUser,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+
+    assert.strictEqual(newStakeRatioPolicy.toNumber(), 50, "check default newStakeRatioPolicy");
+    assert.strictEqual(newSchedulerRewardRatioPolicy.toNumber(), 2, "check default newSchedulerRewardRatioPolicy");
+    assert.strictEqual(newSubscriptionMinimumStakePolicy.toNumber(), 4, "check default newSubscriptionMinimumStakePolicy");
+    assert.strictEqual(newSubscriptionMinimumScorePolicy.toNumber(), 5, "check default newSubscriptionMinimumScorePolicy");
+
+   events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerPoolPolicyUpdate({}),1,constants.EVENT_WAIT_TIMEOUT);
+   assert.strictEqual(events[0].args.oldStakeRatioPolicy.toNumber(), 30, "oldStakeRatioPolicy");
+   assert.strictEqual(events[0].args.newStakeRatioPolicy.toNumber(), newStakeRatioPolicy.toNumber(), "newStakeRatioPolicy");
+   assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(), 1, "oldSchedulerRewardRatioPolicy");
+   assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(), newSchedulerRewardRatioPolicy.toNumber(), "newSchedulerRewardRatioPolicy");
+   assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 3, "oldSubscriptionMinimumStakePolicy");
+   assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), newSubscriptionMinimumStakePolicy.toNumber(), "newSubscriptionMinimumStakePolicy");
+   assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 0, "oldSubscriptionMinimumScorePolicy");
+   assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), newSubscriptionMinimumScorePolicy.toNumber(), "newSubscriptionMinimumScorePolicy");
 
 	});
+
+  it("changeWorkerPoolPolicy_02: not owner of WorkerPool can't call  changeWorkerPoolPolicy.", async function() {
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.changeWorkerPoolPolicy(50/*_newStakeRatioPolicy*/,2/*_newSchedulerRewardRatioPolicy*/,4/*_newSubscriptionMinimumStakePolicy*/,5/*_newSubscriptionMinimumScorePolicy*/,{
+          from: iExecCloudUser,
+          gas:constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
 
 
 });
