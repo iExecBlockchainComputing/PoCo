@@ -100,10 +100,10 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
-	function registerToPool()
+	function registerToPool(address _worker)
 	public returns (bool subscribed);
 
-	function unregisterFromPool()
+	function unregisterFromPool(address _worker)
 	public returns (bool unsubscribed);
 
 	function evictWorker(

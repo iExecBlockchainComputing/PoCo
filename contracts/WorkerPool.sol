@@ -132,24 +132,24 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 	function subscribeToPool() public returns (bool)
 	{
-		//tx.origin = worker
-		require(iexecHubInterface.registerToPool());
-		uint index = m_workers.push(tx.origin); //msg.sender and not tx.origin
-		m_workerIndex[tx.origin] = index;
+		//msg.sender = worker
+		require(iexecHubInterface.registerToPool(msg.sender));
+		uint index = m_workers.push(msg.sender);
+		m_workerIndex[msg.sender] = index;
 		return true;
 	}
 
 	function unsubscribeFromPool() public  returns (bool)
 	{
-		//tx.origin = worker
-		require(iexecHubInterface.unregisterFromPool());
-		require(removeWorker(tx.origin));//msg.sender and not tx.origin
+		//msg.sender = worker
+		require(iexecHubInterface.unregisterFromPool(msg.sender));
+		require(removeWorker(msg.sender));
 		return true;
 	}
 
 	function evictWorker(address _worker) public onlyOwner returns (bool)
 	{
-		//tx.origin = worker
+		//msg.sender = scheduler
 		require(iexecHubInterface.evictWorker(_worker));
 		require(removeWorker(_worker));
 		return true;

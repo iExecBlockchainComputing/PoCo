@@ -322,11 +322,15 @@ contract('IexecHub', function(accounts) {
 
 
   it("getMarketOrderTrust_02 : it should return null values on getMarketOrder on non existing MarketOrder", async function() {
-    trust = await aMarketplaceInstance.getMarketOrderTrust.call(1, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.strictEqual(trust.toNumber(), 0, "check trust");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aMarketplaceInstance.getMarketOrderTrust.call(1, {
+          from: iExecCloudUser,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
   });
 
 

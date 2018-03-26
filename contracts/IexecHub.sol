@@ -434,36 +434,36 @@ contract IexecHub
 	/**
 	 * Worker subscription
 	 */
-	function registerToPool() public returns (bool subscribed)
-	// msg.sender = workerPool && tx.origin = worker
+	function registerToPool(address _worker) public returns (bool subscribed)
+	// msg.sender = workerPool
 	{
 		WorkerPool workerpool = WorkerPool(msg.sender);
 		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		// Lock worker deposit
-		require(lock(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
+		require(lock(_worker, workerpool.m_subscriptionLockStakePolicy()));
 		// Check subscription policy
-		require(m_accounts[tx.origin].stake >= workerpool.m_subscriptionMinimumStakePolicy());
-		require(m_scores[tx.origin]         >= workerpool.m_subscriptionMinimumScorePolicy());
+		require(m_accounts[_worker].stake >= workerpool.m_subscriptionMinimumStakePolicy());
+		require(m_scores[_worker]         >= workerpool.m_subscriptionMinimumScorePolicy());
 		// Update affectation
-		require(workerPoolHub.registerWorkerAffectation(msg.sender, tx.origin));
+		require(workerPoolHub.registerWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolSubscription(msg.sender, tx.origin);
+		WorkerPoolSubscription(msg.sender, _worker);
 		return true;
 	}
 
-	function unregisterFromPool() public returns (bool unsubscribed)
+	function unregisterFromPool(address _worker) public returns (bool unsubscribed)
 	// msg.sender = workerPool && tx.origin = worker
 	{
 		WorkerPool workerpool = WorkerPool(msg.sender);
 		// Check credentials
 		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
 		// Unlock worker stake
-		require(unlock(tx.origin, workerpool.m_subscriptionLockStakePolicy()));
+		require(unlock(_worker, workerpool.m_subscriptionLockStakePolicy()));
 		// Update affectation
-		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, tx.origin));
+		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolUnsubscription(msg.sender, tx.origin);
+		WorkerPoolUnsubscription(msg.sender, _worker);
 		return true;
 	}
 

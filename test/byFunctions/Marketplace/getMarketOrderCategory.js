@@ -322,11 +322,15 @@ contract('IexecHub', function(accounts) {
 
 
   it("getMarketOrderCategory_02 : it should return null values on getMarketOrderCategory on non existing MarketOrder", async function() {
-    category = await aMarketplaceInstance.getMarketOrderCategory.call(1, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.strictEqual(category.toNumber(), 0, "check category");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aMarketplaceInstance.getMarketOrderCategory.call(1, {
+          from: iExecCloudUser,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
   });
 
 
