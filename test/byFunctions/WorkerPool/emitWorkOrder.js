@@ -304,5 +304,31 @@ contract('IexecHub', function(accounts) {
 
 	});
 
+  it("emitWorkOrder_02: check onlyIexecHub on emitWorkOrder", async function() {
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    woid = await aIexecHubInstance.answerEmitWorkOrder.call(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+    await Extensions.expectedExceptionPromise(() => {
+        return  aWorkerPoolInstance.emitWorkOrder(woid,1/*_marketorderIdx*/, {
+          from: scheduleProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
 
 });

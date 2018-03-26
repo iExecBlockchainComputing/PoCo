@@ -134,7 +134,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		//tx.origin = worker
 		require(iexecHubInterface.registerToPool());
-		uint index = m_workers.push(tx.origin);
+		uint index = m_workers.push(tx.origin); //msg.sender and not tx.origin
 		m_workerIndex[tx.origin] = index;
 		return true;
 	}
@@ -143,7 +143,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		//tx.origin = worker
 		require(iexecHubInterface.unregisterFromPool());
-		require(removeWorker(tx.origin));
+		require(removeWorker(tx.origin));//msg.sender and not tx.origin
 		return true;
 	}
 
