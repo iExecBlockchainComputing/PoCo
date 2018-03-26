@@ -107,6 +107,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			m_subscriptionMinimumStakePolicy, _newSubscriptionMinimumStakePolicy,
 			m_subscriptionMinimumScorePolicy, _newSubscriptionMinimumScorePolicy
 		);
+		require(_newSchedulerRewardRatioPolicy <= 100);
 		m_stakeRatioPolicy               = _newStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy     = _newSchedulerRewardRatioPolicy;
 		m_subscriptionMinimumStakePolicy = _newSubscriptionMinimumStakePolicy;

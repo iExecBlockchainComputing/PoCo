@@ -337,5 +337,28 @@ contract('IexecHub', function(accounts) {
   });
 
 
+  it("changeWorkerPoolPolicy_03: owner of WorkerPool  can  set a newSchedulerRewardRatioPolicy  = 100% ", async function() {
+
+    txMined =  await aWorkerPoolInstance.changeWorkerPoolPolicy(50/*_newStakeRatioPolicy*/,100/*_newSchedulerRewardRatioPolicy*/,4/*_newSubscriptionMinimumStakePolicy*/,5/*_newSubscriptionMinimumScorePolicy*/,{
+      from: scheduleProvider,
+      gas:constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerPoolPolicyUpdate({}),1,constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(), 100, "newSchedulerRewardRatioPolicy");
+
+  });
+
+  it("changeWorkerPoolPolicy_04: owner of WorkerPool  can't  set a newSchedulerRewardRatioPolicy  > 100% ", async function() {
+    await Extensions.expectedExceptionPromise(() => {
+        return  aWorkerPoolInstance.changeWorkerPoolPolicy(50/*_newStakeRatioPolicy*/,101/*_newSchedulerRewardRatioPolicy*/,4/*_newSubscriptionMinimumStakePolicy*/,5/*_newSubscriptionMinimumScorePolicy*/,{
+          from: scheduleProvider,
+          gas:constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+  });
+
+
 
 });
