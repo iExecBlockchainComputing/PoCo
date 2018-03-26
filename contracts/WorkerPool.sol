@@ -33,7 +33,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
 	uint256 public constant CONSENSUS_DURATION_RATIO = 5;
-	/* uint256 public constant CONSENSUS_DURATION_LIMIT = 7 days; // 7 days as the MVP here ;) https://ethresear.ch/t/minimal-viable-plasma/426 */
 
 	/**
 	 * Address of slave/related contracts
@@ -98,7 +97,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function changeWorkerPoolPolicy(
 		uint256 _newStakeRatioPolicy,
 		uint256 _newSchedulerRewardRatioPolicy,
-		/* uint256 _newResultRetentionPolicy, // Usage? */
 		uint256 _newSubscriptionMinimumStakePolicy,
 		uint256 _newSubscriptionMinimumScorePolicy)
 	public onlyOwner
@@ -170,12 +168,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	}
 
 	function getConsensusDetails(address _woid) public view returns (
-		uint256, // reward
-		uint256, // stake
-		bytes32, // consensus
-		uint256, // revealDate
-		uint256, // revealCounter
-		uint256) // consensusTimout
+		uint256 c_poolReward,
+		uint256 c_stakeAmount,
+		bytes32 c_consensus,
+		uint256 c_revealDate,
+		uint256 c_revealCounter,
+		uint256 c_consensusTimout,
+		uint256 c_winnerCount)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		return (
@@ -184,7 +183,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			consensus.consensus,
 			consensus.revealDate,
 			consensus.revealCounter,
-			consensus.consensusTimout
+			consensus.consensusTimout,
+			consensus.winnerCount
 		);
 	}
 
@@ -193,7 +193,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint256 catid   = marketplaceInterface.getMarketOrderCategory(_marketorderIdx);
 		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);
-		/* uint256 timeout = CONSENSUS_DURATION_LIMIT.add(now); */
 
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);

@@ -230,19 +230,26 @@ contract Marketplace is IexecHubAccessor
 	}
 	*/
 
+	function existingMarketOrder(uint256 _marketorderIdx) public view  returns (bool marketOrderExist){
+		return m_orderBook[_marketorderIdx].category > 0;
+	}
+
 	/**
 	 * Views
 	 */
 	function getMarketOrderValue(uint256 _marketorderIdx) public view returns (uint256)
 	{
+		require(existingMarketOrder(_marketorderIdx));//no silent value returned
 		return m_orderBook[_marketorderIdx].value;
 	}
 	function getMarketOrderCategory(uint256 _marketorderIdx) public view returns (uint256)
 	{
+		require(existingMarketOrder(_marketorderIdx));//no silent value returned
 		return m_orderBook[_marketorderIdx].category;
 	}
 	function getMarketOrderTrust(uint256 _marketorderIdx) public view returns (uint256)
 	{
+		require(existingMarketOrder(_marketorderIdx));//no silent value returned
 		return m_orderBook[_marketorderIdx].trust;
 	}
 	function getMarketOrder(uint256 _marketorderIdx) public view returns
@@ -259,6 +266,7 @@ contract Marketplace is IexecHubAccessor
 		address workerpool,      // BID can use null for any
 		address workerpoolOwner)
 	{
+		require(existingMarketOrder(_marketorderIdx));//no silent value returned
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		return (
 			marketorder.direction,
