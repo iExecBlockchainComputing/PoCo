@@ -184,4 +184,10 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(aIexecHubInstance.contract.lockWorkOrderCost, undefined, "expected lockWorkOrderCost internal");
   });
 
+	it("removeWorker : nobody can call removeWorker : removeWorker internal function", async function() {
+		assert.strictEqual(aIexecHubInstance.contract.removeWorker, undefined, "expected removeWorker internal");
+	});
+
+	removeWorker
+
 });

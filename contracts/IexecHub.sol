@@ -453,33 +453,32 @@ contract IexecHub
 	}
 
 	function unregisterFromPool(address _worker) public returns (bool unsubscribed)
-	// msg.sender = workerPool && tx.origin = worker
+	// msg.sender = workerPool
 	{
-		WorkerPool workerpool = WorkerPool(msg.sender);
-		// Check credentials
-		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
-		// Unlock worker stake
-		require(unlock(_worker, workerpool.m_subscriptionLockStakePolicy()));
-		// Update affectation
-		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, _worker));
+		require(removeWorker(msg.sender,_worker));
 		// Trigger event notice
 		WorkerPoolUnsubscription(msg.sender, _worker);
 		return true;
 	}
 
 	function evictWorker(address _worker) public returns (bool unsubscribed)
-	// msg.sender = workerpool && _worker = worker
+	// msg.sender = workerpool
 	{
-		WorkerPool workerpool = WorkerPool(msg.sender);
+		require(removeWorker(msg.sender,_worker));
+		// Trigger event notice
+		WorkerPoolEviction(msg.sender, _worker);
+		return true;
+	}
+
+	function removeWorker(address _workerpool, address _worker) internal returns (bool unsubscribed)
+	{
+		WorkerPool workerpool = WorkerPool(_workerpool);
 		// Check credentials
-		require(workerPoolHub.isWorkerPoolRegistered(msg.sender));
-		require(workerPoolHub.getWorkerAffectation(_worker) == msg.sender);
+		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
 		// Unlick worker stake
 		require(unlock(_worker, workerpool.m_subscriptionLockStakePolicy()));
 		// Update affectation
-		require(workerPoolHub.unregisterWorkerAffectation(msg.sender, _worker));
-		// Trigger event notice
-		WorkerPoolEviction(msg.sender, _worker);
+		require(workerPoolHub.unregisterWorkerAffectation(_workerpool, _worker));
 		return true;
 	}
 

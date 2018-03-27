@@ -57,6 +57,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 	event WorkerSubscribe    (address indexed worker);
 	event WorkerUnsubscribe  (address indexed worker);
+	event WorkerEviction     (address indexed worker);
 
 	/**
 	 * Modifiers
@@ -157,17 +158,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		//msg.sender = scheduler
 		require(iexecHubInterface.evictWorker(_worker));
 		require(removeWorker(_worker));
+		WorkerEviction(_worker);
 		return true;
 	}
 
 	function removeWorker(address _worker) internal returns (bool)
 	{
 		uint index = getWorkerIndex(_worker); // fails if worker not registered
-
 		address lastWorker = m_workers[m_workers.length.sub(1)];
 		m_workers    [index     ] = lastWorker;
 		m_workerIndex[lastWorker] = index;
-
 		delete m_workers[m_workers.length.sub(1)];
 		m_workers.length=m_workers.length.sub(1);
 		return true;
