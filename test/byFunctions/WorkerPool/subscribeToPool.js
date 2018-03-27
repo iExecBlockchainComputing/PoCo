@@ -28,7 +28,7 @@ var constants = require("../../constants");
 
 contract('IexecHub', function(accounts) {
 
-  let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
+  let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator,resourceProvider2;
   let subscriptionLockStakePolicy = 6;
   let subscriptionMinimumStakePolicy = 4;
   let subscriptionMinimumScorePolicy = 0;
@@ -48,7 +48,7 @@ contract('IexecHub', function(accounts) {
   let aWorkerPoolInstance;
 
   beforeEach("should prepare accounts and check TestRPC Mode", async() => {
-    assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
+    assert.isAtLeast(accounts.length, 9, "should have at least 9 accounts");
     scheduleProvider = accounts[0];
     resourceProvider = accounts[1];
     appProvider = accounts[2];
@@ -57,14 +57,16 @@ contract('IexecHub', function(accounts) {
     dappProvider = accounts[5];
     iExecCloudUser = accounts[6];
     marketplaceCreator = accounts[7];
+		resourceProvider2 = accounts[8];
 
     await Extensions.makeSureAreUnlocked(
-      [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
+      [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser,resourceProvider2]);
     let balance = await web3.eth.getBalancePromise(scheduleProvider);
     assert.isTrue(
       web3.toWei(web3.toBigNumber(80), "ether").lessThan(balance),
       "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether"));
     await Extensions.refillAccount(scheduleProvider, resourceProvider, 10);
+		await Extensions.refillAccount(scheduleProvider, resourceProvider2, 10);
     await Extensions.refillAccount(scheduleProvider, appProvider, 10);
     await Extensions.refillAccount(scheduleProvider, datasetProvider, 10);
     await Extensions.refillAccount(scheduleProvider, dappUser, 10);
@@ -94,6 +96,10 @@ contract('IexecHub', function(accounts) {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
+			aRLCInstance.transfer(resourceProvider2, 1000, {
+				from: marketplaceCreator,
+				gas: constants.AMOUNT_GAS_PROVIDED
+			}),
       aRLCInstance.transfer(appProvider, 1000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
@@ -122,9 +128,11 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     let balances = await Promise.all([
       aRLCInstance.balanceOf(scheduleProvider),
       aRLCInstance.balanceOf(resourceProvider),
+			aRLCInstance.balanceOf(resourceProvider2),
       aRLCInstance.balanceOf(appProvider),
       aRLCInstance.balanceOf(datasetProvider),
       aRLCInstance.balanceOf(dappUser),
@@ -138,6 +146,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(balances[4].toNumber(), 1000, "1000 nRLC here");
     assert.strictEqual(balances[5].toNumber(), 1000, "1000 nRLC here");
     assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[7].toNumber(), 1000, "1000 nRLC here");
 
     // INIT SMART CONTRACTS BY marketplaceCreator
     aWorkerPoolHubInstance = await WorkerPoolHub.new({
@@ -223,6 +232,10 @@ contract('IexecHub', function(accounts) {
         from: resourceProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
+			aRLCInstance.approve(aIexecHubInstance.address, 100, {
+				from: resourceProvider2,
+				gas: constants.AMOUNT_GAS_PROVIDED
+			}),
       aRLCInstance.approve(aIexecHubInstance.address, 100, {
         from: appProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
@@ -251,7 +264,7 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
+    assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     txMined = await aIexecHubInstance.createWorkerPool(
       "myWorkerPool",
       subscriptionLockStakePolicy,
@@ -385,6 +398,81 @@ contract('IexecHub', function(accounts) {
       constants.AMOUNT_GAS_PROVIDED);
 
 	});
+
+	it("subscribeToPool_05 : multiple resourceProviders  can Subscribe to worker pool", async function() {
+		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
+			from: resourceProvider,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await aWorkerPoolInstance.subscribeToPool({
+			from: resourceProvider,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy, "check stake of the resourceProvider");
+		assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		getWorkersCount = await aWorkerPoolInstance.getWorkersCount.call();
+		assert.strictEqual(getWorkersCount.toNumber(), 1, "getWorkersCount");
+
+		getWorkerIndex = await aWorkerPoolInstance.getWorkerIndex.call(resourceProvider);
+		assert.strictEqual(getWorkerIndex.toNumber(), 0, "getWorkerIndex");
+
+		getWorkerAddress = await aWorkerPoolInstance.getWorkerAddress.call(getWorkerIndex);
+		assert.strictEqual(getWorkerAddress, resourceProvider, "getWorkerAddress");
+
+		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkerPoolSubscription({}), 1, constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+		assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
+
+		events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerSubscribe({}), 1, constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
+
+		getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
+		assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
+
+		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
+			from: resourceProvider2,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		txMined = await aWorkerPoolInstance.subscribeToPool({
+			from: resourceProvider2,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider2);
+		assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy, "check stake of the resourceProvider");
+		assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		getWorkersCount = await aWorkerPoolInstance.getWorkersCount.call();
+		assert.strictEqual(getWorkersCount.toNumber(), 2, "getWorkersCount");
+
+		getWorkerIndex = await aWorkerPoolInstance.getWorkerIndex.call(resourceProvider2);
+		assert.strictEqual(getWorkerIndex.toNumber(), 1, "getWorkerIndex");
+
+		getWorkerAddress = await aWorkerPoolInstance.getWorkerAddress.call(getWorkerIndex);
+		assert.strictEqual(getWorkerAddress, resourceProvider2, "getWorkerAddress");
+
+		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkerPoolSubscription({}), 1, constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+		assert.strictEqual(events[0].args.worker, resourceProvider2, "check worker");
+
+		events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerSubscribe({}), 1, constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.worker, resourceProvider2, "check worker");
+
+		getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider2);
+		assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
+
+	});
+
 
 
 	//TODO check m_subscriptionMinimumScorePolicy
