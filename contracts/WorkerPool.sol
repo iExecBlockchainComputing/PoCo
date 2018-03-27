@@ -135,7 +135,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		//msg.sender = worker
 		require(iexecHubInterface.registerToPool(msg.sender));
 		uint index = m_workers.push(msg.sender);
-		m_workerIndex[msg.sender] = index;
+		m_workerIndex[msg.sender] = index.sub(1);
 		return true;
 	}
 

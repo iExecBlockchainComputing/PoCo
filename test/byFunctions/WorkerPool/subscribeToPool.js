@@ -23,8 +23,8 @@ var constants = require("../../constants");
 contract('IexecHub', function(accounts) {
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-	let subscriptionLockStakePolicy    = 0;
-	let subscriptionMinimumStakePolicy = 10;
+	let subscriptionLockStakePolicy    = 6;
+	let subscriptionMinimumStakePolicy = 4;
 	let subscriptionMinimumScorePolicy = 0;
 	let isTestRPC;
 	let txMined;
@@ -229,27 +229,19 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-/*
+		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy, "check stake of the resourceProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-function getWorkerAddress(uint _index) public view returns (address)
-{
-	return m_workers[_index];
-}
-function getWorkerIndex(address _worker) public view returns (uint)
-{
-	uint index = m_workerIndex[_worker];
-	require(m_workers[index] == _worker);
-	return index;
-}
-function getWorkersCount() public view returns (uint)
-{
-	return m_workers.length;
-}
+    getWorkersCount = await aWorkerPoolInstance.getWorkersCount.call();
+    assert.strictEqual(getWorkersCount.toNumber(), 1, "getWorkersCount");
 
+		getWorkerIndex = await aWorkerPoolInstance.getWorkerIndex.call(resourceProvider);
+		assert.strictEqual(getWorkerIndex.toNumber(), 0, "getWorkerIndex");
 
-*/
-
-
+		getWorkerAddress = await aWorkerPoolInstance.getWorkerAddress.call(getWorkerIndex);
+		assert.strictEqual(getWorkerAddress, resourceProvider, "getWorkerAddress");
 
 	});
 
