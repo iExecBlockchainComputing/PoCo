@@ -91,7 +91,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	function unregisterWorkerAffectation(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool unsubscribed)
 	{
 		require(m_workerAffectation[_worker] == _workerPool);
-		m_workerAffectation[_worker] == address(0);
+		m_workerAffectation[_worker] = address(0);
 		return true;
 	}
 }

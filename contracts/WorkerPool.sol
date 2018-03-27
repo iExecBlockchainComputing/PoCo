@@ -55,7 +55,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	event RevealConsensus    (address indexed woid, bytes32 consensus);
 	event Reveal             (address indexed woid, address indexed worker, bytes32 result);
 
-	event WorkerSubscribe (address indexed worker);
+	event WorkerSubscribe    (address indexed worker);
+	event WorkerUnsubscribe  (address indexed worker);
 
 	/**
 	 * Modifiers
@@ -147,6 +148,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		//msg.sender = worker
 		require(iexecHubInterface.unregisterFromPool(msg.sender));
 		require(removeWorker(msg.sender));
+		WorkerUnsubscribe(msg.sender);
 		return true;
 	}
 

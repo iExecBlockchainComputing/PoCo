@@ -264,7 +264,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("subscribeToPool_01 : resourceProvider can Subscribe if he has enought deposit", async function() {
+  it("unsubscribeFromPool_01 : resourceProvider can unsubscribe from his current worker pool affectation", async function() {
     txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
       from: resourceProvider,
       gas: constants.AMOUNT_GAS_PROVIDED
@@ -281,95 +281,52 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    getWorkersCount = await aWorkerPoolInstance.getWorkersCount.call();
-    assert.strictEqual(getWorkersCount.toNumber(), 1, "getWorkersCount");
+    getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
+    assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
 
-    getWorkerIndex = await aWorkerPoolInstance.getWorkerIndex.call(resourceProvider);
-    assert.strictEqual(getWorkerIndex.toNumber(), 0, "getWorkerIndex");
 
-    getWorkerAddress = await aWorkerPoolInstance.getWorkerAddress.call(getWorkerIndex);
-    assert.strictEqual(getWorkerAddress, resourceProvider, "getWorkerAddress");
+    txMined = await aWorkerPoolInstance.unsubscribeFromPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkerPoolSubscription({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkerPoolUnsubscription({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
     assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
 
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerSubscribe({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerUnsubscribe({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
-
-		getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
-    assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
-
-  });
-
-
-  it("subscribeToPool_02 : resourceProvider can't Subscribe to an other pool if already affected to one pool", async function() {
-
-    txMined = await aIexecHubInstance.createWorkerPool(
-      "myWorkerPool 2",
-      subscriptionLockStakePolicy,
-      subscriptionMinimumStakePolicy,
-      subscriptionMinimumScorePolicy, {
-        from: scheduleProvider
-      });
-
-    workerPoolAddress2 = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 2);
-    aWorkerPoolInstance2 = await WorkerPool.at(workerPoolAddress2);
-
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 94, "check stake of the resourceProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 6, "check stake locked of the resourceProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy + subscriptionLockStakePolicy, "check stake of the resourceProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
+    assert.strictEqual(getWorkerAffectation, '0x0000000000000000000000000000000000000000', "getWorkerAffectation");
 
     getWorkersCount = await aWorkerPoolInstance.getWorkersCount.call();
-    assert.strictEqual(getWorkersCount.toNumber(), 1, "getWorkersCount");
-
-    getWorkerIndex = await aWorkerPoolInstance.getWorkerIndex.call(resourceProvider);
-    assert.strictEqual(getWorkerIndex.toNumber(), 0, "getWorkerIndex");
-
-    getWorkerAddress = await aWorkerPoolInstance.getWorkerAddress.call(getWorkerIndex);
-    assert.strictEqual(getWorkerAddress, resourceProvider, "getWorkerAddress");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkerSubscribe({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
+    assert.strictEqual(getWorkersCount.toNumber(), 0, "getWorkersCount");
 
     await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance2.subscribeToPool({
+        return aWorkerPoolInstance.getWorkerIndex.call(resourceProvider, {
           from: resourceProvider,
           gas: constants.AMOUNT_GAS_PROVIDED
         });
       },
       constants.AMOUNT_GAS_PROVIDED);
-  });
 
-  it("subscribeToPool_03 :resourceProvider can't  Subscribe if he has not enought deposit", async function() {
-    txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.subscribeToPool({
+        return aWorkerPoolInstance.getWorkerAddress.call(0, {
           from: resourceProvider,
           gas: constants.AMOUNT_GAS_PROVIDED
         });
       },
       constants.AMOUNT_GAS_PROVIDED);
+
+
   });
-
-
-	//TODO check m_subscriptionMinimumScorePolicy
 
 
 });
