@@ -55,6 +55,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	event RevealConsensus    (address indexed woid, bytes32 consensus);
 	event Reveal             (address indexed woid, address indexed worker, bytes32 result);
 
+	event WorkerSubscribe (address indexed worker);
+
 	/**
 	 * Modifiers
 	 */
@@ -136,6 +138,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(iexecHubInterface.registerToPool(msg.sender));
 		uint index = m_workers.push(msg.sender);
 		m_workerIndex[msg.sender] = index.sub(1);
+		WorkerSubscribe(msg.sender);
 		return true;
 	}
 

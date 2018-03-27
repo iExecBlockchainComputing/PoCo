@@ -82,8 +82,6 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 
 	function registerWorkerAffectation(address _workerPool, address _worker) public onlyOwner /*owner == IexecHub*/ returns (bool subscribed)
 	{
-		// tx.origin = worker
-		WorkerPool pool = WorkerPool(_workerPool);
 		// you must have no cuurent affectation on others worker Pool
 		require(m_workerAffectation[_worker] == address(0));
 		m_workerAffectation[_worker] = _workerPool;
