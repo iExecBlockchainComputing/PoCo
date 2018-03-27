@@ -328,5 +328,65 @@ contract('IexecHub', function(accounts) {
 
   });
 
+  it("unsubscribeFromPool_02: can't unsubscribe  from a worker pool if not affected on it", async function() {
+    txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy, "check stake of the resourceProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
+    assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.unsubscribeFromPool({
+          from: iExecCloudUser,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("unsubscribeFromPool_03 : direct call to unregisterFromPool on aIexecHubInstance must failed ", async function() {
+    txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), subscriptionMinimumStakePolicy, "check stake of the resourceProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), subscriptionLockStakePolicy, "check stake locked of the resourceProvider");
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    getWorkerAffectation = await aWorkerPoolHubInstance.getWorkerAffectation.call(resourceProvider);
+    assert.strictEqual(getWorkerAffectation, aWorkerPoolInstance.address, "getWorkerAffectation");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aIexecHubInstance.unregisterFromPool(resourceProvider,{
+          from: resourceProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+  });
+
 
 });

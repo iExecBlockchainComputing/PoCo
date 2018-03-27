@@ -369,6 +369,24 @@ contract('IexecHub', function(accounts) {
   });
 
 
+	it("subscribeToPool_04 : direct call to registerToPool on aIexecHubInstance must failed ", async function() {
+		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
+			from: resourceProvider,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		await Extensions.expectedExceptionPromise(() => {
+        return aIexecHubInstance.registerToPool(resourceProvider,{
+					from: resourceProvider,
+					gas: constants.AMOUNT_GAS_PROVIDED
+				});
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+	});
+
+
 	//TODO check m_subscriptionMinimumScorePolicy
 
 

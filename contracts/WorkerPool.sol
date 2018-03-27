@@ -164,12 +164,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint index = getWorkerIndex(_worker); // fails if worker not registered
 
-		address lastWorker = m_workers[m_workers.length-1];
+		address lastWorker = m_workers[m_workers.length.sub(1)];
 		m_workers    [index     ] = lastWorker;
 		m_workerIndex[lastWorker] = index;
 
-		delete m_workers[m_workers.length-1];
-		m_workers.length--;
+		delete m_workers[m_workers.length.sub(1)];
+		m_workers.length=m_workers.length.sub(1);
 		return true;
 	}
 
