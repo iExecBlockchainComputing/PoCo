@@ -188,6 +188,5 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(aIexecHubInstance.contract.removeWorker, undefined, "expected removeWorker internal");
 	});
 
-	removeWorker
 
 });
