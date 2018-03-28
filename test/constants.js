@@ -27,4 +27,13 @@ define("MarketOrderDirectionEnum",{
   CLOSED : 3
 });
 
+define("ContributionStatusEnum",{
+  UNSET       : 0,
+  AUTHORIZED  : 1,
+  CONTRIBUTED : 2,
+  PROVED      : 3,
+  REJECTED    : 4
+});
+
+
 define("DAPP_PARAMS_EXAMPLE","{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}");

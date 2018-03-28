@@ -194,6 +194,32 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		);
 	}
 
+
+	function existingContribution(address _woid,address _worker) public view  returns (bool contributionExist){
+		return m_contributions[_woid][_worker].status != IexecLib.ContributionStatusEnum.UNSET;
+	}
+
+	function getContribution(address _woid,address _worker) public view returns
+	(
+		IexecLib.ContributionStatusEnum status,
+		bytes32 resultHash,
+		bytes32 resultSign,
+		address enclaveChallenge,
+		uint256 score,
+		uint256 weight)
+	{
+		require(existingContribution(_woid,_worker));//no silent value returned
+		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
+		return (
+			contribution.status,
+			contribution.resultHash,
+			contribution.resultSign,
+			contribution.enclaveChallenge,
+			contribution.score,
+			contribution.weight
+		);
+	}
+
 	/**************************** Works management *****************************/
 	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
 	{
@@ -239,8 +265,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
-		// random worker selection ? :
-		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
+
 		address workerPool;
 		uint256 workerScore;
 		(workerPool, workerScore) = iexecHubInterface.getWorkerStatus(_worker); // workerPool, workerScore
