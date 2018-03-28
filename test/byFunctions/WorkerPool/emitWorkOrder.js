@@ -255,7 +255,7 @@ contract('IexecHub', function(accounts) {
 	it("emitWorkOrder_01: check WorkOrderActive event genereated and check getConsensusDetails well valorized", async function() {
 
     //Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 
@@ -307,7 +307,7 @@ contract('IexecHub', function(accounts) {
   it("emitWorkOrder_02: check onlyIexecHub on emitWorkOrder", async function() {
 
     //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
       from: scheduleProvider
     });
 

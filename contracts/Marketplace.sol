@@ -41,7 +41,7 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Market orders
 	 */
-	function emitMarketOrder(
+	function createMarketOrder(
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,

@@ -257,7 +257,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await aMarketplaceInstance.emitMarketOrder(
+		txMined = await aMarketplaceInstance.createMarketOrder(
 			constants.MarketOrderDirectionEnum.ASK,
 			1 /*_category*/,
 			0/*_trust*/,

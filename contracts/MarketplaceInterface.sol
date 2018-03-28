@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 import './IexecLib.sol';
 contract MarketplaceInterface
 {
-	function emitMarketOrder(
+	function createMarketOrder(
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,

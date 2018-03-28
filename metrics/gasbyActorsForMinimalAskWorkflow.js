@@ -109,7 +109,7 @@ contract('IexecHub', function(accounts) {
 	let dataTxResourceProviderDeposit;
 	let dataTxSubscribeToPool;
 	let dataTxAppCreate;
-	let dataTxEmitMarketOrder;
+	let dataTxCreateMarketOrder;
 	let dataTxIExecCloudUserDeposit;
 	let dataTxAnswerEmitWorkOrder;
 	let dataTxCallForContribution;
@@ -371,14 +371,14 @@ contract('IexecHub', function(accounts) {
 		aAppInstance = await App.at(appAddress);
 
 		//Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.createMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 
   console.log("coucou3");
 		//GAS ANALYSE -->
-		dataTxEmitMarketOrder= {spendBy:"scheduleProvider", when:"askWorkflow", function:"emitMarketOrder", gas: txMined.receipt.gasUsed};
+		dataTxCreateMarketOrder= {spendBy:"scheduleProvider", when:"askWorkflow", function:"createMarketOrder", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//answerAskOrder
@@ -532,7 +532,7 @@ contract('IexecHub', function(accounts) {
 				dataTxResourceProviderDeposit,
 				dataTxSubscribeToPool,
 				dataTxAppCreate,
-				dataTxEmitMarketOrder,
+				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
 				dataTxAnswerEmitWorkOrder,
 				dataTxCallForContribution,
@@ -565,7 +565,7 @@ contract('IexecHub', function(accounts) {
 
 		let asktransactionsCostTab = {
 			"Ask Workflow Gas cost transactions":[
-				dataTxEmitMarketOrder,
+				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
 				dataTxAnswerEmitWorkOrder,
 				dataTxCallForContribution,

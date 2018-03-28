@@ -300,10 +300,10 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("answerConsume_01 : answerConsume on emitMarketOrder with volumes 2 : remaining must be 1 and volume : 2 ", async function() {
+  it("answerConsume_01 : answerConsume on createMarketOrder with volumes 2 : remaining must be 1 and volume : 2 ", async function() {
 
     //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
       from: scheduleProvider
     });
 
@@ -357,10 +357,10 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("answerConsume_02 : answerConsume on emitMarketOrder with volumes 1 change the status to CLOSED", async function() {
+  it("answerConsume_02 : answerConsume on createMarketOrder with volumes 1 change the status to CLOSED", async function() {
 
     //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
       from: scheduleProvider
     });
 
@@ -415,10 +415,10 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("answerConsume_03 : answerConsume on emitMarketOrder on volumes 0 and status to CLOSED must failed", async function() {
+  it("answerConsume_03 : answerConsume on createMarketOrder on volumes 0 and status to CLOSED must failed", async function() {
 
     //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
       from: scheduleProvider
     });
 
@@ -481,10 +481,10 @@ contract('IexecHub', function(accounts) {
 
 
 
-    it("answerConsume_04 : answerConsume on emitMarketOrder and wrong marketorderIdx must failed", async function() {
+    it("answerConsume_04 : answerConsume on createMarketOrder and wrong marketorderIdx must failed", async function() {
 
       //Create ask Marker Order by scheduler
-      txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
+      txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
         from: scheduleProvider
       });
 
@@ -522,10 +522,10 @@ contract('IexecHub', function(accounts) {
     });
 
 
-    it("answerConsume_05 : answerConsume on emitMarketOrder with the wrong workerpool address must failed", async function() {
+    it("answerConsume_05 : answerConsume on createMarketOrder with the wrong workerpool address must failed", async function() {
 
       //Create ask Marker Order by scheduler
-      txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
+      txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
         from: scheduleProvider
       });
 
@@ -573,10 +573,10 @@ contract('IexecHub', function(accounts) {
 
 
 
-      it("answerConsume_06 : answerConsume on emitMarketOrder, iExecCloudUser must have deposit enought RLC", async function() {
+      it("answerConsume_06 : answerConsume on createMarketOrder, iExecCloudUser must have deposit enought RLC", async function() {
 
         //Create ask Marker Order by scheduler
-        txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
+        txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
           from: scheduleProvider
         });
 

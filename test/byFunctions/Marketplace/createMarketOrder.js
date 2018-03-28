@@ -298,9 +298,9 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order on an existing category", async function() {
+  it("createMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order on an existing category", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -327,10 +327,10 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("emitMarketOrder_02 : a non owner of worker pool can't emit a ASK Market Order on an existing category", async function() {
+  it("createMarketOrder_02 : a non owner of worker pool can't emit a ASK Market Order on an existing category", async function() {
 
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -345,10 +345,10 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_03 : if cataegory do not exist the ask order must not be emitted", async function() {
+  it("createMarketOrder_03 : if cataegory do not exist the ask order must not be emitted", async function() {
 
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.ASK,
           0 /*_category 0 do not exist. must revert*/ ,
           0 /*_trust*/ ,
@@ -364,9 +364,9 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("emitMarketOrder_04 : BID not yet implemented", async function() {
+  it("createMarketOrder_04 : BID not yet implemented", async function() {
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.BID,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -380,9 +380,9 @@ contract('IexecHub', function(accounts) {
       constants.AMOUNT_GAS_PROVIDED);
   });
 
-  it("emitMarketOrder_05 : can't emitMarketOrder with MarketOrderDirectionEnum to CLOSED", async function() {
+  it("createMarketOrder_05 : can't createMarketOrder with MarketOrderDirectionEnum to CLOSED", async function() {
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.CLOSED,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -396,9 +396,9 @@ contract('IexecHub', function(accounts) {
       constants.AMOUNT_GAS_PROVIDED);
   });
 
-  it("emitMarketOrder_06 : MarketOrderDirectionEnum must be set", async function() {
+  it("createMarketOrder_06 : MarketOrderDirectionEnum must be set", async function() {
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.UNSET,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -413,10 +413,10 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("emitMarketOrder_07 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order of value 101 if he has only deposit 100", async function() {
+  it("createMarketOrder_07 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order of value 101 if he has only deposit 100", async function() {
 
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -431,10 +431,10 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_08 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order if deposit >= value * volume", async function() {
+  it("createMarketOrder_08 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order if deposit >= value * volume", async function() {
     // 100 RLC deposit <= volume (2) * value (50)
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -459,10 +459,10 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_09 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order if deposit < value * volume", async function() {
+  it("createMarketOrder_09 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order if deposit < value * volume", async function() {
     // 100 RLC deposit < volume (2) * value (51)
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -477,9 +477,9 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_10 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order with volume = 0", async function() {
+  it("createMarketOrder_10 : a owner (scheduleProvider) of worker pool can't emit a ASK Market Order with volume = 0", async function() {
     await Extensions.expectedExceptionPromise(() => {
-        return aMarketplaceInstance.emitMarketOrder(
+        return aMarketplaceInstance.createMarketOrder(
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
@@ -494,7 +494,7 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_11 : a owner (scheduleProvider) of worker pool can emit several ASK Market Orders if enought deposit ", async function() {
+  it("createMarketOrder_11 : a owner (scheduleProvider) of worker pool can emit several ASK Market Orders if enought deposit ", async function() {
 
     txMined = await aRLCInstance.approve(aIexecHubInstance.address, 100, {
       from: scheduleProvider,
@@ -513,7 +513,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -537,7 +537,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
 
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       2 /*_category*/ ,
       0 /*_trust*/ ,
@@ -568,9 +568,9 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("emitMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order for free = value 0", async function() {
+  it("createMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order for free = value 0", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,

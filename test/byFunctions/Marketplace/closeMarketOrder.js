@@ -300,7 +300,7 @@ contract('IexecHub', function(accounts) {
 
   it("closeMarketOrder_01 : a owner (scheduleProvider) of worker pool can close a market order he has emitted", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -361,7 +361,7 @@ contract('IexecHub', function(accounts) {
 
   it("closeMarketOrder_02 : only the owner (scheduleProvider) can close a market order he has emitted", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -405,7 +405,7 @@ contract('IexecHub', function(accounts) {
 
   it("closeMarketOrder_03 : closeMarketOrder twice must revert the second time", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,
@@ -473,7 +473,7 @@ contract('IexecHub', function(accounts) {
 
   it("closeMarketOrder_04 : a owner (scheduleProvider) of worker pool can't close non existing marketorderIdx", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       0 /*_trust*/ ,

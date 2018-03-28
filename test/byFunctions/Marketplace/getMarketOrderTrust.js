@@ -300,7 +300,7 @@ contract('IexecHub', function(accounts) {
 
   it("getMarketOrderTrust_01 : it should be possible for every one to get getMarketOrder of an existing MarketOrder", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       1 /*_trust*/ ,
