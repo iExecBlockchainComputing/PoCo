@@ -275,7 +275,7 @@ contract('IexecHub', function(accounts) {
     datasetAddressFromLog = events[0].args.dataset;
 
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, datasetAddressFromLog, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, datasetAddressFromLog, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);

@@ -210,7 +210,7 @@ contract IexecHub
 	/**
 	 * WorkOrder Emission
 	 */
-	function answerEmitWorkOrder(
+	function buyForWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
 		address _app,

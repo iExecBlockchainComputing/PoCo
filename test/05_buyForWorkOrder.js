@@ -12,8 +12,8 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions = require("../../../utils/extensions.js");
-const addEvmFunctions = require("../../../utils/evmFunctions.js");
+const Extensions      = require("../utils/extensions.js");
+const addEvmFunctions = require("../utils/evmFunctions.js");
 const readFileAsync = Promise.promisify(fs.readFile);
 
 addEvmFunctions(web3);
@@ -21,7 +21,7 @@ Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
 Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 Extensions.init(web3, assert);
-var constants = require("../../constants");
+var constants = require("./constants");
 
 contract('IexecHub', function(accounts) {
 
@@ -255,24 +255,22 @@ contract('IexecHub', function(accounts) {
 	});
 
 
-	it("answerAndemitWorkOrder01: check WorkOrderActivated event genereated and WorkOrderStatusEnum.ACTIVE", async function() {
+	it("buyForWorkOrder", async function() {
 		let woid;
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-   aWorkOrderInstance = await WorkOrder.at(woid);
-   let status = await aWorkOrderInstance.m_status.call();
-   assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
-
+		aWorkOrderInstance = await WorkOrder.at(woid);
+    let status = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
 	});
 
 });

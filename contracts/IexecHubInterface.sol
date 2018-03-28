@@ -37,7 +37,7 @@ contract IexecHubInterface
 		string  _datasetParams)
 	external returns (address createdDataset);
 
-	function answerEmitWorkOrder(
+	function buyForWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
 		address _app,

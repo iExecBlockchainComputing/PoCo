@@ -111,7 +111,7 @@ contract('IexecHub', function(accounts) {
 	let dataTxAppCreate;
 	let dataTxCreateMarketOrder;
 	let dataTxIExecCloudUserDeposit;
-	let dataTxAnswerEmitWorkOrder;
+	let dataTxBuyForWorkOrder;
 	let dataTxCallForContribution;
 	let dataTxResourceProviderDepositAsk;
 	let dataTxContribute;
@@ -392,13 +392,13 @@ contract('IexecHub', function(accounts) {
 		dataTxIExecCloudUserDeposit= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"deposit", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
   console.log("coucou4");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/,aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
   console.log("coucou5");
 		//GAS ANALYSE -->
-		dataTxAnswerEmitWorkOrder= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"answerEmitWorkOrder", gas: txMined.receipt.gasUsed};
+		dataTxBuyForWorkOrder= {spendBy:"iExecCloudUser", when:"askWorkflow", function:"buyForWorkOrder", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}));
@@ -534,7 +534,7 @@ contract('IexecHub', function(accounts) {
 				dataTxAppCreate,
 				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
-				dataTxAnswerEmitWorkOrder,
+				dataTxBuyForWorkOrder,
 				dataTxCallForContribution,
 				dataTxResourceProviderDepositAsk,
 				dataTxContribute,
@@ -567,7 +567,7 @@ contract('IexecHub', function(accounts) {
 			"Ask Workflow Gas cost transactions":[
 				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
-				dataTxAnswerEmitWorkOrder,
+				dataTxBuyForWorkOrder,
 				dataTxCallForContribution,
 				dataTxResourceProviderDepositAsk,
 				dataTxContribute,

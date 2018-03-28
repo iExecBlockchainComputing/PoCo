@@ -330,7 +330,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the iExecCloudUser");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    txMined = await aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
       from: iExecCloudUser
     });
     events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskConsume({}), 1, constants.EVENT_WAIT_TIMEOUT);
@@ -389,7 +389,7 @@ contract('IexecHub', function(accounts) {
 
 
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
       from: iExecCloudUser
     });
     events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskConsume({}), 1, constants.EVENT_WAIT_TIMEOUT);
@@ -447,7 +447,7 @@ contract('IexecHub', function(accounts) {
 
 
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
       from: iExecCloudUser
     });
     events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderAskConsume({}), 1, constants.EVENT_WAIT_TIMEOUT);
@@ -470,7 +470,7 @@ contract('IexecHub', function(accounts) {
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     await Extensions.expectedExceptionPromise(() => {
-        return aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+        return aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
           from: iExecCloudUser,
           gas:constants.AMOUNT_GAS_PROVIDED
         });
@@ -512,7 +512,7 @@ contract('IexecHub', function(accounts) {
       assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
       await Extensions.expectedExceptionPromise(() => {
-          return aIexecHubInstance.answerEmitWorkOrder(2 /* unexisting_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+          return aIexecHubInstance.buyForWorkOrder(2 /* unexisting_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
             from: iExecCloudUser,
             gas:constants.AMOUNT_GAS_PROVIDED
           });
@@ -561,7 +561,7 @@ contract('IexecHub', function(accounts) {
         });
       secondWorkerPoolAddress = await aWorkerPoolHubInstance.getWorkerPool(scheduleProvider, 2);
       await Extensions.expectedExceptionPromise(() => {
-          return aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , secondWorkerPoolAddress/* test wrong aWorkerPoolInstance.address*/, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+          return aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , secondWorkerPoolAddress/* test wrong aWorkerPoolInstance.address*/, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
             from: iExecCloudUser,
             gas:constants.AMOUNT_GAS_PROVIDED
           });
@@ -605,7 +605,7 @@ contract('IexecHub', function(accounts) {
 
 
         await Extensions.expectedExceptionPromise(() => {
-            return aIexecHubInstance.answerEmitWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+            return aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
               from: iExecCloudUser,
               gas:constants.AMOUNT_GAS_PROVIDED
             });
