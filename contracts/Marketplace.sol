@@ -157,7 +157,7 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Assets consumption
 	 */
-	function answerConsume(
+	function consumeMarketOrderAsk(
 		uint256 _marketorderIdx,
 		address _requester,
 		address _workerpool)

@@ -300,7 +300,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("answerConsume_01 : answerConsume on createMarketOrder with volumes 2 : remaining must be 1 and volume : 2 ", async function() {
+  it("consumeMarketOrderAsk_01 : consumeMarketOrderAsk on createMarketOrder with volumes 2 : remaining must be 1 and volume : 2 ", async function() {
 
     //Create ask Marker Order by scheduler
     txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
@@ -357,7 +357,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("answerConsume_02 : answerConsume on createMarketOrder with volumes 1 change the status to CLOSED", async function() {
+  it("consumeMarketOrderAsk_02 : consumeMarketOrderAsk on createMarketOrder with volumes 1 change the status to CLOSED", async function() {
 
     //Create ask Marker Order by scheduler
     txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
@@ -415,7 +415,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("answerConsume_03 : answerConsume on createMarketOrder on volumes 0 and status to CLOSED must failed", async function() {
+  it("consumeMarketOrderAsk_03 : consumeMarketOrderAsk on createMarketOrder on volumes 0 and status to CLOSED must failed", async function() {
 
     //Create ask Marker Order by scheduler
     txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
@@ -481,7 +481,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-    it("answerConsume_04 : answerConsume on createMarketOrder and wrong marketorderIdx must failed", async function() {
+    it("consumeMarketOrderAsk_04 : consumeMarketOrderAsk on createMarketOrder and wrong marketorderIdx must failed", async function() {
 
       //Create ask Marker Order by scheduler
       txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
@@ -522,7 +522,7 @@ contract('IexecHub', function(accounts) {
     });
 
 
-    it("answerConsume_05 : answerConsume on createMarketOrder with the wrong workerpool address must failed", async function() {
+    it("consumeMarketOrderAsk_05 : consumeMarketOrderAsk on createMarketOrder with the wrong workerpool address must failed", async function() {
 
       //Create ask Marker Order by scheduler
       txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {
@@ -573,7 +573,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-      it("answerConsume_06 : answerConsume on createMarketOrder, iExecCloudUser must have deposit enought RLC", async function() {
+      it("consumeMarketOrderAsk_06 : consumeMarketOrderAsk on createMarketOrder, iExecCloudUser must have deposit enought RLC", async function() {
 
         //Create ask Marker Order by scheduler
         txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 50 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 2 /*_volume*/ , {

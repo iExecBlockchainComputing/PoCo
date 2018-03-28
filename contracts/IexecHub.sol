@@ -221,7 +221,7 @@ contract IexecHub
 	external returns (address)
 	{
 		address requester = msg.sender;
-		require(marketplace.answerConsume(_marketorderIdx, requester, _workerpool));
+		require(marketplace.consumeMarketOrderAsk(_marketorderIdx, requester, _workerpool));
 
 		WorkOrder workorder = WorkOrder(emitWorkOrder(
 			_marketorderIdx,
