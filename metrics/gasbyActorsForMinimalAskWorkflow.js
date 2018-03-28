@@ -112,7 +112,7 @@ contract('IexecHub', function(accounts) {
 	let dataTxCreateMarketOrder;
 	let dataTxIExecCloudUserDeposit;
 	let dataTxBuyForWorkOrder;
-	let dataTxCallForContribution;
+	let dataTxAllowWorkerToContribute;
 	let dataTxResourceProviderDepositAsk;
 	let dataTxContribute;
 	let dataTxRevealConsensus;
@@ -406,8 +406,8 @@ contract('IexecHub', function(accounts) {
 		console.log("woid is: " + woid);
 		aWorkOrderInstance = await WorkOrder.at(woid);
 
-		//callForContribution
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+		//allowWorkerToContribute
+		txMined = await aWorkerPoolInstance.allowWorkerToContribute(woid, resourceProvider, 0, {
 			from: scheduleProvider,
 			gas: amountGazProvided
 		});
@@ -416,7 +416,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
 
 		//GAS ANALYSE -->
-		dataTxCallForContribution= {spendBy:"scheduleProvider", when:"askWorkflow", function:"callForContribution-1-worker", gas: txMined.receipt.gasUsed};
+		dataTxAllowWorkerToContribute= {spendBy:"scheduleProvider", when:"askWorkflow", function:"allowWorkerToContribute-1-worker", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
 		//workerContribute
@@ -535,7 +535,7 @@ contract('IexecHub', function(accounts) {
 				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
 				dataTxBuyForWorkOrder,
-				dataTxCallForContribution,
+				dataTxAllowWorkerToContribute,
 				dataTxResourceProviderDepositAsk,
 				dataTxContribute,
 				dataTxRevealConsensus,
@@ -568,7 +568,7 @@ contract('IexecHub', function(accounts) {
 				dataTxCreateMarketOrder,
 				dataTxIExecCloudUserDeposit,
 				dataTxBuyForWorkOrder,
-				dataTxCallForContribution,
+				dataTxAllowWorkerToContribute,
 				dataTxResourceProviderDepositAsk,
 				dataTxContribute,
 				dataTxRevealConsensus,

@@ -271,13 +271,13 @@ contract('IexecHub', function(accounts) {
 
 	});
 
-	it("callForContribution", async function() {
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+	it("allowWorkerToContribute", async function() {
+		txMined = await aWorkerPoolInstance.allowWorkerToContribute(woid, resourceProvider, 0, {
 			from: scheduleProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = await Extensions.getEventsPromise(aWorkerPoolInstance.CallForContribution({}),1,constants.EVENT_WAIT_TIMEOUT);
+		events = await Extensions.getEventsPromise(aWorkerPoolInstance.AllowWorkerToContribute({}),1,constants.EVENT_WAIT_TIMEOUT);
 		assert.strictEqual(events[0].args.woid, woid, "woid check");
 		assert.strictEqual(events[0].args.worker, resourceProvider, "check resourceProvider call ");
 		m_statusCall = await aWorkOrderInstance.m_status.call();

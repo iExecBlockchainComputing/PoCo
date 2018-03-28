@@ -271,8 +271,8 @@ contract('IexecHub', function(accounts) {
 		console.log("woid is: " + woid);
 		aWorkOrderInstance = await WorkOrder.at(woid);
 
-		//callForContribution
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+		//allowWorkerToContribute
+		txMined = await aWorkerPoolInstance.allowWorkerToContribute(woid, resourceProvider, 0, {
 			from: scheduleProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});

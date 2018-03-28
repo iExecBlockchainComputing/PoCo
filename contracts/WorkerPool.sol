@@ -49,15 +49,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 oldSubscriptionMinimumStakePolicy, uint256 newSubscriptionMinimumStakePolicy,
 		uint256 oldSubscriptionMinimumScorePolicy, uint256 newSubscriptionMinimumScorePolicy);
 
-	event WorkOrderActive    (address indexed woid);
-	event CallForContribution(address indexed woid, address indexed worker, uint256 workerScore);
-	event Contribute         (address indexed woid, address indexed worker, bytes32 resultHash);
-	event RevealConsensus    (address indexed woid, bytes32 consensus);
-	event Reveal             (address indexed woid, address indexed worker, bytes32 result);
+	event WorkOrderActive         (address indexed woid);
+	event AllowWorkerToContribute (address indexed woid, address indexed worker, uint256 workerScore);
+	event Contribute              (address indexed woid, address indexed worker, bytes32 resultHash);
+	event RevealConsensus         (address indexed woid, bytes32 consensus);
+	event Reveal                  (address indexed woid, address indexed worker, bytes32 result);
 
-	event WorkerSubscribe    (address indexed worker);
-	event WorkerUnsubscribe  (address indexed worker);
-	event WorkerEviction     (address indexed worker);
+	event WorkerSubscribe         (address indexed worker);
+	event WorkerUnsubscribe       (address indexed worker);
+	event WorkerEviction          (address indexed worker);
 
 	/**
 	 * Modifiers
@@ -226,16 +226,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		return true;
 	}
 
-	function callForContributions(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	function allowWorkersToContribute(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		for (uint i = 0; i < _workers.length; ++i)
 		{
-			require(callForContribution(_woid, _workers[i], _enclaveChallenge));
+			require(allowWorkerToContribute(_woid, _workers[i], _enclaveChallenge));
 		}
 		return true;
 	}
 
-	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	function allowWorkerToContribute(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
@@ -250,7 +250,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		CallForContribution(_woid, _worker, workerScore);
+		AllowWorkerToContribute(_woid, _worker, workerScore);
 		return true;
 	}
 
