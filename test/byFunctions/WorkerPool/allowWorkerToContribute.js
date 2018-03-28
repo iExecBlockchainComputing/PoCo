@@ -440,28 +440,7 @@ contract('IexecHub', function(accounts) {
 
     });
 
-//	event AllowWorkerToContribute (address indexed woid, address indexed worker, uint256 workerScore);
-  /*
-
-  function allowWorkerToContribute(address _woid, address _worker, address _enclaveChallenge) public onlyOwner  returns (bool)
-  {
-    require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
-    IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
-    // random worker selection ? :
-    // Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
-    address workerPool;
-    uint256 workerScore;
-    (workerPool, workerScore) = iexecHubInterface.getWorkerStatus(_worker); // workerPool, workerScore
-    require(workerPool == address(this));
-
-    require(contribution.status == IexecLib.ContributionStatusEnum.UNSET);
-    contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
-    contribution.enclaveChallenge = _enclaveChallenge;
-
-    AllowWorkerToContribute(_woid, _worker, workerScore);
-    return true;
-  }*/
-
+//TODO check workerScore valorized
 
 
 
