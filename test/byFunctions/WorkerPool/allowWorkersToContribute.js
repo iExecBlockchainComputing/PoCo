@@ -384,7 +384,7 @@ contract('IexecHub', function(accounts) {
 		});
 
 
-				it("allowWorkersToContribute_01: scheduler can't allowWorkerToContribute a list of worker when a worker is not in his pool (resourceProvider2)", async function() {
+				it("allowWorkersToContribute_02: scheduler can't allowWorkerToContribute a list of worker when a worker is not in his pool (resourceProvider2)", async function() {
 
 			    // WORKER SUBSCRIBE TO POOL
 					txMined = await aWorkerPoolInstance.subscribeToPool({

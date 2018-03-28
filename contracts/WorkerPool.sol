@@ -194,6 +194,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		);
 	}
 
+	function getContributorsCount(address _woid) public view returns (uint256 contributorsCount)
+	{
+		return m_consensus[_woid].contributors.length;
+	}
+
+	function getContributor(address _woid, uint256 index) public view returns (address contributor)
+	{
+		return m_consensus[_woid].contributors[index];
+	}
 
 	function existingContribution(address _woid,address _worker) public view  returns (bool contributionExist){
 		return m_contributions[_woid][_worker].status != IexecLib.ContributionStatusEnum.UNSET;
@@ -219,6 +228,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			contribution.weight
 		);
 	}
+
 
 	/**************************** Works management *****************************/
 	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
@@ -285,7 +295,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
-		// tx.origin = a worker
 		require(_resultHash != 0x0);
 		require(_resultSign != 0x0);
 		if (contribution.enclaveChallenge != address(0))
