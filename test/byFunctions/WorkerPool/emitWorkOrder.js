@@ -288,6 +288,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x0000000000000000000000000000000000000000000000000000000000000000', "check no consensus");
     assert.strictEqual(revealDate.toNumber(), 0, "check no revealDate");
     assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter");
+		assert.isTrue(consensusTimout.toNumber()> 0, "check consensusTimout > 0");
+		assert.strictEqual(winnerCount.toNumber(), 0, "check 0 winnerCount");
 
     let getCategoryWorkClockTimeRefCall = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1,{
       from: iExecCloudUser,

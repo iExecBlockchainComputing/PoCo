@@ -6,6 +6,7 @@ var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var App = artifacts.require("./App.sol");
+var WorkOrder = artifacts.require("./WorkOrder.sol");
 
 const Promise = require("bluebird");
 const fs = require("fs-extra");
@@ -306,7 +307,413 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("contribute_01: resourceProvider,resourceProvider2 are allowed to contribute", async function() {
+  it("revealConsensus_01: scheduler can revealConsensus if at least one worker has contribute", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.RevealConsensus({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
+    assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
+
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
+
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    assert.strictEqual(poolReward.toNumber(), 100, "check poolReward");
+    assert.strictEqual(stakeAmount.toNumber(), 30, "check stakeAmount"); //consensus.poolReward.percentage(m_stakeRatioPolicy)
+    assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
+    assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
+    assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
+    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
+
+
+  });
+
+
+
+  it("revealConsensus_02: only scheduler can revealConsensus.", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+          from: resourceProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("revealConsensus_03: scheduler can't revealConsensus after consensusTimout", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
+    let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
+    await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef);
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+          from: scheduleProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("revealConsensus_04: scheduler can't revealConsensus if no worker has contribute", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    /*  txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+        from: resourceProvider,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+*/
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+          from: scheduleProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("revealConsensus_05: scheduler can't revealConsensus never used by a worker", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer never used"), {
+          from: scheduleProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+  });
+
+
+  it("revealConsensus_06: scheduler can't revealConsensus twice", async function() {
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+    txMined = await aIexecHubInstance.deposit(60, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    await Extensions.expectedExceptionPromise(() => {
+        return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+          from: scheduleProvider,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+
+  });
+
+
+  it("revealConsensus_07: resourceProvider,resourceProvider2 contributions the same result. check winnerCount = 2 ", async function() {
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -367,468 +774,143 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-
-    //check resourceProvider
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({
-      worker: resourceProvider
-    }), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-    assert.strictEqual(events[0].args.worker, resourceProvider, "check worker");
-    assert.strictEqual(events[0].args.resultHash, signed.hash, "check resultHash");
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.CONTRIBUTED, "check constants.ContributionStatusEnum.CONTRIBUTED");
-    assert.strictEqual(resultHash, signed.hash, "check resultHash");
-    assert.strictEqual(resultSign, signed.sign, "check resultSign");
-
-    assert.strictEqual(enclaveChallenge, '0x0000000000000000000000000000000000000000', "check enclaveChallenge");
-    assert.strictEqual(score.toNumber(), 0, "check score");
-    assert.strictEqual(weight.toNumber(), 0, "check weight");
-
-
     txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
       from: resourceProvider2,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    //check resourceProvider2
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.Contribute({
-      worker: resourceProvider2
-    }), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-    assert.strictEqual(events[0].args.worker, resourceProvider2, "check worker");
-    assert.strictEqual(events[0].args.resultHash, signed.hash, "check resultHash");
 
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider2);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.CONTRIBUTED, "check constants.ContributionStatusEnum.CONTRIBUTED");
-    assert.strictEqual(resultHash, signed.hash, "check resultHash");
-    assert.strictEqual(resultSign, signed.sign, "check resultSign");
-
-    assert.strictEqual(enclaveChallenge, '0x0000000000000000000000000000000000000000', "check enclaveChallenge");
-    assert.strictEqual(score.toNumber(), 0, "check score");
-    assert.strictEqual(weight.toNumber(), 0, "check weight");
-
-    getContributorsCount = await aWorkerPoolInstance.getContributorsCount.call(woid);
-    assert.strictEqual(getContributorsCount.toNumber(), 2, "check getContributorsCount");
-
-
-    getContributor0 = await aWorkerPoolInstance.getContributor.call(woid, 0);
-    assert.strictEqual(getContributor0, resourceProvider, "check getContributor0");
-
-    getContributor1 = await aWorkerPoolInstance.getContributor.call(woid, 1);
-    assert.strictEqual(getContributor1, resourceProvider2, "check getContributor1");
-
-  });
-
-
-
-  it("contribute_02: resourceProvider can't contribute with _resultHash = 0", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
+    txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+      from: scheduleProvider,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.RevealConsensus({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
+    assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
 
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
 
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+    assert.strictEqual(poolReward.toNumber(), 100, "check poolReward");
+    assert.strictEqual(stakeAmount.toNumber(), 30, "check stakeAmount"); //consensus.poolReward.percentage(m_stakeRatioPolicy)
+    assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
+    assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
+    assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
+    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.strictEqual(winnerCount.toNumber(), 2, "check 2 winnerCount");
 
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, 0, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
 
   });
 
 
 
+    it("revealConsensus_07: resourceProvider,resourceProvider2  contributions are differents. check winnerCount = 1 ", async function() {
 
-  it("contribute_03: resourceProvider can't contribute with _resultSign = 0", async function() {
+      // WORKER SUBSCRIBE TO POOL
+      txMined = await aWorkerPoolInstance.subscribeToPool({
+        from: resourceProvider,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
 
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
+      txMined = await aWorkerPoolInstance.subscribeToPool({
+        from: resourceProvider2,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+
+      //Create ask Marker Order by scheduler
+      txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
+        from: scheduleProvider
+      });
+
+      let woid;
+      txMined = await aIexecHubInstance.deposit(100, {
+        from: iExecCloudUser,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+      txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+        from: iExecCloudUser
+      });
+
+      events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+      woid = events[0].args.woid;
+      assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+      events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+      assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+      txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider, resourceProvider2], 0, {
+        from: scheduleProvider
+      });
+
+      [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
+      assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+
+      [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider2);
+      assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
+
+      txMined = await aIexecHubInstance.deposit(30, {
+        from: resourceProvider,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+
+      txMined = await aIexecHubInstance.deposit(30, {
+        from: resourceProvider2,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
+      txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+        from: resourceProvider,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+      signed = await Extensions.signResult("iExec the wanderer. WRONG RESULT", resourceProvider);
+      txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
+        from: resourceProvider2,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+      txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
+        from: scheduleProvider,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+      assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+      events = await Extensions.getEventsPromise(aWorkerPoolInstance.RevealConsensus({}), 1, constants.EVENT_WAIT_TIMEOUT);
+      assert.strictEqual(events[0].args.woid, woid, "woid check");
+      assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
+      assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
+
+      m_statusCall = await aWorkOrderInstance.m_status.call();
+      assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
+
+      [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+        from: iExecCloudUser,
+        gas: constants.AMOUNT_GAS_PROVIDED
+      });
+
+      assert.strictEqual(poolReward.toNumber(), 100, "check poolReward");
+      assert.strictEqual(stakeAmount.toNumber(), 30, "check stakeAmount"); //consensus.poolReward.percentage(m_stakeRatioPolicy)
+      assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
+      assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
+      assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
+      assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+      assert.strictEqual(winnerCount.toNumber(), 1, "check only 1 winnerCount");
+
+
     });
 
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, signed.hash, 0, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-
-
-  it("contribute_04: resourceProvider not AUTHORIZED can't contribute", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-    //in this test resourceProvider is not allowed to contribute
-    /*    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-          from: scheduleProvider
-        });
-
-        [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-        assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-    */
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-
-
-  it("contribute_05: resourceProvider can't contribute on wrong woid", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(resourceProvider /*test wrong WOID*/ , signed.hash, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-
-  it("contribute_06: resourceProvider can't contribute if he has not enough deposit for the reward ratio stake", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-    /*
-    For this test :resourceProvider can't contribute if he has not enough deposit for the reward ratio stake
-        txMined = await aIexecHubInstance.deposit(30, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-    */
-
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-
-
-  it("contribute_07: resourceProvider can't contribute twice", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-    txMined = await aIexecHubInstance.deposit(60, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-  });
-
-  it("contribute_08: resourceProvider can't contribute after the consensus timeout", async function() {
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1 /*_marketorderIdx*/ , aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
-    assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.AUTHORIZED, "check constants.ContributionStatusEnum.AUTHORIZED");
-    txMined = await aIexecHubInstance.deposit(60, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-    let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
-    let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
-    await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO*CategoryWorkClockTimeRef);
-    signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-
-    await Extensions.expectedExceptionPromise(() => {
-        return aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-          from: resourceProvider,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-
-  });
-
-
-  //TODO test contribute with challenge enclave
-  //TODO check this : (,contribution.score)   = iexecHubInterface.getWorkerStatus(msg.sender);
 
 });
