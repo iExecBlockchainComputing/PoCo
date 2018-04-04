@@ -275,6 +275,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
+		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 
 		address workerPool;
 		uint256 workerScore;
@@ -292,6 +294,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
@@ -317,7 +320,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function revealConsensus(address _woid, bytes32 _consensus) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-
+  	require(now <= consensus.consensusTimout);
 		require(iexecHubInterface.startRevealingPhase(_woid));
 
 		consensus.winnerCount = 0;
@@ -340,6 +343,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function reveal(address _woid, bytes32 _result) public returns (bool)
 	{
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
@@ -359,6 +363,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function reopen(address _woid) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
 		require(iexecHubInterface.reActivate(_woid));
 		// Reset to status before revealConsensus
@@ -381,6 +386,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function finalizeWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		require((consensus.revealDate <= now && consensus.revealCounter > 0) || consensus.revealCounter == consensus.winnerCount);
 
 		// add penalized to the call worker to contrubution and they never contribute ?

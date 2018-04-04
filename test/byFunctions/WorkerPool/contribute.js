@@ -763,13 +763,14 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("contribute_08: when enclave challenge is active resourceProvider can contribute if contribution resolve it", async function() {
+  it("contribute_08: resourceProvider can't contribute after the consensus timeout", async function() {
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
+
 
     //Create ask Marker Order by scheduler
     txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/ , 0 /*_trust*/ , 100 /*_value*/ , workerPoolAddress /*_workerpool of sheduler*/ , 1 /*_volume*/ , {
@@ -805,11 +806,10 @@ contract('IexecHub', function(accounts) {
       gas: constants.AMOUNT_GAS_PROVIDED
     });
 
-    txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
+    let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
+    await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO*CategoryWorkClockTimeRef);
+
 
     await Extensions.expectedExceptionPromise(() => {
         return aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
@@ -819,7 +819,9 @@ contract('IexecHub', function(accounts) {
       },
       constants.AMOUNT_GAS_PROVIDED);
 
+
   });
+
 
   //TODO test contribute with challenge enclave
   //TODO check this : (,contribution.score)   = iexecHubInterface.getWorkerStatus(msg.sender);

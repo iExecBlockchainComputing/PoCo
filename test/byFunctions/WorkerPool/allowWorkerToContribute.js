@@ -440,6 +440,55 @@ contract('IexecHub', function(accounts) {
 
     });
 
+
+		it("allowWorkerToContribute_05: scheduler can't allowWorkerToContribute on worker after the consensusTimout", async function() {
+
+			if (!isTestRPC) this.skip("This test is only for TestRPC");
+	    // WORKER SUBSCRIBE TO POOL
+			txMined = await aWorkerPoolInstance.subscribeToPool({
+				from: resourceProvider,
+				gas: constants.AMOUNT_GAS_PROVIDED
+			});
+
+	    //Create ask Marker Order by scheduler
+			txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+				from: scheduleProvider
+			});
+
+	  	let woid;
+			txMined = await aIexecHubInstance.deposit(100, {
+				from: iExecCloudUser,
+				gas: constants.AMOUNT_GAS_PROVIDED
+			});
+			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+				from: iExecCloudUser
+			});
+
+	    timestamp = await Extensions.getCurrentBlockTime();
+
+			events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
+			woid = events[0].args.woid;
+			assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+	    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}),1,constants.EVENT_WAIT_TIMEOUT);
+	    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+			let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
+			let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
+			await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO*CategoryWorkClockTimeRef);
+
+			await Extensions.expectedExceptionPromise(() => {
+					return aWorkerPoolInstance.allowWorkerToContribute(woid,resourceProvider,0, {
+			      from: scheduleProvider,
+						gas:constants.AMOUNT_GAS_PROVIDED
+			    });
+				},
+				constants.AMOUNT_GAS_PROVIDED);
+
+		});
+
+
 //TODO check workerScore valorized
 
 
