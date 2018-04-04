@@ -31,8 +31,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	// mapping(woid => worker address => Contribution);
 	mapping(address => mapping(address => IexecLib.Contribution)) public m_contributions;
 
-	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
-	uint256 public constant CONSENSUS_DURATION_RATIO = 5;
+	uint256 public constant REVEAL_PERIOD_DURATION_RATIO  = 2;
+	uint256 public constant CONSENSUS_DURATION_RATIO      = 10;
 
 	/**
 	 * Address of slave/related contracts
@@ -335,7 +335,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		consensus.consensus  = _consensus;
-		consensus.revealDate = REVEAL_PERIOD_DURATION.add(now);
+		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); //is it better to store th catid ?
 		RevealConsensus(_woid, _consensus);
 		return true;
 	}
@@ -347,7 +347,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
-		require(consensus.revealDate        >  now                                        ); // Needed ?
+		require(consensus.revealDate        >  now                                        );
 		require(contribution.status         == IexecLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == consensus.consensus                        );
 		require(contribution.resultHash     == keccak256(_result                        ) );
@@ -356,7 +356,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.PROVED;
 		consensus.revealCounter = consensus.revealCounter.add(1);
 
-		Reveal(_woid, msg.sender, _result); // TODO add WorkStatusEnum in LOG
+		Reveal(_woid, msg.sender, _result); 
 		return true;
 	}
 

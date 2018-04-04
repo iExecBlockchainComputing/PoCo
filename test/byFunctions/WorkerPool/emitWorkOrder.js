@@ -297,9 +297,9 @@ contract('IexecHub', function(accounts) {
     });
     assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 120, "check getCategoryWorkClockTimeRef for cat 1 =120 sec");
 
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), timestamp+600, "consensusTimout =  blocktime + 120 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+1200, "consensusTimout =  blocktime + 120 *10");
     //console.log(timestamp+600);
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), consensusTimout.toNumber(), "consensusTimout =  blocktime + 120 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimout.toNumber(), "consensusTimout =  blocktime + 120 *5");
 
     assert.strictEqual(winnerCount.toNumber(), 0, "check no winnerCount");
 

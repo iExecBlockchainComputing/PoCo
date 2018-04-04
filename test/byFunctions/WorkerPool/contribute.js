@@ -769,7 +769,7 @@ contract('IexecHub', function(accounts) {
   });
 
   it("contribute_08: resourceProvider can't contribute after the consensus timeout", async function() {
-
+		if (!isTestRPC) this.skip("This test is only for TestRPC");
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
