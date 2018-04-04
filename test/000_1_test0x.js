@@ -1,3 +1,5 @@
+var Test0x = artifacts.require("./Test0x.sol");
+
 var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 var IexecHub       = artifacts.require("./IexecHub.sol");
 var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
@@ -9,13 +11,13 @@ var WorkOrder      = artifacts.require("./WorkOrder.sol");
 var IexecLib       = artifacts.require("./IexecLib.sol");
 var Marketplace    = artifacts.require("./Marketplace.sol");
 
+const web3utils       = require('web3-utils');
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
 const readFileAsync   = Promise.promisify(fs.readFile);
-
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -42,13 +44,13 @@ contract('IexecHub', function(accounts) {
 	let aDatasetHubInstance;
 	let aMarketplaceInstance;
 
+
 	//specific for test :
+	let aTest0xInstance;
 	let workerPoolAddress;
 	let aWorkerPoolInstance;
-
 	let appAddress;
 	let aAppInstance;
-	let aWorkOrderInstance;
 
 	before("should prepare accounts and check TestRPC Mode", async() => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -243,75 +245,117 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		aAppInstance = await App.at(appAddress);
 
-		//Create ask Marker Order by scheduler
-		txMined = await aIexecHubInstance.deposit(100, {
-			from: scheduleProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
-			from: scheduleProvider
-		});
+		aTest0xInstance = await Test0x.new({ from: marketplaceCreator });
+		console.log("aTest0xInstance.address is: ", aTest0xInstance.address);
 
-		//answerAskOrder
-		txMined = await aIexecHubInstance.deposit(100, {
-			from: iExecCloudUser,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-			from: iExecCloudUser
-		});
-
-		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
-		woid = events[0].args.woid;
-		console.log("woid is: " + woid);
-		aWorkOrderInstance = await WorkOrder.at(woid);
-
-		//callForContribution
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
-			from: scheduleProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
-
-		//workerContribute
-		assert.strictEqual(subscriptionMinimumStakePolicy, 10, "check stake sanity before contribution");
-		assert.strictEqual(subscriptionLockStakePolicy,    0,  "check stake sanity before contribution");
-		txMined = await aIexecHubInstance.deposit(30, {
-			from: resourceProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-		txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
-			from: resourceProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 10, "check stake of the resourceProvider");
-		assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider : 30 + 10");
 	});
 
-	it("revealConsensus", async function() {
-		txMined = await aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
-			from: scheduleProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(aWorkerPoolInstance.RevealConsensus({}),1,constants.EVENT_WAIT_TIMEOUT);
-		assert.strictEqual(events[0].args.woid, woid, "woid check");
-		assert.strictEqual(events[0].args.consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check revealed Consensus ");
-		assert.strictEqual(events[0].args.consensus, Extensions.hashResult("iExec the wanderer"), "check revealed Consensus ");
 
-		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
-		});
+	let order     = {}
+	let poolOrder = {};
+	let userOrder = {};
+
+	order.category = web3.toBigNumber(3);
+	order.trust    = web3.toBigNumber(100);
+	order.value    = web3.toBigNumber(10);
+
+	it("getPoolOrderHash", async function() {
+		poolOrder.volume     = web3.toBigNumber(5);
+		poolOrder.workerpool = aWorkerPoolInstance.address;
+		poolOrder.salt       = web3.toBigNumber(web3utils.randomHex(32));
+
+		poolOrder.hash = await aTest0xInstance.getPoolOrderHash.call(
+			[ order.category, order.trust, order.value],
+			poolOrder.volume,
+			poolOrder.workerpool,
+			poolOrder.salt
+		);
+
+		assert.strictEqual(
+			poolOrder.hash,
+			web3utils.soliditySha3(
+				aTest0xInstance.address,
+				order.category,
+				order.trust,
+				order.value,
+				poolOrder.volume,
+				poolOrder.workerpool,
+				poolOrder.salt
+			),
+			"check pool order hash"
+		);
+		console.log("hash of pool order: ", poolOrder.hash);
+	});
+
+
+	it("signPoolOrderHash", async function() {
+		signature = web3.eth.sign(scheduleProvider, poolOrder.hash);
+		poolOrder.r = '0x' + signature.substr(2, 64);
+		poolOrder.s = '0x' + signature.substr(66, 64);
+		poolOrder.v = web3.toDecimal(signature.substr(130, 2)) + 27;
+
+		poolSigCheck = await aTest0xInstance.isValidSignature.call(
+			scheduleProvider,
+			poolOrder.hash,
+			poolOrder.v,
+			poolOrder.r,
+			poolOrder.s
+		);
+		assert(poolSigCheck, "invalid pool order signature");
+	});
+
+	it("getUserOrderHash", async function() {
+		userOrder.app         = aAppInstance.address;
+		userOrder.dataset     = '0x0000000000000000000000000000000000000000';
+		userOrder.callback    = '0x0000000000000000000000000000000000000000';
+		userOrder.beneficiary = iExecCloudUser;
+		userOrder.params      = "iExec the wandered";
+		userOrder.requester   = iExecCloudUser;
+		userOrder.salt        = web3.toBigNumber(web3utils.randomHex(32));
+
+		userOrder.hash = await aTest0xInstance.getUserOrderHash.call(
+			[ order.category, order.trust, order.value ],
+			[ userOrder.app, userOrder.dataset, userOrder.callback, userOrder.beneficiary ],
+			userOrder.params,
+			userOrder.requester,
+			userOrder.salt
+		);
+		assert.strictEqual(
+			userOrder.hash,
+			web3utils.soliditySha3(
+				aTest0xInstance.address,
+				order.category,
+				order.trust,
+				order.value,
+				userOrder.app,
+				userOrder.dataset,
+				userOrder.callback,
+				userOrder.beneficiary,
+				userOrder.params,
+				userOrder.requester,
+				userOrder.salt,
+			),
+			"check user order hash"
+		);
+		console.log("hash of user order: ", userOrder.hash);
+	});
+
+	it("signUserOrderHash", async function() {
+		signature = web3.eth.sign(iExecCloudUser, userOrder.hash);
+		userOrder.r = '0x' + signature.substr(2, 64);
+		userOrder.s = '0x' + signature.substr(66, 64);
+		userOrder.v = web3.toDecimal(signature.substr(130, 2)) + 27;
+
+		userSigCheck = await aTest0xInstance.isValidSignature.call(
+			iExecCloudUser,
+			userOrder.hash,
+			userOrder.v,
+			userOrder.r,
+			userOrder.s
+		);
+		assert(userSigCheck, "invalid pool order signature");
+	});
 
 });
