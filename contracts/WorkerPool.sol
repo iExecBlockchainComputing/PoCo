@@ -299,7 +299,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(_resultSign != 0x0);
 		if (contribution.enclaveChallenge != address(0))
 		{
-				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
+			require(contribution.enclaveChallenge == ecrecover(keccak256("\x19Ethereum Signed Message:\n64", _resultHash, _resultSign), _v, _r, _s));
 		}
 
 		require(contribution.status == IexecLib.ContributionStatusEnum.AUTHORIZED);
