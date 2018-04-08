@@ -517,9 +517,6 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  /*
-  TODO : Test remaining value when a ask has been consumed by a iExecCloudUser
-  */
 
 
 

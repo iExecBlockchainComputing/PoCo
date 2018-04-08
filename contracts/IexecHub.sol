@@ -431,6 +431,11 @@ contract IexecHub
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
 	}
 
+	function getWorkerScore(address _worker) public view returns (uint256 workerScore)
+	{
+		return m_scores[_worker];
+	}
+
 	/**
 	 * Worker subscription
 	 */

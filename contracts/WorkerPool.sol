@@ -309,7 +309,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
-		(,contribution.score)   = iexecHubInterface.getWorkerStatus(msg.sender);
+		contribution.score      = iexecHubInterface.getWorkerScore(msg.sender);
 		consensus.contributors.push(msg.sender);
 
 		require(iexecHubInterface.lockForWork(_woid, msg.sender, consensus.stakeAmount));
@@ -356,7 +356,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.PROVED;
 		consensus.revealCounter = consensus.revealCounter.add(1);
 
-		Reveal(_woid, msg.sender, _result); 
+		Reveal(_woid, msg.sender, _result);
 		return true;
 	}
 
@@ -387,9 +387,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
-		require((consensus.revealDate <= now && consensus.revealCounter > 0) || consensus.revealCounter == consensus.winnerCount);
+		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); //consensus.winnerCount never 0 at this step
 
-		// add penalized to the call worker to contrubution and they never contribute ?
+		// add penalized to the call worker to contribution and they never contribute ?
 		require(distributeRewards(_woid, consensus));
 
 		require(iexecHubInterface.finalizeWorkOrder(_woid, _stdout, _stderr, _uri));

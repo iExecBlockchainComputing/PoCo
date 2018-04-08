@@ -100,6 +100,10 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
+	function getWorkerScore(
+		address _worker)
+	public view returns (uint256 workerScore);
+
 	function registerToPool(address _worker)
 	public returns (bool subscribed);
 
