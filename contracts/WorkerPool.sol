@@ -327,7 +327,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		for (uint256 i = 0; i<consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];
-			if (m_contributions[_woid][w].resultHash == _consensus)
+			if (
+			m_contributions[_woid][w].resultHash == _consensus
+			&&
+			m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.CONTRIBUTED//REJECTED contribution must not be count
+			)
 			{
 				consensus.winnerCount = consensus.winnerCount.add(1);
 			}
@@ -366,11 +370,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
 		require(iexecHubInterface.reActivate(_woid));
-		// Reset to status before revealConsensus
-		consensus.winnerCount = 0;
-		consensus.consensus   = 0x0;
-		consensus.revealDate  = 0;
-
 		for (uint256 i = 0; i < consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];
@@ -379,6 +378,10 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 				m_contributions[_woid][w].status = IexecLib.ContributionStatusEnum.REJECTED;
 			}
 		}
+		// Reset to status before revealConsensus. Must be after REJECTED traitement above because of consensus.consensus check
+		consensus.winnerCount = 0;
+		consensus.consensus   = 0x0;
+		consensus.revealDate  = 0;
 		return true;
 	}
 
