@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 contract TestSha
 {
@@ -15,23 +15,23 @@ contract TestSha
 
 	function testSolidityKeccak256FromBytes(bytes32 _input) public
 	{
-		SolidityKeccak256FromBytes(keccak256(_input), _input);
+		emit SolidityKeccak256FromBytes(keccak256(_input), _input);
 	}
 
 	function testSolidityKeccak256FromString(string _input) public
 	{
-		SolidityKeccak256FromString(keccak256(_input), _input);
+		emit SolidityKeccak256FromString(keccak256(_input), _input);
 	}
 
 	function testSolidityKeccak256FromAddress(address _input) public
 	{
-		SolidityKeccak256FromAddress(keccak256(_input), _input);
+		emit SolidityKeccak256FromAddress(keccak256(_input), _input);
 	}
 
 	function testSignedVote(bytes32 _result) public
 	{
 		bytes32 vote = keccak256(_result                        );
 		bytes32 sign = keccak256(_result ^ keccak256(msg.sender));
-		SignedVote(_result, msg.sender, vote, sign);
+		emit SignedVote(_result, msg.sender, vote, sign);
 	}
 }

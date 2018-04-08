@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "./IexecHub.sol";
 
@@ -41,7 +41,7 @@ contract IexecAPI
 	public returns (bool)
 	{
 		require(msg.sender == _woid);
-		WorkOrderCallback(_woid, _stdout, _stderr, _uri);
+		emit WorkOrderCallback(_woid, _stdout, _stderr, _uri);
 		return true;
 	}
 }

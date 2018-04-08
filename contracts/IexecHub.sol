@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "rlc-token/contracts/RLC.sol";
 
@@ -72,7 +72,6 @@ contract IexecHub
 	/* event WorkOrderEmit */
 	event WorkOrderActivated(address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
-	event WorkOrderCancelled(address woid, address indexed workerPool);
 	event WorkOrderAborted  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
@@ -82,8 +81,6 @@ contract IexecHub
 
 	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
-	event OpenWorkerPool          (address indexed workerPool);
-	event CloseWorkerPool         (address indexed workerPool);
 	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
 	event WorkerPoolEviction      (address indexed workerPool, address worker);
@@ -151,7 +148,7 @@ contract IexecHub
 		category.name                      = _name;
 		category.description               = _description;
 		category.workClockTimeRef          = _workClockTimeRef;
-		CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
+		emit CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
 		return m_categoriesCount;
 	}
 
@@ -171,7 +168,7 @@ contract IexecHub
 			_subscriptionMinimumScorePolicy,
 			marketplaceAddress
 		);
-		CreateWorkerPool(tx.origin, newWorkerPool, _description);
+		emit CreateWorkerPool(tx.origin, newWorkerPool, _description);
 		return newWorkerPool;
 	}
 
@@ -187,7 +184,7 @@ contract IexecHub
 			_appPrice,
 			_appParams
 		);
-		CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
+		emit CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
 		return newApp;
 	}
 
@@ -203,7 +200,7 @@ contract IexecHub
 			_datasetPrice,
 			_datasetParams
 			);
-		CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
+		emit CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
 		return newDataset;
 	}
 
@@ -235,7 +232,7 @@ contract IexecHub
 		));
 
 		workorder.activate(); // revert on error
-		WorkOrderActivated(workorder, _workerpool);
+		emit WorkOrderActivated(workorder, _workerpool);
 
 		return workorder;
 	}
@@ -293,7 +290,6 @@ contract IexecHub
 		}
 
 		// WORKERPOOL
-		WorkerPool workerpool = WorkerPool(_workerpool);
 		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
 
 		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
@@ -309,7 +305,7 @@ contract IexecHub
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
 		workorder.reveal(); // revert on error
-		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
+		emit WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
 		return true;
 	}
 
@@ -318,7 +314,7 @@ contract IexecHub
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
 		workorder.reactivate();  // revert on error
-		WorkOrderActivated(_woid, workorder.m_workerpool());
+		emit WorkOrderActivated(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -342,7 +338,7 @@ contract IexecHub
 		require(seize (workerpoolOwner,         value                            ));
 		// IMPORTANT TODO: who do we give the extra value comming from the sheduler ?
 
-		WorkOrderAborted(_woid, workorder.m_workerpool());
+		emit WorkOrderAborted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -398,7 +394,7 @@ contract IexecHub
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
 
-		WorkOrderCompleted(_woid, workorder.m_workerpool());
+		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -453,7 +449,7 @@ contract IexecHub
 		// Update affectation
 		require(workerPoolHub.registerWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolSubscription(msg.sender, _worker);
+		emit WorkerPoolSubscription(msg.sender, _worker);
 		return true;
 	}
 
@@ -462,7 +458,7 @@ contract IexecHub
 	{
 		require(removeWorker(msg.sender,_worker));
 		// Trigger event notice
-		WorkerPoolUnsubscription(msg.sender, _worker);
+		emit WorkerPoolUnsubscription(msg.sender, _worker);
 		return true;
 	}
 
@@ -471,7 +467,7 @@ contract IexecHub
 	{
 		require(removeWorker(msg.sender,_worker));
 		// Trigger event notice
-		WorkerPoolEviction(msg.sender, _worker);
+		emit WorkerPoolEviction(msg.sender, _worker);
 		return true;
 	}
 
@@ -531,9 +527,9 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			AccurateContribution(_woid, _worker);
 			m_contributionHistory.success = m_contributionHistory.success.add(1);
 			m_scores[_worker] = m_scores[_worker].add(1);
+			emit AccurateContribution(_woid, _worker);
 		}
 		return true;
 	}
@@ -544,9 +540,9 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			FaultyContribution(_woid, _worker);
 			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
 			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(50));
+			emit FaultyContribution(_woid, _worker);
 		}
 		return true;
 	}
@@ -557,14 +553,14 @@ contract IexecHub
 	{
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
-		Deposit(msg.sender, _amount);
+		emit Deposit(msg.sender, _amount);
 		return true;
 	}
 	function withdraw(uint256 _amount) external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		require(rlc.transfer(msg.sender, _amount));
-		Withdraw(msg.sender, _amount);
+		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
 	function checkBalance(address _owner) public view returns (uint256 stake, uint256 locked)
@@ -577,13 +573,13 @@ contract IexecHub
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
-		Reward(_user, _amount);
+		emit Reward(_user, _amount);
 		return true;
 	}
 	function seize(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
-		Seize(_user, _amount);
+		emit Seize(_user, _amount);
 		return true;
 	}
 	function lock(address _user, uint256 _amount) internal returns (bool)

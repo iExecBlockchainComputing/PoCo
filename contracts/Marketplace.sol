@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 import './IexecLib.sol';
 import './IexecHubAccessor.sol';
 import './WorkerPool.sol';
@@ -88,7 +88,7 @@ contract Marketplace is IexecHubAccessor
 		{
 			revert();
 		}
-		MarketOrderEmitted(m_orderCount);
+		emit MarketOrderEmitted(m_orderCount);
 		return m_orderCount;
 	}
 
@@ -113,7 +113,7 @@ contract Marketplace is IexecHubAccessor
 			revert();
 		}
 		marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
-		MarketOrderClosed(_marketorderIdx);
+		emit MarketOrderClosed(_marketorderIdx);
 		return true;
 	}
 	/*
@@ -175,7 +175,7 @@ contract Marketplace is IexecHubAccessor
 			marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
 		}
 		require(iexecHubInterface.lockForOrder(_requester, marketorder.value));
-		MarketOrderAskConsume(_marketorderIdx, _requester);
+		emit MarketOrderAskConsume(_marketorderIdx, _requester);
 		return true;
 	}
 	/*

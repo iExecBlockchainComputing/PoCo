@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
@@ -105,7 +105,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 _newSubscriptionMinimumScorePolicy)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(
+		emit WorkerPoolPolicyUpdate(
 			m_stakeRatioPolicy,               _newStakeRatioPolicy,
 			m_schedulerRewardRatioPolicy,     _newSchedulerRewardRatioPolicy,
 			m_subscriptionMinimumStakePolicy, _newSubscriptionMinimumStakePolicy,
@@ -140,7 +140,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(iexecHubInterface.registerToPool(msg.sender));
 		uint index = m_workers.push(msg.sender);
 		m_workerIndex[msg.sender] = index.sub(1);
-		WorkerSubscribe(msg.sender);
+		emit WorkerSubscribe(msg.sender);
 		return true;
 	}
 
@@ -149,7 +149,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		//msg.sender = worker
 		require(iexecHubInterface.unregisterFromPool(msg.sender));
 		require(removeWorker(msg.sender));
-		WorkerUnsubscribe(msg.sender);
+		emit WorkerUnsubscribe(msg.sender);
 		return true;
 	}
 
@@ -158,7 +158,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		//msg.sender = scheduler
 		require(iexecHubInterface.evictWorker(_worker));
 		require(removeWorker(_worker));
-		WorkerEviction(_worker);
+		emit WorkerEviction(_worker);
 		return true;
 	}
 
@@ -241,7 +241,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
 		consensus.consensusTimout = timeout;
 
-		WorkOrderActive(_woid);
+		emit WorkOrderActive(_woid);
 		return true;
 	}
 
@@ -287,7 +287,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		AllowWorkerToContribute(_woid, _worker, workerScore);
+		emit AllowWorkerToContribute(_woid, _worker, workerScore);
 		return true;
 	}
 
@@ -313,7 +313,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		consensus.contributors.push(msg.sender);
 
 		require(iexecHubInterface.lockForWork(_woid, msg.sender, consensus.stakeAmount));
-		Contribute(_woid, msg.sender, _resultHash);
+		emit Contribute(_woid, msg.sender, _resultHash);
 		return consensus.stakeAmount;
 	}
 
@@ -336,7 +336,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 		consensus.consensus  = _consensus;
 		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); //is it better to store th catid ?
-		RevealConsensus(_woid, _consensus);
+		emit RevealConsensus(_woid, _consensus);
 		return true;
 	}
 
@@ -356,7 +356,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.PROVED;
 		consensus.revealCounter = consensus.revealCounter.add(1);
 
-		Reveal(_woid, msg.sender, _result);
+		emit Reveal(_woid, msg.sender, _result);
 		return true;
 	}
 
