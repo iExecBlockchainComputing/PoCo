@@ -9,7 +9,7 @@ import "./WorkOrder.sol";
 import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 {
 	using SafeMathOZ for uint256;
 
@@ -407,16 +407,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint256 i;
 		address w;
-		/**
-		 * Reward distribution:
-		 * totalReward is to be distributed amoung the winners relative to their
-		 * contribution. I believe that the weight should be someting like:
-		 *
-		 * w ~= 1+log(score*bonus)
-		 *
-		 * Is it worth the gaz necessay to compute the log?
-		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-		 */
 		uint256 workerBonus;
 		uint256 workerWeight;
 		uint256 totalWeight;

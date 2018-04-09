@@ -18,10 +18,6 @@ import './IexecLib.sol';
 contract IexecHub
 {
 	using SafeMathOZ for uint256;
-	// uint private constant WORKERPOOL_CREATION_STAKE = 5000; // updated by vote or super admin ?
-	// uint private constant APP_CREATION_STAKE        = 5000; // updated by vote or super admin ?
-	// uint private constant DATASET_CREATION_STAKE    = 5000; // updated by vote or super admin ?
-	// uint private constant WORKER_MEMBERSHIP_STAKE   = 5000; // updated by vote or super admin ?
 
 	/**
 	* RLC contract for token transfers.
@@ -109,8 +105,6 @@ contract IexecHub
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
-		// marketplace        = Marketplace(marketplaceAddress); //too much gas
-		// marketplaceAddress = new Marketplace(this); //too much gas
 		marketplaceAddress  = address(0);
 		m_categoriesCreator = address(0);
 
@@ -122,7 +116,7 @@ contract IexecHub
 	function attachMarketplace(address _marketplaceAddress) public
 	{
 		require(marketplaceAddress == address(0));
-		marketplaceAddress = _marketplaceAddress; //new Marketplace(this);
+		marketplaceAddress = _marketplaceAddress;
 		marketplace        =  Marketplace(_marketplaceAddress);
 	}
 
@@ -159,8 +153,6 @@ contract IexecHub
 		uint256 _subscriptionMinimumScorePolicy)
 	external returns (address createdWorkerPool)
 	{
-		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		// require(lock(msg.sender, WORKERPOOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(
 			_description,
 			_subscriptionLockStakePolicy,
@@ -178,7 +170,6 @@ contract IexecHub
 		string  _appParams)
 	external returns (address createdApp)
 	{
-		// require(lock(msg.sender, APP_CREATION_STAKE)); ?
 		address newApp = appHub.createApp(
 			_appName,
 			_appPrice,
@@ -194,7 +185,6 @@ contract IexecHub
 		string  _datasetParams)
 	external returns (address createdDataset)
 	{
-		// require(lock(msg.sender, DATASET_CREATION_STAKE)); ?
 		address newDataset = datasetHub.createDataset(
 			_datasetName,
 			_datasetPrice,
@@ -362,9 +352,7 @@ contract IexecHub
 		if (appPrice > 0)
 		{
 			require(reward(app.m_owner(), appPrice));
-			// TODO: to unlock a stake ?
 		}
-		// incremente app reputation?
 
 		// DATASET
 		Dataset dataset = Dataset(workorder.m_dataset());
@@ -374,9 +362,7 @@ contract IexecHub
 			if (datasetPrice > 0)
 			{
 				require(reward(dataset.m_owner(), datasetPrice));
-				// TODO: to unlock a stake ?
 			}
-			// incremente dataset reputation?
 		}
 
 		// WORKERPOOL → rewarding done by the caller itself
