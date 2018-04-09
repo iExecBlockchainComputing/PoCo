@@ -388,7 +388,8 @@ contract IexecHub
 		 */
 		uint256 value;
  		address workerpoolOwner;
- 		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());//revert if not exist
+		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
 		require(unlock(workerpoolOwner,         value));                             // unlock scheduler stake
