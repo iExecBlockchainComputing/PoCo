@@ -212,38 +212,11 @@ contract IexecHub
 		address requester = msg.sender;
 		require(marketplace.consumeMarketOrderAsk(_marketorderIdx, requester, _workerpool));
 
-		WorkOrder workorder = WorkOrder(emitWorkOrder(
-			_marketorderIdx,
-			requester,
-			_workerpool,
-			_app,
-			_dataset,
-			_params,
-			_callback,
-			_beneficiary
-		));
-
-		emit WorkOrderActivated(workorder, _workerpool);
-
-		return workorder;
-	}
-
-	function emitWorkOrder(
-		uint256 _marketorderIdx,
-		address _requester,
-		address _workerpool, // Address of a smartcontract
-		address _app,        // Address of a smartcontract
-		address _dataset,    // Address of a smartcontract
-		string  _params,
-		address _callback,
-		address _beneficiary)
-	internal returns (address)
-	{
-		uint256 emitcost = lockWorkOrderCost(_requester, _workerpool, _app, _dataset);
+		uint256 emitcost = lockWorkOrderCost(requester, _workerpool, _app, _dataset);
 
 		WorkOrder workorder = new WorkOrder(
 			_marketorderIdx,
-			_requester,
+			requester,
 			_app,
 			_dataset,
 			_workerpool,
@@ -255,6 +228,7 @@ contract IexecHub
 
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
+		emit WorkOrderActivated(workorder, _workerpool);
 		return workorder;
 	}
 
