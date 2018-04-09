@@ -21,6 +21,10 @@ contract MarketplaceInterface
 		uint256 _marketorderIdx)
 	public view returns(uint256);
 
+	function getMarketOrderWorkerpoolOwner(
+		uint256 _marketorderIdx)
+	public view returns(address);
+
 	function getMarketOrderCategory(
 		uint256 _marketorderIdx)
 	public view returns (uint256);

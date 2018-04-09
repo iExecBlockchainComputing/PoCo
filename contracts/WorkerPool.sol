@@ -180,7 +180,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 c_revealDate,
 		uint256 c_revealCounter,
 		uint256 c_consensusTimout,
-		uint256 c_winnerCount)
+		uint256 c_winnerCount,
+		address c_workerpoolOwner)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		return (
@@ -190,7 +191,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			consensus.revealDate,
 			consensus.revealCounter,
 			consensus.consensusTimout,
-			consensus.winnerCount
+			consensus.winnerCount,
+			consensus.workerpoolOwner
 		);
 	}
 
@@ -238,6 +240,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
+		consensus.workerpoolOwner = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
 		consensus.consensusTimout = timeout;
 
@@ -295,6 +298,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
+		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
@@ -457,7 +461,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecHubInterface.rewardForWork(_woid, m_owner, totalReward, false));
+		require(iexecHubInterface.rewardForWork(_woid,_consensus.workerpoolOwner, totalReward, false));
 
 		return true;
 	}

@@ -242,6 +242,11 @@ contract Marketplace is IexecHubAccessor
 		require(existingMarketOrder(_marketorderIdx));//no silent value returned
 		return m_orderBook[_marketorderIdx].value;
 	}
+	function getMarketOrderWorkerpoolOwner(uint256 _marketorderIdx) public view returns (address)
+	{
+		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		return m_orderBook[_marketorderIdx].workerpoolOwner;
+	}
 	function getMarketOrderCategory(uint256 _marketorderIdx) public view returns (uint256)
 	{
 		require(existingMarketOrder(_marketorderIdx));//no silent value returned

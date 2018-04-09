@@ -54,6 +54,7 @@ library IexecLib
 		uint256 consensusTimout;
 		uint256 winnerCount;
 		address[] contributors;
+		address workerpoolOwner;
 	}
 
 	/***************************************************************************/

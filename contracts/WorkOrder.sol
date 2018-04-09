@@ -80,7 +80,7 @@ contract WorkOrder
 
 	function claim() public onlyIexecHub
 	{
-		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE); // or REVEALING ?
+		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE || m_status == IexecLib.WorkOrderStatusEnum.REVEALING); 
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
 	}
 

@@ -72,7 +72,7 @@ contract IexecHub
 	/* event WorkOrderEmit */
 	event WorkOrderActivated(address woid, address indexed workerPool);
 	event WorkOrderRevealing(address woid, address indexed workerPool);
-	event WorkOrderAborted  (address woid, address workerPool);
+	event WorkOrderClaimed  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
@@ -324,20 +324,23 @@ contract IexecHub
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);//to remove
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
 		uint    value;
 		address workerpoolOwner;
-		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());//revert if not exist
+		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
 
 		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
 		require(seize (workerpoolOwner,         value                            ));
-		// IMPORTANT TODO: who do we give the extra value comming from the sheduler ?
+		//put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
+		require(reward (this,                   value                            ));
+		require(lock   (this,                   value                            ));
 
-		emit WorkOrderAborted(_woid, workorder.m_workerpool());
+		emit WorkOrderClaimed(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -392,6 +395,21 @@ contract IexecHub
 
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
+
+		// Rien ne se perd, rien ne se crée, tout se transfere
+		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
+		uint256 locked;
+		(,locked) = checkBalance(this);
+		if(locked > 0){
+				if(locked <= 10){
+					require(seize(this, locked));
+					require(reward(workerpoolOwner, locked));
+				}
+				else{
+					require(seize(this, locked.percentage(uint256(10))));
+					require(reward(workerpoolOwner, locked.percentage(uint256(10))));
+				}
+		}
 
 		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
