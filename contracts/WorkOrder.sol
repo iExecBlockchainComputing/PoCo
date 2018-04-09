@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import './IexecAPI.sol';
+import './IexecCallbackInterface.sol';
 import './IexecLib.sol';
 contract WorkOrder
 {
@@ -94,7 +94,7 @@ contract WorkOrder
 		if (m_callback != address(0))
 		{
 			// optional dappCallback call can be done
-			require(IexecAPI(m_callback).workOrderCallback(
+			require(IexecCallbackInterface(m_callback).workOrderCallback(
 				this,
 				_stdout,
 				_stderr,

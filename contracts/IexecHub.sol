@@ -22,7 +22,8 @@ contract IexecHub
 	/**
 	* RLC contract for token transfers.
 	*/
-	RLC public rlc;
+	RLC     public rlc;
+	address public tokenAddress;
 
 	/**
 	 * Slaves contracts
@@ -101,6 +102,7 @@ contract IexecHub
 	public
 	{
 		rlc = RLC(_tokenAddress);
+		tokenAddress       = _tokenAddress;
 
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
@@ -424,6 +426,11 @@ contract IexecHub
 		m_categories[_catId].description,
 		m_categories[_catId].workClockTimeRef
 		);
+	}
+
+	function getRLCAddress() public view returns (address rlcAddress)
+	{
+		return tokenAddress;
 	}
 
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)

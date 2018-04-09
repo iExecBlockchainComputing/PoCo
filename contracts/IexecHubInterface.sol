@@ -104,6 +104,9 @@ contract IexecHubInterface
 		address _worker)
 	public view returns (uint256 workerScore);
 
+	function getRLCAddress()
+	public view returns (address rlc);
+
 	function registerToPool(address _worker)
 	public returns (bool subscribed);
 

@@ -60,15 +60,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	event WorkerEviction          (address indexed worker);
 
 	/**
-	 * Modifiers
-	 */
-	modifier onlyWorkerPoolHub()
-	{
-		require(msg.sender == m_workerPoolHubAddress);
-		_;
-	}
-
-	/**
 	 * Methods
 	 */
 	// Constructor
