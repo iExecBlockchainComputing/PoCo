@@ -40,12 +40,12 @@ library SafeMathOZ
 		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
 		return c;
 	}
-
+/* not used
 	function max(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		return a >= b ? a : b;
 	}
-
+*/
 	function min(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		return a < b ? a : b;

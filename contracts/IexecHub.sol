@@ -482,16 +482,6 @@ contract IexecHub
 		require(unlock(_user, _amount));
 		return true;
 	}
-	function seizeForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
-	{
-		require(seize(_user,_amount));
-		return true;
-	}
-	function rewardForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
-	{
-		require(reward(_user,_amount));
-		return true;
-	}
 	/* Work */
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
