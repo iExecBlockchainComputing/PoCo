@@ -293,8 +293,6 @@ contract('IexecHub', function(accounts) {
 
   });
 
-
-
   it("finalizeWork_01: a worker and a scheduler are rewarded when finalizeWork is call successfuly", async function() {
 
     // WORKER SUBSCRIBE TO POOL
@@ -2266,15 +2264,15 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
 
-    //workerWeight resourceProvider = 1 + log2(3)=1.5849 = 2.5849
-    //workerWeight resourceProvider3 = 1 + log2(2)=1 = 2
-    //totalWeight = 4.5849
+    //workerWeight resourceProvider = 1 + log2(3)=1.5849 =  2.5849 why round to 3 ? (see after)
+    //workerWeight resourceProvider3 = 1 + log2(2)=1 = 2  OK
+    //totalWeight = 5
 
     //workersReward = 99% of 50 = 49
 
     //workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
-    //49 * (2.5849 /4.5849) = 27.62 ??? not eq 29
-    //49 * (2/4.5849) = 21.37 ?? not eq 19
+    //49 * (3/5) = 29.4  = 29
+    //49 * (2/5) = 19.6  = 19
     assert.strictEqual(checkBalance[0].toNumber(), 134, "check stake of the resourceProvider. after finalizeWork. initial 105 + 29 ");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider: after finalizeWork.");
 
@@ -2292,6 +2290,13 @@ contract('IexecHub', function(accounts) {
 
     getWorkerScore = await aIexecHubInstance.getWorkerScore.call(resourceProvider3);
     assert.strictEqual(getWorkerScore.toNumber(), 3, " workerScore resourceProvider3");
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid4, resourceProvider);
+    assert.strictEqual(weight.toNumber(), 3, "3 weight for resourceProvider");
+
+    [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid4, resourceProvider3);
+    assert.strictEqual(weight.toNumber(), 2, "2 weight for resourceProvider3");
+
 
 
 
