@@ -33,8 +33,6 @@ library IexecLib
 	enum WorkOrderStatusEnum
 	{
 		UNSET,     // Work order not yet initialized (invalid address)
-		PENDING,   // Work order submited by user
-		CANCELLED, // Work order cancelled by user (before acceptance by a scheduler)
 		ACTIVE,    // Marketed → constributions are open
 		REVEALING, // Starting consensus reveal
 		CLAIMED,   // Failled consensus

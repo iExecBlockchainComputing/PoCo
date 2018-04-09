@@ -231,7 +231,6 @@ contract IexecHub
 			_beneficiary
 		));
 
-		workorder.activate(); // revert on error
 		emit WorkOrderActivated(workorder, _workerpool);
 
 		return workorder;
@@ -318,10 +317,10 @@ contract IexecHub
 		return true;
 	}
 
-	// TODO: msg.sender = requester or _beneficiary
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
 		WorkOrder  workorder  = WorkOrder(_woid);
+		require(workorder.m_requester() == msg.sender);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();

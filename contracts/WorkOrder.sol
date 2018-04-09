@@ -56,7 +56,7 @@ contract WorkOrder
 	{
 		m_iexecHubAddress = msg.sender;
 		require(_requester != address(0));
-		m_status         = IexecLib.WorkOrderStatusEnum.PENDING;
+		m_status         = IexecLib.WorkOrderStatusEnum.ACTIVE;
 		m_marketorderIdx = _marketorderIdx;
 		m_app            = _app;
 		m_dataset        = _dataset;
@@ -71,17 +71,6 @@ contract WorkOrder
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 	}
 
-	function activate() public onlyIexecHub
-	{
-		require(m_status == IexecLib.WorkOrderStatusEnum.PENDING);
-		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
-	}
-
-	function cancel() public onlyIexecHub
-	{
-		require(m_status == IexecLib.WorkOrderStatusEnum.PENDING);
-		m_status = IexecLib.WorkOrderStatusEnum.CANCELLED;
-	}
 
 	function reveal() public onlyIexecHub
 	{

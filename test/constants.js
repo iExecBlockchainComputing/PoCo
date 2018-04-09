@@ -12,12 +12,10 @@ define("AMOUNT_GAS_PROVIDED", 4500000);
 // ENUM
 define("WorkOrderStatusEnum", {
   UNSET:     0,
-  PENDING:   1,
-  CANCELLED: 2,
-  ACTIVE:    3,
-  REVEALING: 4,
-  CLAIMED:   5,
-  COMPLETED: 6
+  ACTIVE:    1,
+  REVEALING: 2,
+  CLAIMED:   3,
+  COMPLETED: 4
 });
 
 define("MarketOrderDirectionEnum",{
