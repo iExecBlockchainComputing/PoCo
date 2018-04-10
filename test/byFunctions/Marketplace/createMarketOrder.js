@@ -420,7 +420,7 @@ contract('IexecHub', function(accounts) {
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
-          101 /*_value*/ , // only deposit 100 so must revert.
+          350 /*_value*/ , // only deposit 100 so must revert. 30%350 = 105 > 100
           workerPoolAddress /*_workerpool of scheduler*/ ,
           1 /*_volume*/ , {
             from: scheduleProvider,
@@ -466,7 +466,7 @@ contract('IexecHub', function(accounts) {
           constants.MarketOrderDirectionEnum.ASK,
           1 /*_category*/ ,
           0 /*_trust*/ ,
-          51 /*_value*/ ,
+          175 /*_value*/ , // 175 * 2 * 30% => 105 > 100
           workerPoolAddress /*_workerpool of scheduler*/ ,
           2 /*_volume*/ , {
             from: scheduleProvider,
@@ -536,6 +536,9 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(workerpool, workerPoolAddress, "check workerpool");
     assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
 
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 170, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  30, "check stake locked of the scheduleProvider.");
 
     txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
@@ -561,14 +564,14 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  200, "check stake locked of the scheduleProvider");
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    assert.strictEqual(checkBalance[0].toNumber(), 140, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  60, "check stake locked of the scheduleProvider. 25 * 4 * 0.3 = 30 . previous 30 +30 =60");
+
 
 
   });
 
-  it("createMarketOrder_01 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order for free = value 0", async function() {
+  it("createMarketOrder_12 : a owner (scheduleProvider) of worker pool can emit a ASK Market Order for free = value 0", async function() {
 
     txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,

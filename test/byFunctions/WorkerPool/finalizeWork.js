@@ -412,8 +412,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");
@@ -633,8 +633,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork.");
@@ -855,8 +855,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 50, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 50, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 85, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 15, "check balance : locked: 50 * 30% = 15");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork.");
@@ -1073,8 +1073,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 96, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 4, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 99, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 1, "check balance : locked: 4*30% = 1.2 = 1");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 14, "check stake of the resourceProvider: before finalizeWork.");
@@ -1293,8 +1293,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 98, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 2, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 100, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check balance : locked. 2 * 30% = 0.6 = 0");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 15, "check stake of the resourceProvider: before finalizeWork.");
@@ -1728,8 +1728,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork.");
@@ -1770,8 +1770,8 @@ contract('IexecHub', function(accounts) {
 
     //50 +15 - (32+32 ) = 1
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 50 + 1, "check stake of the scheduleProvider. 50 unlocked initial + 1");
-    assert.strictEqual(checkBalance[1].toNumber(), 50, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 85 + 1, "check stake of the scheduleProvider. 85 unlocked initial + 1");
+    assert.strictEqual(checkBalance[1].toNumber(), 15, "check stake locked of the scheduleProvider");
 
     events = await Extensions.getEventsPromise(aIexecHubInstance.AccurateContribution({
       worker: resourceProvider
@@ -1935,8 +1935,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 3, "check 3 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 51, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 50, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 86, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 15, "check balance : locked: 50*30% = 15");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 32, "check stake of the resourceProvider: before finalizeWork second.");
@@ -2104,8 +2104,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 2, "check 2 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 3, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+3, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked: 2* 50*30%");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 48, "check stake of the resourceProvider: before finalizeWork third.");
@@ -2145,8 +2145,8 @@ contract('IexecHub', function(accounts) {
 
     //50 +15  - (42 + 21 ) = 65 - 63 = 2
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 53 + 2, "check stake of the scheduleProvider. 53 unlocked initial + 2");
-    assert.strictEqual(checkBalance[1].toNumber(), 50, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 88 + 2, "check stake of the scheduleProvider. 88 unlocked initial + 2");
+    assert.strictEqual(checkBalance[1].toNumber(), 15, "check stake locked of the scheduleProvider");
 
     getWorkerScore = await aIexecHubInstance.getWorkerScore.call(resourceProvider);
     assert.strictEqual(getWorkerScore.toNumber(), 3, " workerScore resourceProvider ");
@@ -2242,8 +2242,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 2, "check 2 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 55, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 50, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 90, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 15, "check balance : locked: 50*30% = 15");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 90, "check stake of the resourceProvider: before finalizeWork third.");
@@ -2425,8 +2425,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");
@@ -2446,7 +2446,7 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("finalizeWork_08: can't finalizeWork  after revealDate if no worker have reveal", async function() {
+  it("finalizeWork_09: can't finalizeWork  after revealDate if no worker have reveal", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
     // WORKER SUBSCRIBE TO POOL
@@ -2559,8 +2559,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");
@@ -2582,7 +2582,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("finalizeWork_09: if at least one worker reveal, scheduler can call finalizeWork after the reveal timeout ", async function() {
+  it("finalizeWork_10: if at least one worker reveal, scheduler can call finalizeWork after the reveal timeout ", async function() {
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -2767,8 +2767,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork.");
@@ -2819,7 +2819,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("finalizeWork_10: test finalizeWork  with dapp with dappPrice and dataset with dataset price", async function() {
+  it("finalizeWork_11: test finalizeWork  with dapp with dappPrice and dataset with dataset price", async function() {
     //dapp
     txMined = await aIexecHubInstance.createApp("25 nRLC price app", 25, constants.DAPP_PARAMS_EXAMPLE, {
       from: appProvider
@@ -2978,8 +2978,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");

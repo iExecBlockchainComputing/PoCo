@@ -326,8 +326,8 @@ contract('IexecHub', function(accounts) {
 
 	it("scheduleProvider call finalizeWork", async function() {
 		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(),   0, "check balance : stake");
-		assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+		assert.strictEqual(checkBalance[0].toNumber(),   70, "check balance : stake");
+		assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked . must lock 30%");
 
 		txMined = await aWorkerPoolInstance.finalizeWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,

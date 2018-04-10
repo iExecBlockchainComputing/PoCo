@@ -347,8 +347,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider");
 
 
     txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
@@ -360,12 +360,12 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider: 30 stake lost");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of aIexecHubInstance.address jackpot to 100 locked");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of aIexecHubInstance.address jackpot to 30 locked");
 
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.CLAIMED, "check m_status CLAIMED");
@@ -480,8 +480,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider");
 
 
     txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
@@ -556,8 +556,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider");
 
 
     await Extensions.expectedExceptionPromise(() => {
@@ -693,8 +693,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked : 100*30%=30");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
@@ -858,8 +858,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked= 100*30%=30");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider");
@@ -882,7 +882,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake 100 loose");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake 30 loose");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
@@ -891,7 +891,7 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address jackpot from scheduler stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of the aIexecHubInstance.address");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the aIexecHubInstance.address");
 
   });
 
@@ -1054,8 +1054,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked= 100*30%=30");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");
@@ -1077,7 +1077,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider: after finalizeWork.");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider. 100 stake loose ");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider. 30 stake loose ");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
@@ -1149,8 +1149,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider");
 
 
     txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
@@ -1170,12 +1170,12 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake locked of aIexecHubInstance.address. jackpot to 100 locked");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of aIexecHubInstance.address. jackpot to 30 locked");
 
     txMined = await aIexecHubInstance.deposit(100, {
       from: scheduleProvider,
@@ -1255,8 +1255,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork .");
@@ -1282,10 +1282,10 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstanceaddress");
-    assert.strictEqual(checkBalance[1].toNumber(), 90, "check stake locked of aIexecHubInstance.address. new jackpot : 100 - 10 % of 100 = 90");
+    assert.strictEqual(checkBalance[1].toNumber(), 27, "check stake locked of aIexecHubInstance.address. new jackpot : 30 - 10 % of 30 = 27");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 100 + 1 + 10, "check stake of the scheduleProvider:  100 unlock + 1 reward + 10 bonus from jackpot");
+    assert.strictEqual(checkBalance[0].toNumber(), 100  + 70+ 1 + 3, "check stake of the scheduleProvider:  170  + 1 reward + 3 bonus from jackpot");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
 
   });
@@ -1345,8 +1345,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 5, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 95, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 5, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 99, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 1, "check stake locked of scheduleProvider= 5*30%=1.5=1");
 
 
     txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
@@ -1366,12 +1366,12 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 95, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 99, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider. lost 1");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
-    assert.strictEqual(checkBalance[1].toNumber(), 5, "check stake locked of aIexecHubInstance.address. jackpot to 5 locked");
+    assert.strictEqual(checkBalance[1].toNumber(), 1, "check stake locked of aIexecHubInstance.address. jackpot to 1 locked");
 
     txMined = await aIexecHubInstance.deposit(100, {
       from: scheduleProvider,
@@ -1451,8 +1451,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 95, "check balance scheduleProvider: stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance scheduleProvider: locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+99, "check balance scheduleProvider: stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance scheduleProvider: locked 100*30%  ");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork .");
@@ -1481,11 +1481,10 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of aIexecHubInstance.address. jackpot clear 5 -> 0");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 195 + 1 + 5, "check stake of the scheduleProvider:  195 unlock + 1 reward + 5 bonus from jackpot");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+99+30 + 1 + 1, "check stake of the scheduleProvider:  199 unlock + 1 reward + 1 bonus from jackpot");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
 
   });
-
 
 
 });

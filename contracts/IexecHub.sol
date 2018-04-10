@@ -25,6 +25,8 @@ contract IexecHub
 	RLC     public rlc;
 	address public tokenAddress;
 
+	uint256 public constant STAKE_BONUS_RATIO  = 10;
+
 	/**
 	 * Slaves contracts
 	 */
@@ -301,10 +303,11 @@ contract IexecHub
 		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
 
 		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
-		require(seize (workerpoolOwner,         value                            ));
+		require(seize (workerpoolOwner,         value.percentage(marketplace.ASK_STAKE_RATIO())                             ));
 		//put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
-		require(reward (this,                   value                            ));
-		require(lock   (this,                   value                            ));
+		require(reward (this,                   value.percentage(marketplace.ASK_STAKE_RATIO())                            ));
+		require(lock   (this,                   value.percentage(marketplace.ASK_STAKE_RATIO())                            ));
+
 
 		emit WorkOrderClaimed(_woid, workorder.m_workerpool());
 		return true;
@@ -354,7 +357,7 @@ contract IexecHub
 		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
-		require(unlock(workerpoolOwner,         value));                             // unlock scheduler stake
+		require(unlock(workerpoolOwner,         value.percentage(marketplace.ASK_STAKE_RATIO())));                             // unlock scheduler stake
 
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
@@ -369,8 +372,8 @@ contract IexecHub
 					require(reward(workerpoolOwner, locked));
 				}
 				else{
-					require(seize(this, locked.percentage(uint256(10))));
-					require(reward(workerpoolOwner, locked.percentage(uint256(10))));
+					require(seize(this, locked.percentage(STAKE_BONUS_RATIO)));
+					require(reward(workerpoolOwner, locked.percentage(STAKE_BONUS_RATIO)));
 				}
 		}
 

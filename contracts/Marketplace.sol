@@ -14,6 +14,8 @@ contract Marketplace is IexecHubAccessor
 	uint                                 public m_orderCount;
 	mapping(uint =>IexecLib.MarketOrder) public m_orderBook;
 
+	uint256 public constant ASK_STAKE_RATIO  = 30;
+
 	/**
 	 * Events
 	 */
@@ -57,7 +59,8 @@ contract Marketplace is IexecHubAccessor
 		if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(WorkerPool(_workerpool).m_owner() == msg.sender);
-			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume)));
+
+			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume).percentage(ASK_STAKE_RATIO)));
 			marketorder.workerpool      = _workerpool;
 			marketorder.workerpoolOwner = msg.sender;
 		}
@@ -76,7 +79,7 @@ contract Marketplace is IexecHubAccessor
 		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(marketorder.workerpoolOwner == msg.sender);
-			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.mul(marketorder.remaining)));
+			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.mul(marketorder.remaining).percentage(ASK_STAKE_RATIO)));
 		}
 		else
 		{

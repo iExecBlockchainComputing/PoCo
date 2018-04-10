@@ -312,8 +312,8 @@ contract('IexecHub', function(accounts) {
 
     //check lock ok :
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  30, "check stake locked of the scheduleProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
@@ -373,8 +373,8 @@ contract('IexecHub', function(accounts) {
 
     //check lock ok :
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  30, "check stake locked of the scheduleProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
@@ -417,8 +417,8 @@ contract('IexecHub', function(accounts) {
 
     //check lock ok :
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  30, "check stake locked of the scheduleProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
@@ -485,8 +485,8 @@ contract('IexecHub', function(accounts) {
 
     //check lock ok :
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the scheduleProvider");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  30, "check stake locked of the scheduleProvider");
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 

@@ -442,8 +442,8 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+    assert.strictEqual(checkBalance[0].toNumber(), 70, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked: 100*30%=30");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork. (30 % of 100 =30)");
