@@ -91,35 +91,35 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     txsMined = await Promise.all([
-      aRLCInstance.transfer(scheduleProvider, 1000, {
+      aRLCInstance.transfer(scheduleProvider, 200000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(resourceProvider, 1000, {
+      aRLCInstance.transfer(resourceProvider, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(resourceProvider2, 1000, {
+      aRLCInstance.transfer(resourceProvider2, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(resourceProvider3, 1000, {
+      aRLCInstance.transfer(resourceProvider3, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(appProvider, 1000, {
+      aRLCInstance.transfer(appProvider, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(dappUser, 1000, {
+      aRLCInstance.transfer(dappUser, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(dappProvider, 1000, {
+      aRLCInstance.transfer(dappProvider, 100000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.transfer(iExecCloudUser, 1000, {
+      aRLCInstance.transfer(iExecCloudUser, 200000, {
         from: marketplaceCreator,
         gas: constants.AMOUNT_GAS_PROVIDED
       })
@@ -142,14 +142,14 @@ contract('IexecHub', function(accounts) {
       aRLCInstance.balanceOf(dappProvider),
       aRLCInstance.balanceOf(iExecCloudUser)
     ]);
-    assert.strictEqual(balances[0].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[1].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[2].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[3].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[4].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[5].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
-    assert.strictEqual(balances[7].toNumber(), 1000, "1000 nRLC here");
+    assert.strictEqual(balances[0].toNumber(), 200000, "200000 nRLC here");
+    assert.strictEqual(balances[1].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[2].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[3].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[4].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[5].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[6].toNumber(), 100000, "100000 nRLC here");
+    assert.strictEqual(balances[7].toNumber(), 200000, "200000 nRLC here");
 
     // INIT SMART CONTRACTS BY marketplaceCreator
     aWorkerPoolHubInstance = await WorkerPoolHub.new({
@@ -227,35 +227,35 @@ contract('IexecHub', function(accounts) {
 
     //INIT RLC approval on IexecHub for all actors
     txsMined = await Promise.all([
-      aRLCInstance.approve(aIexecHubInstance.address, 200, {
+      aRLCInstance.approve(aIexecHubInstance.address, 200000, {
         from: scheduleProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: resourceProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: resourceProvider2,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: resourceProvider3,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: appProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: dappUser,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 100, {
+      aRLCInstance.approve(aIexecHubInstance.address, 100000, {
         from: dappProvider,
         gas: constants.AMOUNT_GAS_PROVIDED
       }),
-      aRLCInstance.approve(aIexecHubInstance.address, 200, {
+      aRLCInstance.approve(aIexecHubInstance.address, 200000, {
         from: iExecCloudUser,
         gas: constants.AMOUNT_GAS_PROVIDED
       })
@@ -285,18 +285,21 @@ contract('IexecHub', function(accounts) {
     appAddress = await aAppHubInstance.getApp(appProvider, 1);
     aAppInstance = await App.at(appAddress);
 
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
   });
 
   it("claimFailedConsensus_01: after consensusTimout requester can call claimFailedConsensus to get refund (stake unlocked)", async function() {
 
 
+
     if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -382,6 +385,13 @@ contract('IexecHub', function(accounts) {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
@@ -430,6 +440,13 @@ contract('IexecHub', function(accounts) {
   it("claimFailedConsensus_03: after consensusTimout requester can't call claimFailedConsensus twice'", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -507,6 +524,13 @@ contract('IexecHub', function(accounts) {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
       from: resourceProvider,
@@ -574,6 +598,13 @@ contract('IexecHub', function(accounts) {
   it("claimFailedConsensus_05: after consensusTimout requester can't call claimFailedConsensus on completed workorder'", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 
 
     // WORKER SUBSCRIBE TO POOL
@@ -733,6 +764,12 @@ contract('IexecHub', function(accounts) {
   it("claimFailedConsensus_06: after consensusTimout requester can call claimFailedConsensus on REVEALING step. Workers stake are unlocked '", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
     // WORKER SUBSCRIBE TO POOL
@@ -897,6 +934,12 @@ contract('IexecHub', function(accounts) {
 
 
   it("claimFailedConsensus_07: after consensusTimout requester can call claimFailedConsensus. test refund of iExecCloudUser with a dapp price and a dataset price on the workorder", async function() {
+
+  txMined = await aIexecHubInstance.deposit(100, {
+    from: scheduleProvider,
+    gas: constants.AMOUNT_GAS_PROVIDED
+  });
+  assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
     //dapp
     txMined = await aIexecHubInstance.createApp("25 nRLC price app", 25, constants.DAPP_PARAMS_EXAMPLE, {
@@ -1095,10 +1138,223 @@ contract('IexecHub', function(accounts) {
 
   });
 
+
+
   it("claimFailedConsensus_08: check jackpot bonus from previous claimFailedConsensus, distribute 10 % to schedulers when completed others workerorder", async function() {
 
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+    txMined = await aIexecHubInstance.deposit(100000, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    // WORKER SUBSCRIBE TO POOL
+    txMined = await aWorkerPoolInstance.subscribeToPool({
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1, 0, 100000, workerPoolAddress, 1, {
+      from: scheduleProvider
+    });
+
+    let woid;
+    txMined = await aIexecHubInstance.deposit(100000, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(1, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid);
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "check woid");
+
+    //cannot claimFailedConsensus before timeout
+    await Extensions.expectedExceptionPromise(() => {
+        return aIexecHubInstance.claimFailedConsensus(woid, {
+          from: iExecCloudUser,
+          gas: constants.AMOUNT_GAS_PROVIDED
+        });
+      },
+      constants.AMOUNT_GAS_PROVIDED);
+
+    let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
+    let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
+    await web3.evm.increaseTimePromise((CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef) + 1);
+
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the iExecCloudUser");
+    assert.strictEqual(checkBalance[1].toNumber(), 100000, "check stake locked of iExecCloudUser");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 70000, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30000, "check stake locked of scheduleProvider");
+
+
+    txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
+      from: iExecCloudUser,
+    });
+
+
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.CLAIMED, "check m_status CLAIMED");
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderClaimed({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+    assert.strictEqual(checkBalance[0].toNumber(), 100000, "check stake of the iExecCloudUser");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 70000, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
+    assert.strictEqual(checkBalance[1].toNumber(), 30000, "check stake locked of aIexecHubInstance.address. jackpot to 30 locked");
+
+    txMined = await aIexecHubInstance.deposit(100000, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    //Create ask Marker Order by scheduler
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1, 0, 100000, workerPoolAddress, 1, {
+      from: scheduleProvider
+    });
+
+    let woid2;
+    txMined = await aIexecHubInstance.deposit(100000, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+    txMined = await aIexecHubInstance.buyForWorkOrder(2, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+      from: iExecCloudUser
+    });
+
+    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    woid2 = events[0].args.woid;
+    aWorkOrderInstance = await WorkOrder.at(woid2);
+
+
+    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid2, [resourceProvider], 0, {
+      from: scheduleProvider
+    });
+
+
+    txMined = await aIexecHubInstance.deposit(30000, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 30000, "check stake of the resourceProvider - before contribute ");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider -  before contribute ");
+
+    //resourceProvider
+    signedResourceProvider = await Extensions.signResult("iExec V2 comming soon", resourceProvider);
+
+    txMined = await aWorkerPoolInstance.contribute(woid2, signedResourceProvider.hash, signedResourceProvider.sign, 0, 0, 0, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+
+    txMined = await aWorkerPoolInstance.revealConsensus(woid2, Extensions.hashResult("iExec V2 comming soon"), {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
+
+    //check resourceProvider
+    const result2 = web3.sha3("iExec V2 comming soon");
+    txMined = await aWorkerPoolInstance.reveal(woid2, result2, {
+      from: resourceProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
+      from: iExecCloudUser,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+
+    assert.strictEqual(poolReward.toNumber(), 100000, "check poolReward");
+    assert.strictEqual(stakeAmount.toNumber(), 30000, "check stakeAmount"); //consensus.poolReward.percentage(m_stakeRatioPolicy)
+    assert.strictEqual(consensus, '0xe9ff9ce7ec1e541c6029eca3eb77ec094dafbaf33801829806e52900ee6a8ced', "check consensus");
+    assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
+    assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1");
+    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 70000+70000, "check balance : stake");
+    assert.strictEqual(checkBalance[1].toNumber(), 30000, "check balance : locked");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork .");
+    assert.strictEqual(checkBalance[1].toNumber(), 30000, "check stake locked of the resourceProvider: before finalizeWork ");
+
+    txMined = await aWorkerPoolInstance.finalizeWork(woid2, "aStdout", "aStderr", "anUri", {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+    m_statusCall = await aWorkOrderInstance.m_status.call();
+    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.COMPLETED, "check m_status COMPLETED");
+
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+    assert.strictEqual(checkBalance[0].toNumber(), 100000, "check stake of the iExecCloudUser pay 100");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 129000, "check stake of the resourceProvider. reward 99000 + 30000 initial");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of resourceProvider");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
+    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstanceaddress");
+    assert.strictEqual(checkBalance[1].toNumber(), 27000, "check stake locked of aIexecHubInstance.address. from 30000 - 10%30000 = 30000 - 3000 = 27000");
+
+    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+    assert.strictEqual(checkBalance[0].toNumber(), 100000  + 70000+ 1000 + 3000, "check stake of the scheduleProvider:  170000 inital  + 1000 reward + 3000 bonus from jackpot");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
+
+  });
+
+
+  it("claimFailedConsensus_09: check jackpot bonus from previous claimFailedConsensus < 1000, distribute all fund to schedulers when completed others workerorder", async function() {
+
+
+    if (!isTestRPC) this.skip("This test is only for TestRPC");
+
+
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -1150,7 +1406,7 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of scheduleProvider= 100*30%=30");
 
 
     txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
@@ -1171,7 +1427,7 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider. lost 30");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
@@ -1255,203 +1511,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 70+70, "check balance : stake");
-    assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the resourceProvider: before finalizeWork .");
-    assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake locked of the resourceProvider: before finalizeWork ");
-
-    txMined = await aWorkerPoolInstance.finalizeWork(woid2, "aStdout", "aStderr", "anUri", {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.COMPLETED, "check m_status COMPLETED");
-
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
-    assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the iExecCloudUser pay 100");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 129, "check stake of the resourceProvider. reward 99 + 30 initial");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of resourceProvider");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstanceaddress");
-    assert.strictEqual(checkBalance[1].toNumber(), 27, "check stake locked of aIexecHubInstance.address. new jackpot : 30 - 10 % of 30 = 27");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 100  + 70+ 1 + 3, "check stake of the scheduleProvider:  170  + 1 reward + 3 bonus from jackpot");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
-
-  });
-
-
-  it("claimFailedConsensus_09: check jackpot bonus from previous claimFailedConsensus < 10, distribute all fund to schedulers when completed others workerorder", async function() {
-
-
-    if (!isTestRPC) this.skip("This test is only for TestRPC");
-
-    // WORKER SUBSCRIBE TO POOL
-    txMined = await aWorkerPoolInstance.subscribeToPool({
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1, 0, 5, workerPoolAddress, 1, {
-      from: scheduleProvider
-    });
-
-    let woid;
-    txMined = await aIexecHubInstance.deposit(5, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(1, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid = events[0].args.woid;
-    aWorkOrderInstance = await WorkOrder.at(woid);
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
-
-    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "check woid");
-
-    //cannot claimFailedConsensus before timeout
-    await Extensions.expectedExceptionPromise(() => {
-        return aIexecHubInstance.claimFailedConsensus(woid, {
-          from: iExecCloudUser,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-
-    let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
-    let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
-    await web3.evm.increaseTimePromise((CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef) + 1);
-
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the iExecCloudUser");
-    assert.strictEqual(checkBalance[1].toNumber(), 5, "check stake locked of iExecCloudUser");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 99, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 1, "check stake locked of scheduleProvider= 5*30%=1.5=1");
-
-
-    txMined = await aIexecHubInstance.claimFailedConsensus(woid, {
-      from: iExecCloudUser,
-    });
-
-
-    m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.CLAIMED, "check m_status CLAIMED");
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderClaimed({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    assert.strictEqual(events[0].args.woid, woid, "woid check");
-    assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
-    assert.strictEqual(checkBalance[0].toNumber(), 5, "check stake of the iExecCloudUser");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 99, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider. lost 1");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
-    assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstance.address");
-    assert.strictEqual(checkBalance[1].toNumber(), 1, "check stake locked of aIexecHubInstance.address. jackpot to 1 locked");
-
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1, 0, 100, workerPoolAddress, 1, {
-      from: scheduleProvider
-    });
-
-    let woid2;
-    txMined = await aIexecHubInstance.deposit(100, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    txMined = await aIexecHubInstance.buyForWorkOrder(2, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-      from: iExecCloudUser
-    });
-
-    events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
-    woid2 = events[0].args.woid;
-    aWorkOrderInstance = await WorkOrder.at(woid2);
-
-
-    txMined = await aWorkerPoolInstance.allowWorkersToContribute(woid2, [resourceProvider], 0, {
-      from: scheduleProvider
-    });
-
-
-    txMined = await aIexecHubInstance.deposit(30, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 30, "check stake of the resourceProvider - before contribute ");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the resourceProvider -  before contribute ");
-
-    //resourceProvider
-    signedResourceProvider = await Extensions.signResult("iExec V2 comming soon", resourceProvider);
-
-    txMined = await aWorkerPoolInstance.contribute(woid2, signedResourceProvider.hash, signedResourceProvider.sign, 0, 0, 0, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-
-    txMined = await aWorkerPoolInstance.revealConsensus(woid2, Extensions.hashResult("iExec V2 comming soon"), {
-      from: scheduleProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    m_statusCall = await aWorkOrderInstance.m_status.call();
-    assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
-
-    //check resourceProvider
-    const result2 = web3.sha3("iExec V2 comming soon");
-    txMined = await aWorkerPoolInstance.reveal(woid2, result2, {
-      from: resourceProvider,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-
-    assert.strictEqual(poolReward.toNumber(), 100, "check poolReward");
-    assert.strictEqual(stakeAmount.toNumber(), 30, "check stakeAmount"); //consensus.poolReward.percentage(m_stakeRatioPolicy)
-    assert.strictEqual(consensus, '0xe9ff9ce7ec1e541c6029eca3eb77ec094dafbaf33801829806e52900ee6a8ced', "check consensus");
-    assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
-    assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
-    assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
-
-    checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 70+99, "check balance scheduleProvider: stake");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+70, "check balance scheduleProvider: stake");
     assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance scheduleProvider: locked 100*30%  ");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
@@ -1469,7 +1529,7 @@ contract('IexecHub', function(accounts) {
 
 
     checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
-    assert.strictEqual(checkBalance[0].toNumber(), 5, "check stake of the iExecCloudUser pay 100. refund 5");
+    assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the iExecCloudUser pay 100. refund 100");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of iExecCloudUser");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
@@ -1478,10 +1538,10 @@ contract('IexecHub', function(accounts) {
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecHubInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecHubInstanceaddress");
-    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of aIexecHubInstance.address. jackpot clear 5 -> 0");
+    assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of aIexecHubInstance.address. jackpot clear 30 -> 0");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 70+99+30 + 1 + 1, "check stake of the scheduleProvider:  199 unlock + 1 reward + 1 bonus from jackpot");
+    assert.strictEqual(checkBalance[0].toNumber(), 70+100+ 1 + 30, "check stake of the scheduleProvider:  70 initial + 100 unlock + 1 reward + 30  all bonus from jackpot");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of scheduleProvider");
 
   });

@@ -26,6 +26,9 @@ contract IexecHub
 	address public tokenAddress;
 
 	uint256 public constant STAKE_BONUS_RATIO  = 10;
+	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
+
+	uint256 public constant SCORE_UNITARY_SLASH = 50;
 
 	/**
 	 * Slaves contracts
@@ -367,14 +370,8 @@ contract IexecHub
 		uint256 locked;
 		(,locked) = checkBalance(this);
 		if(locked > 0){
-				if(locked <= 10){
-					require(seize(this, locked));
-					require(reward(workerpoolOwner, locked));
-				}
-				else{
-					require(seize(this, locked.percentage(STAKE_BONUS_RATIO)));
-					require(reward(workerpoolOwner, locked.percentage(STAKE_BONUS_RATIO)));
-				}
+				require(seize(this,            locked.min(locked.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD))));
+				require(reward(workerpoolOwner,locked.min(locked.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD))));
 		}
 
 		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
@@ -519,7 +516,7 @@ contract IexecHub
 		if (_reputation)
 		{
 			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
-			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(50));
+			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(SCORE_UNITARY_SLASH));
 			emit FaultyContribution(_woid, _worker);
 		}
 		return true;
