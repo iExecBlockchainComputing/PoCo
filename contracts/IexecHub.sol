@@ -300,13 +300,13 @@ contract IexecHub
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); //revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); //revert if not exist
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
 		require(seize  (workerpoolOwner,         workerpoolStake));
-		//put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
+		// put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
 		require(reward (this,                    workerpoolStake));
 		require(lock   (this,                    workerpoolStake));
 
@@ -353,8 +353,8 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); //revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); //revert if not exist
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)

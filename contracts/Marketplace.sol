@@ -66,7 +66,7 @@ contract Marketplace is IexecHubAccessor
 		}
 		else
 		{
-			//no BID implementation
+			// no BID implementation
 			revert();
 		}
 		emit MarketOrderEmitted(m_orderCount);
@@ -126,22 +126,22 @@ contract Marketplace is IexecHubAccessor
 	 */
 	function getMarketOrderValue(uint256 _marketorderIdx) public view returns (uint256)
 	{
-		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
 		return m_orderBook[_marketorderIdx].value;
 	}
 	function getMarketOrderWorkerpoolOwner(uint256 _marketorderIdx) public view returns (address)
 	{
-		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
 		return m_orderBook[_marketorderIdx].workerpoolOwner;
 	}
 	function getMarketOrderCategory(uint256 _marketorderIdx) public view returns (uint256)
 	{
-		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
 		return m_orderBook[_marketorderIdx].category;
 	}
 	function getMarketOrderTrust(uint256 _marketorderIdx) public view returns (uint256)
 	{
-		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
 		return m_orderBook[_marketorderIdx].trust;
 	}
 	function getMarketOrder(uint256 _marketorderIdx) public view returns
@@ -152,10 +152,10 @@ contract Marketplace is IexecHubAccessor
 		uint256 value,          // value/cost/price
 		uint256 volume,         // quantity of instances (total)
 		uint256 remaining,      // remaining instances
-		address workerpool,      // BID can use null for any
+		address workerpool,     // BID can use null for any
 		address workerpoolOwner)
 	{
-		require(existingMarketOrder(_marketorderIdx));//no silent value returned
+		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
 		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
 		return (
 			marketorder.direction,

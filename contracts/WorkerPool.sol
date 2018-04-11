@@ -127,7 +127,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function subscribeToPool() public returns (bool)
 	{
-		//msg.sender = worker
+		// msg.sender = worker
 		require(iexecHubInterface.registerToPool(msg.sender));
 		uint index = m_workers.push(msg.sender);
 		m_workerIndex[msg.sender] = index.sub(1);
@@ -137,7 +137,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function unsubscribeFromPool() public  returns (bool)
 	{
-		//msg.sender = worker
+		// msg.sender = worker
 		require(iexecHubInterface.unregisterFromPool(msg.sender));
 		require(removeWorker(msg.sender));
 		emit WorkerUnsubscribe(msg.sender);
@@ -146,7 +146,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function evictWorker(address _worker) public onlyOwner returns (bool)
 	{
-		//msg.sender = scheduler
+		// msg.sender = scheduler
 		require(iexecHubInterface.evictWorker(_worker));
 		require(removeWorker(_worker));
 		emit WorkerEviction(_worker);
@@ -211,7 +211,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 score,
 		uint256 weight)
 	{
-		require(existingContribution(_woid, _worker)); //no silent value returned
+		require(existingContribution(_woid, _worker)); // no silent value returned
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		return (
 			contribution.status,
@@ -324,9 +324,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		{
 			address w = consensus.contributors[i];
 			if (
-			m_contributions[_woid][w].resultHash == _consensus
-			&&
-			m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.CONTRIBUTED//REJECTED contribution must not be count
+				m_contributions[_woid][w].resultHash == _consensus
+				&&
+				m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
 			)
 			{
 				consensus.winnerCount = consensus.winnerCount.add(1);
@@ -335,7 +335,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		consensus.consensus  = _consensus;
-		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); //is it better to store th catid ?
+		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
 		emit RevealConsensus(_woid, _consensus);
 		return true;
 	}
@@ -386,7 +386,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
-		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); //consensus.winnerCount never 0 at this step
+		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
 
 		// add penalized to the call worker to contribution and they never contribute ?
 		require(distributeRewards(_woid, consensus));
