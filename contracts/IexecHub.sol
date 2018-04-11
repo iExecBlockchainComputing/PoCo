@@ -300,16 +300,15 @@ contract IexecHub
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
-		uint    value;
-		address workerpoolOwner;
-		value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());//revert if not exist
-		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); //revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); //revert if not exist
+		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
-		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
-		require(seize (workerpoolOwner,         value.percentage(marketplace.ASK_STAKE_RATIO())                             ));
+		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(seize  (workerpoolOwner,         workerpoolStake));
 		//put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
-		require(reward (this,                   value.percentage(marketplace.ASK_STAKE_RATIO())                            ));
-		require(lock   (this,                   value.percentage(marketplace.ASK_STAKE_RATIO())                            ));
+		require(reward (this,                    workerpoolStake));
+		require(lock   (this,                    workerpoolStake));
 
 
 		emit WorkOrderClaimed(_woid, workorder.m_workerpool());
@@ -354,24 +353,25 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint256 value;
- 		address workerpoolOwner;
-		value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx());//revert if not exist
-		workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx());//revert if not exist
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); //revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); //revert if not exist
+		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
-		require(unlock(workerpoolOwner,         value.percentage(marketplace.ASK_STAKE_RATIO())));                             // unlock scheduler stake
+		require(unlock(workerpoolOwner,         workerpoolStake)); // unlock scheduler stake
 
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
 
 		// Rien ne se perd, rien ne se crée, tout se transfere
 		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
-		uint256 locked;
-		(,locked) = checkBalance(this);
-		if(locked > 0){
-				require(seize(this,            locked.min(locked.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD))));
-				require(reward(workerpoolOwner,locked.min(locked.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD))));
+		uint256 kitty;
+		(,kitty) = checkBalance(this); // kitty is locked on `this` wallet
+		if(kitty > 0)
+		{
+			uint256 kittyFraction = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			require(seize(this,             kittyFraction));
+			require(reward(workerpoolOwner, kittyFraction));
 		}
 
 		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
@@ -387,7 +387,8 @@ contract IexecHub
 		return m_categories[_catId].workClockTimeRef;
 	}
 
-	function existingCategory(uint256 _catId) public view  returns (bool categoryExist){
+	function existingCategory(uint256 _catId) public view  returns (bool categoryExist)
+	{
 		return m_categories[_catId].catid > 0;
 	}
 
@@ -441,7 +442,7 @@ contract IexecHub
 	function unregisterFromPool(address _worker) public returns (bool unsubscribed)
 	// msg.sender = workerPool
 	{
-		require(removeWorker(msg.sender,_worker));
+		require(removeWorker(msg.sender, _worker));
 		// Trigger event notice
 		emit WorkerPoolUnsubscription(msg.sender, _worker);
 		return true;
@@ -450,7 +451,7 @@ contract IexecHub
 	function evictWorker(address _worker) public returns (bool unsubscribed)
 	// msg.sender = workerpool
 	{
-		require(removeWorker(msg.sender,_worker));
+		require(removeWorker(msg.sender, _worker));
 		// Trigger event notice
 		emit WorkerPoolEviction(msg.sender, _worker);
 		return true;

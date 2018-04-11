@@ -564,8 +564,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(workerpoolOwner, scheduleProvider, "check workerpoolOwner");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-    assert.strictEqual(checkBalance[0].toNumber(), 140, "check stake of the scheduleProvider");
-    assert.strictEqual(checkBalance[1].toNumber(),  60, "check stake locked of the scheduleProvider. 25 * 4 * 0.3 = 30 . previous 30 +30 =60");
+    assert.strictEqual(checkBalance[0].toNumber(), 142, "check stake of the scheduleProvider");
+    assert.strictEqual(checkBalance[1].toNumber(),  58, "check stake locked of the scheduleProvider. floor(25 * 0.3) * 4 = 28 . previous 30 + 28 = 58");
 
 
 

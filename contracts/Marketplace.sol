@@ -60,7 +60,7 @@ contract Marketplace is IexecHubAccessor
 		{
 			require(WorkerPool(_workerpool).m_owner() == msg.sender);
 
-			require(iexecHubInterface.lockForOrder(msg.sender, _value.mul(_volume).percentage(ASK_STAKE_RATIO)));
+			require(iexecHubInterface.lockForOrder(msg.sender, _value.percentage(ASK_STAKE_RATIO).mul(_volume))); // mul must be done after percentage to avoid rounding errors
 			marketorder.workerpool      = _workerpool;
 			marketorder.workerpoolOwner = msg.sender;
 		}
@@ -79,7 +79,7 @@ contract Marketplace is IexecHubAccessor
 		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
 		{
 			require(marketorder.workerpoolOwner == msg.sender);
-			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.mul(marketorder.remaining).percentage(ASK_STAKE_RATIO)));
+			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.percentage(ASK_STAKE_RATIO).mul(marketorder.remaining))); // mul must be done after percentage to avoid rounding errors
 		}
 		else
 		{
@@ -116,7 +116,8 @@ contract Marketplace is IexecHubAccessor
 		return true;
 	}
 
-	function existingMarketOrder(uint256 _marketorderIdx) public view  returns (bool marketOrderExist){
+	function existingMarketOrder(uint256 _marketorderIdx) public view  returns (bool marketOrderExist)
+	{
 		return m_orderBook[_marketorderIdx].category > 0;
 	}
 

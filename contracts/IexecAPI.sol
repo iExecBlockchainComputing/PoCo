@@ -7,24 +7,16 @@ import "rlc-token/contracts/RLC.sol";
 
 contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 {
-
-
-	event WorkOrder(address woid);
-
-	event WithdrawRLCFromIexecAPI(address to,uint256 amount);
-
-	event ApproveIexecHub(address iexecHub,uint256 amount);
-	event DepositRLCOnIexecHub(address iexecHub,uint256 amount);
-	event WithdrawRLCFromIexecHub(address iexecHub,uint256 amount);
-
-
-
-
+	event WorkOrder              (address woid);
+	event WithdrawRLCFromIexecAPI(address to,       uint256 amount);
+	event ApproveIexecHub        (address iexecHub, uint256 amount);
+	event DepositRLCOnIexecHub   (address iexecHub, uint256 amount);
+	event WithdrawRLCFromIexecHub(address iexecHub, uint256 amount);
 
 	// Constructor
 	function IexecAPI(address _iexecHubAddress)
 	IexecHubAccessor(_iexecHubAddress)
-	 public
+	public
 	{
 
 	}
@@ -39,8 +31,8 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		address _beneficiary)
 	public
 	{
-		address woid=iexecHubInterface.buyForWorkOrder(_marketorderIdx,_workerpool,_app,_dataset,_params,_callback,_beneficiary);
-   	emit WorkOrder(woid);
+		address woid = iexecHubInterface.buyFortWorkOrder(_marketorderIdx, _workerpool, _app, _dataset, _params, _callback, _beneficiary);
+		emit WorkOrder(woid);
 	}
 
 	function workOrderCallback(
@@ -82,7 +74,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	{
 		require(iexecHubInterface.withdraw(amount));
 		require(withdrawRLCFromIexecAPI(amount));
-		emit WithdrawRLCFromIexecHub(iexecHubAddress,amount);
+		emit WithdrawRLCFromIexecHub(iexecHubAddress, amount);
 		return true;
 	}
 
