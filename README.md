@@ -342,7 +342,7 @@ Optional: usage not yet implemented in V2
         <tr>
             <td>REVEALING</td>
             <td>revealConsensus</td>
-            <td>WorkOrderPool/td>
+            <td>WorkOrderPool</td>
             <td>scheduler</td>
             <td>scheduler call revealConsensus. Workers can now call reveal function on WorkOrderPool </td>
         </tr>
