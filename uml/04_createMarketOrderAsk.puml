@@ -1,0 +1,42 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 04_createMarketOrderAsk ==
+
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : check his workers availability
+
+autonumber 4
+iexec_scheduler  --> Marketplace : createMarketOrder()
+activate Marketplace
+Marketplace <--> Marketplace :<font color=green><b>Log MarketOrderCreated()
+deactivate Marketplace
+
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

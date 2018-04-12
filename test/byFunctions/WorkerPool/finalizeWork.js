@@ -428,6 +428,12 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.FinalizeWork({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+    assert.strictEqual(events[0].args.stdout, "aStdout", "check stdout");
+    assert.strictEqual(events[0].args.stderr, "aStderr", "check stderr");
+    assert.strictEqual(events[0].args.uri, "anUri", "check uri");
+
     events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderCompleted({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "woid check");
     assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");

@@ -1,0 +1,45 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+
+== 09_revealContribution ==
+
+activate iexec_worker
+autonumber 9
+iexec_worker  --> WorkerPool  :reveal(result)
+activate WorkerPool
+autonumber 9
+WorkerPool <--> WorkerPool :<font color=green><b>Log Reveal()
+
+deactivate WorkerPool
+deactivate iexec_worker
+autonumber 9
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log Reveal
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

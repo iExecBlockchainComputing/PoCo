@@ -1,0 +1,206 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 04_createMarketOrderAsk ==
+
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : check his workers availability
+
+autonumber 4
+iexec_scheduler  --> Marketplace : createMarketOrder()
+activate Marketplace
+Marketplace <--> Marketplace :<font color=green><b>Log MarketOrderCreated()
+deactivate Marketplace
+
+== 05_buyForWorkOrder ==
+
+autonumber 5
+
+IexecAPI --> IexecHub: buyForWorkOrder(app,dataset,workerpool)
+activate IexecHub
+
+
+autonumber 5
+IexecHub --> Marketplace: consumeMarketOrderAsk
+activate Marketplace
+Marketplace <--> Marketplace :<font color=green><b>Log MarketOrderAskConsume()
+deactivate Marketplace
+
+create WorkOrder
+autonumber 5
+IexecHub --> WorkOrder: new (app,dataset,workerpool)
+note over WorkOrder :WorkOrderStatusEnum.ACTIVE
+activate WorkOrder
+autonumber 5
+
+
+IexecHub --> WorkerPool :emitWorkOrder
+autonumber 5
+activate WorkerPool
+IexecHub <--> IexecHub :<font color=green><b>Log event WorkOrderActivated()
+deactivate IexecHub
+WorkerPool <--> WorkerPool :<font color=green><b>Log WorkOrderActive()
+deactivate WorkerPool
+
+autonumber 5
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log WorkOrderActive()
+
+== 06_allowWorkerToContribute ==
+
+autonumber 6
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : randonmy choose worker
+
+autonumber 6
+iexec_scheduler  --> WorkerPool : allowWorkersToContribute()
+activate WorkerPool
+autonumber 6
+WorkerPool <--> WorkerPool :<font color=green><b>Log AllowWorkerToContribute()
+
+deactivate WorkerPool
+
+deactivate iexec_scheduler
+autonumber 6
+WorkerPool o-> iexec_worker :<font color=blue><b>  watch Log AllowWorkerToContribute()
+
+
+== 07_workerContribute ==
+
+
+activate iexec_worker
+iexec_worker  <--> AppRepository : getApp
+autonumber 7
+autonumber 7
+iexec_worker  <--> DatasetRepository : getDataset
+
+autonumber 7
+iexec_worker-> iexec_worker: execute the asked work
+activate iexec_worker
+autonumber 7
+iexec_worker-> iexec_worker: resultHash (vote)
+autonumber 7
+iexec_worker-> iexec_worker: resultSigned(proof of knowledge)
+autonumber 7
+iexec_worker  --> WorkerPool : contribute()
+deactivate  iexec_worker
+
+activate WorkerPool
+
+WorkerPool <--> WorkerPool :<font color=green><b>Log Contribute()
+
+deactivate WorkerPool
+autonumber 7
+
+deactivate  iexec_worker
+deactivate WorkerPool
+autonumber 7
+
+WorkerPool o-> iexec_scheduler :<font color=blue><b>  watch Log Contribute()
+
+
+== 08_revealConsensus ==
+
+activate iexec_scheduler
+
+autonumber 8
+iexec_scheduler -> iexec_scheduler: check if consensus on resultHash is reached
+autonumber 8
+iexec_scheduler --> WorkerPool : revealConsensus()
+activate WorkerPool
+note over WorkOrder :WorkOrderStatusEnum.REVEALING
+autonumber 8
+WorkerPool <--> WorkerPool :<font color=green><b>Log RevealConsensus()
+
+deactivate iexec_scheduler
+deactivate WorkerPool
+autonumber 8
+WorkerPool o-> iexec_worker : <font color=blue><b>watch Log RevealConsensus
+
+== 09_revealContribution ==
+
+activate iexec_worker
+autonumber 9
+iexec_worker  --> WorkerPool  :reveal(result)
+activate WorkerPool
+autonumber 9
+WorkerPool <--> WorkerPool :<font color=green><b>Log Reveal()
+
+deactivate WorkerPool
+deactivate iexec_worker
+autonumber 9
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log Reveal
+
+== 10_finalizeWork ==
+
+activate iexec_scheduler
+
+autonumber 10
+iexec_scheduler -> iexec_scheduler : check if all workers are reveal or reveal period end
+autonumber 10
+iexec_scheduler  <--> iexec_worker  : getResult
+
+autonumber 10
+iexec_scheduler --> WorkerPool : finalizedWork(stdout,stderr,uri)
+activate WorkerPool
+autonumber 10
+WorkerPool --> IexecHub :finalizedWorkOrder
+autonumber 10
+activate IexecHub
+
+IexecHub --> WorkOrder :setResult(stdout,stderr,uri)
+activate WorkOrder
+autonumber 10
+note over WorkOrder : WorkOrderStatusEnum.COMPLETED
+WorkOrder <--> IexecAPI : workOrderCallback
+autonumber 10
+WorkOrder -> IexecHub
+
+deactivate WorkOrder
+note over IexecHub : RLC reward/seize for actors
+autonumber 10
+IexecHub o-> IexecHub :<font color=green><b> Log WorkOrderCompleted()
+
+autonumber 10
+IexecHub --> WorkerPool
+deactivate IexecHub
+autonumber 10
+
+WorkerPool <--> WorkerPool :<font color=green><b>Log FinalizedWork()
+
+deactivate WorkerPool
+autonumber 10
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log FinalizedWork
+autonumber 10
+WorkerPool o-> iexec_worker :<font color=blue><b> watch Log FinalizedWork
+
+
+deactivate iexec_scheduler
+deactivate WorkOrder
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

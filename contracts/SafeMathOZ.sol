@@ -4,7 +4,7 @@ pragma solidity ^0.4.21;
 /**
  * @title SafeMath
  * @dev Math operations with safety checks that throw on error
- * last open zepplin version : https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
+ * last open zepplin version used for : add sub mul div function : https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
 * commit : https://github.com/OpenZeppelin/zeppelin-solidity/commit/815d9e1f457f57cfbb1b4e889f2255c9a517f661
  */
 library SafeMathOZ

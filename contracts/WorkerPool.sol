@@ -54,6 +54,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	event Contribute              (address indexed woid, address indexed worker, bytes32 resultHash);
 	event RevealConsensus         (address indexed woid, bytes32 consensus);
 	event Reveal                  (address indexed woid, address indexed worker, bytes32 result);
+	event Reopen                  (address indexed woid);
+  event FinalizeWork            (address indexed woid, string stdout, string stderr, string uri);
+
 
 	event WorkerSubscribe         (address indexed worker);
 	event WorkerUnsubscribe       (address indexed worker);
@@ -378,6 +381,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		consensus.winnerCount = 0;
 		consensus.consensus   = 0x0;
 		consensus.revealDate  = 0;
+		emit Reopen(_woid);
 		return true;
 	}
 
@@ -392,6 +396,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(distributeRewards(_woid, consensus));
 
 		require(iexecHubInterface.finalizeWorkOrder(_woid, _stdout, _stderr, _uri));
+		emit FinalizeWork(_woid,_stdout,_stderr,_uri);
 		return true;
 	}
 

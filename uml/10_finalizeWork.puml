@@ -1,0 +1,79 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+
+== 10_finalizeWork ==
+
+activate iexec_scheduler
+
+autonumber 10
+iexec_scheduler -> iexec_scheduler : check if all workers are reveal or reveal period end
+autonumber 10
+iexec_scheduler  <--> iexec_worker  : getResult
+
+autonumber 10
+iexec_scheduler --> WorkerPool : finalizedWork(stdout,stderr,uri)
+activate WorkerPool
+autonumber 10
+WorkerPool --> IexecHub :finalizedWorkOrder
+autonumber 10
+activate IexecHub
+
+IexecHub --> WorkOrder :setResult(stdout,stderr,uri)
+activate WorkOrder
+autonumber 10
+note over WorkOrder : WorkOrderStatusEnum.COMPLETED
+WorkOrder <--> IexecAPI : workOrderCallback
+autonumber 10
+WorkOrder -> IexecHub
+
+deactivate WorkOrder
+note over IexecHub : RLC reward/seize for actors
+autonumber 10
+IexecHub o-> IexecHub :<font color=green><b> Log WorkOrderCompleted()
+
+autonumber 10
+IexecHub --> WorkerPool
+deactivate IexecHub
+autonumber 10
+
+WorkerPool <--> WorkerPool :<font color=green><b>Log FinalizedWork()
+
+deactivate WorkerPool
+autonumber 10
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log FinalizedWork
+autonumber 10
+WorkerPool o-> iexec_worker :<font color=blue><b> watch Log FinalizedWork
+
+
+deactivate iexec_scheduler
+deactivate WorkOrder
+
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

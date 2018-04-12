@@ -19,7 +19,7 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Events
 	 */
-	event MarketOrderEmitted   (uint marketorderIdx);
+	event MarketOrderCreated   (uint marketorderIdx);
 	event MarketOrderClosed    (uint marketorderIdx);
 	event MarketOrderAskConsume(uint marketorderIdx, address requester);
 
@@ -69,7 +69,7 @@ contract Marketplace is IexecHubAccessor
 			// no BID implementation
 			revert();
 		}
-		emit MarketOrderEmitted(m_orderCount);
+		emit MarketOrderCreated(m_orderCount);
 		return m_orderCount;
 	}
 

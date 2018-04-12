@@ -445,6 +445,9 @@ contract('IexecHub', function(accounts) {
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE again");
 
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.Reopen({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
+
     [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
     assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.REJECTED, "check constants.ContributionStatusEnum.REJECTED");
     assert.strictEqual(resultHash, signed.hash, "check resultHash");

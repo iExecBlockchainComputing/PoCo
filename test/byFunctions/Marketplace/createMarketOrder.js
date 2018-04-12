@@ -310,7 +310,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
     [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
@@ -444,7 +444,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
     [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
@@ -523,7 +523,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
     [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
@@ -550,7 +550,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 2, "marketorderIdx");
 
     [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(2);
@@ -583,7 +583,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
     [direction, category, trust, value, volume, remaining, workerpool, workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);

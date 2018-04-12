@@ -1,8 +1,5 @@
 @startuml
-object IexecAPI
-object MyDapp
 
-IexecAPI <|-- MyDapp
 
 object App
 object AppHub
@@ -10,28 +7,25 @@ object AppHub
 object Dataset
 object DatasetHub
 
-object WorkOrder
-object WorkOrderHub
-
 object WorkerPool
 object WorkerPoolHub
 
+object MarketPlace
+
 object IexecHub
+object WorkOrder
 
 AppHub <|-- IexecHub
 DatasetHub <|-- IexecHub
 WorkerPoolHub <|-- IexecHub
-WorkOrderHub <|-- IexecHub
 
+MarketPlace <|-- IexecHub
 
 WorkerPool "n" *-- "0" WorkerPoolHub
 App "n" *-- "0" AppHub
 Dataset "n" *-- "0" DatasetHub
-WorkOrder "n" *-- "0" WorkOrderHub
 
-
-
-MyDapp --> WorkOrder: create
+WorkOrder "n" *-- "0" IexecHub
 
 
 @enduml

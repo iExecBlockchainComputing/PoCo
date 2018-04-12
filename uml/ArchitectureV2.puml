@@ -10,16 +10,13 @@ ScheduleProvider@startuml
 
 
 cloud {
-  [MyDapp]
   [IexecAPI]
 }
-component [MyDapp]
 component [IexecAPI]
-[IexecAPI] <|-right-  [MyDapp]
 
 
 
-DappUser -down-> [MyDapp]: use
+DappUser -down-> [IexecAPI]: use
 
 
 cloud {
@@ -28,9 +25,8 @@ cloud {
 
 component [WorkOrder]
 
-MyDapp <-down-> [WorkOrder]: owner
 
-iExecCloudUser -down-> [WorkOrder]: owner
+
 
 cloud {
   [App]
@@ -58,17 +54,28 @@ component [iexec-worker]
 
 cloud {
   [iExecHub]
+  [Marketplace]
 }
 
 cloud {
   [RLC Token]
 }
 
+
+component [Marketplace]
 component [iExecHub]
 component [RLC Token]
 
+IexecAPI <-down-> [iExecHub]
+
+iExecCloudUser -down-> [iExecHub]
+
+
+[Marketplace] <-right-> [iExecHub]
 
 [iExecHub] <-right-> [RLC Token]
+
+
 
 
 AppProvider -up-> [App]: owner
@@ -85,11 +92,12 @@ ScheduleProvider -down-> [ResultRepository]: control and expose
 ResultRepository <-left-> [iexec-scheduler]
 
 
-[Dataset] <-up-> [iExecHub]
-[App] <-up-> [iExecHub]
+[Dataset] <-up- [WorkOrder]
+[App] <-up- [WorkOrder]
+[WorkOrder] -down-> [WorkerPool]
 
-[iExecHub] <-down-> [WorkerPool]
-[iExecHub] <-up-> [WorkOrder]
+
+[iExecHub] -down-> [WorkOrder]
 
 [iexec-scheduler] <-up-> [WorkerPool]
 [iexec-worker] <-up-> [WorkerPool]

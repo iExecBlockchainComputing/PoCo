@@ -1,0 +1,65 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 05_buyForWorkOrder ==
+
+autonumber 5
+
+IexecAPI --> IexecHub: buyForWorkOrder(app,dataset,workerpool)
+activate IexecHub
+
+
+autonumber 5
+IexecHub --> Marketplace: consumeMarketOrderAsk
+activate Marketplace
+Marketplace <--> Marketplace :<font color=green><b>Log MarketOrderAskConsume()
+deactivate Marketplace
+
+create WorkOrder
+autonumber 5
+IexecHub --> WorkOrder: new (app,dataset,workerpool)
+note over WorkOrder :WorkOrderStatusEnum.ACTIVE
+activate WorkOrder
+autonumber 5
+
+
+IexecHub --> WorkerPool :emitWorkOrder
+autonumber 5
+activate WorkerPool
+IexecHub <--> IexecHub :<font color=green><b>Log event WorkOrderActivated()
+deactivate IexecHub
+WorkerPool <--> WorkerPool :<font color=green><b>Log WorkOrderActive()
+deactivate WorkerPool
+
+autonumber 5
+WorkerPool o-> iexec_scheduler :<font color=blue><b> watch Log WorkOrderActive()
+
+
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

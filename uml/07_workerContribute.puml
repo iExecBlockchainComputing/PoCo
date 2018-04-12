@@ -1,0 +1,65 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 07_workerContribute ==
+
+
+activate iexec_worker
+iexec_worker  <--> AppRepository : getApp
+autonumber 7
+autonumber 7
+iexec_worker  <--> DatasetRepository : getDataset
+
+autonumber 7
+iexec_worker-> iexec_worker: execute the asked work
+activate iexec_worker
+autonumber 7
+iexec_worker-> iexec_worker: resultHash (vote)
+autonumber 7
+iexec_worker-> iexec_worker: resultSigned(proof of knowledge)
+autonumber 7
+iexec_worker  --> WorkerPool : contribute()
+deactivate  iexec_worker
+
+activate WorkerPool
+
+WorkerPool <--> WorkerPool :<font color=green><b>Log Contribute()
+
+deactivate WorkerPool
+autonumber 7
+
+deactivate  iexec_worker
+deactivate WorkerPool
+autonumber 7
+
+WorkerPool o-> iexec_scheduler :<font color=blue><b>  watch Log Contribute()
+
+
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml
