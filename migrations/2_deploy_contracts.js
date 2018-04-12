@@ -119,11 +119,15 @@ module.exports = function(deployer) {
 //mainnet = '0x607F4C5BB672230e8672085532f7e901544a7375'
 
 module.exports = function(deployer) {
+  let aRLCInstance;
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
-  let aTaskRequestHubInstance;
   let aIexecHub;
+  let aMarketplaceInstance;
+  let creator;
+  aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
+
   return deployer.deploy(WorkerPoolHub)
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
@@ -141,13 +145,7 @@ module.exports = function(deployer) {
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address: " + instance.address);
-      return deployer.deploy(TaskRequestHub);
-    })
-    .then(() => TaskRequestHub.deployed())
-    .then(instance => {
-      aTaskRequestHubInstance = instance;
-      console.log("TaskRequestHub deployed at address: " + instance.address);
-      return deployer.deploy(IexecHub, '0x7314dc4d7794b5e7894212ca1556ae8e3de58621', aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, aTaskRequestHubInstance.address);
+      return deployer.deploy(IexecHub, aRLCInstance, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -165,9 +163,36 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("transferOwnership of DatasetHub to IexecHub");
-      return aTaskRequestHubInstance.transferOwnership(aIexecHub.address);
+      return deployer.deploy(Marketplace, aIexecHub.address);
     })
-    .then(() => console.log("transferOwnership of TaskRequestHub to IexecHub"));
+    .then(() => Marketplace.deployed())
+    .then(instance => {
+      aMarketplaceInstance = instance;
+      console.log("Marketplace deployed at address: " + instance.address);
+      return aIexecHub.attachMarketplace(instance.address);
+    })
+    .then(() => {
+      console.log("attach Marketplace to IexecHub done");
+      return aIexecHub.setCategoriesCreator(creator);
+    })
+    .then(() => {
+      console.log("setCategoriesCreator to "+creator);
+      return readFileAsync("./config/categories.json");
+    })
+    .then(categories => {
+      var categoriesConfigFileJson = JSON.parse(categories);
+      catagoriesPromises = [];
+      for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+        console.log("create category : "+categoriesConfigFileJson.categories[i].name);
+        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef));
+      }
+      return Promise.all(catagoriesPromises);
+    })
+    .then(categoriesCreated => {
+      return aIexecHub.m_categoriesCount.call()
+    })
+    .then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
+    ;
 };
 
 **/
