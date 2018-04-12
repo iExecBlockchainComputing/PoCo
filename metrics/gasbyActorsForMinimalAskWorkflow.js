@@ -4,7 +4,6 @@ var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
 var AppHub         = artifacts.require("./AppHub.sol");
 var DatasetHub     = artifacts.require("./DatasetHub.sol");
 var WorkerPool     = artifacts.require("./WorkerPool.sol");
-var AuthorizedList = artifacts.require("./AuthorizedList.sol");
 var App            = artifacts.require("./App.sol");
 var WorkOrder      = artifacts.require("./WorkOrder.sol");
 var IexecLib       = artifacts.require("./IexecLib.sol");
@@ -13,8 +12,8 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 
 const Promise         = require("bluebird");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
-const Extensions      = require("../../utils/extensions.js");
-const addEvmFunctions = require("../../utils/evmFunctions.js");
+const Extensions      = require("../utils/extensions.js");
+const addEvmFunctions = require("../utils/evmFunctions.js");
 
 const fs = require("fs-extra");
 const openAsync = Promise.promisify(fs.open);
@@ -23,7 +22,7 @@ const readFileAsync = Promise.promisify(fs.readFile);
 const writeFileAsync = Promise.promisify(fs.writeFile);
 
 
-
+var constants = require("../test/constants");
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -48,21 +47,6 @@ const saveJsonTabToFile = async (tab,file) => {
 
 contract('IexecHub', function(accounts) {
 
-	WorkOrder.WorkOrderStatusEnum = {
-		UNSET:     0,
-		PENDING:   1,
-		CANCELLED: 2,
-		ACTIVE:    3,
-		REVEALING: 4,
-		CLAIMED:   5,
-		COMPLETED: 6
-	};
-	IexecLib.MarketOrderDirectionEnum = {
-		UNSET  : 0,
-		BID    : 1,
-		ASK    : 2,
-		CLOSED : 3
-	};
 
 	let DAPP_PARAMS_EXAMPLE = "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}";
 
@@ -105,7 +89,6 @@ contract('IexecHub', function(accounts) {
 	let dataTxCreateMarketplace;
 	let dataTxAttachMarketplace;
 	let dataTxCreateWorkerPool;
-	let dataTxUpdateWhitelist;
 	let dataTxResourceProviderDeposit;
 	let dataTxSubscribeToPool;
 	let dataTxAppCreate;
@@ -287,6 +270,26 @@ contract('IexecHub', function(accounts) {
 		dataTxAttachMarketplace= {spendBy:"marketplaceCreator", when:"init", function:"attachMarketplace", gas: txMined.receipt.gasUsed};
 		// <-- GAS ANALYSE
 
+
+		// INIT categories in MARKETPLACE
+		txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
+			from: marketplaceCreator
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("setCategoriesCreator  to marketplaceCreator");
+ 		var categoriesConfigFile = await readFileAsync("./config/categories.json");
+		var categoriesConfigFileJson = JSON.parse(categoriesConfigFile);
+		for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+			console.log("created category:");
+			console.log(categoriesConfigFileJson.categories[i].name);
+			console.log(JSON.stringify(categoriesConfigFileJson.categories[i].description));
+			console.log(categoriesConfigFileJson.categories[i].workClockTimeRef);
+			txMined = await aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef, {
+				from: marketplaceCreator
+			});
+			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		}
+
 		//INIT RLC approval on IexecHub for all actors
 		txsMined = await Promise.all([
 			aRLCInstance.approve(aIexecHubInstance.address, 100, { from: scheduleProvider, gas: amountGazProvided }),
@@ -324,17 +327,6 @@ contract('IexecHub', function(accounts) {
 
 		aWorkerPoolInstance = await WorkerPool.at(workerPoolAddress);
 
-		// WHITELIST A WORKER IN A WORKER POOL
-		workersAuthorizedListAddress = await aWorkerPoolInstance.workersAuthorizedListAddress.call();
-		aWorkersAuthorizedListInstance = await AuthorizedList.at(workersAuthorizedListAddress);
-		txMined = await aWorkersAuthorizedListInstance.updateWhitelist(resourceProvider, true, {
-			from: scheduleProvider,
-			gas: amountGazProvided
-		});
-		//GAS ANALYSE -->
-		dataTxUpdateWhitelist= {spendBy:"scheduleProvider", when:"init", function:"updateWhitelist", gas: txMined.receipt.gasUsed};
-		// <-- GAS ANALYSE
-
 		// WORKER ADD deposit to respect workerpool policy
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		txMined = await aIexecHubInstance.deposit(subscriptionLockStakePolicy + subscriptionMinimumStakePolicy, {
@@ -367,11 +359,20 @@ contract('IexecHub', function(accounts) {
 		// <-- GAS ANALYSE
   console.log("coucou2");
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
-		appAddress = await aAppHubInstance.getApp(appProvider, 0);
+		appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		aAppInstance = await App.at(appAddress);
 
+
+  console.log("coucou22");
+    txMined = await aIexecHubInstance.deposit(100, {
+      from: scheduleProvider,
+      gas: amountGazProvided
+    });
+
+      console.log("coucou23");
+
 		//Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.createMarketOrder(IexecLib.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
@@ -413,7 +414,7 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
+		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status ACTIVE");
 
 		//GAS ANALYSE -->
 		dataTxAllowWorkerToContribute= {spendBy:"scheduleProvider", when:"askWorkflow", function:"allowWorkerToContribute-1-worker", gas: txMined.receipt.gasUsed};
@@ -453,7 +454,7 @@ contract('IexecHub', function(accounts) {
 
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
+		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
 
 		//GAS ANALYSE -->
@@ -468,7 +469,7 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, amountGazProvided, "should not use all gas");
 		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
+		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
 		//GAS ANALYSE -->
 		dataTxReveal= {spendBy:"resourceProvider", when:"askWorkflow", function:"reveal", gas: txMined.receipt.gasUsed};
@@ -479,8 +480,8 @@ contract('IexecHub', function(accounts) {
 
 	it("scheduleProvider call finalizeWork", async function() {
 		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(),   0, "check balance : stake");
-		assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+		assert.strictEqual(checkBalance[0].toNumber(),   70, "check balance : stake");
+		assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked");
 
 		txMined = await aWorkerPoolInstance.finalizeWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,
@@ -497,7 +498,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");
 
 		m_statusCall = await aWorkOrderInstance.m_status.call();
-		assert.strictEqual(m_statusCall.toNumber(), WorkOrder.WorkOrderStatusEnum.COMPLETED, "check m_status COMPLETED");
+		assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.COMPLETED, "check m_status COMPLETED");
 
 		result = await Promise.all([
 			aWorkOrderInstance.m_stdout.call(),
@@ -528,7 +529,6 @@ contract('IexecHub', function(accounts) {
 				dataTxCreateMarketplace,
 				dataTxAttachMarketplace,
 				dataTxCreateWorkerPool,
-				dataTxUpdateWhitelist,
 				dataTxResourceProviderDeposit,
 				dataTxSubscribeToPool,
 				dataTxAppCreate,
@@ -556,7 +556,6 @@ contract('IexecHub', function(accounts) {
 				dataTxCreateMarketplace,
 				dataTxAttachMarketplace,
 				dataTxCreateWorkerPool,
-				dataTxUpdateWhitelist,
 				dataTxResourceProviderDeposit,
 				dataTxSubscribeToPool,
 				dataTxAppCreate

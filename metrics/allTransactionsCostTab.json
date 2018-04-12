@@ -4,25 +4,25 @@
             "spendBy": "marketplaceCreator",
             "when": "init",
             "function": "newWorkerPoolHub",
-            "gas": 4324295
+            "gas": 3706145
         },
         {
             "spendBy": "marketplaceCreator",
             "when": "init",
             "function": "newAppHub",
-            "gas": 1745403
+            "gas": 803533
         },
         {
             "spendBy": "marketplaceCreator",
             "when": "init",
             "function": "newDatasetHub",
-            "gas": 1746131
+            "gas": 803597
         },
         {
             "spendBy": "marketplaceCreator",
             "when": "init",
             "function": "newIexecHub",
-            "gas": 5741596
+            "gas": 4961625
         },
         {
             "spendBy": "marketplaceCreator",
@@ -46,7 +46,7 @@
             "spendBy": "marketplaceCreator",
             "when": "init",
             "function": "newMarketplace",
-            "gas": 667966
+            "gas": 792013
         },
         {
             "spendBy": "marketplaceCreator",
@@ -58,85 +58,79 @@
             "spendBy": "scheduleProvider",
             "when": "init",
             "function": "createWorkerPool",
-            "gas": 3920681
-        },
-        {
-            "spendBy": "scheduleProvider",
-            "when": "init",
-            "function": "updateWhitelist",
-            "gas": 45207
+            "gas": 2646746
         },
         {
             "spendBy": "resourceProvider",
             "when": "init",
             "function": "deposit",
-            "gas": 80970
+            "gas": 81065
         },
         {
             "spendBy": "resourceProvider",
             "when": "init",
             "function": "subscribeToPool",
-            "gas": 138133
+            "gas": 119303
         },
         {
             "spendBy": "appProvider",
             "when": "init",
             "function": "newApp",
-            "gas": 2046769
+            "gas": 504665
         },
         {
             "spendBy": "scheduleProvider",
             "when": "askWorkflow",
-            "function": "emitMarketOrder",
-            "gas": 238862
+            "function": "createMarketOrder",
+            "gas": 227570
         },
         {
             "spendBy": "iExecCloudUser",
             "when": "askWorkflow",
             "function": "deposit",
-            "gas": 50970
+            "gas": 51065
         },
         {
             "spendBy": "iExecCloudUser",
             "when": "askWorkflow",
-            "function": "answerEmitWorkOrder",
-            "gas": 1078478
+            "function": "buyForWorkOrder",
+            "gas": 907517
         },
         {
             "spendBy": "scheduleProvider",
             "when": "askWorkflow",
-            "function": "callForContribution-1-worker",
-            "gas": 62094
+            "function": "allowWorkerToContribute-1-worker",
+            "gas": 62718
         },
         {
             "spendBy": "resourceProvider",
             "when": "askWorkflow",
             "function": "deposit",
-            "gas": 50970
+            "gas": 51065
         },
         {
             "spendBy": "resourceProvider",
             "when": "askWorkflow",
             "function": "contribute",
-            "gas": 160039
+            "gas": 159569
         },
         {
             "spendBy": "scheduleProvider",
             "when": "askWorkflow",
             "function": "revealConsensus",
-            "gas": 109398
+            "gas": 118016
         },
         {
             "spendBy": "resourceProvider",
             "when": "askWorkflow",
             "function": "reveal",
-            "gas": 57499
+            "gas": 57560
         },
         {
             "spendBy": "scheduleProvider",
             "when": "askWorkflow",
             "function": "finalizeWork",
-            "gas": 231322
+            "gas": 224731
         }
     ]
 }
