@@ -68,12 +68,9 @@ contract IexecHub
 	 * Reputation for PoCo
 	 */
 	mapping(address => uint256)  public m_scores;
-	IexecLib.ContributionHistory public m_contributionHistory;
 
 
-	/* event WorkOrderEmit */
 	event WorkOrderActivated(address woid, address indexed workerPool);
-	event WorkOrderRevealing(address woid, address indexed workerPool);
 	event WorkOrderClaimed  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
@@ -99,32 +96,25 @@ contract IexecHub
 	 * Constructor
 	 */
 	function IexecHub(
-		address _tokenAddress,
-		address _workerPoolHubAddress,
-		address _appHubAddress,
-		address _datasetHubAddress
 	)
 	public
 	{
-		rlc = RLC(_tokenAddress);
+
+	}
+
+
+	function attachContracts(address _tokenAddress,address _marketplaceAddress, address _workerPoolHubAddress, address _appHubAddress, address _datasetHubAddress) public
+	{
+		require(tokenAddress == address(0));
 		tokenAddress       = _tokenAddress;
+		rlc                = RLC(_tokenAddress);
+
+		marketplaceAddress = _marketplaceAddress;
+		marketplace        = Marketplace(_marketplaceAddress);
 
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
-		marketplaceAddress  = address(0);
-		m_categoriesCreator = address(0);
-
-		m_contributionHistory.success = 0;
-		m_contributionHistory.failled = 0;
-
-	}
-
-	function attachMarketplace(address _marketplaceAddress) public
-	{
-		require(marketplaceAddress == address(0));
-		marketplaceAddress = _marketplaceAddress;
-		marketplace        =  Marketplace(_marketplaceAddress);
 	}
 
 	function setCategoriesCreator(address _categoriesCreator) public
@@ -270,23 +260,6 @@ contract IexecHub
 	/**
 	 * WorkOrder life cycle
 	 */
-	function startRevealingPhase(address _woid) public returns (bool)
-	{
-		WorkOrder workorder = WorkOrder(_woid);
-		require(workorder.m_workerpool() == msg.sender);
-		workorder.reveal(); // revert on error
-		emit WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
-		return true;
-	}
-
-	function reActivate(address _woid) public returns (bool)
-	{
-		WorkOrder workorder = WorkOrder(_woid);
-		require(workorder.m_workerpool() == msg.sender);
-		workorder.reactivate();  // revert on error
-		emit WorkOrderActivated(_woid, workorder.m_workerpool());
-		return true;
-	}
 
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
@@ -503,7 +476,6 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			m_contributionHistory.success = m_contributionHistory.success.add(1);
 			m_scores[_worker] = m_scores[_worker].add(1);
 			emit AccurateContribution(_woid, _worker);
 		}
@@ -516,7 +488,6 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
 			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(SCORE_UNITARY_SLASH));
 			emit FaultyContribution(_woid, _worker);
 		}

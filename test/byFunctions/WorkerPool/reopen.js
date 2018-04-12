@@ -169,7 +169,7 @@ contract('IexecHub', function(accounts) {
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+    aIexecHubInstance = await IexecHub.new( {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");
@@ -199,7 +199,7 @@ contract('IexecHub', function(accounts) {
     console.log("aMarketplaceInstance.address is ");
     console.log(aMarketplaceInstance.address);
 
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+    txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -447,6 +447,8 @@ contract('IexecHub', function(accounts) {
 
     events = await Extensions.getEventsPromise(aWorkerPoolInstance.Reopen({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "woid check");
+
+    await Extensions.getEventsPromise(aWorkOrderInstance.WorkOrderReActivated({}), 1, constants.EVENT_WAIT_TIMEOUT);
 
     [status, resultHash, resultSign, enclaveChallenge, score, weight] = await aWorkerPoolInstance.getContribution.call(woid, resourceProvider);
     assert.strictEqual(status.toNumber(), constants.ContributionStatusEnum.REJECTED, "check constants.ContributionStatusEnum.REJECTED");

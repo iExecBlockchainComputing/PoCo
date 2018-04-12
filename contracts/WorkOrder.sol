@@ -6,6 +6,12 @@ contract WorkOrder
 {
 
 
+	event WorkOrderActivated();
+	event WorkOrderReActivated();
+	event WorkOrderRevealing();
+	event WorkOrderClaimed  ();
+	event WorkOrderCompleted();
+
 	/**
 	 * Members
 	 */
@@ -65,24 +71,32 @@ contract WorkOrder
 		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
 	}
 
-
-	function reveal() public onlyIexecHub
+	function startRevealingPhase() public returns (bool)
 	{
+		require(m_workerpool == msg.sender);
 		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		m_status = IexecLib.WorkOrderStatusEnum.REVEALING;
+		emit WorkOrderRevealing();
+		return true;
 	}
+
+	function reActivate() public returns (bool)
+	{
+		require(m_workerpool == msg.sender);
+		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
+		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
+		emit WorkOrderReActivated();
+		return true;
+	}
+
 
 	function claim() public onlyIexecHub
 	{
 		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE || m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
+		emit WorkOrderClaimed();
 	}
 
-	function reactivate() public onlyIexecHub
-	{
-		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
-		m_status = IexecLib.WorkOrderStatusEnum.ACTIVE;
-	}
 
 	function setResult(string _stdout, string _stderr, string _uri) public onlyIexecHub
 	{
@@ -101,6 +115,7 @@ contract WorkOrder
 				_uri
 			));
 		}
+		emit WorkOrderCompleted();
 	}
 
 }

@@ -170,7 +170,7 @@ contract('IexecHub', function(accounts) {
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+    aIexecHubInstance = await IexecHub.new( {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");
@@ -200,7 +200,7 @@ contract('IexecHub', function(accounts) {
     console.log("aMarketplaceInstance.address is ");
     console.log(aMarketplaceInstance.address);
 
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+    txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -373,9 +373,14 @@ contract('IexecHub', function(accounts) {
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.CLAIMED, "check m_status CLAIMED");
 
+    await Extensions.getEventsPromise(aWorkOrderInstance.WorkOrderClaimed({}), 1, constants.EVENT_WAIT_TIMEOUT);
+
     events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderClaimed({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "woid check");
     assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "the aWorkerPoolInstance address check");
+
+    events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderClaimed({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    assert.strictEqual(events[0].args.woid, woid, "woid check");
 
 
   });

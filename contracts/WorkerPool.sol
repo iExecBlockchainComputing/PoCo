@@ -50,12 +50,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 oldSubscriptionMinimumScorePolicy, uint256 newSubscriptionMinimumScorePolicy);
 
 	event WorkOrderActive         (address indexed woid);
+	event WorkOrderClaimed        (address indexed woid);
+
 	event AllowWorkerToContribute (address indexed woid, address indexed worker, uint256 workerScore);
 	event Contribute              (address indexed woid, address indexed worker, bytes32 resultHash);
 	event RevealConsensus         (address indexed woid, bytes32 consensus);
 	event Reveal                  (address indexed woid, address indexed worker, bytes32 result);
 	event Reopen                  (address indexed woid);
   event FinalizeWork            (address indexed woid, string stdout, string stderr, string uri);
+
 
 
 	event WorkerSubscribe         (address indexed worker);
@@ -257,6 +260,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 				require(iexecHubInterface.unlockForWork(_woid, w, consensus.stakeAmount));
 			}
 		}
+		emit WorkOrderClaimed(_woid);
 		return true;
 	}
 
@@ -320,7 +324,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
-		require(iexecHubInterface.startRevealingPhase(_woid));
+		require(WorkOrder(_woid).startRevealingPhase());
 
 		consensus.winnerCount = 0;
 		for (uint256 i = 0; i<consensus.contributors.length; ++i)
@@ -368,7 +372,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
-		require(iexecHubInterface.reActivate(_woid));
+		require(WorkOrder(_woid).reActivate());
+
 		for (uint256 i = 0; i < consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];

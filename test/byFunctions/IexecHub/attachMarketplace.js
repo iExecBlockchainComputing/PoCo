@@ -128,7 +128,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aDatasetHubInstance.address is ");
 		console.log(aDatasetHubInstance.address);
 
-		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+		aIexecHubInstance = await IexecHub.new( {
 			from: marketplaceCreator
 		});
 		console.log("aIexecHubInstance.address is ");
@@ -161,7 +161,7 @@ contract('IexecHub', function(accounts) {
 
 
 	it("attachMarketplace_01 : it should be possible to attachMarketplace to IexecHub", async function() {
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+    txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
 			from: marketplaceCreator,
       gas : constants.AMOUNT_GAS_PROVIDED
 		});
@@ -170,14 +170,14 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(marketplaceAddressCall,  aMarketplaceInstance.address, "check marketplaceAddress in aIexecHubInstance");
 	});
 
-  it("attachMarketplace_02 : it must not be possible to attachMarketplace to IexecHub twice", async function() {
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+  it("attachMarketplace_02 : it must not be possible to attachContracts to IexecHub twice", async function() {
+    txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
       from: marketplaceCreator,
       gas : constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
     await Extensions.expectedExceptionPromise(() => {
-        return aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+        return aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
           from: marketplaceCreator,
           gas : constants.AMOUNT_GAS_PROVIDED
         });

@@ -494,7 +494,7 @@ or
 ```
 coverage : 12/04/2018
 
-180 passing (13m)
+180 passing (12m)
 1 pending
 
 -----------------------------|----------|----------|----------|----------|----------------|
@@ -507,7 +507,7 @@ Dataset.sol                |      100 |       50 |      100 |      100 |        
 DatasetHub.sol             |      100 |      100 |      100 |      100 |                |
 IexecAPI.sol               |      100 |       50 |      100 |      100 |                |
 IexecCallbackInterface.sol |      100 |      100 |      100 |      100 |                |
-IexecHub.sol               |      100 |    69.83 |      100 |      100 |                |
+IexecHub.sol               |      100 |    70.54 |      100 |      100 |                |
 IexecHubAccessor.sol       |      100 |       75 |      100 |      100 |                |
 IexecHubInterface.sol      |      100 |      100 |      100 |      100 |                |
 IexecLib.sol               |      100 |      100 |      100 |      100 |                |
@@ -517,11 +517,11 @@ MarketplaceInterface.sol   |      100 |      100 |      100 |      100 |        
 OwnableOZ.sol              |      100 |       75 |      100 |      100 |                |
 SafeMathOZ.sol             |      100 |       75 |      100 |      100 |                |
 TestSha.sol                |      100 |      100 |      100 |      100 |                |
-WorkOrder.sol              |      100 |     62.5 |      100 |      100 |                |
+WorkOrder.sol              |      100 |       60 |      100 |      100 |                |
 WorkerPool.sol             |      100 |    82.69 |      100 |      100 |                |
 WorkerPoolHub.sol          |      100 |       75 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 All files                    |      100 |    75.16 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-
+```
 ## Oyente analyse see [here](./oyente)
