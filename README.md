@@ -349,14 +349,14 @@ Optional: usage not yet implemented in V2
         <tr>
             <td>CLAIMED</td>
             <td>claimFailedConsensus</td>
-            <td>IexecHub/<td>
+            <td>IexecHub</td>
             <td>iExecCloudUser</td>
             <td>if a WordeORder is in ACTIVE or REVEALING for too long, iExecCloudUser can get a refund by calling claimFailedConsensus</td>
         </tr>
         <tr>
             <td>COMPLETED</td>
             <td>finalizedWork</td>
-            <td>WorkOrderPool/td>
+            <td>WorkOrderPool</td>
             <td>scheduler</td>
             <td>Consensus reached, at least one worker has reveal and reveal period ended or all workers (with positive contributions) have revealed, scheduler can call finalizedWork function. This call distributeRewards and set result and status in WorkOrder</td>
         </tr>
