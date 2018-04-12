@@ -1798,6 +1798,10 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.woid, woid, "check woid");
     assert.strictEqual(events[0].args.worker, resourceProvider3, "check resourceProvider3 FaultyContribution");
 
+    [success, failled] = await aIexecHubInstance.m_contributionHistory.call();
+    assert.strictEqual(success.toNumber(), 2, "2 AccurateContribution");
+    assert.strictEqual(failled.toNumber(), 1, "1 FaultyContribution");
+
     [workerPool, workerScore] = await aIexecHubInstance.getWorkerStatus.call(resourceProvider);
     assert.strictEqual(workerPool, workerPoolAddress, "check workerPool");
     assert.strictEqual(workerScore.toNumber(), 1, " workerScore resourceProvider ");

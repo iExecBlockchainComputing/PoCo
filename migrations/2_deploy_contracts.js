@@ -126,8 +126,9 @@ module.exports = function(deployer) {
   let aDatasetHubInstance;
   let aIexecHub;
   let aMarketplaceInstance;
+  let categoriesConfigFileJson;
   let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
-  aRLCInstance='0x7314dc4d7794b5e7894212ca1556ae8e3de58621';
+  aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
 
   return deployer.deploy(WorkerPoolHub)
     .then(() => WorkerPoolHub.deployed())
@@ -181,13 +182,29 @@ module.exports = function(deployer) {
       return readFileAsync("./config/categories.json");
     })
     .then(categories => {
-      var categoriesConfigFileJson = JSON.parse(categories);
-      catagoriesPromises = [];
-      for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
-        console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef));
-      }
-      return Promise.all(catagoriesPromises);
+      categoriesConfigFileJson = JSON.parse(categories);
+      console.log("create category : "+categoriesConfigFileJson.categories[0].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[0].name,JSON.stringify(categoriesConfigFileJson.categories[0].description),categoriesConfigFileJson.categories[0].workClockTimeRef);
+    })
+    .then(categoriesCreated => {
+      console.log("create category : "+categoriesConfigFileJson.categories[1].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[1].name,JSON.stringify(categoriesConfigFileJson.categories[1].description),categoriesConfigFileJson.categories[1].workClockTimeRef);
+    })
+    .then(categoriesCreated => {
+      console.log("create category : "+categoriesConfigFileJson.categories[2].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[2].name,JSON.stringify(categoriesConfigFileJson.categories[2].description),categoriesConfigFileJson.categories[2].workClockTimeRef);
+    })
+    .then(categoriesCreated => {
+      console.log("create category : "+categoriesConfigFileJson.categories[3].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[3].name,JSON.stringify(categoriesConfigFileJson.categories[3].description),categoriesConfigFileJson.categories[3].workClockTimeRef);
+    })
+    .then(categoriesCreated => {
+      console.log("create category : "+categoriesConfigFileJson.categories[4].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[4].name,JSON.stringify(categoriesConfigFileJson.categories[4].description),categoriesConfigFileJson.categories[4].workClockTimeRef);
+    })
+    .then(categoriesCreated => {
+      console.log("create category : "+categoriesConfigFileJson.categories[5].name);
+      return aIexecHub.createCategory(categoriesConfigFileJson.categories[5].name,JSON.stringify(categoriesConfigFileJson.categories[5].description),categoriesConfigFileJson.categories[5].workClockTimeRef);
     })
     .then(categoriesCreated => {
       return aIexecHub.m_categoriesCount.call()

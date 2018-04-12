@@ -146,14 +146,14 @@
     "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/TestSha.sol",
     "exportedSymbols": {
       "TestSha": [
-        3786
+        3808
       ]
     },
-    "id": 3787,
+    "id": 3809,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3687,
+        "id": 3709,
         "literals": [
           "solidity",
           "^",
@@ -169,9 +169,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 3786,
+        "id": 3808,
         "linearizedBaseContracts": [
-          3786
+          3808
         ],
         "name": "TestSha",
         "nodeType": "ContractDefinition",
@@ -179,20 +179,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3693,
+            "id": 3715,
             "name": "SolidityKeccak256FromBytes",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3692,
+              "id": 3714,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3689,
+                  "id": 3711,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3693,
+                  "scope": 3715,
                   "src": "125:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -201,7 +201,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3688,
+                    "id": 3710,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "125:7:16",
@@ -215,11 +215,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3691,
+                  "id": 3713,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3693,
+                  "scope": 3715,
                   "src": "141:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -228,7 +228,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3690,
+                    "id": 3712,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "141:7:16",
@@ -248,20 +248,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3699,
+            "id": 3721,
             "name": "SolidityKeccak256FromString",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3698,
+              "id": 3720,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3695,
+                  "id": 3717,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3699,
+                  "scope": 3721,
                   "src": "193:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -270,7 +270,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3694,
+                    "id": 3716,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "193:7:16",
@@ -284,11 +284,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3697,
+                  "id": 3719,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3699,
+                  "scope": 3721,
                   "src": "209:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -297,7 +297,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 3696,
+                    "id": 3718,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "209:6:16",
@@ -317,20 +317,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3705,
+            "id": 3727,
             "name": "SolidityKeccak256FromAddress",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3704,
+              "id": 3726,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3701,
+                  "id": 3723,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3705,
+                  "scope": 3727,
                   "src": "261:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -339,7 +339,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3700,
+                    "id": 3722,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "261:7:16",
@@ -353,11 +353,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3703,
+                  "id": 3725,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3705,
+                  "scope": 3727,
                   "src": "277:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -366,7 +366,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3702,
+                    "id": 3724,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "277:7:16",
@@ -386,20 +386,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3715,
+            "id": 3737,
             "name": "SignedVote",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3714,
+              "id": 3736,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3707,
+                  "id": 3729,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "315:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -408,7 +408,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3706,
+                    "id": 3728,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "315:7:16",
@@ -422,11 +422,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3709,
+                  "id": 3731,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "332:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -435,7 +435,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3708,
+                    "id": 3730,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "332:7:16",
@@ -449,11 +449,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3711,
+                  "id": 3733,
                   "indexed": false,
                   "name": "vote",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "349:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -462,7 +462,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3710,
+                    "id": 3732,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "349:7:16",
@@ -476,11 +476,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3713,
+                  "id": 3735,
                   "indexed": false,
                   "name": "sign",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "365:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -489,7 +489,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3712,
+                    "id": 3734,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "365:7:16",
@@ -508,7 +508,7 @@
           },
           {
             "body": {
-              "id": 3727,
+              "id": 3749,
               "nodeType": "Block",
               "src": "448:66:16",
               "statements": [
@@ -521,11 +521,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3722,
+                            "id": 3744,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3717,
+                            "referencedDeclaration": 3739,
                             "src": "494:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -540,18 +540,18 @@
                               "typeString": "bytes32"
                             }
                           ],
-                          "id": 3721,
+                          "id": 3743,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "484:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3723,
+                        "id": 3745,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -567,11 +567,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3724,
+                        "id": 3746,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3717,
+                        "referencedDeclaration": 3739,
                         "src": "503:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -590,18 +590,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3720,
+                      "id": 3742,
                       "name": "SolidityKeccak256FromBytes",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3693,
+                      "referencedDeclaration": 3715,
                       "src": "457:26:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32,bytes32)"
                       }
                     },
-                    "id": 3725,
+                    "id": 3747,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -615,14 +615,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3726,
+                  "id": 3748,
                   "nodeType": "EmitStatement",
                   "src": "452:58:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3728,
+            "id": 3750,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -630,15 +630,15 @@
             "name": "testSolidityKeccak256FromBytes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3718,
+              "id": 3740,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3717,
+                  "id": 3739,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3728,
+                  "scope": 3750,
                   "src": "424:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -647,7 +647,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3716,
+                    "id": 3738,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "424:7:16",
@@ -664,12 +664,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3719,
+              "id": 3741,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "448:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "384:130:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -677,7 +677,7 @@
           },
           {
             "body": {
-              "id": 3740,
+              "id": 3762,
               "nodeType": "Block",
               "src": "581:67:16",
               "statements": [
@@ -690,11 +690,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3735,
+                            "id": 3757,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3730,
+                            "referencedDeclaration": 3752,
                             "src": "628:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_string_memory_ptr",
@@ -709,18 +709,18 @@
                               "typeString": "string memory"
                             }
                           ],
-                          "id": 3734,
+                          "id": 3756,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "618:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3736,
+                        "id": 3758,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -736,11 +736,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3737,
+                        "id": 3759,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3730,
+                        "referencedDeclaration": 3752,
                         "src": "637:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -759,18 +759,18 @@
                           "typeString": "string memory"
                         }
                       ],
-                      "id": 3733,
+                      "id": 3755,
                       "name": "SolidityKeccak256FromString",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3699,
+                      "referencedDeclaration": 3721,
                       "src": "590:27:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bytes32,string memory)"
                       }
                     },
-                    "id": 3738,
+                    "id": 3760,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -784,14 +784,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3739,
+                  "id": 3761,
                   "nodeType": "EmitStatement",
                   "src": "585:59:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3741,
+            "id": 3763,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -799,15 +799,15 @@
             "name": "testSolidityKeccak256FromString",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3731,
+              "id": 3753,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3730,
+                  "id": 3752,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3741,
+                  "scope": 3763,
                   "src": "558:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -816,7 +816,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 3729,
+                    "id": 3751,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "558:6:16",
@@ -833,12 +833,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3732,
+              "id": 3754,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "581:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "517:131:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -846,7 +846,7 @@
           },
           {
             "body": {
-              "id": 3753,
+              "id": 3775,
               "nodeType": "Block",
               "src": "717:68:16",
               "statements": [
@@ -859,11 +859,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3748,
+                            "id": 3770,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3743,
+                            "referencedDeclaration": 3765,
                             "src": "765:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -878,18 +878,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 3747,
+                          "id": 3769,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "755:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3749,
+                        "id": 3771,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -905,11 +905,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3750,
+                        "id": 3772,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3743,
+                        "referencedDeclaration": 3765,
                         "src": "774:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -928,18 +928,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 3746,
+                      "id": 3768,
                       "name": "SolidityKeccak256FromAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3705,
+                      "referencedDeclaration": 3727,
                       "src": "726:28:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$returns$__$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 3751,
+                    "id": 3773,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -953,14 +953,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3752,
+                  "id": 3774,
                   "nodeType": "EmitStatement",
                   "src": "721:60:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3754,
+            "id": 3776,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -968,15 +968,15 @@
             "name": "testSolidityKeccak256FromAddress",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3744,
+              "id": 3766,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3743,
+                  "id": 3765,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3754,
+                  "scope": 3776,
                   "src": "693:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -985,7 +985,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3742,
+                    "id": 3764,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "693:7:16",
@@ -1002,12 +1002,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3745,
+              "id": 3767,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "717:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "651:134:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1015,21 +1015,21 @@
           },
           {
             "body": {
-              "id": 3784,
+              "id": 3806,
               "nodeType": "Block",
               "src": "837:178:16",
               "statements": [
                 {
                   "assignments": [
-                    3760
+                    3782
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3760,
+                      "id": 3782,
                       "name": "vote",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3785,
+                      "scope": 3807,
                       "src": "841:12:16",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1038,7 +1038,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 3759,
+                        "id": 3781,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "841:7:16",
@@ -1051,17 +1051,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3764,
+                  "id": 3786,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 3762,
+                        "id": 3784,
                         "name": "_result",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3756,
+                        "referencedDeclaration": 3778,
                         "src": "866:7:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1076,18 +1076,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3761,
+                      "id": 3783,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6693,
+                      "referencedDeclaration": 6715,
                       "src": "856:9:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 3763,
+                    "id": 3785,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1106,15 +1106,15 @@
                 },
                 {
                   "assignments": [
-                    3766
+                    3788
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3766,
+                      "id": 3788,
                       "name": "sign",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3785,
+                      "scope": 3807,
                       "src": "902:12:16",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1123,7 +1123,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 3765,
+                        "id": 3787,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "902:7:16",
@@ -1136,7 +1136,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3775,
+                  "id": 3797,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -1146,18 +1146,18 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 3773,
+                        "id": 3795,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 3768,
+                          "id": 3790,
                           "name": "_result",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3756,
+                          "referencedDeclaration": 3778,
                           "src": "927:7:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -1173,18 +1173,18 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 3770,
+                                "id": 3792,
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6699,
+                                "referencedDeclaration": 6721,
                                 "src": "947:3:16",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
                                   "typeString": "msg"
                                 }
                               },
-                              "id": 3771,
+                              "id": 3793,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -1206,18 +1206,18 @@
                                 "typeString": "address"
                               }
                             ],
-                            "id": 3769,
+                            "id": 3791,
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6693,
+                            "referencedDeclaration": 6715,
                             "src": "937:9:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                               "typeString": "function () pure returns (bytes32)"
                             }
                           },
-                          "id": 3772,
+                          "id": 3794,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1245,18 +1245,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3767,
+                      "id": 3789,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6693,
+                      "referencedDeclaration": 6715,
                       "src": "917:9:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 3774,
+                    "id": 3796,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1279,11 +1279,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 3777,
+                        "id": 3799,
                         "name": "_result",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3756,
+                        "referencedDeclaration": 3778,
                         "src": "979:7:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1294,18 +1294,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 3778,
+                          "id": 3800,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6699,
+                          "referencedDeclaration": 6721,
                           "src": "988:3:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 3779,
+                        "id": 3801,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1321,11 +1321,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3780,
+                        "id": 3802,
                         "name": "vote",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3760,
+                        "referencedDeclaration": 3782,
                         "src": "1000:4:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1334,11 +1334,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3781,
+                        "id": 3803,
                         "name": "sign",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3766,
+                        "referencedDeclaration": 3788,
                         "src": "1006:4:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1365,18 +1365,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3776,
+                      "id": 3798,
                       "name": "SignedVote",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3715,
+                      "referencedDeclaration": 3737,
                       "src": "968:10:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32,address,bytes32,bytes32)"
                       }
                     },
-                    "id": 3782,
+                    "id": 3804,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1390,14 +1390,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3783,
+                  "id": 3805,
                   "nodeType": "EmitStatement",
                   "src": "963:48:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3785,
+            "id": 3807,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1405,15 +1405,15 @@
             "name": "testSignedVote",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3757,
+              "id": 3779,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3756,
+                  "id": 3778,
                   "name": "_result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3785,
+                  "scope": 3807,
                   "src": "812:15:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1422,7 +1422,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3755,
+                    "id": 3777,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "812:7:16",
@@ -1439,19 +1439,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3758,
+              "id": 3780,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "837:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "788:227:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3787,
+        "scope": 3809,
         "src": "70:947:16"
       }
     ],
@@ -1461,14 +1461,14 @@
     "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/TestSha.sol",
     "exportedSymbols": {
       "TestSha": [
-        3786
+        3808
       ]
     },
-    "id": 3787,
+    "id": 3809,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3687,
+        "id": 3709,
         "literals": [
           "solidity",
           "^",
@@ -1484,9 +1484,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 3786,
+        "id": 3808,
         "linearizedBaseContracts": [
-          3786
+          3808
         ],
         "name": "TestSha",
         "nodeType": "ContractDefinition",
@@ -1494,20 +1494,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3693,
+            "id": 3715,
             "name": "SolidityKeccak256FromBytes",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3692,
+              "id": 3714,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3689,
+                  "id": 3711,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3693,
+                  "scope": 3715,
                   "src": "125:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1516,7 +1516,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3688,
+                    "id": 3710,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "125:7:16",
@@ -1530,11 +1530,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3691,
+                  "id": 3713,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3693,
+                  "scope": 3715,
                   "src": "141:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1543,7 +1543,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3690,
+                    "id": 3712,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "141:7:16",
@@ -1563,20 +1563,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3699,
+            "id": 3721,
             "name": "SolidityKeccak256FromString",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3698,
+              "id": 3720,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3695,
+                  "id": 3717,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3699,
+                  "scope": 3721,
                   "src": "193:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1585,7 +1585,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3694,
+                    "id": 3716,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "193:7:16",
@@ -1599,11 +1599,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3697,
+                  "id": 3719,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3699,
+                  "scope": 3721,
                   "src": "209:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1612,7 +1612,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 3696,
+                    "id": 3718,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "209:6:16",
@@ -1632,20 +1632,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3705,
+            "id": 3727,
             "name": "SolidityKeccak256FromAddress",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3704,
+              "id": 3726,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3701,
+                  "id": 3723,
                   "indexed": false,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3705,
+                  "scope": 3727,
                   "src": "261:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1654,7 +1654,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3700,
+                    "id": 3722,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "261:7:16",
@@ -1668,11 +1668,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3703,
+                  "id": 3725,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3705,
+                  "scope": 3727,
                   "src": "277:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1681,7 +1681,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3702,
+                    "id": 3724,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "277:7:16",
@@ -1701,20 +1701,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 3715,
+            "id": 3737,
             "name": "SignedVote",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3714,
+              "id": 3736,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3707,
+                  "id": 3729,
                   "indexed": false,
                   "name": "input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "315:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1723,7 +1723,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3706,
+                    "id": 3728,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "315:7:16",
@@ -1737,11 +1737,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3709,
+                  "id": 3731,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "332:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1750,7 +1750,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3708,
+                    "id": 3730,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "332:7:16",
@@ -1764,11 +1764,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3711,
+                  "id": 3733,
                   "indexed": false,
                   "name": "vote",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "349:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1777,7 +1777,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3710,
+                    "id": 3732,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "349:7:16",
@@ -1791,11 +1791,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3713,
+                  "id": 3735,
                   "indexed": false,
                   "name": "sign",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3715,
+                  "scope": 3737,
                   "src": "365:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1804,7 +1804,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3712,
+                    "id": 3734,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "365:7:16",
@@ -1823,7 +1823,7 @@
           },
           {
             "body": {
-              "id": 3727,
+              "id": 3749,
               "nodeType": "Block",
               "src": "448:66:16",
               "statements": [
@@ -1836,11 +1836,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3722,
+                            "id": 3744,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3717,
+                            "referencedDeclaration": 3739,
                             "src": "494:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -1855,18 +1855,18 @@
                               "typeString": "bytes32"
                             }
                           ],
-                          "id": 3721,
+                          "id": 3743,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "484:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3723,
+                        "id": 3745,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1882,11 +1882,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3724,
+                        "id": 3746,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3717,
+                        "referencedDeclaration": 3739,
                         "src": "503:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1905,18 +1905,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3720,
+                      "id": 3742,
                       "name": "SolidityKeccak256FromBytes",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3693,
+                      "referencedDeclaration": 3715,
                       "src": "457:26:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32,bytes32)"
                       }
                     },
-                    "id": 3725,
+                    "id": 3747,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1930,14 +1930,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3726,
+                  "id": 3748,
                   "nodeType": "EmitStatement",
                   "src": "452:58:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3728,
+            "id": 3750,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1945,15 +1945,15 @@
             "name": "testSolidityKeccak256FromBytes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3718,
+              "id": 3740,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3717,
+                  "id": 3739,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3728,
+                  "scope": 3750,
                   "src": "424:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1962,7 +1962,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3716,
+                    "id": 3738,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "424:7:16",
@@ -1979,12 +1979,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3719,
+              "id": 3741,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "448:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "384:130:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1992,7 +1992,7 @@
           },
           {
             "body": {
-              "id": 3740,
+              "id": 3762,
               "nodeType": "Block",
               "src": "581:67:16",
               "statements": [
@@ -2005,11 +2005,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3735,
+                            "id": 3757,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3730,
+                            "referencedDeclaration": 3752,
                             "src": "628:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_string_memory_ptr",
@@ -2024,18 +2024,18 @@
                               "typeString": "string memory"
                             }
                           ],
-                          "id": 3734,
+                          "id": 3756,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "618:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3736,
+                        "id": 3758,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2051,11 +2051,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3737,
+                        "id": 3759,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3730,
+                        "referencedDeclaration": 3752,
                         "src": "637:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -2074,18 +2074,18 @@
                           "typeString": "string memory"
                         }
                       ],
-                      "id": 3733,
+                      "id": 3755,
                       "name": "SolidityKeccak256FromString",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3699,
+                      "referencedDeclaration": 3721,
                       "src": "590:27:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bytes32,string memory)"
                       }
                     },
-                    "id": 3738,
+                    "id": 3760,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2099,14 +2099,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3739,
+                  "id": 3761,
                   "nodeType": "EmitStatement",
                   "src": "585:59:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3741,
+            "id": 3763,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2114,15 +2114,15 @@
             "name": "testSolidityKeccak256FromString",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3731,
+              "id": 3753,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3730,
+                  "id": 3752,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3741,
+                  "scope": 3763,
                   "src": "558:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2131,7 +2131,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 3729,
+                    "id": 3751,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "558:6:16",
@@ -2148,12 +2148,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3732,
+              "id": 3754,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "581:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "517:131:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2161,7 +2161,7 @@
           },
           {
             "body": {
-              "id": 3753,
+              "id": 3775,
               "nodeType": "Block",
               "src": "717:68:16",
               "statements": [
@@ -2174,11 +2174,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 3748,
+                            "id": 3770,
                             "name": "_input",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3743,
+                            "referencedDeclaration": 3765,
                             "src": "765:6:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2193,18 +2193,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 3747,
+                          "id": 3769,
                           "name": "keccak256",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6693,
+                          "referencedDeclaration": 6715,
                           "src": "755:9:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                             "typeString": "function () pure returns (bytes32)"
                           }
                         },
-                        "id": 3749,
+                        "id": 3771,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2220,11 +2220,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3750,
+                        "id": 3772,
                         "name": "_input",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3743,
+                        "referencedDeclaration": 3765,
                         "src": "774:6:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2243,18 +2243,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 3746,
+                      "id": 3768,
                       "name": "SolidityKeccak256FromAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3705,
+                      "referencedDeclaration": 3727,
                       "src": "726:28:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$returns$__$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 3751,
+                    "id": 3773,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2268,14 +2268,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3752,
+                  "id": 3774,
                   "nodeType": "EmitStatement",
                   "src": "721:60:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3754,
+            "id": 3776,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2283,15 +2283,15 @@
             "name": "testSolidityKeccak256FromAddress",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3744,
+              "id": 3766,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3743,
+                  "id": 3765,
                   "name": "_input",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3754,
+                  "scope": 3776,
                   "src": "693:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2300,7 +2300,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3742,
+                    "id": 3764,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "693:7:16",
@@ -2317,12 +2317,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3745,
+              "id": 3767,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "717:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "651:134:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2330,21 +2330,21 @@
           },
           {
             "body": {
-              "id": 3784,
+              "id": 3806,
               "nodeType": "Block",
               "src": "837:178:16",
               "statements": [
                 {
                   "assignments": [
-                    3760
+                    3782
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3760,
+                      "id": 3782,
                       "name": "vote",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3785,
+                      "scope": 3807,
                       "src": "841:12:16",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2353,7 +2353,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 3759,
+                        "id": 3781,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "841:7:16",
@@ -2366,17 +2366,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3764,
+                  "id": 3786,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 3762,
+                        "id": 3784,
                         "name": "_result",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3756,
+                        "referencedDeclaration": 3778,
                         "src": "866:7:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2391,18 +2391,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3761,
+                      "id": 3783,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6693,
+                      "referencedDeclaration": 6715,
                       "src": "856:9:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 3763,
+                    "id": 3785,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2421,15 +2421,15 @@
                 },
                 {
                   "assignments": [
-                    3766
+                    3788
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 3766,
+                      "id": 3788,
                       "name": "sign",
                       "nodeType": "VariableDeclaration",
-                      "scope": 3785,
+                      "scope": 3807,
                       "src": "902:12:16",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2438,7 +2438,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 3765,
+                        "id": 3787,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "902:7:16",
@@ -2451,7 +2451,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 3775,
+                  "id": 3797,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -2461,18 +2461,18 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 3773,
+                        "id": 3795,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 3768,
+                          "id": 3790,
                           "name": "_result",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3756,
+                          "referencedDeclaration": 3778,
                           "src": "927:7:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -2488,18 +2488,18 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 3770,
+                                "id": 3792,
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6699,
+                                "referencedDeclaration": 6721,
                                 "src": "947:3:16",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
                                   "typeString": "msg"
                                 }
                               },
-                              "id": 3771,
+                              "id": 3793,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2521,18 +2521,18 @@
                                 "typeString": "address"
                               }
                             ],
-                            "id": 3769,
+                            "id": 3791,
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6693,
+                            "referencedDeclaration": 6715,
                             "src": "937:9:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                               "typeString": "function () pure returns (bytes32)"
                             }
                           },
-                          "id": 3772,
+                          "id": 3794,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2560,18 +2560,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3767,
+                      "id": 3789,
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6693,
+                      "referencedDeclaration": 6715,
                       "src": "917:9:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                         "typeString": "function () pure returns (bytes32)"
                       }
                     },
-                    "id": 3774,
+                    "id": 3796,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2594,11 +2594,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 3777,
+                        "id": 3799,
                         "name": "_result",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3756,
+                        "referencedDeclaration": 3778,
                         "src": "979:7:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2609,18 +2609,18 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 3778,
+                          "id": 3800,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6699,
+                          "referencedDeclaration": 6721,
                           "src": "988:3:16",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 3779,
+                        "id": 3801,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2636,11 +2636,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3780,
+                        "id": 3802,
                         "name": "vote",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3760,
+                        "referencedDeclaration": 3782,
                         "src": "1000:4:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2649,11 +2649,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 3781,
+                        "id": 3803,
                         "name": "sign",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3766,
+                        "referencedDeclaration": 3788,
                         "src": "1006:4:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2680,18 +2680,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 3776,
+                      "id": 3798,
                       "name": "SignedVote",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3715,
+                      "referencedDeclaration": 3737,
                       "src": "968:10:16",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32,address,bytes32,bytes32)"
                       }
                     },
-                    "id": 3782,
+                    "id": 3804,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2705,14 +2705,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3783,
+                  "id": 3805,
                   "nodeType": "EmitStatement",
                   "src": "963:48:16"
                 }
               ]
             },
             "documentation": null,
-            "id": 3785,
+            "id": 3807,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2720,15 +2720,15 @@
             "name": "testSignedVote",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3757,
+              "id": 3779,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3756,
+                  "id": 3778,
                   "name": "_result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3785,
+                  "scope": 3807,
                   "src": "812:15:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2737,7 +2737,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 3755,
+                    "id": 3777,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "812:7:16",
@@ -2754,19 +2754,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3758,
+              "id": 3780,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "837:0:16"
             },
-            "scope": 3786,
+            "scope": 3808,
             "src": "788:227:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3787,
+        "scope": 3809,
         "src": "70:947:16"
       }
     ],
@@ -2778,5 +2778,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-04-12T18:32:30.798Z"
+  "updatedAt": "2018-04-12T21:13:40.880Z"
 }

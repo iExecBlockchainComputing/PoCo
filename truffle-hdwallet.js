@@ -13,60 +13,60 @@ module.exports = {
       /*
       Using network 'ropsten'.
 
-      Running migration: 1_initial_migration.js
-        Deploying Migrations...
-        ... 0xd9228d595461f2b40484db0e82275a270ad6625f276bf202f8fc78666a4a28d0
-        Migrations: 0x9a1eb11bcbc6cf50fda67519568bec2da3f8cad0
-      Saving successful migration to network...
-        ... 0x0e1f3e5ac6bae9966fcfcd4078b8170f1c939718d4bf6d9b987a1be1fa69f7b8
-      Saving artifacts...
-      Running migration: 2_deploy_contracts.js
-        Deploying WorkerPoolHub...
-        ... 0x78939933dd334948d1c91429fa27a8801cf74cbbeb39686a085e24d39ad27c97
-        WorkerPoolHub: 0x6fbb19d1e0c43a46bdf6b5087207b1ea1744dfb3
-      WorkerPoolHub deployed at address: 0x6fbb19d1e0c43a46bdf6b5087207b1ea1744dfb3
-        Deploying AppHub...
-        ... 0xcda139edc12205fb09f60fd34faa3dacc82b4f7b8f1fdddec676566ae4194a4d
-        AppHub: 0x90c7154bc5e77a0ff535bd9ac1ecd9cc14718f08
-      AppHub deployed at address: 0x90c7154bc5e77a0ff535bd9ac1ecd9cc14718f08
-        Deploying DatasetHub...
-        ... 0x798b04d224257086038b2b1e70a239132ad699c2beadd529cb0a94d9a52d63d4
-        DatasetHub: 0xdee768d9a781658503445cbe79e463bcf90538d5
-      DatasetHub deployed at address: 0xdee768d9a781658503445cbe79e463bcf90538d5
-        Deploying IexecHub...
-        ... 0x595fdb692ec5f39bc86f9fa3ef73de84f07d2bfe2fe73eb932e7500ce408726e
-        IexecHub: 0x12b92a17b1ca4bb10b861386446b8b2716e58c9b
-      IexecHub deployed at address: 0x12b92a17b1ca4bb10b861386446b8b2716e58c9b
-        ... 0x366ac6501b1571b0e62247f9fb65f6f5306d4a92312f69e6015c2612aab84295
-      transferOwnership of WorkerPoolHub to IexecHub
-        ... 0xea2461d4d9d0ccf17decea86548e1e1ba7b30060ea709760c22135ce358f5438
-      transferOwnership of AppHub to IexecHub
-        ... 0x2ed31318d8c9f3099cdf1de63624e2d9c2aa70894cabdccb0148a1fa16cad8f5
-      transferOwnership of DatasetHub to IexecHub
-        Deploying Marketplace...
-        ... 0x5f28ec7d433c2f21c5e90cae68bded4051817c4a5a589e0e99bea11e98a582e9
-        Marketplace: 0x9315a6ae9a9842bcb5ad8f5d43a4271d297088e2
-      Marketplace deployed at address: 0x9315a6ae9a9842bcb5ad8f5d43a4271d297088e2
-        ... 0xb71b2150962548f87fd03bda00b030770a9afb6300ffd7181c652f76f5f4bae9
-      attach Contracts to IexecHub done
-        ... 0x11868d7b248d3b5713a3064270d5d123713ab9664fb913a8cb1c322114de7080
-      setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
-      create category : Mega
-      create category : MegaPlus
-      create category : Giga
-      create category : GigaPlus
-      create category : GigaGrande
-      create category : GigaMax
-        ... 0x167551da8b64bc99c905ffca13c925e130141f7f1fc55f49018d29a1b923037d
-        ... 0x5431ce9169dc43c2a9b5cdf6bdfdf50b8e521aeef1102fd57d6a3b8cc8cab97c
-        ... 0x9932fcba440f1dd4367f5a0cd067dece1ae4a86c509be553c4a92b02b0cd87a4
-        ... 0xd1715be33c9bae078815c09b7c834ef7d1bc74dc2294b53f65864fd6495daa35
-        ... 0x8256d14f854f571a5a59fbc266d489e40a3d7a350d3106b7d1ecaf3f4544c65b
-        ... 0x30bed86521f1f107a1cdd153089d9d4d31ce120749c152d113d799b90d580436
-      m_categoriesCount is now: 6
-      Saving successful migration to network...
-        ... 0x808191db79549f31415559d8f03d73cd52973a022b860eece1c52f17772f9988
-      Saving artifacts...
+Running migration: 1_initial_migration.js
+  Deploying Migrations...
+  ... 0x1a2c06cad52560461769f84f7cc05504d371f3f90923d75c5188bf8f108e899a
+  Migrations: 0x670ed4bb1fd989cfaae1b6e508663f9174e74901
+Saving successful migration to network...
+  ... 0x943fa1a21592f23c19d0ca46939c366d46a8782346425e600d3ef7acae63a196
+Saving artifacts...
+Running migration: 2_deploy_contracts.js
+  Deploying WorkerPoolHub...
+  ... 0x279013f3b1dbd073a8cdd5d1c32c3a37535a450c1e9b78e21a472ace3911c8d9
+  WorkerPoolHub: 0x3fb50bb0716e0967c2c76599aad214b62b9b74c8
+WorkerPoolHub deployed at address: 0x3fb50bb0716e0967c2c76599aad214b62b9b74c8
+  Deploying AppHub...
+  ... 0xae025e17048ceff49be9b9f35c0642443c4f6d1d6dd4b42ca638795227e2a789
+  AppHub: 0x7f9884f75571e5ace278e71ea9b2f035d71601f3
+AppHub deployed at address: 0x7f9884f75571e5ace278e71ea9b2f035d71601f3
+  Deploying DatasetHub...
+  ... 0x2ee1aeb9027d9420ef79e393815d42333353be2381ffa0c2ec5516bfd3792c14
+  DatasetHub: 0x97f2f83bfbf3bf9b9f641204ace4ba6cfe8f3c3e
+DatasetHub deployed at address: 0x97f2f83bfbf3bf9b9f641204ace4ba6cfe8f3c3e
+  Deploying IexecHub...
+  ... 0x6d78bf5941175a90e47bcc48c4ada49012632ec57178a420fb43d59b5810955d
+  IexecHub: 0x8bbf09dc4514077b60a45cbd6d8294111534500d
+IexecHub deployed at address: 0x8bbf09dc4514077b60a45cbd6d8294111534500d
+  ... 0x9cdfccd9c7ce5b1467789fa7aa5f6299bb39ba7ddec31bbde639a33950a94428
+transferOwnership of WorkerPoolHub to IexecHub
+  ... 0xe986c81943eb28132afe87b57b13f605d2855740f41de119fe2461369e72c7f0
+transferOwnership of AppHub to IexecHub
+  ... 0x34e87fcfb224f0ef6b39bdd69e4f65f028f6dda920b012f75c50fe0dbc8b5a0e
+transferOwnership of DatasetHub to IexecHub
+  Deploying Marketplace...
+  ... 0x75198166e7e4b6f512154c27238dc5769ddfbc054ba1fa584c5856139042a008
+  Marketplace: 0xdc61f092704dc567be178323a951edd59bde4736
+Marketplace deployed at address: 0xdc61f092704dc567be178323a951edd59bde4736
+  ... 0x5393c4123b07388c8e26abe6961d6f07f7f5293129a2664b71c29e2687c9a989
+attach Contracts to IexecHub done
+  ... 0x9a1df7c907cd7c4ff6d590b0c159c41a8183974891a82403a4079bc93bc4d620
+setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
+create category : Mega
+  ... 0x3209da0d74e8c7834f2263d81c803c2fd7c6396985db9539c1465db5c464b481
+create category : MegaPlus
+  ... 0x2a0d51bf9b32f1597b350fb2759405acaac348e5a3822b93a12dbb4f8c2e8bb8
+create category : Giga
+  ... 0x27929ba3ca9e69bacb7ae0177c1e9ed9a7d51538956927bffa4d2216ec082ce6
+create category : GigaPlus
+  ... 0x5d7438816bcb2a31d070ddc12f0a861370bacac97fd22abb9d77a504e26ce888
+create category : GigaGrande
+  ... 0xc248f5f6df634cc2d4212d54fd81115903d59f51170d48b4bbb3227e10f06aaf
+create category : GigaMax
+  ... 0x7ea52b20d32ce3465a46c64990ee28b8808b0c67272564d9c7b120c309af9cbd
+m_categoriesCount is now: 6
+Saving successful migration to network...
+  ... 0x79f172716e77c86fd7dba8928846d10b46cd4be9079343a6394fcefc9f5a2479
+Saving artifacts...
 
       */
     },
@@ -77,64 +77,62 @@ module.exports = {
       gasPrice: 22000000000,
 
       /*
-
       Using network 'rinkeby'.
 
       Running migration: 1_initial_migration.js
         Deploying Migrations...
-        ... 0x606911f71cd4985b547adeba3cc5097ab68ff2605bd520110730216e5defb724
-        Migrations: 0x908ad2872339c6156afe3b38c9357c1ca89e67e8
+        ... 0xad6d3e61ba7c2fc335f14644f0285d3cb966b201981335ab1cd9211851882842
+        Migrations: 0x5c5de6b1b80eee8e1431824e3931f853d0fedc0b
       Saving successful migration to network...
-        ... 0xc4645b0ef4b6badbe9639afb89f751fcb2b36d5e07a21cbbef87ca045472b49a
+        ... 0x95fafef424840b34950beef3c8074bfaccb8c1ccb2a47391cac08c6a655f3e1a
       Saving artifacts...
       Running migration: 2_deploy_contracts.js
         Deploying WorkerPoolHub...
-        ... 0xa04d7e2c0b3cea1c75d900a8f484387cc5e3056b3fcbec039258115fca1d6689
-        WorkerPoolHub: 0x6875a88a10a21041e75265eb7be1b483bab4b638
-      WorkerPoolHub deployed at address: 0x6875a88a10a21041e75265eb7be1b483bab4b638
+        ... 0xf058caf372d72302d3efb70a9ac323f803d8b80087f352bd1fdb0b6f0718c64c
+        WorkerPoolHub: 0x201d5e5bb4e865be7f9a84ff0f12a1ca1980dcbd
+      WorkerPoolHub deployed at address: 0x201d5e5bb4e865be7f9a84ff0f12a1ca1980dcbd
         Deploying AppHub...
-        ... 0xed64122a00d94b5845f93c55faa8fa8c9a2d30ba153f2c996571bfb43fb4f139
-        AppHub: 0x54adc857dfa34bbc50ee7105dd0d9cb57798d535
-      AppHub deployed at address: 0x54adc857dfa34bbc50ee7105dd0d9cb57798d535
+        ... 0x06fa7774178e9297bf510c524714fcd999ab7790c44965dfaf744e9b0ebccb64
+        AppHub: 0x700425c7684e069c27ec3b3784a22025f95c6057
+      AppHub deployed at address: 0x700425c7684e069c27ec3b3784a22025f95c6057
         Deploying DatasetHub...
-        ... 0xab09a56c148c9c32c3bceedf23083a3c90310ddeed2dc827186a47cf9de5c965
-        DatasetHub: 0xd5eb98773f0b113f4691217e0a62bd520198eeb8
-      DatasetHub deployed at address: 0xd5eb98773f0b113f4691217e0a62bd520198eeb8
+        ... 0x5cf4c4c290a0b88f8e568c0bb9869b07f37ec9c8aff5b2d5a6b58d1385d97493
+        DatasetHub: 0xc6ce0a9928ac8da11e34c7f8ac174af058162295
+      DatasetHub deployed at address: 0xc6ce0a9928ac8da11e34c7f8ac174af058162295
         Deploying IexecHub...
-        ... 0x64564fd91ccb0fc964ff27123c4976b8c115f5053836642d912caaf98f1ce062
-        IexecHub: 0x94769bf5ee101205886c9518130e3acd71510661
-      IexecHub deployed at address: 0x94769bf5ee101205886c9518130e3acd71510661
-        ... 0x76d9637a17ae1cafa10687f014faaf9fa165a4cf977e797bad3dc8e4131d3a10
+        ... 0xf5247ed94fa4ae172b9a9f830aac8ca799b94af3f8bc185bc3fd2117ead1f50f
+        IexecHub: 0x374bb77dd977716f813b820f5737cfc9a7a7aa05
+      IexecHub deployed at address: 0x374bb77dd977716f813b820f5737cfc9a7a7aa05
+        ... 0x94ad95c7e80f69a4c4f7762811a0467e961cafd9f4f41e4c3185a41fd14e5693
       transferOwnership of WorkerPoolHub to IexecHub
-        ... 0xa160b88352119b52642a34a6b3a268e55f7e22fcfc574c6532869dba6914265f
+        ... 0x2c205da845a051c60bbefdc3895959a4886ad2a7290280a67257f0319c1c58a7
       transferOwnership of AppHub to IexecHub
-        ... 0x7124eb4089310109aa4be5b110662957b78a604ed044377a193c6c85a3163f4b
+        ... 0x233a9bb5c643b0b1e471d5e1b04b07284aefd30b6ab14acc0fb04986e839f02f
       transferOwnership of DatasetHub to IexecHub
         Deploying Marketplace...
-        ... 0xbca4b49df5c16c8ed2d4fccbbb57678e12a4e5b36f377244dbc6029ddf57d5e3
-        Marketplace: 0x6d2ec2e6bc2f5d852ea1d7eca05802db00095556
-      Marketplace deployed at address: 0x6d2ec2e6bc2f5d852ea1d7eca05802db00095556
-        ... 0x81d3121ea6f96eadd07f624b812aac1c9df4e82dd998b04a4f146e68912654d6
+        ... 0x1a0a2f0e05e969cd0887a8d4113c6824f602e3bc55613307c95cc48bdd35a494
+        Marketplace: 0x446ff67e20cdffcd427946cc3b6fa9ec411bf5c3
+      Marketplace deployed at address: 0x446ff67e20cdffcd427946cc3b6fa9ec411bf5c3
+        ... 0xdcc1f194ec32690756f2e998c597fb7eee7468c22fd887cf2719ef911e056660
       attach Contracts to IexecHub done
-        ... 0x1446ccd23b4d2d1c35cf8ec9d6c271c11c7e49b891d1bda0d7c8c89635fecd10
+        ... 0x589a1ef5e1029d39719680cf708e2bf188b27d7ecf7f708adac602ec398b415a
       setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
       create category : Mega
+        ... 0xf8ef1e7f49b3bded46ba07a6544852c656d6e62b65236b219a306362ea323ae4
       create category : MegaPlus
+        ... 0x8631d4430758979c18583dfaae4827f4d354276fea0b5ac1de7a87c48b4b1dd8
       create category : Giga
+        ... 0x7b85bbab7a6892d160e52bea9b54f1b471cfdfac8874fb1d7e12e3cf095be418
       create category : GigaPlus
+        ... 0x7206e94cc1f929305bbe2ef29cc863f32ba5018545f497ddb40ae27995ff6478
       create category : GigaGrande
+        ... 0x21fe3027d572b13d999b8f6e863a4f33040871d3438455328a13f18f8ce3b157
       create category : GigaMax
-        ... 0x28e9fbeb82f5026e55fd4a54e1d4d9d8c19e1e1e18c3b0640f3b32dff7b2f04d
-        ... 0xf297f8b55d944473381ff6992675673d99c2d688f6dc94da35cf3e2212cb8806
-        ... 0xb1ca025351c1ed1aae083c1ef8652036a06bbfb42fb89d6bac5d3b0d9aa9d7d5
-        ... 0x454988c38db44d8210caa2e9a2f72497ddc7f7004abf1fa635773cc4e796a423
-        ... 0x68e3fa87f7fcf375068afabf826a6529f5d54e9924925d1260967711e7e23a76
-        ... 0x74f8b03b7c1ad1c96d87682c74c065bde3c21dc5ae6b89cfdb367d766eff1281
+        ... 0xe2db7a9faedb4abcd87bd011f4314462e5b7714d9e3550f151f93209c3ab3b8d
       m_categoriesCount is now: 6
       Saving successful migration to network...
-        ... 0x730e0bd197c738f0ceff216ed6a7cd480ec465aed6a38a797567e474d9eb77ac
+        ... 0xac25b2960c1c3d4e67dc6ab133e81bf1e5ba694deb93dd0a41f821a1d043c8ab
       Saving artifacts...
-
       */
     },
     kovan: {
@@ -143,55 +141,61 @@ module.exports = {
       gas: 4710000,
       gasPrice: 22000000000,
       /*
-
       Using network 'kovan'.
 
+      Running migration: 1_initial_migration.js
+        Deploying Migrations...
+        ... 0x361324899f441d4cc6ebcee0e207231f373bd658633ab28923c7370afd4859b0
+        Migrations: 0x6a6446fd53ff278e8e08ea97d6f85802bc0061fd
+      Saving successful migration to network...
+        ... 0x98d93a02a5940cf863407a3997542c1983c9f21f2634aca6ac47df93a7b83a67
+      Saving artifacts...
       Running migration: 2_deploy_contracts.js
         Deploying WorkerPoolHub...
-        ... 0xa6262fcc125be2711be50f163cb3f22b513048837ee39dd4ac4e8bff3eeb4287
-        WorkerPoolHub: 0xbd5bfa55237415d2bc4f8ccb310939d3bdad6674
-      WorkerPoolHub deployed at address: 0xbd5bfa55237415d2bc4f8ccb310939d3bdad6674
+        ... 0x04097a44fd9a1078aeb9f182bc91b42c0b799373f7593afc92e8c3a532d794bb
+        WorkerPoolHub: 0x4f9aaf6f6244cdee53c8147eb2839aeae548a207
+      WorkerPoolHub deployed at address: 0x4f9aaf6f6244cdee53c8147eb2839aeae548a207
         Deploying AppHub...
-        ... 0x5cc72edfb03a3eb7bc9f2680ce7ddff73493ab029e607e43f18dc14974168fa9
-        AppHub: 0xa496debd0690a217fcd5726f902e6944ff2e3b69
-      AppHub deployed at address: 0xa496debd0690a217fcd5726f902e6944ff2e3b69
+        ... 0x222fbb484370bea62e90bdc12a1c12ed107e0135588f87851be74c9445d52d48
+        AppHub: 0x2a3827b9f8d5aaf187eb2aeaa60b3bf2e1306475
+      AppHub deployed at address: 0x2a3827b9f8d5aaf187eb2aeaa60b3bf2e1306475
         Deploying DatasetHub...
-        ... 0xe1c0ff75681216cd0607ab69fd5c1fb36097de79ec0736ea05e4bf6ff5a47857
-        DatasetHub: 0xf9a672e79e6aa6c95d3315085b069452e305a0e1
-      DatasetHub deployed at address: 0xf9a672e79e6aa6c95d3315085b069452e305a0e1
+        ... 0x72cd7fbf9a9c4863ef96c2806e159befc6c72806b832e0aff675f977691d2bdc
+        DatasetHub: 0x9542f1373ff375f5c6213a761e97c3ea6eb91cad
+      DatasetHub deployed at address: 0x9542f1373ff375f5c6213a761e97c3ea6eb91cad
         Deploying IexecHub...
-        ... 0xcd3ac795cfd3f40bbf2a85dde6d038818c3ed0f4803d1a0d2f35657e2bd17001
-        IexecHub: 0x45cbd2d0e9a913f17669f226727b1849ff7bfcb7
-      IexecHub deployed at address: 0x45cbd2d0e9a913f17669f226727b1849ff7bfcb7
-        ... 0x8595ee165fe7ed61ccc5e86c87d6f4c8c33b95c69a495dbeaf82775513158237
+        ... 0x8f48edb65d695eff021a68bdb3f4d8834d79d0ad0a1564902ad9105f6c908306
+        IexecHub: 0xb6c77a4a16cc3373a46f1d143c67f09127a6a086
+      IexecHub deployed at address: 0xb6c77a4a16cc3373a46f1d143c67f09127a6a086
+        ... 0xc70c2a19fe626f65ba2e7791c95c1642ff1f0cb3de2d580d2bedc99ba054bbac
       transferOwnership of WorkerPoolHub to IexecHub
-        ... 0x6de629d975f5cf1549fc57178854ca04e1a28f4e56f96ae5619b67d8354aa8b6
+        ... 0x3fc321c6195173a2c3bff680078c0552862741e6401229029218d3536c4afb8d
       transferOwnership of AppHub to IexecHub
-        ... 0x0df16c893f7bb807323463163753b71ba9fbdc53e1469a3451e4aab71570c89d
+        ... 0xde64493dc7aadb9113d5f499133a515118badabdd8d3284631bf2f13294afa6b
       transferOwnership of DatasetHub to IexecHub
         Deploying Marketplace...
-        ... 0x0973591b9634133172094a309011287803077d2c9ee9f0c59f41f4ba150f19a9
-        Marketplace: 0x07e12c896a86c54ad0a068fca5f0d0cd9e02aba0
-      Marketplace deployed at address: 0x07e12c896a86c54ad0a068fca5f0d0cd9e02aba0
-        ... 0xa1ab3a88be5e82ef8faf22f4b3f82e4965ca558b8c906d047d5427b14fac76de
+        ... 0x3ee5152dc2ba18cbadfb33ad8845277718e755c685b07de4229b0fb3600097c7
+        Marketplace: 0xf7ef6b1052ad2d7a8400cb2a9bfec1dd5e1eac90
+      Marketplace deployed at address: 0xf7ef6b1052ad2d7a8400cb2a9bfec1dd5e1eac90
+        ... 0x649460043b755ba2276c0c1f59b45fddf1ff56c48b95658a41ed584de57da69c
       attach Contracts to IexecHub done
-        ... 0xc1b68af8ad5798ff5a9578a225a48efc77d592fd47509685143c316afadc58b0
+        ... 0x230ceff4f9dd1d28eafae45b791f2331927b5f2f12a8d49d3f0691874be280fa
       setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
       create category : Mega
-        ... 0x28ae3c798fca42fa7257c00603fe83f2dca1e2137d28ffde793b4e2d6403d21d
+        ... 0xc5de531b190cb15bf6431bc9aa0f53152d79149e2501f1007481fcf718da8d93
       create category : MegaPlus
-        ... 0x26e5c7c6c2e439acb8374da8152ddc0775424c02f052f15a8725346ce665bee4
+        ... 0xcb5fcfdf69c00b7e8a8f4cdf148011a03e12f30ba7c4fb4653b16957f03a03f4
       create category : Giga
-        ... 0xbfc67c29b81ebbed899cf30d786cb66b5ef7c500b07e064edc4b282645ffe31c
+        ... 0x1b6f6573ba822e067cb1a002e8d133d6c33c1d89cfd3839ea80c73e298396a7b
       create category : GigaPlus
-        ... 0x20b572c8eb1e66a90d7709101d932a5829cfd6903b3b4b329f017d2513a45494
+        ... 0xf4d7633ef7cd21abf5110bb40e2a6a07e87090b189e31daf4e89765e707677fd
       create category : GigaGrande
-        ... 0xee8a3176bd39f693487924573d27b2a8e25d87327917fc72117ad7989f3bfc83
+        ... 0x476f8f4c1039e6c8854528588a09016d17a342c726a729596fcc9acc30b0cb31
       create category : GigaMax
-        ... 0x63f7dd20239298358bcc84176ea4fef357fccf0a9028f646e6e2d4eb4134f80a
+        ... 0x700a302c41d08582740a8bfdf1ead75f13b05d3f78af642795fcb1eed60f3179
       m_categoriesCount is now: 6
       Saving successful migration to network...
-        ... 0x17a6a167be3f9e7f305ae6e1c0eef5d2ec03f94129d487f4ea6aeaf90e96ed8e
+        ... 0x0fa7f2a735ebce0f11e61b70247875562895795e56cd089bd7c8d1310c88e36d
       Saving artifacts...
       */
 

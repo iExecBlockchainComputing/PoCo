@@ -68,6 +68,7 @@ contract IexecHub
 	 * Reputation for PoCo
 	 */
 	mapping(address => uint256)  public m_scores;
+	IexecLib.ContributionHistory public m_contributionHistory;
 
 
 	event WorkOrderActivated(address woid, address indexed workerPool);
@@ -476,6 +477,7 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
+			m_contributionHistory.success = m_contributionHistory.success.add(1);
 			m_scores[_worker] = m_scores[_worker].add(1);
 			emit AccurateContribution(_woid, _worker);
 		}
@@ -488,6 +490,7 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
+			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
 			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(SCORE_UNITARY_SLASH));
 			emit FaultyContribution(_woid, _worker);
 		}

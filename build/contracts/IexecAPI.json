@@ -343,7 +343,7 @@
         "id": 390,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 3509,
+        "sourceUnit": 3531,
         "src": "25:25:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -354,7 +354,7 @@
         "id": 391,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 2362,
+        "sourceUnit": 2384,
         "src": "51:32:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -376,7 +376,7 @@
         "id": 393,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 6477,
+        "sourceUnit": 6499,
         "src": "123:37:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -390,10 +390,10 @@
               "id": 394,
               "name": "OwnableOZ",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3508,
+              "referencedDeclaration": 3530,
               "src": "184:9:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_OwnableOZ_$3508",
+                "typeIdentifier": "t_contract$_OwnableOZ_$3530",
                 "typeString": "contract OwnableOZ"
               }
             },
@@ -408,10 +408,10 @@
               "id": 396,
               "name": "IexecHubAccessor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2361,
+              "referencedDeclaration": 2383,
               "src": "195:16:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecHubAccessor_$2361",
+                "typeIdentifier": "t_contract$_IexecHubAccessor_$2383",
                 "typeString": "contract IexecHubAccessor"
               }
             },
@@ -440,8 +440,8 @@
         ],
         "contractDependencies": [
           650,
-          2361,
-          3508
+          2383,
+          3530
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -450,8 +450,8 @@
         "linearizedBaseContracts": [
           624,
           650,
-          2361,
-          3508
+          2383,
+          3530
         ],
         "name": "IexecAPI",
         "nodeType": "ContractDefinition",
@@ -810,10 +810,10 @@
                   "name": "IexecHubAccessor",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2361,
+                  "referencedDeclaration": 2383,
                   "src": "611:16:4",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_IexecHubAccessor_$2361_$",
+                    "typeIdentifier": "t_type$_t_contract$_IexecHubAccessor_$2383_$",
                     "typeString": "type(contract IexecHubAccessor)"
                   }
                 },
@@ -1040,10 +1040,10 @@
                         "name": "iexecHubInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2325,
+                        "referencedDeclaration": 2347,
                         "src": "867:17:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                          "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                           "typeString": "contract IexecHubInterface"
                         }
                       },
@@ -1054,7 +1054,7 @@
                       "lValueRequested": false,
                       "memberName": "buyForWorkOrder",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2439,
+                      "referencedDeclaration": 2461,
                       "src": "867:33:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_address_$_t_address_$_t_address_$_t_string_memory_ptr_$_t_address_$_t_address_$returns$_t_address_$",
@@ -1373,7 +1373,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6699,
+                            "referencedDeclaration": 6721,
                             "src": "1146:3:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -1427,7 +1427,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1138:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -1763,7 +1763,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_RLC_$6476",
+                        "typeIdentifier": "t_contract$_RLC_$6498",
                         "typeString": "contract RLC"
                       },
                       "typeName": {
@@ -1771,10 +1771,10 @@
                         "id": 510,
                         "name": "RLC",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 6476,
+                        "referencedDeclaration": 6498,
                         "src": "1323:3:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_RLC_$6476",
+                          "typeIdentifier": "t_contract$_RLC_$6498",
                           "typeString": "contract RLC"
                         }
                       },
@@ -1797,10 +1797,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1337:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -1811,7 +1811,7 @@
                           "lValueRequested": false,
                           "memberName": "getRLCAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2555,
+                          "referencedDeclaration": 2577,
                           "src": "1337:31:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -1844,10 +1844,10 @@
                       "name": "RLC",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6476,
+                      "referencedDeclaration": 6498,
                       "src": "1333:3:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_RLC_$6476_$",
+                        "typeIdentifier": "t_type$_t_contract$_RLC_$6498_$",
                         "typeString": "type(contract RLC)"
                       }
                     },
@@ -1861,7 +1861,7 @@
                     "nodeType": "FunctionCall",
                     "src": "1333:38:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_RLC_$6476",
+                      "typeIdentifier": "t_contract$_RLC_$6498",
                       "typeString": "contract RLC"
                     }
                   },
@@ -1881,7 +1881,7 @@
                             "name": "iexecHubAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2323,
+                            "referencedDeclaration": 2345,
                             "src": "1395:15:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1922,7 +1922,7 @@
                             "referencedDeclaration": 511,
                             "src": "1383:3:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_RLC_$6476",
+                              "typeIdentifier": "t_contract$_RLC_$6498",
                               "typeString": "contract RLC"
                             }
                           },
@@ -1933,7 +1933,7 @@
                           "lValueRequested": false,
                           "memberName": "approve",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 6427,
+                          "referencedDeclaration": 6449,
                           "src": "1383:11:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -1966,7 +1966,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1375:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2001,7 +2001,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "1445:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2103,7 +2103,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1293:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2210,7 +2210,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_RLC_$6476",
+                        "typeIdentifier": "t_contract$_RLC_$6498",
                         "typeString": "contract RLC"
                       },
                       "typeName": {
@@ -2218,10 +2218,10 @@
                         "id": 543,
                         "name": "RLC",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 6476,
+                        "referencedDeclaration": 6498,
                         "src": "1577:3:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_RLC_$6476",
+                          "typeIdentifier": "t_contract$_RLC_$6498",
                           "typeString": "contract RLC"
                         }
                       },
@@ -2244,10 +2244,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1591:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -2258,7 +2258,7 @@
                           "lValueRequested": false,
                           "memberName": "getRLCAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2555,
+                          "referencedDeclaration": 2577,
                           "src": "1591:31:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -2291,10 +2291,10 @@
                       "name": "RLC",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6476,
+                      "referencedDeclaration": 6498,
                       "src": "1587:3:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_RLC_$6476_$",
+                        "typeIdentifier": "t_type$_t_contract$_RLC_$6498_$",
                         "typeString": "type(contract RLC)"
                       }
                     },
@@ -2308,7 +2308,7 @@
                     "nodeType": "FunctionCall",
                     "src": "1587:38:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_RLC_$6476",
+                      "typeIdentifier": "t_contract$_RLC_$6498",
                       "typeString": "contract RLC"
                     }
                   },
@@ -2330,7 +2330,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6699,
+                              "referencedDeclaration": 6721,
                               "src": "1650:3:4",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -2385,7 +2385,7 @@
                             "referencedDeclaration": 544,
                             "src": "1637:3:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_RLC_$6476",
+                              "typeIdentifier": "t_contract$_RLC_$6498",
                               "typeString": "contract RLC"
                             }
                           },
@@ -2396,7 +2396,7 @@
                           "lValueRequested": false,
                           "memberName": "transfer",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 6323,
+                          "referencedDeclaration": 6345,
                           "src": "1637:12:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -2429,7 +2429,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1629:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2466,7 +2466,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6699,
+                          "referencedDeclaration": 6721,
                           "src": "1703:3:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2582,7 +2582,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1547:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2708,10 +2708,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1835:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -2722,7 +2722,7 @@
                           "lValueRequested": false,
                           "memberName": "deposit",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2667,
+                          "referencedDeclaration": 2689,
                           "src": "1835:25:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -2755,7 +2755,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1827:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2790,7 +2790,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "1899:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2892,7 +2892,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1797:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3018,10 +3018,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "2039:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -3032,7 +3032,7 @@
                           "lValueRequested": false,
                           "memberName": "withdraw",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2674,
+                          "referencedDeclaration": 2696,
                           "src": "2039:26:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -3065,7 +3065,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "2031:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3155,7 +3155,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "2078:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3190,7 +3190,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "2151:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3292,7 +3292,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "2001:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3412,7 +3412,7 @@
         "id": 390,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 3509,
+        "sourceUnit": 3531,
         "src": "25:25:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3423,7 +3423,7 @@
         "id": 391,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 2362,
+        "sourceUnit": 2384,
         "src": "51:32:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3445,7 +3445,7 @@
         "id": 393,
         "nodeType": "ImportDirective",
         "scope": 625,
-        "sourceUnit": 6477,
+        "sourceUnit": 6499,
         "src": "123:37:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3459,10 +3459,10 @@
               "id": 394,
               "name": "OwnableOZ",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3508,
+              "referencedDeclaration": 3530,
               "src": "184:9:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_OwnableOZ_$3508",
+                "typeIdentifier": "t_contract$_OwnableOZ_$3530",
                 "typeString": "contract OwnableOZ"
               }
             },
@@ -3477,10 +3477,10 @@
               "id": 396,
               "name": "IexecHubAccessor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2361,
+              "referencedDeclaration": 2383,
               "src": "195:16:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecHubAccessor_$2361",
+                "typeIdentifier": "t_contract$_IexecHubAccessor_$2383",
                 "typeString": "contract IexecHubAccessor"
               }
             },
@@ -3509,8 +3509,8 @@
         ],
         "contractDependencies": [
           650,
-          2361,
-          3508
+          2383,
+          3530
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -3519,8 +3519,8 @@
         "linearizedBaseContracts": [
           624,
           650,
-          2361,
-          3508
+          2383,
+          3530
         ],
         "name": "IexecAPI",
         "nodeType": "ContractDefinition",
@@ -3879,10 +3879,10 @@
                   "name": "IexecHubAccessor",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2361,
+                  "referencedDeclaration": 2383,
                   "src": "611:16:4",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_IexecHubAccessor_$2361_$",
+                    "typeIdentifier": "t_type$_t_contract$_IexecHubAccessor_$2383_$",
                     "typeString": "type(contract IexecHubAccessor)"
                   }
                 },
@@ -4109,10 +4109,10 @@
                         "name": "iexecHubInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2325,
+                        "referencedDeclaration": 2347,
                         "src": "867:17:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                          "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                           "typeString": "contract IexecHubInterface"
                         }
                       },
@@ -4123,7 +4123,7 @@
                       "lValueRequested": false,
                       "memberName": "buyForWorkOrder",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 2439,
+                      "referencedDeclaration": 2461,
                       "src": "867:33:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_address_$_t_address_$_t_address_$_t_string_memory_ptr_$_t_address_$_t_address_$returns$_t_address_$",
@@ -4442,7 +4442,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6699,
+                            "referencedDeclaration": 6721,
                             "src": "1146:3:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -4496,7 +4496,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1138:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -4832,7 +4832,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_RLC_$6476",
+                        "typeIdentifier": "t_contract$_RLC_$6498",
                         "typeString": "contract RLC"
                       },
                       "typeName": {
@@ -4840,10 +4840,10 @@
                         "id": 510,
                         "name": "RLC",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 6476,
+                        "referencedDeclaration": 6498,
                         "src": "1323:3:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_RLC_$6476",
+                          "typeIdentifier": "t_contract$_RLC_$6498",
                           "typeString": "contract RLC"
                         }
                       },
@@ -4866,10 +4866,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1337:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -4880,7 +4880,7 @@
                           "lValueRequested": false,
                           "memberName": "getRLCAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2555,
+                          "referencedDeclaration": 2577,
                           "src": "1337:31:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -4913,10 +4913,10 @@
                       "name": "RLC",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6476,
+                      "referencedDeclaration": 6498,
                       "src": "1333:3:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_RLC_$6476_$",
+                        "typeIdentifier": "t_type$_t_contract$_RLC_$6498_$",
                         "typeString": "type(contract RLC)"
                       }
                     },
@@ -4930,7 +4930,7 @@
                     "nodeType": "FunctionCall",
                     "src": "1333:38:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_RLC_$6476",
+                      "typeIdentifier": "t_contract$_RLC_$6498",
                       "typeString": "contract RLC"
                     }
                   },
@@ -4950,7 +4950,7 @@
                             "name": "iexecHubAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2323,
+                            "referencedDeclaration": 2345,
                             "src": "1395:15:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -4991,7 +4991,7 @@
                             "referencedDeclaration": 511,
                             "src": "1383:3:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_RLC_$6476",
+                              "typeIdentifier": "t_contract$_RLC_$6498",
                               "typeString": "contract RLC"
                             }
                           },
@@ -5002,7 +5002,7 @@
                           "lValueRequested": false,
                           "memberName": "approve",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 6427,
+                          "referencedDeclaration": 6449,
                           "src": "1383:11:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5035,7 +5035,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1375:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -5070,7 +5070,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "1445:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -5172,7 +5172,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1293:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5279,7 +5279,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_RLC_$6476",
+                        "typeIdentifier": "t_contract$_RLC_$6498",
                         "typeString": "contract RLC"
                       },
                       "typeName": {
@@ -5287,10 +5287,10 @@
                         "id": 543,
                         "name": "RLC",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 6476,
+                        "referencedDeclaration": 6498,
                         "src": "1577:3:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_RLC_$6476",
+                          "typeIdentifier": "t_contract$_RLC_$6498",
                           "typeString": "contract RLC"
                         }
                       },
@@ -5313,10 +5313,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1591:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -5327,7 +5327,7 @@
                           "lValueRequested": false,
                           "memberName": "getRLCAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2555,
+                          "referencedDeclaration": 2577,
                           "src": "1591:31:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -5360,10 +5360,10 @@
                       "name": "RLC",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6476,
+                      "referencedDeclaration": 6498,
                       "src": "1587:3:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_RLC_$6476_$",
+                        "typeIdentifier": "t_type$_t_contract$_RLC_$6498_$",
                         "typeString": "type(contract RLC)"
                       }
                     },
@@ -5377,7 +5377,7 @@
                     "nodeType": "FunctionCall",
                     "src": "1587:38:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_RLC_$6476",
+                      "typeIdentifier": "t_contract$_RLC_$6498",
                       "typeString": "contract RLC"
                     }
                   },
@@ -5399,7 +5399,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6699,
+                              "referencedDeclaration": 6721,
                               "src": "1650:3:4",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -5454,7 +5454,7 @@
                             "referencedDeclaration": 544,
                             "src": "1637:3:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_RLC_$6476",
+                              "typeIdentifier": "t_contract$_RLC_$6498",
                               "typeString": "contract RLC"
                             }
                           },
@@ -5465,7 +5465,7 @@
                           "lValueRequested": false,
                           "memberName": "transfer",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 6323,
+                          "referencedDeclaration": 6345,
                           "src": "1637:12:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5498,7 +5498,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1629:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -5535,7 +5535,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6699,
+                          "referencedDeclaration": 6721,
                           "src": "1703:3:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -5651,7 +5651,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1547:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5777,10 +5777,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "1835:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -5791,7 +5791,7 @@
                           "lValueRequested": false,
                           "memberName": "deposit",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2667,
+                          "referencedDeclaration": 2689,
                           "src": "1835:25:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -5824,7 +5824,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "1827:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -5859,7 +5859,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "1899:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -5961,7 +5961,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "1797:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6087,10 +6087,10 @@
                             "name": "iexecHubInterface",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2325,
+                            "referencedDeclaration": 2347,
                             "src": "2039:17:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IexecHubInterface_$2720",
+                              "typeIdentifier": "t_contract$_IexecHubInterface_$2742",
                               "typeString": "contract IexecHubInterface"
                             }
                           },
@@ -6101,7 +6101,7 @@
                           "lValueRequested": false,
                           "memberName": "withdraw",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 2674,
+                          "referencedDeclaration": 2696,
                           "src": "2039:26:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -6134,7 +6134,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "2031:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -6224,7 +6224,7 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6702,
+                      "referencedDeclaration": 6724,
                       "src": "2078:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -6259,7 +6259,7 @@
                         "name": "iexecHubAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2323,
+                        "referencedDeclaration": 2345,
                         "src": "2151:15:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -6361,7 +6361,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3473,
+                  "referencedDeclaration": 3495,
                   "src": "2001:9:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6460,5 +6460,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-04-12T18:32:30.783Z"
+  "updatedAt": "2018-04-12T21:13:40.866Z"
 }
