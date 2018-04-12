@@ -15,7 +15,7 @@
 # PoCo UML
 
 
-- [Contracts MCD](.uml/ContractV2.pdf)
+- [Contracts MCD](./uml/ContractV2.pdf)
 
 - [Contracts and Actors Architecture](./uml/ArchitectureV2.pdf)
 
@@ -29,7 +29,7 @@
 - (r) = a repository on the responsability of (w)
 
 ## Actor : Marketplace Creator :
-create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [WorkOrderHub](./contracts/WorkOrderHub.sol),[WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol),[Marketplace](./contracts/Marketplace.sol) Once IexecHub smart contract is created by Marketplace Creator, IexecHub and Marketplace can be used by the others actors scheduler, workers, iExecCloudUser :
+create [IexecHub](./contracts/IexecHub.sol) smart contract. IexecHub is composed of [WorkerPoolHub](./contracts/WorkerPoolHub.sol),[DatasetHub](./contracts/DatasetHub.sol),[AppHub](./contracts/AppHub.sol),[Marketplace](./contracts/Marketplace.sol) Once IexecHub smart contract is created by Marketplace Creator, IexecHub and Marketplace can be used by the others actors scheduler, workers, iExecCloudUser :
 
 blockchain interaction :
 <table>
@@ -52,7 +52,12 @@ blockchain interaction :
             <td></td>
             <td>Marketplace Creator</td>
             <td>truffle cli</td>
-            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a></td>
+            <td><a href="./contracts/IexecHub.sol" target="_blank">IexecHub</a>,
+            <a href="./contracts/Marketplace.sol" target="_blank">Marketplace</a>,
+            <a href="./contracts/WorkerPoolHub.sol" target="_blank">WorkerPoolHub</a>,
+            <a href="./contracts/DatasetHub.sol" target="_blank">DatasetHub</a>,
+            <a href="./contracts/AppHub.sol" target="_blank">AppHub</a>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -117,8 +122,8 @@ blockchain interaction :
             <td></td>
         </tr>
         <tr>
-            <td><a href="./test/10_finalizedWork.js" target="_blank">10_finalizedWork.js</a></td>
-            <td>finalizedWork</td>
+            <td><a href="./test/10_finalizeWork.js" target="_blank">10_finalizeWork.js</a></td>
+            <td>finalizeWork</td>
             <td>WorkerPool</td>
             <td>ScheduleProvider</td>
             <td>iexec-scheduler</td>
@@ -192,7 +197,7 @@ blockchain interaction :
     <tbody>
         <tr>
             <td></td>
-            <td><a href="./test/3_appCreation.js" target="_blank">3_appCreation.js</a></td>
+            <td><a href="./test/03_appCreation.js" target="_blank">03_appCreation.js</a></td>
             <td>createApp</td>
             <td>IexecHub</td>
             <td>appProvider</td>
@@ -344,8 +349,8 @@ Optional: usage not yet implemented in V2
         <tr>
             <td>CLAIMED</td>
             <td>claimFailedConsensus</td>
-            <td>IexecHub/td>
-            <td>iExecCloudUser or any ?</td>
+            <td>IexecHub/<td>
+            <td>iExecCloudUser</td>
             <td>if a WordeORder is in ACTIVE or REVEALING for too long, iExecCloudUser can get a refund by calling claimFailedConsensus</td>
         </tr>
         <tr>
@@ -372,7 +377,7 @@ Optional: usage not yet implemented in V2
     <tbody>
         <tr>
             <td>AUTHORIZED</td>
-            <td>callForContribution</td>
+            <td>allowWorkerToContribute</td>
             <td>WorkOrderPool</td>
             <td>scheduler</td>
             <td>Scheduler has commited to the WorkOrder (ACTIVE) and workers can contribute when called in.</td>
@@ -396,7 +401,7 @@ Optional: usage not yet implemented in V2
             <td>reopen</td>
             <td>WorkOrderPool</td>
             <td>scheduler</td>
-            <td>If NO worker has revealed, scheduler call reopen function and all previous contribution are tag REJECTED  in order to reopen a new callForContribution round</td>
+            <td>If NO worker has revealed, scheduler call reopen function and all previous contribution are tag REJECTED  in order to reopen a new allowWorkerToContribute round</td>
         </tr>
     </tbody>
 </table>
