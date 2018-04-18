@@ -229,16 +229,15 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		);
 	}
 
-
 	/**************************** Works management *****************************/
-	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
+	function emitWorkOrder(address _woid) public onlyIexecHub returns (bool)
 	{
-		uint256 catid   = marketplaceInterface.getMarketOrderCategory(_marketorderIdx);
-		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);
+		WorkOrder workorder = WorkOrder(_woid);
 
+		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(workorder.m_category()).mul(CONSENSUS_DURATION_RATIO).add(now);
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
-		consensus.workerpoolOwner = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
+		consensus.poolReward      = workorder.m_value();
+		consensus.workerpoolOwner = workorder.m_workerpoolOwner();
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
 		consensus.consensusTimout = timeout;
 
@@ -342,7 +341,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		consensus.consensus  = _consensus;
-		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
+		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(WorkOrder(_woid).m_category()).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
 		emit RevealConsensus(_woid, _consensus);
 		return true;
 	}

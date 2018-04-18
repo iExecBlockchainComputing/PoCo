@@ -1,4 +1,5 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
+
 /* import './IexecLib.sol'; */
 import './IexecHubAccessor.sol';
 import './WorkerPool.sol';
@@ -73,7 +74,7 @@ contract OxMarketplace is IexecHubAccessor
 		uint8   v,
 		bytes32 r,
 		bytes32 s)
-	public pure returns (bool)
+	public view returns (bool)
 	{
 		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s);
 	}
@@ -254,7 +255,7 @@ contract OxMarketplace is IexecHubAccessor
 	public returns (bool)
 	{
 		// msg.sender = requester
-		require(msg.sender == _requester);
+		require(msg.sender == _userOrder_requester);
 
 		// compute hashs & check signatures
 		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _userOrder_requester, _salt);

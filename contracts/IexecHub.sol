@@ -195,36 +195,57 @@ contract IexecHub
 	/**
 	 * WorkOrder Emission
 	 */
-	function buyForWorkOrder(
-		uint256 _marketorderIdx,
-		address _workerpool,
-		address _app,
-		address _dataset,
-		string  _params,
-		address _callback,
-		address _beneficiary)
+
+	function marketOrders(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** Pool settings **********/
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
+		/********** User settings **********/
+		address[5] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		/* address _userOrder_requester, */
+		string  _userOrder_params,
+		/********** Signatures **********/
+		uint256[2] _salt,
+		uint8[2]   _v,
+		bytes32[2] _r,
+		bytes32[2] _s)
 	external returns (address)
 	{
-		address requester = msg.sender;
-		require(marketplace.consumeMarketOrderAsk(_marketorderIdx, requester, _workerpool));
+		require(marketplace.matchOrders(
+			_commonOrder,
+			_poolOrder_volume,
+			_poolOrder_workerpool,
+			_userOrder,
+			_userOrder_params,
+			_salt,
+			_v,
+			_r,
+			_s));
 
-		uint256 emitcost = lockWorkOrderCost(requester, _workerpool, _app, _dataset);
+		uint256 emitcost = lockWorkOrderCost(
+			_userOrder[4],         //requester,
+			_poolOrder_workerpool, //workerpool,
+			_userOrder[0],         //app,
+			_userOrder[2]);        //dataset
 
 		WorkOrder workorder = new WorkOrder(
-			_marketorderIdx,
-			requester,
-			_app,
-			_dataset,
-			_workerpool,
-			emitcost,
-			_params,
-			_callback,
-			_beneficiary
-		);
+			_commonOrder,
+			_poolOrder_workerpool,
+			WorkerPool(_poolOrder_workerpool).m_owner(),
+			_userOrder,
+			_userOrder_params,
+			emitcost);
 
-		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
-
-		emit WorkOrderActivated(workorder, _workerpool);
+		emit WorkOrderActivated(workorder, _poolOrder_workerpool);
 		return workorder;
 	}
 
@@ -274,8 +295,8 @@ contract IexecHub
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
+		uint256 value           = workorder.m_value();
+		address workerpoolOwner = workorder.m_workerpoolOwner();
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
@@ -327,8 +348,8 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
+		uint256 value           = workorder.m_value(); // revert if not exist
+		address workerpoolOwner = workorder.m_workerpoolOwner(); // revert if not exist
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)

@@ -3,25 +3,27 @@ pragma solidity ^0.4.21;
 library IexecLib
 {
 	/***************************************************************************/
-	/*                              Market Order                               */
+	/*                             Market Matching                             */
 	/***************************************************************************/
-	enum MarketOrderDirectionEnum
+	struct MarketMatching
 	{
-		UNSET,
-		BID,
-		ASK,
-		CLOSED
-	}
-	struct MarketOrder
-	{
-		MarketOrderDirectionEnum direction;
-		uint256 category;        // runtime selection
-		uint256 trust;           // for PoCo
-		uint256 value;           // value/cost/price
-		uint256 volume;          // quantity of instances (total)
-		uint256 remaining;       // remaining instances
-		address workerpool;      // BID can use null for any
-		address workerpoolOwner; // fix ownership if workerpool ownership change during the workorder steps
+		/********** Order settings **********/
+		uint256 common_category;
+		uint256 common_trust;
+		uint256 common_value;
+		/********** Pool settings **********/
+		uint256 pool_volume;
+		address pool_workerpool;
+		address pool_workerpoolOwner;
+		uint256 pool_salt;
+		/********** User settings **********/
+		address user_app;
+		address user_dataset;
+		address user_callback;
+		address user_beneficiary;
+		address user_requester;
+		string  user_params;
+		uint256 user_salt;
 	}
 
 	/***************************************************************************/

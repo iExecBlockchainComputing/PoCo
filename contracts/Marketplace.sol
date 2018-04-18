@@ -1,5 +1,5 @@
-pragma solidity ^0.4.21;
-import './IexecLib.sol';
+pragma solidity ^0.4.18;
+/* import './IexecLib.sol'; */
 import './IexecHubAccessor.sol';
 import './WorkerPool.sol';
 import "./SafeMathOZ.sol";
@@ -11,18 +11,16 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Marketplace
 	 */
-	uint                                 public m_orderCount;
-	mapping(uint =>IexecLib.MarketOrder) public m_orderBook;
+	// IexecLib.MarketMatching[]   public m_matchings;
+	mapping(bytes32 => uint256) public m_consumed;
 
-	uint256 public constant ASK_STAKE_RATIO  = 30;
+	uint256 public constant ASK_STAKE_RATIO = 30;
 
 	/**
 	 * Events
 	 */
-	event MarketOrderCreated   (uint marketorderIdx);
-	event MarketOrderClosed    (uint marketorderIdx);
-	event MarketOrderAskConsume(uint marketorderIdx, address requester);
-
+	/* event MarketOrderCancel(bytes32 hash, ); */
+	/* event MarketOrderDeal  (bytes32 hash, ); */
 
 	/**
 	 * Constructor
@@ -33,140 +31,241 @@ contract Marketplace is IexecHubAccessor
 	{
 	}
 
-	/**
-	 * Market orders
-	 */
-	function createMarketOrder(
-		IexecLib.MarketOrderDirectionEnum _direction,
-		uint256 _category,
-		uint256 _trust,
-		uint256 _value,
-		address _workerpool,
-		uint256 _volume)
-	public returns (uint)
-	{
-		require(iexecHubInterface.existingCategory(_category));
-		require(_volume >0);
-		m_orderCount = m_orderCount.add(1);
-		IexecLib.MarketOrder storage marketorder    = m_orderBook[m_orderCount];
-		marketorder.direction      = _direction;
-		marketorder.category       = _category;
-		marketorder.trust          = _trust;
-		marketorder.value          = _value;
-		marketorder.volume         = _volume;
-		marketorder.remaining      = _volume;
-
-		if (_direction == IexecLib.MarketOrderDirectionEnum.ASK)
-		{
-			require(WorkerPool(_workerpool).m_owner() == msg.sender);
-
-			require(iexecHubInterface.lockForOrder(msg.sender, _value.percentage(ASK_STAKE_RATIO).mul(_volume))); // mul must be done after percentage to avoid rounding errors
-			marketorder.workerpool      = _workerpool;
-			marketorder.workerpoolOwner = msg.sender;
-		}
-		else
-		{
-			// no BID implementation
-			revert();
-		}
-		emit MarketOrderCreated(m_orderCount);
-		return m_orderCount;
-	}
-
-	function closeMarketOrder(uint256 _marketorderIdx) public returns (bool)
-	{
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		if (marketorder.direction == IexecLib.MarketOrderDirectionEnum.ASK)
-		{
-			require(marketorder.workerpoolOwner == msg.sender);
-			require(iexecHubInterface.unlockForOrder(marketorder.workerpoolOwner, marketorder.value.percentage(ASK_STAKE_RATIO).mul(marketorder.remaining))); // mul must be done after percentage to avoid rounding errors
-		}
-		else
-		{
-			// no BID implementation
-			revert();
-		}
-		marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
-		emit MarketOrderClosed(_marketorderIdx);
-		return true;
-	}
 
 
-	/**
-	 * Assets consumption
-	 */
-	function consumeMarketOrderAsk(
-		uint256 _marketorderIdx,
-		address _requester,
-		address _workerpool)
-	public onlyIexecHub returns (bool)
-	{
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		require(marketorder.direction  == IexecLib.MarketOrderDirectionEnum.ASK);
-		require(marketorder.remaining  >  0);
-		require(marketorder.workerpool == _workerpool);
 
-		marketorder.remaining = marketorder.remaining.sub(1);
-		if (marketorder.remaining == 0)
-		{
-			marketorder.direction = IexecLib.MarketOrderDirectionEnum.CLOSED;
-		}
-		require(iexecHubInterface.lockForOrder(_requester, marketorder.value));
-		emit MarketOrderAskConsume(_marketorderIdx, _requester);
-		return true;
+/*
+	function getMatchingCategory(uint256 matchingID)
+	public view returns(uint256)
+	{
+		return m_matchings[matchingID].common_category;
+	}
+	function getMatchingValue(uint256 matchingID)
+	public view returns(uint256)
+	{
+		return m_matchings[matchingID].common_value;
+	}
+	function getMatchingTrust(uint256 matchingID)
+	public view returns(uint256)
+	{
+		return m_matchings[matchingID].common_trust;
+	}
+	function getMatchingWorkerpool(uint256 matchingID)
+	public view returns(address)
+	{
+		return m_matchings[matchingID].pool_workerpool;
+	}
+	function getMatchingWorkerpoolOwner(uint256 matchingID)
+	public view returns(address)
+	{
+		return m_matchings[matchingID].pool_workerpoolOwner;
+	}
+*/
+
+
+
+
+
+
+
+
+
+	function isValidSignature(
+		address signer,
+		bytes32 hash,
+		uint8   v,
+		bytes32 r,
+		bytes32 s)
+	public pure returns (bool)
+	{
+		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s);
 	}
 
-	function existingMarketOrder(uint256 _marketorderIdx) public view  returns (bool marketOrderExist)
+	function getPoolOrderHash(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** Pool settings **********/
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
+		uint256 _poolOrder_salt)
+	public view returns (bytes32)
 	{
-		return m_orderBook[_marketorderIdx].category > 0;
+		return keccak256(
+			address(this),
+			_commonOrder[0],
+			_commonOrder[1],
+			_commonOrder[2],
+			_poolOrder_volume,
+			_poolOrder_workerpool,
+			_poolOrder_salt);
 	}
 
-	/**
-	 * Views
-	 */
-	function getMarketOrderValue(uint256 _marketorderIdx) public view returns (uint256)
+	function getUserOrderHash(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** User settings **********/
+		address[5] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		/* address _userOrder_requester, */
+		string  _userOrder_params,
+		uint256 _userOrder_salt)
+	public view returns (bytes32)
 	{
-		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
-		return m_orderBook[_marketorderIdx].value;
-	}
-	function getMarketOrderWorkerpoolOwner(uint256 _marketorderIdx) public view returns (address)
-	{
-		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
-		return m_orderBook[_marketorderIdx].workerpoolOwner;
-	}
-	function getMarketOrderCategory(uint256 _marketorderIdx) public view returns (uint256)
-	{
-		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
-		return m_orderBook[_marketorderIdx].category;
-	}
-	function getMarketOrderTrust(uint256 _marketorderIdx) public view returns (uint256)
-	{
-		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
-		return m_orderBook[_marketorderIdx].trust;
-	}
-	function getMarketOrder(uint256 _marketorderIdx) public view returns
-	(
-		IexecLib.MarketOrderDirectionEnum direction,
-		uint256 category,       // runtime selection
-		uint256 trust,          // for PoCo
-		uint256 value,          // value/cost/price
-		uint256 volume,         // quantity of instances (total)
-		uint256 remaining,      // remaining instances
-		address workerpool,     // BID can use null for any
-		address workerpoolOwner)
-	{
-		require(existingMarketOrder(_marketorderIdx)); // no silent value returned
-		IexecLib.MarketOrder storage marketorder = m_orderBook[_marketorderIdx];
-		return (
-			marketorder.direction,
-			marketorder.category,
-			marketorder.trust,
-			marketorder.value,
-			marketorder.volume,
-			marketorder.remaining,
-			marketorder.workerpool,
-			marketorder.workerpoolOwner
+		return keccak256(
+			address(this),
+			_commonOrder[0],   // category
+			_commonOrder[1],   // trust
+			_commonOrder[2],   // value
+			_userOrder[0],     // app
+			_userOrder[1],     // dataset
+			_userOrder[2],     // callback
+			_userOrder[3],     // beneficiary
+			_userOrder[4],     // requester
+			_userOrder_params, // params
+			_userOrder_salt    // salt
 		);
+	}
+
+
+
+
+	/**
+	 * Deal on Market
+	 */
+	function matchOrders(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** Pool settings **********/
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
+		/********** User settings **********/
+		address[5] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		/* address _userOrder_requester, */
+		string  _userOrder_params,
+		/********** Signatures **********/
+		uint256[2] _salt,
+		uint8[2]   _v,
+		bytes32[2] _r,
+		bytes32[2] _s)
+	public returns(bool)
+	{
+		IexecLib.MarketMatching memory matching = IexecLib.MarketMatching({
+			common_category:      _commonOrder[0],
+			common_trust:         _commonOrder[1],
+			common_value:         _commonOrder[2],
+			pool_volume:          _poolOrder_volume,
+			pool_workerpool:      _poolOrder_workerpool,
+			pool_workerpoolOwner: WorkerPool(_poolOrder_workerpool).m_owner(),
+			pool_salt:            _salt[0],
+			user_app:             _userOrder[0],
+			user_dataset:         _userOrder[1],
+			user_callback:        _userOrder[2],
+			user_beneficiary:     _userOrder[3],
+			user_requester:       _userOrder[4],
+			user_params:          _userOrder_params,
+			user_salt:            _salt[1]
+		});
+
+		bytes32 poolHash = getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt[0]);
+		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _salt[1]);
+
+		// Check signatures
+		require(isValidSignature(matching.pool_workerpoolOwner, poolHash, _v[0], _r[0], _s[0]));
+		require(isValidSignature(matching.user_requester,       userHash, _v[1], _r[1], _s[1]));
+
+		require(iexecHubInterface.existingCategory(matching.common_category));
+
+		// check consumption
+		require(m_consumed[poolHash] <  matching.pool_volume);
+		require(m_consumed[userHash] == 0);
+		m_consumed[poolHash] = m_consumed[poolHash].add(1);
+		m_consumed[userHash] = 1;
+
+		// TODO: Event
+		return true;
+	}
+
+
+
+
+
+
+
+	function cancelPoolMarket(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** Pool settings **********/
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
+		/********** Signature **********/
+		uint256 _salt,
+		uint8   _v,
+		bytes32 _r,
+		bytes32 _s)
+	public returns (bool)
+	{
+		// msg.sender = workerpoolOwner
+		require(msg.sender == WorkerPool(_poolOrder_workerpool).m_owner());
+
+		// compute hashs & check signatures
+		bytes32 poolHash = getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt);
+		require(isValidSignature(msg.sender, poolHash, _v, _r, _s));
+
+		m_consumed[poolHash] = _poolOrder_volume;
+
+		return true;
+	}
+
+	function cancelUserMarket(
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** User settings **********/
+		address[5] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		/* address _userOrder_requester, */
+		string  _userOrder_params,
+		/********** Signature **********/
+		uint256 _salt,
+		uint8   _v,
+		bytes32 _r,
+		bytes32 _s)
+	public returns (bool)
+	{
+		// msg.sender = requester
+		require(msg.sender == _userOrder[4]);
+
+		// compute hashs & check signatures
+		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _salt);
+		require(isValidSignature(msg.sender, userHash, _v, _r, _s));
+
+		m_consumed[userHash] = 1;
+
+		return true;
 	}
 
 }

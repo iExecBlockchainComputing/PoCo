@@ -3,6 +3,7 @@ var TestSha = artifacts.require("./TestSha.sol");
 const Promise         = require("bluebird");
 const keccak256       = require("solidity-sha3");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
+const web3utils       = require('web3-utils');
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
 
@@ -10,7 +11,7 @@ addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
 Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-Extensions.init(web3, assert);
+Extensions.init(web3, web3utils, assert);
 var constants = require("./constants");
 
 contract('IexecHub', function(accounts) {

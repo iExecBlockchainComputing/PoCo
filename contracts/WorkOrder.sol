@@ -17,17 +17,21 @@ contract WorkOrder
 	 */
 	IexecLib.WorkOrderStatusEnum public m_status;
 
-	uint256 public m_marketorderIdx;
+	uint256 public m_category;
+	uint256 public m_trust;
+	uint256 public m_value;
+
+	address public m_workerpool;
+	address public m_workerpoolOwner;
 
 	address public m_app;
 	address public m_dataset;
-	address public m_workerpool;
-	address public m_requester;
-
-	uint256 public m_emitcost;
-	string  public m_params;
 	address public m_callback;
 	address public m_beneficiary;
+	address public m_requester;
+	string  public m_params;
+
+	uint256 public m_emitcost;
 
 	string  public m_stdout;
 	string  public m_stderr;
@@ -45,30 +49,41 @@ contract WorkOrder
 	 * Constructor
 	 */
 	function WorkOrder(
-		uint256 _marketorderIdx,
-		address _requester,
-		address _app,
-		address _dataset,
-		address _workerpool,
-		uint256 _emitcost,
-		string  _params,
-		address _callback,
-		address _beneficiary)
+		/********** Order settings **********/
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
+		/********** Pool settings **********/
+		/* uint256 _poolOrder_volume, */ // NOT NEEDED
+		address _poolOrder_workerpool,
+		address _poolOrder_workerpoolOwner,
+		/********** User settings **********/
+		address[5] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		/* address _userOrder_requester, */
+		string  _userOrder_params,
+		/********** Extra **********/
+		uint256 _emitcost)
 	public
 	{
 		m_iexecHubAddress = msg.sender;
-		require(_requester != address(0));
-		m_status         = IexecLib.WorkOrderStatusEnum.ACTIVE;
-		m_marketorderIdx = _marketorderIdx;
-		m_app            = _app;
-		m_dataset        = _dataset;
-		m_workerpool     = _workerpool;
-		m_requester      = _requester;
-		m_emitcost       = _emitcost;
-		m_params         = _params;
-		m_callback       = _callback;
-		m_beneficiary    = _beneficiary;
-		// needed for the scheduler to authorize api token access on this m_beneficiary address in case _requester is a smart contract.
+		m_status          = IexecLib.WorkOrderStatusEnum.ACTIVE;
+		m_category        = _commonOrder[0];
+		m_trust           = _commonOrder[1];
+		m_value           = _commonOrder[2];
+		m_workerpool      = _poolOrder_workerpool;
+		m_workerpoolOwner = _poolOrder_workerpoolOwner;
+		m_app             = _userOrder[0];
+		m_dataset         = _userOrder[1];
+		m_callback        = _userOrder[2];
+		m_beneficiary     = _userOrder[3];
+		m_requester       = _userOrder[4];
+		m_params          = _userOrder_params;
+		m_emitcost        = _emitcost;
 	}
 
 	function startRevealingPhase() public returns (bool)

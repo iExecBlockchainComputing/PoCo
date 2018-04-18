@@ -253,43 +253,43 @@ contract('IexecHub', function(accounts) {
 
 
 
-	signHash = function(account, hash)
-	{
-		signature = web3.eth.sign(account, hash);
-		result    = {}
-		result.r  = '0x' + signature.substr(2, 64);
-		result.s  = '0x' + signature.substr(66, 64);
-		result.v  = web3.toDecimal(signature.substr(130, 2)) + 27;
-		return result;
-	}
-	poolOrderHashing = function(
-		marketplace,
-		order_category,
-		order_trust,
-		order_value,
-		poolOrder_volume,
-		poolOrder_workerpool,
-		poolOrder_salt
-	)
-	{
-		return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, poolOrder_volume, poolOrder_workerpool, poolOrder_salt);
-	}
-	userOrderHashing = function(
-		marketplace,
-		order_category,
-		order_trust,
-		order_value,
-		userOrder_app,
-		userOrder_dataset,
-		userOrder_callback,
-		userOrder_beneficiary,
-		userOrder_params,
-		userOrder_requester,
-		userOrder_salt
-	)
-	{
-		return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, userOrder_app, userOrder_dataset, userOrder_callback, userOrder_beneficiary, userOrder_params, userOrder_requester, userOrder_salt,);
-	}
+		signHash = function(account, hash)
+		{
+			signature = web3.eth.sign(account, hash);
+			result    = {}
+			result.r  = '0x' + signature.substr(2, 64);
+			result.s  = '0x' + signature.substr(66, 64);
+			result.v  = web3.toDecimal(signature.substr(130, 2)) + 27;
+			return result;
+		}
+		poolOrderHashing = function(
+			marketplace,
+			order_category,
+			order_trust,
+			order_value,
+			poolOrder_volume,
+			poolOrder_workerpool,
+			poolOrder_salt
+		)
+		{
+			return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, poolOrder_volume, poolOrder_workerpool, poolOrder_salt);
+		}
+		userOrderHashing = function(
+			marketplace,
+			order_category,
+			order_trust,
+			order_value,
+			userOrder_app,
+			userOrder_dataset,
+			userOrder_callback,
+			userOrder_beneficiary,
+			userOrder_params,
+			userOrder_requester,
+			userOrder_salt
+		)
+		{
+			return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, userOrder_app, userOrder_dataset, userOrder_callback, userOrder_beneficiary, userOrder_params, userOrder_requester, userOrder_salt,);
+		}
 
 
 

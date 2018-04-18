@@ -1,4 +1,7 @@
 // credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
+
+const web3utils = require('web3-utils');
+
 var _ = require("lodash");
 module.exports = {
 
@@ -285,5 +288,48 @@ module.exports = {
   },
   hashResult: function(result)          { return this.hashByteResult(web3.sha3(result)         ); },
   signResult: function(result, address) { return this.signByteResult(web3.sha3(result), address); },
+
+
+
+
+  signHash: function(account, hash)
+  {
+    signature = web3.eth.sign(account, hash);
+    return {
+      r: '0x' + signature.substr(2, 64),
+      s: '0x' + signature.substr(66, 64),
+      v: web3.toDecimal(signature.substr(130, 2)) + 27
+    }
+  },
+
+  poolOrderHashing: function(
+    marketplace,
+    order_category,
+    order_trust,
+    order_value,
+    poolOrder_volume,
+    poolOrder_workerpool,
+    poolOrder_salt
+  )
+  {
+    return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, poolOrder_volume, poolOrder_workerpool, poolOrder_salt);
+  },
+
+  userOrderHashing: function(
+    marketplace,
+    order_category,
+    order_trust,
+    order_value,
+    userOrder_app,
+    userOrder_dataset,
+    userOrder_callback,
+    userOrder_beneficiary,
+    userOrder_requester,
+    userOrder_params,
+    userOrder_salt
+  )
+  {
+    return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, userOrder_app, userOrder_dataset, userOrder_callback, userOrder_beneficiary, userOrder_requester, userOrder_params, userOrder_salt,);
+  },
 
 };

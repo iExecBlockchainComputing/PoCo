@@ -12,6 +12,7 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
+const web3utils       = require('web3-utils');
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
 const readFileAsync = Promise.promisify(fs.readFile);
@@ -245,42 +246,108 @@ contract('IexecHub', function(accounts) {
 	});
 
 
+	let commonOrder = {}
+	let poolOrder   = {};
+	let userOrder   = {};
 
-	it("Create ask Marker Order by scheduler", async function() {
+	it("setup", async function() {
+		// ==================================================================
+		commonOrder.category = 3;
+		commonOrder.trust    = 100;
+		commonOrder.value    = 10;
+		// ==================================================================
+		poolOrder.volume     = 5
+		poolOrder.workerpool = aWorkerPoolInstance.address;
+		poolOrder.salt       = web3utils.randomHex(32);
+		// ------------------------------------------------------------------
+		poolOrder.hash = Extensions.poolOrderHashing(
+			aMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
+			poolOrder.volume,
+			poolOrder.workerpool,
+			poolOrder.salt
+		);
+		poolOrder.sig = Extensions.signHash(scheduleProvider, poolOrder.hash)
+		// ==================================================================
+		userOrder.app         = aAppInstance.address;
+		userOrder.dataset     = '0x0000000000000000000000000000000000000000';
+		userOrder.callback    = '0x0000000000000000000000000000000000000000';
+		userOrder.beneficiary = iExecCloudUser;
+		userOrder.params      = "iExec the wandered";
+		userOrder.requester   = iExecCloudUser;
+		userOrder.salt        = web3utils.randomHex(32);
+		// ------------------------------------------------------------------
+		userOrder.hash = Extensions.userOrderHashing(
+			aMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
+			userOrder.app,
+			userOrder.dataset,
+			userOrder.callback,
+			userOrder.beneficiary,
+			userOrder.requester,
+			userOrder.params,
+			userOrder.salt
+		);
+		userOrder.sig = Extensions.signHash(iExecCloudUser, userOrder.hash)
+		// ==================================================================
+	});
 
-		txMined = await aIexecHubInstance.deposit(100, {
-			from: scheduleProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the scheduleProvider");
-		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the scheduleProvider");
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+	it("getPoolOrderHash", async function() {
+		hashedPoolOrder = await aMarketplaceInstance.getPoolOrderHash.call(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value],
+			poolOrder.volume,
+			poolOrder.workerpool,
+			poolOrder.salt
+		);
+		assert.strictEqual(
+			hashedPoolOrder,
+			poolOrder.hash,
+			"check pool order hash"
+		);
+		console.log("hash of pool order: ", poolOrder.hash);
+	});
 
-		txMined = await aMarketplaceInstance.createMarketOrder(
-			constants.MarketOrderDirectionEnum.ASK,
-			1 /*_category*/,
-			0/*_trust*/,
-			100/*_value*/,
-			workerPoolAddress/*_workerpool of sheduler*/,
-			1/*_volume*/,
-			{
-				from: scheduleProvider
-			});
+	it("getUserOrderHash", async function() {
+		hashedUserOrder = await aMarketplaceInstance.getUserOrderHash.call(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value ],
+			[ userOrder.app, userOrder.dataset, userOrder.callback, userOrder.beneficiary, userOrder.requester ],
+			userOrder.params,
+			userOrder.salt
+		);
+		assert.strictEqual(
+			hashedUserOrder,
+			userOrder.hash,
+			"check user order hash"
+		);
+		console.log("hash of user order: ", userOrder.hash);
+	});
 
-		events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}),1,constants.EVENT_WAIT_TIMEOUT);
-		assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
 
-		[direction,category,trust,value,volume,remaining,workerpool,workerpoolOwner] = await aMarketplaceInstance.getMarketOrder.call(1);
-		assert.strictEqual(direction.toNumber(),      constants.MarketOrderDirectionEnum.ASK,        "check constants.MarketOrderDirectionEnum.ASK");
-		assert.strictEqual(category.toNumber(),       1,                                            "check category");
-		assert.strictEqual(trust.toNumber(),          0,                                            "check trust");
-		assert.strictEqual(value.toNumber(),          100,                                          "check value");
-		assert.strictEqual(volume.toNumber(),         1,                                            "check volume");
-		assert.strictEqual(remaining.toNumber(),      1,                                            "check remaining");
-		assert.strictEqual(workerpool,                workerPoolAddress,                            "check workerpool");
-		assert.strictEqual(workerpoolOwner,           scheduleProvider,                             "check workerpoolOwner");
+	it("signPoolOrderHash", async function() {
+		poolSigCheck = await aMarketplaceInstance.isValidSignature.call(
+			scheduleProvider,
+			poolOrder.hash,
+			poolOrder.sig.v,
+			poolOrder.sig.r,
+			poolOrder.sig.s
+		);
+		assert(poolSigCheck, "invalid pool order signature");
+	});
 
+
+	it("signUserOrderHash", async function() {
+		userSigCheck = await aMarketplaceInstance.isValidSignature.call(
+			iExecCloudUser,
+			userOrder.hash,
+			userOrder.sig.v,
+			userOrder.sig.r,
+			userOrder.sig.s
+		);
+		assert(userSigCheck, "invalid pool order signature");
 	});
 
 });
