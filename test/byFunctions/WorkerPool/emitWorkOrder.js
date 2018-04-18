@@ -138,7 +138,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aDatasetHubInstance.address is ");
 		console.log(aDatasetHubInstance.address);
 
-		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+		aIexecHubInstance = await IexecHub.new( {
 			from: marketplaceCreator
 		});
 		console.log("aIexecHubInstance.address is ");
@@ -168,7 +168,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aMarketplaceInstance.address is ");
 		console.log(aMarketplaceInstance.address);
 
-		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+		txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -255,7 +255,7 @@ contract('IexecHub', function(accounts) {
 	it("emitWorkOrder_01: check WorkOrderActive event genereated and check getConsensusDetails well valorized", async function() {
 
     //Create ask Marker Order by scheduler
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 
@@ -265,7 +265,7 @@ contract('IexecHub', function(accounts) {
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 
@@ -288,6 +288,8 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x0000000000000000000000000000000000000000000000000000000000000000', "check no consensus");
     assert.strictEqual(revealDate.toNumber(), 0, "check no revealDate");
     assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter");
+		assert.isTrue(consensusTimout.toNumber()> 0, "check consensusTimout > 0");
+		assert.strictEqual(winnerCount.toNumber(), 0, "check 0 winnerCount");
 
     let getCategoryWorkClockTimeRefCall = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1,{
       from: iExecCloudUser,
@@ -295,9 +297,9 @@ contract('IexecHub', function(accounts) {
     });
     assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 120, "check getCategoryWorkClockTimeRef for cat 1 =120 sec");
 
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), timestamp+600, "consensusTimout =  blocktime + 120 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+1200, "consensusTimout =  blocktime + 120 *10");
     //console.log(timestamp+600);
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*5), consensusTimout.toNumber(), "consensusTimout =  blocktime + 120 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimout.toNumber(), "consensusTimout =  blocktime + 120 *5");
 
     assert.strictEqual(winnerCount.toNumber(), 0, "check no winnerCount");
 
@@ -307,7 +309,7 @@ contract('IexecHub', function(accounts) {
   it("emitWorkOrder_02: check onlyIexecHub on emitWorkOrder", async function() {
 
     //Create ask Marker Order by scheduler
-    txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+    txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
       from: scheduleProvider
     });
 
@@ -317,7 +319,7 @@ contract('IexecHub', function(accounts) {
       gas: constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    woid = await aIexecHubInstance.answerEmitWorkOrder.call(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+    woid = await aIexecHubInstance.buyForWorkOrder.call(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
       from: iExecCloudUser
     });
     await Extensions.expectedExceptionPromise(() => {

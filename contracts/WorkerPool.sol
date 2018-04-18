@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
@@ -9,7 +9,7 @@ import "./WorkOrder.sol";
 import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned by a S(w)
+contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 {
 	using SafeMathOZ for uint256;
 
@@ -31,8 +31,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	// mapping(woid => worker address => Contribution);
 	mapping(address => mapping(address => IexecLib.Contribution)) public m_contributions;
 
-	uint256 public constant REVEAL_PERIOD_DURATION   = 3 hours;
-	uint256 public constant CONSENSUS_DURATION_RATIO = 5;
+	uint256 public constant REVEAL_PERIOD_DURATION_RATIO  = 2;
+	uint256 public constant CONSENSUS_DURATION_RATIO      = 10;
 
 	/**
 	 * Address of slave/related contracts
@@ -49,24 +49,21 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 oldSubscriptionMinimumStakePolicy, uint256 newSubscriptionMinimumStakePolicy,
 		uint256 oldSubscriptionMinimumScorePolicy, uint256 newSubscriptionMinimumScorePolicy);
 
-	event WorkOrderActive    (address indexed woid);
-	event CallForContribution(address indexed woid, address indexed worker, uint256 workerScore);
-	event Contribute         (address indexed woid, address indexed worker, bytes32 resultHash);
-	event RevealConsensus    (address indexed woid, bytes32 consensus);
-	event Reveal             (address indexed woid, address indexed worker, bytes32 result);
+	event WorkOrderActive         (address indexed woid);
+	event WorkOrderClaimed        (address indexed woid);
 
-	event WorkerSubscribe    (address indexed worker);
-	event WorkerUnsubscribe  (address indexed worker);
-	event WorkerEviction     (address indexed worker);
+	event AllowWorkerToContribute (address indexed woid, address indexed worker, uint256 workerScore);
+	event Contribute              (address indexed woid, address indexed worker, bytes32 resultHash);
+	event RevealConsensus         (address indexed woid, bytes32 consensus);
+	event Reveal                  (address indexed woid, address indexed worker, bytes32 result);
+	event Reopen                  (address indexed woid);
+  event FinalizeWork            (address indexed woid, string stdout, string stderr, string uri);
 
-	/**
-	 * Modifiers
-	 */
-	modifier onlyWorkerPoolHub()
-	{
-		require(msg.sender == m_workerPoolHubAddress);
-		_;
-	}
+
+
+	event WorkerSubscribe         (address indexed worker);
+	event WorkerUnsubscribe       (address indexed worker);
+	event WorkerEviction          (address indexed worker);
 
 	/**
 	 * Methods
@@ -105,7 +102,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 _newSubscriptionMinimumScorePolicy)
 	public onlyOwner
 	{
-		WorkerPoolPolicyUpdate(
+		emit WorkerPoolPolicyUpdate(
 			m_stakeRatioPolicy,               _newStakeRatioPolicy,
 			m_schedulerRewardRatioPolicy,     _newSchedulerRewardRatioPolicy,
 			m_subscriptionMinimumStakePolicy, _newSubscriptionMinimumStakePolicy,
@@ -136,29 +133,29 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 	function subscribeToPool() public returns (bool)
 	{
-		//msg.sender = worker
+		// msg.sender = worker
 		require(iexecHubInterface.registerToPool(msg.sender));
 		uint index = m_workers.push(msg.sender);
 		m_workerIndex[msg.sender] = index.sub(1);
-		WorkerSubscribe(msg.sender);
+		emit WorkerSubscribe(msg.sender);
 		return true;
 	}
 
 	function unsubscribeFromPool() public  returns (bool)
 	{
-		//msg.sender = worker
+		// msg.sender = worker
 		require(iexecHubInterface.unregisterFromPool(msg.sender));
 		require(removeWorker(msg.sender));
-		WorkerUnsubscribe(msg.sender);
+		emit WorkerUnsubscribe(msg.sender);
 		return true;
 	}
 
 	function evictWorker(address _worker) public onlyOwner returns (bool)
 	{
-		//msg.sender = scheduler
+		// msg.sender = scheduler
 		require(iexecHubInterface.evictWorker(_worker));
 		require(removeWorker(_worker));
-		WorkerEviction(_worker);
+		emit WorkerEviction(_worker);
 		return true;
 	}
 
@@ -169,7 +166,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		m_workers    [index     ] = lastWorker;
 		m_workerIndex[lastWorker] = index;
 		delete m_workers[m_workers.length.sub(1)];
-		m_workers.length=m_workers.length.sub(1);
+		m_workers.length = m_workers.length.sub(1);
 		return true;
 	}
 
@@ -180,7 +177,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		uint256 c_revealDate,
 		uint256 c_revealCounter,
 		uint256 c_consensusTimout,
-		uint256 c_winnerCount)
+		uint256 c_winnerCount,
+		address c_workerpoolOwner)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		return (
@@ -190,9 +188,47 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			consensus.revealDate,
 			consensus.revealCounter,
 			consensus.consensusTimout,
-			consensus.winnerCount
+			consensus.winnerCount,
+			consensus.workerpoolOwner
 		);
 	}
+
+	function getContributorsCount(address _woid) public view returns (uint256 contributorsCount)
+	{
+		return m_consensus[_woid].contributors.length;
+	}
+
+	function getContributor(address _woid, uint256 index) public view returns (address contributor)
+	{
+		return m_consensus[_woid].contributors[index];
+	}
+
+	function existingContribution(address _woid, address _worker) public view  returns (bool contributionExist)
+	{
+		return m_contributions[_woid][_worker].status != IexecLib.ContributionStatusEnum.UNSET;
+	}
+
+	function getContribution(address _woid, address _worker) public view returns
+	(
+		IexecLib.ContributionStatusEnum status,
+		bytes32 resultHash,
+		bytes32 resultSign,
+		address enclaveChallenge,
+		uint256 score,
+		uint256 weight)
+	{
+		require(existingContribution(_woid, _worker)); // no silent value returned
+		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
+		return (
+			contribution.status,
+			contribution.resultHash,
+			contribution.resultSign,
+			contribution.enclaveChallenge,
+			contribution.score,
+			contribution.weight
+		);
+	}
+
 
 	/**************************** Works management *****************************/
 	function emitWorkOrder(address _woid, uint256 _marketorderIdx) public onlyIexecHub returns (bool)
@@ -202,10 +238,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
+		consensus.workerpoolOwner = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
 		consensus.consensusTimout = timeout;
 
-		WorkOrderActive(_woid);
+		emit WorkOrderActive(_woid);
 		return true;
 	}
 
@@ -220,27 +257,29 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			w = consensus.contributors[i];
 			if (m_contributions[_woid][w].status != IexecLib.ContributionStatusEnum.AUTHORIZED)
 			{
- 				require(iexecHubInterface.unlockForWork(_woid, w, consensus.stakeAmount));
+				require(iexecHubInterface.unlockForWork(_woid, w, consensus.stakeAmount));
 			}
 		}
+		emit WorkOrderClaimed(_woid);
 		return true;
 	}
 
-	function callForContributions(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	function allowWorkersToContribute(address _woid, address[] _workers, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		for (uint i = 0; i < _workers.length; ++i)
 		{
-			require(callForContribution(_woid, _workers[i], _enclaveChallenge));
+			require(allowWorkerToContribute(_woid, _workers[i], _enclaveChallenge));
 		}
 		return true;
 	}
 
-	function callForContribution(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
+	function allowWorkerToContribute(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
-		// random worker selection ? :
-		// Can use a random selection trick by using block.blockhash (256 most recent blocks accessible) and a modulo list of workers not yet called.
+		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
+
 		address workerPool;
 		uint256 workerScore;
 		(workerPool, workerScore) = iexecHubInterface.getWorkerStatus(_worker); // workerPool, workerScore
@@ -250,47 +289,52 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		CallForContribution(_woid, _worker, workerScore);
+		emit AllowWorkerToContribute(_woid, _worker, workerScore);
 		return true;
 	}
 
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
+		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
-		// tx.origin = a worker
 		require(_resultHash != 0x0);
 		require(_resultSign != 0x0);
 		if (contribution.enclaveChallenge != address(0))
 		{
-				require(contribution.enclaveChallenge == ecrecover(keccak256(_resultHash ^ _resultSign),  _v,  _r,  _s));
+			require(contribution.enclaveChallenge == ecrecover(keccak256("\x19Ethereum Signed Message:\n64", _resultHash, _resultSign), _v, _r, _s));
 		}
 
 		require(contribution.status == IexecLib.ContributionStatusEnum.AUTHORIZED);
 		contribution.status     = IexecLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
-		(,contribution.score)   = iexecHubInterface.getWorkerStatus(msg.sender);
+		contribution.score      = iexecHubInterface.getWorkerScore(msg.sender);
 		consensus.contributors.push(msg.sender);
 
 		require(iexecHubInterface.lockForWork(_woid, msg.sender, consensus.stakeAmount));
-		Contribute(_woid, msg.sender, _resultHash);
+		emit Contribute(_woid, msg.sender, _resultHash);
 		return consensus.stakeAmount;
 	}
 
 	function revealConsensus(address _woid, bytes32 _consensus) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-
-		require(iexecHubInterface.startRevealingPhase(_woid));
+		require(now <= consensus.consensusTimout);
+		require(WorkOrder(_woid).startRevealingPhase());
 
 		consensus.winnerCount = 0;
 		for (uint256 i = 0; i<consensus.contributors.length; ++i)
 		{
 			address w = consensus.contributors[i];
-			if (m_contributions[_woid][w].resultHash == _consensus)
+			if (
+				m_contributions[_woid][w].resultHash == _consensus
+				&&
+				m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+			)
 			{
 				consensus.winnerCount = consensus.winnerCount.add(1);
 			}
@@ -298,18 +342,19 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		consensus.consensus  = _consensus;
-		consensus.revealDate = REVEAL_PERIOD_DURATION.add(now);
-		RevealConsensus(_woid, _consensus);
+		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(marketplaceInterface.getMarketOrderCategory(WorkOrder(_woid).m_marketorderIdx())).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
+		emit RevealConsensus(_woid, _consensus);
 		return true;
 	}
 
 	function reveal(address _woid, bytes32 _result) public returns (bool)
 	{
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
-		require(consensus.revealDate        >  now                                        ); // Needed ?
+		require(consensus.revealDate        >  now                                        );
 		require(contribution.status         == IexecLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == consensus.consensus                        );
 		require(contribution.resultHash     == keccak256(_result                        ) );
@@ -318,19 +363,16 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 		contribution.status     = IexecLib.ContributionStatusEnum.PROVED;
 		consensus.revealCounter = consensus.revealCounter.add(1);
 
-		Reveal(_woid, msg.sender, _result); // TODO add WorkStatusEnum in LOG
+		emit Reveal(_woid, msg.sender, _result);
 		return true;
 	}
 
 	function reopen(address _woid) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
+		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
-		require(iexecHubInterface.reActivate(_woid));
-		// Reset to status before revealConsensus
-		consensus.winnerCount = 0;
-		consensus.consensus   = 0x0;
-		consensus.revealDate  = 0;
+		require(WorkOrder(_woid).reActivate());
 
 		for (uint256 i = 0; i < consensus.contributors.length; ++i)
 		{
@@ -340,6 +382,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 				m_contributions[_woid][w].status = IexecLib.ContributionStatusEnum.REJECTED;
 			}
 		}
+		// Reset to status before revealConsensus. Must be after REJECTED traitement above because of consensus.consensus check
+		consensus.winnerCount = 0;
+		consensus.consensus   = 0x0;
+		consensus.revealDate  = 0;
+		emit Reopen(_woid);
 		return true;
 	}
 
@@ -347,12 +394,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	function finalizeWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require((consensus.revealDate <= now && consensus.revealCounter > 0) || consensus.revealCounter == consensus.winnerCount);
+		require(now <= consensus.consensusTimout);
+		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
 
-		// add penalized to the call worker to contrubution and they never contribute ?
+		// add penalized to the call worker to contribution and they never contribute ?
 		require(distributeRewards(_woid, consensus));
 
 		require(iexecHubInterface.finalizeWorkOrder(_woid, _stdout, _stderr, _uri));
+		emit FinalizeWork(_woid,_stdout,_stderr,_uri);
 		return true;
 	}
 
@@ -360,16 +409,6 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 	{
 		uint256 i;
 		address w;
-		/**
-		 * Reward distribution:
-		 * totalReward is to be distributed amoung the winners relative to their
-		 * contribution. I believe that the weight should be someting like:
-		 *
-		 * w ~= 1+log(score*bonus)
-		 *
-		 * Is it worth the gaz necessay to compute the log?
-		 * → https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity#8110
-		 */
 		uint256 workerBonus;
 		uint256 workerWeight;
 		uint256 totalWeight;
@@ -414,7 +453,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor // Owned
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecHubInterface.rewardForWork(_woid, m_owner, totalReward, false));
+		require(iexecHubInterface.rewardForWork(_woid, _consensus.workerpoolOwner, totalReward, false));
 
 		return true;
 	}

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 import './IexecLib.sol';
 contract IexecHubInterface
 {
@@ -37,7 +37,7 @@ contract IexecHubInterface
 		string  _datasetParams)
 	external returns (address createdDataset);
 
-	function answerEmitWorkOrder(
+	function buyForWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
 		address _app,
@@ -99,6 +99,13 @@ contract IexecHubInterface
 	function getWorkerStatus(
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
+
+	function getWorkerScore(
+		address _worker)
+	public view returns (uint256 workerScore);
+
+	function getRLCAddress()
+	public view returns (address rlc);
 
 	function registerToPool(address _worker)
 	public returns (bool subscribed);

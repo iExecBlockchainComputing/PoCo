@@ -1,13 +1,11 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 import './IexecLib.sol';
 contract MarketplaceInterface
 {
-	function emitMarketOrder(
+	function createMarketOrder(
 		IexecLib.MarketOrderDirectionEnum _direction,
 		uint256 _category,
 		uint256 _trust,
-		/* uint256 _marketDeadline, */
-		/* uint256 _assetDeadline, */
 		uint256 _value,
 		address _workerpool,
 		uint256 _volume)
@@ -20,6 +18,10 @@ contract MarketplaceInterface
 	function getMarketOrderValue(
 		uint256 _marketorderIdx)
 	public view returns(uint256);
+
+	function getMarketOrderWorkerpoolOwner(
+		uint256 _marketorderIdx)
+	public view returns(address);
 
 	function getMarketOrderCategory(
 		uint256 _marketorderIdx)
@@ -35,11 +37,8 @@ contract MarketplaceInterface
 		IexecLib.MarketOrderDirectionEnum direction,
 		uint256 category,       // runtime selection
 		uint256 trust,          // for PoCo
-		/* uint256 marketDeadline, // deadline for market making */
-		/* uint256 assetDeadline,  // deadline for work submission */
 		uint256 value,          // value/cost/price
 		uint256 volume,         // quantity of instances (total)
 		uint256 remaining,      // remaining instances
-		/* address requester,      // null for ASK */
 		address workerpool);    // BID can use null for any
 }

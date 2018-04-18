@@ -1,0 +1,49 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 06_allowWorkerToContribute ==
+
+autonumber 6
+activate iexec_scheduler
+iexec_scheduler -> iexec_scheduler : randonmy choose worker
+
+autonumber 6
+iexec_scheduler  --> WorkerPool : allowWorkersToContribute()
+activate WorkerPool
+autonumber 6
+WorkerPool <--> WorkerPool :<font color=green><b>Log AllowWorkerToContribute()
+
+deactivate WorkerPool
+
+deactivate iexec_scheduler
+autonumber 6
+WorkerPool o-> iexec_worker :<font color=blue><b>  watch Log AllowWorkerToContribute()
+
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

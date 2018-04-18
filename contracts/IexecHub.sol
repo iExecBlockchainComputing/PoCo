@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "rlc-token/contracts/RLC.sol";
 
@@ -18,15 +18,17 @@ import './IexecLib.sol';
 contract IexecHub
 {
 	using SafeMathOZ for uint256;
-	// uint private constant WORKERPOOL_CREATION_STAKE = 5000; // updated by vote or super admin ?
-	// uint private constant APP_CREATION_STAKE        = 5000; // updated by vote or super admin ?
-	// uint private constant DATASET_CREATION_STAKE    = 5000; // updated by vote or super admin ?
-	// uint private constant WORKER_MEMBERSHIP_STAKE   = 5000; // updated by vote or super admin ?
 
 	/**
 	* RLC contract for token transfers.
 	*/
-	RLC public rlc;
+	RLC     public rlc;
+	address public tokenAddress;
+
+	uint256 public constant STAKE_BONUS_RATIO  = 10;
+	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
+
+	uint256 public constant SCORE_UNITARY_SLASH = 50;
 
 	/**
 	 * Slaves contracts
@@ -69,11 +71,8 @@ contract IexecHub
 	IexecLib.ContributionHistory public m_contributionHistory;
 
 
-	/* event WorkOrderEmit */
 	event WorkOrderActivated(address woid, address indexed workerPool);
-	event WorkOrderRevealing(address woid, address indexed workerPool);
-	event WorkOrderCancelled(address woid, address indexed workerPool);
-	event WorkOrderAborted  (address woid, address workerPool);
+	event WorkOrderClaimed  (address woid, address workerPool);
 	event WorkOrderCompleted(address woid, address workerPool);
 
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
@@ -82,8 +81,6 @@ contract IexecHub
 
 	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
-	event OpenWorkerPool          (address indexed workerPool);
-	event CloseWorkerPool         (address indexed workerPool);
 	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
 	event WorkerPoolEviction      (address indexed workerPool, address worker);
@@ -100,33 +97,25 @@ contract IexecHub
 	 * Constructor
 	 */
 	function IexecHub(
-		address _tokenAddress,
-		address _workerPoolHubAddress,
-		address _appHubAddress,
-		address _datasetHubAddress
 	)
 	public
 	{
-		rlc = RLC(_tokenAddress);
+
+	}
+
+
+	function attachContracts(address _tokenAddress,address _marketplaceAddress, address _workerPoolHubAddress, address _appHubAddress, address _datasetHubAddress) public
+	{
+		require(tokenAddress == address(0));
+		tokenAddress       = _tokenAddress;
+		rlc                = RLC(_tokenAddress);
+
+		marketplaceAddress = _marketplaceAddress;
+		marketplace        = Marketplace(_marketplaceAddress);
 
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
-		// marketplace        = Marketplace(marketplaceAddress); //too much gas
-		// marketplaceAddress = new Marketplace(this); //too much gas
-		marketplaceAddress  = address(0);
-		m_categoriesCreator = address(0);
-
-		m_contributionHistory.success = 0;
-		m_contributionHistory.failled = 0;
-
-	}
-
-	function attachMarketplace(address _marketplaceAddress) public
-	{
-		require(marketplaceAddress == address(0));
-		marketplaceAddress = _marketplaceAddress; //new Marketplace(this);
-		marketplace        =  Marketplace(_marketplaceAddress);
 	}
 
 	function setCategoriesCreator(address _categoriesCreator) public
@@ -151,7 +140,7 @@ contract IexecHub
 		category.name                      = _name;
 		category.description               = _description;
 		category.workClockTimeRef          = _workClockTimeRef;
-		CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
+		emit CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
 		return m_categoriesCount;
 	}
 
@@ -162,8 +151,6 @@ contract IexecHub
 		uint256 _subscriptionMinimumScorePolicy)
 	external returns (address createdWorkerPool)
 	{
-		// add a staking and lock for the msg.sender scheduler. in order to prevent against pool creation spam ?
-		// require(lock(msg.sender, WORKERPOOL_CREATION_STAKE)); ?
 		address newWorkerPool = workerPoolHub.createWorkerPool(
 			_description,
 			_subscriptionLockStakePolicy,
@@ -171,7 +158,7 @@ contract IexecHub
 			_subscriptionMinimumScorePolicy,
 			marketplaceAddress
 		);
-		CreateWorkerPool(tx.origin, newWorkerPool, _description);
+		emit CreateWorkerPool(tx.origin, newWorkerPool, _description);
 		return newWorkerPool;
 	}
 
@@ -181,13 +168,12 @@ contract IexecHub
 		string  _appParams)
 	external returns (address createdApp)
 	{
-		// require(lock(msg.sender, APP_CREATION_STAKE)); ?
 		address newApp = appHub.createApp(
 			_appName,
 			_appPrice,
 			_appParams
 		);
-		CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
+		emit CreateApp(tx.origin, newApp, _appName, _appPrice, _appParams);
 		return newApp;
 	}
 
@@ -197,20 +183,19 @@ contract IexecHub
 		string  _datasetParams)
 	external returns (address createdDataset)
 	{
-		// require(lock(msg.sender, DATASET_CREATION_STAKE)); ?
 		address newDataset = datasetHub.createDataset(
 			_datasetName,
 			_datasetPrice,
 			_datasetParams
 			);
-		CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
+		emit CreateDataset(tx.origin, newDataset, _datasetName, _datasetPrice, _datasetParams);
 		return newDataset;
 	}
 
 	/**
 	 * WorkOrder Emission
 	 */
-	function answerEmitWorkOrder(
+	function buyForWorkOrder(
 		uint256 _marketorderIdx,
 		address _workerpool,
 		address _app,
@@ -221,41 +206,13 @@ contract IexecHub
 	external returns (address)
 	{
 		address requester = msg.sender;
-		require(marketplace.answerConsume(_marketorderIdx, requester, _workerpool));
+		require(marketplace.consumeMarketOrderAsk(_marketorderIdx, requester, _workerpool));
 
-		WorkOrder workorder = WorkOrder(emitWorkOrder(
-			_marketorderIdx,
-			requester,
-			_workerpool,
-			_app,
-			_dataset,
-			_params,
-			_callback,
-			_beneficiary
-		));
-
-		workorder.activate(); // revert on error
-		WorkOrderActivated(workorder, _workerpool);
-
-		return workorder;
-	}
-
-	function emitWorkOrder(
-		uint256 _marketorderIdx,
-		address _requester,
-		address _workerpool, // Address of a smartcontract
-		address _app,        // Address of a smartcontract
-		address _dataset,    // Address of a smartcontract
-		string  _params,
-		address _callback,
-		address _beneficiary)
-	internal returns (address)
-	{
-		uint256 emitcost = lockWorkOrderCost(_requester, _workerpool, _app, _dataset);
+		uint256 emitcost = lockWorkOrderCost(requester, _workerpool, _app, _dataset);
 
 		WorkOrder workorder = new WorkOrder(
 			_marketorderIdx,
-			_requester,
+			requester,
 			_app,
 			_dataset,
 			_workerpool,
@@ -267,6 +224,7 @@ contract IexecHub
 
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
+		emit WorkOrderActivated(workorder, _workerpool);
 		return workorder;
 	}
 
@@ -293,7 +251,6 @@ contract IexecHub
 		}
 
 		// WORKERPOOL
-		WorkerPool workerpool = WorkerPool(_workerpool);
 		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
 
 		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
@@ -304,45 +261,31 @@ contract IexecHub
 	/**
 	 * WorkOrder life cycle
 	 */
-	function startRevealingPhase(address _woid) public returns (bool)
-	{
-		WorkOrder workorder = WorkOrder(_woid);
-		require(workorder.m_workerpool() == msg.sender);
-		workorder.reveal(); // revert on error
-		WorkOrderRevealing(_woid, msg.sender); // msg.sender is workorder.m_workerpool()
-		return true;
-	}
 
-	function reActivate(address _woid) public returns (bool)
-	{
-		WorkOrder workorder = WorkOrder(_woid);
-		require(workorder.m_workerpool() == msg.sender);
-		workorder.reactivate();  // revert on error
-		WorkOrderActivated(_woid, workorder.m_workerpool());
-		return true;
-	}
-
-	// TODO: msg.sender = requester or _beneficiary
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
 		WorkOrder  workorder  = WorkOrder(_woid);
+		require(workorder.m_requester() == msg.sender);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
-		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);//to remove
+		require(currentStatus == IexecLib.WorkOrderStatusEnum.ACTIVE || currentStatus == IexecLib.WorkOrderStatusEnum.REVEALING);
 		// Unlock stakes for all workers
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
-		uint    value;
-		address workerpoolOwner;
-		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
+		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
-		require(unlock(workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
-		require(seize (workerpoolOwner,         value                            ));
-		// IMPORTANT TODO: who do we give the extra value comming from the sheduler ?
+		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(seize  (workerpoolOwner,         workerpoolStake));
+		// put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
+		require(reward (this,                    workerpoolStake));
+		require(lock   (this,                    workerpoolStake));
 
-		WorkOrderAborted(_woid, workorder.m_workerpool());
+
+		emit WorkOrderClaimed(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -364,9 +307,7 @@ contract IexecHub
 		if (appPrice > 0)
 		{
 			require(reward(app.m_owner(), appPrice));
-			// TODO: to unlock a stake ?
 		}
-		// incremente app reputation?
 
 		// DATASET
 		Dataset dataset = Dataset(workorder.m_dataset());
@@ -376,9 +317,7 @@ contract IexecHub
 			if (datasetPrice > 0)
 			{
 				require(reward(dataset.m_owner(), datasetPrice));
-				// TODO: to unlock a stake ?
 			}
-			// incremente dataset reputation?
 		}
 
 		// WORKERPOOL → rewarding done by the caller itself
@@ -388,17 +327,28 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint256 value;
- 		address workerpoolOwner;
- 		(,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
+		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
+		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
-		require(unlock(workerpoolOwner,         value));                             // unlock scheduler stake
+		require(unlock(workerpoolOwner,         workerpoolStake)); // unlock scheduler stake
 
 		// write results
 		workorder.setResult(_stdout, _stderr, _uri); // revert on error
 
-		WorkOrderCompleted(_woid, workorder.m_workerpool());
+		// Rien ne se perd, rien ne se crée, tout se transfere
+		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
+		uint256 kitty;
+		(,kitty) = checkBalance(this); // kitty is locked on `this` wallet
+		if(kitty > 0)
+		{
+			uint256 kittyFraction = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			require(seize(this,             kittyFraction));
+			require(reward(workerpoolOwner, kittyFraction));
+		}
+
+		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
 		return true;
 	}
 
@@ -411,7 +361,8 @@ contract IexecHub
 		return m_categories[_catId].workClockTimeRef;
 	}
 
-	function existingCategory(uint256 _catId) public view  returns (bool categoryExist){
+	function existingCategory(uint256 _catId) public view  returns (bool categoryExist)
+	{
 		return m_categories[_catId].catid > 0;
 	}
 
@@ -426,9 +377,19 @@ contract IexecHub
 		);
 	}
 
+	function getRLCAddress() public view returns (address rlcAddress)
+	{
+		return tokenAddress;
+	}
+
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);
+	}
+
+	function getWorkerScore(address _worker) public view returns (uint256 workerScore)
+	{
+		return m_scores[_worker];
 	}
 
 	/**
@@ -448,25 +409,25 @@ contract IexecHub
 		// Update affectation
 		require(workerPoolHub.registerWorkerAffectation(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolSubscription(msg.sender, _worker);
+		emit WorkerPoolSubscription(msg.sender, _worker);
 		return true;
 	}
 
 	function unregisterFromPool(address _worker) public returns (bool unsubscribed)
 	// msg.sender = workerPool
 	{
-		require(removeWorker(msg.sender,_worker));
+		require(removeWorker(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolUnsubscription(msg.sender, _worker);
+		emit WorkerPoolUnsubscription(msg.sender, _worker);
 		return true;
 	}
 
 	function evictWorker(address _worker) public returns (bool unsubscribed)
 	// msg.sender = workerpool
 	{
-		require(removeWorker(msg.sender,_worker));
+		require(removeWorker(msg.sender, _worker));
 		// Trigger event notice
-		WorkerPoolEviction(msg.sender, _worker);
+		emit WorkerPoolEviction(msg.sender, _worker);
 		return true;
 	}
 
@@ -496,16 +457,6 @@ contract IexecHub
 		require(unlock(_user, _amount));
 		return true;
 	}
-	function seizeForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
-	{
-		require(seize(_user,_amount));
-		return true;
-	}
-	function rewardForOrder(address _user, uint256 _amount) public onlyMarketplace returns (bool)
-	{
-		require(reward(_user,_amount));
-		return true;
-	}
 	/* Work */
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
@@ -526,9 +477,9 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			AccurateContribution(_woid, _worker);
 			m_contributionHistory.success = m_contributionHistory.success.add(1);
 			m_scores[_worker] = m_scores[_worker].add(1);
+			emit AccurateContribution(_woid, _worker);
 		}
 		return true;
 	}
@@ -539,9 +490,9 @@ contract IexecHub
 		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
-			FaultyContribution(_woid, _worker);
 			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
-			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(50));
+			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(SCORE_UNITARY_SLASH));
+			emit FaultyContribution(_woid, _worker);
 		}
 		return true;
 	}
@@ -552,14 +503,14 @@ contract IexecHub
 	{
 		require(rlc.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
-		Deposit(msg.sender, _amount);
+		emit Deposit(msg.sender, _amount);
 		return true;
 	}
 	function withdraw(uint256 _amount) external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		require(rlc.transfer(msg.sender, _amount));
-		Withdraw(msg.sender, _amount);
+		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
 	function checkBalance(address _owner) public view returns (uint256 stake, uint256 locked)
@@ -572,13 +523,13 @@ contract IexecHub
 	function reward(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
-		Reward(_user, _amount);
+		emit Reward(_user, _amount);
 		return true;
 	}
 	function seize(address _user, uint256 _amount) internal returns (bool)
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
-		Seize(_user, _amount);
+		emit Seize(_user, _amount);
 		return true;
 	}
 	function lock(address _user, uint256 _amount) internal returns (bool)

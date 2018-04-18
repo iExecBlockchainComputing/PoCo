@@ -1,9 +1,9 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
 
-contract App is OwnableOZ, IexecHubAccessor // Owned by a D(w)
+contract App is OwnableOZ, IexecHubAccessor
 {
 
 	/**

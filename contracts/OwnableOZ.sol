@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 /**
  * @title Ownable
@@ -36,7 +36,7 @@ contract OwnableOZ
 	function transferOwnership(address _newOwner) public onlyOwner
 	{
 		require(_newOwner != address(0));
-		OwnershipTransferred(m_owner, _newOwner);
+		emit OwnershipTransferred(m_owner, _newOwner);
 		m_owner = _newOwner;
 	}
 

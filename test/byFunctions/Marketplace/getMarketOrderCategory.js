@@ -166,7 +166,7 @@ contract('IexecHub', function(accounts) {
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+    aIexecHubInstance = await IexecHub.new( {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");
@@ -196,7 +196,7 @@ contract('IexecHub', function(accounts) {
     console.log("aMarketplaceInstance.address is ");
     console.log(aMarketplaceInstance.address);
 
-    txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+    txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -300,7 +300,7 @@ contract('IexecHub', function(accounts) {
 
   it("getMarketOrderCategory_01 : it should be possible for every one to get getMarketOrderCategory of an existing MarketOrder", async function() {
 
-    txMined = await aMarketplaceInstance.emitMarketOrder(
+    txMined = await aMarketplaceInstance.createMarketOrder(
       constants.MarketOrderDirectionEnum.ASK,
       1 /*_category*/ ,
       1 /*_trust*/ ,
@@ -310,7 +310,7 @@ contract('IexecHub', function(accounts) {
         from: scheduleProvider
       });
 
-    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderEmitted({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.MarketOrderCreated({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.marketorderIdx.toNumber(), 1, "marketorderIdx");
     category = await aMarketplaceInstance.getMarketOrderCategory.call(1, {
       from: iExecCloudUser,

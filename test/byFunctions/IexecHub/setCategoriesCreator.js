@@ -161,7 +161,7 @@ contract('IexecHub', function(accounts) {
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+    aIexecHubInstance = await IexecHub.new( {
       from: marketplaceCreator
     });
     console.log("aIexecHubInstance.address is ");

@@ -139,7 +139,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aDatasetHubInstance.address is ");
 		console.log(aDatasetHubInstance.address);
 
-		aIexecHubInstance = await IexecHub.new(aRLCInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address, {
+		aIexecHubInstance = await IexecHub.new( {
 			from: marketplaceCreator
 		});
 		console.log("aIexecHubInstance.address is ");
@@ -169,7 +169,7 @@ contract('IexecHub', function(accounts) {
 		console.log("aMarketplaceInstance.address is ");
 		console.log(aMarketplaceInstance.address);
 
-		txMined = await aIexecHubInstance.attachMarketplace(aMarketplaceInstance.address, {
+		txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -249,7 +249,7 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await aMarketplaceInstance.emitMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
+		txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
 			from: scheduleProvider
 		});
 
@@ -261,7 +261,7 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
-		txMined = await aIexecHubInstance.answerEmitWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
+		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
 		});
 
@@ -270,8 +270,8 @@ contract('IexecHub', function(accounts) {
 		console.log("woid is: " + woid);
 		aWorkOrderInstance = await WorkOrder.at(woid);
 
-		//callForContribution
-		txMined = await aWorkerPoolInstance.callForContribution(woid, resourceProvider, 0, {
+		//allowWorkerToContribute
+		txMined = await aWorkerPoolInstance.allowWorkerToContribute(woid, resourceProvider, 0, {
 			from: scheduleProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
@@ -320,8 +320,8 @@ contract('IexecHub', function(accounts) {
 
 	it("scheduleProvider call finalizeWork", async function() {
 		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
-		assert.strictEqual(checkBalance[0].toNumber(),   0, "check balance : stake");
-		assert.strictEqual(checkBalance[1].toNumber(), 100, "check balance : locked");
+		assert.strictEqual(checkBalance[0].toNumber(),   70, "check balance : stake");
+		assert.strictEqual(checkBalance[1].toNumber(), 30, "check balance : locked . must lock 30%");
 
 		txMined = await aWorkerPoolInstance.finalizeWork(woid, "aStdout", "aStderr", "anUri", {
 			from: scheduleProvider,

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 library IexecLib
 {
@@ -17,14 +17,11 @@ library IexecLib
 		MarketOrderDirectionEnum direction;
 		uint256 category;        // runtime selection
 		uint256 trust;           // for PoCo
-		// uint256 marketDeadline;  // deadline for market making
-		// uint256 assetDeadline;   // deadline for work submission
 		uint256 value;           // value/cost/price
 		uint256 volume;          // quantity of instances (total)
 		uint256 remaining;       // remaining instances
-		// address requester;       // null for ASK
 		address workerpool;      // BID can use null for any
-		address workerpoolOwner; // BID can use null for any
+		address workerpoolOwner; // fix ownership if workerpool ownership change during the workorder steps
 	}
 
 	/***************************************************************************/
@@ -33,8 +30,6 @@ library IexecLib
 	enum WorkOrderStatusEnum
 	{
 		UNSET,     // Work order not yet initialized (invalid address)
-		PENDING,   // Work order submited by user
-		CANCELLED, // Work order cancelled by user (before acceptance by a scheduler)
 		ACTIVE,    // Marketed → constributions are open
 		REVEALING, // Starting consensus reveal
 		CLAIMED,   // Failled consensus
@@ -56,6 +51,7 @@ library IexecLib
 		uint256 consensusTimout;
 		uint256 winnerCount;
 		address[] contributors;
+		address workerpoolOwner;
 	}
 
 	/***************************************************************************/

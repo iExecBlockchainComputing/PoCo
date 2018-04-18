@@ -1,0 +1,48 @@
+@startuml
+
+iExecCloudUser -> IexecAPI
+
+box "Smart contracts"
+	participant IexecAPI
+	participant IexecHub
+	participant Marketplace
+	participant WorkOrder
+    participant WorkerPool
+
+end box
+
+
+== 08_revealConsensus ==
+
+activate iexec_scheduler
+
+autonumber 8
+iexec_scheduler -> iexec_scheduler: check if consensus on resultHash is reached
+autonumber 8
+iexec_scheduler --> WorkerPool : revealConsensus()
+activate WorkerPool
+note over WorkOrder :WorkOrderStatusEnum.REVEALING
+autonumber 8
+WorkerPool <--> WorkerPool :<font color=green><b>Log RevealConsensus()
+
+deactivate iexec_scheduler
+deactivate WorkerPool
+autonumber 8
+WorkerPool o-> iexec_worker :<font color=blue><b> watch Log RevealConsensus
+
+
+box "Spring boot app" #LightBlue
+	participant iexec_scheduler
+  participant iexec_worker
+end box
+
+
+box "Repository" #Bisque
+	participant AppRepository
+    participant DatasetRepository
+end box
+
+
+
+
+@enduml

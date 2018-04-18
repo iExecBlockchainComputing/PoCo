@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import './IexecHubInterface.sol';
 
@@ -6,8 +6,6 @@ contract IexecHubAccessor
 {
 	address           internal iexecHubAddress;
 	IexecHubInterface internal iexecHubInterface;
-
-	/* event IexecHubTransferred(address indexed previousIexecHub, address indexed newIexecHub); */
 
 	modifier onlyIexecHub()
 	{
@@ -21,15 +19,5 @@ contract IexecHubAccessor
 		iexecHubAddress   = _iexecHubAddress;
 		iexecHubInterface = IexecHubInterface(_iexecHubAddress);
 	}
-
-	// TODO: need owner to change hub address → IexecHubInterface is Ownable ?
-	/*
-	function changeIexecHubAddress(address _newIexecHubAddress)
-	{
-		require(_newIexecHubAddress != address(0));
-		iexecHubAddress   = _newIexecHubAddress;
-		iexecHubInterface = IexecHubInterface(_newIexecHubAddress);
-	}
-	*/
 
 }

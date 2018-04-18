@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import './MarketplaceInterface.sol';
 
@@ -6,12 +6,12 @@ contract MarketplaceAccessor
 {
 	address              internal marketplaceAddress;
 	MarketplaceInterface internal marketplaceInterface;
-
+/* not used
 	modifier onlyMarketplace()
 	{
 		require(msg.sender == marketplaceAddress);
 		_;
-	}
+	}*/
 
 	function MarketplaceAccessor(address _marketplaceAddress) public
 	{
