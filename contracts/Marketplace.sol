@@ -11,7 +11,6 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Marketplace
 	 */
-	// IexecLib.MarketMatching[]   public m_matchings;
 	mapping(bytes32 => uint256) public m_consumed;
 
 	uint256 public constant ASK_STAKE_RATIO = 30;
@@ -19,12 +18,9 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Events
 	 */
-	event MarketMatched   (bytes32 poolHash, bytes userHash);
+	event MarketMatched   (bytes32 poolHash, bytes32 userHash);
 	event MarketClosedPool(bytes32 poolHash);
 	event MarketClosedUser(bytes32 userHash);
-
-	/* event MarketOrderCancel(bytes32 hash, ); */
-	/* event MarketOrderDeal  (bytes32 hash, ); */
 
 	/**
 	 * Constructor
