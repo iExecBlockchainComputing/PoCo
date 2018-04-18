@@ -1,4 +1,4 @@
-var Test0x = artifacts.require("./Test0x.sol");
+var OxMarketplace  = artifacts.require("./OxMarketplace.sol");
 
 var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 var IexecHub       = artifacts.require("./IexecHub.sol");
@@ -44,13 +44,13 @@ contract('IexecHub', function(accounts) {
 	let aDatasetHubInstance;
 	let aMarketplaceInstance;
 
-
 	//specific for test :
-	let aTest0xInstance;
 	let workerPoolAddress;
 	let aWorkerPoolInstance;
 	let appAddress;
 	let aAppInstance;
+
+	let aOxMarketplaceInstance;
 
 	before("should prepare accounts and check TestRPC Mode", async() => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -246,67 +246,79 @@ contract('IexecHub', function(accounts) {
 		aAppInstance = await App.at(appAddress);
 
 
-		aTest0xInstance = await Test0x.new({ from: marketplaceCreator });
-		console.log("aTest0xInstance.address is: ", aTest0xInstance.address);
+		aOxMarketplaceInstance = await OxMarketplace.new(aIexecHubInstance.address, { from: marketplaceCreator });
+		console.log("aOxMarketplaceInstance.address is: ", aOxMarketplaceInstance.address);
 
 	});
 
 
 
-	let order     = {}
-	let poolOrder = {};
-	let userOrder = {};
+	signHash = function(account, hash)
+	{
+		signature = web3.eth.sign(account, hash);
+		result    = {}
+		result.r  = '0x' + signature.substr(2, 64);
+		result.s  = '0x' + signature.substr(66, 64);
+		result.v  = web3.toDecimal(signature.substr(130, 2)) + 27;
+		return result;
+	}
+	poolOrderHashing = function(
+		marketplace,
+		order_category,
+		order_trust,
+		order_value,
+		poolOrder_volume,
+		poolOrder_workerpool,
+		poolOrder_salt
+	)
+	{
+		return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, poolOrder_volume, poolOrder_workerpool, poolOrder_salt);
+	}
+	userOrderHashing = function(
+		marketplace,
+		order_category,
+		order_trust,
+		order_value,
+		userOrder_app,
+		userOrder_dataset,
+		userOrder_callback,
+		userOrder_beneficiary,
+		userOrder_params,
+		userOrder_requester,
+		userOrder_salt
+	)
+	{
+		return web3utils.soliditySha3(marketplace, order_category, order_trust, order_value, userOrder_app, userOrder_dataset, userOrder_callback, userOrder_beneficiary, userOrder_params, userOrder_requester, userOrder_salt,);
+	}
 
-	order.category = web3.toBigNumber(3);
-	order.trust    = web3.toBigNumber(100);
-	order.value    = web3.toBigNumber(10);
 
-	it("getPoolOrderHash", async function() {
+
+
+	let commonOrder = {}
+	let poolOrder   = {};
+	let userOrder   = {};
+
+	it("setup", async function() {
+		// ==================================================================
+		commonOrder.category = web3.toBigNumber(3);
+		commonOrder.trust    = web3.toBigNumber(100);
+		commonOrder.value    = web3.toBigNumber(10);
+		// ==================================================================
 		poolOrder.volume     = web3.toBigNumber(5);
 		poolOrder.workerpool = aWorkerPoolInstance.address;
 		poolOrder.salt       = web3.toBigNumber(web3utils.randomHex(32));
-
-		poolOrder.hash = await aTest0xInstance.getPoolOrderHash.call(
-			[ order.category, order.trust, order.value],
+		// ------------------------------------------------------------------
+		poolOrder.hash = poolOrderHashing(
+			aOxMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
 			poolOrder.volume,
 			poolOrder.workerpool,
 			poolOrder.salt
 		);
-
-		assert.strictEqual(
-			poolOrder.hash,
-			web3utils.soliditySha3(
-				aTest0xInstance.address,
-				order.category,
-				order.trust,
-				order.value,
-				poolOrder.volume,
-				poolOrder.workerpool,
-				poolOrder.salt
-			),
-			"check pool order hash"
-		);
-		console.log("hash of pool order: ", poolOrder.hash);
-	});
-
-
-	it("signPoolOrderHash", async function() {
-		signature = web3.eth.sign(scheduleProvider, poolOrder.hash);
-		poolOrder.r = '0x' + signature.substr(2, 64);
-		poolOrder.s = '0x' + signature.substr(66, 64);
-		poolOrder.v = web3.toDecimal(signature.substr(130, 2)) + 27;
-
-		poolSigCheck = await aTest0xInstance.isValidSignature.call(
-			scheduleProvider,
-			poolOrder.hash,
-			poolOrder.v,
-			poolOrder.r,
-			poolOrder.s
-		);
-		assert(poolSigCheck, "invalid pool order signature");
-	});
-
-	it("getUserOrderHash", async function() {
+		poolOrder.sig = signHash(scheduleProvider, poolOrder.hash)
+		// ==================================================================
 		userOrder.app         = aAppInstance.address;
 		userOrder.dataset     = '0x0000000000000000000000000000000000000000';
 		userOrder.callback    = '0x0000000000000000000000000000000000000000';
@@ -314,48 +326,93 @@ contract('IexecHub', function(accounts) {
 		userOrder.params      = "iExec the wandered";
 		userOrder.requester   = iExecCloudUser;
 		userOrder.salt        = web3.toBigNumber(web3utils.randomHex(32));
+		// ------------------------------------------------------------------
+		userOrder.hash = userOrderHashing(
+			aOxMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
+			userOrder.app,
+			userOrder.dataset,
+			userOrder.callback,
+			userOrder.beneficiary,
+			userOrder.params,
+			userOrder.requester,
+			userOrder.salt
+		);
+		userOrder.sig = signHash(iExecCloudUser, userOrder.hash)
+		// ==================================================================
+	});
 
-		userOrder.hash = await aTest0xInstance.getUserOrderHash.call(
-			[ order.category, order.trust, order.value ],
+	it("getPoolOrderHash", async function() {
+		hashedPoolOrder = await aOxMarketplaceInstance.getPoolOrderHash.call(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value],
+			poolOrder.volume,
+			poolOrder.workerpool,
+			poolOrder.salt
+		);
+		assert.strictEqual(
+			hashedPoolOrder,
+			poolOrder.hash,
+			"check pool order hash"
+		);
+		console.log("hash of pool order: ", poolOrder.hash);
+	});
+
+	it("getUserOrderHash", async function() {
+		hashedUserOrder = await aOxMarketplaceInstance.getUserOrderHash.call(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value ],
 			[ userOrder.app, userOrder.dataset, userOrder.callback, userOrder.beneficiary ],
 			userOrder.params,
 			userOrder.requester,
 			userOrder.salt
 		);
 		assert.strictEqual(
+			hashedUserOrder,
 			userOrder.hash,
-			web3utils.soliditySha3(
-				aTest0xInstance.address,
-				order.category,
-				order.trust,
-				order.value,
-				userOrder.app,
-				userOrder.dataset,
-				userOrder.callback,
-				userOrder.beneficiary,
-				userOrder.params,
-				userOrder.requester,
-				userOrder.salt,
-			),
 			"check user order hash"
 		);
 		console.log("hash of user order: ", userOrder.hash);
 	});
 
-	it("signUserOrderHash", async function() {
-		signature = web3.eth.sign(iExecCloudUser, userOrder.hash);
-		userOrder.r = '0x' + signature.substr(2, 64);
-		userOrder.s = '0x' + signature.substr(66, 64);
-		userOrder.v = web3.toDecimal(signature.substr(130, 2)) + 27;
 
-		userSigCheck = await aTest0xInstance.isValidSignature.call(
+	it("signPoolOrderHash", async function() {
+		poolSigCheck = await aOxMarketplaceInstance.isValidSignature.call(
+			scheduleProvider,
+			poolOrder.hash,
+			poolOrder.sig.v,
+			poolOrder.sig.r,
+			poolOrder.sig.s
+		);
+		assert(poolSigCheck, "invalid pool order signature");
+	});
+
+
+	it("signUserOrderHash", async function() {
+		userSigCheck = await aOxMarketplaceInstance.isValidSignature.call(
 			iExecCloudUser,
 			userOrder.hash,
-			userOrder.v,
-			userOrder.r,
-			userOrder.s
+			userOrder.sig.v,
+			userOrder.sig.r,
+			userOrder.sig.s
 		);
 		assert(userSigCheck, "invalid pool order signature");
+	});
+
+	it("OxMarketplace: match orders", async function() {
+		fillOrder = await aOxMarketplaceInstance.matchOrders.call(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value ],
+			poolOrder.volume,
+			poolOrder.workerpool,
+			[ userOrder.app, userOrder.dataset, userOrder.callback, userOrder.beneficiary ],
+			userOrder.params,
+			userOrder.requester,
+			[ poolOrder.salt,  userOrder.salt  ],
+			[ poolOrder.sig.v, userOrder.sig.v ],
+			[ poolOrder.sig.r, userOrder.sig.r ],
+			[ poolOrder.sig.s, userOrder.sig.s ]
+		);
+		assert(fillOrder, "error matching the orders")
 	});
 
 });

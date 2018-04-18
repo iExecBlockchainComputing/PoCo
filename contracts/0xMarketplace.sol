@@ -27,24 +27,24 @@ contract OxMarketplace is IexecHubAccessor
 	struct Matching
 	{
 		/********** Order settings **********/
-		uint256 category;
-		uint256 trust;
-		uint256 value;
+		uint256 common_category;
+		uint256 common_trust;
+		uint256 common_value;
 		/********** Pool settings **********/
-		uint256 volume;
-		address workerpool;
-		address workerpoolOwner;
-		uint256 poolSalt;
-		bytes32 poolHash;
+		uint256 pool_volume;
+		address pool_workerpool;
+		address pool_workerpoolOwner;
+		uint256 pool_salt;
+		bytes32 pool_hash;
 		/********** User settings **********/
-		address app;
-		address dataset;
-		address callback;
-		address beneficiary;
-		string  params;
-		address requester;
-		uint256 userSalt;
-		bytes32 userHash;
+		address user_app;
+		address user_dataset;
+		address user_callback;
+		address user_beneficiary;
+		string  user_params;
+		address user_requester;
+		uint256 user_salt;
+		bytes32 user_hash;
 	}
 
 
@@ -73,93 +73,85 @@ contract OxMarketplace is IexecHubAccessor
 		uint8   v,
 		bytes32 r,
 		bytes32 s)
-	public constant returns (bool)
+	public pure returns (bool)
 	{
-		return signer == ecrecover(hash, v, r, s);
+		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s);
 	}
 
 	function getPoolOrderHash(
 		/********** Order settings **********/
-		uint256[3] _order,
-		/* uint256 _category, */
-		/* uint256 _trust, */
-		/* uint256 _value, */
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
 		/********** Pool settings **********/
-		uint256 _volume,
-		address _workerpool,
-		/********** Signatures **********/
-		uint256 _salt)
-	public constant returns (bytes32)
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
+		uint256 _poolOrder_salt)
+	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
-			_order[0],   // category
-			_order[1],   // trust
-			_order[2],   // value
-			_volume,     // salt
-			_workerpool, // salt
-			_salt);      // salt
+			_commonOrder[0],
+			_commonOrder[1],
+			_commonOrder[2],
+			_poolOrder_volume,
+			_poolOrder_workerpool,
+			_poolOrder_salt);
 	}
 
 	function getUserOrderHash(
 		/********** Order settings **********/
-		uint256[3] _order,
-		/* uint256 _category, */
-		/* uint256 _trust, */
-		/* uint256 _value, */
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
 		/********** User settings **********/
-		address[4] _work,
-		/* address _app, */
-		/* address _dataset, */
-		/* address _callback, */
-		/* address _beneficiary, */
-		string  _params,
-		address _requester,
-		/********** Signatures **********/
-		uint256 _salt)
-	public constant returns (bytes32)
+		address[4] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		string  _userOrder_params,
+		address _userOrder_requester,
+		uint256 _userOrder_salt)
+	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
-			_order[0],  // category
-			_order[1],  // trust
-			_order[2],  // value
-			_work[0],   // app
-			_work[1],   // dataset
-			_work[2],   // callback
-			_work[3],   // beneficiary
-			_params,    // salt
-			_requester, // salt
-			_salt);     // salt
+			_commonOrder[0],      // category
+			_commonOrder[1],      // trust
+			_commonOrder[2],      // value
+			_userOrder[0],        // app
+			_userOrder[1],        // dataset
+			_userOrder[2],        // callback
+			_userOrder[3],        // beneficiary
+			_userOrder_params,    // params
+			_userOrder_requester, // requester
+			_userOrder_salt       // salt
+		);
 	}
-
-
-
-
-
-
-
 
 	/**
 	 * Deal on Market
 	 */
-	function fillOrder(
+	function matchOrders(
 		/********** Order settings **********/
-		uint256[3] _order,
-		/* uint256 _category, */
-		/* uint256 _trust, */
-		/* uint256 _value, */
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
 		/********** Pool settings **********/
-		uint256 _volume,
-		address _workerpool,
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
 		/********** User settings **********/
-		address[4] _work,
-		/* address _app, */
-		/* address _dataset, */
-		/* address _callback, */
-		/* address _beneficiary, */
-		string  _params,
-		address _requester,
+		address[4] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		string  _userOrder_params,
+		address _userOrder_requester,
 		/********** Signatures **********/
 		uint256[2] _salt,
 		uint8[2]   _v,
@@ -167,41 +159,40 @@ contract OxMarketplace is IexecHubAccessor
 		bytes32[2] _s)
 	public returns(bool)
 	{
-
 		Matching memory matching = Matching({
-			category:        _order[0],
-			trust:           _order[1],
-			value:           _order[2],
-			volume:          _volume,
-			workerpool:      _workerpool,
-			workerpoolOwner: WorkerPool(_workerpool).m_owner(),
-			poolSalt:        _salt[0],
-			poolHash:        getPoolOrderHash(_order, _volume, _workerpool, _salt[0]),
-			app:             _work[0],
-			dataset:         _work[1],
-			callback:        _work[2],
-			beneficiary:     _work[3],
-			params:          _params,
-			requester:       _requester,
-			userSalt:        _salt[1],
-			userHash:        getUserOrderHash(_order, _work, _params, _requester, _salt[1])
+			common_category:      _commonOrder[0],
+			common_trust:         _commonOrder[1],
+			common_value:         _commonOrder[2],
+			pool_volume:          _poolOrder_volume,
+			pool_workerpool:      _poolOrder_workerpool,
+			pool_workerpoolOwner: WorkerPool(_poolOrder_workerpool).m_owner(),
+			pool_salt:            _salt[0],
+			pool_hash:            getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt[0]),
+			user_app:             _userOrder[0],
+			user_dataset:         _userOrder[1],
+			user_callback:        _userOrder[2],
+			user_beneficiary:     _userOrder[3],
+			user_params:          _userOrder_params,
+			user_requester:       _userOrder_requester,
+			user_salt:            _salt[1],
+			user_hash:            getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _userOrder_requester, _salt[1])
 		});
 
-		require(iexecHubInterface.existingCategory(matching.category));
-
 		// Check signatures
-		require(isValidSignature(matching.workerpoolOwner, matching.poolHash, _v[0], _r[0], _s[0]));
-		require(isValidSignature(matching.requester,       matching.userHash, _v[1], _r[1], _s[1]));
+		require(isValidSignature(matching.pool_workerpoolOwner, matching.pool_hash, _v[0], _r[0], _s[0]));
+		require(isValidSignature(matching.user_requester,       matching.user_hash, _v[1], _r[1], _s[1]));
+
+		require(iexecHubInterface.existingCategory(matching.common_category));
 
 		// check consumption
-		require(m_consumed[matching.poolHash] <  matching.volume);
-		require(m_consumed[matching.userHash] == 0);
-		m_consumed[matching.poolHash] = m_consumed[matching.poolHash].add(1);
-		m_consumed[matching.userHash] = 1;
+		require(m_consumed[matching.pool_hash] <  matching.pool_volume);
+		require(m_consumed[matching.user_hash] == 0);
+		m_consumed[matching.pool_hash] = m_consumed[matching.pool_hash].add(1);
+		m_consumed[matching.user_hash] = 1;
 
 		// lock all stake
-		require(iexecHubInterface.lockForOrder(matching.workerpoolOwner, matching.value));
-		require(iexecHubInterface.lockForOrder(matching.requester,       matching.value));
+		/* require(iexecHubInterface.lockForOrder(matching.pool_workerpoolOwner, matching.common_value)); */
+		/* require(iexecHubInterface.lockForOrder(matching.user_requester,       matching.common_value)); */
 
 		// TODO: Event
 		return true;
@@ -215,13 +206,13 @@ contract OxMarketplace is IexecHubAccessor
 
 	function cancelPoolMarket(
 		/********** Order settings **********/
-		uint256[3] _order,
-		/* uint256 _category, */
-		/* uint256 _trust, */
-		/* uint256 _value, */
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
 		/********** Pool settings **********/
-		uint256 _volume,
-		address _workerpool,
+		uint256 _poolOrder_volume,
+		address _poolOrder_workerpool,
 		/********** Signature **********/
 		uint256 _salt,
 		uint8   _v,
@@ -230,31 +221,31 @@ contract OxMarketplace is IexecHubAccessor
 	public returns (bool)
 	{
 		// msg.sender = workerpoolOwner
-		require(msg.sender == WorkerPool(_workerpool).m_owner());
+		require(msg.sender == WorkerPool(_poolOrder_workerpool).m_owner());
 
 		// compute hashs & check signatures
-		bytes32 poolHash = getPoolOrderHash(_order, _volume, _workerpool, _salt);
+		bytes32 poolHash = getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt);
 		require(isValidSignature(msg.sender, poolHash, _v, _r, _s));
 
-		m_consumed[poolHash] = _volume;
+		m_consumed[poolHash] = _poolOrder_volume;
 
 		return true;
 	}
 
 	function cancelUserMarket(
 		/********** Order settings **********/
-		uint256[3] _order,
-		/* uint256 _category, */
-		/* uint256 _trust, */
-		/* uint256 _value, */
+		uint256[3] _commonOrder,
+		/* uint256 _commonOrder_category, */
+		/* uint256 _commonOrder_trust, */
+		/* uint256 _commonOrder_value, */
 		/********** User settings **********/
-		address[4] _workdescription,
-		/* address _app, */
-		/* address _dataset, */
-		/* address _callback, */
-		/* address _beneficiary, */
-		string  _params,
-		address _requester,
+		address[4] _userOrder,
+		/* address _userOrder_app, */
+		/* address _userOrder_dataset, */
+		/* address _userOrder_callback, */
+		/* address _userOrder_beneficiary, */
+		string  _userOrder_params,
+		address _userOrder_requester,
 		/********** Signature **********/
 		uint256 _salt,
 		uint8   _v,
@@ -266,7 +257,7 @@ contract OxMarketplace is IexecHubAccessor
 		require(msg.sender == _requester);
 
 		// compute hashs & check signatures
-		bytes32 userHash = getUserOrderHash(_order, _workdescription, _params, _requester, _salt);
+		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _userOrder_requester, _salt);
 		require(isValidSignature(msg.sender, userHash, _v, _r, _s));
 
 		m_consumed[userHash] = 1;
