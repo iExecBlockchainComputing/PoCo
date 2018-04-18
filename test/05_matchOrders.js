@@ -248,11 +248,11 @@ contract('IexecHub', function(accounts) {
 		aAppInstance = await App.at(appAddress);
 
 		// ==================================================================
-		commonOrder.category = 3;
-		commonOrder.trust    = 100;
-		commonOrder.value    = 10;
+		commonOrder.category = 1;
+		commonOrder.trust    = 0;
+		commonOrder.value    = 100;
 		// ==================================================================
-		poolOrder.volume     = 5
+		poolOrder.volume     = 1
 		poolOrder.workerpool = aWorkerPoolInstance.address;
 		poolOrder.salt       = web3utils.randomHex(32);
 		// ------------------------------------------------------------------
@@ -293,6 +293,24 @@ contract('IexecHub', function(accounts) {
 	});
 
 	it("marketOrders", async function() {
+		txMined = await aIexecHubInstance.deposit(100, {
+			from: scheduleProvider,
+			gas: constants.AMOUNT_GAS_PROVIDED
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		txMined = await aIexecHubInstance.deposit(100, {
+			from: iExecCloudUser,
+		});
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the scheduleProvider. 100 unlocked");
+		assert.strictEqual(checkBalance[1].toNumber(),   0, "check stake of the scheduleProvider.   0 locked");
+		checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+		assert.strictEqual(checkBalance[0].toNumber(), 100, "check stake of the iExecCloudUser. 100 unlocked");
+		assert.strictEqual(checkBalance[1].toNumber(),   0, "check stake of the iExecCloudUser.   0 locked");
+
 		txMined = await aIexecHubInstance.marketOrders(
 			[ commonOrder.category, commonOrder.trust, commonOrder.value ],
 			poolOrder.volume,
@@ -305,6 +323,8 @@ contract('IexecHub', function(accounts) {
 			[ poolOrder.sig.s, userOrder.sig.s ],
 			{ from: iExecCloudUser }
 		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
 
@@ -312,6 +332,14 @@ contract('IexecHub', function(accounts) {
 
 		status = await aWorkOrderInstance.m_status.call();
 		assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
+
+		checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
+		assert.strictEqual(checkBalance[0].toNumber(), 70, "check stake of the scheduleProvider. 70 unlocked");
+		assert.strictEqual(checkBalance[1].toNumber(), 30, "check stake of the scheduleProvider. 30 locked");
+		checkBalance = await aIexecHubInstance.checkBalance.call(iExecCloudUser);
+		assert.strictEqual(checkBalance[0].toNumber(),   0, "check stake of the iExecCloudUser.   0 unlocked");
+		assert.strictEqual(checkBalance[1].toNumber(), 100, "check stake of the iExecCloudUser. 100 locked");
+
 	});
 
 });

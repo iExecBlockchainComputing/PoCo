@@ -61,8 +61,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 		string _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy,
-		address _marketplaceAddress)
+		uint256 _subscriptionMinimumScorePolicy)
 	external onlyOwner /*owner == IexecHub*/ returns (address createdWorkerPool)
 	{
 		// tx.origin == owner
@@ -73,8 +72,7 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 			_description,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
-			_subscriptionMinimumScorePolicy,
-			_marketplaceAddress
+			_subscriptionMinimumScorePolicy
 		);
 		addWorkerPool(tx.origin, newWorkerPool);
 		return newWorkerPool;

@@ -31,45 +31,6 @@ contract Marketplace is IexecHubAccessor
 	{
 	}
 
-
-
-
-/*
-	function getMatchingCategory(uint256 matchingID)
-	public view returns(uint256)
-	{
-		return m_matchings[matchingID].common_category;
-	}
-	function getMatchingValue(uint256 matchingID)
-	public view returns(uint256)
-	{
-		return m_matchings[matchingID].common_value;
-	}
-	function getMatchingTrust(uint256 matchingID)
-	public view returns(uint256)
-	{
-		return m_matchings[matchingID].common_trust;
-	}
-	function getMatchingWorkerpool(uint256 matchingID)
-	public view returns(address)
-	{
-		return m_matchings[matchingID].pool_workerpool;
-	}
-	function getMatchingWorkerpoolOwner(uint256 matchingID)
-	public view returns(address)
-	{
-		return m_matchings[matchingID].pool_workerpoolOwner;
-	}
-*/
-
-
-
-
-
-
-
-
-
 	function isValidSignature(
 		address signer,
 		bytes32 hash,
@@ -196,6 +157,10 @@ contract Marketplace is IexecHubAccessor
 		require(m_consumed[userHash] == 0);
 		m_consumed[poolHash] = m_consumed[poolHash].add(1);
 		m_consumed[userHash] = 1;
+
+		// Lock
+		require(iexecHubInterface.lockForOrder(matching.pool_workerpoolOwner, matching.common_value.percentage(ASK_STAKE_RATIO).mul(matching.pool_volume))); // mul must be done after percentage to avoid rounding errors
+		require(iexecHubInterface.lockForOrder(matching.user_requester,       matching.common_value)); // Lock funds for app + dataset payment
 
 		// TODO: Event
 		return true;

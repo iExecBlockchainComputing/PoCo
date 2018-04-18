@@ -2,17 +2,14 @@ pragma solidity ^0.4.21;
 
 import './OwnableOZ.sol';
 import './IexecHubAccessor.sol';
-import './MarketplaceAccessor.sol';
 import './IexecHub.sol';
 import "./SafeMathOZ.sol";
 import "./WorkOrder.sol";
-import "./Marketplace.sol";
 import './IexecLib.sol';
 
-contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
+contract WorkerPool is OwnableOZ, IexecHubAccessor
 {
 	using SafeMathOZ for uint256;
-
 
 	/**
 	 * Members
@@ -37,7 +34,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	/**
 	 * Address of slave/related contracts
 	 */
-	address        public  m_workerPoolHubAddress;
+	address public m_workerPoolHubAddress;
 
 
 	/**
@@ -74,10 +71,8 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		string  _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy,
-		address _marketplaceAddress)
+		uint256 _subscriptionMinimumScorePolicy)
 	IexecHubAccessor(_iexecHubAddress)
-	MarketplaceAccessor(_marketplaceAddress)
 	public
 	{
 		// tx.origin == owner
@@ -230,7 +225,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	}
 
 	/**************************** Works management *****************************/
-	function emitWorkOrder(address _woid) public onlyIexecHub returns (bool)
+	function initiateConsensus(address _woid) public onlyIexecHub returns (bool)
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 
@@ -288,7 +283,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		contribution.status           = IexecLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		emit AllowWorkerToContribute(_woid, _worker, workerScore);
+		emit AllowWorkerToContribute(_woid, _worker, 0);
 		return true;
 	}
 

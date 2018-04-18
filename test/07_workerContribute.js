@@ -12,10 +12,10 @@ var Marketplace    = artifacts.require("./Marketplace.sol");
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
+const web3utils       = require('web3-utils');
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
 const readFileAsync = Promise.promisify(fs.readFile);
-
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -25,6 +25,7 @@ Extensions.init(web3, assert);
 var constants = require("./constants");
 
 contract('IexecHub', function(accounts) {
+
 
 	let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
 	let subscriptionLockStakePolicy    = 0;
@@ -48,6 +49,10 @@ contract('IexecHub', function(accounts) {
 	let appAddress;
 	let aAppInstance;
 	let aWorkOrderInstance;
+
+	let commonOrder = {}
+	let poolOrder   = {};
+	let userOrder   = {};
 
 	before("should prepare accounts and check TestRPC Mode", async() => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -163,7 +168,6 @@ contract('IexecHub', function(accounts) {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of DatasetHub to IexecHub");
 
-
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator
 		});
@@ -243,27 +247,79 @@ contract('IexecHub', function(accounts) {
 		appAddress = await aAppHubInstance.getApp(appProvider, 1);
 		aAppInstance = await App.at(appAddress);
 
-		//Create ask Marker Order by scheduler
+		//Create ask Marker Orders
+		// ==================================================================
+		commonOrder.category = 1;
+		commonOrder.trust    = 0;
+		commonOrder.value    = 100;
+		// ==================================================================
+		poolOrder.volume     = 1
+		poolOrder.workerpool = aWorkerPoolInstance.address;
+		poolOrder.salt       = web3utils.randomHex(32);
+		// ------------------------------------------------------------------
+		poolOrder.hash = Extensions.poolOrderHashing(
+			aMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
+			poolOrder.volume,
+			poolOrder.workerpool,
+			poolOrder.salt
+		);
+		poolOrder.sig = Extensions.signHash(scheduleProvider, poolOrder.hash)
+		// ==================================================================
+		userOrder.app         = aAppInstance.address;
+		userOrder.dataset     = '0x0000000000000000000000000000000000000000';
+		userOrder.callback    = '0x0000000000000000000000000000000000000000';
+		userOrder.beneficiary = iExecCloudUser;
+		userOrder.params      = "iExec the wandered";
+		userOrder.requester   = iExecCloudUser;
+		userOrder.salt        = web3utils.randomHex(32);
+		// ------------------------------------------------------------------
+		userOrder.hash = Extensions.userOrderHashing(
+			aMarketplaceInstance.address,
+			commonOrder.category,
+			commonOrder.trust,
+			commonOrder.value,
+			userOrder.app,
+			userOrder.dataset,
+			userOrder.callback,
+			userOrder.beneficiary,
+			userOrder.requester,
+			userOrder.params,
+			userOrder.salt
+		);
+		userOrder.sig = Extensions.signHash(iExecCloudUser, userOrder.hash)
+		// ==================================================================
+
+		//markerOrders
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: scheduleProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await aMarketplaceInstance.createMarketOrder(constants.MarketOrderDirectionEnum.ASK, 1 /*_category*/, 0/*_trust*/, 100/*_value*/, workerPoolAddress/*_workerpool of sheduler*/, 1/*_volume*/, {
-			from: scheduleProvider
-		});
-
-		//answerAskOrder
 		txMined = await aIexecHubInstance.deposit(100, {
 			from: iExecCloudUser,
-			gas: constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
-			from: iExecCloudUser
-		});
+		txMined = await aIexecHubInstance.marketOrders(
+			[ commonOrder.category, commonOrder.trust, commonOrder.value ],
+			poolOrder.volume,
+			poolOrder.workerpool,
+			[ userOrder.app, userOrder.dataset, userOrder.callback, userOrder.beneficiary, userOrder.requester ],
+			userOrder.params,
+			[ poolOrder.salt,  userOrder.salt  ],
+			[ poolOrder.sig.v, userOrder.sig.v ],
+			[ poolOrder.sig.r, userOrder.sig.r ],
+			[ poolOrder.sig.s, userOrder.sig.s ],
+			{
+				from: iExecCloudUser,
+				gas: constants.AMOUNT_GAS_PROVIDED
+			}
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;

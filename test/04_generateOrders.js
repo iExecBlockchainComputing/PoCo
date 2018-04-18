@@ -252,11 +252,11 @@ contract('IexecHub', function(accounts) {
 
 	it("setup", async function() {
 		// ==================================================================
-		commonOrder.category = 3;
-		commonOrder.trust    = 100;
-		commonOrder.value    = 10;
+		commonOrder.category = 1;
+		commonOrder.trust    = 0;
+		commonOrder.value    = 100;
 		// ==================================================================
-		poolOrder.volume     = 5
+		poolOrder.volume     = 1
 		poolOrder.workerpool = aWorkerPoolInstance.address;
 		poolOrder.salt       = web3utils.randomHex(32);
 		// ------------------------------------------------------------------

@@ -77,7 +77,7 @@ contract IexecHub
 
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
 	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
-	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolDescription                                        );
+	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolDescription                                  );
 
 	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
@@ -96,15 +96,18 @@ contract IexecHub
 	/**
 	 * Constructor
 	 */
-	function IexecHub(
-	)
+	function IexecHub()
 	public
 	{
-
 	}
 
-
-	function attachContracts(address _tokenAddress,address _marketplaceAddress, address _workerPoolHubAddress, address _appHubAddress, address _datasetHubAddress) public
+	function attachContracts(
+		address _tokenAddress,
+		address _marketplaceAddress,
+		address _workerPoolHubAddress,
+		address _appHubAddress,
+		address _datasetHubAddress)
+	public
 	{
 		require(tokenAddress == address(0));
 		tokenAddress       = _tokenAddress;
@@ -155,8 +158,7 @@ contract IexecHub
 			_description,
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
-			_subscriptionMinimumScorePolicy,
-			marketplaceAddress
+			_subscriptionMinimumScorePolicy
 		);
 		emit CreateWorkerPool(tx.origin, newWorkerPool, _description);
 		return newWorkerPool;
@@ -220,6 +222,8 @@ contract IexecHub
 		bytes32[2] _s)
 	external returns (address)
 	{
+		require(workerPoolHub.isWorkerPoolRegistered(_poolOrder_workerpool));
+
 		require(marketplace.matchOrders(
 			_commonOrder,
 			_poolOrder_volume,
@@ -231,7 +235,7 @@ contract IexecHub
 			_r,
 			_s));
 
-		uint256 emitcost = lockWorkOrderCost(
+		uint256 appPayment = lockAppPayment(
 			_userOrder[4],         //requester,
 			_poolOrder_workerpool, //workerpool,
 			_userOrder[0],         //app,
@@ -243,13 +247,15 @@ contract IexecHub
 			WorkerPool(_poolOrder_workerpool).m_owner(),
 			_userOrder,
 			_userOrder_params,
-			emitcost);
+			appPayment);
+
+		require(WorkerPool(_poolOrder_workerpool).initiateConsensus(workorder));
 
 		emit WorkOrderActivated(workorder, _poolOrder_workerpool);
 		return workorder;
 	}
 
-	function lockWorkOrderCost(
+	function lockAppPayment(
 		address _requester,
 		address _workerpool, // Address of a smartcontract
 		address _app,        // Address of a smartcontract
@@ -260,7 +266,7 @@ contract IexecHub
 		App app = App(_app);
 		require(appHub.isAppRegistered (_app       ));
 		// initialize usercost with dapp price
-		uint256 emitcost = app.m_appPrice();
+		uint256 appPayment = app.m_appPrice();
 
 		// DATASET
 		if (_dataset != address(0)) // address(0) → no dataset
@@ -268,15 +274,12 @@ contract IexecHub
 			Dataset dataset = Dataset(_dataset);
 			require(datasetHub.isDatasetRegistred(_dataset   ));
 			// add optional datasetPrice for userCost
-			emitcost = emitcost.add(dataset.m_datasetPrice());
+			appPayment = appPayment.add(dataset.m_datasetPrice());
 		}
 
-		// WORKERPOOL
-		require(workerPoolHub.isWorkerPoolRegistered(_workerpool));
+		require(lock(_requester, appPayment)); // Lock funds for app + dataset payment
 
-		require(lock(_requester, emitcost)); // Lock funds for app + dataset payment
-
-		return emitcost;
+		return appPayment;
 	}
 
 	/**
@@ -299,7 +302,7 @@ contract IexecHub
 		address workerpoolOwner = workorder.m_workerpoolOwner();
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
-		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
+		require(unlock (workorder.m_requester(), value.add(workorder.m_appPayment()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
 		require(seize  (workerpoolOwner,         workerpoolStake));
 		// put workerpoolOwner stake seize into iexecHub address for bonus for scheduler on next well finalized Task
 		require(reward (this,                    workerpoolStake));
@@ -346,13 +349,13 @@ contract IexecHub
 		/**
 		 * seize stacked funds from requester.
 		 * reward = value: was locked at market making
-		 * emitcost: was locked at when emiting the workorder
+		 * appPayment: was locked at when emiting the workorder
 		 */
 		uint256 value           = workorder.m_value(); // revert if not exist
 		address workerpoolOwner = workorder.m_workerpoolOwner(); // revert if not exist
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
-		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
+		require(seize (workorder.m_requester(), value.add(workorder.m_appPayment()))); // seize funds for payment (market value + appPayment)
 		require(unlock(workerpoolOwner,         workerpoolStake)); // unlock scheduler stake
 
 		// write results
@@ -397,12 +400,10 @@ contract IexecHub
 		m_categories[_catId].workClockTimeRef
 		);
 	}
-
 	function getRLCAddress() public view returns (address rlcAddress)
 	{
 		return tokenAddress;
 	}
-
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);

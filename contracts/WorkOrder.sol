@@ -31,7 +31,7 @@ contract WorkOrder
 	address public m_requester;
 	string  public m_params;
 
-	uint256 public m_emitcost;
+	uint256 public m_appPayment;
 
 	string  public m_stdout;
 	string  public m_stderr;
@@ -67,7 +67,7 @@ contract WorkOrder
 		/* address _userOrder_requester, */
 		string  _userOrder_params,
 		/********** Extra **********/
-		uint256 _emitcost)
+		uint256 _appPayment)
 	public
 	{
 		m_iexecHubAddress = msg.sender;
@@ -83,7 +83,7 @@ contract WorkOrder
 		m_beneficiary     = _userOrder[3];
 		m_requester       = _userOrder[4];
 		m_params          = _userOrder_params;
-		m_emitcost        = _emitcost;
+		m_appPayment      = _appPayment;
 	}
 
 	function startRevealingPhase() public returns (bool)
