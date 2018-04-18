@@ -19,6 +19,10 @@ contract Marketplace is IexecHubAccessor
 	/**
 	 * Events
 	 */
+	event MarketMatched   (bytes32 poolHash, bytes userHash);
+	event MarketClosedPool(bytes32 poolHash);
+	event MarketClosedUser(bytes32 userHash);
+
 	/* event MarketOrderCancel(bytes32 hash, ); */
 	/* event MarketOrderDeal  (bytes32 hash, ); */
 
@@ -96,9 +100,6 @@ contract Marketplace is IexecHubAccessor
 		);
 	}
 
-
-
-
 	/**
 	 * Deal on Market
 	 */
@@ -124,7 +125,7 @@ contract Marketplace is IexecHubAccessor
 		uint8[2]   _v,
 		bytes32[2] _r,
 		bytes32[2] _s)
-	public returns(bool)
+	public onlyIexecHub returns (bool)
 	{
 		IexecLib.MarketMatching memory matching = IexecLib.MarketMatching({
 			common_category:      _commonOrder[0],
@@ -162,7 +163,7 @@ contract Marketplace is IexecHubAccessor
 		require(iexecHubInterface.lockForOrder(matching.pool_workerpoolOwner, matching.common_value.percentage(ASK_STAKE_RATIO).mul(matching.pool_volume))); // mul must be done after percentage to avoid rounding errors
 		require(iexecHubInterface.lockForOrder(matching.user_requester,       matching.common_value)); // Lock funds for app + dataset payment
 
-		// TODO: Event
+		emit MarketMatched(poolHash, userHash);
 		return true;
 	}
 
@@ -197,6 +198,7 @@ contract Marketplace is IexecHubAccessor
 
 		m_consumed[poolHash] = _poolOrder_volume;
 
+		emit MarketClosedPool(poolHash);
 		return true;
 	}
 
@@ -230,6 +232,7 @@ contract Marketplace is IexecHubAccessor
 
 		m_consumed[userHash] = 1;
 
+		emit MarketClosedUser(userHash);
 		return true;
 	}
 
