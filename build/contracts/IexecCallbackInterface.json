@@ -70,14 +70,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo-dev/contracts/IexecCallbackInterface.sol",
     "exportedSymbols": {
       "IexecCallbackInterface": [
-        886
+        413
       ]
     },
-    "id": 887,
+    "id": 414,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 862,
+        "id": 389,
         "literals": [
           "solidity",
           "^",
@@ -85,7 +85,7 @@
           ".21"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:5"
+        "src": "0:24:4"
       },
       {
         "baseContracts": [],
@@ -93,9 +93,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 886,
+        "id": 413,
         "linearizedBaseContracts": [
-          886
+          413
         ],
         "name": "IexecCallbackInterface",
         "nodeType": "ContractDefinition",
@@ -103,7 +103,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 875,
+            "id": 402,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -111,16 +111,16 @@
             "name": "workOrderCallback",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 871,
+              "id": 398,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 864,
+                  "id": 391,
                   "name": "_woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "93:13:5",
+                  "scope": 402,
+                  "src": "93:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -128,10 +128,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 863,
+                    "id": 390,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "93:7:5",
+                    "src": "93:7:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -142,11 +142,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 866,
+                  "id": 393,
                   "name": "_stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "110:15:5",
+                  "scope": 402,
+                  "src": "110:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -154,10 +154,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 865,
+                    "id": 392,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "110:6:5",
+                    "src": "110:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -168,11 +168,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 868,
+                  "id": 395,
                   "name": "_stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "129:15:5",
+                  "scope": 402,
+                  "src": "129:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -180,10 +180,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 867,
+                    "id": 394,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "129:6:5",
+                    "src": "129:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -194,11 +194,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 870,
+                  "id": 397,
                   "name": "_uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "148:12:5",
+                  "scope": 402,
+                  "src": "148:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -206,10 +206,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 869,
+                    "id": 396,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "148:6:5",
+                    "src": "148:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -219,20 +219,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "89:72:5"
+              "src": "89:72:4"
             },
             "payable": false,
             "returnParameters": {
-              "id": 874,
+              "id": 401,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 873,
+                  "id": 400,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "178:4:5",
+                  "scope": 402,
+                  "src": "178:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -240,10 +240,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 872,
+                    "id": 399,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "178:4:5",
+                    "src": "178:4:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -253,10 +253,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "177:6:5"
+              "src": "177:6:4"
             },
-            "scope": 886,
-            "src": "63:121:5",
+            "scope": 413,
+            "src": "63:121:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
@@ -264,21 +264,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 885,
+            "id": 412,
             "name": "WorkOrderCallback",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 884,
+              "id": 411,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 877,
+                  "id": 404,
                   "indexed": false,
                   "name": "woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "211:12:5",
+                  "scope": 412,
+                  "src": "211:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -286,10 +286,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 876,
+                    "id": 403,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "211:7:5",
+                    "src": "211:7:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -300,12 +300,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 879,
+                  "id": 406,
                   "indexed": false,
                   "name": "stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "225:13:5",
+                  "scope": 412,
+                  "src": "225:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -313,10 +313,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 878,
+                    "id": 405,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "225:6:5",
+                    "src": "225:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -327,12 +327,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 881,
+                  "id": 408,
                   "indexed": false,
                   "name": "stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "240:13:5",
+                  "scope": 412,
+                  "src": "240:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -340,10 +340,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 880,
+                    "id": 407,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "240:6:5",
+                    "src": "240:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -354,12 +354,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 883,
+                  "id": 410,
                   "indexed": false,
                   "name": "uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "255:10:5",
+                  "scope": 412,
+                  "src": "255:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -367,10 +367,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 882,
+                    "id": 409,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "255:6:5",
+                    "src": "255:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -380,29 +380,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "210:56:5"
+              "src": "210:56:4"
             },
-            "src": "187:80:5"
+            "src": "187:80:4"
           }
         ],
-        "scope": 887,
-        "src": "26:243:5"
+        "scope": 414,
+        "src": "26:243:4"
       }
     ],
-    "src": "0:270:5"
+    "src": "0:270:4"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/PoCo-dev/contracts/IexecCallbackInterface.sol",
     "exportedSymbols": {
       "IexecCallbackInterface": [
-        886
+        413
       ]
     },
-    "id": 887,
+    "id": 414,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 862,
+        "id": 389,
         "literals": [
           "solidity",
           "^",
@@ -410,7 +410,7 @@
           ".21"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:5"
+        "src": "0:24:4"
       },
       {
         "baseContracts": [],
@@ -418,9 +418,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 886,
+        "id": 413,
         "linearizedBaseContracts": [
-          886
+          413
         ],
         "name": "IexecCallbackInterface",
         "nodeType": "ContractDefinition",
@@ -428,7 +428,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 875,
+            "id": 402,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -436,16 +436,16 @@
             "name": "workOrderCallback",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 871,
+              "id": 398,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 864,
+                  "id": 391,
                   "name": "_woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "93:13:5",
+                  "scope": 402,
+                  "src": "93:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -453,10 +453,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 863,
+                    "id": 390,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "93:7:5",
+                    "src": "93:7:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -467,11 +467,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 866,
+                  "id": 393,
                   "name": "_stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "110:15:5",
+                  "scope": 402,
+                  "src": "110:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -479,10 +479,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 865,
+                    "id": 392,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "110:6:5",
+                    "src": "110:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -493,11 +493,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 868,
+                  "id": 395,
                   "name": "_stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "129:15:5",
+                  "scope": 402,
+                  "src": "129:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -505,10 +505,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 867,
+                    "id": 394,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "129:6:5",
+                    "src": "129:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -519,11 +519,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 870,
+                  "id": 397,
                   "name": "_uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "148:12:5",
+                  "scope": 402,
+                  "src": "148:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -531,10 +531,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 869,
+                    "id": 396,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "148:6:5",
+                    "src": "148:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -544,20 +544,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "89:72:5"
+              "src": "89:72:4"
             },
             "payable": false,
             "returnParameters": {
-              "id": 874,
+              "id": 401,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 873,
+                  "id": 400,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 875,
-                  "src": "178:4:5",
+                  "scope": 402,
+                  "src": "178:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -565,10 +565,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 872,
+                    "id": 399,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "178:4:5",
+                    "src": "178:4:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -578,10 +578,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "177:6:5"
+              "src": "177:6:4"
             },
-            "scope": 886,
-            "src": "63:121:5",
+            "scope": 413,
+            "src": "63:121:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
@@ -589,21 +589,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 885,
+            "id": 412,
             "name": "WorkOrderCallback",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 884,
+              "id": 411,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 877,
+                  "id": 404,
                   "indexed": false,
                   "name": "woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "211:12:5",
+                  "scope": 412,
+                  "src": "211:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -611,10 +611,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 876,
+                    "id": 403,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "211:7:5",
+                    "src": "211:7:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -625,12 +625,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 879,
+                  "id": 406,
                   "indexed": false,
                   "name": "stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "225:13:5",
+                  "scope": 412,
+                  "src": "225:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -638,10 +638,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 878,
+                    "id": 405,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "225:6:5",
+                    "src": "225:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -652,12 +652,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 881,
+                  "id": 408,
                   "indexed": false,
                   "name": "stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "240:13:5",
+                  "scope": 412,
+                  "src": "240:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -665,10 +665,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 880,
+                    "id": 407,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "240:6:5",
+                    "src": "240:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -679,12 +679,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 883,
+                  "id": 410,
                   "indexed": false,
                   "name": "uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 885,
-                  "src": "255:10:5",
+                  "scope": 412,
+                  "src": "255:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -692,10 +692,10 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 882,
+                    "id": 409,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "255:6:5",
+                    "src": "255:6:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string storage pointer"
@@ -705,16 +705,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "210:56:5"
+              "src": "210:56:4"
             },
-            "src": "187:80:5"
+            "src": "187:80:4"
           }
         ],
-        "scope": 887,
-        "src": "26:243:5"
+        "scope": 414,
+        "src": "26:243:4"
       }
     ],
-    "src": "0:270:5"
+    "src": "0:270:4"
   },
   "compiler": {
     "name": "solc",
@@ -722,5 +722,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-04-18T19:16:27.884Z"
+  "updatedAt": "2018-04-22T08:57:50.608Z"
 }

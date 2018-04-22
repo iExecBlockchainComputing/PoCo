@@ -2,6 +2,9 @@
 
 trap catch INT
 
+TESTRPC="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/testrpc"
+TRUFFLE="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/truffle"
+
 function print_style
 {
 	if   [ "$1" == "info"    ]; then COLOR="96m";
@@ -20,7 +23,7 @@ function initialize
 	mkdir -p logs
 	# starting testrpc
 	print_style 'info' "Starting testrpc daemon in a tmux session\n"
-	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c testrpc || exit 1
+	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c $TESTRPC || exit 1
 }
 function finalize
 {
@@ -42,7 +45,7 @@ function runCompile
 	# compile contracts
 	logfile="logs/compile.$date.log"
 	printf "Compiling ... "
-	truffle compile > $logfile 2>&1
+	$TRUFFLE compile > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
 		print_style 'danger' "failure\n"
@@ -59,7 +62,7 @@ function runDeploy
 	# try deploying contracts
 	logfile="logs/deploy.$date.log"
 	printf "Deploying ... "
-	truffle deploy > $logfile 2>&1
+	$TRUFFLE deploy > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
 		print_style 'danger' "failure\n"
@@ -82,7 +85,7 @@ function runTests
 		if [ "$checkpoint" \> "$filename" ]; then continue; fi
 
 		printf "Starting test ${filename%.*} ... "
-		truffle test $filepath > $logfile 2>&1
+		$TRUFFLE test $filepath > $logfile 2>&1
 		if [[ $? -ne 0 ]];
 		then
 			print_style 'danger' "failure\n"
