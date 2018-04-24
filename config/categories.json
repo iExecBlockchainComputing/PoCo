@@ -1,51 +1,38 @@
 {
   "categories": [{
-      "name": "Mega",
+      "name": "1",
       "description": {
-        "in": "100mo",
-        "out": "100mo"
+        "io": "10mo"
+      },
+      "workClockTimeRef": 30
+    },
+    {
+      "name": "2",
+      "description": {
+        "io": "100mo"
       },
       "workClockTimeRef": 120
     },
     {
-      "name": "MegaPlus",
+      "name": "3",
       "description": {
-        "in": "512mo",
-        "out": "512mo"
+        "io": "250mo"
       },
-      "workClockTimeRef": 300
+      "workClockTimeRef": 900
     },
     {
-      "name": "Giga",
+      "name": "4",
       "description": {
-        "in": "1Go",
-        "out": "1Go"
+        "io": "500mo"
       },
       "workClockTimeRef": 1800
     },
     {
-      "name": "GigaPlus",
+      "name": "5",
       "description": {
-        "in": "5Go",
-        "out": "5Go"
+        "io": "1go"
       },
       "workClockTimeRef": 3600
-    },
-    {
-      "name": "GigaGrande",
-      "description": {
-        "in": "250go",
-        "out": "250go"
-      },
-      "workClockTimeRef": 18000
-    },
-    {
-      "name": "GigaMax",
-      "description": {
-        "in": "500go",
-        "out": "500go"
-      },
-      "workClockTimeRef": 36000
     }
   ]
 }

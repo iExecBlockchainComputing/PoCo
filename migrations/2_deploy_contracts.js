@@ -12,7 +12,6 @@ const readFileAsync = Promise.promisify(fs.readFile);
 // Contracts FULL DEV DEPLOY with new RLC token created
 
 **/
-
 module.exports = function(deployer) {
   let aRLCInstance;
   let aWorkerPoolHubInstance;
@@ -203,14 +202,9 @@ module.exports = function(deployer) {
       return aIexecHub.createCategory(categoriesConfigFileJson.categories[4].name,JSON.stringify(categoriesConfigFileJson.categories[4].description),categoriesConfigFileJson.categories[4].workClockTimeRef);
     })
     .then(categoriesCreated => {
-      console.log("create category : "+categoriesConfigFileJson.categories[5].name);
-      return aIexecHub.createCategory(categoriesConfigFileJson.categories[5].name,JSON.stringify(categoriesConfigFileJson.categories[5].description),categoriesConfigFileJson.categories[5].workClockTimeRef);
-    })
-    .then(categoriesCreated => {
       return aIexecHub.m_categoriesCount.call()
     })
     .then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
     ;
 
-};
-*/
+};*/
