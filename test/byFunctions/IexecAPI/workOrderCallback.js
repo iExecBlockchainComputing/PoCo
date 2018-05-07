@@ -309,7 +309,7 @@ contract('IexecHub', function(accounts) {
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
 
-    txMined = await aIexecAPIInstance.approveIexecHub(200, {
+    txMined = await aIexecAPIInstance.approveIexecHub(200,aRLCInstance.address, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });

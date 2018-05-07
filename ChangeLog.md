@@ -18,6 +18,7 @@ Features:
  * [#16](https://github.com/iExecBlockchainComputing/PoCo/issues/16) add counters info in Hub
 
 Bugfixes:
+* [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) possibly useless RLC address getter
 
 
 ### [v1.0.12](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.12)

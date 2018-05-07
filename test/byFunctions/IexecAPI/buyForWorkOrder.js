@@ -264,7 +264,7 @@ contract('IexecHub', function(accounts) {
     });
     console.log("aIexecAPIInstance created "+aIexecAPIInstance.address);
 
-    txMined = await aIexecAPIInstance.approveIexecHub(200, {
+    txMined = await aIexecAPIInstance.approveIexecHub(200,aRLCInstance.address, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -284,7 +284,7 @@ contract('IexecHub', function(accounts) {
     balance =await aRLCInstance.balanceOf(iExecCloudUser);
 		assert.strictEqual(balance.toNumber(), 500, "check balanceOf iExecCloudUser");
 
-    txMined = await aIexecAPIInstance.withdrawRLCFromIexecAPI(100, {
+    txMined = await aIexecAPIInstance.withdrawRLCFromIexecAPI(100,aRLCInstance.address, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -316,7 +316,7 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(events[0].args.owner, aIexecAPIInstance.address, "check Deposit owner");
 		assert.strictEqual(events[0].args.amount.toNumber(), 200, "check Deposit amount");
 
-    txMined = await aIexecAPIInstance.withdrawRLCFromIexecHub(100, {
+    txMined = await aIexecAPIInstance.withdrawRLCFromIexecHub(100,aRLCInstance.address, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });

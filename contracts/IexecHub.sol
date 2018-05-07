@@ -377,11 +377,6 @@ contract IexecHub
 		);
 	}
 
-	function getRLCAddress() public view returns (address rlcAddress)
-	{
-		return tokenAddress;
-	}
-
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);

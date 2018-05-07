@@ -47,17 +47,17 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		return true;
 	}
 
-	function approveIexecHub(uint256 amount) public onlyOwner returns (bool)
+	function approveIexecHub(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(iexecHubInterface.getRLCAddress());
+		RLC rlc = RLC(rlcAddress);
 		require(rlc.approve(iexecHubAddress, amount));
 		emit ApproveIexecHub(iexecHubAddress, amount);
 		return true;
 	}
 
-	function withdrawRLCFromIexecAPI(uint256 amount) public onlyOwner returns (bool)
+	function withdrawRLCFromIexecAPI(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(iexecHubInterface.getRLCAddress());
+		RLC rlc = RLC(rlcAddress);
 		require(rlc.transfer(msg.sender, amount));
 		emit WithdrawRLCFromIexecAPI(msg.sender, amount);
 		return true;
@@ -70,10 +70,10 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		return true;
 	}
 
-	function withdrawRLCFromIexecHub(uint256 amount) public onlyOwner returns (bool)
+	function withdrawRLCFromIexecHub(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
 	{
 		require(iexecHubInterface.withdraw(amount));
-		require(withdrawRLCFromIexecAPI(amount));
+		require(withdrawRLCFromIexecAPI(amount,rlcAddress));
 		emit WithdrawRLCFromIexecHub(iexecHubAddress, amount);
 		return true;
 	}
