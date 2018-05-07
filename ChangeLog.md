@@ -9,7 +9,7 @@ Features:
 
 Bugfixes:
  * [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): Malicious IexecAPI contract without callback                       [PLANNED in v1.0.13]
- * [#20](https://github.com/iExecBlockchainComputing/PoCo/issues/20): add range on trust param ( 0- n ) and check it in contracts        [PLANNED in v1.0.13]
+
 
 ### v1.0.13 (unreleased)
 
@@ -19,6 +19,7 @@ Features:
 
 Bugfixes:
 * [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) possibly useless RLC address getter
+* [#20](https://github.com/iExecBlockchainComputing/PoCo/issues/20): add range on trust param ( 0- 100 ) and check it in contracts
 
 
 ### [v1.0.12](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.12)
