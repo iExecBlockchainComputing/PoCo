@@ -63,18 +63,18 @@ module.exports = function(deployer) {
     .then(instance => {
       aIexecHub = instance;
       console.log("IexecHub deployed at address: " + aIexecHub.address);
-      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+      return aWorkerPoolHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of WorkerPoolHub to IexecHub");
-      return aAppHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
+      return aAppHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of AppHub to IexecHub");
-      return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of AppHub to IexecHub");
+      return aDatasetHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of DatasetHub to IexecHub");
+      console.log("setImmutableOwnership of DatasetHub to IexecHub");
       return deployer.deploy(Marketplace, aIexecHub.address);
     })
     .then(() => Marketplace.deployed())
@@ -152,18 +152,18 @@ module.exports = function(deployer) {
     .then(instance => {
       aIexecHub = instance;
       console.log("IexecHub deployed at address: " + aIexecHub.address);
-      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+      return aWorkerPoolHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of WorkerPoolHub to IexecHub");
-      return aAppHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
+      return aAppHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of AppHub to IexecHub");
-      return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of AppHub to IexecHub");
+      return aDatasetHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of DatasetHub to IexecHub");
+      console.log("setImmutableOwnership of DatasetHub to IexecHub");
       return deployer.deploy(Marketplace, aIexecHub.address);
     })
     .then(() => Marketplace.deployed())

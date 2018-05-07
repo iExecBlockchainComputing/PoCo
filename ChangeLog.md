@@ -4,7 +4,6 @@
 Features:
  * [#17](https://github.com/iExecBlockchainComputing/PoCo/issues/17): do not revert bad reveal but store it to a wrong status            [POST V2]
  * [#19](https://github.com/iExecBlockchainComputing/PoCo/issues/19): MarketOrder (Direction & Status)                                   [GO/NOGO]
- * [#21](https://github.com/iExecBlockchainComputing/PoCo/issues/21): remove change ownership in OwnableOZ.sol                           [PLANNED in v1.0.13]
  * [#22](https://github.com/iExecBlockchainComputing/PoCo/issues/22): allow to deposit on someone else's account                         [GO/NOGO]
  * [#23](https://github.com/iExecBlockchainComputing/PoCo/issues/23): rename createMarketOrder => createOrder || createWorkOrder         [GO/NOGO]
 
@@ -16,6 +15,7 @@ Bugfixes:
 
 Features:
  * [#16](https://github.com/iExecBlockchainComputing/PoCo/issues/16) add counters info in Hub
+ * [#21](https://github.com/iExecBlockchainComputing/PoCo/issues/21): remove change ownership in OwnableOZ.sol   
 
 Bugfixes:
 * [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) possibly useless RLC address getter

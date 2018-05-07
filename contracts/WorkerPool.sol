@@ -83,7 +83,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		// tx.origin == owner
 		// msg.sender ==  WorkerPoolHub
 		require(tx.origin != msg.sender);
-		transferOwnership(tx.origin); // owner → tx.origin
+		setImmutableOwnership(tx.origin); // owner → tx.origin
 
 		m_description                    = _description;
 		m_stakeRatioPolicy               = 30; // % of the work order price to stake

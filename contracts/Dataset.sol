@@ -27,7 +27,7 @@ contract Dataset is OwnableOZ, IexecHubAccessor
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender);
-		transferOwnership(tx.origin); // owner → tx.origin
+		setImmutableOwnership(tx.origin); // owner → tx.origin
 
 		m_datasetName   = _datasetName;
 		m_datasetPrice  = _datasetPrice;

@@ -159,23 +159,23 @@ contract('IexecHub', function(accounts) {
     console.log("aIexecHubInstance.address is ");
     console.log(aIexecHubInstance.address);
 
-    txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of WorkerPoolHub to IexecHub");
+    console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
 
-    txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of AppHub to IexecHub");
+    console.log("setImmutableOwnership of AppHub to IexecHub");
 
-    txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of DatasetHub to IexecHub");
+    console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
     aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, {
       from: marketplaceCreator

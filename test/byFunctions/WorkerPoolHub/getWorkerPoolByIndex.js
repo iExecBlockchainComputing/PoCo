@@ -174,7 +174,7 @@ contract('IexecHub', function(accounts) {
 
     // USE marketplaceCreator as owner for test. In real deployement ownership is :
     /*
-        txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+        txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
           from: marketplaceCreator
         });
     */
