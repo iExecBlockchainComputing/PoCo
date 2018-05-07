@@ -47,7 +47,6 @@ contract Marketplace is IexecHubAccessor
 	{
 		require(iexecHubInterface.existingCategory(_category));
 		require(_volume >0);
-		require(_trust <=100);
 		m_orderCount = m_orderCount.add(1);
 		IexecLib.MarketOrder storage marketorder    = m_orderBook[m_orderCount];
 		marketorder.direction      = _direction;
