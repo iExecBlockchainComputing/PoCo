@@ -7,6 +7,8 @@ var WorkerPool     = artifacts.require("./WorkerPool.sol");
 var App            = artifacts.require("./App.sol");
 var WorkOrder      = artifacts.require("./WorkOrder.sol");
 var Marketplace    = artifacts.require("./Marketplace.sol");
+var IexecAPI = artifacts.require("./IexecAPI.sol");
+var CallbackProof = artifacts.require("./CallbackProof.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");

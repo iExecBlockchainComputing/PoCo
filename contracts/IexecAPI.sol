@@ -13,12 +13,16 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	event DepositRLCOnIexecHub   (address iexecHub, uint256 amount);
 	event WithdrawRLCFromIexecHub(address iexecHub, uint256 amount);
 
+	address public m_callbackProofAddress;
+	address public m_rlcAddress;
+
 	// Constructor
-	function IexecAPI(address _iexecHubAddress)
+	function IexecAPI(address _iexecHubAddress,address _callbackProofAddress, address _rlcAddress)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
-
+    m_callbackProofAddress=_callbackProofAddress;
+		m_rlcAddress =_rlcAddress;
 	}
 
 	function buyForWorkOrder(
@@ -42,22 +46,22 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		string  _uri)
 	public returns (bool)
 	{
-		require(msg.sender == _woid);
+		require(msg.sender == m_callbackProofAddress);
 		emit WorkOrderCallback(_woid, _stdout, _stderr, _uri);
 		return true;
 	}
 
-	function approveIexecHub(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
+	function approveIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(rlcAddress);
+		RLC rlc = RLC(m_rlcAddress);
 		require(rlc.approve(iexecHubAddress, amount));
 		emit ApproveIexecHub(iexecHubAddress, amount);
 		return true;
 	}
 
-	function withdrawRLCFromIexecAPI(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
+	function withdrawRLCFromIexecAPI(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(rlcAddress);
+		RLC rlc = RLC(m_rlcAddress);
 		require(rlc.transfer(msg.sender, amount));
 		emit WithdrawRLCFromIexecAPI(msg.sender, amount);
 		return true;
@@ -70,10 +74,10 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		return true;
 	}
 
-	function withdrawRLCFromIexecHub(uint256 amount, address rlcAddress) public onlyOwner returns (bool)
+	function withdrawRLCFromIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
 		require(iexecHubInterface.withdraw(amount));
-		require(withdrawRLCFromIexecAPI(amount,rlcAddress));
+		require(withdrawRLCFromIexecAPI(amount));
 		emit WithdrawRLCFromIexecHub(iexecHubAddress, amount);
 		return true;
 	}

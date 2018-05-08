@@ -9,6 +9,7 @@ var WorkOrder = artifacts.require("./WorkOrder.sol");
 var IexecLib = artifacts.require("./IexecLib.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var IexecAPI = artifacts.require("./IexecAPI.sol");
+var CallbackProof = artifacts.require("./CallbackProof.sol");
 
 const Promise = require("bluebird");
 const fs = require("fs-extra");
@@ -46,6 +47,7 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aMarketplaceInstance;
+  let aCallbackProofInstance;
 
   //specific for test :
   let workerPoolAddress;
@@ -55,7 +57,7 @@ contract('IexecHub', function(accounts) {
   let aAppInstance;
   let aWorkOrderInstance;
 
-  before("should prepare accounts and check TestRPC Mode", async() => {
+  beforeEach("should prepare accounts and check TestRPC Mode", async() => {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
     scheduleProvider = accounts[0];
     resourceProvider = accounts[1];
@@ -148,6 +150,12 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
 
     // INIT SMART CONTRACTS BY marketplaceCreator
+    aCallbackProofInstance = await CallbackProof.new({
+      from: marketplaceCreator
+    });
+    console.log("aCallbackProofInstance.address is ");
+    console.log(aCallbackProofInstance.address);
+
     aWorkerPoolHubInstance = await WorkerPoolHub.new({
       from: marketplaceCreator
     });
@@ -304,12 +312,12 @@ contract('IexecHub', function(accounts) {
   it("workOrderCallback_01: test workOrderCallback from a smart contract", async function() {
 
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aCallbackProofInstance.address,aRLCInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
 
-    txMined = await aIexecAPIInstance.approveIexecHub(200,aRLCInstance.address, {
+    txMined = await aIexecAPIInstance.approveIexecHub(200, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -479,6 +487,13 @@ contract('IexecHub', function(accounts) {
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
     assert.strictEqual(checkBalance[0].toNumber(), 101, "check stake of the scheduleProvider. 100 unlocked + won 1% of price");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
+
+
+    txMined = await aCallbackProofInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
+      from: scheduleProvider,
+      gas: constants.AMOUNT_GAS_PROVIDED
+    });
+    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 
 		events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderCallback({}), 1, constants.EVENT_WAIT_TIMEOUT);

@@ -3,9 +3,10 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
+var CallbackProof = artifacts.require("./CallbackProof.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-const fs              = require("fs-extra");
-const Promise         = require("bluebird");
+const fs = require("fs-extra");
+const Promise = require("bluebird");
 const readFileAsync = Promise.promisify(fs.readFile);
 /**
 
@@ -14,14 +15,20 @@ const readFileAsync = Promise.promisify(fs.readFile);
 **/
 module.exports = function(deployer) {
   let aRLCInstance;
+  let aCallbackProofInstance;
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aIexecHub;
   let aMarketplaceInstance;
   let creator;
-
-  return deployer.deploy(RLC)
+  return deployer.deploy(CallbackProof)
+    .then(() => CallbackProof.deployed())
+    .then(instance => {
+      aCallbackProofInstance = instance;
+      console.log("CallbackProof deployed at address: " + instance.address);
+      return deployer.deploy(RLC);
+    })
     .then(() => RLC.deployed())
     .then(instance => {
       aRLCInstance = instance;
@@ -81,7 +88,7 @@ module.exports = function(deployer) {
     .then(instance => {
       aMarketplaceInstance = instance;
       console.log("Marketplace deployed at address: " + instance.address);
-      return aIexecHub.attachContracts(aRLCInstance.address,aMarketplaceInstance.address,aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
+      return aIexecHub.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
 
     })
     .then(() => {
@@ -89,23 +96,22 @@ module.exports = function(deployer) {
       return aIexecHub.setCategoriesCreator(creator);
     })
     .then(() => {
-      console.log("setCategoriesCreator to "+creator);
+      console.log("setCategoriesCreator to " + creator);
       return readFileAsync("./config/categories.json");
     })
     .then(categories => {
       var categoriesConfigFileJson = JSON.parse(categories);
       catagoriesPromises = [];
-      for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
-        console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef));
+      for (var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+        console.log("create category : " + categoriesConfigFileJson.categories[i].name);
+        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name, JSON.stringify(categoriesConfigFileJson.categories[i].description), categoriesConfigFileJson.categories[i].workClockTimeRef));
       }
       return Promise.all(catagoriesPromises);
     })
     .then(categoriesCreated => {
       return aIexecHub.m_categoriesCount.call()
     })
-    .then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
-    ;
+    .then(m_categoriesCount => console.log("m_categoriesCount is now: " + m_categoriesCount));
 };
 
 /**
@@ -129,7 +135,13 @@ module.exports = function(deployer) {
   let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
   aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
 
-  return deployer.deploy(WorkerPoolHub)
+  return deployer.deploy(CallbackProof)
+    .then(() => CallbackProof.deployed())
+    .then(instance => {
+      aCallbackProofInstance = instance;
+      console.log("CallbackProof deployed at address: " + instance.address);
+      return deployer.deploy(WorkerPoolHub);
+    })
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
