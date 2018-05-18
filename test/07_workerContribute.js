@@ -181,7 +181,7 @@ contract('IexecHub', function(accounts) {
 		console.log("attachMarketplace to IexecHub");
 
 		// INIT categories in MARKETPLACE
-		txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
+		txMined = await aIexecHubInstance.transferOwnership(marketplaceCreator, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -344,22 +344,14 @@ contract('IexecHub', function(accounts) {
 			from: resourceProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
+
 		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
 		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 40 (30 + 10 earlier)");
 		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 0");
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-		m_workerStake = await aWorkerPoolInstance.contribute.call(woid, signed.hash, signed.sign, 0, 0, 0, {
-			from: resourceProvider,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.strictEqual(m_workerStake.toNumber(), 30, "30% of 100 (price) = 30 will be lock for resourceProvider");
 
-		checkBalance = await aIexecHubInstance.checkBalance.call(resourceProvider);
-		assert.strictEqual(checkBalance[0].toNumber(), 40, "check stake of the resourceProvider: 30 (including 10 of initial stake)");
-		assert.strictEqual(checkBalance[1].toNumber(),  0, "check stake locked of the resourceProvider: 10 from lock at workerpool subscription");
-		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
 		txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, 0, 0, 0, {
 			from: resourceProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED

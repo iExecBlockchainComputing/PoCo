@@ -229,12 +229,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 	{
 		WorkOrder workorder = WorkOrder(_woid);
 
-		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(workorder.m_category()).mul(CONSENSUS_DURATION_RATIO).add(now);
+		uint256 workClockTimeRef;
+		(,,workClockTimeRef) = iexecHubInterface.getCategory(workorder.m_category());
+
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		consensus.poolReward      = workorder.m_value();
 		consensus.workerpoolOwner = workorder.m_workerpoolOwner();
 		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
-		consensus.consensusTimout = timeout;
+		consensus.consensusTimout = workClockTimeRef.mul(CONSENSUS_DURATION_RATIO).add(now);
 
 		emit WorkOrderActive(_woid);
 		return true;
@@ -335,8 +337,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 		}
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
+		uint256 workClockTimeRef;
+		(,,workClockTimeRef) = iexecHubInterface.getCategory(WorkOrder(_woid).m_category());
+
 		consensus.consensus  = _consensus;
-		consensus.revealDate = iexecHubInterface.getCategoryWorkClockTimeRef(WorkOrder(_woid).m_category()).mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
+		consensus.revealDate = workClockTimeRef.mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
 		emit RevealConsensus(_woid, _consensus);
 		return true;
 	}

@@ -165,7 +165,7 @@ contract('IexecHub', function(accounts) {
 		console.log("attachMarketplace to IexecHub");
 
 		// INIT categories in MARKETPLACE
-		txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
+		txMined = await aIexecHubInstance.transferOwnership(marketplaceCreator, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");

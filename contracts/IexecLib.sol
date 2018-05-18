@@ -98,7 +98,6 @@ library IexecLib
 
 	struct Category
 	{
-		uint256 catid;
 		string  name;
 		string  description;
 		uint256 workClockTimeRef;

@@ -87,7 +87,7 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("attach Contracts to IexecHub done");
-      return aIexecHub.setCategoriesCreator(creator);
+      return aIexecHub.transferOwnership(creator);
     })
     .then(() => {
       console.log("setCategoriesCreator to "+creator);

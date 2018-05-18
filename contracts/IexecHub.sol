@@ -15,20 +15,18 @@ import './IexecLib.sol';
  * @title IexecHub
  */
 
-contract IexecHub
+contract IexecHub is OwnableOZ
 {
 	using SafeMathOZ for uint256;
 
 	/**
 	* RLC contract for token transfers.
 	*/
-	RLC     public rlc;
-	address public tokenAddress;
+	RLC public rlc;
 
-	uint256 public constant STAKE_BONUS_RATIO  = 10;
+	uint256 public constant STAKE_BONUS_RATIO         = 10;
 	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
-
-	uint256 public constant SCORE_UNITARY_SLASH = 50;
+	uint256 public constant SCORE_UNITARY_SLASH       = 50;
 
 	/**
 	 * Slaves contracts
@@ -41,10 +39,9 @@ contract IexecHub
 	 * Market place
 	 */
 	Marketplace marketplace;
-	address     public marketplaceAddress;
 	modifier onlyMarketplace()
 	{
-		require(msg.sender == marketplaceAddress);
+		require(msg.sender == address(marketplace));
 		_;
 	}
 	/**
@@ -52,12 +49,6 @@ contract IexecHub
 	 */
 	mapping(uint256 => IexecLib.Category) public m_categories;
 	uint256                               public m_categoriesCount;
-	address                               public m_categoriesCreator;
-	modifier onlyCategoriesCreator()
-	{
-		require(msg.sender == m_categoriesCreator);
-		_;
-	}
 
 	/**
 	 * Escrow
@@ -69,6 +60,8 @@ contract IexecHub
 	 */
 	mapping(address => uint256)  public m_scores;
 	IexecLib.ContributionHistory public m_contributionHistory;
+
+
 
 
 	event WorkOrderActivated(address woid, address indexed workerPool);
@@ -109,22 +102,12 @@ contract IexecHub
 		address _datasetHubAddress)
 	public
 	{
-		require(tokenAddress == address(0));
-		tokenAddress       = _tokenAddress;
-		rlc                = RLC(_tokenAddress);
-
-		marketplaceAddress = _marketplaceAddress;
-		marketplace        = Marketplace(_marketplaceAddress);
-
-		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
-		appHub             = AppHub       (_appHubAddress       );
-		datasetHub         = DatasetHub   (_datasetHubAddress   );
-	}
-
-	function setCategoriesCreator(address _categoriesCreator) public
-	{
-		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
-		m_categoriesCreator = _categoriesCreator;
+		require(address(rlc) == address(0));
+		rlc           = RLC          (_tokenAddress        );
+		marketplace   = Marketplace  (_marketplaceAddress  );
+		workerPoolHub = WorkerPoolHub(_workerPoolHubAddress);
+		appHub        = AppHub       (_appHubAddress       );
+		datasetHub    = DatasetHub   (_datasetHubAddress   );
 	}
 
 	/**
@@ -135,14 +118,16 @@ contract IexecHub
 		string  _name,
 		string  _description,
 		uint256 _workClockTimeRef)
-	public onlyCategoriesCreator returns (uint256 catid)
+	/* public onlyOwner returns (uint256 catid) */
+	public returns (uint256 catid)
 	{
 		m_categoriesCount                  = m_categoriesCount.add(1);
+
 		IexecLib.Category storage category = m_categories[m_categoriesCount];
-		category.catid                     = m_categoriesCount;
 		category.name                      = _name;
 		category.description               = _description;
 		category.workClockTimeRef          = _workClockTimeRef;
+
 		emit CreateCategory(m_categoriesCount, _name, _description, _workClockTimeRef);
 		return m_categoriesCount;
 	}
@@ -379,35 +364,22 @@ contract IexecHub
 	/**
 	 * Views
 	 */
-	function getCategoryWorkClockTimeRef(uint256 _catId) public view returns (uint256 workClockTimeRef)
+
+	function existingCategory(uint256 _catid) public view  returns (bool categoryExist)
 	{
-		require(existingCategory(_catId));
-		return m_categories[_catId].workClockTimeRef;
+		return _catid <= m_categoriesCount;
 	}
 
-	function existingCategory(uint256 _catId) public view  returns (bool categoryExist)
+	function getCategory(uint256 _catid) public view returns (string name, string  description, uint256 workClockTimeRef)
 	{
-		return m_categories[_catId].catid > 0;
-	}
-
-	function getCategory(uint256 _catId) public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef)
-	{
-		require(existingCategory(_catId));
+		require(existingCategory(_catid));
 		return (
-		m_categories[_catId].catid,
-		m_categories[_catId].name,
-		m_categories[_catId].description,
-		m_categories[_catId].workClockTimeRef
+			m_categories[_catid].name,
+			m_categories[_catid].description,
+			m_categories[_catid].workClockTimeRef
 		);
 	}
-	/**
-	 * Not enough gas
-	 **
-	function getRLCAddress() public view returns (address rlcAddress)
-	{
-		return tokenAddress;
-	}
-	*/
+
 	function getWorkerStatus(address _worker) public view returns (address workerPool, uint256 workerScore)
 	{
 		return (workerPoolHub.getWorkerAffectation(_worker), m_scores[_worker]);

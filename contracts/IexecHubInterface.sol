@@ -6,12 +6,6 @@ contract IexecHubInterface
 		address _marketplaceAddress)
 	public;
 
-	function setCategoriesCreator(
-		address _categoriesCreator)
-	public;
-
-
-
 	function createCategory(
 		string  _name,
 		string  _description,
@@ -84,17 +78,13 @@ contract IexecHubInterface
 		string  _uri)
 	public returns (bool);
 
-	function getCategoryWorkClockTimeRef(
-		uint256 _catId)
-	public view returns (uint256 workClockTimeRef);
-
 	function existingCategory(
 		uint256 _catId)
 	public view  returns (bool categoryExist);
 
 	function getCategory(
-		uint256 _catId)
-	public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef);
+		uint256 _catid)
+	public view returns (string name, string  description, uint256 workClockTimeRef);
 
 	function getWorkerStatus(
 		address _worker)
