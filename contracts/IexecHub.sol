@@ -118,8 +118,8 @@ contract IexecHub is OwnableOZ
 		string  _name,
 		string  _description,
 		uint256 _workClockTimeRef)
-	/* public onlyOwner returns (uint256 catid) */
-	public returns (uint256 catid)
+	public onlyOwner returns (uint256 catid)
+	/* public returns (uint256 catid) */
 	{
 		m_categoriesCount                  = m_categoriesCount.add(1);
 
