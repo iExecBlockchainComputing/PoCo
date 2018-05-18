@@ -64,6 +64,12 @@ contract IexecHub
 	 */
 	mapping(address => IexecLib.Account) public m_accounts;
 
+
+	/**
+	 * workOrder Registered
+	 */
+	mapping(address => bool) public m_woidRegistered;
+
 	/**
 	 * Reputation for PoCo
 	 */
@@ -116,6 +122,7 @@ contract IexecHub
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
+
 	}
 
 	function setCategoriesCreator(address _categoriesCreator) public
@@ -222,10 +229,17 @@ contract IexecHub
 			_beneficiary
 		);
 
+		m_woidRegistered[workorder] = true;
+
 		require(WorkerPool(_workerpool).emitWorkOrder(workorder, _marketorderIdx));
 
 		emit WorkOrderActivated(workorder, _workerpool);
 		return workorder;
+	}
+
+	function isWoidRegistred(address _woid) public view returns (bool)
+	{
+		return m_woidRegistered[_woid];
 	}
 
 	function lockWorkOrderCost(
@@ -264,6 +278,7 @@ contract IexecHub
 
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		WorkOrder  workorder  = WorkOrder(_woid);
 		require(workorder.m_requester() == msg.sender);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());

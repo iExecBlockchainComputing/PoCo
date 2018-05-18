@@ -79,57 +79,50 @@ Saving artifacts...
       /*
       Using network 'rinkeby'.
 
-      Running migration: 1_initial_migration.js
-        Deploying Migrations...
-        ... 0x13171ebc1d23e5e5033c536e69021e6d56418cbd472f0cc66f796a6478bcf8b4
-        Migrations: 0x45cbd2d0e9a913f17669f226727b1849ff7bfcb7
-      Saving successful migration to network...
-        ... 0x22585c3899a99ad6547c48d109621fb73fbea1006f72c5eb22bcc323286f31e6
-      Saving artifacts...
       Running migration: 2_deploy_contracts.js
         Deploying WorkerPoolHub...
-        ... 0x3db74ce812efda0e43c9bb3105c59116f116f9797e55d3231e0a8cf4d86fbddb
-        WorkerPoolHub: 0xce72d26a3bf413c76254e6d6af9745ff11383135
-      WorkerPoolHub deployed at address: 0xce72d26a3bf413c76254e6d6af9745ff11383135
+        ... 0x643cf135a3d9400426d9be9c7e131e400f07c679caf1caecf3eed769eb702d40
+        WorkerPoolHub: 0x24f4c2d90a12939427e18a47702b468729e7b522
+      WorkerPoolHub deployed at address: 0x24f4c2d90a12939427e18a47702b468729e7b522
         Deploying AppHub...
-        ... 0xae81343bafb8a275a59f84a6d20221364b9d37100f450a49792c1c0fc5bbd7f3
-        AppHub: 0x71cb68b0d9bf2b4a03c2caa6ea54773ba413163f
-      AppHub deployed at address: 0x71cb68b0d9bf2b4a03c2caa6ea54773ba413163f
+        ... 0x5dd318fec365f35d58b3bc98335896bac61064957a8a3a62eea67ea1ab463e69
+        AppHub: 0xd59b85ebe967474915ac9d4c4ef58294d713609e
+      AppHub deployed at address: 0xd59b85ebe967474915ac9d4c4ef58294d713609e
         Deploying DatasetHub...
-        ... 0xbb70e28561843a385dc2afdf2baa81da69769e46f536ec9f1fd72dd34373bc98
-        DatasetHub: 0x07e12c896a86c54ad0a068fca5f0d0cd9e02aba0
-      DatasetHub deployed at address: 0x07e12c896a86c54ad0a068fca5f0d0cd9e02aba0
+        ... 0xacfb98da7a168711e19942bb151e4a1c780dbd19084b432f0e1ca363f360c211
+        DatasetHub: 0xf7ef6b1052ad2d7a8400cb2a9bfec1dd5e1eac90
+      DatasetHub deployed at address: 0xf7ef6b1052ad2d7a8400cb2a9bfec1dd5e1eac90
         Deploying IexecHub...
-        ... 0x84a1182aa50da0649342b54ad837bf37dcb9c46ccd7d6547391e4a5daee77638
-        IexecHub: 0x0439c512222d00c0e197d9b4f8bce6198a9902e4
-      IexecHub deployed at address: 0x0439c512222d00c0e197d9b4f8bce6198a9902e4
-        ... 0xcf672d6dcac0ec9105ea0a324a90f30b8229e34883b02a834ec72c4c16cce33d
-      transferOwnership of WorkerPoolHub to IexecHub
-        ... 0x6547118e2fc0be1f2d8c44a8c1f335a9293100f814ddd66a1584580b9bf1af48
-      transferOwnership of AppHub to IexecHub
-        ... 0x12d9d882199d0a67a24085ccaace9bbe821021ab55ec051fc951615925b854a5
-      transferOwnership of DatasetHub to IexecHub
+        ... 0x09d0a1915e2c7168ebefd6675d5945dc4c96accaa47f05aeb9ebbec4ce0aba93
+        IexecHub: 0x745a85b596784dd0883874ac2f38434d604b9331
+      IexecHub deployed at address: 0x745a85b596784dd0883874ac2f38434d604b9331
+        ... 0x9e3dc4ac6821b3b73bdd4c59a23c0e0af2657525ec1f8714a01b928efb28a9ab
+      setImmutableOwnership of WorkerPoolHub to IexecHub
+        ... 0x9061206f92b523a4cc837391aa82e0246ba02488df86fab980df93a9c7610a92
+      setImmutableOwnership of AppHub to IexecHub
+        ... 0xec23009bae74446501f5894916478742b0143ad754c2ee4dcc5f99ed30eb7533
+      setImmutableOwnership of DatasetHub to IexecHub
         Deploying Marketplace...
-        ... 0xf33d9f86bd2ad148266888584474820ca71fc78176aaad827428e5579a1d2421
-        Marketplace: 0xfdb29ec352ad5efea3fad3cf1eeb6f9e61a1c1c7
-      Marketplace deployed at address: 0xfdb29ec352ad5efea3fad3cf1eeb6f9e61a1c1c7
-        ... 0x64a2ea020d7c63d9f1cc32fececa6385256542631ecc275dd1641fd0eef900dd
+        ... 0x708fa3d5838eaf3dd1137ad3c32f05f086601a4392f67eec6dff6a04387c7e00
+        Marketplace: 0x9ef1031cd9bc4d5d89aee514381b609cf234eab2
+      Marketplace deployed at address: 0x9ef1031cd9bc4d5d89aee514381b609cf234eab2
+        ... 0x1db6b209ad8ef783c5f1aa5ca36adc59318afb0abaf89b07880cae837a96185a
       attach Contracts to IexecHub done
-        ... 0x7d4e46de74449f36a5c067a2730eff136f162c27f363318987ee098608408f7a
+        ... 0x009a2692a1d22038f3e47e86efb9a3425748b0fd6aae5ed470563be5e2872ca5
       setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
       create category : 1
-        ... 0xb26231545fa9c49491bb9e264abe07e7db1dfa7649ee6a99dba30d6ca538f81d
+        ... 0x5ae267c5a52afda83e42d97d22040edfb2815c8145ab852412de76d831f2d613
       create category : 2
-        ... 0x1e252ff8857710990be91fef28088ac220008f3c810642753759b63cea912a20
+        ... 0x63bfe2dd2dec2a0a09dd5ab8d9a78f976fe20486e9a111fc20e9ebba6757d449
       create category : 3
-        ... 0x25b1d2e75350e1ae19d25d828efe140e464eb67bd73fa63e966f11af1c77aa05
+        ... 0xaceae403a13085d61cf21cc57c19a2957e63f56e346c91510dac6d4e0698df10
       create category : 4
-        ... 0x81cbc28d564675748defa7c5425e827a51b80a0cd2755d2920d8e1b958af90ad
+        ... 0x2b447a4d45d35b1b4e1fd0ee5987e9ff24035b4dfc3e3e72e00f307f6003dfaa
       create category : 5
-        ... 0x9ac6b88e1a345a2e21c71cf1f8740c0f06644df14e3d80be6b6b93ec8f2632e4
+        ... 0xd6043dc27e26b30e279818bed273b436918ba4c56f51c4d802894f4752136c0f
       m_categoriesCount is now: 5
       Saving successful migration to network...
-        ... 0x043526e478270f90fdb2c949de758d2d33f322b7833ac0d8020087e31b319193
+        ... 0x7d3fced57dcf9f094a4a6f4fd7330fec2d46a456b82d09fc651bf6a9af7ebf5e
       Saving artifacts...
       */
     },
@@ -141,58 +134,58 @@ Saving artifacts...
       /*
       Using network 'kovan'.
 
-      Running migration: 1_initial_migration.js
-        Deploying Migrations...
-        ... 0xba892965edfbf968f96a19b1de8796241791cd8851f151da53d1cffb61c9e0be
-        Migrations: 0x76b8c862234eb74aaa030c68f01c8d4baaeee5ee
-      Saving successful migration to network...
-        ... 0xc5d72ca17f82ec08696e349ad6ef5f244e6d2d7458b4cd519176e1915764ba86
-      Saving artifacts...
-      Running migration: 2_deploy_contracts.js
-        Deploying WorkerPoolHub...
-        ... 0xcfe9554fa8a29889afd7a25dd50a308549f7512b9706f18a6abe0361946abe19
-        WorkerPoolHub: 0x09e045d87158a06035d0204d13cc9199779a233d
-      WorkerPoolHub deployed at address: 0x09e045d87158a06035d0204d13cc9199779a233d
-        Deploying AppHub...
-        ... 0x1b49c194175d9debed9c88760e6994f0026d2fc302efdadf0bf7729f9b0464a1
-        AppHub: 0xab9f3c7737caa21421046f0d453ef792c9d9667c
-      AppHub deployed at address: 0xab9f3c7737caa21421046f0d453ef792c9d9667c
-        Deploying DatasetHub...
-        ... 0xbfb5913f0a958aa892366bffb12a12ea9da5a69a1448d6db093ee829b73d336e
-        DatasetHub: 0x4d4f1096e353b288b7f815a3c0bb878b3e0fa930
-      DatasetHub deployed at address: 0x4d4f1096e353b288b7f815a3c0bb878b3e0fa930
-        Deploying IexecHub...
-        ... 0x53392c4d4a16a723751578c32e9045e466a37a894e8c964375d53a7104922f85
-        IexecHub: 0xd6fac685e694fcfb60738fa50bac7cd4c0bad7db
-      IexecHub deployed at address: 0xd6fac685e694fcfb60738fa50bac7cd4c0bad7db
-        ... 0x449e1e8454492b5a30dce570bd2df29a2d4a888f443af4b7906babdfaf638f22
-      transferOwnership of WorkerPoolHub to IexecHub
-        ... 0x27e926baf1d3bcbc0de60a2762f0ef6499eda7a7d89084df1a03fd9f71c3c255
-      transferOwnership of AppHub to IexecHub
-        ... 0x3559b3c8a96d9e8a95efda24f515d7c4b2562a4419dd7d244de406025c06f061
-      transferOwnership of DatasetHub to IexecHub
-        Deploying Marketplace...
-        ... 0xa13fbf77364049cc20126a520dd578fbc6d774eeb2a05c53b66fb0c64a9e45a2
-        Marketplace: 0x32aedc290604f7a674781b232143b837a358d711
-      Marketplace deployed at address: 0x32aedc290604f7a674781b232143b837a358d711
-        ... 0xb66225b86ec8c181307144bb832fe3a18a92133939fcb3bc16817e66aabb0072
-      attach Contracts to IexecHub done
-        ... 0x855c7f5b8dba04b4818a08b512e850313f2451233df7a7b73d0f6ad52a1efd9a
-      setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
-      create category : 1
-        ... 0xf7d35be5c6028761ad4c47a4fd8d4a5ed97bcd573c81d9ffe965b4d4cf9defba
-      create category : 2
-        ... 0x3c2e1987d78201a7b3ed96bebea5ea67aa97d4cdf38d0a53ffcda94900659a02
-      create category : 3
-        ... 0x8a0a60b793a41c422037adbf48aac74dea09b367f51a7ffb0466b08f70981daf
-      create category : 4
-        ... 0x1c9bfc3d2a117293bfcc60766ea3c7c8b610a6d624fadc1d713ded994694b319
-      create category : 5
-        ... 0xf07396c4bd2400567b8d0d1f9ca13677d52002ec2293862dc06bfe9ac3ba2c2e
-      m_categoriesCount is now: 5
-      Saving successful migration to network...
-        ... 0xba462b16c8f8573b2b8764d53c30460b13a0f8a9720829f8447411b54acfddd9
-      Saving artifacts...
+      Running migration: 1_initial_migration.js                                                                                                                                               [0/1923]
+      Deploying Migrations...
+      ... 0x776e7a94bd8bfd25368397fb52f708da383d7e7b6c56025c5cdcd3379e7abc1f
+      Migrations: 0x01df6cdb1c9c4fc061e1310331518727468e1ed1
+    Saving successful migration to network...
+      ... 0x5f6bea9735f873ef3c44bf9f1feae71e5aee0a8a0d69834095dd2703b31c74cf
+    Saving artifacts...
+    Running migration: 2_deploy_contracts.js
+      Deploying WorkerPoolHub...
+      ... 0xb5b4edc991a3784537e37c16e580925afe3b074fd90943bade43f35fbfbe273e
+      WorkerPoolHub: 0x09890378fca09f564113a163b04f926e3fb1cce3
+    WorkerPoolHub deployed at address: 0x09890378fca09f564113a163b04f926e3fb1cce3
+      Deploying AppHub...
+      ... 0x6a94befac5d5fc228ae374f5915938319b46a4151bfb471094eb28f8a74228d4
+      AppHub: 0xaeeded79c9167f1980685eed90bb3a18c3186408
+    AppHub deployed at address: 0xaeeded79c9167f1980685eed90bb3a18c3186408
+      Deploying DatasetHub...
+      ... 0x62a82b8dbf56cf47c4c29d4f84743d1debda942a008e14dc1237b86d7aec26d1
+      DatasetHub: 0xf2dfcc63eafc1fcd37c3b92f3263374f7d6c6d56
+    DatasetHub deployed at address: 0xf2dfcc63eafc1fcd37c3b92f3263374f7d6c6d56
+      Deploying IexecHub...
+      ... 0xa6f40c0874dcd149347e4a8a755260a0ade3458fbe359a5811a13139b36f8405
+      IexecHub: 0x33229f7f4213b66f85126f06d9239a36da6e3003
+    IexecHub deployed at address: 0x33229f7f4213b66f85126f06d9239a36da6e3003
+      ... 0x4ca68a22490c148108e0c54e46bbf66dab383ebe4cd972929c071844d2f2bd50
+    setImmutableOwnership of WorkerPoolHub to IexecHub
+      ... 0xfbf1041bb751c1f88a7b5917a128892ff174500f163183fb09a08d79158177c9
+    setImmutableOwnership of AppHub to IexecHub
+      ... 0x242b2b1d44df4eec982ebac4f5528447f53a6dc789dbd35bca9ab54a3de35b47
+    setImmutableOwnership of DatasetHub to IexecHub
+      Deploying Marketplace...
+      ... 0xc56ee95a08c3d1a8b7f5ae604d58e1f35aca20967ee53e53b5a244eebd1bed65
+      Marketplace: 0x1f4629a34c67c0f483e3fb9da40ac2dd4b7c08e0
+    Marketplace deployed at address: 0x1f4629a34c67c0f483e3fb9da40ac2dd4b7c08e0
+      ... 0x3fda876fd1ce03a3253ad913d3174f75d5b5587be5d3af8e389faf46e867e7f6
+    attach Contracts to IexecHub done
+      ... 0xcf78b6608ab2551fbe04d743b6b26e835e7e92f76af382ecddd1dadc74fafe37
+    setCategoriesCreator to 0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC
+    create category : 1
+      ... 0x3e27af69957287b536241745b31c6f61e421084bf1a751a8def62563dee7ee27
+    create category : 2
+      ... 0xc13369b4554d26f513d56a8a829b0ee2685346f1f4b535235998acbfa64c1345
+    create category : 3
+      ... 0x90dfb98a3f4064cf8af7788efce0a3b3f7202ac02dec589dc9047f2515e2b11b
+    create category : 4
+      ... 0x04407b2e5d5e0ca9c8c1539d5b038a6f365707832e9bbbc875f17f0b30c8ebbd
+    create category : 5
+      ... 0x48278a42902d576c7f27470c039e45155017794b06834a0a5982ac223989cdb3
+    m_categoriesCount is now: 5
+    Saving successful migration to network...
+      ... 0x7048baed63946823e8f0a7b207695dfbb3d7df4bd82f0ff221ede9f8cc51d646
+    Saving artifacts...
       */
 
 

@@ -9,7 +9,7 @@ var WorkOrder = artifacts.require("./WorkOrder.sol");
 var IexecLib = artifacts.require("./IexecLib.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var IexecAPI = artifacts.require("./IexecAPI.sol");
-var CallbackProof = artifacts.require("./CallbackProof.sol");
+
 
 const Promise = require("bluebird");
 const fs = require("fs-extra");
@@ -47,7 +47,6 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aMarketplaceInstance;
-  let aCallbackProofInstance;
 
   //specific for test :
   let workerPoolAddress;
@@ -150,11 +149,6 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
 
     // INIT SMART CONTRACTS BY marketplaceCreator
-    aCallbackProofInstance = await CallbackProof.new({
-      from: marketplaceCreator
-    });
-    console.log("aCallbackProofInstance.address is ");
-    console.log(aCallbackProofInstance.address);
 
     aWorkerPoolHubInstance = await WorkerPoolHub.new({
       from: marketplaceCreator
@@ -311,8 +305,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_01: test workOrderCallback from a smart contract", async function() {
 
-
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aCallbackProofInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -491,24 +484,24 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[0].toNumber(), 101, "check stake of the scheduleProvider. 100 unlocked + won 1% of price");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
 
-    isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+    isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
       from: iExecCloudUser
     });
     assert.strictEqual(isCallbackDone, false, "check isCallbackDone false");
 
 
-    txMined = await aCallbackProofInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
+    txMined = await aMarketplaceInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
       from: scheduleProvider,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+    isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
       from: iExecCloudUser
     });
     assert.strictEqual(isCallbackDone, true, "check isCallbackDone true");
 
-    events = await Extensions.getEventsPromise(aCallbackProofInstance.WorkOrderCallbackProof({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.WorkOrderCallbackProof({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "check  woid");
     assert.strictEqual(events[0].args.requester, aIexecAPIInstance.address, "check  requester = aIexecAPIInstance");
     assert.strictEqual(events[0].args.beneficiary, marketplaceCreator, "check  beneficiary = marketplaceCreator in our case");
@@ -528,7 +521,7 @@ contract('IexecHub', function(accounts) {
 
     //can't callback twice
     return await Extensions.expectedExceptionPromise(() => {
-        return aCallbackProofInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
+        return aMarketplaceInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
           from: scheduleProvider,
           gas: constants.AMOUNT_GAS_PROVIDED
         });
@@ -540,7 +533,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_02: test every body can callback", async function() {
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aCallbackProofInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -719,24 +712,24 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(checkBalance[0].toNumber(), 101, "check stake of the scheduleProvider. 100 unlocked + won 1% of price");
     assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
 
-    isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+    isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
       from: iExecCloudUser
     });
     assert.strictEqual(isCallbackDone, false, "check isCallbackDone false");
 
 
-    txMined = await aCallbackProofInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
+    txMined = await aMarketplaceInstance.workOrderCallback(woid, "aStdout", "aStderr", "anUri", {
       from: resourceProvider, //every body can call back
       gas: constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+    isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
       from: iExecCloudUser
     });
     assert.strictEqual(isCallbackDone, true, "check isCallbackDone true");
 
-    events = await Extensions.getEventsPromise(aCallbackProofInstance.WorkOrderCallbackProof({}), 1, constants.EVENT_WAIT_TIMEOUT);
+    events = await Extensions.getEventsPromise(aMarketplaceInstance.WorkOrderCallbackProof({}), 1, constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "check  woid");
     assert.strictEqual(events[0].args.requester, aIexecAPIInstance.address, "check  requester = aIexecAPIInstance");
     assert.strictEqual(events[0].args.beneficiary, marketplaceCreator, "check  beneficiary = marketplaceCreator in our case");
@@ -758,7 +751,7 @@ contract('IexecHub', function(accounts) {
 
     it("workOrderCallback_03: test callback with wrong result are reverted", async function() {
 
-      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aCallbackProofInstance.address, aRLCInstance.address, {
+      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
         from: iExecCloudUser
       });
       console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -937,21 +930,21 @@ contract('IexecHub', function(accounts) {
       assert.strictEqual(checkBalance[0].toNumber(), 101, "check stake of the scheduleProvider. 100 unlocked + won 1% of price");
       assert.strictEqual(checkBalance[1].toNumber(), 0, "check stake locked of the scheduleProvider");
 
-      isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+      isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
         from: iExecCloudUser
       });
       assert.strictEqual(isCallbackDone, false, "check isCallbackDone false");
 
 
        await Extensions.expectedExceptionPromise(() => {
-          return aCallbackProofInstance.workOrderCallback(woid, "aStdoutWRONGRESULT", "aStderr", "anUri", {
+          return aMarketplaceInstance.workOrderCallback(woid, "aStdoutWRONGRESULT", "aStderr", "anUri", {
             from: resourceProvider,
             gas: constants.AMOUNT_GAS_PROVIDED
           });
         },
         constants.AMOUNT_GAS_PROVIDED);
 
-        isCallbackDone = await aCallbackProofInstance.isCallbackDone.call(woid, {
+        isCallbackDone = await aMarketplaceInstance.isCallbackDone.call(woid, {
           from: iExecCloudUser
         });
         assert.strictEqual(isCallbackDone, false, "check isCallbackDone false");

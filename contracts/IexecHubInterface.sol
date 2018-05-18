@@ -47,6 +47,10 @@ contract IexecHubInterface
 		address _beneficiary)
 	external returns (address);
 
+	function isWoidRegistred(
+		address _woid)
+	public view returns (bool);
+
 	function emitWorkOrder(
 		uint256 _marketorderIdx,
 		address _requester,

@@ -3,7 +3,6 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
-var CallbackProof = artifacts.require("./CallbackProof.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 const fs = require("fs-extra");
 const Promise = require("bluebird");
@@ -15,20 +14,13 @@ const readFileAsync = Promise.promisify(fs.readFile);
 **/
 module.exports = function(deployer) {
   let aRLCInstance;
-  let aCallbackProofInstance;
   let aWorkerPoolHubInstance;
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aIexecHub;
   let aMarketplaceInstance;
   let creator;
-  return deployer.deploy(CallbackProof)
-    .then(() => CallbackProof.deployed())
-    .then(instance => {
-      aCallbackProofInstance = instance;
-      console.log("CallbackProof deployed at address: " + instance.address);
-      return deployer.deploy(RLC);
-    })
+  return deployer.deploy(RLC)
     .then(() => RLC.deployed())
     .then(instance => {
       aRLCInstance = instance;
@@ -89,7 +81,6 @@ module.exports = function(deployer) {
       aMarketplaceInstance = instance;
       console.log("Marketplace deployed at address: " + instance.address);
       return aIexecHub.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
-
     })
     .then(() => {
       console.log("attach Contracts to IexecHub done");
@@ -133,15 +124,9 @@ module.exports = function(deployer) {
   let aMarketplaceInstance;
   let categoriesConfigFileJson;
   let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
-  aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
+  aRLCInstance='0x7314dc4d7794b5e7894212ca1556ae8e3de58621';
 
-  return deployer.deploy(CallbackProof)
-    .then(() => CallbackProof.deployed())
-    .then(instance => {
-      aCallbackProofInstance = instance;
-      console.log("CallbackProof deployed at address: " + instance.address);
-      return deployer.deploy(WorkerPoolHub);
-    })
+  return deployer.deploy(WorkerPoolHub)
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
