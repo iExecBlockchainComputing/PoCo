@@ -307,8 +307,8 @@ contract IexecHub
 		string  _uri)
 	public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		WorkOrder workorder = WorkOrder(_woid);
-
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
 
@@ -338,9 +338,12 @@ contract IexecHub
 		 * reward = value: was locked at market making
 		 * emitcost: was locked at when emiting the workorder
 		 */
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
-		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
+		/* uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist */
+		/* address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist */
+		uint256 value;
+		address workerpoolOwner;
+		(,,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		uint256 workerpoolStake       = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
 		require(unlock(workerpoolOwner,         workerpoolStake)); // unlock scheduler stake
@@ -350,13 +353,14 @@ contract IexecHub
 
 		// Rien ne se perd, rien ne se crée, tout se transfere
 		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
-		uint256 kitty;
-		(,kitty) = checkBalance(this); // kitty is locked on `this` wallet
-		if(kitty > 0)
+		// we reuse the varaible value for the kitty / fraction of the kitty (stack too deep)
+		/* (,value) = checkBalance(this); // kitty is locked on `this` wallet */
+		value = m_accounts[this].locked; // kitty is locked on `this` wallet
+		if(value > 0)
 		{
-			uint256 kittyFraction = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
-			require(seize(this,             kittyFraction));
-			require(reward(workerpoolOwner, kittyFraction));
+			value = value.min(value.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			require(seize(this,             value));
+			require(reward(workerpoolOwner, value));
 		}
 
 		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
@@ -466,21 +470,23 @@ contract IexecHub
 	/* Work */
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
 		return true;
 	}
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
 	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(reward(_worker, _amount));
-		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
 			m_contributionHistory.success = m_contributionHistory.success.add(1);
@@ -491,9 +497,9 @@ contract IexecHub
 	}
 	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
+		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(seize(_worker, _amount));
-		// ------------------------------------------------------------------------
 		if (_reputation)
 		{
 			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
