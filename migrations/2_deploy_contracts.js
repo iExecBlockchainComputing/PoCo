@@ -1,11 +1,14 @@
-var IexecHub = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
-var AppHub = artifacts.require("./AppHub.sol");
-var DatasetHub = artifacts.require("./DatasetHub.sol");
-var Marketplace = artifacts.require("./Marketplace.sol");
-var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-const fs              = require("fs-extra");
-const Promise         = require("bluebird");
+var RLC              = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub         = artifacts.require("./IexecHub.sol");
+var Marketplace      = artifacts.require("./Marketplace.sol");
+var AppHub           = artifacts.require("./AppHub.sol");
+var DatasetHub       = artifacts.require("./DatasetHub.sol");
+var WorkerPool       = artifacts.require("./WorkerPool.sol");
+var WorkerPoolHub    = artifacts.require("./WorkerPoolHub.sol");
+var WorkOrderFactory = artifacts.require("./WorkOrderFactory.sol");
+
+const fs            = require("fs-extra");
+const Promise       = require("bluebird");
 const readFileAsync = Promise.promisify(fs.readFile);
 /**
 
@@ -40,12 +43,6 @@ module.exports = function(deployer) {
     })
     .then(faucetSupply => {
       console.log("RLC faucet supply is " + faucetSupply.toNumber());
-      return deployer.deploy(WorkerPoolHub);
-    })
-    .then(() => WorkerPoolHub.deployed())
-    .then(instance => {
-      aWorkerPoolHubInstance = instance;
-      console.log("WorkerPoolHub deployed at address: " + instance.address);
       return deployer.deploy(AppHub);
     })
     .then(() => AppHub.deployed())
@@ -58,16 +55,30 @@ module.exports = function(deployer) {
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address: " + instance.address);
+      return deployer.deploy(WorkerPoolHub);
+    })
+    .then(() => WorkerPoolHub.deployed())
+    .then(instance => {
+      aWorkerPoolHubInstance = instance;
+      console.log("WorkerPoolHub deployed at address: " + instance.address);
+      return deployer.deploy(WorkOrderFactory);
+    })
+    .then(() => WorkOrderFactory.deployed())
+    .then(instance => {
+      aWorkOrderFactoryInstance = instance;
+      console.log("WorkOrderFactory deployed at address: " + instance.address);
       return deployer.deploy(IexecHub);
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
       aIexecHub = instance;
       console.log("IexecHub deployed at address: " + aIexecHub.address);
-      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+      return deployer.deploy(Marketplace, aIexecHub.address);
     })
-    .then(() => {
-      console.log("transferOwnership of WorkerPoolHub to IexecHub");
+    .then(() => Marketplace.deployed())
+    .then(instance => {
+      aMarketplaceInstance = instance;
+      console.log("Marketplace deployed at address: " + instance.address);
       return aAppHubInstance.transferOwnership(aIexecHub.address);
     })
     .then(() => {
@@ -76,14 +87,22 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("transferOwnership of DatasetHub to IexecHub");
-      return deployer.deploy(Marketplace, aIexecHub.address);
+      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
     })
-    .then(() => Marketplace.deployed())
-    .then(instance => {
-      aMarketplaceInstance = instance;
-      console.log("Marketplace deployed at address: " + instance.address);
-      return aIexecHub.attachContracts(aRLCInstance.address,aMarketplaceInstance.address,aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
-
+    .then(() => {
+      console.log("transferOwnership of WorkerPoolHub to IexecHub");
+      return aWorkOrderFactoryInstance.transferOwnership(aIexecHub.address);
+    })
+    .then(() => {
+      console.log("transferOwnership of WorkOrderFactory to IexecHub");
+      return aIexecHub.attachContracts(
+        aRLCInstance.address,
+        aMarketplaceInstance.address,
+        aAppHubInstance.address,
+        aDatasetHubInstance.address,
+        aWorkerPoolHubInstance.address,
+        aWorkOrderFactoryInstance.address
+      );
     })
     .then(() => {
       console.log("attach Contracts to IexecHub done");

@@ -70,14 +70,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo-dev/contracts/IexecCallbackInterface.sol",
     "exportedSymbols": {
       "IexecCallbackInterface": [
-        413
+        401
       ]
     },
-    "id": 414,
+    "id": 402,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 389,
+        "id": 377,
         "literals": [
           "solidity",
           "^",
@@ -93,9 +93,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 413,
+        "id": 401,
         "linearizedBaseContracts": [
-          413
+          401
         ],
         "name": "IexecCallbackInterface",
         "nodeType": "ContractDefinition",
@@ -103,7 +103,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 402,
+            "id": 390,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -111,15 +111,15 @@
             "name": "workOrderCallback",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 398,
+              "id": 386,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 391,
+                  "id": 379,
                   "name": "_woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "93:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -128,7 +128,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 390,
+                    "id": 378,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "93:7:4",
@@ -142,10 +142,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 393,
+                  "id": 381,
                   "name": "_stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "110:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -154,7 +154,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 392,
+                    "id": 380,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "110:6:4",
@@ -168,10 +168,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 395,
+                  "id": 383,
                   "name": "_stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "129:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -180,7 +180,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 394,
+                    "id": 382,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "129:6:4",
@@ -194,10 +194,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 397,
+                  "id": 385,
                   "name": "_uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "148:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -206,7 +206,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 396,
+                    "id": 384,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "148:6:4",
@@ -223,15 +223,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 401,
+              "id": 389,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 400,
+                  "id": 388,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "178:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -240,7 +240,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 399,
+                    "id": 387,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "178:4:4",
@@ -255,7 +255,7 @@
               ],
               "src": "177:6:4"
             },
-            "scope": 413,
+            "scope": 401,
             "src": "63:121:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -264,20 +264,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 412,
+            "id": 400,
             "name": "WorkOrderCallback",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 411,
+              "id": 399,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 404,
+                  "id": 392,
                   "indexed": false,
                   "name": "woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "211:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -286,7 +286,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 403,
+                    "id": 391,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "211:7:4",
@@ -300,11 +300,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 406,
+                  "id": 394,
                   "indexed": false,
                   "name": "stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "225:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -313,7 +313,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 405,
+                    "id": 393,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "225:6:4",
@@ -327,11 +327,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 408,
+                  "id": 396,
                   "indexed": false,
                   "name": "stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "240:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -340,7 +340,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 407,
+                    "id": 395,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "240:6:4",
@@ -354,11 +354,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 410,
+                  "id": 398,
                   "indexed": false,
                   "name": "uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "255:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -367,7 +367,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 409,
+                    "id": 397,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "255:6:4",
@@ -385,7 +385,7 @@
             "src": "187:80:4"
           }
         ],
-        "scope": 414,
+        "scope": 402,
         "src": "26:243:4"
       }
     ],
@@ -395,14 +395,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo-dev/contracts/IexecCallbackInterface.sol",
     "exportedSymbols": {
       "IexecCallbackInterface": [
-        413
+        401
       ]
     },
-    "id": 414,
+    "id": 402,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 389,
+        "id": 377,
         "literals": [
           "solidity",
           "^",
@@ -418,9 +418,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 413,
+        "id": 401,
         "linearizedBaseContracts": [
-          413
+          401
         ],
         "name": "IexecCallbackInterface",
         "nodeType": "ContractDefinition",
@@ -428,7 +428,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 402,
+            "id": 390,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -436,15 +436,15 @@
             "name": "workOrderCallback",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 398,
+              "id": 386,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 391,
+                  "id": 379,
                   "name": "_woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "93:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -453,7 +453,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 390,
+                    "id": 378,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "93:7:4",
@@ -467,10 +467,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 393,
+                  "id": 381,
                   "name": "_stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "110:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -479,7 +479,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 392,
+                    "id": 380,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "110:6:4",
@@ -493,10 +493,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 395,
+                  "id": 383,
                   "name": "_stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "129:15:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -505,7 +505,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 394,
+                    "id": 382,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "129:6:4",
@@ -519,10 +519,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 397,
+                  "id": 385,
                   "name": "_uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "148:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -531,7 +531,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 396,
+                    "id": 384,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "148:6:4",
@@ -548,15 +548,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 401,
+              "id": 389,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 400,
+                  "id": 388,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 390,
                   "src": "178:4:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -565,7 +565,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 399,
+                    "id": 387,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "178:4:4",
@@ -580,7 +580,7 @@
               ],
               "src": "177:6:4"
             },
-            "scope": 413,
+            "scope": 401,
             "src": "63:121:4",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -589,20 +589,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 412,
+            "id": 400,
             "name": "WorkOrderCallback",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 411,
+              "id": 399,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 404,
+                  "id": 392,
                   "indexed": false,
                   "name": "woid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "211:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -611,7 +611,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 403,
+                    "id": 391,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "211:7:4",
@@ -625,11 +625,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 406,
+                  "id": 394,
                   "indexed": false,
                   "name": "stdout",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "225:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -638,7 +638,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 405,
+                    "id": 393,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "225:6:4",
@@ -652,11 +652,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 408,
+                  "id": 396,
                   "indexed": false,
                   "name": "stderr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "240:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -665,7 +665,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 407,
+                    "id": 395,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "240:6:4",
@@ -679,11 +679,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 410,
+                  "id": 398,
                   "indexed": false,
                   "name": "uri",
                   "nodeType": "VariableDeclaration",
-                  "scope": 412,
+                  "scope": 400,
                   "src": "255:10:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -692,7 +692,7 @@
                     "typeString": "string memory"
                   },
                   "typeName": {
-                    "id": 409,
+                    "id": 397,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "255:6:4",
@@ -710,7 +710,7 @@
             "src": "187:80:4"
           }
         ],
-        "scope": 414,
+        "scope": 402,
         "src": "26:243:4"
       }
     ],
@@ -722,5 +722,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-05-18T18:48:09.869Z"
+  "updatedAt": "2018-05-19T17:45:04.183Z"
 }

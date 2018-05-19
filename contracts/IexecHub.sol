@@ -4,12 +4,15 @@ import "rlc-token/contracts/RLC.sol";
 
 import './WorkOrder.sol';
 import './Marketplace.sol';
+
 import './AppHub.sol';
 import './DatasetHub.sol';
 import './WorkerPoolHub.sol';
+import './WorkOrderFactory.sol';
+
+
 import "./SafeMathOZ.sol";
 import './IexecLib.sol';
-
 
 /**
  * @title IexecHub
@@ -31,9 +34,10 @@ contract IexecHub is OwnableOZ
 	/**
 	 * Slaves contracts
 	 */
-	AppHub        public appHub;
-	DatasetHub    public datasetHub;
-	WorkerPoolHub public workerPoolHub;
+	AppHub           public appHub;
+	DatasetHub       public datasetHub;
+	WorkerPoolHub    public workerPoolHub;
+	WorkOrderFactory public workOrderFactory;
 
 	/**
 	 * Market place
@@ -61,22 +65,21 @@ contract IexecHub is OwnableOZ
 	mapping(address => uint256)  public m_scores;
 	IexecLib.ContributionHistory public m_contributionHistory;
 
-
-
-
-	event WorkOrderActivated(address woid, address indexed workerPool);
-	event WorkOrderClaimed  (address woid, address workerPool);
-	event WorkOrderCompleted(address woid, address workerPool);
-
+	/**
+	 * Events
+	 */
 	event CreateApp       (address indexed appOwner,        address indexed app,        string appName,     uint256 appPrice,     string appParams    );
 	event CreateDataset   (address indexed datasetOwner,    address indexed dataset,    string datasetName, uint256 datasetPrice, string datasetParams);
 	event CreateWorkerPool(address indexed workerPoolOwner, address indexed workerPool, string workerPoolDescription                                  );
-
 	event CreateCategory  (uint256 catid, string name, string description, uint256 workClockTimeRef);
 
 	event WorkerPoolSubscription  (address indexed workerPool, address worker);
 	event WorkerPoolUnsubscription(address indexed workerPool, address worker);
 	event WorkerPoolEviction      (address indexed workerPool, address worker);
+
+	event WorkOrderActivated(address indexed woid, address indexed workerPool);
+	event WorkOrderClaimed  (address indexed woid, address indexed workerPool);
+	event WorkOrderCompleted(address indexed woid, address indexed workerPool);
 
 	event AccurateContribution(address woid, address indexed worker);
 	event FaultyContribution  (address woid, address indexed worker);
@@ -97,17 +100,19 @@ contract IexecHub is OwnableOZ
 	function attachContracts(
 		address _tokenAddress,
 		address _marketplaceAddress,
-		address _workerPoolHubAddress,
 		address _appHubAddress,
-		address _datasetHubAddress)
+		address _datasetHubAddress,
+		address _workerPoolHubAddress,
+		address _workOrderFactoryAddress)
 	public
 	{
 		require(address(rlc) == address(0));
-		rlc           = RLC          (_tokenAddress        );
-		marketplace   = Marketplace  (_marketplaceAddress  );
-		workerPoolHub = WorkerPoolHub(_workerPoolHubAddress);
-		appHub        = AppHub       (_appHubAddress       );
-		datasetHub    = DatasetHub   (_datasetHubAddress   );
+		rlc              = RLC             (_tokenAddress           );
+		marketplace      = Marketplace     (_marketplaceAddress     );
+		appHub           = AppHub          (_appHubAddress          );
+		datasetHub       = DatasetHub      (_datasetHubAddress      );
+		workerPoolHub    = WorkerPoolHub   (_workerPoolHubAddress   );
+		workOrderFactory = WorkOrderFactory(_workOrderFactoryAddress);
 	}
 
 	/**
@@ -226,18 +231,19 @@ contract IexecHub is OwnableOZ
 			_userOrder[0],         //app,
 			_userOrder[2]);        //dataset
 
-		WorkOrder workorder = new WorkOrder(
+		WorkOrder woid = workOrderFactory.createWorkOrder(
 			_commonOrder,
 			_poolOrder_workerpool,
 			WorkerPool(_poolOrder_workerpool).m_owner(),
 			_userOrder,
 			_userOrder_params,
-			appPayment);
+			appPayment
+		);
 
-		require(WorkerPool(_poolOrder_workerpool).initiateConsensus(workorder));
+		require(WorkerPool(_poolOrder_workerpool).initiateConsensus(woid));
 
-		emit WorkOrderActivated(workorder, _poolOrder_workerpool);
-		return workorder;
+		emit WorkOrderActivated(woid, _poolOrder_workerpool);
+		return woid;
 	}
 
 	function lockAppPayment(
@@ -249,7 +255,7 @@ contract IexecHub is OwnableOZ
 	{
 		// APP
 		App app = App(_app);
-		require(appHub.isAppRegistered (_app       ));
+		require(appHub.isAppRegistered (_app));
 		// initialize usercost with dapp price
 		uint256 appPayment = app.m_appPrice();
 
@@ -257,7 +263,7 @@ contract IexecHub is OwnableOZ
 		if (_dataset != address(0)) // address(0) → no dataset
 		{
 			Dataset dataset = Dataset(_dataset);
-			require(datasetHub.isDatasetRegistred(_dataset   ));
+			require(datasetHub.isDatasetRegistred(_dataset));
 			// add optional datasetPrice for userCost
 			appPayment = appPayment.add(dataset.m_datasetPrice());
 		}
@@ -273,8 +279,9 @@ contract IexecHub is OwnableOZ
 
 	function claimFailedConsensus(address _woid) public returns (bool)
 	{
-		WorkOrder  workorder  = WorkOrder(_woid);
+		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_requester() == msg.sender);
+
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
 
 		IexecLib.WorkOrderStatusEnum currentStatus = workorder.m_status();
@@ -348,13 +355,15 @@ contract IexecHub is OwnableOZ
 
 		// Rien ne se perd, rien ne se crée, tout se transfere
 		// distribute bonus to scheduler. jackpot bonus come from scheduler stake loose on IexecHub contract
-		uint256 kitty;
-		(,kitty) = checkBalance(this); // kitty is locked on `this` wallet
-		if(kitty > 0)
+
+		// value → kitty
+		(,value) = checkBalance(this); // kitty is locked on `this` wallet
+		if(value > 0)
 		{
-			uint256 kittyFraction = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
-			require(seize(this,             kittyFraction));
-			require(reward(workerpoolOwner, kittyFraction));
+			// value → fraction of kitty
+			value = value.min(value.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			require(seize(this,             value));
+			require(reward(workerpoolOwner, value));
 		}
 
 		emit WorkOrderCompleted(_woid, workorder.m_workerpool());
@@ -365,14 +374,14 @@ contract IexecHub is OwnableOZ
 	 * Views
 	 */
 
-	function existingCategory(uint256 _catid) public view  returns (bool categoryExist)
+	function existCategory(uint256 _catid) public view  returns (bool categoryExist)
 	{
 		return _catid <= m_categoriesCount;
 	}
 
 	function getCategory(uint256 _catid) public view returns (string name, string  description, uint256 workClockTimeRef)
 	{
-		require(existingCategory(_catid));
+		require(existCategory(_catid));
 		return (
 			m_categories[_catid].name,
 			m_categories[_catid].description,
@@ -458,18 +467,21 @@ contract IexecHub is OwnableOZ
 	/* Work */
 	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
+		require(workOrderFactory.isValid(_woid));
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
 		return true;
 	}
 	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
 	{
+		require(workOrderFactory.isValid(_woid));
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
 	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
+		require(workOrderFactory.isValid(_woid));
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(reward(_worker, _amount));
 		// ------------------------------------------------------------------------
@@ -483,6 +495,7 @@ contract IexecHub is OwnableOZ
 	}
 	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
 	{
+		require(workOrderFactory.isValid(_woid));
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(seize(_worker, _amount));
 		// ------------------------------------------------------------------------

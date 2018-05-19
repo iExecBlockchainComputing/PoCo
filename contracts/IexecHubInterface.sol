@@ -1,10 +1,10 @@
 pragma solidity ^0.4.21;
-import './IexecLib.sol';
+
+import "rlc-token/contracts/RLC.sol";
+
 contract IexecHubInterface
 {
-	function attachMarketplace(
-		address _marketplaceAddress)
-	public;
+	RLC public rlc;
 
 	function createCategory(
 		string  _name,
@@ -78,7 +78,7 @@ contract IexecHubInterface
 		string  _uri)
 	public returns (bool);
 
-	function existingCategory(
+	function existCategory(
 		uint256 _catId)
 	public view  returns (bool categoryExist);
 
@@ -93,9 +93,6 @@ contract IexecHubInterface
 	function getWorkerScore(
 		address _worker)
 	public view returns (uint256 workerScore);
-
-	function getRLCAddress()
-	public view returns (address rlc);
 
 	function registerToPool(address _worker)
 	public returns (bool subscribed);

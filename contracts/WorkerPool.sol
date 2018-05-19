@@ -271,7 +271,9 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 
 	function allowWorkerToContribute(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
-		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
+		WorkOrder workorder = WorkOrder(_woid);
+
+		require(workorder.m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
@@ -291,9 +293,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
-		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
+		WorkOrder workorder = WorkOrder(_woid);
+
+		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
-		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
+		require(workorder.m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		// msg.sender = a worker
@@ -318,9 +322,11 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 
 	function revealConsensus(address _woid, bytes32 _consensus) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		WorkOrder workorder = WorkOrder(_woid);
+
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
-		require(WorkOrder(_woid).startRevealingPhase());
+		require(workorder.startRevealingPhase());
 
 		consensus.winnerCount = 0;
 		for (uint256 i = 0; i<consensus.contributors.length; ++i)
@@ -338,7 +344,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 		require(consensus.winnerCount > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
 		uint256 workClockTimeRef;
-		(,,workClockTimeRef) = iexecHubInterface.getCategory(WorkOrder(_woid).m_category());
+		(,,workClockTimeRef) = iexecHubInterface.getCategory(workorder.m_category());
 
 		consensus.consensus  = _consensus;
 		consensus.revealDate = workClockTimeRef.mul(REVEAL_PERIOD_DURATION_RATIO).add(now); // is it better to store th catid ?
@@ -348,11 +354,13 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 
 	function reveal(address _woid, bytes32 _result) public returns (bool)
 	{
+		WorkOrder workorder = WorkOrder(_woid);
+
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
-		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
+		require(workorder.m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
 		require(consensus.revealDate        >  now                                        );
 		require(contribution.status         == IexecLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == consensus.consensus                        );
@@ -368,10 +376,12 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor
 
 	function reopen(address _woid) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		WorkOrder workorder = WorkOrder(_woid);
+
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
-		require(WorkOrder(_woid).reActivate());
+		require(workorder.reActivate());
 
 		for (uint256 i = 0; i < consensus.contributors.length; ++i)
 		{

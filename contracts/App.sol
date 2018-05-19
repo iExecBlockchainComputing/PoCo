@@ -1,17 +1,17 @@
 pragma solidity ^0.4.21;
 
 import './OwnableOZ.sol';
-import './IexecHubAccessor.sol';
+/* import './IexecHubAccessor.sol'; */
 
-contract App is OwnableOZ, IexecHubAccessor
+contract App is OwnableOZ //, IexecHubAccessor
 {
 
 	/**
 	 * Members
 	 */
-	string        public m_appName;
-	uint256       public m_appPrice;
-	string        public m_appParams;
+	string  public m_appName;
+	uint256 public m_appPrice;
+	string  public m_appParams;
 
 	/**
 	 * Constructor
@@ -21,7 +21,7 @@ contract App is OwnableOZ, IexecHubAccessor
 		string  _appName,
 		uint256 _appPrice,
 		string  _appParams)
-	IexecHubAccessor(_iexecHubAddress)
+	/* IexecHubAccessor(_iexecHubAddress) */
 	public
 	{
 		// tx.origin == owner

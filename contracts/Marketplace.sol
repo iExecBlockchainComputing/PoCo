@@ -147,7 +147,7 @@ contract Marketplace is IexecHubAccessor
 		require(isValidSignature(matching.pool_workerpoolOwner, poolHash, _v[0], _r[0], _s[0]));
 		require(isValidSignature(matching.user_requester,       userHash, _v[1], _r[1], _s[1]));
 
-		require(iexecHubInterface.existingCategory(matching.common_category));
+		require(iexecHubInterface.existCategory(matching.common_category));
 
 		// check consumption
 		require(m_consumed[poolHash] <  matching.pool_volume);

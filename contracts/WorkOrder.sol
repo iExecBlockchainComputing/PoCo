@@ -2,9 +2,10 @@ pragma solidity ^0.4.21;
 
 import './IexecCallbackInterface.sol';
 import './IexecLib.sol';
-contract WorkOrder
-{
+import './OwnableOZ.sol';
 
+contract WorkOrder is OwnableOZ
+{
 
 	event WorkOrderActivated();
 	event WorkOrderReActivated();
@@ -37,17 +38,10 @@ contract WorkOrder
 	string  public m_stderr;
 	string  public m_uri;
 
-	address public m_iexecHubAddress;
-
-	modifier onlyIexecHub()
-	{
-		require(msg.sender == m_iexecHubAddress);
-		_;
-	}
-
 	/**
 	 * Constructor
 	 */
+	/* constructor( */
 	function WorkOrder(
 		/********** Order settings **********/
 		uint256[3] _commonOrder,
@@ -70,7 +64,7 @@ contract WorkOrder
 		uint256 _appPayment)
 	public
 	{
-		m_iexecHubAddress = msg.sender;
+		// Creator is owner →  iExecHub
 		m_status          = IexecLib.WorkOrderStatusEnum.ACTIVE;
 		m_category        = _commonOrder[0];
 		m_trust           = _commonOrder[1];
@@ -86,7 +80,8 @@ contract WorkOrder
 		m_appPayment      = _appPayment;
 	}
 
-	function startRevealingPhase() public returns (bool)
+	function startRevealingPhase()
+	public returns (bool)
 	{
 		require(m_workerpool == msg.sender);
 		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE);
@@ -95,7 +90,8 @@ contract WorkOrder
 		return true;
 	}
 
-	function reActivate() public returns (bool)
+	function reActivate()
+	public returns (bool)
 	{
 		require(m_workerpool == msg.sender);
 		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
@@ -105,7 +101,8 @@ contract WorkOrder
 	}
 
 
-	function claim() public onlyIexecHub
+	function claim()
+	public onlyOwner /* owner = iExecHub */
 	{
 		require(m_status == IexecLib.WorkOrderStatusEnum.ACTIVE || m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
 		m_status = IexecLib.WorkOrderStatusEnum.CLAIMED;
@@ -113,7 +110,8 @@ contract WorkOrder
 	}
 
 
-	function setResult(string _stdout, string _stderr, string _uri) public onlyIexecHub
+	function setResult(string _stdout, string _stderr, string _uri)
+	public onlyOwner /* owner = iExecHub */
 	{
 		require(m_status == IexecLib.WorkOrderStatusEnum.REVEALING);
 		m_status = IexecLib.WorkOrderStatusEnum.COMPLETED;

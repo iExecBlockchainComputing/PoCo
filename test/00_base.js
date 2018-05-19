@@ -1,21 +1,24 @@
-var RLC            = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub       = artifacts.require("./IexecHub.sol");
-var WorkerPoolHub  = artifacts.require("./WorkerPoolHub.sol");
-var AppHub         = artifacts.require("./AppHub.sol");
-var DatasetHub     = artifacts.require("./DatasetHub.sol");
-var WorkerPool     = artifacts.require("./WorkerPool.sol");
-var App            = artifacts.require("./App.sol");
-var WorkOrder      = artifacts.require("./WorkOrder.sol");
-var Marketplace    = artifacts.require("./Marketplace.sol");
+var RLC              = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub         = artifacts.require("./IexecHub.sol");
+var Marketplace      = artifacts.require("./Marketplace.sol");
+var App              = artifacts.require("./App.sol");
+var AppHub           = artifacts.require("./AppHub.sol");
+var Dataset          = artifacts.require("./Dataset.sol");
+var DatasetHub       = artifacts.require("./DatasetHub.sol");
+var WorkerPool       = artifacts.require("./WorkerPool.sol");
+var WorkerPoolHub    = artifacts.require("./WorkerPoolHub.sol");
+var WorkOrder        = artifacts.require("./WorkOrder.sol");
+var WorkOrderFactory = artifacts.require("./WorkOrderFactory.sol");
 
 const BN              = require("bn");
 const keccak256       = require("solidity-sha3");
 const Promise         = require("bluebird");
 const fs              = require("fs-extra");
+const web3utils       = require('web3-utils');
 //extensions.js : credit to : https://github.com/coldice/dbh-b9lab-hackathon/blob/development/truffle/utils/extensions.js
 const Extensions      = require("../utils/extensions.js");
 const addEvmFunctions = require("../utils/evmFunctions.js");
-const readFileAsync = Promise.promisify(fs.readFile);
+const readFileAsync   = Promise.promisify(fs.readFile);
 
 addEvmFunctions(web3);
 Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
@@ -36,11 +39,11 @@ contract('IexecHub', function(accounts) {
 	let testTimemout = 0;
 	let aRLCInstance;
 	let aIexecHubInstance;
-	let aWorkerPoolHubInstance;
+	let aMarketplaceInstance;
 	let aAppHubInstance;
 	let aDatasetHubInstance;
-	let aMarketplaceInstance;
-
+	let aWorkerPoolHubInstance;
+	let aWorkOrderFactoryInstance;
 
 	before("should prepare accounts and check TestRPC Mode",async () => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -110,76 +113,73 @@ contract('IexecHub', function(accounts) {
 		assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
 
 		// INIT SMART CONTRACTS BY marketplaceCreator
-		aWorkerPoolHubInstance = await WorkerPoolHub.new({
-			from: marketplaceCreator
-		});
-		console.log("aWorkerPoolHubInstance.address is ");
-		console.log(aWorkerPoolHubInstance.address);
-
-		aAppHubInstance = await AppHub.new({
-			from: marketplaceCreator
-		});
-		console.log("aAppHubInstance.address is ");
-		console.log(aAppHubInstance.address);
-
-		aDatasetHubInstance = await DatasetHub.new({
-			from: marketplaceCreator
-		});
-		console.log("aDatasetHubInstance.address is ");
-		console.log(aDatasetHubInstance.address);
-
-		aIexecHubInstance = await IexecHub.new({
-			from: marketplaceCreator
-		});
+		aIexecHubInstance = await IexecHub.new({ from: marketplaceCreator });
 		console.log("aIexecHubInstance.address is ");
 		console.log(aIexecHubInstance.address);
-
-		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
-			from: marketplaceCreator
-		});
+		txMined = await aIexecHubInstance.transferOwnership(marketplaceCreator, { from: marketplaceCreator });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+		console.log("transferOwnership of IexecHub to marketplaceCreator");
 
-		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
-			from: marketplaceCreator
-		});
+		aAppHubInstance = await AppHub.new({ from: marketplaceCreator });
+		console.log("aAppHubInstance.address is ");
+		console.log(aAppHubInstance.address);
+		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, { from: marketplaceCreator });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of AppHub to IexecHub");
 
-		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
-			from: marketplaceCreator
-		});
+		aDatasetHubInstance = await DatasetHub.new({ from: marketplaceCreator });
+		console.log("aDatasetHubInstance.address is ");
+		console.log(aDatasetHubInstance.address);
+		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, { from: marketplaceCreator });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("transferOwnership of DatasetHub to IexecHub");
 
-		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
-			from: marketplaceCreator
-		});
+		aWorkerPoolHubInstance = await WorkerPoolHub.new({ from: marketplaceCreator });
+		console.log("aWorkerPoolHubInstance.address is ");
+		console.log(aWorkerPoolHubInstance.address);
+		txMined = await aWorkerPoolHubInstance.transferOwnership( aIexecHubInstance.address, { from: marketplaceCreator });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+
+		aWorkOrderFactoryInstance = await WorkOrderFactory.new({ from: marketplaceCreator });
+		console.log("aWorkOrderFactoryInstance.address is ");
+		console.log(aWorkOrderFactoryInstance.address);
+		txMined = await aWorkOrderFactoryInstance.transferOwnership(aIexecHubInstance.address, { from: marketplaceCreator }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("transferOwnership of WorkOrderFactory to IexecHub");
+
+		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, { from: marketplaceCreator });
 		console.log("aMarketplaceInstance.address is ");
 		console.log(aMarketplaceInstance.address);
 
-		txMined = await aIexecHubInstance.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address,{
-			from: marketplaceCreator
-		});
+		txMined = await aIexecHubInstance.attachContracts(
+			aRLCInstance.address,
+			aMarketplaceInstance.address,
+			aAppHubInstance.address,
+			aDatasetHubInstance.address,
+			aWorkerPoolHubInstance.address,
+			aWorkOrderFactoryInstance.address,
+			{ from: marketplaceCreator }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		console.log("attachMarketplace to IexecHub");
 
 		// INIT categories in MARKETPLACE
-		txMined = await aIexecHubInstance.transferOwnership(marketplaceCreator, {
-			from: marketplaceCreator
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("setCategoriesCreator  to marketplaceCreator");
- 		var categoriesConfigFile = await readFileAsync("./config/categories.json");
+		var categoriesConfigFile     = await readFileAsync("./config/categories.json");
 		var categoriesConfigFileJson = JSON.parse(categoriesConfigFile);
-		for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+		for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
+		{
 			console.log("created category:");
 			console.log(categoriesConfigFileJson.categories[i].name);
 			console.log(JSON.stringify(categoriesConfigFileJson.categories[i].description));
 			console.log(categoriesConfigFileJson.categories[i].workClockTimeRef);
-			txMined = await aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef, {
-				from: marketplaceCreator
-			});
+			txMined = await aIexecHubInstance.createCategory(
+				categoriesConfigFileJson.categories[i].name,
+				JSON.stringify(categoriesConfigFileJson.categories[i].description),
+				categoriesConfigFileJson.categories[i].workClockTimeRef,
+				{ from: marketplaceCreator }
+			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		}
 
@@ -209,7 +209,6 @@ contract('IexecHub', function(accounts) {
 	it("TestRPC mode example : test only launch when testrpc is used", async function() {
 		if (!isTestRPC) this.skip("This test is only for TestRPC");
 	});
-
 
 	//TODO Ownable not changeable because of association on mapping. or change mapping allowed according to tansfertOwnership
 
