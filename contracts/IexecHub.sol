@@ -22,13 +22,11 @@ contract IexecHub
 	/**
 	* RLC contract for token transfers.
 	*/
-	RLC     public rlc;
-	address public tokenAddress;
+	RLC public rlc;
 
-	uint256 public constant STAKE_BONUS_RATIO  = 10;
+	uint256 public constant STAKE_BONUS_RATIO         = 10;
 	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
-
-	uint256 public constant SCORE_UNITARY_SLASH = 50;
+	uint256 public constant SCORE_UNITARY_SLASH       = 50;
 
 	/**
 	 * Slaves contracts
@@ -41,10 +39,9 @@ contract IexecHub
 	 * Market place
 	 */
 	Marketplace marketplace;
-	address     public marketplaceAddress;
 	modifier onlyMarketplace()
 	{
-		require(msg.sender == marketplaceAddress);
+		require(msg.sender == address(marketplace));
 		_;
 	}
 	/**
@@ -96,34 +93,33 @@ contract IexecHub
 	/**
 	 * Constructor
 	 */
-	function IexecHub(
-	)
+	function IexecHub()
 	public
 	{
-
+		m_categoriesCreator = msg.sender;
 	}
 
-
-	function attachContracts(address _tokenAddress,address _marketplaceAddress, address _workerPoolHubAddress, address _appHubAddress, address _datasetHubAddress) public
+	function attachContracts(
+		address _tokenAddress,
+		address _marketplaceAddress,
+		address _workerPoolHubAddress,
+		address _appHubAddress,
+		address _datasetHubAddress)
+	public onlyCategoriesCreator
 	{
-		require(tokenAddress == address(0));
-		tokenAddress       = _tokenAddress;
-		rlc                = RLC(_tokenAddress);
-
-		marketplaceAddress = _marketplaceAddress;
-		marketplace        = Marketplace(_marketplaceAddress);
-
+		require(address(rlc) == address(0));
+		rlc                = RLC          (_tokenAddress        );
+		marketplace        = Marketplace  (_marketplaceAddress  );
 		workerPoolHub      = WorkerPoolHub(_workerPoolHubAddress);
 		appHub             = AppHub       (_appHubAddress       );
 		datasetHub         = DatasetHub   (_datasetHubAddress   );
 	}
 
-	function setCategoriesCreator(address _categoriesCreator) public
+	function setCategoriesCreator(address _categoriesCreator)
+	public onlyCategoriesCreator
 	{
-		require(m_categoriesCreator == address(0) || (m_categoriesCreator != address(0) && msg.sender == m_categoriesCreator));
 		m_categoriesCreator = _categoriesCreator;
 	}
-
 	/**
 	 * Factory
 	 */
@@ -156,7 +152,7 @@ contract IexecHub
 			_subscriptionLockStakePolicy,
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy,
-			marketplaceAddress
+			address(marketplace)
 		);
 		emit CreateWorkerPool(tx.origin, newWorkerPool, _description);
 		return newWorkerPool;

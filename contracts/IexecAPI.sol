@@ -14,15 +14,13 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	event WithdrawRLCFromIexecHub(address iexecHub, uint256 amount);
 
 	address public m_callbackProofAddress;
-	address public m_rlcAddress;
 
 	// Constructor
-	function IexecAPI(address _iexecHubAddress,address _callbackProofAddress, address _rlcAddress)
+	function IexecAPI(address _iexecHubAddress, address _callbackProofAddress)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
-    m_callbackProofAddress=_callbackProofAddress;
-		m_rlcAddress =_rlcAddress;
+		m_callbackProofAddress = _callbackProofAddress;
 	}
 
 	function buyForWorkOrder(
@@ -53,15 +51,15 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 
 	function approveIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(m_rlcAddress);
-		require(rlc.approve(iexecHubAddress, amount));
-		emit ApproveIexecHub(iexecHubAddress, amount);
+		RLC rlc = iexecHubInterface.rlc();
+		require(rlc.approve(address(iexecHubInterface), amount));
+		emit ApproveIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 
 	function withdrawRLCFromIexecAPI(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(m_rlcAddress);
+		RLC rlc = iexecHubInterface.rlc();
 		require(rlc.transfer(msg.sender, amount));
 		emit WithdrawRLCFromIexecAPI(msg.sender, amount);
 		return true;
@@ -70,7 +68,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	function depositRLCOnIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
 		require(iexecHubInterface.deposit(amount));
-		emit DepositRLCOnIexecHub(iexecHubAddress, amount);
+		emit DepositRLCOnIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 
@@ -78,7 +76,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	{
 		require(iexecHubInterface.withdraw(amount));
 		require(withdrawRLCFromIexecAPI(amount));
-		emit WithdrawRLCFromIexecHub(iexecHubAddress, amount);
+		emit WithdrawRLCFromIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 

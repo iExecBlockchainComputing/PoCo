@@ -1,25 +1,31 @@
 pragma solidity ^0.4.21;
-import './IexecLib.sol';
+
+import "rlc-token/contracts/RLC.sol";
+
 contract IexecHubInterface
 {
-	function attachMarketplace(
-		address _marketplaceAddress)
-	public;
+	RLC public rlc;
+
+	function attachContracts(
+		address _tokenAddress,
+		address _marketplaceAddress,
+		address _workerPoolHubAddress,
+		address _appHubAddress,
+		address _datasetHubAddress)
+		public;
 
 	function setCategoriesCreator(
 		address _categoriesCreator)
 	public;
 
-
-
 	function createCategory(
 		string  _name,
 		string  _description,
 		uint256 _workClockTimeRef)
-	public /* onlyCategoriesCreator */ returns (uint256 catid);
+	public returns (uint256 catid);
 
 	function createWorkerPool(
-		string  _name,
+		string  _description,
 		uint256 _subscriptionLockStakePolicy,
 		uint256 _subscriptionMinimumStakePolicy,
 		uint256 _subscriptionMinimumScorePolicy)
@@ -47,31 +53,12 @@ contract IexecHubInterface
 		address _beneficiary)
 	external returns (address);
 
-	function emitWorkOrder(
-		uint256 _marketorderIdx,
-		address _requester,
-		address _workerpool, // Address of a smartcontract
-		address _app,        // Address of a smartcontract
-		address _dataset,    // Address of a smartcontract
-		string  _params,
-		address _callback,
-		address _beneficiary)
-	internal returns (address);
-
 	function lockWorkOrderCost(
 		address _requester,
 		address _workerpool, // Address of a smartcontract
 		address _app,        // Address of a smartcontract
 		address _dataset)    // Address of a smartcontract
 	internal returns (uint256);
-
-	function startRevealingPhase(
-		address _woid)
-	public returns (bool);
-
-	function reActivate(
-		address _woid)
-	public returns (bool);
 
 	function claimFailedConsensus(
 		address _woid)
@@ -94,103 +81,45 @@ contract IexecHubInterface
 
 	function getCategory(
 		uint256 _catId)
-	public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef);
+		public view returns (uint256 catid, string name, string  description, uint256 workClockTimeRef);
 
 	function getWorkerStatus(
 		address _worker)
 	public view returns (address workerPool, uint256 workerScore);
 
-	function getWorkerScore(
-		address _worker)
-	public view returns (uint256 workerScore);
+	function getWorkerScore(address _worker) public view returns (uint256 workerScore);
 
-	function registerToPool(address _worker)
-	public returns (bool subscribed);
+	function registerToPool(address _worker) public returns (bool subscribed);
 
-	function unregisterFromPool(address _worker)
-	public returns (bool unsubscribed);
+	function unregisterFromPool(address _worker) public returns (bool unsubscribed);
 
-	function evictWorker(
-		address _worker)
-	public returns (bool unsubscribed);
+	function evictWorker(address _worker) public returns (bool unsubscribed);
 
-	function lockForOrder(
-		address _user,
-		uint256 _amount)
-	public /* onlyMarketplace */ returns (bool);
+	function removeWorker(address _workerpool, address _worker) internal returns (bool unsubscribed);
 
-	function unlockForOrder(
-		address _user,
-		uint256 _amount)
-	public /* onlyMarketplace */ returns (bool);
+	function lockForOrder(address _user, uint256 _amount) public returns (bool);
 
-	function seizeForOrder(
-		address _user,
-		uint256 _amount)
-	public /* onlyMarketplace */ returns (bool);
+	function unlockForOrder(address _user, uint256 _amount) public returns (bool);
 
-	function rewardForOrder(
-		address _user,
-		uint256 _amount)
-	public /* onlyMarketplace */ returns (bool);
+	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool);
 
-	function lockForWork(
-		address _woid,
-		address _user,
-		uint256 _amount)
-	public returns (bool);
+	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool);
 
-	function unlockForWork(
-		address _woid,
-		address _user,
-		uint256 _amount)
-	public returns (bool);
+	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool);
 
-	function rewardForWork(
-		address _woid,
-		address _worker,
-		uint256 _amount,
-		bool    _reputation)
-	public returns (bool);
+	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool);
 
-	function seizeForWork(
-		address _woid,
-		address _worker,
-		uint256 _amount,
-		bool    _reputation)
-	public returns (bool);
+	function deposit(uint256 _amount) external returns (bool);
 
-	function deposit(
-		uint256 _amount)
-	external returns (bool);
+	function withdraw(uint256 _amount) external returns (bool);
 
-	function withdraw(
-		uint256 _amount)
-	external returns (bool);
+	function checkBalance(address _owner) public view returns (uint256 stake, uint256 locked);
 
-	function checkBalance(
-		address _owner)
-	public view returns (uint256 stake, uint256 locked);
+	function reward(address _user, uint256 _amount) internal returns (bool);
 
-	function reward(
-		address _user,
-		uint256 _amount)
-	internal returns (bool);
+	function seize(address _user, uint256 _amount) internal returns (bool);
 
-	function seize(
-		address _user,
-		uint256 _amount)
-	internal returns (bool);
+	function lock(address _user, uint256 _amount) internal returns (bool);
 
-	function lock(
-		address _user,
-		uint256 _amount)
-	internal returns (bool);
-
-	function unlock(
-		address _user,
-		uint256 _amount)
-	internal returns (bool);
-
-
+	function unlock(address _user, uint256 _amount) internal returns (bool);
 }
