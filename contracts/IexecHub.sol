@@ -247,7 +247,7 @@ contract IexecHub
 	{
 		// APP
 		App app = App(_app);
-		require(appHub.isAppRegistered (_app       ));
+		require(appHub.isAppRegistered (_app));
 		// initialize usercost with dapp price
 		uint256 emitcost = app.m_appPrice();
 
@@ -255,7 +255,7 @@ contract IexecHub
 		if (_dataset != address(0)) // address(0) → no dataset
 		{
 			Dataset dataset = Dataset(_dataset);
-			require(datasetHub.isDatasetRegistred(_dataset   ));
+			require(datasetHub.isDatasetRegistred(_dataset));
 			// add optional datasetPrice for userCost
 			emitcost = emitcost.add(dataset.m_datasetPrice());
 		}
@@ -285,8 +285,11 @@ contract IexecHub
 		require(workerpool.claimFailedConsensus(_woid));
 		workorder.claim(); // revert on error
 
-		uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist
-		address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist
+		/* uint256 value           = marketplace.getMarketOrderValue(workorder.m_marketorderIdx()); // revert if not exist */
+		/* address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist */
+		uint256 value;
+		address workerpoolOwner;
+		(,,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx()); // Single call cost less gas
 		uint256 workerpoolStake = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(unlock (workorder.m_requester(), value.add(workorder.m_emitcost()))); // UNLOCK THE FUNDS FOR REINBURSEMENT
@@ -342,7 +345,7 @@ contract IexecHub
 		/* address workerpoolOwner = marketplace.getMarketOrderWorkerpoolOwner(workorder.m_marketorderIdx()); // revert if not exist */
 		uint256 value;
 		address workerpoolOwner;
-		(,,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx());
+		(,,,value,,,,workerpoolOwner) = marketplace.getMarketOrder(workorder.m_marketorderIdx()); // Single call cost less gas
 		uint256 workerpoolStake       = value.percentage(marketplace.ASK_STAKE_RATIO());
 
 		require(seize (workorder.m_requester(), value.add(workorder.m_emitcost()))); // seize funds for payment (market value + emitcost)
@@ -385,10 +388,10 @@ contract IexecHub
 	{
 		require(existingCategory(_catId));
 		return (
-		m_categories[_catId].catid,
-		m_categories[_catId].name,
-		m_categories[_catId].description,
-		m_categories[_catId].workClockTimeRef
+			m_categories[_catId].catid,
+			m_categories[_catId].name,
+			m_categories[_catId].description,
+			m_categories[_catId].workClockTimeRef
 		);
 	}
 
