@@ -18,7 +18,11 @@ Features:
 
 Bugfixes:
 * [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) possibly useless RLC address getter
-* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): Malicious IexecAPI contract without callback 
+* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): Malicious IexecAPI contract without callback
+* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): [SC AUDIT] Result without Payment. Malicious IexecAPI contract without callback
+* [#25](https://github.com/iExecBlockchainComputing/PoCo/issues/25) :[SC AUDIT] Scheduler can manipulate its reward percentage
+* [#26](https://github.com/iExecBlockchainComputing/PoCo/issues/26) :[SC AUDIT] Arbitrary Contract are trusted
+
 
 ### [v1.0.12](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.12)
 Initial version. external audit launched on this release v1.0.12

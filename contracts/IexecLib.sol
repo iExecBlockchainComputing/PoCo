@@ -52,6 +52,8 @@ library IexecLib
 		uint256 winnerCount;
 		address[] contributors;
 		address workerpoolOwner;
+		uint256 schedulerRewardRatioPolicy;
+
 	}
 
 	/***************************************************************************/

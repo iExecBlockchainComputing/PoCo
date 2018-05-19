@@ -261,6 +261,8 @@ contract('IexecHub', function(accounts) {
 			from: iExecCloudUser,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
+
+
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
@@ -272,6 +274,13 @@ contract('IexecHub', function(accounts) {
    aWorkOrderInstance = await WorkOrder.at(woid);
    let status = await aWorkOrderInstance.m_status.call();
    assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
+
+	 let isWoidRegistred = await aIexecHubInstance.isWoidRegistred.call(woid);
+	 assert.strictEqual(isWoidRegistred, true, "check isWoidRegistred true");
+
+	 let isWoidRegistredKO = await aIexecHubInstance.isWoidRegistred.call(iExecCloudUser);
+	 assert.strictEqual(isWoidRegistredKO, false, "check iExecCloudUser is not a workorder");
+
 
 	});
 

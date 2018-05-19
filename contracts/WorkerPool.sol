@@ -237,12 +237,14 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 timeout = iexecHubInterface.getCategoryWorkClockTimeRef(catid).mul(CONSENSUS_DURATION_RATIO).add(now);
 
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		consensus.poolReward      = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
-		consensus.workerpoolOwner = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
-		consensus.stakeAmount     = consensus.poolReward.percentage(m_stakeRatioPolicy);
-		consensus.consensusTimout = timeout;
+		consensus.poolReward                 = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
+		consensus.workerpoolOwner            = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
+		consensus.stakeAmount                = consensus.poolReward.percentage(m_stakeRatioPolicy);
+		consensus.consensusTimout            = timeout;
+		consensus.schedulerRewardRatioPolicy = m_schedulerRewardRatioPolicy;
 
 		emit WorkOrderActive(_woid);
+
 		return true;
 	}
 
@@ -275,6 +277,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function allowWorkerToContribute(address _woid, address _worker, address _enclaveChallenge) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
@@ -295,6 +298,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function contribute(address _woid, bytes32 _resultHash, bytes32 _resultSign, uint8 _v, bytes32 _r, bytes32 _s) public returns (uint256 workerStake)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
@@ -322,6 +326,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function revealConsensus(address _woid, bytes32 _consensus) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require(WorkOrder(_woid).startRevealingPhase());
@@ -349,6 +354,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function reveal(address _woid, bytes32 _result) public returns (bool)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
@@ -369,6 +375,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 
 	function reopen(address _woid) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
@@ -393,6 +400,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	// if sheduler never call finalized ? no incetive to do that. schedulermust be pay also at this time
 	function finalizeWork(address _woid, string _stdout, string _stderr, string _uri) public onlyOwner /*onlySheduler*/ returns (bool)
 	{
+		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
 		require(now <= consensus.consensusTimout);
 		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
@@ -434,7 +442,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(m_schedulerRewardRatioPolicy));
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
 
 		for (i = 0; i<contributors.length; ++i)
 		{

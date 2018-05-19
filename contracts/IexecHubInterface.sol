@@ -53,6 +53,10 @@ contract IexecHubInterface
 		address _beneficiary)
 	external returns (address);
 
+	function isWoidRegistred(
+		address _woid)
+	public view returns (bool);
+
 	function lockWorkOrderCost(
 		address _requester,
 		address _workerpool, // Address of a smartcontract
