@@ -189,14 +189,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceInterface.sol",
     "exportedSymbols": {
       "MarketplaceInterface": [
-        3377
+        3371
       ]
     },
-    "id": 3378,
+    "id": 3372,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3304,
+        "id": 3298,
         "literals": [
           "solidity",
           "^",
@@ -209,10 +209,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/IexecLib.sol",
         "file": "./IexecLib.sol",
-        "id": 3305,
+        "id": 3299,
         "nodeType": "ImportDirective",
-        "scope": 3378,
-        "sourceUnit": 2651,
+        "scope": 3372,
+        "sourceUnit": 2645,
         "src": "25:24:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -223,9 +223,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 3377,
+        "id": 3371,
         "linearizedBaseContracts": [
-          3377
+          3371
         ],
         "name": "MarketplaceInterface",
         "nodeType": "ContractDefinition",
@@ -233,7 +233,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3322,
+            "id": 3316,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -241,31 +241,31 @@
             "name": "createMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3318,
+              "id": 3312,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3307,
+                  "id": 3301,
                   "name": "_direction",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "113:44:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                     "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 3306,
+                    "id": 3300,
                     "name": "IexecLib.MarketOrderDirectionEnum",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2566,
+                    "referencedDeclaration": 2560,
                     "src": "113:33:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                       "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                     }
                   },
@@ -274,10 +274,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3309,
+                  "id": 3303,
                   "name": "_category",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "161:17:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -286,7 +286,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3308,
+                    "id": 3302,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "161:7:11",
@@ -300,10 +300,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3311,
+                  "id": 3305,
                   "name": "_trust",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "182:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -312,7 +312,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3310,
+                    "id": 3304,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:11",
@@ -326,10 +326,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3313,
+                  "id": 3307,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "200:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -338,7 +338,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3312,
+                    "id": 3306,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "200:7:11",
@@ -352,10 +352,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3315,
+                  "id": 3309,
                   "name": "_workerpool",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "218:19:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -364,7 +364,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3314,
+                    "id": 3308,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "218:7:11",
@@ -378,10 +378,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3317,
+                  "id": 3311,
                   "name": "_volume",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "241:15:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -390,7 +390,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3316,
+                    "id": 3310,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "241:7:11",
@@ -407,15 +407,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3321,
+              "id": 3315,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3320,
+                  "id": 3314,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "275:4:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -424,7 +424,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3319,
+                    "id": 3313,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "275:4:11",
@@ -439,7 +439,7 @@
               ],
               "src": "274:6:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "83:198:11",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -448,7 +448,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3329,
+            "id": 3323,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -456,15 +456,15 @@
             "name": "closeMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3325,
+              "id": 3319,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3324,
+                  "id": 3318,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3329,
+                  "scope": 3323,
                   "src": "313:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -473,7 +473,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3323,
+                    "id": 3317,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "313:7:11",
@@ -490,15 +490,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3328,
+              "id": 3322,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3327,
+                  "id": 3321,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3329,
+                  "scope": 3323,
                   "src": "355:4:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -507,7 +507,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 3326,
+                    "id": 3320,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "355:4:11",
@@ -522,7 +522,7 @@
               ],
               "src": "354:6:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "284:77:11",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -531,7 +531,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3336,
+            "id": 3330,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -539,15 +539,15 @@
             "name": "getMarketOrderValue",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3332,
+              "id": 3326,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3331,
+                  "id": 3325,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3336,
+                  "scope": 3330,
                   "src": "396:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -556,7 +556,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3330,
+                    "id": 3324,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:7:11",
@@ -573,15 +573,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3335,
+              "id": 3329,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3334,
+                  "id": 3328,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3336,
+                  "scope": 3330,
                   "src": "442:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -590,7 +590,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3333,
+                    "id": 3327,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "442:7:11",
@@ -605,7 +605,7 @@
               ],
               "src": "441:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "364:87:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -614,7 +614,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3343,
+            "id": 3337,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -622,15 +622,15 @@
             "name": "getMarketOrderWorkerpoolOwner",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3339,
+              "id": 3333,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3338,
+                  "id": 3332,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
+                  "scope": 3337,
                   "src": "496:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -639,7 +639,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3337,
+                    "id": 3331,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:7:11",
@@ -656,15 +656,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3342,
+              "id": 3336,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3341,
+                  "id": 3335,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
+                  "scope": 3337,
                   "src": "542:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -673,7 +673,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3340,
+                    "id": 3334,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "542:7:11",
@@ -688,7 +688,7 @@
               ],
               "src": "541:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "454:97:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -697,7 +697,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3350,
+            "id": 3344,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -705,15 +705,15 @@
             "name": "getMarketOrderCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3346,
+              "id": 3340,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3345,
+                  "id": 3339,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3350,
+                  "scope": 3344,
                   "src": "589:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -722,7 +722,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3344,
+                    "id": 3338,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "589:7:11",
@@ -739,15 +739,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3349,
+              "id": 3343,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3348,
+                  "id": 3342,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3350,
+                  "scope": 3344,
                   "src": "636:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -756,7 +756,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3347,
+                    "id": 3341,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "636:7:11",
@@ -771,7 +771,7 @@
               ],
               "src": "635:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "554:91:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -780,7 +780,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3357,
+            "id": 3351,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -788,15 +788,15 @@
             "name": "getMarketOrderTrust",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3353,
+              "id": 3347,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3352,
+                  "id": 3346,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3357,
+                  "scope": 3351,
                   "src": "680:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -805,7 +805,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3351,
+                    "id": 3345,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "680:7:11",
@@ -822,15 +822,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3356,
+              "id": 3350,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3355,
+                  "id": 3349,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3357,
+                  "scope": 3351,
                   "src": "726:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -839,7 +839,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3354,
+                    "id": 3348,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "726:7:11",
@@ -854,7 +854,7 @@
               ],
               "src": "725:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "648:87:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -863,7 +863,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3376,
+            "id": 3370,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -871,15 +871,15 @@
             "name": "getMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3360,
+              "id": 3354,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3359,
+                  "id": 3353,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "765:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -888,7 +888,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3358,
+                    "id": 3352,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "765:7:11",
@@ -905,31 +905,31 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3375,
+              "id": 3369,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3362,
+                  "id": 3356,
                   "name": "direction",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "814:43:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                     "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 3361,
+                    "id": 3355,
                     "name": "IexecLib.MarketOrderDirectionEnum",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2566,
+                    "referencedDeclaration": 2560,
                     "src": "814:33:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                       "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                     }
                   },
@@ -938,10 +938,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3364,
+                  "id": 3358,
                   "name": "category",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "861:16:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -950,7 +950,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3363,
+                    "id": 3357,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "861:7:11",
@@ -964,10 +964,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3366,
+                  "id": 3360,
                   "name": "trust",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "908:13:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -976,7 +976,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3365,
+                    "id": 3359,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "908:7:11",
@@ -990,10 +990,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3368,
+                  "id": 3362,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "946:13:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1002,7 +1002,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3367,
+                    "id": 3361,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "946:7:11",
@@ -1016,10 +1016,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3370,
+                  "id": 3364,
                   "name": "volume",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "992:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1028,7 +1028,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3369,
+                    "id": 3363,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "992:7:11",
@@ -1042,10 +1042,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3372,
+                  "id": 3366,
                   "name": "remaining",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "1051:17:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1054,7 +1054,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3371,
+                    "id": 3365,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:11",
@@ -1068,10 +1068,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3374,
+                  "id": 3368,
                   "name": "workerpool",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "1100:18:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1080,7 +1080,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3373,
+                    "id": 3367,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1100:7:11",
@@ -1095,14 +1095,14 @@
               ],
               "src": "810:309:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "738:382:11",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3378,
+        "scope": 3372,
         "src": "50:1103:11"
       }
     ],
@@ -1112,14 +1112,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceInterface.sol",
     "exportedSymbols": {
       "MarketplaceInterface": [
-        3377
+        3371
       ]
     },
-    "id": 3378,
+    "id": 3372,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3304,
+        "id": 3298,
         "literals": [
           "solidity",
           "^",
@@ -1132,10 +1132,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/IexecLib.sol",
         "file": "./IexecLib.sol",
-        "id": 3305,
+        "id": 3299,
         "nodeType": "ImportDirective",
-        "scope": 3378,
-        "sourceUnit": 2651,
+        "scope": 3372,
+        "sourceUnit": 2645,
         "src": "25:24:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1146,9 +1146,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 3377,
+        "id": 3371,
         "linearizedBaseContracts": [
-          3377
+          3371
         ],
         "name": "MarketplaceInterface",
         "nodeType": "ContractDefinition",
@@ -1156,7 +1156,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3322,
+            "id": 3316,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1164,31 +1164,31 @@
             "name": "createMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3318,
+              "id": 3312,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3307,
+                  "id": 3301,
                   "name": "_direction",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "113:44:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                     "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 3306,
+                    "id": 3300,
                     "name": "IexecLib.MarketOrderDirectionEnum",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2566,
+                    "referencedDeclaration": 2560,
                     "src": "113:33:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                       "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                     }
                   },
@@ -1197,10 +1197,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3309,
+                  "id": 3303,
                   "name": "_category",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "161:17:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1209,7 +1209,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3308,
+                    "id": 3302,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "161:7:11",
@@ -1223,10 +1223,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3311,
+                  "id": 3305,
                   "name": "_trust",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "182:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1235,7 +1235,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3310,
+                    "id": 3304,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:11",
@@ -1249,10 +1249,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3313,
+                  "id": 3307,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "200:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1261,7 +1261,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3312,
+                    "id": 3306,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "200:7:11",
@@ -1275,10 +1275,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3315,
+                  "id": 3309,
                   "name": "_workerpool",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "218:19:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1287,7 +1287,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3314,
+                    "id": 3308,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "218:7:11",
@@ -1301,10 +1301,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3317,
+                  "id": 3311,
                   "name": "_volume",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "241:15:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1313,7 +1313,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3316,
+                    "id": 3310,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "241:7:11",
@@ -1330,15 +1330,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3321,
+              "id": 3315,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3320,
+                  "id": 3314,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3322,
+                  "scope": 3316,
                   "src": "275:4:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1347,7 +1347,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3319,
+                    "id": 3313,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "275:4:11",
@@ -1362,7 +1362,7 @@
               ],
               "src": "274:6:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "83:198:11",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1371,7 +1371,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3329,
+            "id": 3323,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1379,15 +1379,15 @@
             "name": "closeMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3325,
+              "id": 3319,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3324,
+                  "id": 3318,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3329,
+                  "scope": 3323,
                   "src": "313:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1396,7 +1396,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3323,
+                    "id": 3317,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "313:7:11",
@@ -1413,15 +1413,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3328,
+              "id": 3322,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3327,
+                  "id": 3321,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3329,
+                  "scope": 3323,
                   "src": "355:4:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1430,7 +1430,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 3326,
+                    "id": 3320,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "355:4:11",
@@ -1445,7 +1445,7 @@
               ],
               "src": "354:6:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "284:77:11",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1454,7 +1454,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3336,
+            "id": 3330,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1462,15 +1462,15 @@
             "name": "getMarketOrderValue",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3332,
+              "id": 3326,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3331,
+                  "id": 3325,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3336,
+                  "scope": 3330,
                   "src": "396:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1479,7 +1479,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3330,
+                    "id": 3324,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:7:11",
@@ -1496,15 +1496,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3335,
+              "id": 3329,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3334,
+                  "id": 3328,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3336,
+                  "scope": 3330,
                   "src": "442:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1513,7 +1513,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3333,
+                    "id": 3327,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "442:7:11",
@@ -1528,7 +1528,7 @@
               ],
               "src": "441:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "364:87:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -1537,7 +1537,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3343,
+            "id": 3337,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1545,15 +1545,15 @@
             "name": "getMarketOrderWorkerpoolOwner",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3339,
+              "id": 3333,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3338,
+                  "id": 3332,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
+                  "scope": 3337,
                   "src": "496:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1562,7 +1562,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3337,
+                    "id": 3331,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:7:11",
@@ -1579,15 +1579,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3342,
+              "id": 3336,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3341,
+                  "id": 3335,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3343,
+                  "scope": 3337,
                   "src": "542:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1596,7 +1596,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3340,
+                    "id": 3334,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "542:7:11",
@@ -1611,7 +1611,7 @@
               ],
               "src": "541:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "454:97:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -1620,7 +1620,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3350,
+            "id": 3344,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1628,15 +1628,15 @@
             "name": "getMarketOrderCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3346,
+              "id": 3340,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3345,
+                  "id": 3339,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3350,
+                  "scope": 3344,
                   "src": "589:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1645,7 +1645,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3344,
+                    "id": 3338,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "589:7:11",
@@ -1662,15 +1662,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3349,
+              "id": 3343,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3348,
+                  "id": 3342,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3350,
+                  "scope": 3344,
                   "src": "636:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1679,7 +1679,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3347,
+                    "id": 3341,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "636:7:11",
@@ -1694,7 +1694,7 @@
               ],
               "src": "635:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "554:91:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -1703,7 +1703,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3357,
+            "id": 3351,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1711,15 +1711,15 @@
             "name": "getMarketOrderTrust",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3353,
+              "id": 3347,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3352,
+                  "id": 3346,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3357,
+                  "scope": 3351,
                   "src": "680:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1728,7 +1728,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3351,
+                    "id": 3345,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "680:7:11",
@@ -1745,15 +1745,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3356,
+              "id": 3350,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3355,
+                  "id": 3349,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3357,
+                  "scope": 3351,
                   "src": "726:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1762,7 +1762,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3354,
+                    "id": 3348,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "726:7:11",
@@ -1777,7 +1777,7 @@
               ],
               "src": "725:9:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "648:87:11",
             "stateMutability": "view",
             "superFunction": null,
@@ -1786,7 +1786,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 3376,
+            "id": 3370,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1794,15 +1794,15 @@
             "name": "getMarketOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3360,
+              "id": 3354,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3359,
+                  "id": 3353,
                   "name": "_marketorderIdx",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "765:23:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1811,7 +1811,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3358,
+                    "id": 3352,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "765:7:11",
@@ -1828,31 +1828,31 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3375,
+              "id": 3369,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3362,
+                  "id": 3356,
                   "name": "direction",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "814:43:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                    "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                     "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 3361,
+                    "id": 3355,
                     "name": "IexecLib.MarketOrderDirectionEnum",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2566,
+                    "referencedDeclaration": 2560,
                     "src": "814:33:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2566",
+                      "typeIdentifier": "t_enum$_MarketOrderDirectionEnum_$2560",
                       "typeString": "enum IexecLib.MarketOrderDirectionEnum"
                     }
                   },
@@ -1861,10 +1861,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3364,
+                  "id": 3358,
                   "name": "category",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "861:16:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1873,7 +1873,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3363,
+                    "id": 3357,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "861:7:11",
@@ -1887,10 +1887,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3366,
+                  "id": 3360,
                   "name": "trust",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "908:13:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1899,7 +1899,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3365,
+                    "id": 3359,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "908:7:11",
@@ -1913,10 +1913,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3368,
+                  "id": 3362,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "946:13:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1925,7 +1925,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3367,
+                    "id": 3361,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "946:7:11",
@@ -1939,10 +1939,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3370,
+                  "id": 3364,
                   "name": "volume",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "992:14:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1951,7 +1951,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3369,
+                    "id": 3363,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "992:7:11",
@@ -1965,10 +1965,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3372,
+                  "id": 3366,
                   "name": "remaining",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "1051:17:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1977,7 +1977,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3371,
+                    "id": 3365,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:11",
@@ -1991,10 +1991,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 3374,
+                  "id": 3368,
                   "name": "workerpool",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3376,
+                  "scope": 3370,
                   "src": "1100:18:11",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2003,7 +2003,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3373,
+                    "id": 3367,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1100:7:11",
@@ -2018,14 +2018,14 @@
               ],
               "src": "810:309:11"
             },
-            "scope": 3377,
+            "scope": 3371,
             "src": "738:382:11",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3378,
+        "scope": 3372,
         "src": "50:1103:11"
       }
     ],
@@ -2037,5 +2037,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-05-19T20:29:46.550Z"
+  "updatedAt": "2018-05-19T20:37:01.853Z"
 }

@@ -23,14 +23,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceAccessor.sol",
     "exportedSymbols": {
       "MarketplaceAccessor": [
-        3302
+        3296
       ]
     },
-    "id": 3303,
+    "id": 3297,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3272,
+        "id": 3266,
         "literals": [
           "solidity",
           "^",
@@ -43,10 +43,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceInterface.sol",
         "file": "./MarketplaceInterface.sol",
-        "id": 3273,
+        "id": 3267,
         "nodeType": "ImportDirective",
-        "scope": 3303,
-        "sourceUnit": 3378,
+        "scope": 3297,
+        "sourceUnit": 3372,
         "src": "26:36:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -57,19 +57,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 3302,
+        "id": 3296,
         "linearizedBaseContracts": [
-          3302
+          3296
         ],
         "name": "MarketplaceAccessor",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 3275,
+            "id": 3269,
             "name": "marketplaceAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 3302,
+            "scope": 3296,
             "src": "96:48:10",
             "stateVariable": true,
             "storageLocation": "default",
@@ -78,7 +78,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 3274,
+              "id": 3268,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "96:7:10",
@@ -92,26 +92,26 @@
           },
           {
             "constant": false,
-            "id": 3277,
+            "id": 3271,
             "name": "marketplaceInterface",
             "nodeType": "VariableDeclaration",
-            "scope": 3302,
+            "scope": 3296,
             "src": "147:50:10",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+              "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
               "typeString": "contract MarketplaceInterface"
             },
             "typeName": {
               "contractScope": null,
-              "id": 3276,
+              "id": 3270,
               "name": "MarketplaceInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3377,
+              "referencedDeclaration": 3371,
               "src": "147:20:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                 "typeString": "contract MarketplaceInterface"
               }
             },
@@ -120,7 +120,7 @@
           },
           {
             "body": {
-              "id": 3300,
+              "id": 3294,
               "nodeType": "Block",
               "src": "365:164:10",
               "statements": [
@@ -134,18 +134,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 3287,
+                        "id": 3281,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 3283,
+                          "id": 3277,
                           "name": "_marketplaceAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3279,
+                          "referencedDeclaration": 3273,
                           "src": "377:19:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -160,7 +160,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 3285,
+                              "id": 3279,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -183,7 +183,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 3284,
+                            "id": 3278,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -196,7 +196,7 @@
                             },
                             "typeName": "address"
                           },
-                          "id": 3286,
+                          "id": 3280,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -224,18 +224,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 3282,
+                      "id": 3276,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6610,
+                      "referencedDeclaration": 6604,
                       "src": "369:7:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 3288,
+                    "id": 3282,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -249,25 +249,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3289,
+                  "id": 3283,
                   "nodeType": "ExpressionStatement",
                   "src": "369:42:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 3292,
+                    "id": 3286,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 3290,
+                      "id": 3284,
                       "name": "marketplaceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3275,
+                      "referencedDeclaration": 3269,
                       "src": "415:18:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -278,11 +278,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 3291,
+                      "id": 3285,
                       "name": "_marketplaceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3279,
+                      "referencedDeclaration": 3273,
                       "src": "438:19:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -295,28 +295,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 3293,
+                  "id": 3287,
                   "nodeType": "ExpressionStatement",
                   "src": "415:42:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 3298,
+                    "id": 3292,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 3294,
+                      "id": 3288,
                       "name": "marketplaceInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3277,
+                      "referencedDeclaration": 3271,
                       "src": "461:20:10",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                         "typeString": "contract MarketplaceInterface"
                       }
                     },
@@ -327,11 +327,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 3296,
+                          "id": 3290,
                           "name": "_marketplaceAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3279,
+                          "referencedDeclaration": 3273,
                           "src": "505:19:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -346,18 +346,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 3295,
+                        "id": 3289,
                         "name": "MarketplaceInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3377,
+                        "referencedDeclaration": 3371,
                         "src": "484:20:10",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3377_$",
+                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3371_$",
                           "typeString": "type(contract MarketplaceInterface)"
                         }
                       },
-                      "id": 3297,
+                      "id": 3291,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -367,24 +367,24 @@
                       "nodeType": "FunctionCall",
                       "src": "484:41:10",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                         "typeString": "contract MarketplaceInterface"
                       }
                     },
                     "src": "461:64:10",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                       "typeString": "contract MarketplaceInterface"
                     }
                   },
-                  "id": 3299,
+                  "id": 3293,
                   "nodeType": "ExpressionStatement",
                   "src": "461:64:10"
                 }
               ]
             },
             "documentation": null,
-            "id": 3301,
+            "id": 3295,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -392,15 +392,15 @@
             "name": "MarketplaceAccessor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3280,
+              "id": 3274,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3279,
+                  "id": 3273,
                   "name": "_marketplaceAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3301,
+                  "scope": 3295,
                   "src": "328:27:10",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -409,7 +409,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3278,
+                    "id": 3272,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "328:7:10",
@@ -426,19 +426,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3281,
+              "id": 3275,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "365:0:10"
             },
-            "scope": 3302,
+            "scope": 3296,
             "src": "299:230:10",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3303,
+        "scope": 3297,
         "src": "64:467:10"
       }
     ],
@@ -448,14 +448,14 @@
     "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceAccessor.sol",
     "exportedSymbols": {
       "MarketplaceAccessor": [
-        3302
+        3296
       ]
     },
-    "id": 3303,
+    "id": 3297,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3272,
+        "id": 3266,
         "literals": [
           "solidity",
           "^",
@@ -468,10 +468,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/PoCo/contracts/MarketplaceInterface.sol",
         "file": "./MarketplaceInterface.sol",
-        "id": 3273,
+        "id": 3267,
         "nodeType": "ImportDirective",
-        "scope": 3303,
-        "sourceUnit": 3378,
+        "scope": 3297,
+        "sourceUnit": 3372,
         "src": "26:36:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -482,19 +482,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 3302,
+        "id": 3296,
         "linearizedBaseContracts": [
-          3302
+          3296
         ],
         "name": "MarketplaceAccessor",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 3275,
+            "id": 3269,
             "name": "marketplaceAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 3302,
+            "scope": 3296,
             "src": "96:48:10",
             "stateVariable": true,
             "storageLocation": "default",
@@ -503,7 +503,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 3274,
+              "id": 3268,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "96:7:10",
@@ -517,26 +517,26 @@
           },
           {
             "constant": false,
-            "id": 3277,
+            "id": 3271,
             "name": "marketplaceInterface",
             "nodeType": "VariableDeclaration",
-            "scope": 3302,
+            "scope": 3296,
             "src": "147:50:10",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+              "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
               "typeString": "contract MarketplaceInterface"
             },
             "typeName": {
               "contractScope": null,
-              "id": 3276,
+              "id": 3270,
               "name": "MarketplaceInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3377,
+              "referencedDeclaration": 3371,
               "src": "147:20:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                 "typeString": "contract MarketplaceInterface"
               }
             },
@@ -545,7 +545,7 @@
           },
           {
             "body": {
-              "id": 3300,
+              "id": 3294,
               "nodeType": "Block",
               "src": "365:164:10",
               "statements": [
@@ -559,18 +559,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 3287,
+                        "id": 3281,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 3283,
+                          "id": 3277,
                           "name": "_marketplaceAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3279,
+                          "referencedDeclaration": 3273,
                           "src": "377:19:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -585,7 +585,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 3285,
+                              "id": 3279,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -608,7 +608,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 3284,
+                            "id": 3278,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -621,7 +621,7 @@
                             },
                             "typeName": "address"
                           },
-                          "id": 3286,
+                          "id": 3280,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -649,18 +649,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 3282,
+                      "id": 3276,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6610,
+                      "referencedDeclaration": 6604,
                       "src": "369:7:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 3288,
+                    "id": 3282,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -674,25 +674,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3289,
+                  "id": 3283,
                   "nodeType": "ExpressionStatement",
                   "src": "369:42:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 3292,
+                    "id": 3286,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 3290,
+                      "id": 3284,
                       "name": "marketplaceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3275,
+                      "referencedDeclaration": 3269,
                       "src": "415:18:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -703,11 +703,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 3291,
+                      "id": 3285,
                       "name": "_marketplaceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3279,
+                      "referencedDeclaration": 3273,
                       "src": "438:19:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -720,28 +720,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 3293,
+                  "id": 3287,
                   "nodeType": "ExpressionStatement",
                   "src": "415:42:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 3298,
+                    "id": 3292,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 3294,
+                      "id": 3288,
                       "name": "marketplaceInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3277,
+                      "referencedDeclaration": 3271,
                       "src": "461:20:10",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                         "typeString": "contract MarketplaceInterface"
                       }
                     },
@@ -752,11 +752,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 3296,
+                          "id": 3290,
                           "name": "_marketplaceAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3279,
+                          "referencedDeclaration": 3273,
                           "src": "505:19:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -771,18 +771,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 3295,
+                        "id": 3289,
                         "name": "MarketplaceInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3377,
+                        "referencedDeclaration": 3371,
                         "src": "484:20:10",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3377_$",
+                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3371_$",
                           "typeString": "type(contract MarketplaceInterface)"
                         }
                       },
-                      "id": 3297,
+                      "id": 3291,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -792,24 +792,24 @@
                       "nodeType": "FunctionCall",
                       "src": "484:41:10",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                         "typeString": "contract MarketplaceInterface"
                       }
                     },
                     "src": "461:64:10",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3377",
+                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3371",
                       "typeString": "contract MarketplaceInterface"
                     }
                   },
-                  "id": 3299,
+                  "id": 3293,
                   "nodeType": "ExpressionStatement",
                   "src": "461:64:10"
                 }
               ]
             },
             "documentation": null,
-            "id": 3301,
+            "id": 3295,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -817,15 +817,15 @@
             "name": "MarketplaceAccessor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3280,
+              "id": 3274,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3279,
+                  "id": 3273,
                   "name": "_marketplaceAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3301,
+                  "scope": 3295,
                   "src": "328:27:10",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -834,7 +834,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3278,
+                    "id": 3272,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "328:7:10",
@@ -851,19 +851,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 3281,
+              "id": 3275,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "365:0:10"
             },
-            "scope": 3302,
+            "scope": 3296,
             "src": "299:230:10",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 3303,
+        "scope": 3297,
         "src": "64:467:10"
       }
     ],
@@ -875,5 +875,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-05-19T20:29:46.539Z"
+  "updatedAt": "2018-05-19T20:37:01.847Z"
 }

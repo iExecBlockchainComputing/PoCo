@@ -66,6 +66,11 @@ contract IexecHub
 	 * workOrder Registered
 	 */
 	mapping(address => bool) public m_woidRegistered;
+	modifier onlyRegisteredWoid(address _woid)
+	{
+		require(m_woidRegistered[_woid]);
+		_;
+	}
 
 	/**
 	 * Reputation for PoCo
@@ -272,9 +277,9 @@ contract IexecHub
 	 * WorkOrder life cycle
 	 */
 
-	function claimFailedConsensus(address _woid) public returns (bool)
+	function claimFailedConsensus(address _woid)
+	public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		WorkOrder  workorder  = WorkOrder(_woid);
 		require(workorder.m_requester() == msg.sender);
 		WorkerPool workerpool = WorkerPool(workorder.m_workerpool());
@@ -308,9 +313,8 @@ contract IexecHub
 		string  _stdout,
 		string  _stderr,
 		string  _uri)
-	public returns (bool)
+	public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		WorkOrder workorder = WorkOrder(_woid);
 		require(workorder.m_workerpool() == msg.sender);
 		require(workorder.m_status()     == IexecLib.WorkOrderStatusEnum.REVEALING);
@@ -471,23 +475,20 @@ contract IexecHub
 		return true;
 	}
 	/* Work */
-	function lockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
+	function lockForWork(address _woid, address _user, uint256 _amount) public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(lock(_user, _amount));
 		return true;
 	}
-	function unlockForWork(address _woid, address _user, uint256 _amount) public returns (bool)
+	function unlockForWork(address _woid, address _user, uint256 _amount) public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(unlock(_user, _amount));
 		return true;
 	}
-	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
+	function rewardForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(reward(_worker, _amount));
 		if (_reputation)
@@ -498,9 +499,8 @@ contract IexecHub
 		}
 		return true;
 	}
-	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public returns (bool)
+	function seizeForWork(address _woid, address _worker, uint256 _amount, bool _reputation) public onlyRegisteredWoid(_woid) returns (bool)
 	{
-		require(m_woidRegistered[_woid]);
 		require(WorkOrder(_woid).m_workerpool() == msg.sender);
 		require(seize(_worker, _amount));
 		if (_reputation)
