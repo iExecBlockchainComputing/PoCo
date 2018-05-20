@@ -492,15 +492,15 @@ or
 
 
 ```
-coverage : 12/04/2018
+coverage : 20/05/2018
 
-180 passing (12m)
+184 passing (10m)
 1 pending
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------------------|----------|----------|----------|----------|----------------|
-contracts/                  |      100 |    75.16 |      100 |      100 |                |
+contracts/                  |      100 |     74.7 |      100 |      100 |                |
 App.sol                    |      100 |       50 |      100 |      100 |                |
 AppHub.sol                 |      100 |      100 |      100 |      100 |                |
 Dataset.sol                |      100 |       50 |      100 |      100 |                |
@@ -511,17 +511,17 @@ IexecHub.sol               |      100 |    70.54 |      100 |      100 |        
 IexecHubAccessor.sol       |      100 |       75 |      100 |      100 |                |
 IexecHubInterface.sol      |      100 |      100 |      100 |      100 |                |
 IexecLib.sol               |      100 |      100 |      100 |      100 |                |
-Marketplace.sol            |      100 |    88.89 |      100 |      100 |                |
+Marketplace.sol            |      100 |    83.33 |      100 |      100 |                |
 MarketplaceAccessor.sol    |      100 |       50 |      100 |      100 |                |
 MarketplaceInterface.sol   |      100 |      100 |      100 |      100 |                |
-OwnableOZ.sol              |      100 |       75 |      100 |      100 |                |
+OwnableOZ.sol              |      100 |    66.67 |      100 |      100 |                |
 SafeMathOZ.sol             |      100 |       75 |      100 |      100 |                |
 TestSha.sol                |      100 |      100 |      100 |      100 |                |
-WorkOrder.sol              |      100 |       60 |      100 |      100 |                |
-WorkerPool.sol             |      100 |    82.69 |      100 |      100 |                |
+WorkOrder.sol              |      100 |    56.25 |      100 |      100 |                |
+WorkerPool.sol             |      100 |     81.9 |      100 |      100 |                |
 WorkerPoolHub.sol          |      100 |       75 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |      100 |    75.16 |      100 |      100 |                |
+All files                    |      100 |     74.7 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 ## Oyente analyse see [here](./oyente)
