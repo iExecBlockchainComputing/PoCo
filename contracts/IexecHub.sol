@@ -38,7 +38,7 @@ contract IexecHub
 	/**
 	 * Market place
 	 */
-	Marketplace marketplace;
+	Marketplace public marketplace;
 	modifier onlyMarketplace()
 	{
 		require(msg.sender == address(marketplace));

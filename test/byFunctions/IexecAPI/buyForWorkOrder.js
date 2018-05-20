@@ -259,7 +259,7 @@ contract('IexecHub', function(accounts) {
 	it("buyForWorkOrder_01: test buyForWorkOrder from a smart contract", async function() {
 
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address,{
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created "+aIexecAPIInstance.address);

@@ -166,7 +166,7 @@ contract('IexecHub', function(accounts) {
       gas : constants.AMOUNT_GAS_PROVIDED
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    let marketplaceAddressCall = await aIexecHubInstance.marketplaceAddress.call();
+    let marketplaceAddressCall = await aIexecHubInstance.marketplace.call();
     assert.strictEqual(marketplaceAddressCall,  aMarketplaceInstance.address, "check marketplaceAddress in aIexecHubInstance");
 	});
 
