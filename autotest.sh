@@ -75,7 +75,7 @@ function runDeploy
 	fi
 }
 
-function runTests
+function runCoreTests
 {
 	# running tests
 	for filepath in `find test/ -maxdepth 1 -type f -name "*.js" -print | sort`
@@ -99,6 +99,23 @@ function runTests
 	done
 }
 
+function runAllTests
+{
+  # running tests
+  logfile="logs/alltests.$date.log"
+  printf "Starting all test ... "
+  $TRUFFLE test > $logfile 2>&1
+  if [[ $? -ne 0 ]];
+  then
+    print_style 'danger' "failure\n"
+    print_style 'danger' "Full report is available at $logfile\n"
+    catch
+  else
+    print_style 'success' "success\n"
+    rm -f $logfile
+  fi
+}
+
 date=$(date --utc +"%Y-%m-%dT%H:%M:%S")
 checkpoint="$1"
 
@@ -106,5 +123,6 @@ checkpoint="$1"
 initialize
 runCompile
 runDeploy
-runTests
+runCoreTests
+#runAllTests
 finalize

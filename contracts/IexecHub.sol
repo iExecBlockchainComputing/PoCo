@@ -303,7 +303,6 @@ contract IexecHub
 		require(reward (this,                    workerpoolStake));
 		require(lock   (this,                    workerpoolStake));
 
-
 		emit WorkOrderClaimed(_woid, workorder.m_workerpool());
 		return true;
 	}
