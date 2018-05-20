@@ -420,7 +420,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 workerBonus;
 		uint256 workerWeight;
 		uint256 totalWeight;
-		uint256 workerReward;
+		uint256 individualWorkerReward;
 		uint256 totalReward = _consensus.poolReward;
 		address[] memory contributors = _consensus.contributors;
 		for (i = 0; i<contributors.length; ++i)
@@ -442,17 +442,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
+		uint256 totalWorkersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
 
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
 			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
 			{
-				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
-				totalReward  = totalReward.sub(workerReward);
+				individualWorkerReward = totalWorkersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
+				totalReward  = totalReward.sub(individualWorkerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _consensus.stakeAmount));
-				require(iexecHubInterface.rewardForWork(_woid, w, workerReward, true));
+				require(iexecHubInterface.rewardForWork(_woid, w, individualWorkerReward, true));
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
