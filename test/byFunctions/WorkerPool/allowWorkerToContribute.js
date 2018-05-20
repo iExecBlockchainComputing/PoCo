@@ -441,7 +441,7 @@ contract('IexecHub', function(accounts) {
     });
 
 
-		it("allowWorkerToContribute_05: scheduler can't allowWorkerToContribute on worker after the consensusTimout", async function() {
+		it("allowWorkerToContribute_05: scheduler can't allowWorkerToContribute on worker after the consensusTimeout", async function() {
 
 			if (!isTestRPC) this.skip("This test is only for TestRPC");
 	    // WORKER SUBSCRIBE TO POOL
