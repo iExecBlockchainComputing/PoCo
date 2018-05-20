@@ -1,6 +1,5 @@
 pragma solidity ^0.4.21;
 
-
 //smart contract for testing purpose only
 
 contract TestSha
