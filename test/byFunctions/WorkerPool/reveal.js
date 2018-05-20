@@ -627,7 +627,7 @@ contract('IexecHub', function(accounts) {
 
     let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
     let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
-    await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef);
+    await web3.evm.increaseTimePromise((CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef)+1);
 
     const result = web3.sha3("iExec the wanderer");
 
