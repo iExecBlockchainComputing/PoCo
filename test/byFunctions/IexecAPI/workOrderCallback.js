@@ -304,7 +304,7 @@ contract('IexecHub', function(accounts) {
   it("workOrderCallback_01: test workOrderCallback from a smart contract", async function() {
 
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address,aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);

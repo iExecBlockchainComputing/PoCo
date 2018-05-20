@@ -305,7 +305,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_01: test workOrderCallback from a smart contract", async function() {
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -533,7 +533,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_02: test every body can callback", async function() {
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -751,7 +751,7 @@ contract('IexecHub', function(accounts) {
 
     it("workOrderCallback_03: test callback with wrong result are reverted", async function() {
 
-      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
         from: iExecCloudUser
       });
       console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
