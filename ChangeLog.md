@@ -17,11 +17,18 @@ Features:
  * [#21](https://github.com/iExecBlockchainComputing/PoCo/issues/21): remove change ownership in OwnableOZ.sol   
 
 Bugfixes:
-* [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) possibly useless RLC address getter
-* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): Malicious IexecAPI contract without callback
-* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15): [SC AUDIT] Result without Payment. Malicious IexecAPI contract without callback
-* [#25](https://github.com/iExecBlockchainComputing/PoCo/issues/25) :[SC AUDIT] Scheduler can manipulate its reward percentage
-* [#26](https://github.com/iExecBlockchainComputing/PoCo/issues/26) :[SC AUDIT] Arbitrary Contract are trusted
+* [#24](https://github.com/iExecBlockchainComputing/PoCo/issues/24) : possibly useless RLC address getter
+* [#15](https://github.com/iExecBlockchainComputing/PoCo/issues/15) :[CS AUDIT] Result without Payment. Malicious IexecAPI contract without callback
+* [#25](https://github.com/iExecBlockchainComputing/PoCo/issues/25) :[CS AUDIT] Scheduler can manipulate its reward percentage
+* [#26](https://github.com/iExecBlockchainComputing/PoCo/issues/26) :[CS AUDIT] Arbitrary Contract are trusted
+* [#27](https://github.com/iExecBlockchainComputing/PoCo/issues/27) :[CS AUDIT] fix consensusTimout, failled typo to consensusTimeout, failed
+* [#28](https://github.com/iExecBlockchainComputing/PoCo/issues/28) : Attacker can race to attach invalid hubs.
+* [#29](https://github.com/iExecBlockchainComputing/PoCo/issues/29) : [CS AUDIT] Addresses are are duplicates
+* [#30](https://github.com/iExecBlockchainComputing/PoCo/issues/30) : IexecHubInterface is not up to date
+* [#31](https://github.com/iExecBlockchainComputing/PoCo/issues/31) : OwnableOZ event not correct
+* [#32](https://github.com/iExecBlockchainComputing/PoCo/issues/32) : Need more gas
+* [#33](https://github.com/iExecBlockchainComputing/PoCo/issues/33) : [CS AUDIT] Both a contract and an event are called WorkOrder.
+* [#34](https://github.com/iExecBlockchainComputing/PoCo/issues/34) : [CS AUDIT] the variable names workerReward and workersReward are confusingly similar
 
 
 ### [v1.0.12](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.12)

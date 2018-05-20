@@ -305,7 +305,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_01: test workOrderCallback from a smart contract", async function() {
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -421,7 +421,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -440,7 +440,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
 
@@ -533,7 +533,7 @@ contract('IexecHub', function(accounts) {
 
   it("workOrderCallback_02: test every body can callback", async function() {
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -649,7 +649,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -668,7 +668,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
 
@@ -751,7 +751,7 @@ contract('IexecHub', function(accounts) {
 
     it("workOrderCallback_03: test callback with wrong result are reverted", async function() {
 
-      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, aRLCInstance.address, {
+      aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
         from: iExecCloudUser
       });
       console.log("aIexecAPIInstance created " + aIexecAPIInstance.address);
@@ -867,7 +867,7 @@ contract('IexecHub', function(accounts) {
       assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
       assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-      [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+      [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
         from: iExecCloudUser,
         gas: constants.AMOUNT_GAS_PROVIDED
       });
@@ -886,7 +886,7 @@ contract('IexecHub', function(accounts) {
       assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
       assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
       assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-      assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+      assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
       assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
 

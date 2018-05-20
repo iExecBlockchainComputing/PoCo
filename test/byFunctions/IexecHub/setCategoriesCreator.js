@@ -219,28 +219,6 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("setCategoriesCreator_03 : it should be possible for any user to setCategoriesCreator to himself", async function() {
-
-    txMined = await aIexecHubInstance.setCategoriesCreator(iExecCloudUser, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, iExecCloudUser, "check m_categoriesCreator in aIexecHubInstance");
-
-  });
-
-  it("setCategoriesCreator_04 : it should be possible for any user to setCategoriesCreator to others users", async function() {
-    txMined = await aIexecHubInstance.setCategoriesCreator(resourceProvider, {
-      from: iExecCloudUser,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, resourceProvider, "check m_categoriesCreator in aIexecHubInstance");
-  });
 
   it("setCategoriesCreator_05 :  when m_categoriesCreator is valorized. it must not be possible to others users to call setCategoriesCreator", async function() {
     txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {

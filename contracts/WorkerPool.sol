@@ -176,7 +176,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		bytes32 c_consensus,
 		uint256 c_revealDate,
 		uint256 c_revealCounter,
-		uint256 c_consensusTimout,
+		uint256 c_consensusTimeout,
 		uint256 c_winnerCount,
 		address c_workerpoolOwner)
 	{
@@ -187,7 +187,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 			consensus.consensus,
 			consensus.revealDate,
 			consensus.revealCounter,
-			consensus.consensusTimout,
+			consensus.consensusTimeout,
 			consensus.winnerCount,
 			consensus.workerpoolOwner
 		);
@@ -240,7 +240,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		consensus.poolReward                 = marketplaceInterface.getMarketOrderValue(_marketorderIdx);
 		consensus.workerpoolOwner            = marketplaceInterface.getMarketOrderWorkerpoolOwner(_marketorderIdx);
 		consensus.stakeAmount                = consensus.poolReward.percentage(m_stakeRatioPolicy);
-		consensus.consensusTimout            = timeout;
+		consensus.consensusTimeout            = timeout;
 		consensus.schedulerRewardRatioPolicy = m_schedulerRewardRatioPolicy;
 
 		emit WorkOrderActive(_woid);
@@ -251,7 +251,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	function claimFailedConsensus(address _woid) public onlyIexecHub returns (bool)
 	{
 	  IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now > consensus.consensusTimout);
+		require(now > consensus.consensusTimeout);
 		uint256 i;
 		address w;
 		for (i = 0; i < consensus.contributors.length; ++i)
@@ -281,7 +281,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 
 		address workerPool;
 		uint256 workerScore;
@@ -300,7 +300,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.ACTIVE); // can't contribute on a claimed or completed workorder
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
@@ -328,7 +328,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 		require(WorkOrder(_woid).startRevealingPhase());
 
 		consensus.winnerCount = 0;
@@ -356,7 +356,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus    storage consensus    = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 		IexecLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 
 		require(WorkOrder(_woid).m_status() == IexecLib.WorkOrderStatusEnum.REVEALING     );
@@ -377,7 +377,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 		require(consensus.revealDate <= now && consensus.revealCounter == 0);
 		require(WorkOrder(_woid).reActivate());
 
@@ -402,7 +402,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 	{
 		require(iexecHubInterface.isWoidRegistred(_woid));
 		IexecLib.Consensus storage consensus = m_consensus[_woid];
-		require(now <= consensus.consensusTimout);
+		require(now <= consensus.consensusTimeout);
 		require((consensus.revealDate <= now && consensus.revealCounter > 0) || (consensus.revealCounter == consensus.winnerCount)); // consensus.winnerCount never 0 at this step
 
 		// add penalized to the call worker to contribution and they never contribute ?
@@ -420,7 +420,7 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		uint256 workerBonus;
 		uint256 workerWeight;
 		uint256 totalWeight;
-		uint256 workerReward;
+		uint256 individualWorkerReward;
 		uint256 totalReward = _consensus.poolReward;
 		address[] memory contributors = _consensus.contributors;
 		for (i = 0; i<contributors.length; ++i)
@@ -442,17 +442,17 @@ contract WorkerPool is OwnableOZ, IexecHubAccessor, MarketplaceAccessor
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
+		uint256 totalWorkersReward = totalReward.percentage(uint256(100).sub(_consensus.schedulerRewardRatioPolicy));
 
 		for (i = 0; i<contributors.length; ++i)
 		{
 			w = contributors[i];
 			if (m_contributions[_woid][w].status == IexecLib.ContributionStatusEnum.PROVED)
 			{
-				workerReward = workersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
-				totalReward  = totalReward.sub(workerReward);
+				individualWorkerReward = totalWorkersReward.mulByFraction(m_contributions[_woid][w].weight, totalWeight);
+				totalReward  = totalReward.sub(individualWorkerReward);
 				require(iexecHubInterface.unlockForWork(_woid, w, _consensus.stakeAmount));
-				require(iexecHubInterface.rewardForWork(_woid, w, workerReward, true));
+				require(iexecHubInterface.rewardForWork(_woid, w, individualWorkerReward, true));
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{

@@ -375,7 +375,7 @@ contract('IexecHub', function(accounts) {
 
     await Extensions.getEventsPromise(aWorkOrderInstance.WorkOrderRevealing({}), 1, constants.EVENT_WAIT_TIMEOUT);
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -385,7 +385,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
 
@@ -455,7 +455,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("revealConsensus_03: scheduler can't revealConsensus after consensusTimout", async function() {
+  it("revealConsensus_03: scheduler can't revealConsensus after consensusTimeout", async function() {
 		if (!isTestRPC) this.skip("This test is only for TestRPC");
     // WORKER SUBSCRIBE TO POOL
     txMined = await aWorkerPoolInstance.subscribeToPool({
@@ -508,7 +508,7 @@ contract('IexecHub', function(accounts) {
 
     let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
     let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
-    await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef);
+    await web3.evm.increaseTimePromise((CONSENSUS_DURATION_RATIO * CategoryWorkClockTimeRef)+1);
 
     await Extensions.expectedExceptionPromise(() => {
         return aWorkerPoolInstance.revealConsensus(woid, Extensions.hashResult("iExec the wanderer"), {
@@ -797,7 +797,7 @@ contract('IexecHub', function(accounts) {
     m_statusCall = await aWorkOrderInstance.m_status.call();
     assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -807,7 +807,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 2, "check 2 winnerCount");
 
 
@@ -898,7 +898,7 @@ contract('IexecHub', function(accounts) {
       m_statusCall = await aWorkOrderInstance.m_status.call();
       assert.strictEqual(m_statusCall.toNumber(), constants.WorkOrderStatusEnum.REVEALING, "check m_status REVEALING");
 
-      [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+      [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
         from: iExecCloudUser,
         gas: constants.AMOUNT_GAS_PROVIDED
       });
@@ -908,7 +908,7 @@ contract('IexecHub', function(accounts) {
       assert.strictEqual(consensus, events[0].args.consensus, "check consensus");
       assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
       assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter yet");
-      assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+      assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
       assert.strictEqual(winnerCount.toNumber(), 1, "check only 1 winnerCount");
 
 

@@ -441,7 +441,7 @@ contract('IexecHub', function(accounts) {
     });
 
 
-		it("allowWorkerToContribute_05: scheduler can't allowWorkerToContribute on worker after the consensusTimout", async function() {
+		it("allowWorkerToContribute_05: scheduler can't allowWorkerToContribute on worker after the consensusTimeout", async function() {
 
 			if (!isTestRPC) this.skip("This test is only for TestRPC");
 	    // WORKER SUBSCRIBE TO POOL
@@ -476,7 +476,7 @@ contract('IexecHub', function(accounts) {
 
 			let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
 			let CONSENSUS_DURATION_RATIO = await aWorkerPoolInstance.CONSENSUS_DURATION_RATIO.call();
-			await web3.evm.increaseTimePromise(CONSENSUS_DURATION_RATIO*CategoryWorkClockTimeRef);
+			await web3.evm.increaseTimePromise((CONSENSUS_DURATION_RATIO*CategoryWorkClockTimeRef)+1);
 
 			await Extensions.expectedExceptionPromise(() => {
 					return aWorkerPoolInstance.allowWorkerToContribute(woid,resourceProvider,0, {

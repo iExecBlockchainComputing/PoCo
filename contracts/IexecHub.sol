@@ -38,7 +38,7 @@ contract IexecHub
 	/**
 	 * Market place
 	 */
-	Marketplace marketplace;
+	Marketplace public marketplace;
 	modifier onlyMarketplace()
 	{
 		require(msg.sender == address(marketplace));
@@ -504,7 +504,7 @@ contract IexecHub
 		require(seize(_worker, _amount));
 		if (_reputation)
 		{
-			m_contributionHistory.failled = m_contributionHistory.failled.add(1);
+			m_contributionHistory.failed = m_contributionHistory.failed.add(1);
 			m_scores[_worker] = m_scores[_worker].sub(m_scores[_worker].min(SCORE_UNITARY_SLASH));
 			emit FaultyContribution(_woid, _worker);
 		}
