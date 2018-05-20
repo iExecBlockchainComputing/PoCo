@@ -7,7 +7,7 @@ import "rlc-token/contracts/RLC.sol";
 
 contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 {
-	event WorkOrder              (address woid);
+	event WorkOrderActivated     (address woid);
 	event WithdrawRLCFromIexecAPI(address to,       uint256 amount);
 	event ApproveIexecHub        (address iexecHub, uint256 amount);
 	event DepositRLCOnIexecHub   (address iexecHub, uint256 amount);
@@ -34,7 +34,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	public
 	{
 		address woid = iexecHubInterface.buyForWorkOrder(_marketorderIdx, _workerpool, _app, _dataset, _params, _callback, _beneficiary);
-		emit WorkOrder(woid);
+		emit WorkOrderActivated(woid);
 	}
 
 	function workOrderCallback(

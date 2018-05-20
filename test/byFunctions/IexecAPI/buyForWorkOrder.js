@@ -348,6 +348,9 @@ contract('IexecHub', function(accounts) {
 		woid = events[0].args.woid;
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
 
+		events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.woid, woid, "check woid");
+
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecAPIInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecAPIInstance.address");
     assert.strictEqual(checkBalance[1].toNumber(),  100, "check stake locked of the aIexecAPIInstance.address");
