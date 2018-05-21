@@ -126,24 +126,24 @@ module.exports = function(deployer) {
   let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
   aRLCInstance='0x7314dc4d7794b5e7894212ca1556ae8e3de58621';
 
-  return deployer.deploy(WorkerPoolHub)
+  return deployer.deploy(WorkerPoolHub,{gas: 4685012})
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
       console.log("WorkerPoolHub deployed at address: " + instance.address);
-      return deployer.deploy(AppHub);
+      return deployer.deploy(AppHub,{gas: 4685012});
     })
     .then(() => AppHub.deployed())
     .then(instance => {
       aAppHubInstance = instance;
       console.log("AppHub deployed at address: " + instance.address);
-      return deployer.deploy(DatasetHub);
+      return deployer.deploy(DatasetHub,{gas: 4685012});
     })
     .then(() => DatasetHub.deployed())
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address: " + instance.address);
-      return deployer.deploy(IexecHub);
+      return deployer.deploy(IexecHub,{gas: 4685012});
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
@@ -161,7 +161,7 @@ module.exports = function(deployer) {
     })
     .then(() => {
       console.log("setImmutableOwnership of DatasetHub to IexecHub");
-      return deployer.deploy(Marketplace, aIexecHub.address);
+      return deployer.deploy(Marketplace, aIexecHub.address,{gas: 4685012});
     })
     .then(() => Marketplace.deployed())
     .then(instance => {
