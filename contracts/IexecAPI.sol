@@ -7,18 +7,20 @@ import "rlc-token/contracts/RLC.sol";
 
 contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 {
-	event WorkOrder              (address woid);
+	event WorkOrderActivated     (address woid);
 	event WithdrawRLCFromIexecAPI(address to,       uint256 amount);
 	event ApproveIexecHub        (address iexecHub, uint256 amount);
 	event DepositRLCOnIexecHub   (address iexecHub, uint256 amount);
 	event WithdrawRLCFromIexecHub(address iexecHub, uint256 amount);
 
+	address public m_callbackProofAddress;
+
 	// Constructor
-	function IexecAPI(address _iexecHubAddress)
+	function IexecAPI(address _iexecHubAddress, address _callbackProofAddress)
 	IexecHubAccessor(_iexecHubAddress)
 	public
 	{
-
+		m_callbackProofAddress = _callbackProofAddress;
 	}
 
 	function buyForWorkOrder(
@@ -32,7 +34,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	public
 	{
 		address woid = iexecHubInterface.buyForWorkOrder(_marketorderIdx, _workerpool, _app, _dataset, _params, _callback, _beneficiary);
-		emit WorkOrder(woid);
+		emit WorkOrderActivated(woid);
 	}
 
 	function workOrderCallback(
@@ -42,22 +44,22 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		string  _uri)
 	public returns (bool)
 	{
-		require(msg.sender == _woid);
+		require(msg.sender == m_callbackProofAddress);
 		emit WorkOrderCallback(_woid, _stdout, _stderr, _uri);
 		return true;
 	}
 
 	function approveIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(iexecHubInterface.getRLCAddress());
-		require(rlc.approve(iexecHubAddress, amount));
-		emit ApproveIexecHub(iexecHubAddress, amount);
+		RLC rlc = iexecHubInterface.rlc();
+		require(rlc.approve(address(iexecHubInterface), amount));
+		emit ApproveIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 
 	function withdrawRLCFromIexecAPI(uint256 amount) public onlyOwner returns (bool)
 	{
-		RLC rlc = RLC(iexecHubInterface.getRLCAddress());
+		RLC rlc = iexecHubInterface.rlc();
 		require(rlc.transfer(msg.sender, amount));
 		emit WithdrawRLCFromIexecAPI(msg.sender, amount);
 		return true;
@@ -66,7 +68,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	function depositRLCOnIexecHub(uint256 amount) public onlyOwner returns (bool)
 	{
 		require(iexecHubInterface.deposit(amount));
-		emit DepositRLCOnIexecHub(iexecHubAddress, amount);
+		emit DepositRLCOnIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 
@@ -74,7 +76,7 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 	{
 		require(iexecHubInterface.withdraw(amount));
 		require(withdrawRLCFromIexecAPI(amount));
-		emit WithdrawRLCFromIexecHub(iexecHubAddress, amount);
+		emit WithdrawRLCFromIexecHub(address(iexecHubInterface), amount);
 		return true;
 	}
 

@@ -4,9 +4,8 @@ var WorkerPoolHub = artifacts.require("./WorkerPoolHub.sol");
 var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var WorkerPool = artifacts.require("./WorkerPool.sol");
-var App = artifacts.require("./App.sol");
-var WorkOrder = artifacts.require("./WorkOrder.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
+var Dataset = artifacts.require("./Dataset.sol");
 
 const BN = require("bn");
 const keccak256 = require("solidity-sha3");
@@ -33,9 +32,6 @@ var constants = require("../../constants");
 contract('IexecHub', function(accounts) {
 
   let scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser, marketplaceCreator;
-  let subscriptionLockStakePolicy = 0;
-  let subscriptionMinimumStakePolicy = 10;
-  let subscriptionMinimumScorePolicy = 0;
   let isTestRPC;
   let txMined;
   let txsMined;
@@ -46,7 +42,6 @@ contract('IexecHub', function(accounts) {
   let aAppHubInstance;
   let aDatasetHubInstance;
   let aMarketplaceInstance;
-
 
   beforeEach("should prepare accounts and check TestRPC Mode", async() => {
     assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
@@ -59,13 +54,12 @@ contract('IexecHub', function(accounts) {
     iExecCloudUser = accounts[6];
     marketplaceCreator = accounts[7];
 
-    // INIT ACCOUNTS
-    await Extensions.makeSureAreUnlocked([scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
+    await Extensions.makeSureAreUnlocked(
+      [scheduleProvider, resourceProvider, appProvider, datasetProvider, dappUser, dappProvider, iExecCloudUser]);
     let balance = await web3.eth.getBalancePromise(scheduleProvider);
     assert.isTrue(
       web3.toWei(web3.toBigNumber(80), "ether").lessThan(balance),
-      "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether")
-    );
+      "dappProvider should have at least 80 ether, not " + web3.fromWei(balance, "ether"));
     await Extensions.refillAccount(scheduleProvider, resourceProvider, 10);
     await Extensions.refillAccount(scheduleProvider, appProvider, 10);
     await Extensions.refillAccount(scheduleProvider, datasetProvider, 10);
@@ -87,7 +81,6 @@ contract('IexecHub', function(accounts) {
       gas: constants.AMOUNT_GAS_PROVIDED
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    //INIT ACCOUNTS WITH RLC
     txsMined = await Promise.all([
       aRLCInstance.transfer(scheduleProvider, 1000, {
         from: marketplaceCreator,
@@ -149,115 +142,87 @@ contract('IexecHub', function(accounts) {
     console.log("aWorkerPoolHubInstance.address is ");
     console.log(aWorkerPoolHubInstance.address);
 
-    aAppHubInstance = await AppHub.new({
-      from: marketplaceCreator
-    });
-    console.log("aAppHubInstance.address is ");
-    console.log(aAppHubInstance.address);
-
     aDatasetHubInstance = await DatasetHub.new({
       from: marketplaceCreator
     });
     console.log("aDatasetHubInstance.address is ");
     console.log(aDatasetHubInstance.address);
 
-    aIexecHubInstance = await IexecHub.new( {
-      from: marketplaceCreator
-    });
-    console.log("aIexecHubInstance.address is ");
-    console.log(aIexecHubInstance.address);
 
-    txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
-
-    txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("setImmutableOwnership of AppHub to IexecHub");
-
+    // USE marketplaceCreator as owner for test. In real deployement ownership is :
+    /*
     txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("setImmutableOwnership of DatasetHub to IexecHub");
-
-    aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, {
-      from: marketplaceCreator
-    });
-    console.log("aMarketplaceInstance.address is ");
-    console.log(aMarketplaceInstance.address);
-  });
-
-
-  it("setCategoriesCreator_01 : it should be possible for the marketplaceCreator to setCategoriesCreator to himself", async function() {
-
-    txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
-      from: marketplaceCreator,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, marketplaceCreator, "check m_categoriesCreator in aIexecHubInstance");
-
-  });
-
-  it("setCategoriesCreator_02 : it should be possible for the marketplaceCreator to setCategoriesCreator to others users", async function() {
-
-    txMined = await aIexecHubInstance.setCategoriesCreator(iExecCloudUser, {
-      from: marketplaceCreator,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, iExecCloudUser, "check m_categoriesCreator in aIexecHubInstance");
-
-  });
-
-
-  it("setCategoriesCreator_05 :  when m_categoriesCreator is valorized. it must not be possible to others users to call setCategoriesCreator", async function() {
-    txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
-      from: marketplaceCreator,
-      gas: constants.AMOUNT_GAS_PROVIDED
-    });
-    assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-    let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, marketplaceCreator, "check m_categoriesCreator marketplaceCreator in aIexecHubInstance");
-    await Extensions.expectedExceptionPromise(() => {
-        return aIexecHubInstance.setCategoriesCreator(iExecCloudUser, {
-          from: iExecCloudUser,
-          gas: constants.AMOUNT_GAS_PROVIDED
-        });
-      },
-      constants.AMOUNT_GAS_PROVIDED);
-    categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-    assert.strictEqual(categoriesCreatorCall, marketplaceCreator, "check m_categoriesCreator still marketplaceCreator in aIexecHubInstance");
-  });
-
-	it("setCategoriesCreator_06 :  when m_categoriesCreator is valorized. it must be possible to the m_categoriesCreator to call setCategoriesCreator and change the address", async function() {
-		txMined = await aIexecHubInstance.setCategoriesCreator(marketplaceCreator, {
-			from: marketplaceCreator,
-			gas: constants.AMOUNT_GAS_PROVIDED
+			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
-		let categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-		assert.strictEqual(categoriesCreatorCall, marketplaceCreator, "check m_categoriesCreator marketplaceCreator in aIexecHubInstance");
+    */
 
-		txMined = await aIexecHubInstance.setCategoriesCreator(iExecCloudUser, {
-			from: marketplaceCreator,
-			gas: constants.AMOUNT_GAS_PROVIDED
-		});
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		categoriesCreatorCall = await aIexecHubInstance.m_categoriesCreator.call();
-		assert.strictEqual(categoriesCreatorCall, iExecCloudUser, "check m_categoriesCreator is now iExecCloudUser in aIexecHubInstance");
-	});
+
+  });
+
+
+  it("getDatasetByIndex_01 : is a public function returning the dataset by owner address and index", async function() {
+
+    let createdDataset = await aDatasetHubInstance.createDataset.call(
+      "dataset Name",
+      0,
+      "dataset Params", {
+        from: marketplaceCreator,
+      });
+
+
+
+    m_totalDatasetCount = await aDatasetHubInstance.m_totalDatasetCount.call();
+    assert.strictEqual(m_totalDatasetCount.toNumber(), 0, "check m_totalDatasetCount");
+
+    getDataset = await aDatasetHubInstance.getDatasetByIndex.call( 1, {
+      from: iExecCloudUser
+    });
+    assert.notEqual(getDataset, createdDataset, "check getDataset");
+    assert.strictEqual(getDataset, '0x0000000000000000000000000000000000000000', "check 0x0000000000000000000000000000000000000000");
+
+
+    txMined = await aDatasetHubInstance.createDataset(
+      "dataset Name",
+      0,
+      "dataset Params", {
+        from: marketplaceCreator,
+      });
+
+    getDataset = await aDatasetHubInstance.getDatasetByIndex.call( 1, {
+      from: iExecCloudUser
+    });
+    assert.strictEqual(getDataset, createdDataset, "check getDataset");
+
+    m_totalDatasetCount = await aDatasetHubInstance.m_totalDatasetCount.call();
+    assert.strictEqual(m_totalDatasetCount.toNumber(), 1, "check m_totalDatasetCount");
+
+    let createdDataset2 = await aDatasetHubInstance.createDataset.call(
+      "dataset Name 2",
+      1,
+      "dataset Params 2", {
+        from: marketplaceCreator,
+      });
+
+    txMined = await aDatasetHubInstance.createDataset(
+      "dataset Name 2",
+      1,
+      "dataset Params 2", {
+        from: marketplaceCreator,
+      });
+
+    getDataset = await aDatasetHubInstance.getDatasetByIndex.call(2, {
+      from: iExecCloudUser
+    });
+    assert.strictEqual(getDataset, createdDataset2, "check getDataset");
+
+    m_totalDatasetCount = await aDatasetHubInstance.m_totalDatasetCount.call();
+    assert.strictEqual(m_totalDatasetCount.toNumber(), 2, "check m_totalDatasetCount");
+
+  });
+
 
 });

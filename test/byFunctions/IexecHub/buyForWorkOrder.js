@@ -144,23 +144,23 @@ contract('IexecHub', function(accounts) {
 		console.log("aIexecHubInstance.address is ");
 		console.log(aIexecHubInstance.address);
 
-		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+		console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
 
-		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of AppHub to IexecHub");
+		console.log("setImmutableOwnership of AppHub to IexecHub");
 
-		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of DatasetHub to IexecHub");
+		console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator
@@ -261,6 +261,8 @@ contract('IexecHub', function(accounts) {
 			from: iExecCloudUser,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});
+
+
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		txMined = await aIexecHubInstance.buyForWorkOrder(1/*_marketorderIdx*/, aWorkerPoolInstance.address, aAppInstance.address, 0, "noParam", 0, iExecCloudUser, {
 			from: iExecCloudUser
@@ -272,6 +274,13 @@ contract('IexecHub', function(accounts) {
    aWorkOrderInstance = await WorkOrder.at(woid);
    let status = await aWorkOrderInstance.m_status.call();
    assert.strictEqual(status.toNumber(), constants.WorkOrderStatusEnum.ACTIVE, "check m_status");
+
+	 let isWoidRegistred = await aIexecHubInstance.isWoidRegistred.call(woid);
+	 assert.strictEqual(isWoidRegistred, true, "check isWoidRegistred true");
+
+	 let isWoidRegistredKO = await aIexecHubInstance.isWoidRegistred.call(iExecCloudUser);
+	 assert.strictEqual(isWoidRegistredKO, false, "check iExecCloudUser is not a workorder");
+
 
 	});
 

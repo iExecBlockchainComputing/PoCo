@@ -27,7 +27,7 @@ contract App is OwnableOZ, IexecHubAccessor
 		// tx.origin == owner
 		// msg.sender == DatasetHub
 		require(tx.origin != msg.sender);
-		transferOwnership(tx.origin); // owner → tx.origin
+		setImmutableOwnership(tx.origin); // owner → tx.origin
 
 		m_appName   = _appName;
 		m_appPrice  = _appPrice;

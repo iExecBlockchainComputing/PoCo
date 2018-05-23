@@ -8,6 +8,7 @@ pragma solidity ^0.4.21;
 contract OwnableOZ
 {
 	address public m_owner;
+	bool    public m_changeable;
 
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -26,18 +27,21 @@ contract OwnableOZ
 	 */
 	function OwnableOZ() public
 	{
-		m_owner = msg.sender;
+		m_owner      = msg.sender;
+		m_changeable = true;
 	}
 
 	/**
 	 * @dev Allows the current owner to transfer control of the contract to a newOwner.
 	 * @param _newOwner The address to transfer ownership to.
 	 */
-	function transferOwnership(address _newOwner) public onlyOwner
+	function setImmutableOwnership(address _newOwner) public onlyOwner
 	{
+		require(m_changeable);
 		require(_newOwner != address(0));
 		emit OwnershipTransferred(m_owner, _newOwner);
-		m_owner = _newOwner;
+		m_owner      = _newOwner;
+		m_changeable = false;
 	}
 
 }

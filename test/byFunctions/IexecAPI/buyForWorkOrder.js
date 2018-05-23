@@ -49,7 +49,7 @@ contract('IexecHub', function(accounts) {
 	let aAppInstance;
 	let aWorkOrderInstance;
 
-	before("should prepare accounts and check TestRPC Mode", async() => {
+	beforeEach("should prepare accounts and check TestRPC Mode", async() => {
 		assert.isAtLeast(accounts.length, 8, "should have at least 8 accounts");
 		scheduleProvider   = accounts[0];
 		resourceProvider   = accounts[1];
@@ -145,23 +145,23 @@ contract('IexecHub', function(accounts) {
 		console.log("aIexecHubInstance.address is ");
 		console.log(aIexecHubInstance.address);
 
-		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+		console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
 
-		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of AppHub to IexecHub");
+		console.log("setImmutableOwnership of AppHub to IexecHub");
 
-		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of DatasetHub to IexecHub");
+		console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator
@@ -259,12 +259,12 @@ contract('IexecHub', function(accounts) {
 	it("buyForWorkOrder_01: test buyForWorkOrder from a smart contract", async function() {
 
 
-    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address,{
+    aIexecAPIInstance = await IexecAPI.new(aIexecHubInstance.address, aMarketplaceInstance.address, {
       from: iExecCloudUser
     });
     console.log("aIexecAPIInstance created "+aIexecAPIInstance.address);
 
-    txMined = await aIexecAPIInstance.approveIexecHub(200, {
+    txMined = await aIexecAPIInstance.approveIexecHub(200,{
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -284,7 +284,7 @@ contract('IexecHub', function(accounts) {
     balance =await aRLCInstance.balanceOf(iExecCloudUser);
 		assert.strictEqual(balance.toNumber(), 500, "check balanceOf iExecCloudUser");
 
-    txMined = await aIexecAPIInstance.withdrawRLCFromIexecAPI(100, {
+    txMined = await aIexecAPIInstance.withdrawRLCFromIexecAPI(100,{
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -347,6 +347,9 @@ contract('IexecHub', function(accounts) {
 		events = await Extensions.getEventsPromise(aIexecHubInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
 		woid = events[0].args.woid;
 		assert.strictEqual(events[0].args.workerPool, aWorkerPoolInstance.address, "check workerPool");
+
+		events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
+		assert.strictEqual(events[0].args.woid, woid, "check woid");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(aIexecAPIInstance.address);
     assert.strictEqual(checkBalance[0].toNumber(), 0, "check stake of the aIexecAPIInstance.address");

@@ -176,23 +176,23 @@ contract('IexecHub', function(accounts) {
     console.log("aIexecHubInstance.address is ");
     console.log(aIexecHubInstance.address);
 
-    txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of WorkerPoolHub to IexecHub");
+    console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
 
-    txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of AppHub to IexecHub");
+    console.log("setImmutableOwnership of AppHub to IexecHub");
 
-    txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
       from: marketplaceCreator
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-    console.log("transferOwnership of DatasetHub to IexecHub");
+    console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
     aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address, {
       from: marketplaceCreator
@@ -288,7 +288,7 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("claimFailedConsensus_01: after consensusTimout requester can call claimFailedConsensus to get refund (stake unlocked)", async function() {
+  it("claimFailedConsensus_01: after consensusTimeout requester can call claimFailedConsensus to get refund (stake unlocked)", async function() {
 
 
 
@@ -385,7 +385,7 @@ contract('IexecHub', function(accounts) {
 
   });
 
-  it("claimFailedConsensus_02: after consensusTimout only requester can call claimFailedConsensus", async function() {
+  it("claimFailedConsensus_02: after consensusTimeout only requester can call claimFailedConsensus", async function() {
 
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
@@ -442,7 +442,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("claimFailedConsensus_03: after consensusTimout requester can't call claimFailedConsensus twice'", async function() {
+  it("claimFailedConsensus_03: after consensusTimeout requester can't call claimFailedConsensus twice'", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
@@ -525,7 +525,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("claimFailedConsensus_04: after consensusTimout requester can't call claimFailedConsensus on wrong workerorder id'", async function() {
+  it("claimFailedConsensus_04: after consensusTimeout requester can't call claimFailedConsensus on wrong workerorder id'", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
@@ -600,7 +600,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("claimFailedConsensus_05: after consensusTimout requester can't call claimFailedConsensus on completed workorder'", async function() {
+  it("claimFailedConsensus_05: after consensusTimeout requester can't call claimFailedConsensus on completed workorder'", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
@@ -704,7 +704,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -723,7 +723,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
 
@@ -766,7 +766,7 @@ contract('IexecHub', function(accounts) {
 
 
 
-  it("claimFailedConsensus_06: after consensusTimout requester can call claimFailedConsensus on REVEALING step. Workers stake are unlocked '", async function() {
+  it("claimFailedConsensus_06: after consensusTimeout requester can call claimFailedConsensus on REVEALING step. Workers stake are unlocked '", async function() {
 
     if (!isTestRPC) this.skip("This test is only for TestRPC");
 
@@ -869,7 +869,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -888,7 +888,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     let CategoryWorkClockTimeRef = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1);
@@ -938,7 +938,7 @@ contract('IexecHub', function(accounts) {
   });
 
 
-  it("claimFailedConsensus_07: after consensusTimout requester can call claimFailedConsensus. test refund of iExecCloudUser with a dapp price and a dataset price on the workorder", async function() {
+  it("claimFailedConsensus_07: after consensusTimeout requester can call claimFailedConsensus. test refund of iExecCloudUser with a dapp price and a dataset price on the workorder", async function() {
 
   txMined = await aIexecHubInstance.deposit(100, {
     from: scheduleProvider,
@@ -1079,7 +1079,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(events[0].args.result, '0x5def3ac0554e7a443f84985aa9629864e81d71d59e0649ddad3d618f85a1bf4b', "check revealed result by resourceProvider");
     assert.strictEqual(events[0].args.result, web3.sha3("iExec the wanderer"), "check revealed result by resourceProvider");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -1098,7 +1098,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x2fa3c6dc29e10dfc01cea7e9443ffe431e6564e74f5dcf4de4b04f2e5d343d70', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1 now");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
@@ -1298,7 +1298,7 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -1308,7 +1308,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0xe9ff9ce7ec1e541c6029eca3eb77ec094dafbaf33801829806e52900ee6a8ced', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);
@@ -1502,7 +1502,7 @@ contract('IexecHub', function(accounts) {
     });
     assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid2, {
       from: iExecCloudUser,
       gas: constants.AMOUNT_GAS_PROVIDED
     });
@@ -1512,7 +1512,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0xe9ff9ce7ec1e541c6029eca3eb77ec094dafbaf33801829806e52900ee6a8ced', "check consensus");
     assert.isTrue(revealDate.toNumber() > 0, "check revealDate > 0");
     assert.strictEqual(revealCounter.toNumber(), 1, "check revealCounter 1");
-    assert.isTrue(consensusTimout.toNumber() > 0, "check consensusTimout > 0");
+    assert.isTrue(consensusTimeout.toNumber() > 0, "check consensusTimeout > 0");
     assert.strictEqual(winnerCount.toNumber(), 1, "check 1 winnerCount");
 
     checkBalance = await aIexecHubInstance.checkBalance.call(scheduleProvider);

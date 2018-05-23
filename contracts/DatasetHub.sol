@@ -15,6 +15,10 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	mapping(address => mapping(uint256 => address)) m_datasetByOwnerByIndex;
 	mapping(address => bool)                        m_datasetRegistered;
 
+	mapping(uint256 => address)                     m_datasetByIndex;
+	uint256 public                                  m_totalDatasetCount;
+
+
 
 	/**
 	 * Constructor
@@ -38,13 +42,19 @@ contract DatasetHub is OwnableOZ // is Owned by IexecHub
 	{
 		return m_datasetByOwnerByIndex[_owner][_index];
 	}
+	function getDatasetByIndex(uint256 _index) public view returns (address)
+	{
+		return m_datasetByIndex[_index];
+	}
 
 	function addDataset(address _owner, address _dataset) internal
 	{
 		uint id = m_datasetCountByOwner[_owner].add(1);
-		m_datasetCountByOwner  [_owner]     = id;
-		m_datasetByOwnerByIndex[_owner][id] = _dataset;
-		m_datasetRegistered    [_dataset]   = true;
+		m_totalDatasetCount = m_totalDatasetCount.add(1);
+		m_datasetByIndex       [m_totalDatasetCount] = _dataset;
+		m_datasetCountByOwner  [_owner]              = id;
+		m_datasetByOwnerByIndex[_owner][id]          = _dataset;
+		m_datasetRegistered    [_dataset]            = true;
 	}
 
 	function createDataset(

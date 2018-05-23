@@ -144,23 +144,23 @@ contract('IexecHub', function(accounts) {
 		console.log("aIexecHubInstance.address is ");
 		console.log(aIexecHubInstance.address);
 
-		txMined = await aWorkerPoolHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aWorkerPoolHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of WorkerPoolHub to IexecHub");
+		console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
 
-		txMined = await aAppHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aAppHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of AppHub to IexecHub");
+		console.log("setImmutableOwnership of AppHub to IexecHub");
 
-		txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+		txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of DatasetHub to IexecHub");
+		console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
 		aMarketplaceInstance = await Marketplace.new(aIexecHubInstance.address,{
 			from: marketplaceCreator
@@ -278,7 +278,7 @@ contract('IexecHub', function(accounts) {
     events = await Extensions.getEventsPromise(aWorkerPoolInstance.WorkOrderActive({}),1,constants.EVENT_WAIT_TIMEOUT);
     assert.strictEqual(events[0].args.woid, woid, "check woid");
 
-    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid,{
+    [poolReward, stakeAmount, consensus, revealDate, revealCounter, consensusTimeout, winnerCount] = await aWorkerPoolInstance.getConsensusDetails.call(woid,{
       from: iExecCloudUser,
       gas:constants.AMOUNT_GAS_PROVIDED
     });
@@ -288,7 +288,7 @@ contract('IexecHub', function(accounts) {
     assert.strictEqual(consensus, '0x0000000000000000000000000000000000000000000000000000000000000000', "check no consensus");
     assert.strictEqual(revealDate.toNumber(), 0, "check no revealDate");
     assert.strictEqual(revealCounter.toNumber(), 0, "check no revealCounter");
-		assert.isTrue(consensusTimout.toNumber()> 0, "check consensusTimout > 0");
+		assert.isTrue(consensusTimeout.toNumber()> 0, "check consensusTimeout > 0");
 		assert.strictEqual(winnerCount.toNumber(), 0, "check 0 winnerCount");
 
     let getCategoryWorkClockTimeRefCall = await aIexecHubInstance.getCategoryWorkClockTimeRef.call(1,{
@@ -297,9 +297,9 @@ contract('IexecHub', function(accounts) {
     });
     assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 30, "check getCategoryWorkClockTimeRef for cat 1 =30 sec");
 
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+300, "consensusTimout =  blocktime + 30 *10");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+300, "consensusTimeout =  blocktime + 30 *10");
     //console.log(timestamp+600);
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimout.toNumber(), "consensusTimout =  blocktime + 30 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimeout.toNumber(), "consensusTimeout =  blocktime + 30 *5");
 
     assert.strictEqual(winnerCount.toNumber(), 0, "check no winnerCount");
 

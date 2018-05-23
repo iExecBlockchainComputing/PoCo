@@ -151,11 +151,11 @@ contract('IexecHub', function(accounts) {
 
     // USE marketplaceCreator as owner for test. In real deployement ownership is :
     /*
-    txMined = await aDatasetHubInstance.transferOwnership(aIexecHubInstance.address, {
+    txMined = await aDatasetHubInstance.setImmutableOwnership(aIexecHubInstance.address, {
 			from: marketplaceCreator
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		console.log("transferOwnership of DatasetHub to IexecHub");
+		console.log("setImmutableOwnership of DatasetHub to IexecHub");
 
     */
 

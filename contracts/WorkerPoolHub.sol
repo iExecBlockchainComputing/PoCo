@@ -22,6 +22,11 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	/* mapping(address => address)                     m_ownerByWorkerPool; */
 	mapping(address => bool)                        m_workerPoolRegistered;
 
+	mapping(uint256 => address)                     m_workerPoolByIndex;
+	uint256 public                                  m_totalWorkerPoolCount;
+
+
+
 	/**
 	 * Constructor
 	 */
@@ -44,6 +49,10 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	{
 		return m_workerPoolByOwnerByIndex[_owner][_index];
 	}
+	function getWorkerPoolByIndex(uint256 _index) public view returns (address)
+	{
+		return m_workerPoolByIndex[_index];
+	}
 	function getWorkerAffectation(address _worker) public view returns (address workerPool)
 	{
 		return m_workerAffectation[_worker];
@@ -52,9 +61,11 @@ contract WorkerPoolHub is OwnableOZ // is Owned by IexecHub
 	function addWorkerPool(address _owner, address _workerPool) internal
 	{
 		uint id = m_workerPoolCountByOwner[_owner].add(1);
-		m_workerPoolCountByOwner  [_owner]      = id;
-		m_workerPoolByOwnerByIndex[_owner][id]  = _workerPool;
-		m_workerPoolRegistered    [_workerPool] = true;
+		m_totalWorkerPoolCount = m_totalWorkerPoolCount.add(1);
+		m_workerPoolByIndex       [m_totalWorkerPoolCount] = _workerPool;
+		m_workerPoolCountByOwner  [_owner]                 = id;
+		m_workerPoolByOwnerByIndex[_owner][id]             = _workerPool;
+		m_workerPoolRegistered    [_workerPool]            = true;
 	}
 
 	function createWorkerPool(

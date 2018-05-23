@@ -32,7 +32,7 @@ library IexecLib
 		UNSET,     // Work order not yet initialized (invalid address)
 		ACTIVE,    // Marketed → constributions are open
 		REVEALING, // Starting consensus reveal
-		CLAIMED,   // Failled consensus
+		CLAIMED,   // failed consensus
 		COMPLETED  // Concensus achieved
 	}
 
@@ -48,10 +48,12 @@ library IexecLib
 		bytes32 consensus;
 		uint256 revealDate;
 		uint256 revealCounter;
-		uint256 consensusTimout;
+		uint256 consensusTimeout;
 		uint256 winnerCount;
 		address[] contributors;
 		address workerpoolOwner;
+		uint256 schedulerRewardRatioPolicy;
+
 	}
 
 	/***************************************************************************/
@@ -88,10 +90,10 @@ library IexecLib
 		uint256 locked;
 	}
 
-	struct ContributionHistory // for credibility computation, f = failled/total
+	struct ContributionHistory // for credibility computation, f = failed/total
 	{
 		uint256 success;
-		uint256 failled;
+		uint256 failed;
 	}
 
 	struct Category

@@ -1,6 +1,5 @@
 pragma solidity ^0.4.21;
 
-import './IexecCallbackInterface.sol';
 import './IexecLib.sol';
 contract WorkOrder
 {
@@ -29,6 +28,7 @@ contract WorkOrder
 	address public m_callback;
 	address public m_beneficiary;
 
+	bytes32 public m_resultCallbackProof;
 	string  public m_stdout;
 	string  public m_stderr;
 	string  public m_uri;
@@ -105,16 +105,7 @@ contract WorkOrder
 		m_stdout = _stdout;
 		m_stderr = _stderr;
 		m_uri    = _uri;
-		if (m_callback != address(0))
-		{
-			// optional dappCallback call can be done
-			require(IexecCallbackInterface(m_callback).workOrderCallback(
-				this,
-				_stdout,
-				_stderr,
-				_uri
-			));
-		}
+		m_resultCallbackProof =keccak256(_stdout,_stderr,_uri);
 		emit WorkOrderCompleted();
 	}
 

@@ -4,8 +4,8 @@ var AppHub = artifacts.require("./AppHub.sol");
 var DatasetHub = artifacts.require("./DatasetHub.sol");
 var Marketplace = artifacts.require("./Marketplace.sol");
 var RLC = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-const fs              = require("fs-extra");
-const Promise         = require("bluebird");
+const fs = require("fs-extra");
+const Promise = require("bluebird");
 const readFileAsync = Promise.promisify(fs.readFile);
 /**
 
@@ -20,7 +20,6 @@ module.exports = function(deployer) {
   let aIexecHub;
   let aMarketplaceInstance;
   let creator;
-
   return deployer.deploy(RLC)
     .then(() => RLC.deployed())
     .then(instance => {
@@ -63,49 +62,47 @@ module.exports = function(deployer) {
     .then(instance => {
       aIexecHub = instance;
       console.log("IexecHub deployed at address: " + aIexecHub.address);
-      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+      return aWorkerPoolHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of WorkerPoolHub to IexecHub");
-      return aAppHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
+      return aAppHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of AppHub to IexecHub");
-      return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of AppHub to IexecHub");
+      return aDatasetHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of DatasetHub to IexecHub");
+      console.log("setImmutableOwnership of DatasetHub to IexecHub");
       return deployer.deploy(Marketplace, aIexecHub.address);
     })
     .then(() => Marketplace.deployed())
     .then(instance => {
       aMarketplaceInstance = instance;
       console.log("Marketplace deployed at address: " + instance.address);
-      return aIexecHub.attachContracts(aRLCInstance.address,aMarketplaceInstance.address,aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
-
+      return aIexecHub.attachContracts(aRLCInstance.address, aMarketplaceInstance.address, aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
     })
     .then(() => {
       console.log("attach Contracts to IexecHub done");
       return aIexecHub.setCategoriesCreator(creator);
     })
     .then(() => {
-      console.log("setCategoriesCreator to "+creator);
+      console.log("setCategoriesCreator to " + creator);
       return readFileAsync("./config/categories.json");
     })
     .then(categories => {
       var categoriesConfigFileJson = JSON.parse(categories);
       catagoriesPromises = [];
-      for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
-        console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name,JSON.stringify(categoriesConfigFileJson.categories[i].description),categoriesConfigFileJson.categories[i].workClockTimeRef));
+      for (var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+        console.log("create category : " + categoriesConfigFileJson.categories[i].name);
+        catagoriesPromises.push(aIexecHub.createCategory(categoriesConfigFileJson.categories[i].name, JSON.stringify(categoriesConfigFileJson.categories[i].description), categoriesConfigFileJson.categories[i].workClockTimeRef));
       }
       return Promise.all(catagoriesPromises);
     })
     .then(categoriesCreated => {
       return aIexecHub.m_categoriesCount.call()
     })
-    .then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
-    ;
+    .then(m_categoriesCount => console.log("m_categoriesCount is now: " + m_categoriesCount));
 };
 
 /**
@@ -127,44 +124,44 @@ module.exports = function(deployer) {
   let aMarketplaceInstance;
   let categoriesConfigFileJson;
   let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
-  aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
+  aRLCInstance='0x7314dc4d7794b5e7894212ca1556ae8e3de58621';
 
-  return deployer.deploy(WorkerPoolHub)
+  return deployer.deploy(WorkerPoolHub,{gas: 4685012})
     .then(() => WorkerPoolHub.deployed())
     .then(instance => {
       aWorkerPoolHubInstance = instance;
       console.log("WorkerPoolHub deployed at address: " + instance.address);
-      return deployer.deploy(AppHub);
+      return deployer.deploy(AppHub,{gas: 4685012});
     })
     .then(() => AppHub.deployed())
     .then(instance => {
       aAppHubInstance = instance;
       console.log("AppHub deployed at address: " + instance.address);
-      return deployer.deploy(DatasetHub);
+      return deployer.deploy(DatasetHub,{gas: 4685012});
     })
     .then(() => DatasetHub.deployed())
     .then(instance => {
       aDatasetHubInstance = instance;
       console.log("DatasetHub deployed at address: " + instance.address);
-      return deployer.deploy(IexecHub);
+      return deployer.deploy(IexecHub,{gas: 4685012});
     })
     .then(() => IexecHub.deployed())
     .then(instance => {
       aIexecHub = instance;
       console.log("IexecHub deployed at address: " + aIexecHub.address);
-      return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+      return aWorkerPoolHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of WorkerPoolHub to IexecHub");
-      return aAppHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of WorkerPoolHub to IexecHub");
+      return aAppHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of AppHub to IexecHub");
-      return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+      console.log("setImmutableOwnership of AppHub to IexecHub");
+      return aDatasetHubInstance.setImmutableOwnership(aIexecHub.address);
     })
     .then(() => {
-      console.log("transferOwnership of DatasetHub to IexecHub");
-      return deployer.deploy(Marketplace, aIexecHub.address);
+      console.log("setImmutableOwnership of DatasetHub to IexecHub");
+      return deployer.deploy(Marketplace, aIexecHub.address,{gas: 4685012});
     })
     .then(() => Marketplace.deployed())
     .then(instance => {
