@@ -10,7 +10,7 @@ Features:
 Bugfixes:
 
 
-### v1.0.13 (unreleased)
+### [v1.0.13](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.13)
 
 Features:
  * [#16](https://github.com/iExecBlockchainComputing/PoCo/issues/16) add counters info in Hub
