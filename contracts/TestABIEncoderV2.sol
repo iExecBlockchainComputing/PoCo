@@ -9,34 +9,70 @@ library Iexec0xLib
 	/**
 	 * Structures
 	 */
-	struct PoolMarket
+	struct signature
 	{
-		uint256 category;
-		uint256 trust;
-		uint256 value;
-		uint256 volume;
-		address workerpool;
-		bytes32 salt;
 		uint8   v;
 		bytes32 r;
 		bytes32 s;
+	}
+	struct DappMarket
+	{
+		// market
+		address   dapp;
+		uint256   dappprice;
+		uint256   volume;
+		// extra
+		bytes32   salt;
+		signature sig;
+	}
+	struct DataMarket
+	{
+		// market
+		address   data;
+		uint256   dataprice;
+		uint256   volume;
+		// extra
+		bytes32   salt;
+		signature sig;
+	}
+	struct PoolMarket
+	{
+		// market
+		address   pool;
+		uint256   poolprice;
+		uint256   volume;
+		// settings
+		uint256   category;
+		uint256   trust;
+		// extra
+		bytes32   salt;
+		signature sig;
 	}
 	struct UserMarket
 	{
-		uint256 category;
-		uint256 trust;
-		uint256 value;
-		address app;
-		address dataset;
-		address requester;
-		address beneficiary;
-		address callback;
-		string  params;
-		bytes32 salt;
-		uint8   v;
-		bytes32 r;
-		bytes32 s;
+		// market
+		address   dapp;
+		uint256   dappprice;
+		address   data;
+		uint256   dataprice;
+		address   pool;
+		uint256   poolprice;
+		address   requester;
+		// settings
+		uint256   category;
+		uint256   trust;
+		address   beneficiary;
+		address   callback;
+		string    params;
+		// extra
+		bytes32   salt;
+		signature sig;
 	}
+
+
+
+
+
 
 	enum WorkOrderStatusEnum
 	{
@@ -130,6 +166,7 @@ contract WorkOrder
 	/**
 	 * Constructor
 	 */
+	/*
 	constructor(
 		Iexec0xLib.PoolMarket _poolmarket,
 		Iexec0xLib.UserMarket _usermarket)
@@ -140,11 +177,11 @@ contract WorkOrder
 		trust            = _poolmarket.trust;
 		workerpool       = _poolmarket.workerpool;
 		workerpoolOwner  = OwnableOZ(workerpool).m_owner();
-		workerpoolReward = _poolmarket.value;
+		workerpoolReward = _poolmarket.workerpoolprice;
 		app              = _usermarket.app;
-		/* if (app     != address(0)) { appReward      = App(app).price();         } */
+		// if (app     != address(0)) { appReward      = App(app).price();         }
 		dataset          = _usermarket.dataset;
-		/* if (dataset != address(0)) { datasetReward  = Dataset(dataset).price(); } */
+		// if (dataset != address(0)) { datasetReward  = Dataset(dataset).price(); }
 		requester        = _usermarket.requester;
 		beneficiary      = _usermarket.beneficiary;
 		callback         = _usermarket.callback;
@@ -164,10 +201,19 @@ contract WorkOrder
 		schedulerRewardRatio = _schedulerRewardRatio;
 		consensusDeadline    = _consensusDeadline;
 	}
-
+	*/
 
 
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -201,47 +247,81 @@ contract TestABIEncoderV2
 	 * Hashing and signature tools
 	 */
 	function isValidSignature(
-		address signer,
-		bytes32 hash,
-		uint8   v,
-		bytes32 r,
-		bytes32 s)
+		address              signer,
+		bytes32              hash,
+		Iexec0xLib.signature sig)
 	public pure returns (bool)
 	{
-		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s);
+		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), sig.v, sig.r, sig.s);
 	}
 
-	function getUserMarketHash(Iexec0xLib.UserMarket usermarket)
+
+	function getDappMarketHash(Iexec0xLib.DappMarket dappmarket)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
-			usermarket.category,
-			usermarket.trust,
-			usermarket.value,
-			usermarket.app,
-			usermarket.dataset,
-			usermarket.requester,
-			usermarket.beneficiary,
-			usermarket.callback,
-			usermarket.params,
-			usermarket.salt
+			// market
+			dappmarket.dapp,
+			dappmarket.dappprice,
+			dappmarket.volume,
+			// extra
+			dappmarket.salt
 		);
 	}
-
+	function getDataMarketHash(Iexec0xLib.DataMarket datamarket)
+	public view returns (bytes32)
+	{
+		return keccak256(
+			address(this),
+			// market
+			datamarket.data,
+			datamarket.dataprice,
+			datamarket.volume,
+			// extra
+			datamarket.salt
+		);
+	}
 	function getPoolMarketHash(Iexec0xLib.PoolMarket poolmarket)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
+			// market
+			poolmarket.pool,
+			poolmarket.poolprice,
+			poolmarket.volume,
+			// settings
 			poolmarket.category,
 			poolmarket.trust,
-			poolmarket.value,
-			poolmarket.volume,
-			poolmarket.workerpool,
+			// extra
 			poolmarket.salt
 		);
 	}
+	function getUserMarketHash(Iexec0xLib.UserMarket usermarket)
+	public view returns (bytes32)
+	{
+		return keccak256(
+			address(this),
+			// market
+			usermarket.dapp,
+			usermarket.dappprice,
+			usermarket.data,
+			usermarket.dataprice,
+			usermarket.pool,
+			usermarket.poolprice,
+			usermarket.requester,
+			// settings
+			usermarket.category,
+			usermarket.trust,
+			usermarket.beneficiary,
+			usermarket.callback,
+			usermarket.params,
+			// extra
+			usermarket.salt
+		);
+	}
+
 
 	/**
 	 * Marketplace methods
@@ -250,37 +330,56 @@ contract TestABIEncoderV2
 	function test() public returns(bool) { return true; }
 
 	function matchOrders(
+		Iexec0xLib.DappMarket dappmarket,
+		Iexec0xLib.DataMarket datamarket,
 		Iexec0xLib.PoolMarket poolmarket,
 		Iexec0xLib.UserMarket usermarket)
-	public returns (bool)
+	public view returns (bool)
 	{
 		/**
 		 * Check compatibility
 		 */
-		require(poolmarket.category == usermarket.category);
-		require(poolmarket.trust    == usermarket.trust   );
-		require(poolmarket.value    == usermarket.value   );
+		require(usermarket.category  == poolmarket.category );
+		require(usermarket.trust     == poolmarket.trust    );
+
+		require(usermarket.dappprice == dappmarket.dappprice);
+		require(usermarket.dataprice == datamarket.dataprice);
+		require(usermarket.poolprice == poolmarket.poolprice);
+
+		require(usermarket.dapp      == dappmarket.dapp     );
+		require(usermarket.data      == datamarket.data     );
+		require(usermarket.pool      == address(0)
+		     || usermarket.pool      == poolmarket.pool     );
 
 		/**
 		 * Check authenticity
 		 */
+		bytes32 dappmarketHash = getDappMarketHash(dappmarket);
+		bytes32 datamarketHash = getDataMarketHash(datamarket);
 		bytes32 poolmarketHash = getPoolMarketHash(poolmarket);
-		require(isValidSignature(
-		// 	OwnableOZ(poolmarket.workerpool).m_owner(), // workerpoolOwner
-			poolmarket.workerpool, // workerpoolOwner
-			poolmarketHash,
-			poolmarket.v,
-			poolmarket.r,
-			poolmarket.s
-		));
-
 		bytes32 usermarketHash = getUserMarketHash(usermarket);
+		require(isValidSignature(
+		 	OwnableOZ(dappmarket.dapp).m_owner(), // application owner
+			dappmarketHash,
+			dappmarket.sig
+		));
+		if (usermarket.data != address(0)) // only check if dataset is enabled
+		{
+			require(isValidSignature(
+				OwnableOZ(datamarket.data).m_owner(), // dataset owner
+				datamarketHash,
+				datamarket.sig
+			));
+		}
+		require(isValidSignature(
+		 	OwnableOZ(poolmarket.pool).m_owner(), // workerpool owner
+			poolmarketHash,
+			poolmarket.sig
+		));
 		require(isValidSignature(
 			usermarket.requester,
 			usermarketHash,
-			usermarket.v,
-			usermarket.r,
-			usermarket.s
+			usermarket.sig
 		));
 
 		/**
@@ -288,15 +387,15 @@ contract TestABIEncoderV2
 		 */
 		require(m_consumed[poolmarketHash] <  poolmarket.volume);
 		require(m_consumed[usermarketHash] == 0);
-		m_consumed[poolmarketHash] = m_consumed[poolmarketHash].add(1);
-		m_consumed[usermarketHash] = 1;
+		// m_consumed[poolmarketHash] = m_consumed[poolmarketHash].add(1);
+		// m_consumed[usermarketHash] = 1;
 
 		/**
 		 * Lock
 		 */
 		// TODO: lock funds
 
-		emit MarketsMatched(poolmarketHash, usermarketHash);
+		// emit MarketsMatched(poolmarketHash, usermarketHash);
 		return true;
 	}
 
@@ -306,7 +405,7 @@ contract TestABIEncoderV2
 		/**
 		 * Only workerpool owner can cancel
 		 */
-		require(msg.sender == OwnableOZ(poolmarket.workerpool).m_owner());
+		require(msg.sender == OwnableOZ(poolmarket.pool).m_owner());
 
 		/**
 		 * Check authenticity
@@ -315,9 +414,7 @@ contract TestABIEncoderV2
 		require(isValidSignature(
 			msg.sender, // workerpool owner
 			poolmarketHash,
-			poolmarket.v,
-			poolmarket.r,
-			poolmarket.s
+			poolmarket.sig
 		));
 
 		/**
@@ -344,9 +441,7 @@ contract TestABIEncoderV2
 		require(isValidSignature(
 			msg.sender, // requester
 			usermarketHash,
-			usermarket.v,
-			usermarket.r,
-			usermarket.s
+			usermarket.sig
 		));
 
 		/**
