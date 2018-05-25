@@ -70,7 +70,6 @@ let wallet   = web3.eth.accounts[0];
 var contract = null;
 
 
-
 var poolmarket = {
 	category:    4,
 	trust:       1000,
@@ -107,9 +106,6 @@ it("ContractCreate", async function() {
 	// provider             = new ethers.providers.JsonRpcProvider('http://localhost:8545');
 	contract             = new ethers.Contract(instance.address, abi, provider);
 });
-
-
-
 
 it("sign markets", async function() {
 	signObject(wallet, poolmarket, getPoolMarketHash(contract.address, poolmarket));
@@ -149,6 +145,21 @@ it("verify signatures", async function() {
 });
 
 it("make market", async function() {
+
+	var tx = { to: contract.address, value: 0 };
+	// console.log(wallet);
+	// console.log(web3.eth.accounts)
+	web3.eth.sendTransaction({
+		from: wallet,
+		to:   '0x11f4d0A3c12e86B4b5F39B213F7E19D048276DAe'
+		// to:   contract.address,
+		// data: ''
+	}, function(error, hash) {
+		console.log(error, hash)
+	});
+
+
+	
 	contract.matchOrders(poolmarket, usermarket).then(function(result) {
 		console.log("MatchOrder!");
 		console.log(result);

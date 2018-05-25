@@ -246,6 +246,9 @@ contract TestABIEncoderV2
 	/**
 	 * Marketplace methods
 	 */
+
+	function test() public returns(bool) { return true; }
+
 	function matchOrders(
 		Iexec0xLib.PoolMarket poolmarket,
 		Iexec0xLib.UserMarket usermarket)
