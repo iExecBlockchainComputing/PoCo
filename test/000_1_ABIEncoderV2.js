@@ -1,8 +1,8 @@
-const TestABIEncoderV2 = artifacts.require("./TestABIEncoderV2.sol");
+const Marketplace_ABIEncoderV2 = artifacts.require("./Marketplace_ABIEncoderV2.sol");
 const OwnableOZ        = artifacts.require("./OwnableOZ.sol");
 const ethers = require('ethers');
 
-function getDappMarketHash(marketplace, dappmarket)
+function getDappOrderHash(marketplace, dappmarket)
 {
 	return ethers.utils.solidityKeccak256([
 		'address',
@@ -18,7 +18,7 @@ function getDappMarketHash(marketplace, dappmarket)
 		dappmarket.salt,
 	]);
 }
-function getDataMarketHash(marketplace, datamarket)
+function getDataOrderHash(marketplace, datamarket)
 {
 	return ethers.utils.solidityKeccak256([
 		'address',
@@ -34,7 +34,7 @@ function getDataMarketHash(marketplace, datamarket)
 		datamarket.salt,
 	]);
 }
-function getPoolMarketHash(marketplace, poolmarket)
+function getPoolOrderHash(marketplace, poolmarket)
 {
 	return ethers.utils.solidityKeccak256([
 		'address',
@@ -54,7 +54,7 @@ function getPoolMarketHash(marketplace, poolmarket)
 		poolmarket.salt,
 	]);
 }
-function getUserMarketHash(marketplace, usermarket)
+function getUserOrderHash(marketplace, usermarket)
 {
 	return ethers.utils.solidityKeccak256([
 		'address',
@@ -64,9 +64,9 @@ function getUserMarketHash(marketplace, usermarket)
 		'uint256',
 		'address',
 		'uint256',
+		'uint256',
+		'uint256',
 		'address',
-		'uint256',
-		'uint256',
 		'address',
 		'address',
 		'string',
@@ -74,55 +74,55 @@ function getUserMarketHash(marketplace, usermarket)
 	],[
 		marketplace,
 		usermarket.dapp,
-		usermarket.dappprice,
+		usermarket.dapppricemax,
 		usermarket.data,
-		usermarket.dataprice,
+		usermarket.datapricemax,
 		usermarket.pool,
-		usermarket.poolprice,
-		usermarket.requester,
+		usermarket.poolpricemax,
 		usermarket.category,
 		usermarket.trust,
+		usermarket.requester,
 		usermarket.beneficiary,
 		usermarket.callback,
 		usermarket.params,
 		usermarket.salt,
 	]);
 }
-function sign(wallet, hash)
+function signMarket(object, wallet, hashing)
 {
-	// return ethers.utils.splitSignature(wallet.signMessage(hash));
-	return ethers.utils.splitSignature(web3.eth.sign(wallet, hash));
+	object.sign = ethers.utils.splitSignature(web3.eth.sign(wallet, hashing(object)));
+	return object
 }
 
 
 
 
 
-let abi        = JSON.stringify(TestABIEncoderV2.abi);
+
+let abi        = JSON.stringify(Marketplace_ABIEncoderV2.abi);
 // web3.currentProvider = new web3.providers.HttpProvider('http://localhost:8545');
 // provider             = new ethers.providers.Web3Provider(web3.currentProvider);
-let provider   = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-var contract   = null;
+let provider  = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+var contract  = null;
 
-let user       = web3.eth.accounts[0];
-let dappOwner  = web3.eth.accounts[1];
-let dataOwner  = web3.eth.accounts[2];
-let poolOwner  = web3.eth.accounts[3];
+let user      = web3.eth.accounts[0];
+let dappOwner = web3.eth.accounts[1];
+let dataOwner = web3.eth.accounts[2];
+let poolOwner = web3.eth.accounts[3];
 
-var dappmarket = null;
-var datamarket = null;
-var poolmarket = null;
-var usermarket = null;
-
+var dapporder = null;
+var dataorder = null;
+var poolorder = null;
+var userorder = null;
 
 
 
 
 it("Initialisation", async function(){
 
-	instance = await TestABIEncoderV2.new();
+	instance = await Marketplace_ABIEncoderV2.new();
 	contract = new ethers.Contract(instance.address, abi, provider);
-	console.log("TestABIEncoderV2 at:", instance.address);
+	console.log("Marketplace_ABIEncoderV2 at:", instance.address);
 
 	dappInstance = await OwnableOZ.new();
 	dataInstance = await OwnableOZ.new();
@@ -133,122 +133,121 @@ it("Initialisation", async function(){
 	console.log("dapp, data and pool created");
 });
 
-it("build markets", async function(){
-	dappmarket = {
+it("build orders", async function(){
+	dapporder = {
 		//market
-		dapp:        dappInstance.address,
-		dappprice:   3,
-		volume:      1000,
+		dapp:         dappInstance.address,
+		dappprice:    3,
+		volume:       1000,
 		// extra
-		salt:        ethers.utils.randomBytes(32),
-		sign:        null
+		salt:         ethers.utils.randomBytes(32),
+		sign:         null
 	};
-	datamarket = {
+	dataorder = {
 		//market
-		// data:        '0x0000000000000000000000000000000000000000',
-		data:        dataInstance.address,
-		dataprice:   1,
-		volume:      1000,
+		data:         dataInstance.address,
+		dataprice:    1,
+		volume:       1000,
 		// extra
-		salt:        ethers.utils.randomBytes(32),
-		sign:        null
+		salt:         ethers.utils.randomBytes(32),
+		sign:         null
 	};
-	poolmarket = {
+	poolorder = {
 		// market
-		pool:        poolInstance.address,
-		poolprice:   25,
-		volume:      3,
+		pool:         poolInstance.address,
+		poolprice:    25,
+		volume:       3,
 		// settings
-		category:    4,
-		trust:       1000,
+		category:     4,
+		trust:        1000,
 		// extra
-		salt:        ethers.utils.randomBytes(32),
-		sign:        null
+		salt:         ethers.utils.randomBytes(32),
+		sign:         null
 	};
-	usermarket = {
+	userorder = {
 		// market
-		dapp:        dappInstance.address,
-		dappprice:   3,
-		data:        dataInstance.address,
-		dataprice:   1,
-		pool:        poolInstance.address,
-		poolprice:   25,
-		requester:   user,
+		dapp:         dappInstance.address,
+		dapppricemax: 3,
+		data:         dataInstance.address,
+		datapricemax: 1,
+		pool:         poolInstance.address,
+		poolpricemax: 25,
 		// settings
-		category:    4,
-		trust:       1000,
-		beneficiary: user,
-		callback:    '0x0000000000000000000000000000000000000000',
-		params:      "echo HelloWorld",
+		category:     4,
+		trust:        1000,
+		requester:    user,
+		beneficiary:  user,
+		callback:     '0x0000000000000000000000000000000000000000',
+		params:       "echo HelloWorld",
 		// extra
-		salt:        ethers.utils.randomBytes(32),
-		sign:        null, // defined later
+		salt:         ethers.utils.randomBytes(32),
+		sign:         null, // defined later
 	};
 });
 
-it("sign markets", async function(){
-	dappmarket.sig = sign(dappOwner, getDappMarketHash(contract.address, dappmarket));
-	datamarket.sig = sign(dataOwner, getDataMarketHash(contract.address, datamarket));
-	poolmarket.sig = sign(poolOwner, getPoolMarketHash(contract.address, poolmarket));
-	usermarket.sig = sign(user,      getUserMarketHash(contract.address, usermarket));
+it("sign orders", async function(){
+	_ = signMarket(dapporder, dappOwner, (obj) => getDappOrderHash(contract.address, obj));
+	_ = signMarket(dataorder, dataOwner, (obj) => getDataOrderHash(contract.address, obj));
+	_ = signMarket(poolorder, poolOwner, (obj) => getPoolOrderHash(contract.address, obj));
+	_ = signMarket(userorder, user,      (obj) => getUserOrderHash(contract.address, obj));
 });
 
 it("verify hashs", async function(){
-	contract.getDappMarketHash(dappmarket).then(function(result) {
+	contract.getDappOrderHash(dapporder).then(function(result) {
 		console.log("dappmarket hash:", result);
-		assert.strictEqual(result, getDappMarketHash(contract.address, dappmarket), "Error with dappmarket hash computation");
+		assert.strictEqual(result, getDappOrderHash(contract.address, dapporder), "Error with dapporder hash computation");
 	});
-	contract.getDataMarketHash(datamarket).then(function(result) {
+	contract.getDataOrderHash(dataorder).then(function(result) {
 		console.log("datamarket hash:", result);
-		assert.strictEqual(result, getDataMarketHash(contract.address, datamarket), "Error with datamarket hash computation");
+		assert.strictEqual(result, getDataOrderHash(contract.address, dataorder), "Error with dataorder hash computation");
 	});
-	contract.getPoolMarketHash(poolmarket).then(function(result) {
+	contract.getPoolOrderHash(poolorder).then(function(result) {
 		console.log("poolmarket hash:", result);
-		assert.strictEqual(result, getPoolMarketHash(contract.address, poolmarket), "Error with poolmarket hash computation");
+		assert.strictEqual(result, getPoolOrderHash(contract.address, poolorder), "Error with poolorder hash computation");
 	});
-	contract.getUserMarketHash(usermarket).then(function(result) {
+	contract.getUserOrderHash(userorder).then(function(result) {
 		console.log("usermarket hash:", result);
-		assert.strictEqual(result, getUserMarketHash(contract.address, usermarket), "Error with usermarket hash computation");
+		assert.strictEqual(result, getUserOrderHash(contract.address, userorder), "Error with userorder hash computation");
 	});
 });
 
 it("verify signatures", async function(){
 	contract.isValidSignature(
 		dappOwner,
-		getDappMarketHash(contract.address, dappmarket),
-		dappmarket.sig
+		getDappOrderHash(contract.address, dapporder),
+		dapporder.sign
 	).then(function(result) {
-		assert(result, "Error with the validation of the dappmarket signature");
+		assert(result, "Error with the validation of the dapporder signature");
 	});
 	contract.isValidSignature(
 		dataOwner,
-		getDataMarketHash(contract.address, datamarket),
-		datamarket.sig
+		getDataOrderHash(contract.address, dataorder),
+		dataorder.sign
 	).then(function(result) {
-		assert(result, "Error with the validation of the datamarket signature");
+		assert(result, "Error with the validation of the dataorder signature");
 	});
 	contract.isValidSignature(
 		poolOwner,
-		getPoolMarketHash(contract.address, poolmarket),
-		poolmarket.sig
+		getPoolOrderHash(contract.address, poolorder),
+		poolorder.sign
 	).then(function(result) {
-		assert(result, "Error with the validation of the poolmarket signature");
+		assert(result, "Error with the validation of the poolorder signature");
 	});
 	contract.isValidSignature(
 		user,
-		getUserMarketHash(contract.address, usermarket),
-		usermarket.sig
+		getUserOrderHash(contract.address, userorder),
+		userorder.sign
 	).then(function(result) {
-		assert(result, "Error with the validation of the usermarket signature");
+		assert(result, "Error with the validation of the userorder signature");
 	});
 });
 
 it("make market", async function(){
 	contract.matchOrders(
-		dappmarket,
-		datamarket,
-		poolmarket,
-		usermarket
+		dapporder,
+		dataorder,
+		poolorder,
+		userorder
 	).then(function(result) {
 		console.log("MatchOrder!");
 		console.log(result);

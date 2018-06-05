@@ -339,13 +339,17 @@ contract('IexecHub', function(accounts) {
 		});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		signed = await Extensions.signResult("iExec the wanderer", resourceProvider);
-		sgxsign   = web3.eth.sign(SGXkeys, signed.hash.substr(2,64) + signed.sign.substr(2,64));
-		sgxsign_r = '0x' + sgxsign.substr(2, 64);
-		sgxsign_s = '0x' + sgxsign.substr(66, 64);
-		sgxsign_v = web3.toDecimal(sgxsign.substr(130, 2)) + 27;
+		contrib = await Extensions.signResult("iExec the wanderer", resourceProvider);
+		signmsg = '0x' + contrib.hash.substr(2,64) + contrib.sign.substr(2,64);
+		sgxsign = await Extensions.signHash(SGXkeys, signmsg);
 
-		txMined = await aWorkerPoolInstance.contribute(woid, signed.hash, signed.sign, sgxsign_v, sgxsign_r, sgxsign_s, {
+		console.log("#CONTRIB");
+		console.log(contrib);
+		console.log("signmsg:", signmsg);
+		console.log("sgxkeys:", SGXkeys);
+		console.log("signature:", sgxsign);
+
+		txMined = await aWorkerPoolInstance.contribute(woid, contrib.hash, contrib.sign, sgxsign.v, sgxsign.r, sgxsign.s, {
 			from: resourceProvider,
 			gas: constants.AMOUNT_GAS_PROVIDED
 		});

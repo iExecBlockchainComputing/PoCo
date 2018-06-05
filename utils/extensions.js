@@ -272,33 +272,39 @@ module.exports = {
       return true;
     }
   },
-  hashByteResult: function(byteresult)
+
+  hashResult: function(message)
   {
-    const resultHash    = web3.sha3(byteresult,  {encoding: 'hex'}); // Vote
-    return resultHash;
+    const messagehash = web3.sha3(message);
+    const hash        = web3.sha3(messagehash, {encoding: 'hex'}); // Vote
+    return hash
   },
-  signByteResult: function(byteresult, address)
+  signResult: function(message, address)
   {
-    const resultHash    = web3.sha3(byteresult, {encoding: 'hex'}); // Vote
-    const addressHash   = web3.sha3(address,    {encoding: 'hex'});
-    var   xor           = '0x';
-    for(i=2; i<66; ++i) xor += (parseInt(byteresult.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
-    const sign          = web3.sha3(xor, {encoding: 'hex'}); // Sign
-    return {hash: resultHash, sign: sign};
+    const messageHash = web3.sha3(message);
+    const addressHash = web3.sha3(address, {encoding: 'hex'});
+    var   xor         = '0x';
+    for(i=2; i<66; ++i) xor += (parseInt(messageHash.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
+    const hash        = web3.sha3(messageHash, {encoding: 'hex'}); // Vote
+    const sign        = web3.sha3(xor,         {encoding: 'hex'}); // Sign
+    return {
+      __message:     message,
+      __messageHash: messageHash,
+      __address:     address,
+  		__addressHash: addressHash,
+  		__xor:         xor,
+  		hash:          hash,
+      sign:          sign
+    };
   },
-  hashResult: function(result)          { return this.hashByteResult(web3.sha3(result)         ); },
-  signResult: function(result, address) { return this.signByteResult(web3.sha3(result), address); },
-
-
-
-
   signHash: function(account, hash)
   {
     signature = web3.eth.sign(account, hash);
     return {
-      r: '0x' + signature.substr(2, 64),
-      s: '0x' + signature.substr(66, 64),
-      v: web3.toDecimal(signature.substr(130, 2)) + 27
+      __signature: signature,
+      r:           '0x' + signature.substr(2, 64),
+      s:           '0x' + signature.substr(66, 64),
+      v:           web3.toDecimal(signature.substr(130, 2)) + 27
     }
   },
 

@@ -15,7 +15,12 @@ library Iexec0xLib
 		bytes32 r;
 		bytes32 s;
 	}
-	struct DappMarket
+	struct Resource
+	{
+		address pointer;
+		uint256 price;
+	}
+	struct DappOrder
 	{
 		// market
 		address   dapp;
@@ -23,9 +28,9 @@ library Iexec0xLib
 		uint256   volume;
 		// extra
 		bytes32   salt;
-		signature sig;
+		signature sign;
 	}
-	struct DataMarket
+	struct DataOrder
 	{
 		// market
 		address   data;
@@ -33,9 +38,9 @@ library Iexec0xLib
 		uint256   volume;
 		// extra
 		bytes32   salt;
-		signature sig;
+		signature sign;
 	}
-	struct PoolMarket
+	struct PoolOrder
 	{
 		// market
 		address   pool;
@@ -46,17 +51,17 @@ library Iexec0xLib
 		uint256   trust;
 		// extra
 		bytes32   salt;
-		signature sig;
+		signature sign;
 	}
-	struct UserMarket
+	struct UserOrder
 	{
 		// market
 		address   dapp;
-		uint256   dappprice;
+		uint256   dapppricemax;
 		address   data;
-		uint256   dataprice;
+		uint256   datapricemax;
 		address   pool;
-		uint256   poolprice;
+		uint256   poolpricemax;
 		address   requester;
 		// settings
 		uint256   category;
@@ -66,7 +71,7 @@ library Iexec0xLib
 		string    params;
 		// extra
 		bytes32   salt;
-		signature sig;
+		signature sign;
 	}
 
 
@@ -82,6 +87,36 @@ library Iexec0xLib
 		CLAIMED,   // Failled consensus
 		COMPLETED  // Concensus achieved
 	}
+
+	struct WorkOrder
+	{
+		WorkOrderStatusEnum status;
+
+		// Ressources
+		Resource dapp;
+		Resource data;
+		Resource pool;
+
+		// execution settings
+		uint256 category;
+		uint256 trust;
+
+		// execution details
+		address requester;
+		address beneficiary;
+		address callback;
+		string  params;
+
+		// other settings
+		uint256 workerStakeRatio;
+		uint256 schedulerRewardRatio;
+	}
+
+
+
+
+
+
 
 	enum ContributionStatusEnum
 	{
@@ -100,110 +135,20 @@ library Iexec0xLib
 		uint256                score;
 		uint256                weight;
 	}
-}
 
-
-
-
-contract WorkOrder
-{
-	using SafeMathOZ for uint256;
-
-	/**
-	 * Market
-	 */
-	Iexec0xLib.WorkOrderStatusEnum status;
-	// common
-	uint256 category;
-	uint256 trust;
-	// workerpool
-	address workerpool;
-	address workerpoolOwner;
-	uint256 workerpoolReward;
-	// app
-	address app;
-	uint256 appReward;
-	// dataset
-	address dataset;
-	uint256 datasetReward;
-	// execution
-	address requester;
-	address beneficiary;
-	address callback;
-	string  params;
-
-	/**
-	 * Worker pool settings
-	 */
-	uint256 workerStakeRatio;
-	uint256 schedulerRewardRatio;
-
-	/**
-	 * Consensus
-	 */
-	mapping(address => Iexec0xLib.Contribution) contributions;
-	address[] contributors;
-
-	bytes32 consensus;
-	uint256 winnerCounter;
-	uint256 revealCounter;
-
-	/**
-	 * Timers
-	 */
-	uint256 consensusDeadline;
-	uint256 revealDeadline;
-
-
-
-
-	modifier onlyWorkerPool
-	{
-		require(msg.sender == workerpool);
-		_;
-	}
-
-	/**
-	 * Constructor
-	 */
 	/*
-	constructor(
-		Iexec0xLib.PoolMarket _poolmarket,
-		Iexec0xLib.UserMarket _usermarket)
-	public
-	{
-		status           = Iexec0xLib.WorkOrderStatusEnum.UNSET;
-		category         = _poolmarket.category;
-		trust            = _poolmarket.trust;
-		workerpool       = _poolmarket.workerpool;
-		workerpoolOwner  = OwnableOZ(workerpool).m_owner();
-		workerpoolReward = _poolmarket.workerpoolprice;
-		app              = _usermarket.app;
-		// if (app     != address(0)) { appReward      = App(app).price();         }
-		dataset          = _usermarket.dataset;
-		// if (dataset != address(0)) { datasetReward  = Dataset(dataset).price(); }
-		requester        = _usermarket.requester;
-		beneficiary      = _usermarket.beneficiary;
-		callback         = _usermarket.callback;
-		params           = _usermarket.params;
-	}
+		// consensus
+		mapping(address => Contribution) contributions;
+		address[] contributors;
 
-	function initialize(
-		uint256 _workerStakeRatio,
-		uint256 _schedulerRewardRatio,
-		uint256 _consensusDeadline)
-	public onlyWorkerPool returns (bool)
-	{
-		require(status == Iexec0xLib.WorkOrderStatusEnum.UNSET);
-		status = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		bytes32 consensus;
+		uint256 winnerCounter;
+		uint256 revealCounter;
 
-		workerStakeRatio     = _workerStakeRatio;
-		schedulerRewardRatio = _schedulerRewardRatio;
-		consensusDeadline    = _consensusDeadline;
-	}
+		// timers
+		uint256 consensusDeadline;
+		uint256 revealDeadline;
 	*/
-
-
 }
 
 
@@ -218,23 +163,37 @@ contract WorkOrder
 
 
 
-contract TestABIEncoderV2
+
+
+
+
+
+
+
+
+contract Marketplace_ABIEncoderV2
 {
 	using SafeMathOZ for uint256;
-
-	/**
-	 * Marketplace data
-	 */
-	mapping(bytes32 => uint256) m_consumed;
 
 	uint256 public constant POOL_STAKE_RATIO = 30;
 
 	/**
+	 * Marketplace data
+	 */
+	mapping(bytes32 => uint256             ) public m_consumed;
+	mapping(bytes32 => Iexec0xLib.WorkOrder) public m_workorders;
+
+	/**
 	 * Events
 	 */
-	event MarketsMatched  (bytes32 poolHash, bytes32 userHash);
-	event PoolMarketClosed(bytes32 poolHash);
-	event UserMarketClosed(bytes32 userHash);
+	event OrdersMatched  (bytes32 dappHash,
+	                      bytes32 dataHash,
+	                      bytes32 poolHash,
+	                      bytes32 userHash);
+	event DappOrderClosed(bytes32 dappHash);
+	event DataOrderClosed(bytes32 dataHash);
+	event PoolOrderClosed(bytes32 poolHash);
+	event UserOrderClosed(bytes32 userHash);
 
 	/**
 	 * Constructor
@@ -249,208 +208,378 @@ contract TestABIEncoderV2
 	function isValidSignature(
 		address              signer,
 		bytes32              hash,
-		Iexec0xLib.signature sig)
+		Iexec0xLib.signature sign)
 	public pure returns (bool)
 	{
-		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), sig.v, sig.r, sig.s);
+		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), sign.v, sign.r, sign.s);
 	}
 
-
-	function getDappMarketHash(Iexec0xLib.DappMarket dappmarket)
+	function getDappOrderHash(Iexec0xLib.DappOrder dapporder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
 			// market
-			dappmarket.dapp,
-			dappmarket.dappprice,
-			dappmarket.volume,
+			dapporder.dapp,
+			dapporder.dappprice,
+			dapporder.volume,
 			// extra
-			dappmarket.salt
+			dapporder.salt
 		);
 	}
-	function getDataMarketHash(Iexec0xLib.DataMarket datamarket)
+	function getDataOrderHash(Iexec0xLib.DataOrder dataorder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
 			// market
-			datamarket.data,
-			datamarket.dataprice,
-			datamarket.volume,
+			dataorder.data,
+			dataorder.dataprice,
+			dataorder.volume,
 			// extra
-			datamarket.salt
+			dataorder.salt
 		);
 	}
-	function getPoolMarketHash(Iexec0xLib.PoolMarket poolmarket)
+	function getPoolOrderHash(Iexec0xLib.PoolOrder poolorder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
 			// market
-			poolmarket.pool,
-			poolmarket.poolprice,
-			poolmarket.volume,
+			poolorder.pool,
+			poolorder.poolprice,
+			poolorder.volume,
 			// settings
-			poolmarket.category,
-			poolmarket.trust,
+			poolorder.category,
+			poolorder.trust,
 			// extra
-			poolmarket.salt
+			poolorder.salt
 		);
 	}
-	function getUserMarketHash(Iexec0xLib.UserMarket usermarket)
+	function getUserOrderHash(Iexec0xLib.UserOrder userorder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
 			// market
-			usermarket.dapp,
-			usermarket.dappprice,
-			usermarket.data,
-			usermarket.dataprice,
-			usermarket.pool,
-			usermarket.poolprice,
-			usermarket.requester,
+			userorder.dapp,
+			userorder.dapppricemax,
+			userorder.data,
+			userorder.datapricemax,
+			userorder.pool,
+			userorder.poolpricemax,
 			// settings
-			usermarket.category,
-			usermarket.trust,
-			usermarket.beneficiary,
-			usermarket.callback,
-			usermarket.params,
+			userorder.category,
+			userorder.trust,
+			userorder.requester,
+			userorder.beneficiary,
+			userorder.callback,
+			userorder.params,
 			// extra
-			usermarket.salt
+			userorder.salt
 		);
 	}
-
 
 	/**
 	 * Marketplace methods
 	 */
-
-	function test() public returns(bool) { return true; }
-
 	function matchOrders(
-		Iexec0xLib.DappMarket dappmarket,
-		Iexec0xLib.DataMarket datamarket,
-		Iexec0xLib.PoolMarket poolmarket,
-		Iexec0xLib.UserMarket usermarket)
-	public view returns (bool)
+		Iexec0xLib.DappOrder dapporder,
+		Iexec0xLib.DataOrder dataorder,
+		Iexec0xLib.PoolOrder poolorder,
+		Iexec0xLib.UserOrder userorder)
+	public returns (bytes32)
 	{
 		/**
-		 * Check compatibility
+		 * Check orders compatibility
 		 */
-		require(usermarket.category  == poolmarket.category );
-		require(usermarket.trust     == poolmarket.trust    );
+		// computation environment
+		require(userorder.category == poolorder.category );
+		require(userorder.trust    == poolorder.trust    );
 
-		require(usermarket.dappprice == dappmarket.dappprice);
-		require(usermarket.dataprice == datamarket.dataprice);
-		require(usermarket.poolprice == poolmarket.poolprice);
+		// user allowed enugh ressources.
+		require(userorder.dapppricemax >= dapporder.dappprice);
+		require(userorder.datapricemax >= dataorder.dataprice);
+		require(userorder.poolpricemax >= poolorder.poolprice);
 
-		require(usermarket.dapp      == dappmarket.dapp     );
-		require(usermarket.data      == datamarket.data     );
-		require(usermarket.pool      == address(0)
-		     || usermarket.pool      == poolmarket.pool     );
+		// pairing is valid
+		require(userorder.dapp == dapporder.dapp);
+		require(userorder.data == dataorder.data);
+		require(userorder.pool == address(0)
+		     || userorder.pool == poolorder.pool);
 
 		/**
-		 * Check authenticity
+		 * Check orders authenticity
 		 */
-		bytes32 dappmarketHash = getDappMarketHash(dappmarket);
-		bytes32 datamarketHash = getDataMarketHash(datamarket);
-		bytes32 poolmarketHash = getPoolMarketHash(poolmarket);
-		bytes32 usermarketHash = getUserMarketHash(usermarket);
+
+		// dapp
+		bytes32 dapporderHash = getDappOrderHash(dapporder);
 		require(isValidSignature(
-		 	OwnableOZ(dappmarket.dapp).m_owner(), // application owner
-			dappmarketHash,
-			dappmarket.sig
+			OwnableOZ(dapporder.dapp).m_owner(), // application owner
+			dapporderHash,
+			dapporder.sign
 		));
-		if (usermarket.data != address(0)) // only check if dataset is enabled
+
+		// data
+		bytes32 dataorderHash = getDataOrderHash(dataorder);
+		if (userorder.data != address(0)) // only check if dataset is enabled
 		{
 			require(isValidSignature(
-				OwnableOZ(datamarket.data).m_owner(), // dataset owner
-				datamarketHash,
-				datamarket.sig
+				OwnableOZ(dataorder.data).m_owner(), // dataset owner
+				dataorderHash,
+				dataorder.sign
 			));
 		}
+
+		// pool
+		bytes32 poolorderHash = getPoolOrderHash(poolorder);
 		require(isValidSignature(
-		 	OwnableOZ(poolmarket.pool).m_owner(), // workerpool owner
-			poolmarketHash,
-			poolmarket.sig
+		 	OwnableOZ(poolorder.pool).m_owner(), // workerpool owner
+			poolorderHash,
+			poolorder.sign
 		));
+
+		// user
+		bytes32 userorderHash = getUserOrderHash(userorder);
 		require(isValidSignature(
-			usermarket.requester,
-			usermarketHash,
-			usermarket.sig
+			userorder.requester,
+			userorderHash,
+			userorder.sign
 		));
 
 		/**
 		 * Check and update availability
 		 */
-		require(m_consumed[poolmarketHash] <  poolmarket.volume);
-		require(m_consumed[usermarketHash] == 0);
-		// m_consumed[poolmarketHash] = m_consumed[poolmarketHash].add(1);
-		// m_consumed[usermarketHash] = 1;
+		require(m_consumed[dapporderHash] <  dapporder.volume);
+		require(m_consumed[dataorderHash] <  dataorder.volume);
+		require(m_consumed[poolorderHash] <  poolorder.volume);
+		require(m_consumed[userorderHash] == 0);
+		m_consumed[dapporderHash] = m_consumed[dapporderHash].add(1);
+		m_consumed[dataorderHash] = m_consumed[dataorderHash].add(1);
+		m_consumed[poolorderHash] = m_consumed[poolorderHash].add(1);
+		m_consumed[userorderHash] = 1;
 
 		/**
 		 * Lock
 		 */
 		// TODO: lock funds
 
-		// emit MarketsMatched(poolmarketHash, usermarketHash);
+		/**
+		 * Record
+		 */
+		Iexec0xLib.WorkOrder storage workorder = m_workorders[userorderHash];
+		workorder.status               = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		workorder.dapp.pointer         = dapporder.dapp;
+		workorder.dapp.price           = dapporder.dappprice;
+		workorder.data.pointer         = dataorder.data;
+		workorder.data.price           = dataorder.dataprice;
+		workorder.pool.pointer         = poolorder.pool;
+		workorder.pool.price           = poolorder.poolprice;
+		workorder.category             = userorder.category;
+		workorder.trust                = userorder.trust;
+		workorder.requester            = userorder.requester;
+		workorder.beneficiary          = userorder.beneficiary;
+		workorder.callback             = userorder.callback;
+		workorder.params               = userorder.params;
+		workorder.workerStakeRatio     = 0; // TODO
+		workorder.schedulerRewardRatio = 0; // TODO
+
+		emit OrdersMatched(
+			dapporderHash,
+			dataorderHash,
+			poolorderHash,
+			userorderHash
+		);
+		return userorderHash;
+	}
+
+	function cancelDappOrder(Iexec0xLib.DappOrder dapporder)
+	public returns (bool)
+	{
+		/**
+		 * Only Dapp owner can cancel
+		 */
+		require(msg.sender == OwnableOZ(dapporder.dapp).m_owner());
+
+		/**
+		 * Check authenticity
+		 */
+		bytes32 dapporderHash = getDappOrderHash(dapporder);
+		require(isValidSignature(
+			msg.sender, // dapp owner
+			dapporderHash,
+			dapporder.sign
+		));
+
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[dapporderHash] = dapporder.volume;
+
+		emit DappOrderClosed(dapporderHash);
 		return true;
 	}
 
-	function cancelPoolMarket(Iexec0xLib.PoolMarket poolmarket)
+	function cancelDataOrder(Iexec0xLib.DataOrder dataorder)
+	public returns (bool)
+	{
+		/**
+		 * Only dataset owner can cancel
+		 */
+		require(msg.sender == OwnableOZ(dataorder.data).m_owner());
+
+		/**
+		 * Check authenticity
+		 */
+		bytes32 dataorderHash = getDataOrderHash(dataorder);
+		require(isValidSignature(
+			msg.sender, // dataset owner
+			dataorderHash,
+			dataorder.sign
+		));
+
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[dataorderHash] = dataorder.volume;
+
+		emit DataOrderClosed(dataorderHash);
+		return true;
+	}
+
+	function cancelPoolOrder(Iexec0xLib.PoolOrder poolorder)
 	public returns (bool)
 	{
 		/**
 		 * Only workerpool owner can cancel
 		 */
-		require(msg.sender == OwnableOZ(poolmarket.pool).m_owner());
+		require(msg.sender == OwnableOZ(poolorder.pool).m_owner());
 
 		/**
 		 * Check authenticity
 		 */
-		bytes32 poolmarketHash = getPoolMarketHash(poolmarket);
+		bytes32 poolorderHash = getPoolOrderHash(poolorder);
 		require(isValidSignature(
 			msg.sender, // workerpool owner
-			poolmarketHash,
-			poolmarket.sig
+			poolorderHash,
+			poolorder.sign
 		));
 
 		/**
 		 * Cancel market by marking it consumed
 		 */
-		m_consumed[poolmarketHash] = poolmarket.volume;
+		m_consumed[poolorderHash] = poolorder.volume;
 
-		emit PoolMarketClosed(poolmarketHash);
+		emit PoolOrderClosed(poolorderHash);
 		return true;
 	}
 
-	function cancelUserMarket(Iexec0xLib.UserMarket usermarket)
+	function cancelUserOrder(Iexec0xLib.UserOrder userorder)
 	public returns (bool)
 	{
 		/**
 		 * Only requester can cancel
 		 */
-		require(msg.sender == usermarket.requester);
+		require(msg.sender == userorder.requester);
 
 		/**
 		 * Check authenticity
 		 */
-		bytes32 usermarketHash = getUserMarketHash(usermarket);
+		bytes32 userorderHash = getUserOrderHash(userorder);
 		require(isValidSignature(
 			msg.sender, // requester
-			usermarketHash,
-			usermarket.sig
+			userorderHash,
+			userorder.sign
 		));
 
 		/**
 		 * Cancel market by marking it consumed
 		 */
-		m_consumed[usermarketHash] = 1;
+		m_consumed[userorderHash] = 1;
 
-		emit UserMarketClosed(usermarketHash);
+		emit UserOrderClosed(userorderHash);
 		return true;
 	}
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+contract MarketFactory
+{
+	struct Agent
+	{
+		address reference;
+		uint256 price;
+	}
+	struct WorkOrder
+	{
+		WorkOrderStatusEnum status;
+		Agent   dapp;
+		Agent   data;
+		Agent   pool;
+		// execution settings
+		uint256 category;
+		uint256 trust;
+		// execution details
+		address requester;
+		address beneficiary;
+		address callback;
+		string  params;
+		// other settings
+		uint256 workerStakeRatio;
+		uint256 schedulerRewardRatio;
+	}
+
+	using SafeMathOZ for uint256;
+
+	Marketplace_ABIEncoderV2 marketplace;
+
+	mapping(bytes32 => WorkOrder) public m_workorders;
+
+	constructor() public
+	{
+	}
+
+	function initialize(
+		Iexec0xLib.DappOrder dapporder,
+		Iexec0xLib.DataOrder dataorder,
+		Iexec0xLib.PoolOrder poolorder,
+		Iexec0xLib.UserOrder userorder)
+	public returns (uint256)
+	{
+		bytes32 woid = marketplace.matchOrders(dapporder, dataorder, poolorder, userorder);
+
+		Iexec0xLib.WorkOrder memory workorder = m_workorders[woid];
+		workorder.status               = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		workorder.dapp                 = dapporder.dapp;
+		workorder.dappprice            = dapporder.dappprice;
+		workorder.data                 = dataorder.data;
+		workorder.dataprice            = dataorder.dataprice;
+		workorder.pool                 = poolorder.pool;
+		workorder.poolprice            = poolorder.poolprice;
+		workorder.category             = userorder.category;
+		workorder.trust                = userorder.trust;
+		workorder.requester            = userorder.requester;
+		workorder.beneficiary          = userorder.beneficiary;
+		workorder.callback             = userorder.callback;
+		workorder.params               = userorder.params;
+		workorder.workerStakeRatio     = 0;
+		workorder.schedulerRewardRatio = 0;
+	}
+}
+*/
