@@ -95,7 +95,7 @@ contract ConsensusesManager
 		bytes32              _resultHash,
 		bytes32              _resultSign,
 		Iexec0xLib.signature _challengeSign)
-	public
+	public // worker
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
@@ -167,7 +167,7 @@ contract ConsensusesManager
 	function reveal(
 		bytes32 _woid,
 		bytes32 _result)
-	public onlyScheduler(_woid)
+	public // worker
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
@@ -186,6 +186,32 @@ contract ConsensusesManager
 		//emit Reveal(_woid, msg.sender, _result);
 	}
 
+	function reopen(
+		bytes32 _woid)
+	public onlyScheduler(_woid)
+	{
+		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
+		require(workorder.consensusDeadline >  now                                     );
+		require(workorder.revealDeadline    <= now
+		     && workorder.revealCounter     == 0                                       );
+
+		for (uint256 i = 0; i < workorder.contributors.length; ++i)
+		{
+			address worker = workorder.contributors[i];
+			if (m_contributions[_woid][worker].resultHash == workorder.consensusValue)
+			{
+				m_contributions[_woid][worker].status = Iexec0xLib.ContributionStatusEnum.REJECTED;
+			}
+		}
+
+		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		workorder.consensusValue = 0x0;
+		workorder.revealDeadline = 0;
+		workorder.winnerCounter  = 0;
+
+		//emit Reopen(_woid);
+	}
 
 	function finalizeWork(
 		bytes32 _woid,
@@ -210,8 +236,6 @@ contract ConsensusesManager
 
 		//emit FinalizeWork(_woid,_stdout,_stderr,_uri);
 	}
-
-
 
 	function claimfailed(
 		bytes32 _woid)
@@ -239,12 +263,6 @@ contract ConsensusesManager
 
 		/* emit WorkOrderClaimed(_woid); */
 	}
-
-
-	// function reopen
-
-
-
 
 	function distributeRewards(bytes32 _woid) private returns (bool)
 	{
