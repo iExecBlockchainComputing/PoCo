@@ -1,235 +1,462 @@
-pragma solidity ^0.4.18;
-/* import './IexecLib.sol'; */
-import './IexecHubAccessor.sol';
-import './WorkerPool.sol';
+pragma solidity ^0.4.21;
+pragma experimental ABIEncoderV2;
+
+import "./Iexec0xLib.sol";
+import "./Escrow.sol";
+import "./OwnableOZ.sol";
 import "./SafeMathOZ.sol";
 
-contract Marketplace is IexecHubAccessor
+contract Marketplace is Escrow
 {
 	using SafeMathOZ for uint256;
 
-	/**
-	 * Marketplace
-	 */
-	mapping(bytes32 => uint256) public m_consumed;
+	uint256 public constant POOL_STAKE_RATIO = 30;
 
-	uint256 public constant ASK_STAKE_RATIO = 30;
+	/**
+	 * Marketplace data
+	 */
+	mapping(bytes32 => uint256        ) public m_consumed;
+	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
 
 	/**
 	 * Events
 	 */
-	event MarketMatched   (bytes32 poolHash, bytes32 userHash);
-	event MarketClosedPool(bytes32 poolHash);
-	event MarketClosedUser(bytes32 userHash);
+	event OrdersMatched  (bytes32 dappHash,
+	                      bytes32 dataHash,
+	                      bytes32 poolHash,
+	                      bytes32 userHash);
+	event DappOrderClosed(bytes32 dappHash);
+	event DataOrderClosed(bytes32 dataHash);
+	event PoolOrderClosed(bytes32 poolHash);
+	event UserOrderClosed(bytes32 userHash);
 
 	/**
 	 * Constructor
 	 */
-	function Marketplace(address _iexecHubAddress)
-	IexecHubAccessor(_iexecHubAddress)
-	public
+	constructor(address _rlctoken)
+	public Escrow(_rlctoken)
 	{
 	}
 
+	/**
+	 * Accessor
+	 */
+	function viewDeal(bytes32 _id)
+	public view returns (Iexec0xLib.Deal)
+	{
+		return m_deals[_id];
+	}
+
+	/**
+	 * Hashing and signature tools
+	 */
 	function isValidSignature(
-		address signer,
-		bytes32 hash,
-		uint8   v,
-		bytes32 r,
-		bytes32 s)
+		address              _signer,
+		bytes32              _hash,
+		Iexec0xLib.signature _signature)
 	public pure returns (bool)
 	{
-		return signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", hash), v, r, s);
+		return _signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", _hash), _signature.v, _signature.r, _signature.s);
 	}
 
-	function getPoolOrderHash(
-		/********** Order settings **********/
-		uint256[3] _commonOrder,
-		/* uint256 _commonOrder_category, */
-		/* uint256 _commonOrder_trust, */
-		/* uint256 _commonOrder_value, */
-		/********** Pool settings **********/
-		uint256 _poolOrder_volume,
-		address _poolOrder_workerpool,
-		uint256 _poolOrder_salt)
+	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
-			_commonOrder[0],
-			_commonOrder[1],
-			_commonOrder[2],
-			_poolOrder_volume,
-			_poolOrder_workerpool,
-			_poolOrder_salt);
+			// market
+			_dapporder.dapp,
+			_dapporder.dappprice,
+			_dapporder.volume,
+			// extra
+			_dapporder.salt
+		);
 	}
-
-	function getUserOrderHash(
-		/********** Order settings **********/
-		uint256[3] _commonOrder,
-		/* uint256 _commonOrder_category, */
-		/* uint256 _commonOrder_trust, */
-		/* uint256 _commonOrder_value, */
-		/********** User settings **********/
-		address[5] _userOrder,
-		/* address _userOrder_app, */
-		/* address _userOrder_dataset, */
-		/* address _userOrder_callback, */
-		/* address _userOrder_beneficiary, */
-		/* address _userOrder_requester, */
-		string  _userOrder_params,
-		uint256 _userOrder_salt)
+	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
 		return keccak256(
 			address(this),
-			_commonOrder[0],   // category
-			_commonOrder[1],   // trust
-			_commonOrder[2],   // value
-			_userOrder[0],     // app
-			_userOrder[1],     // dataset
-			_userOrder[2],     // callback
-			_userOrder[3],     // beneficiary
-			_userOrder[4],     // requester
-			_userOrder_params, // params
-			_userOrder_salt    // salt
+			// market
+			_dataorder.data,
+			_dataorder.dataprice,
+			_dataorder.volume,
+			// extra
+			_dataorder.salt
+		);
+	}
+	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
+	public view returns (bytes32)
+	{
+		return keccak256(
+			address(this),
+			// market
+			_poolorder.pool,
+			_poolorder.poolprice,
+			_poolorder.volume,
+			// settings
+			_poolorder.category,
+			_poolorder.trust,
+			// extra
+			_poolorder.salt
+		);
+	}
+	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
+	public view returns (bytes32)
+	{
+		return keccak256(
+			address(this),
+			// market
+			_userorder.dapp,
+			_userorder.dapppricemax,
+			_userorder.data,
+			_userorder.datapricemax,
+			_userorder.pool,
+			_userorder.poolpricemax,
+			// settings
+			_userorder.category,
+			_userorder.trust,
+			_userorder.requester,
+			_userorder.beneficiary,
+			_userorder.callback,
+			_userorder.params,
+			// extra
+			_userorder.salt
 		);
 	}
 
 	/**
-	 * Deal on Market
+	 * Marketplace methods
 	 */
 	function matchOrders(
-		/********** Order settings **********/
-		uint256[3] _commonOrder,
-		/* uint256 _commonOrder_category, */
-		/* uint256 _commonOrder_trust, */
-		/* uint256 _commonOrder_value, */
-		/********** Pool settings **********/
-		uint256 _poolOrder_volume,
-		address _poolOrder_workerpool,
-		/********** User settings **********/
-		address[5] _userOrder,
-		/* address _userOrder_app, */
-		/* address _userOrder_dataset, */
-		/* address _userOrder_callback, */
-		/* address _userOrder_beneficiary, */
-		/* address _userOrder_requester, */
-		string  _userOrder_params,
-		/********** Signatures **********/
-		uint256[2] _salt,
-		uint8[2]   _v,
-		bytes32[2] _r,
-		bytes32[2] _s)
-	public onlyIexecHub returns (bool)
+		Iexec0xLib.DappOrder _dapporder,
+		Iexec0xLib.DataOrder _dataorder,
+		Iexec0xLib.PoolOrder _poolorder,
+		Iexec0xLib.UserOrder _userorder)
+	public returns (bytes32)
 	{
-		IexecLib.MarketMatching memory matching = IexecLib.MarketMatching({
-			common_category:      _commonOrder[0],
-			common_trust:         _commonOrder[1],
-			common_value:         _commonOrder[2],
-			pool_volume:          _poolOrder_volume,
-			pool_workerpool:      _poolOrder_workerpool,
-			pool_workerpoolOwner: WorkerPool(_poolOrder_workerpool).m_owner(),
-			pool_salt:            _salt[0],
-			user_app:             _userOrder[0],
-			user_dataset:         _userOrder[1],
-			user_callback:        _userOrder[2],
-			user_beneficiary:     _userOrder[3],
-			user_requester:       _userOrder[4],
-			user_params:          _userOrder_params,
-			user_salt:            _salt[1]
-		});
+		/**
+		 * Check orders compatibility
+		 */
+		// computation environment
+		require(_userorder.category == _poolorder.category );
+		require(_userorder.trust    == _poolorder.trust    );
 
-		bytes32 poolHash = getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt[0]);
-		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _salt[1]);
+		// user allowed enugh ressources.
+		require(_userorder.dapppricemax >= _dapporder.dappprice);
+		require(_userorder.datapricemax >= _dataorder.dataprice);
+		require(_userorder.poolpricemax >= _poolorder.poolprice);
 
-		// Check signatures
-		require(isValidSignature(matching.pool_workerpoolOwner, poolHash, _v[0], _r[0], _s[0]));
-		require(isValidSignature(matching.user_requester,       userHash, _v[1], _r[1], _s[1]));
+		// pairing is valid
+		require(_userorder.dapp == _dapporder.dapp);
+		require(_userorder.data == _dataorder.data);
+		require(_userorder.pool == address(0)
+		     || _userorder.pool == _poolorder.pool);
 
-		require(iexecHubInterface.existCategory(matching.common_category));
+		/**
+		 * Check orders authenticity
+		 */
 
-		// check consumption
-		require(m_consumed[poolHash] <  matching.pool_volume);
-		require(m_consumed[userHash] == 0);
-		m_consumed[poolHash] = m_consumed[poolHash].add(1);
-		m_consumed[userHash] = 1;
+		// dapp
+		bytes32 dapporderHash = getDappOrderHash(_dapporder);
+		address dappowner     = OwnableOZ(_dapporder.dapp).m_owner(); // application owner
+		require(isValidSignature(dappowner, dapporderHash, _dapporder.sign));
 
-		// Lock
-		require(iexecHubInterface.lockForOrder(matching.pool_workerpoolOwner, matching.common_value.percentage(ASK_STAKE_RATIO).mul(matching.pool_volume))); // mul must be done after percentage to avoid rounding errors
-		require(iexecHubInterface.lockForOrder(matching.user_requester,       matching.common_value)); // Lock funds for app + dataset payment
+		// data
+		bytes32 dataorderHash = getDataOrderHash(_dataorder);
+		address dataowner     = 0;
+		if (_dataorder.data != address(0)) // only check if dataset is enabled
+		{
+			dataowner = OwnableOZ(_dataorder.data).m_owner(); // dataset owner
+			require(isValidSignature(dataowner, dataorderHash, _dataorder.sign));
+		}
 
-		emit MarketMatched(poolHash, userHash);
-		return true;
+		// pool
+		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
+		address poolowner     = OwnableOZ(_poolorder.pool).m_owner(); // workerpool owner
+		require(isValidSignature(poolowner, poolorderHash, _poolorder.sign));
+
+		// user
+		bytes32 userorderHash = getUserOrderHash(_userorder);
+		require(isValidSignature(_userorder.requester, userorderHash, _userorder.sign));
+
+		/**
+		 * Check and update availability
+		 */
+		require(m_consumed[dapporderHash] <  _dapporder.volume);
+		require(m_consumed[dataorderHash] <  _dataorder.volume);
+		require(m_consumed[poolorderHash] <  _poolorder.volume);
+		require(m_consumed[userorderHash] == 0);
+		m_consumed[dapporderHash] = m_consumed[dapporderHash].add(1);
+		m_consumed[dataorderHash] = m_consumed[dataorderHash].add(1);
+		m_consumed[poolorderHash] = m_consumed[poolorderHash].add(1);
+		m_consumed[userorderHash] = 1;
+
+		/**
+		 * Record
+		 */
+		Iexec0xLib.Deal storage deal = m_deals[userorderHash];
+		deal.dapp.pointer         = _dapporder.dapp;
+		deal.dapp.owner           = dappowner;
+		deal.dapp.price           = _dapporder.dappprice;
+		deal.data.owner           = dataowner;
+		deal.data.pointer         = _dataorder.data;
+		deal.data.price           = _dataorder.dataprice;
+		deal.pool.pointer         = _poolorder.pool;
+		deal.pool.owner           = poolowner;
+		deal.pool.price           = _poolorder.poolprice;
+		deal.category             = _userorder.category;
+		deal.trust                = _userorder.trust;
+		deal.requester            = _userorder.requester;
+		deal.beneficiary          = _userorder.beneficiary;
+		deal.callback             = _userorder.callback;
+		deal.params               = _userorder.params;
+
+		deal.workerStake          = _poolorder.poolprice.percentage(0); // TODO
+		deal.schedulerRewardRatio = 0; // TODO
+
+		/**
+		* Lock
+		*/
+		lock(
+			deal.requester,
+			deal.dapp.price
+			.add(deal.data.price)
+			.add(deal.pool.price)
+		);
+		lock(
+			deal.pool.owner,
+			deal.pool.price
+			.percentage(deal.schedulerRewardRatio)
+		);
+
+		/**
+		 * Initiate workorder & consensus
+		 */
+		// TODO
+
+		/**
+		 * Advertize
+		 */
+		emit OrdersMatched(
+			dapporderHash,
+			dataorderHash,
+			poolorderHash,
+			userorderHash
+		);
+		return userorderHash;
 	}
 
-
-
-
-
-
-
-	function cancelPoolMarket(
-		/********** Order settings **********/
-		uint256[3] _commonOrder,
-		/* uint256 _commonOrder_category, */
-		/* uint256 _commonOrder_trust, */
-		/* uint256 _commonOrder_value, */
-		/********** Pool settings **********/
-		uint256 _poolOrder_volume,
-		address _poolOrder_workerpool,
-		/********** Signature **********/
-		uint256 _salt,
-		uint8   _v,
-		bytes32 _r,
-		bytes32 _s)
+	function cancelDappOrder(Iexec0xLib.DappOrder _dapporder)
 	public returns (bool)
 	{
-		// msg.sender = workerpoolOwner
-		require(msg.sender == WorkerPool(_poolOrder_workerpool).m_owner());
+		/**
+		 * Only Dapp owner can cancel
+		 */
+		require(msg.sender == OwnableOZ(_dapporder.dapp).m_owner());
 
-		// compute hashs & check signatures
-		bytes32 poolHash = getPoolOrderHash(_commonOrder, _poolOrder_volume, _poolOrder_workerpool, _salt);
-		require(isValidSignature(msg.sender, poolHash, _v, _r, _s));
+		/**
+		 * Check authenticity
+		 */
+		bytes32 dapporderHash = getDappOrderHash(_dapporder);
+		require(isValidSignature(
+			msg.sender, // dapp owner
+			dapporderHash,
+			_dapporder.sign
+		));
 
-		m_consumed[poolHash] = _poolOrder_volume;
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[dapporderHash] = _dapporder.volume;
 
-		emit MarketClosedPool(poolHash);
+		emit DappOrderClosed(dapporderHash);
 		return true;
 	}
 
-	function cancelUserMarket(
-		/********** Order settings **********/
-		uint256[3] _commonOrder,
-		/* uint256 _commonOrder_category, */
-		/* uint256 _commonOrder_trust, */
-		/* uint256 _commonOrder_value, */
-		/********** User settings **********/
-		address[5] _userOrder,
-		/* address _userOrder_app, */
-		/* address _userOrder_dataset, */
-		/* address _userOrder_callback, */
-		/* address _userOrder_beneficiary, */
-		/* address _userOrder_requester, */
-		string  _userOrder_params,
-		/********** Signature **********/
-		uint256 _salt,
-		uint8   _v,
-		bytes32 _r,
-		bytes32 _s)
+	function cancelDataOrder(Iexec0xLib.DataOrder _dataorder)
 	public returns (bool)
 	{
-		// msg.sender = requester
-		require(msg.sender == _userOrder[4]);
+		/**
+		 * Only dataset owner can cancel
+		 */
+		require(msg.sender == OwnableOZ(_dataorder.data).m_owner());
 
-		// compute hashs & check signatures
-		bytes32 userHash = getUserOrderHash(_commonOrder, _userOrder, _userOrder_params, _salt);
-		require(isValidSignature(msg.sender, userHash, _v, _r, _s));
+		/**
+		 * Check authenticity
+		 */
+		bytes32 dataorderHash = getDataOrderHash(_dataorder);
+		require(isValidSignature(
+			msg.sender, // dataset owner
+			dataorderHash,
+			_dataorder.sign
+		));
 
-		m_consumed[userHash] = 1;
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[dataorderHash] = _dataorder.volume;
 
-		emit MarketClosedUser(userHash);
+		emit DataOrderClosed(dataorderHash);
 		return true;
 	}
+
+	function cancelPoolOrder(Iexec0xLib.PoolOrder _poolorder)
+	public returns (bool)
+	{
+		/**
+		 * Only workerpool owner can cancel
+		 */
+		require(msg.sender == OwnableOZ(_poolorder.pool).m_owner());
+
+		/**
+		 * Check authenticity
+		 */
+		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
+		require(isValidSignature(
+			msg.sender, // workerpool owner
+			poolorderHash,
+			_poolorder.sign
+		));
+
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[poolorderHash] = _poolorder.volume;
+
+		emit PoolOrderClosed(poolorderHash);
+		return true;
+	}
+
+	function cancelUserOrder(Iexec0xLib.UserOrder _userorder)
+	public returns (bool)
+	{
+		/**
+		 * Only requester can cancel
+		 */
+		require(msg.sender == _userorder.requester);
+
+		/**
+		 * Check authenticity
+		 */
+		bytes32 userorderHash = getUserOrderHash(_userorder);
+		require(isValidSignature(
+			msg.sender, // requester
+			userorderHash,
+			_userorder.sign
+		));
+
+		/**
+		 * Cancel market by marking it consumed
+		 */
+		m_consumed[userorderHash] = 1;
+
+		emit UserOrderClosed(userorderHash);
+		return true;
+	}
+
+
+
+
+
+
+
+
+
+	uint256 public constant STAKE_BONUS_RATIO         = 10;
+	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
+
+
+
+
+
+	function lockContribution(bytes32 _woid, address _user)
+	public // onlyConsensus
+	returns (bool)
+	{
+		require(lock(_user, m_deals[_woid].workerStake));
+		return true;
+	}
+
+	function unlockContribution(bytes32 _woid, address _user)
+	public // onlyConsensus
+	returns (bool)
+	{
+		require(unlock(_user, m_deals[_woid].workerStake));
+		return true;
+	}
+
+	function seizeContribution(bytes32 _woid, address _user)
+	public // onlyConsensus
+	returns (bool)
+	{
+		require(seize(_user, m_deals[_woid].workerStake));
+		return true;
+	}
+
+	function rewardForContribution(bytes32 _woid, address _user, uint256 _amount)
+	public // onlyConsensus
+	returns (bool)
+	{
+		require(reward(_user, _amount));
+		return true;
+	}
+
+	function rewardForScheduling(bytes32 _woid, uint256 _amount)
+	public // onlyConsensus
+	returns (bool)
+	{
+		require(reward(m_deals[_woid].pool.owner, _amount));
+		return true;
+	}
+
+	function successWork(bytes32 _woid)
+	public // onlyConsensus
+	returns (bool)
+	{
+		Iexec0xLib.Deal memory deal = m_deals[_woid];
+
+		uint256 userstake = deal.dapp.price
+		                    .add(deal.data.price)
+		                    .add(deal.pool.price);
+		uint256 poolstake = deal.pool.price
+		                    .percentage(deal.schedulerRewardRatio);
+
+		require(seize (deal.requester,  userstake));
+		require(unlock(deal.pool.owner, poolstake));
+		require(reward(deal.dapp.owner, deal.dapp.price));
+		require(reward(deal.data.owner, deal.data.price));
+		// pool reward performed by consensus manager
+
+		uint256 kitty = viewAccount(this).stake;
+		if (kitty > 0)
+		{
+			kitty = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			require(seize (this,            kitty));
+			require(reward(deal.pool.owner, kitty));
+		}
+		return true;
+	}
+
+	function failedWork(bytes32 _woid)
+	public // onlyConsensus
+	returns (bool)
+	{
+		Iexec0xLib.Deal memory deal = m_deals[_woid];
+
+		uint256 userstake = deal.dapp.price
+		                    .add(deal.data.price)
+		                    .add(deal.pool.price);
+		uint256 poolstake = deal.pool.price
+		                    .percentage(deal.schedulerRewardRatio);
+
+		require(unlock(deal.requester,  userstake));
+		require(seize (deal.pool.owner, poolstake));
+		require(reward(this,            poolstake)); // Kitty
+
+		return true;
+	}
+
+
 
 }
