@@ -251,7 +251,7 @@ contract Marketplace is Escrow
 		require(lock(
 			deal.pool.owner,
 			deal.pool.price
-			.percentage(deal.schedulerRewardRatio)
+			.percentage(POOL_STAKE_RATIO)
 		));
 
 		/**
@@ -427,7 +427,7 @@ contract Marketplace is Escrow
 		                    .add(deal.data.price)
 		                    .add(deal.pool.price);
 		uint256 poolstake = deal.pool.price
-		                    .percentage(deal.schedulerRewardRatio);
+		                    .percentage(POOL_STAKE_RATIO);
 
 		require(seize (deal.requester,  userstake));
 		require(unlock(deal.pool.owner, poolstake));
@@ -457,7 +457,7 @@ contract Marketplace is Escrow
 		                    .add(deal.data.price)
 		                    .add(deal.pool.price);
 		uint256 poolstake = deal.pool.price
-		                    .percentage(deal.schedulerRewardRatio);
+		                    .percentage(POOL_STAKE_RATIO);
 
 		require(unlock(deal.requester,  userstake));
 		require(seize (deal.pool.owner, poolstake));
