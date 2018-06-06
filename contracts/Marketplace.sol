@@ -13,9 +13,9 @@ contract Marketplace is Escrow
 	/***************************************************************************
 	 *                                Constants                                *
 	 ***************************************************************************/
-	uint256 public constant POOL_STAKE_RATIO          = 30;
-	uint256 public constant STAKE_BONUS_RATIO         = 10;
-	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
+	uint256 public constant POOL_STAKE_RATIO    = 30;
+	uint256 public constant KITTY_RATIO         = 10;
+	uint256 public constant KITTY_MIN           = 1000;
 
 	/***************************************************************************
 	 *                            Marketplace data                             *
@@ -439,9 +439,9 @@ contract Marketplace is Escrow
 		if (kitty > 0)
 		{
 			kitty = kitty
-			        .percentage(STAKE_BONUS_RATIO)  // fraction
-			        .max(STAKE_BONUS_MIN_THRESHOLD) // at least this
-			        .min(kitty);                    // but not more than available
+			        .percentage(KITTY_RATIO) // fraction
+			        .max(KITTY_MIN)          // at least this
+			        .min(kitty);             // but not more than available
 			require(seize (this,            kitty));
 			require(reward(deal.pool.owner, kitty));
 		}
