@@ -10,17 +10,22 @@ contract Marketplace is Escrow
 {
 	using SafeMathOZ for uint256;
 
-	uint256 public constant POOL_STAKE_RATIO = 30;
+	/***************************************************************************
+	 *                                Constants                                *
+	 ***************************************************************************/
+	uint256 public constant POOL_STAKE_RATIO          = 30;
+	uint256 public constant STAKE_BONUS_RATIO         = 10;
+	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
 
-	/**
-	 * Marketplace data
-	 */
-	mapping(bytes32 => uint256        ) public m_consumed;
+	/***************************************************************************
+	 *                            Marketplace data                             *
+	 ***************************************************************************/
 	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
+	mapping(bytes32 => uint256        ) public m_consumed;
 
-	/**
-	 * Events
-	 */
+	/***************************************************************************
+	 *                                 Events                                  *
+	 ***************************************************************************/
 	event OrdersMatched  (bytes32 dappHash,
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
@@ -30,26 +35,41 @@ contract Marketplace is Escrow
 	event PoolOrderClosed(bytes32 poolHash);
 	event UserOrderClosed(bytes32 userHash);
 
-	/**
-	 * Constructor
-	 */
+	/***************************************************************************
+	 *                                Modifiers                                *
+	 ***************************************************************************/
+	modifier onlyConsensusManager()
+	{
+		require(false); // TODO
+		_;
+	}
+
+	/***************************************************************************
+	 *                               Constructor                               *
+	 ***************************************************************************/
 	constructor(address _rlctoken)
 	public Escrow(_rlctoken)
 	{
 	}
 
-	/**
-	 * Accessor
-	 */
+	/***************************************************************************
+	 *                                Accessor                                 *
+	 ***************************************************************************/
 	function viewDeal(bytes32 _id)
 	public view returns (Iexec0xLib.Deal)
 	{
 		return m_deals[_id];
 	}
 
-	/**
-	 * Hashing and signature tools
-	 */
+	function viewConsumed(bytes32 _hash)
+	public view returns (uint256)
+	{
+		return m_consumed[_hash];
+	}
+
+	/***************************************************************************
+	 *                       Hashing and signature tools                       *
+	 ***************************************************************************/
 	function isValidSignature(
 		address              _signer,
 		bytes32              _hash,
@@ -72,6 +92,7 @@ contract Marketplace is Escrow
 			_dapporder.salt
 		);
 	}
+
 	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
@@ -85,6 +106,7 @@ contract Marketplace is Escrow
 			_dataorder.salt
 		);
 	}
+
 	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
 	public view returns (bytes32)
 	{
@@ -101,6 +123,7 @@ contract Marketplace is Escrow
 			_poolorder.salt
 		);
 	}
+
 	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
 	public view returns (bytes32)
 	{
@@ -125,9 +148,9 @@ contract Marketplace is Escrow
 		);
 	}
 
-	/**
-	 * Marketplace methods
-	 */
+	/***************************************************************************
+	 *                           Marketplace methods                           *
+	 ***************************************************************************/
 	function matchOrders(
 		Iexec0xLib.DappOrder _dapporder,
 		Iexec0xLib.DataOrder _dataorder,
@@ -156,10 +179,9 @@ contract Marketplace is Escrow
 		/**
 		 * Check orders authenticity
 		 */
-
 		// dapp
 		bytes32 dapporderHash = getDappOrderHash(_dapporder);
-		address dappowner     = OwnableOZ(_dapporder.dapp).m_owner(); // application owner
+		address dappowner     = OwnableOZ(_dapporder.dapp).m_owner();
 		require(isValidSignature(dappowner, dapporderHash, _dapporder.sign));
 
 		// data
@@ -167,13 +189,13 @@ contract Marketplace is Escrow
 		address dataowner     = 0;
 		if (_dataorder.data != address(0)) // only check if dataset is enabled
 		{
-			dataowner = OwnableOZ(_dataorder.data).m_owner(); // dataset owner
+			dataowner = OwnableOZ(_dataorder.data).m_owner();
 			require(isValidSignature(dataowner, dataorderHash, _dataorder.sign));
 		}
 
 		// pool
 		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
-		address poolowner     = OwnableOZ(_poolorder.pool).m_owner(); // workerpool owner
+		address poolowner     = OwnableOZ(_poolorder.pool).m_owner();
 		require(isValidSignature(poolowner, poolorderHash, _poolorder.sign));
 
 		// user
@@ -212,28 +234,30 @@ contract Marketplace is Escrow
 		deal.callback             = _userorder.callback;
 		deal.params               = _userorder.params;
 
-		deal.workerStake          = _poolorder.poolprice.percentage(0); // TODO
-		deal.schedulerRewardRatio = 0; // TODO
+		// TODO: 0 → WorkerPool(_poolorder.pool).workerStakeRatio();
+		deal.workerStake          = _poolorder.poolprice.percentage(0);
+		// TODO: 0 → WorkerPool(_poolorder.pool).schedulerRewardRatio();
+		deal.schedulerRewardRatio = 0;
 
 		/**
 		* Lock
 		*/
-		lock(
+		require(lock(
 			deal.requester,
 			deal.dapp.price
 			.add(deal.data.price)
 			.add(deal.pool.price)
-		);
-		lock(
+		));
+		require(lock(
 			deal.pool.owner,
 			deal.pool.price
 			.percentage(deal.schedulerRewardRatio)
-		);
+		));
 
 		/**
 		 * Initiate workorder & consensus
 		 */
-		// TODO
+		// consensusmanager.initialize(_woid);
 
 		/**
 		 * Advertize
@@ -355,64 +379,47 @@ contract Marketplace is Escrow
 		return true;
 	}
 
-
-
-
-
-
-
-
-
-	uint256 public constant STAKE_BONUS_RATIO         = 10;
-	uint256 public constant STAKE_BONUS_MIN_THRESHOLD = 1000;
-
-
-
-
-
+	/***************************************************************************
+	 *                             Escrow overhead                             *
+	 ***************************************************************************/
 	function lockContribution(bytes32 _woid, address _user)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		require(lock(_user, m_deals[_woid].workerStake));
 		return true;
 	}
 
 	function unlockContribution(bytes32 _woid, address _user)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		require(unlock(_user, m_deals[_woid].workerStake));
 		return true;
 	}
 
 	function seizeContribution(bytes32 _woid, address _user)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		require(seize(_user, m_deals[_woid].workerStake));
 		return true;
 	}
 
-	function rewardForContribution(bytes32 _woid, address _user, uint256 _amount)
-	public // onlyConsensus
-	returns (bool)
+	function unlockAndRewardForContribution(bytes32 _woid, address _user, uint256 _amount)
+	public onlyConsensusManager returns (bool)
 	{
+		require(unlock(_user, m_deals[_woid].workerStake));
 		require(reward(_user, _amount));
 		return true;
 	}
 
 	function rewardForScheduling(bytes32 _woid, uint256 _amount)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		require(reward(m_deals[_woid].pool.owner, _amount));
 		return true;
 	}
 
 	function successWork(bytes32 _woid)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		Iexec0xLib.Deal memory deal = m_deals[_woid];
 
@@ -428,10 +435,13 @@ contract Marketplace is Escrow
 		require(reward(deal.data.owner, deal.data.price));
 		// pool reward performed by consensus manager
 
-		uint256 kitty = viewAccount(this).stake;
+		uint256 kitty = viewAccount(this).locked;
 		if (kitty > 0)
 		{
-			kitty = kitty.min(kitty.percentage(STAKE_BONUS_RATIO).max(STAKE_BONUS_MIN_THRESHOLD));
+			kitty = kitty
+			        .percentage(STAKE_BONUS_RATIO)  // fraction
+			        .max(STAKE_BONUS_MIN_THRESHOLD) // at least this
+			        .min(kitty);                    // but not more than available
 			require(seize (this,            kitty));
 			require(reward(deal.pool.owner, kitty));
 		}
@@ -439,8 +449,7 @@ contract Marketplace is Escrow
 	}
 
 	function failedWork(bytes32 _woid)
-	public // onlyConsensus
-	returns (bool)
+	public onlyConsensusManager returns (bool)
 	{
 		Iexec0xLib.Deal memory deal = m_deals[_woid];
 
@@ -452,7 +461,8 @@ contract Marketplace is Escrow
 
 		require(unlock(deal.requester,  userstake));
 		require(seize (deal.pool.owner, poolstake));
-		require(reward(this,            poolstake)); // Kitty
+		require(reward(this,            poolstake)); // → Kitty
+		require(lock  (this,            poolstake)); // → Kitty
 
 		return true;
 	}

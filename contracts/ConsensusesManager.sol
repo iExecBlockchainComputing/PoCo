@@ -9,55 +9,67 @@ contract ConsensusesManager
 {
 	using SafeMathOZ for uint256;
 
-	/**
-	 * Consensuses
-	 */
+	/***************************************************************************
+	 *                                Constants                                *
+	 ***************************************************************************/
+
+	uint256 public constant SCORE_UNITARY_SLASH = 50;
+
+	/***************************************************************************
+	 *                             Other contracts                             *
+	 ***************************************************************************/
+	Marketplace marketplace;
+
+	/***************************************************************************
+	 *                               Consensuses                               *
+	 ***************************************************************************/
 	mapping(bytes32 => Iexec0xLib.WorkOrder)                        m_workorders;
 	mapping(bytes32 => mapping(address => Iexec0xLib.Contribution)) m_contributions;
 
-	/**
-	 * Worker score
-	 */
+	/***************************************************************************
+	 *                              Worker score                               *
+	 ***************************************************************************/
 	mapping(address => uint256) public m_scores;
 
+	/***************************************************************************
+	 *                                 Events                                  *
+	 ***************************************************************************/
+	event ConsensusInitialize             (bytes32 indexed woid, address indexed pool);
+	event ConsensusAllowWorkerToContribute(bytes32 indexed woid, address indexed worker);
+	event ConsensusContribute             (bytes32 indexed woid, address indexed worker, bytes32);
+	event ConsensusRevealConsensus        (bytes32 indexed woid, bytes32);
+	event ConsensusReveal                 (bytes32 indexed woid, address indexed worker, bytes32);
+	event ConsensusReopen                 (bytes32 indexed woid);
+	event ConsensusFinalized              (bytes32 indexed woid, string, string, string);
+	event ConsensusClaimed                (bytes32 indexed woid);
 
-
-
-	/**
-	 * Slaves contracts
-	 */
-	Marketplace marketplace;
-
+	/***************************************************************************
+	 *                                Modifiers                                *
+	 ***************************************************************************/
 	modifier onlyMarketplace()
 	{
 		require(msg.sender == address(marketplace));
 		_;
 	}
+
 	modifier onlyScheduler(bytes32 _woid)
 	{
 		require(msg.sender == marketplace.viewDeal(_woid).pool.owner);
 		_;
 	}
 
-
-	/**
-	 * Constructor
-	 */
+	/***************************************************************************
+	 *                               Constructor                               *
+	 ***************************************************************************/
 	constructor()
 	public
 	{
 	}
 
-
-
-
-
-
-
-	/**
-	 * Consensus methods
-	 */
-	function initiateConsensus(
+	/***************************************************************************
+	 *                            Consensus methods                            *
+	 ***************************************************************************/
+	function initialize(
 		bytes32 _woid)
 	public onlyMarketplace
 	{
@@ -67,7 +79,7 @@ contract ConsensusesManager
 		workorder.status            = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
 		workorder.consensusDeadline = now + 0; // TODO
 
-		//TODO event (with workerpoolID)
+		emit ConsensusInitialize(_woid, marketplace.viewDeal(_woid).pool.owner);
 	}
 
 	function allowWorkerToContribute(
@@ -87,7 +99,7 @@ contract ConsensusesManager
 		contribution.status           = Iexec0xLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		// emit AllowWorkerToContribute(_woid, _worker);
+		emit ConsensusAllowWorkerToContribute(_woid, _worker);
 	}
 
 	function contribute(
@@ -127,7 +139,7 @@ contract ConsensusesManager
 
 		require(marketplace.lockContribution(_woid, msg.sender));
 
-		//emit Contribute(_woid, msg.sender, _resultHash);
+		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
 
 	function revealConsensus(
@@ -138,7 +150,6 @@ contract ConsensusesManager
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
 		require(workorder.consensusDeadline >  now                                  );
-
 
 		uint256 winnerCounter = 0;
 		for (uint256 i = 0; i<workorder.contributors.length; ++i)
@@ -161,7 +172,7 @@ contract ConsensusesManager
 		workorder.revealCounter  = 0;
 		workorder.winnerCounter  = winnerCounter;
 
-		//emit RevealConsensus(_woid, _consensus);
+		emit ConsensusRevealConsensus(_woid, _consensus);
 	}
 
 	function reveal(
@@ -183,7 +194,7 @@ contract ConsensusesManager
 		contribution.status     = Iexec0xLib.ContributionStatusEnum.PROVED;
 		workorder.revealCounter = workorder.revealCounter.add(1);
 
-		//emit Reveal(_woid, msg.sender, _result);
+		emit ConsensusReveal(_woid, msg.sender, _result);
 	}
 
 	function reopen(
@@ -210,7 +221,7 @@ contract ConsensusesManager
 		workorder.revealDeadline = 0;
 		workorder.winnerCounter  = 0;
 
-		//emit Reopen(_woid);
+		emit ConsensusReopen(_woid);
 	}
 
 	function finalizeWork(
@@ -232,9 +243,9 @@ contract ConsensusesManager
 		 * Stake and reward management
 		 */
 		require(marketplace.successWork(_woid));
-		// TODO rewards
+		__distributeRewards(_woid);
 
-		//emit FinalizeWork(_woid,_stdout,_stderr,_uri);
+		emit ConsensusFinalized(_woid, _stdout, _stderr, _uri);
 	}
 
 	function claimfailed(
@@ -261,28 +272,26 @@ contract ConsensusesManager
 			}
 		}
 
-		/* emit WorkOrderClaimed(_woid); */
+		emit ConsensusClaimed(_woid);
 	}
 
-	function distributeRewards(bytes32 _woid) private returns (bool)
+	function __distributeRewards(bytes32 _woid) private returns (bool)
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 
 		uint256 i;
 		address worker;
 
-		uint256 workerWeight;
-		uint256 totalWeight;
+		uint256 totalWeight = 0;
 		uint256 totalReward = marketplace.viewDeal(_woid).pool.price;
 		uint256 workerStake = marketplace.viewDeal(_woid).workerStake;
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
 			worker = workorder.contributors[i];
-			Iexec0xLib.Contribution storage c = m_contributions[_woid][worker];
-			if (c.status == Iexec0xLib.ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][worker].status == Iexec0xLib.ContributionStatusEnum.PROVED)
 			{
-				totalWeight  = totalWeight.add(c.weight);
+				totalWeight  = totalWeight.add(m_contributions[_woid][worker].weight);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -302,15 +311,14 @@ contract ConsensusesManager
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(marketplace.unlockContribution   (_woid, worker));
-				require(marketplace.rewardForContribution(_woid, worker, workerReward));
-				// TODO increase score
+				require(marketplace.unlockAndRewardForContribution(_woid, worker, workerReward));
+				m_scores[worker] = m_scores[worker].add(1);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				require(marketplace.seizeContribution(_woid, worker));
-				// TODO decrease score
+				m_scores[worker] = m_scores[worker].sub(SCORE_UNITARY_SLASH);
 			}
 		}
 		// totalReward now contains the scheduler share
