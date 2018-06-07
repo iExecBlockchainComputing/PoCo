@@ -99,17 +99,18 @@ module.exports = function(deployer) {
 			return readFileAsync("./config/categories.json");
 		})
 		.then(categories => {
+			createCatagoriesPromises = [];
 			var categoriesConfigFileJson = JSON.parse(categories);
-			catagoriesPromises = [];
-			for(var i = 0; i < categoriesConfigFileJson.categories.length; i++) {
+			for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
+			{
 				console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-				catagoriesPromises.push(aIexecHub.createCategoryLegacy(
+				createCatagoriesPromises.push(aIexecHub.createCategoryLegacy(
 					categoriesConfigFileJson.categories[i].name,
 					JSON.stringify(categoriesConfigFileJson.categories[i].description),
 					categoriesConfigFileJson.categories[i].workClockTimeRef
 				));
 			}
-			return Promise.all(catagoriesPromises);
+			return Promise.all(createCatagoriesPromises);
 		})
 		.then(categoriesCreated => {
 			return aIexecHub.countCategory.call()

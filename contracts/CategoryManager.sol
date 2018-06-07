@@ -19,6 +19,7 @@ contract CategoryManager is OwnableMutable
 		string  name,
 		string  description,
 		uint256 workClockTimeRef);
+
 	/**
 	 * Constructor
 	 */
