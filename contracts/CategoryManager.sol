@@ -1,0 +1,82 @@
+pragma solidity ^0.4.21;
+pragma experimental ABIEncoderV2;
+
+import "./Iexec0xLib.sol";
+import "./tools/OwnableOZ.sol";
+
+contract CategoryManager is OwnableOZ
+{
+	/**
+	 * Content
+	 */
+	Iexec0xLib.Category[] public m_categories;
+
+	/**
+	 * Event
+	 */
+	event CreateCategory(
+		uint256 catid,
+		string  name,
+		string  description,
+		uint256 workClockTimeRef);
+	/**
+	 * Constructor
+	 */
+	constructor()
+	public
+	{
+	}
+
+	/**
+	 * Accessors
+	 */
+	function viewCategory(uint256 _catid)
+	public view returns (Iexec0xLib.Category)
+	{
+		return m_categories[_catid];
+	}
+
+	function countCategory()
+	public view returns (uint256)
+	{
+		return m_categories.length;
+	}
+
+	/**
+	 * Methods
+	 */
+	function createCategory(Iexec0xLib.Category _category)
+	public onlyOwner returns (uint256)
+	{
+		uint256 catid = m_categories.push(_category);
+		emit CreateCategory(
+			catid,
+			_category.name,
+			_category.description,
+			_category.workClockTimeRef
+		);
+		return catid;
+	}
+
+	function createCategoryLegacy(
+		string  name,
+		string  description,
+		uint256 workClockTimeRef)
+	public onlyOwner returns (uint256)
+	{
+		uint256 catid = m_categories.push(Iexec0xLib.Category(
+			name,
+			description,
+			workClockTimeRef
+		));
+		emit CreateCategory(
+			catid,
+			name,
+			description,
+			workClockTimeRef
+		);
+		return catid;
+	}
+
+
+}

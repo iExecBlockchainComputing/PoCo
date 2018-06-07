@@ -2,23 +2,33 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./Iexec0xLib.sol";
-import "./Marketplace.sol";
-import "./SafeMathOZ.sol";
+import "./tools/SafeMathOZ.sol";
 
-contract ConsensusesManager
+import "./CategoryManager.sol";
+
+import "./Marketplace.sol";
+import "./resources_contract/DappHub.sol";
+import "./resources_contract/DataHub.sol";
+import "./resources_contract/PoolHub.sol";
+
+contract IexecHub is CategoryManager
 {
 	using SafeMathOZ for uint256;
 
 	/***************************************************************************
 	 *                                Constants                                *
 	 ***************************************************************************/
-
-	uint256 public constant SCORE_UNITARY_SLASH = 50;
+	uint256 public constant SCORE_UNITARY_SLASH      = 50;
+	uint256 public constant CONSENSUS_DURATION_RATIO = 10;
+	uint256 public constant REVEAL_DURATION_RATIO    = 2;
 
 	/***************************************************************************
 	 *                             Other contracts                             *
 	 ***************************************************************************/
 	Marketplace marketplace;
+	DappHub     dapphub;
+	DataHub     datahub;
+	PoolHub     poolhub;
 
 	/***************************************************************************
 	 *                               Consensuses                               *
@@ -27,9 +37,10 @@ contract ConsensusesManager
 	mapping(bytes32 => mapping(address => Iexec0xLib.Contribution)) m_contributions;
 
 	/***************************************************************************
-	 *                              Worker score                               *
+	 *                                 Workers                                 *
 	 ***************************************************************************/
-	mapping(address => uint256) public m_scores;
+	mapping(address => uint256) public m_workerScores;
+	mapping(address => address) public m_workerAffectations;
 
 	/***************************************************************************
 	 *                                 Events                                  *
@@ -66,6 +77,55 @@ contract ConsensusesManager
 	{
 	}
 
+	function attachContracts(
+		address _marketplaceAddress,
+	  address _dappHubAddress,
+	  address _dataHubAddress,
+	  address _poolHubAddress)
+	public onlyOwner
+	{
+		require(address(marketplace) == address(0));
+		marketplace = Marketplace(_marketplaceAddress);
+		dapphub     = DappHub    (_dappHubAddress    );
+		datahub     = DataHub    (_dataHubAddress    );
+		poolhub     = PoolHub    (_poolHubAddress    );
+	}
+
+	/***************************************************************************
+	 *                                Accessors                                *
+	 ***************************************************************************/
+	function viewWorkorder(bytes32 _woid)
+	public view returns (Iexec0xLib.WorkOrder)
+	{
+		return m_workorders[_woid];
+	}
+
+	function viewContribution(bytes32 _woid, address _worker)
+	public view returns (Iexec0xLib.Contribution)
+	{
+		return m_contributions[_woid][_worker];
+	}
+
+	function viewScore(address _worker)
+	public view returns (uint256)
+	{
+		return m_workerScores[_worker];
+	}
+
+	function viewAffectation(address _worker)
+	public view returns (Pool)
+	{
+		return Pool(m_workerAffectations[_worker]);
+	}
+
+	function checkResources(address daap, address data, address pool)
+	public view returns (bool)
+	{
+		return dapphub.isDappRegistered(daap)
+		    && datahub.isDataRegistered(data)
+		    && poolhub.isPoolRegistered(pool);
+	}
+
 	/***************************************************************************
 	 *                            Consensus methods                            *
 	 ***************************************************************************/
@@ -77,7 +137,9 @@ contract ConsensusesManager
 		require(workorder.status == Iexec0xLib.WorkOrderStatusEnum.UNSET);
 
 		workorder.status            = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
-		workorder.consensusDeadline = now + 0; // TODO
+		workorder.consensusDeadline = viewCategory(marketplace.viewDeal(_woid).category).workClockTimeRef
+		                              .mul(CONSENSUS_DURATION_RATIO)
+		                              .add(now);
 
 		emit ConsensusInitialize(_woid, marketplace.viewDeal(_woid).pool.owner);
 	}
@@ -133,7 +195,7 @@ contract ConsensusesManager
 		contribution.status     = Iexec0xLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash = _resultHash;
 		contribution.resultSign = _resultSign;
-		contribution.score      = m_scores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
+		contribution.score      = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
 		contribution.weight     = 1 + contribution.score.log();
 		workorder.contributors.push(msg.sender);
 
@@ -168,7 +230,9 @@ contract ConsensusesManager
 
 		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.REVEALING;
 		workorder.consensusValue = _consensus;
-		workorder.revealDeadline = now + 0; //TODO
+		workorder.revealDeadline = viewCategory(marketplace.viewDeal(_woid).category).workClockTimeRef
+		                           .mul(REVEAL_DURATION_RATIO)
+		                           .add(now);
 		workorder.revealCounter  = 0;
 		workorder.winnerCounter  = winnerCounter;
 
@@ -311,19 +375,58 @@ contract ConsensusesManager
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(marketplace.unlockAndRewardForContribution(_woid, worker, workerReward));
-				m_scores[worker] = m_scores[worker].add(1);
+				require(marketplace.unlockContribution   (_woid, worker));
+				require(marketplace.rewardForContribution(_woid, worker, workerReward));
+				m_workerScores[worker] = m_workerScores[worker].add(1);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				require(marketplace.seizeContribution(_woid, worker));
-				m_scores[worker] = m_scores[worker].sub(SCORE_UNITARY_SLASH);
+				m_workerScores[worker] = m_workerScores[worker].sub(SCORE_UNITARY_SLASH);
 			}
 		}
 		// totalReward now contains the scheduler share
 		require(marketplace.rewardForScheduling(_woid, totalReward));
 
+		return true;
+	}
+
+	/***************************************************************************
+	 *                       Worker affectation methods                        *
+	 ***************************************************************************/
+	function subscribe(Pool _pool)
+	public returns (bool)
+	{
+		require(poolhub.isPoolRegistered(_pool));
+
+		require(m_workerAffectations[msg.sender] == address(0));
+		require(marketplace.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
+		require(marketplace.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
+		require(m_workerScores[msg.sender]                >= _pool.m_subscriptionMinimumScorePolicy());
+		m_workerAffectations[msg.sender] = address(_pool);
+		return true;
+	}
+
+	function unsubscribe()
+	public returns (bool)
+	{
+		Pool pool = Pool(m_workerAffectations[msg.sender]);
+
+		require(address(pool) != address(0));
+		require(marketplace.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy()));
+		m_workerAffectations[msg.sender] = address(0);
+		return true;
+	}
+
+	function evict(address _worker)
+	public returns (bool)
+	{
+		Pool pool = Pool(m_workerAffectations[_worker]);
+
+		require(address(pool) == _worker);
+		require(marketplace.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy()));
+		m_workerAffectations[_worker] = address(0);
 		return true;
 	}
 

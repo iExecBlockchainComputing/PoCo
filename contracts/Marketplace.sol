@@ -2,11 +2,16 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./Iexec0xLib.sol";
-import "./Escrow.sol";
-import "./OwnableOZ.sol";
-import "./SafeMathOZ.sol";
+import "./tools/SafeMathOZ.sol";
 
-contract Marketplace is Escrow
+import "./Escrow.sol";
+import "./IexecHubAccessor.sol";
+
+import "./resources_contract/DappHub.sol";
+import "./resources_contract/DataHub.sol";
+import "./resources_contract/PoolHub.sol";
+
+contract Marketplace is Escrow, IexecHubAccessor
 {
 	using SafeMathOZ for uint256;
 
@@ -36,19 +41,14 @@ contract Marketplace is Escrow
 	event UserOrderClosed(bytes32 userHash);
 
 	/***************************************************************************
-	 *                                Modifiers                                *
-	 ***************************************************************************/
-	modifier onlyConsensusManager()
-	{
-		require(false); // TODO
-		_;
-	}
-
-	/***************************************************************************
 	 *                               Constructor                               *
 	 ***************************************************************************/
-	constructor(address _rlctoken)
-	public Escrow(_rlctoken)
+	constructor(
+		address _rlctoken,
+		address _iexechub)
+	public
+	Escrow(_rlctoken)
+	IexecHubAccessor(_iexechub)
 	{
 	}
 
@@ -151,6 +151,7 @@ contract Marketplace is Escrow
 	/***************************************************************************
 	 *                           Marketplace methods                           *
 	 ***************************************************************************/
+
 	function matchOrders(
 		Iexec0xLib.DappOrder _dapporder,
 		Iexec0xLib.DataOrder _dataorder,
@@ -176,12 +177,14 @@ contract Marketplace is Escrow
 		require(_userorder.pool == address(0)
 		     || _userorder.pool == _poolorder.pool);
 
+		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
+
 		/**
 		 * Check orders authenticity
 		 */
 		// dapp
 		bytes32 dapporderHash = getDappOrderHash(_dapporder);
-		address dappowner     = OwnableOZ(_dapporder.dapp).m_owner();
+		address dappowner     = Dapp(_dapporder.dapp).m_owner();
 		require(isValidSignature(dappowner, dapporderHash, _dapporder.sign));
 
 		// data
@@ -189,13 +192,13 @@ contract Marketplace is Escrow
 		address dataowner     = 0;
 		if (_dataorder.data != address(0)) // only check if dataset is enabled
 		{
-			dataowner = OwnableOZ(_dataorder.data).m_owner();
+			dataowner = Data(_dataorder.data).m_owner();
 			require(isValidSignature(dataowner, dataorderHash, _dataorder.sign));
 		}
 
 		// pool
 		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
-		address poolowner     = OwnableOZ(_poolorder.pool).m_owner();
+		address poolowner     = Pool(_poolorder.pool).m_owner();
 		require(isValidSignature(poolowner, poolorderHash, _poolorder.sign));
 
 		// user
@@ -233,15 +236,12 @@ contract Marketplace is Escrow
 		deal.beneficiary          = _userorder.beneficiary;
 		deal.callback             = _userorder.callback;
 		deal.params               = _userorder.params;
-
-		// TODO: 0 → WorkerPool(_poolorder.pool).workerStakeRatio();
-		deal.workerStake          = _poolorder.poolprice.percentage(0);
-		// TODO: 0 → WorkerPool(_poolorder.pool).schedulerRewardRatio();
-		deal.schedulerRewardRatio = 0;
+		deal.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
+		deal.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
 
 		/**
-		* Lock
-		*/
+		 * Lock
+		 */
 		require(lock(
 			deal.requester,
 			deal.dapp.price
@@ -257,7 +257,7 @@ contract Marketplace is Escrow
 		/**
 		 * Initiate workorder & consensus
 		 */
-		// consensusmanager.initialize(_woid);
+		iexechub.initialize(userorderHash);
 
 		/**
 		 * Advertize
@@ -277,7 +277,7 @@ contract Marketplace is Escrow
 		/**
 		 * Only Dapp owner can cancel
 		 */
-		require(msg.sender == OwnableOZ(_dapporder.dapp).m_owner());
+		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
 
 		/**
 		 * Check authenticity
@@ -304,7 +304,7 @@ contract Marketplace is Escrow
 		/**
 		 * Only dataset owner can cancel
 		 */
-		require(msg.sender == OwnableOZ(_dataorder.data).m_owner());
+		require(msg.sender == Data(_dataorder.data).m_owner());
 
 		/**
 		 * Check authenticity
@@ -331,7 +331,7 @@ contract Marketplace is Escrow
 		/**
 		 * Only workerpool owner can cancel
 		 */
-		require(msg.sender == OwnableOZ(_poolorder.pool).m_owner());
+		require(msg.sender == Pool(_poolorder.pool).m_owner());
 
 		/**
 		 * Check authenticity
@@ -380,46 +380,55 @@ contract Marketplace is Escrow
 	}
 
 	/***************************************************************************
-	 *                             Escrow overhead                             *
+	 *                     Escrow overhead for affectation                     *
 	 ***************************************************************************/
-	function lockContribution(bytes32 _woid, address _user)
-	public onlyConsensusManager returns (bool)
+	function lockSubscription(address _worker, uint256 _amount)
+	public onlyIexecHub returns (bool)
 	{
-		require(lock(_user, m_deals[_woid].workerStake));
-		return true;
+		return lock(_worker, _amount);
 	}
 
-	function unlockContribution(bytes32 _woid, address _user)
-	public onlyConsensusManager returns (bool)
+	function unlockSubscription(address _worker, uint256 _amount)
+	public onlyIexecHub returns (bool)
 	{
-		require(unlock(_user, m_deals[_woid].workerStake));
-		return true;
+		return unlock(_worker, _amount);
 	}
 
-	function seizeContribution(bytes32 _woid, address _user)
-	public onlyConsensusManager returns (bool)
+	/***************************************************************************
+	 *                    Escrow overhead for contribution                     *
+	 ***************************************************************************/
+	function lockContribution(bytes32 _woid, address _worker)
+	public onlyIexecHub returns (bool)
 	{
-		require(seize(_user, m_deals[_woid].workerStake));
-		return true;
+		return lock(_worker, m_deals[_woid].workerStake);
 	}
 
-	function unlockAndRewardForContribution(bytes32 _woid, address _user, uint256 _amount)
-	public onlyConsensusManager returns (bool)
+	function unlockContribution(bytes32 _woid, address _worker)
+	public onlyIexecHub returns (bool)
 	{
-		require(unlock(_user, m_deals[_woid].workerStake));
-		require(reward(_user, _amount));
-		return true;
+		return unlock(_worker, m_deals[_woid].workerStake);
+	}
+
+	function seizeContribution(bytes32 _woid, address _worker)
+	public onlyIexecHub returns (bool)
+	{
+		return seize(_worker, m_deals[_woid].workerStake);
+	}
+
+	function rewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
+	public onlyIexecHub returns (bool)
+	{
+		return reward(_worker, _amount);
 	}
 
 	function rewardForScheduling(bytes32 _woid, uint256 _amount)
-	public onlyConsensusManager returns (bool)
+	public onlyIexecHub returns (bool)
 	{
-		require(reward(m_deals[_woid].pool.owner, _amount));
-		return true;
+		return reward(m_deals[_woid].pool.owner, _amount);
 	}
 
 	function successWork(bytes32 _woid)
-	public onlyConsensusManager returns (bool)
+	public onlyIexecHub returns (bool)
 	{
 		Iexec0xLib.Deal memory deal = m_deals[_woid];
 
@@ -449,7 +458,7 @@ contract Marketplace is Escrow
 	}
 
 	function failedWork(bytes32 _woid)
-	public onlyConsensusManager returns (bool)
+	public onlyIexecHub returns (bool)
 	{
 		Iexec0xLib.Deal memory deal = m_deals[_woid];
 

@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import "rlc-token/contracts/RLC.sol";
 
 import "./Iexec0xLib.sol";
-import "./SafeMathOZ.sol";
+import "./tools/SafeMathOZ.sol";
 
 contract Escrow
 {
@@ -34,7 +34,7 @@ contract Escrow
 	constructor(address _rlctoken)
 	public
 	{
-		require(_rlctoken == address(0));
+		require(_rlctoken != address(0));
 		rlc = RLC(_rlctoken);
 	}
 

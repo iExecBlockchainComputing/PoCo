@@ -4,13 +4,20 @@ pragma experimental ABIEncoderV2;
 library Iexec0xLib
 {
 	/**
-	 * Escrow account
-	 */
+	* Tools
+	*/
 	struct Account
 	{
 		uint256 stake;
 		uint256 locked;
 	}
+	struct Category
+	{
+		string  name;
+		string  description;
+		uint256 workClockTimeRef;
+	}
+
 	/**
 	 * Generic
 	 */
@@ -20,6 +27,7 @@ library Iexec0xLib
 		bytes32 r;
 		bytes32 s;
 	}
+
 	/**
 	 * Marketplace - Orders
 	 */
@@ -103,6 +111,7 @@ library Iexec0xLib
 		uint256 workerStake;
 		uint256 schedulerRewardRatio;
 	}
+
 	/**
 	 * Workorders
 	 */
@@ -124,6 +133,7 @@ library Iexec0xLib
 		uint256   winnerCounter;
 		address[] contributors;
 	}
+
 	/**
 	 * Consensus
 	 */
@@ -144,4 +154,6 @@ library Iexec0xLib
 		uint256 score;
 		uint256 weight;
 	}
+
+
 }
