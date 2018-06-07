@@ -1,10 +1,10 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import '../tools/OwnableOZ.sol';
+import '../tools/Ownable.sol';
 import "../tools/SafeMathOZ.sol";
 
-contract Pool is OwnableOZ
+contract Pool is OwnableImmutable
 {
 	using SafeMathOZ for uint256;
 
@@ -35,12 +35,10 @@ contract Pool is OwnableOZ
 		string  _description,
 		uint256 _subscriptionLockStakePolicy)
 	public
+	OwnableImmutable(_poolOwner)
 	{
-		transferOwnership(_poolOwner); // owner → tx.origin
-
 		m_description                    = _description;
 		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy;
-
 		m_workerStakeRatioPolicy         = 30; // set later: % of the work order price to stake
 		m_schedulerRewardRatioPolicy     = 1;  // set later: % of the work reward going to scheduler vs workers reward
 		m_subscriptionMinimumStakePolicy = 0;  // set later: subscription policy

@@ -2,10 +2,10 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import './Dapp.sol';
-import "../tools/OwnableOZ.sol";
+import "../tools/Ownable.sol";
 import "../tools/SafeMathOZ.sol";
 
-contract DappHub is OwnableOZ // is Owned by IexecHub
+contract DappHub is OwnableMutable // is Owned by IexecHub
 {
 
 	using SafeMathOZ for uint256;

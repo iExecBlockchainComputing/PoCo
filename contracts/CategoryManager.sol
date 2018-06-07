@@ -2,9 +2,9 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./Iexec0xLib.sol";
-import "./tools/OwnableOZ.sol";
+import "./tools/Ownable.sol";
 
-contract CategoryManager is OwnableOZ
+contract CategoryManager is OwnableMutable
 {
 	/**
 	 * Content

@@ -1,9 +1,9 @@
 pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
-import '../tools/OwnableOZ.sol';
+import '../tools/Ownable.sol';
 
-contract Data is OwnableOZ//, IexecHubAccessor
+contract Data is OwnableImmutable
 {
 
 	/**
@@ -20,8 +20,8 @@ contract Data is OwnableOZ//, IexecHubAccessor
 		string  _dataName,
 		string  _dataParams)
 	public
+	OwnableImmutable(_dataOwner)
 	{
-		transferOwnership(_dataOwner);
 		m_dataName   = _dataName;
 		m_dataParams = _dataParams;
 	}
