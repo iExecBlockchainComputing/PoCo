@@ -8,9 +8,9 @@ var Dapp        = artifacts.require("./Dapp.sol");
 var Data        = artifacts.require("./Data.sol");
 var Pool        = artifacts.require("./Pool.sol");
 
-const ethers  = require('ethers'); // for ABIEncoderV2
-const OxTools = require('../utils/OxTools');
-
+const ethers    = require('ethers'); // for ABIEncoderV2
+const constants = require("./constants");
+const OxTools   = require('../utils/OxTools');
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
@@ -27,7 +27,10 @@ const OxTools = require('../utils/OxTools');
 // Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
 // Extensions.init(web3, assert);
 
-var constants = require("./constants");
+function extractEvents(txMined, address, name)
+{
+	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
+}
 
 contract('IexecHub', async (accounts) => {
 
@@ -143,9 +146,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateDapp({}));
-		events = txMined.logs;
-		assert.strictEqual(events[0].address,         IexecHubInstance.address,      "Wrong event address");
-		assert.strictEqual(events[0].event,           "CreateDapp",                  "Wrong event type");
+		events = extractEvents(txMined, IexecHubInstance.address, "CreateDapp");
 		assert.strictEqual(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
 		assert.strictEqual(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
 		assert.strictEqual(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
@@ -167,12 +168,10 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateData({}));
-		events = txMined.logs;
-		assert.strictEqual(events[0].address,         IexecHubInstance.address, "Wrong event address");
-		assert.strictEqual(events[0].event,           "CreateData",             "Wrong event type");
-		assert.strictEqual(events[0].args.dataOwner,  dataProvider,             "Erroneous Data owner" );
-		assert.strictEqual(events[0].args.dataName,   "Pi",                     "Erroneous Data name"  );
-		assert.strictEqual(events[0].args.dataParams, "3.1415926535",           "Erroneous Data params");
+		events = extractEvents(txMined, IexecHubInstance.address, "CreateData");
+		assert.strictEqual(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
+		assert.strictEqual(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
+		assert.strictEqual(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
 
 		DataInstance = await Data.at(events[0].args.data);
 
@@ -197,11 +196,9 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// events = await OxTools.getEventsPromise(IexecHubInstance.CreatePool({}));
-		events = txMined.logs;
-		assert.strictEqual(events[0].address,              IexecHubInstance.address, "Wrong event address");
-		assert.strictEqual(events[0].event,                "CreatePool",             "Wrong event type");
-		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,            "Erroneous Pool owner"      );
-		assert.strictEqual(events[0].args.poolDescription, "A test workerpool",      "Erroneous Pool description");
+		events = extractEvents(txMined, IexecHubInstance.address, "CreatePool");
+		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
+		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
 
 		PoolInstance = await Pool.at(events[0].args.pool);
 
@@ -226,9 +223,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// events = await OxTools.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
-		events = txMined.logs;
-		assert.strictEqual(events[0].address,                                           PoolInstance.address, "Wrong event address"                        );
-		assert.strictEqual(events[0].event,                                             "PoolPolicyUpdate",   "Wrong event type"                           );
+		events = extractEvents(txMined, PoolInstance.address, "PoolPolicyUpdate");
 		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,                   "Erroneous oldWorkerStakeRatioPolicy"        );
 		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,                   "Erroneous newWorkerStakeRatioPolicy"        );
 		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,                    "Erroneous oldSchedulerRewardRatioPolicy"    );
