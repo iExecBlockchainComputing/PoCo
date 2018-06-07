@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
 
-contract Data is Ownable // immutable
+contract Data is OwnableImmutable
 {
 
 	/**
@@ -20,7 +20,7 @@ contract Data is Ownable // immutable
 		string  _dataName,
 		string  _dataParams)
 	public
-	Ownable(_dataOwner)
+	OwnableImmutable(_dataOwner)
 	{
 		m_dataName   = _dataName;
 		m_dataParams = _dataParams;

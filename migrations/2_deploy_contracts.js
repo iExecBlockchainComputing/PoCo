@@ -4,17 +4,12 @@ var Marketplace = artifacts.require("./Marketplace.sol");
 var DappHub     = artifacts.require("./DappHub.sol");
 var DataHub     = artifacts.require("./DataHub.sol");
 var PoolHub     = artifacts.require("./PoolHub.sol");
-// var WorkerPool       = artifacts.require("./Pool.sol");
 
 const fs            = require("fs-extra");
 const Promise       = require("bluebird");
 const readFileAsync = Promise.promisify(fs.readFile);
 
-/**
- * Contracts FULL DEV DEPLOY with new RLC token created
- */
-
-module.exports = function(deployer) {
+module.exports = function(deployer, network, accounts) {
 	let aRLCInstance;
 	let aIexecHub;
 	let aMarketplaceInstance;

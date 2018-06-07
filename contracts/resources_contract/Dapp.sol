@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
 
-contract Dapp is Ownable // immutable
+contract Dapp is OwnableImmutable
 {
 
 	/**
@@ -20,7 +20,7 @@ contract Dapp is Ownable // immutable
 		string  _dappName,
 		string  _dappParams)
 	public
-	Ownable(_dappOwner)
+	OwnableImmutable(_dappOwner)
 	{
 		m_dappName   = _dappName;
 		m_dappParams = _dappParams;

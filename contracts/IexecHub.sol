@@ -45,13 +45,17 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
+	event CreateDapp(address indexed dappOwner, address indexed dapp, string dappName, string dappParams);
+	event CreateData(address indexed dataOwner, address indexed data, string dataName, string dataParams);
+	event CreatePool(address indexed poolOwner, address indexed pool, string poolDescription);
+
 	event ConsensusInitialize             (bytes32 indexed woid, address indexed pool);
 	event ConsensusAllowWorkerToContribute(bytes32 indexed woid, address indexed worker);
-	event ConsensusContribute             (bytes32 indexed woid, address indexed worker, bytes32);
-	event ConsensusRevealConsensus        (bytes32 indexed woid, bytes32);
-	event ConsensusReveal                 (bytes32 indexed woid, address indexed worker, bytes32);
+	event ConsensusContribute             (bytes32 indexed woid, address indexed worker, bytes32 resultHash);
+	event ConsensusRevealConsensus        (bytes32 indexed woid, bytes32 consensus);
+	event ConsensusReveal                 (bytes32 indexed woid, address indexed worker, bytes32 result);
 	event ConsensusReopen                 (bytes32 indexed woid);
-	event ConsensusFinalized              (bytes32 indexed woid, string, string, string);
+	event ConsensusFinalized              (bytes32 indexed woid, string stdout, string stderr, string uri);
 	event ConsensusClaimed                (bytes32 indexed woid);
 
 	/***************************************************************************
@@ -430,5 +434,45 @@ contract IexecHub is CategoryManager
 		return true;
 	}
 
+	/***************************************************************************
+	 *                                Hub Proxy                                *
+	 ***************************************************************************/
+	function createDapp(
+		string  _dappName,
+		string  _dappParams)
+	public returns (Dapp)
+	{
+		Dapp newDapp = dapphub.createDapp(msg.sender, _dappName, _dappParams);
+		emit CreateDapp(msg.sender, newDapp, _dappName, _dappParams);
+		return newDapp;
+	}
+
+	function createData(
+		string  _dataName,
+		string  _dataParams)
+	public returns (Data)
+	{
+		Data newData = datahub.createData(msg.sender, _dataName, _dataParams);
+		emit CreateData(msg.sender, newData, _dataName, _dataParams);
+		return newData;
+	}
+
+	function createPool(
+		string  _poolDescription,
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
+	public returns (Pool)
+	{
+		Pool newPool = poolhub.createPool(
+			msg.sender,
+			_poolDescription,
+			_subscriptionLockStakePolicy,
+			_subscriptionMinimumStakePolicy,
+			_subscriptionMinimumScorePolicy
+		);
+		emit CreatePool(msg.sender, newPool, _poolDescription);
+		return newPool;
+	}
 
 }

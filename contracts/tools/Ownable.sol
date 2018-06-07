@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-contract Ownable
+contract OwnableImmutable
 {
 	address public m_owner;
 
@@ -23,7 +23,7 @@ contract Ownable
 	}
 }
 
-contract OwnableMutable is Ownable
+contract OwnableMutable is OwnableImmutable
 {
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -32,7 +32,7 @@ contract OwnableMutable is Ownable
 	 * account.
 	 */
 	constructor() public
-	Ownable(msg.sender)
+	OwnableImmutable(msg.sender)
 	{
 	}
 

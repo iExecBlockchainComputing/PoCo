@@ -1,0 +1,390 @@
+var RLC         = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub    = artifacts.require("./IexecHub.sol");
+var Marketplace = artifacts.require("./Marketplace.sol");
+var DappHub     = artifacts.require("./DappHub.sol");
+var DataHub     = artifacts.require("./DataHub.sol");
+var PoolHub     = artifacts.require("./PoolHub.sol");
+var Dapp        = artifacts.require("./Dapp.sol");
+var Data        = artifacts.require("./Data.sol");
+var Pool        = artifacts.require("./Pool.sol");
+
+const ethers          = require('ethers'); // for ABIEncoderV2
+
+const Promise         = require("bluebird");
+const addEvmFunctions = require("../utils/evmFunctions.js");
+const Extensions      = require("../utils/extensions.js");
+
+// const BN              = require("bn");
+// const keccak256       = require("solidity-sha3");
+// const fs              = require("fs-extra");
+// const web3utils       = require('web3-utils');
+// const readFileAsync   = Promise.promisify(fs.readFile);
+
+addEvmFunctions(web3);
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
+Extensions.init(web3, assert);
+
+var constants = require("./constants");
+
+contract('IexecHub', async (accounts) => {
+
+	assert.isAtLeast(accounts.length, 9, "should have at least 9 accounts");
+	let iexecAdmin    = accounts[0];
+	let dappProvider  = accounts[1];
+	let dataProvider  = accounts[2];
+	let poolScheduler = accounts[3];
+	let poolWorker1   = accounts[4];
+	let poolWorker2   = accounts[5];
+	let poolWorker3   = accounts[6];
+	let user          = accounts[7];
+	let sgxEnclave    = accounts[8];
+
+	var RLCInstance         = null;
+	var IexecHubInstance    = null;
+	var MarketplaceInstance = null;
+	var DappHubInstance     = null;
+	var DataHubInstance     = null;
+	var PoolHubInstance     = null;
+	var DappInstance        = null;
+	var DataInstance        = null;
+	var PoolInstance        = null;
+	var dapporder           = null;
+	var dataorder           = null;
+	var poolorder           = null;
+	var userorder           = null;
+
+	var MarketplaceInstanceEther = null;
+
+	/***************************************************************************
+	 *                        Environment configuration                        *
+	 ***************************************************************************/
+	before("configure", async () => {
+		/**
+		 * Retreive deployed contracts
+		 */
+		RLCInstance         = await RLC.deployed();
+		IexecHubInstance    = await IexecHub.deployed();
+		MarketplaceInstance = await Marketplace.deployed();
+		DappHubInstance     = await DappHub.deployed();
+		DataHubInstance     = await DataHub.deployed();
+		PoolHubInstance     = await PoolHub.deployed();
+
+		/**
+		 * For ABIEncoderV2
+		 */
+		let abi                  = JSON.stringify(Marketplace.abi);
+		let provider             = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+		MarketplaceInstanceEther = new ethers.Contract(MarketplaceInstance.address, abi, provider);
+
+		/**
+		 * Token distribution
+		 */
+		assert.strictEqual(iexecAdmin, await RLCInstance.owner.call(), "iexecAdmin should own the RLC smart contract");
+		txsMined = await Promise.all([
+			RLCInstance.transfer(dappProvider,  1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(dataProvider,  1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolScheduler, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker1,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker2,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker3,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(user,          1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		let balances = await Promise.all([
+			RLCInstance.balanceOf(dappProvider),
+			RLCInstance.balanceOf(dataProvider),
+			RLCInstance.balanceOf(poolScheduler),
+			RLCInstance.balanceOf(poolWorker1),
+			RLCInstance.balanceOf(poolWorker2),
+			RLCInstance.balanceOf(poolWorker3),
+			RLCInstance.balanceOf(user)
+		]);
+		assert.strictEqual(balances[0].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[1].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[2].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[3].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[4].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[5].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
+
+		txsMined = await Promise.all([
+			RLCInstance.approve(Marketplace.address, 100, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 100, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+	});
+
+	/***************************************************************************
+	 *                  TEST: Dapp creation (by dappProvider)                  *
+	 ***************************************************************************/
+	it("Dapp Creation", async () => {
+		txMined = await IexecHubInstance.createDapp("R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = await Extensions.getEventsPromise(IexecHubInstance.CreateDapp({}));
+		assert.strictEqual(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
+		assert.strictEqual(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
+		assert.strictEqual(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
+
+		DappInstance = await Dapp.at(events[0].args.dapp);
+
+		let count = await DappHubInstance.viewCount(dappProvider);
+		assert.strictEqual(count.toNumber(), 1, "dappProvider must have 1 dapp now");
+
+		let dappAddress = await DappHubInstance.viewEntry(dappProvider, 1);
+		assert.strictEqual(dappAddress, DappInstance.address, "check dappAddress");
+	});
+
+	/***************************************************************************
+	 *                  TEST: Data creation (by dataProvider)                  *
+	 ***************************************************************************/
+	it("Data Creation", async () => {
+		txMined = await IexecHubInstance.createData("Pi", "3.1415926535", { from: dataProvider });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = await Extensions.getEventsPromise(IexecHubInstance.CreateData({}));
+		assert.strictEqual(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
+		assert.strictEqual(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
+		assert.strictEqual(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
+
+		DataInstance = await Data.at(events[0].args.data);
+
+		let count = await DataHubInstance.viewCount(dataProvider);
+		assert.strictEqual(count.toNumber(), 1, "dataProvider must have 1 data now");
+
+		let dataAddress = await DataHubInstance.viewEntry(dataProvider, 1);
+		assert.strictEqual(dataAddress, DataInstance.address, "check dataAddress");
+	});
+
+	/***************************************************************************
+	 *                 TEST: Pool creation (by poolScheduler)                  *
+	 ***************************************************************************/
+	it("Pool Creation", async () => {
+		txMined = await IexecHubInstance.createPool(
+			"A test workerpool",
+			100, // lock
+			100, // minimum stake
+			100, // minimum score
+			{ from: poolScheduler }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = await Extensions.getEventsPromise(IexecHubInstance.CreatePool({}));
+		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
+		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
+
+		PoolInstance = await Pool.at(events[0].args.pool);
+
+		let count = await PoolHubInstance.viewCount(poolScheduler);
+		assert.strictEqual(count.toNumber(), 1, "poolScheduler must have 1 pool now");
+
+		let poolAddress = await PoolHubInstance.viewEntry(poolScheduler, 1);
+		assert.strictEqual(poolAddress, PoolInstance.address, "check poolAddress");
+	});
+
+	/***************************************************************************
+	 *               TEST: Pool configuration (by poolScheduler)               *
+	 ***************************************************************************/
+	it("Pool Configuration", async () => {
+		txMined = await PoolInstance.changePoolPolicy(
+			35,  // worker stake ratio
+			5,   // scheduler reward ratio
+			100, // minimum stake
+			0,   // minimum score
+			{ from: poolScheduler }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = await Extensions.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
+		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,  "Erroneous newWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(),     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 100, "Erroneous oldSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), 100, "Erroneous newSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 100, "Erroneous oldSubscriptionMinimumScorePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,   "Erroneous newSubscriptionMinimumScorePolicy");
+	});
+
+	/***************************************************************************
+	 *              TEST: Dapp order signature (by dappProvider)               *
+	 ***************************************************************************/
+	it("Generate dapp order", async () => {
+		dapporder = Extensions.signMarket(
+			{
+				//market
+				dapp:         DappInstance.address,
+				dappprice:    3,
+				volume:       1000,
+				// extra
+				salt:         ethers.utils.randomBytes(32),
+			},
+			dappProvider,
+			(obj) => Extensions.getDappOrderHash(Marketplace.address, obj)
+		);
+
+		MarketplaceInstanceEther.getDappOrderHash(
+			dapporder
+		).then(function (hash) {
+			assert.strictEqual(hash, Extensions.getDappOrderHash(Marketplace.address, dapporder), "Error with dapporder hash computation");
+		});
+
+		MarketplaceInstanceEther.isValidSignature(
+			dappProvider,
+			Extensions.getDappOrderHash(Marketplace.address, dapporder),
+			dapporder.sign
+		).then(function(result) {
+			assert.strictEqual(result, true, "Error with the validation of the dapporder signature");
+		});
+
+	});
+
+	/***************************************************************************
+	 *              TEST: Data order signature (by dataProvider)               *
+	 ***************************************************************************/
+	it("Generate data order", async () => {
+		dataorder = Extensions.signMarket(
+			{
+				//market
+				data:         DataInstance.address,
+				dataprice:    1,
+				volume:       1000,
+				// extra
+				salt:         ethers.utils.randomBytes(32),
+			},
+			dataProvider,
+			(obj) => Extensions.getDataOrderHash(Marketplace.address, obj)
+		);
+
+		MarketplaceInstanceEther.getDataOrderHash(
+			dataorder
+		).then(function (hash) {
+			assert.strictEqual(hash, Extensions.getDataOrderHash(Marketplace.address, dataorder), "Error with dataorder hash computation");
+		});
+
+		MarketplaceInstanceEther.isValidSignature(
+			dataProvider,
+			Extensions.getDataOrderHash(Marketplace.address, dataorder),
+			dataorder.sign
+		).then(function(result) {
+			assert.strictEqual(result, true, "Error with the validation of the dataorder signature");
+		});
+
+	});
+
+	/***************************************************************************
+	 *              TEST: Pool order signature (by poolProvider)               *
+	 ***************************************************************************/
+	it("Generate pool order", async () => {
+		poolorder = Extensions.signMarket(
+			{
+				// market
+				pool:         PoolInstance.address,
+				poolprice:    25,
+				volume:       3,
+				// settings
+				category:     4,
+				trust:        1000,
+				// extra
+				salt:         ethers.utils.randomBytes(32),
+			},
+			poolScheduler,
+			(obj) => Extensions.getPoolOrderHash(Marketplace.address, obj)
+		);
+
+		MarketplaceInstanceEther.getPoolOrderHash(
+			poolorder
+		).then(function (hash) {
+			assert.strictEqual(hash, Extensions.getPoolOrderHash(Marketplace.address, poolorder), "Error with poolorder hash computation");
+		});
+
+		MarketplaceInstanceEther.isValidSignature(
+			poolScheduler,
+			Extensions.getPoolOrderHash(Marketplace.address, poolorder),
+			poolorder.sign
+		).then(function(result) {
+			assert.strictEqual(result, true, "Error with the validation of the poolorder signature");
+		});
+
+	});
+
+	/***************************************************************************
+	 *                  TEST: User order signature (by user)                   *
+	 ***************************************************************************/
+	it("Generate user order", async () => {
+		userorder = Extensions.signMarket(
+			{
+				// market
+				dapp:         DappInstance.address,
+				dapppricemax: 3,
+				data:         DataInstance.address,
+				datapricemax: 1,
+				pool:         PoolInstance.address,
+				poolpricemax: 25,
+				// settings
+				category:     4,
+				trust:        1000,
+				requester:    user,
+				beneficiary:  user,
+				callback:     '0x0000000000000000000000000000000000000000',
+				params:       "echo HelloWorld",
+				// extra
+				salt:         ethers.utils.randomBytes(32),
+			},
+			user,
+			(obj) => Extensions.getUserOrderHash(Marketplace.address, obj)
+		);
+
+		MarketplaceInstanceEther.getUserOrderHash(
+			userorder
+		).then(function (hash) {
+			assert.strictEqual(hash, Extensions.getUserOrderHash(Marketplace.address, userorder), "Error with userorder hash computation");
+		});
+
+		MarketplaceInstanceEther.isValidSignature(
+			user,
+			Extensions.getUserOrderHash(Marketplace.address, userorder),
+			userorder.sign
+		).then(function(result) {
+			assert.strictEqual(result, true, "Error with the validation of the userorder signature");
+		});
+
+	});
+
+	/***************************************************************************
+	 *                           TEST: Market making                           *
+	 ***************************************************************************/
+	it("Make market", async () => {
+		MarketplaceInstanceEther.matchOrders(
+			dapporder,
+			dataorder,
+			poolorder,
+			userorder
+		).then(function(result) {
+			console.log("MatchOrder:", result);
+		});
+	});
+
+
+
+});

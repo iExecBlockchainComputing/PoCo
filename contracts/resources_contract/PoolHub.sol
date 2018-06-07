@@ -19,11 +19,19 @@ contract PoolHub is HubBase
 	 */
 	function createPool(
 		address _poolOwner,
-		string  _poolName,
-		uint256 _subscriptionLockStakePolicy)
+		string  _poolDescription,
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
 	public onlyOwner /*owner == IexecHub*/ returns (Pool)
 	{
-		Pool newPool = new Pool(_poolOwner, _poolName, _subscriptionLockStakePolicy);
+		Pool newPool = new Pool(
+			_poolOwner,
+			_poolDescription,
+			_subscriptionLockStakePolicy,
+			_subscriptionMinimumStakePolicy,
+			_subscriptionMinimumScorePolicy
+		);
 		require(insert(newPool, _poolOwner));
 		return newPool;
 	}

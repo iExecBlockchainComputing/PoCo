@@ -4,14 +4,14 @@ pragma experimental ABIEncoderV2;
 import '../tools/Ownable.sol';
 import "../tools/SafeMathOZ.sol";
 
-contract Pool is Ownable // immutable
+contract Pool is OwnableImmutable
 {
 	using SafeMathOZ for uint256;
 
 	/**
 	 * Parameters
 	 */
-	string  public m_description;
+	string  public m_poolDescription;
 	uint256 public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
 	uint256 public m_workerStakeRatioPolicy;         // % of reward to stake
 	uint256 public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
@@ -32,17 +32,19 @@ contract Pool is Ownable // immutable
 	 */
 	constructor(
 		address _poolOwner,
-		string  _description,
-		uint256 _subscriptionLockStakePolicy)
+		string  _poolDescription,
+		uint256 _subscriptionLockStakePolicy,
+		uint256 _subscriptionMinimumStakePolicy,
+		uint256 _subscriptionMinimumScorePolicy)
 	public
-	Ownable(_poolOwner)
+	OwnableImmutable(_poolOwner)
 	{
-		m_description                    = _description;
-		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy;
-		m_workerStakeRatioPolicy         = 30; // set later: % of the work order price to stake
-		m_schedulerRewardRatioPolicy     = 1;  // set later: % of the work reward going to scheduler vs workers reward
-		m_subscriptionMinimumStakePolicy = 0;  // set later: subscription policy
-		m_subscriptionMinimumScorePolicy = 0;  // set later: subscription policy
+		m_poolDescription                = _poolDescription;
+		m_workerStakeRatioPolicy         = 30;                               // mutable
+		m_schedulerRewardRatioPolicy     = 1;                                // mutable
+		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy;     // constant
+		m_subscriptionMinimumStakePolicy = _subscriptionMinimumStakePolicy;  // mutable
+		m_subscriptionMinimumScorePolicy = _subscriptionMinimumScorePolicy;  // mutable
 	}
 
 	function changePoolPolicy(
