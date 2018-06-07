@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-contract OwnableImmutable
+contract Ownable
 {
 	address public m_owner;
 
@@ -23,28 +23,17 @@ contract OwnableImmutable
 	}
 }
 
-contract OwnableMutable
+contract OwnableMutable is Ownable
 {
-	address public m_owner;
-
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-	/**
-	 * @dev Throws if called by any account other than the owner.
-	 */
-	modifier onlyOwner()
-	{
-		require(msg.sender == m_owner);
-		_;
-	}
 
 	/**
 	 * @dev The Ownable constructor sets the original `owner` of the contract to the sender
 	 * account.
 	 */
 	constructor() public
+	Ownable(msg.sender)
 	{
-		m_owner = msg.sender;
 	}
 
 	/**

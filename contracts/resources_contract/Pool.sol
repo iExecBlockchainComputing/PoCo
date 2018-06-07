@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import '../tools/Ownable.sol';
 import "../tools/SafeMathOZ.sol";
 
-contract Pool is OwnableImmutable
+contract Pool is Ownable // immutable
 {
 	using SafeMathOZ for uint256;
 
@@ -35,7 +35,7 @@ contract Pool is OwnableImmutable
 		string  _description,
 		uint256 _subscriptionLockStakePolicy)
 	public
-	OwnableImmutable(_poolOwner)
+	Ownable(_poolOwner)
 	{
 		m_description                    = _description;
 		m_subscriptionLockStakePolicy    = _subscriptionLockStakePolicy;

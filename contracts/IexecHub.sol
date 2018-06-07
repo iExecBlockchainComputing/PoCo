@@ -121,9 +121,9 @@ contract IexecHub is CategoryManager
 	function checkResources(address daap, address data, address pool)
 	public view returns (bool)
 	{
-		return dapphub.isDappRegistered(daap)
-		    && datahub.isDataRegistered(data)
-		    && poolhub.isPoolRegistered(pool);
+		return dapphub.isRegistered(daap)
+		    && datahub.isRegistered(data)
+		    && poolhub.isRegistered(pool);
 	}
 
 	/***************************************************************************
@@ -398,7 +398,7 @@ contract IexecHub is CategoryManager
 	function subscribe(Pool _pool)
 	public returns (bool)
 	{
-		require(poolhub.isPoolRegistered(_pool));
+		require(poolhub.isRegistered(_pool));
 
 		require(m_workerAffectations[msg.sender] == address(0));
 		require(marketplace.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
