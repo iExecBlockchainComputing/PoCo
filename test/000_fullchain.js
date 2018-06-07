@@ -8,23 +8,24 @@ var Dapp        = artifacts.require("./Dapp.sol");
 var Data        = artifacts.require("./Data.sol");
 var Pool        = artifacts.require("./Pool.sol");
 
-const ethers          = require('ethers'); // for ABIEncoderV2
+const ethers  = require('ethers'); // for ABIEncoderV2
+const OxTools = require('../utils/OxTools');
 
-const Promise         = require("bluebird");
-const addEvmFunctions = require("../utils/evmFunctions.js");
-const Extensions      = require("../utils/extensions.js");
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
 // const fs              = require("fs-extra");
 // const web3utils       = require('web3-utils');
 // const readFileAsync   = Promise.promisify(fs.readFile);
+// const Promise         = require("bluebird");
+// const addEvmFunctions = require("../utils/evmFunctions.js");
+// const Extensions      = require("../utils/extensions.js");
 
-addEvmFunctions(web3);
-Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
-Promise.promisifyAll(web3.version, { suffix: "Promise" });
-Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-Extensions.init(web3, assert);
+// addEvmFunctions(web3);
+// Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+// Promise.promisifyAll(web3.version, { suffix: "Promise" });
+// Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
+// Extensions.init(web3, assert);
 
 var constants = require("./constants");
 
@@ -50,10 +51,10 @@ contract('IexecHub', async (accounts) => {
 	var DappInstance        = null;
 	var DataInstance        = null;
 	var PoolInstance        = null;
-	var dapporder           = null;
-	var dataorder           = null;
-	var poolorder           = null;
-	var userorder           = null;
+	var DappOrder           = null;
+	var DataOrder           = null;
+	var PoolOrder           = null;
+	var UserOrder           = null;
 
 	var MarketplaceInstanceEther = null;
 
@@ -141,7 +142,10 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.createDapp("R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(IexecHubInstance.CreateDapp({}));
+		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateDapp({}));
+		events = txMined.logs;
+		assert.strictEqual(events[0].address,         IexecHubInstance.address,      "Wrong event address");
+		assert.strictEqual(events[0].event,           "CreateDapp",                  "Wrong event type");
 		assert.strictEqual(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
 		assert.strictEqual(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
 		assert.strictEqual(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
@@ -162,10 +166,13 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.createData("Pi", "3.1415926535", { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(IexecHubInstance.CreateData({}));
-		assert.strictEqual(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
-		assert.strictEqual(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
-		assert.strictEqual(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
+		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateData({}));
+		events = txMined.logs;
+		assert.strictEqual(events[0].address,         IexecHubInstance.address, "Wrong event address");
+		assert.strictEqual(events[0].event,           "CreateData",             "Wrong event type");
+		assert.strictEqual(events[0].args.dataOwner,  dataProvider,             "Erroneous Data owner" );
+		assert.strictEqual(events[0].args.dataName,   "Pi",                     "Erroneous Data name"  );
+		assert.strictEqual(events[0].args.dataParams, "3.1415926535",           "Erroneous Data params");
 
 		DataInstance = await Data.at(events[0].args.data);
 
@@ -189,9 +196,12 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(IexecHubInstance.CreatePool({}));
-		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
-		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
+		// events = await OxTools.getEventsPromise(IexecHubInstance.CreatePool({}));
+		events = txMined.logs;
+		assert.strictEqual(events[0].address,              IexecHubInstance.address, "Wrong event address");
+		assert.strictEqual(events[0].event,                "CreatePool",             "Wrong event type");
+		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,            "Erroneous Pool owner"      );
+		assert.strictEqual(events[0].args.poolDescription, "A test workerpool",      "Erroneous Pool description");
 
 		PoolInstance = await Pool.at(events[0].args.pool);
 
@@ -215,22 +225,25 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = await Extensions.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
-		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
-		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,  "Erroneous newWorkerStakeRatioPolicy"        );
-		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
-		assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(),     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
-		assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 100, "Erroneous oldSubscriptionMinimumStakePolicy");
-		assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), 100, "Erroneous newSubscriptionMinimumStakePolicy");
-		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 100, "Erroneous oldSubscriptionMinimumScorePolicy");
-		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,   "Erroneous newSubscriptionMinimumScorePolicy");
+		// events = await OxTools.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
+		events = txMined.logs;
+		assert.strictEqual(events[0].address,                                           PoolInstance.address, "Wrong event address"                        );
+		assert.strictEqual(events[0].event,                                             "PoolPolicyUpdate",   "Wrong event type"                           );
+		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,                   "Erroneous oldWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,                   "Erroneous newWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,                    "Erroneous oldSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(),     5,                    "Erroneous newSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 100,                  "Erroneous oldSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), 100,                  "Erroneous newSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 100,                  "Erroneous oldSubscriptionMinimumScorePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,                    "Erroneous newSubscriptionMinimumScorePolicy");
 	});
 
 	/***************************************************************************
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("Generate dapp order", async () => {
-		dapporder = Extensions.signMarket(
+		DappOrder = OxTools.signMarket(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -240,21 +253,21 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dappProvider,
-			(obj) => Extensions.getDappOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getDappOrderHash(Marketplace.address, obj)
 		);
 
 		MarketplaceInstanceEther.getDappOrderHash(
-			dapporder
+			DappOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, Extensions.getDappOrderHash(Marketplace.address, dapporder), "Error with dapporder hash computation");
+			assert.strictEqual(hash, OxTools.getDappOrderHash(Marketplace.address, DappOrder), "Error with DappOrder hash computation");
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			dappProvider,
-			Extensions.getDappOrderHash(Marketplace.address, dapporder),
-			dapporder.sign
+			OxTools.getDappOrderHash(Marketplace.address, DappOrder),
+			DappOrder.sign
 		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the dapporder signature");
+			assert.strictEqual(result, true, "Error with the validation of the DappOrder signature");
 		});
 
 	});
@@ -263,7 +276,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Data order signature (by dataProvider)               *
 	 ***************************************************************************/
 	it("Generate data order", async () => {
-		dataorder = Extensions.signMarket(
+		DataOrder = OxTools.signMarket(
 			{
 				//market
 				data:         DataInstance.address,
@@ -273,21 +286,21 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dataProvider,
-			(obj) => Extensions.getDataOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getDataOrderHash(Marketplace.address, obj)
 		);
 
 		MarketplaceInstanceEther.getDataOrderHash(
-			dataorder
+			DataOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, Extensions.getDataOrderHash(Marketplace.address, dataorder), "Error with dataorder hash computation");
+			assert.strictEqual(hash, OxTools.getDataOrderHash(Marketplace.address, DataOrder), "Error with DataOrder hash computation");
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			dataProvider,
-			Extensions.getDataOrderHash(Marketplace.address, dataorder),
-			dataorder.sign
+			OxTools.getDataOrderHash(Marketplace.address, DataOrder),
+			DataOrder.sign
 		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the dataorder signature");
+			assert.strictEqual(result, true, "Error with the validation of the DataOrder signature");
 		});
 
 	});
@@ -296,7 +309,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Pool order signature (by poolProvider)               *
 	 ***************************************************************************/
 	it("Generate pool order", async () => {
-		poolorder = Extensions.signMarket(
+		PoolOrder = OxTools.signMarket(
 			{
 				// market
 				pool:         PoolInstance.address,
@@ -309,21 +322,21 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			poolScheduler,
-			(obj) => Extensions.getPoolOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getPoolOrderHash(Marketplace.address, obj)
 		);
 
 		MarketplaceInstanceEther.getPoolOrderHash(
-			poolorder
+			PoolOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, Extensions.getPoolOrderHash(Marketplace.address, poolorder), "Error with poolorder hash computation");
+			assert.strictEqual(hash, OxTools.getPoolOrderHash(Marketplace.address, PoolOrder), "Error with PoolOrder hash computation");
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			poolScheduler,
-			Extensions.getPoolOrderHash(Marketplace.address, poolorder),
-			poolorder.sign
+			OxTools.getPoolOrderHash(Marketplace.address, PoolOrder),
+			PoolOrder.sign
 		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the poolorder signature");
+			assert.strictEqual(result, true, "Error with the validation of the PoolOrder signature");
 		});
 
 	});
@@ -332,7 +345,7 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: User order signature (by user)                   *
 	 ***************************************************************************/
 	it("Generate user order", async () => {
-		userorder = Extensions.signMarket(
+		UserOrder = OxTools.signMarket(
 			{
 				// market
 				dapp:         DappInstance.address,
@@ -352,21 +365,21 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			user,
-			(obj) => Extensions.getUserOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getUserOrderHash(Marketplace.address, obj)
 		);
 
 		MarketplaceInstanceEther.getUserOrderHash(
-			userorder
+			UserOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, Extensions.getUserOrderHash(Marketplace.address, userorder), "Error with userorder hash computation");
+			assert.strictEqual(hash, OxTools.getUserOrderHash(Marketplace.address, UserOrder), "Error with UserOrder hash computation");
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			user,
-			Extensions.getUserOrderHash(Marketplace.address, userorder),
-			userorder.sign
+			OxTools.getUserOrderHash(Marketplace.address, UserOrder),
+			UserOrder.sign
 		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the userorder signature");
+			assert.strictEqual(result, true, "Error with the validation of the UserOrder signature");
 		});
 
 	});
@@ -376,10 +389,10 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Make market", async () => {
 		MarketplaceInstanceEther.matchOrders(
-			dapporder,
-			dataorder,
-			poolorder,
-			userorder
+			DappOrder,
+			DataOrder,
+			PoolOrder,
+			UserOrder
 		).then(function(result) {
 			console.log("MatchOrder:", result);
 		});
