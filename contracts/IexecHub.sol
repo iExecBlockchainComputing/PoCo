@@ -58,6 +58,10 @@ contract IexecHub is CategoryManager
 	event ConsensusFinalized              (bytes32 indexed woid, string stdout, string stderr, string uri);
 	event ConsensusClaimed                (bytes32 indexed woid);
 
+	event WorkerSubscription  (address indexed pool, address worker);
+	event WorkerUnsubscription(address indexed pool, address worker);
+	event WorkerEviction      (address indexed pool, address worker);
+
 	/***************************************************************************
 	 *                                Modifiers                                *
 	 ***************************************************************************/
@@ -409,6 +413,8 @@ contract IexecHub is CategoryManager
 		require(marketplace.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
 		require(m_workerScores[msg.sender]                >= _pool.m_subscriptionMinimumScorePolicy());
 		m_workerAffectations[msg.sender] = address(_pool);
+
+		emit WorkerSubscription(address(_pool), msg.sender);
 		return true;
 	}
 
@@ -416,10 +422,12 @@ contract IexecHub is CategoryManager
 	public returns (bool)
 	{
 		Pool pool = Pool(m_workerAffectations[msg.sender]);
-
 		require(address(pool) != address(0));
+
 		require(marketplace.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy()));
 		m_workerAffectations[msg.sender] = address(0);
+
+		emit WorkerUnsubscription(address(pool), msg.sender);
 		return true;
 	}
 
@@ -427,10 +435,13 @@ contract IexecHub is CategoryManager
 	public returns (bool)
 	{
 		Pool pool = Pool(m_workerAffectations[_worker]);
+		require(address(pool)  != address(0));
+		require(pool.m_owner() == msg.sender);
 
-		require(address(pool) == _worker);
 		require(marketplace.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy()));
 		m_workerAffectations[_worker] = address(0);
+
+		emit WorkerEviction(address(pool), _worker);
 		return true;
 	}
 

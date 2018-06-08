@@ -87,13 +87,13 @@ contract('IexecHub', async (accounts) => {
 		 */
 		assert.strictEqual(iexecAdmin, await RLCInstance.owner.call(), "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
-			RLCInstance.transfer(dappProvider,  1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(dataProvider,  1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolScheduler, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker1,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker2,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker3,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,          1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -112,22 +112,22 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.balanceOf(poolWorker3),
 			RLCInstance.balanceOf(user)
 		]);
-		assert.strictEqual(balances[0].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[1].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[2].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[3].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[4].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[5].toNumber(), 1000, "1000 nRLC here");
-		assert.strictEqual(balances[6].toNumber(), 1000, "1000 nRLC here");
+		assert.strictEqual(balances[0].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[1].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[2].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[3].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[4].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[5].toNumber(), 1000000000, "1000000000 nRLC here");
+		assert.strictEqual(balances[6].toNumber(), 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(Marketplace.address, 100, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 100, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(Marketplace.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(Marketplace.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -188,9 +188,9 @@ contract('IexecHub', async (accounts) => {
 	it("Pool Creation", async () => {
 		txMined = await IexecHubInstance.createPool(
 			"A test workerpool",
-			100, // lock
-			100, // minimum stake
-			100, // minimum score
+			10, // lock
+			10, // minimum stake
+			10, // minimum score
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -224,14 +224,153 @@ contract('IexecHub', async (accounts) => {
 
 		// events = await Extensions.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
 		events = extractEvents(txMined, PoolInstance.address, "PoolPolicyUpdate");
-		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,                   "Erroneous oldWorkerStakeRatioPolicy"        );
-		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,                   "Erroneous newWorkerStakeRatioPolicy"        );
-		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,                    "Erroneous oldSchedulerRewardRatioPolicy"    );
-		assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(),     5,                    "Erroneous newSchedulerRewardRatioPolicy"    );
-		assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 100,                  "Erroneous oldSubscriptionMinimumStakePolicy");
-		assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), 100,                  "Erroneous newSubscriptionMinimumStakePolicy");
-		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 100,                  "Erroneous oldSubscriptionMinimumScorePolicy");
-		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,                    "Erroneous newSubscriptionMinimumScorePolicy");
+		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,  "Erroneous newWorkerStakeRatioPolicy"        );
+		assert.strictEqual(events[0].args.oldSchedulerRewardRatioPolicy.toNumber(),     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.newSchedulerRewardRatioPolicy.toNumber(),     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumStakePolicy.toNumber(), 10,  "Erroneous oldSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumStakePolicy.toNumber(), 100, "Erroneous newSubscriptionMinimumStakePolicy");
+		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 10,  "Erroneous oldSubscriptionMinimumScorePolicy");
+		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,   "Erroneous newSubscriptionMinimumScorePolicy");
+	});
+
+	/***************************************************************************
+	 *                     TEST: Check marketplace escrow                      *
+	 ***************************************************************************/
+	it("Check escrow balances", async () => {
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
+	});
+
+	/***************************************************************************
+	 *                   TEST: Deposit funds to marketplace                    *
+	 ***************************************************************************/
+	it("Marketplace deposit", async () => {
+		txsMined = await Promise.all([
+			MarketplaceInstance.deposit(1000, { from: poolScheduler }),
+			MarketplaceInstance.deposit(1000, { from: poolWorker1   }),
+			MarketplaceInstance.deposit(1000, { from: poolWorker2   }),
+			MarketplaceInstance.deposit(1000, { from: poolWorker3   }),
+			MarketplaceInstance.deposit(1000, { from: user          }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+	});
+
+	/***************************************************************************
+	 *                       TEST: Worker join the pool                        *
+	 ***************************************************************************/
+	it("Worker join", async () => {
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
+		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
+		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
+		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+
+		txsMined = await Promise.all([
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 }),
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 }),
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = extractEvents(txsMined[0], IexecHubInstance.address, "WorkerSubscription");
+		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.strictEqual(events[0].args.worker, poolWorker1,          "check worker");
+		events = extractEvents(txsMined[1], IexecHubInstance.address, "WorkerSubscription");
+		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.strictEqual(events[0].args.worker, poolWorker2,          "check worker");
+		events = extractEvents(txsMined[2], IexecHubInstance.address, "WorkerSubscription");
+		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
+
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
+		assert.strictEqual(affectation, PoolInstance.address, "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
+		assert.strictEqual(affectation, PoolInstance.address, "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
+		assert.strictEqual(affectation, PoolInstance.address, "affectation issue");
+
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
+	});
+
+	/***************************************************************************
+	 *                       TEST: Worker leave the pool                       *
+	 ***************************************************************************/
+	it("Worker unsubscription & eviction", async () => {
+		txsMined = await Promise.all([
+			IexecHubInstance.unsubscribe(             { from: poolWorker2   }),
+			IexecHubInstance.evict      (poolWorker3, { from: poolScheduler }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = extractEvents(txsMined[0], IexecHubInstance.address, "WorkerUnsubscription");
+		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.strictEqual(events[0].args.worker, poolWorker2,          "check worker");
+		events = extractEvents(txsMined[1], IexecHubInstance.address, "WorkerEviction");
+		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
+
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
+		assert.strictEqual(affectation, PoolInstance.address,                         "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
+		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
+		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
 
 	/***************************************************************************

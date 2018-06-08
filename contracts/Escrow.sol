@@ -46,6 +46,13 @@ contract Escrow
 	{
 		return m_accounts[_user];
 	}
+
+	function viewAccountLegacy(address _user)
+	public view returns (uint256 stake, uint256 locked)
+	{
+		return ( m_accounts[_user].stake, m_accounts[_user].locked );
+	}
+
 	/**
 	 * Wallet methods: public
 	 */
