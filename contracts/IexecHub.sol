@@ -161,15 +161,30 @@ contract IexecHub is CategoryManager
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
 		require(workorder.consensusDeadline >  now                                  );
-		// check _worker is in workerpool
 
 		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][_worker];
 		require(contribution.status == Iexec0xLib.ContributionStatusEnum.UNSET);
 
+		// worker must be subscribed to the pool
+		require(m_workerAffectations[_worker] == marketplace.viewDeal(_woid).pool.pointer);
+
+		// authorize contribution
 		contribution.status           = Iexec0xLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
 		emit ConsensusAllowWorkerToContribute(_woid, _worker);
+	}
+
+	function allowWorkersToContribute(
+		bytes32   _woid,
+		address[] _workers,
+		address   _enclaveChallenge)
+	public onlyScheduler(_woid)
+	{
+		for (uint i = 0; i < _workers.length; ++i)
+		{
+			allowWorkerToContribute(_woid, _workers[i], _enclaveChallenge);
+		}
 	}
 
 	function contribute(
@@ -347,7 +362,8 @@ contract IexecHub is CategoryManager
 		emit ConsensusClaimed(_woid);
 	}
 
-	function __distributeRewards(bytes32 _woid) private returns (bool)
+	function __distributeRewards(bytes32 _woid)
+	private
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 
@@ -396,8 +412,6 @@ contract IexecHub is CategoryManager
 		}
 		// totalReward now contains the scheduler share
 		require(marketplace.rewardForScheduling(_woid, totalReward));
-
-		return true;
 	}
 
 	/***************************************************************************
@@ -448,6 +462,7 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                Hub Proxy                                *
 	 ***************************************************************************/
+	// TODO: remove proxy for gas ?
 	function createDapp(
 		string  _dappName,
 		string  _dappParams)

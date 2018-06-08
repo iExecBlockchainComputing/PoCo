@@ -35,10 +35,10 @@ contract Marketplace is Escrow, IexecHubAccessor
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
 	                      bytes32 userHash);
-	event DappOrderClosed(bytes32 dappHash);
-	event DataOrderClosed(bytes32 dataHash);
-	event PoolOrderClosed(bytes32 poolHash);
-	event UserOrderClosed(bytes32 userHash);
+	event ClosedDappOrder(bytes32 dappHash);
+	event ClosedDataOrder(bytes32 dataHash);
+	event ClosedPoolOrder(bytes32 poolHash);
+	event ClosedUserOrder(bytes32 userHash);
 
 	/***************************************************************************
 	 *                               Constructor                               *
@@ -151,7 +151,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                           Marketplace methods                           *
 	 ***************************************************************************/
-
 	function matchOrders(
 		Iexec0xLib.DappOrder _dapporder,
 		Iexec0xLib.DataOrder _dataorder,
@@ -294,7 +293,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 		 */
 		m_consumed[dapporderHash] = _dapporder.volume;
 
-		emit DappOrderClosed(dapporderHash);
+		emit ClosedDappOrder(dapporderHash);
 		return true;
 	}
 
@@ -321,7 +320,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 		 */
 		m_consumed[dataorderHash] = _dataorder.volume;
 
-		emit DataOrderClosed(dataorderHash);
+		emit ClosedDataOrder(dataorderHash);
 		return true;
 	}
 
@@ -348,7 +347,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 		 */
 		m_consumed[poolorderHash] = _poolorder.volume;
 
-		emit PoolOrderClosed(poolorderHash);
+		emit ClosedPoolOrder(poolorderHash);
 		return true;
 	}
 
@@ -375,7 +374,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 		 */
 		m_consumed[userorderHash] = 1;
 
-		emit UserOrderClosed(userorderHash);
+		emit ClosedUserOrder(userorderHash);
 		return true;
 	}
 
@@ -475,7 +474,5 @@ contract Marketplace is Escrow, IexecHubAccessor
 
 		return true;
 	}
-
-
 
 }

@@ -99,7 +99,7 @@ module.exports = function(deployer, network, accounts) {
 			for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
 			{
 				console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-				createCatagoriesPromises.push(aIexecHub.createCategoryLegacy(
+				createCatagoriesPromises.push(aIexecHub.createCategory(
 					categoriesConfigFileJson.categories[i].name,
 					JSON.stringify(categoriesConfigFileJson.categories[i].description),
 					categoriesConfigFileJson.categories[i].workClockTimeRef

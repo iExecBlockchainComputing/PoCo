@@ -46,20 +46,7 @@ contract CategoryManager is OwnableMutable
 	/**
 	 * Methods
 	 */
-	function createCategory(Iexec0xLib.Category _category)
-	public onlyOwner returns (uint256)
-	{
-		uint256 catid = m_categories.push(_category);
-		emit CreateCategory(
-			catid,
-			_category.name,
-			_category.description,
-			_category.workClockTimeRef
-		);
-		return catid;
-	}
-
-	function createCategoryLegacy(
+	function createCategory(
 		string  name,
 		string  description,
 		uint256 workClockTimeRef)
@@ -78,6 +65,21 @@ contract CategoryManager is OwnableMutable
 		);
 		return catid;
 	}
-
+	/**
+	 * TODO: move to struct based initialization ?
+	 *
+	function createCategory(Iexec0xLib.Category _category)
+	public onlyOwner returns (uint256)
+	{
+		uint256 catid = m_categories.push(_category);
+		emit CreateCategory(
+			catid,
+			_category.name,
+			_category.description,
+			_category.workClockTimeRef
+		);
+		return catid;
+	}
+	*/
 
 }

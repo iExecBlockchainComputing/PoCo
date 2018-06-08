@@ -529,6 +529,7 @@ contract('IexecHub', async (accounts) => {
 			UserOrder
 		).then(function(result) {
 			console.log("MatchOrder:", result);
+			// event OrdersMatched
 		});
 	});
 
