@@ -57,6 +57,8 @@ contract IexecHub is CategoryManager
 	event ConsensusReopen                 (bytes32 indexed woid);
 	event ConsensusFinalized              (bytes32 indexed woid, string stdout, string stderr, string uri);
 	event ConsensusClaimed                (bytes32 indexed woid);
+	event AccurateContribution            (bytes32 indexed woid, address indexed worker);
+	event FaultyContribution              (bytes32 indexed woid, address indexed worker);
 
 	event WorkerSubscription  (address indexed pool, address worker);
 	event WorkerUnsubscription(address indexed pool, address worker);
@@ -402,12 +404,16 @@ contract IexecHub is CategoryManager
 				require(marketplace.unlockContribution   (_woid, worker));
 				require(marketplace.rewardForContribution(_woid, worker, workerReward));
 				m_workerScores[worker] = m_workerScores[worker].add(1);
+
+				emit AccurateContribution(_woid, worker);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				require(marketplace.seizeContribution(_woid, worker));
 				m_workerScores[worker] = m_workerScores[worker].sub(SCORE_UNITARY_SLASH);
+
+				emit FaultyContribution(_woid, worker);
 			}
 		}
 		// totalReward now contains the scheduler share
