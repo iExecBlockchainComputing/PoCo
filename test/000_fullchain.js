@@ -145,7 +145,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.createDapp("R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateDapp({}));
+		// events = await Extensions.getEventsPromise(IexecHubInstance.CreateDapp({}));
 		events = extractEvents(txMined, IexecHubInstance.address, "CreateDapp");
 		assert.strictEqual(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
 		assert.strictEqual(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
@@ -167,7 +167,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.createData("Pi", "3.1415926535", { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await OxTools.getEventsPromise(IexecHubInstance.CreateData({}));
+		// events = await Extensions.getEventsPromise(IexecHubInstance.CreateData({}));
 		events = extractEvents(txMined, IexecHubInstance.address, "CreateData");
 		assert.strictEqual(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
 		assert.strictEqual(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
@@ -195,7 +195,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await OxTools.getEventsPromise(IexecHubInstance.CreatePool({}));
+		// events = await Extensions.getEventsPromise(IexecHubInstance.CreatePool({}));
 		events = extractEvents(txMined, IexecHubInstance.address, "CreatePool");
 		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
 		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
@@ -222,7 +222,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await OxTools.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
+		// events = await Extensions.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
 		events = extractEvents(txMined, PoolInstance.address, "PoolPolicyUpdate");
 		assert.strictEqual(events[0].args.oldWorkerStakeRatioPolicy.toNumber(),         30,                   "Erroneous oldWorkerStakeRatioPolicy"        );
 		assert.strictEqual(events[0].args.newWorkerStakeRatioPolicy.toNumber(),         35,                   "Erroneous newWorkerStakeRatioPolicy"        );
