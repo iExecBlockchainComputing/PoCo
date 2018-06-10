@@ -49,16 +49,16 @@ contract IexecHub is CategoryManager
 	event CreateData(address indexed dataOwner, address indexed data, string dataName, string dataParams);
 	event CreatePool(address indexed poolOwner, address indexed pool, string poolDescription);
 
-	event ConsensusInitialize             (bytes32 indexed woid, address indexed pool);
-	event ConsensusAllowWorkerToContribute(bytes32 indexed woid, address indexed worker);
-	event ConsensusContribute             (bytes32 indexed woid, address indexed worker, bytes32 resultHash);
-	event ConsensusRevealConsensus        (bytes32 indexed woid, bytes32 consensus);
-	event ConsensusReveal                 (bytes32 indexed woid, address indexed worker, bytes32 result);
-	event ConsensusReopen                 (bytes32 indexed woid);
-	event ConsensusFinalized              (bytes32 indexed woid, string stdout, string stderr, string uri);
-	event ConsensusClaimed                (bytes32 indexed woid);
-	event AccurateContribution            (bytes32 indexed woid, address indexed worker);
-	event FaultyContribution              (bytes32 indexed woid, address indexed worker);
+	event ConsensusInitialize       (bytes32 indexed woid, address indexed pool);
+	event ConsensusAllowContribution(bytes32 indexed woid, address indexed worker);
+	event ConsensusContribute       (bytes32 indexed woid, address indexed worker, bytes32 resultHash);
+	event ConsensusRevealConsensus  (bytes32 indexed woid, bytes32 consensus);
+	event ConsensusReveal           (bytes32 indexed woid, address indexed worker, bytes32 result);
+	event ConsensusReopen           (bytes32 indexed woid);
+	event ConsensusFinalized        (bytes32 indexed woid, string stdout, string stderr, string uri);
+	event ConsensusClaimed          (bytes32 indexed woid);
+	event AccurateContribution      (bytes32 indexed woid, address indexed worker);
+	event FaultyContribution        (bytes32 indexed woid, address indexed worker);
 
 	event WorkerSubscription  (address indexed pool, address worker);
 	event WorkerUnsubscription(address indexed pool, address worker);
@@ -174,7 +174,7 @@ contract IexecHub is CategoryManager
 		contribution.status           = Iexec0xLib.ContributionStatusEnum.AUTHORIZED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 
-		emit ConsensusAllowWorkerToContribute(_woid, _worker);
+		emit ConsensusAllowContribution(_woid, _worker);
 	}
 
 	function allowWorkersToContribute(

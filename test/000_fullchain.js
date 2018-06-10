@@ -12,6 +12,9 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
 const OxTools   = require('../utils/OxTools');
 
+
+
+
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
 // const fs              = require("fs-extra");
@@ -300,22 +303,21 @@ contract('IexecHub', async (accounts) => {
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
 		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
 
-		txsMined = await Promise.all([
-			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 }),
-			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 }),
-			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txsMined[0], IexecHubInstance.address, "WorkerSubscription");
+		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
 		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.strictEqual(events[0].args.worker, poolWorker1,          "check worker");
-		events = extractEvents(txsMined[1], IexecHubInstance.address, "WorkerSubscription");
+
+		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
 		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.strictEqual(events[0].args.worker, poolWorker2,          "check worker");
-		events = extractEvents(txsMined[2], IexecHubInstance.address, "WorkerSubscription");
+
+		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
 		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
 
