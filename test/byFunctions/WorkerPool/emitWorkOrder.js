@@ -295,11 +295,11 @@ contract('IexecHub', function(accounts) {
       from: iExecCloudUser,
       gas:constants.AMOUNT_GAS_PROVIDED
     });
-    assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 30, "check getCategoryWorkClockTimeRef for cat 1 =30 sec");
+    assert.strictEqual(getCategoryWorkClockTimeRefCall.toNumber(), 300, "check getCategoryWorkClockTimeRef for cat 1 =300 sec");
 
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+300, "consensusTimeout =  blocktime + 30 *10");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), timestamp+3000, "consensusTimeout =  blocktime + 300 *10");
     //console.log(timestamp+600);
-    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimeout.toNumber(), "consensusTimeout =  blocktime + 30 *5");
+    assert.strictEqual(timestamp+(getCategoryWorkClockTimeRefCall.toNumber()*10), consensusTimeout.toNumber(), "consensusTimeout =  blocktime + 300 *5");
 
     assert.strictEqual(winnerCount.toNumber(), 0, "check no winnerCount");
 

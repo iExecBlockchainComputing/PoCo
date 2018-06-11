@@ -10,6 +10,11 @@ Features:
 Bugfixes:
 
 
+### v1.0.14 (not released)
+
+Features:
+ * [#42](https://github.com/iExecBlockchainComputing/PoCo/issues/42) ajust timeout categories
+
 ### [v1.0.13](https://github.com/iExecBlockchainComputing/PoCo/releases/tag/v1.0.13)
 
 Features:

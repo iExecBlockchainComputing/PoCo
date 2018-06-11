@@ -492,7 +492,7 @@ or
 
 
 ```
-coverage : 20/05/2018
+coverage : 11/06/2018
 
 184 passing (10m)
 1 pending
