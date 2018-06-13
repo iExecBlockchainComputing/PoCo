@@ -1,0 +1,879 @@
+{
+  "contractName": "MarketplaceAccessor",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "name": "_marketplaceAddress",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x60606040523415600e57600080fd5b60405160208060a383398101604052808051915050600160a060020a0381161515603757600080fd5b60008054600160a060020a03909216600160a060020a0319928316811790915560018054909216179055603580606e6000396000f3006060604052600080fd00a165627a7a7230582028a3ca0ac1aea21a0b958f8f751e114a59010a5ecd5d2cf0e4151510b0ca61480029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a7230582028a3ca0ac1aea21a0b958f8f751e114a59010a5ecd5d2cf0e4151510b0ca61480029",
+  "sourceMap": "64:467:11:-;;;299:230;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;;;377:33:11;;;;369:42;;;;;;415:18;:42;;-1:-1:-1;;;;;415:42:11;;;-1:-1:-1;;;;;;415:42:11;;;;;;;;;461:64;;;;;;;;64:467;;;;;;",
+  "deployedSourceMap": "64:467:11:-;;;;;",
+  "source": "pragma solidity ^0.4.21;\n\nimport './MarketplaceInterface.sol';\n\ncontract MarketplaceAccessor\n{\n\taddress              internal marketplaceAddress;\n\tMarketplaceInterface internal marketplaceInterface;\n/* not used\n\tmodifier onlyMarketplace()\n\t{\n\t\trequire(msg.sender == marketplaceAddress);\n\t\t_;\n\t}*/\n\n\tfunction MarketplaceAccessor(address _marketplaceAddress) public\n\t{\n\t\trequire(_marketplaceAddress != address(0));\n\t\tmarketplaceAddress   = _marketplaceAddress;\n\t\tmarketplaceInterface = MarketplaceInterface(_marketplaceAddress);\n\t}\n}\n",
+  "sourcePath": "/Users/fbranci/iexecdev/PoCo/contracts/MarketplaceAccessor.sol",
+  "ast": {
+    "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/MarketplaceAccessor.sol",
+    "exportedSymbols": {
+      "MarketplaceAccessor": [
+        3545
+      ]
+    },
+    "id": 3546,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3515,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:11"
+      },
+      {
+        "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/MarketplaceInterface.sol",
+        "file": "./MarketplaceInterface.sol",
+        "id": 3516,
+        "nodeType": "ImportDirective",
+        "scope": 3546,
+        "sourceUnit": 3621,
+        "src": "26:36:11",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 3545,
+        "linearizedBaseContracts": [
+          3545
+        ],
+        "name": "MarketplaceAccessor",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 3518,
+            "name": "marketplaceAddress",
+            "nodeType": "VariableDeclaration",
+            "scope": 3545,
+            "src": "96:48:11",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 3517,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "96:7:11",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 3520,
+            "name": "marketplaceInterface",
+            "nodeType": "VariableDeclaration",
+            "scope": 3545,
+            "src": "147:50:11",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+              "typeString": "contract MarketplaceInterface"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 3519,
+              "name": "MarketplaceInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 3620,
+              "src": "147:20:11",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                "typeString": "contract MarketplaceInterface"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 3543,
+              "nodeType": "Block",
+              "src": "365:164:11",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 3530,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "id": 3526,
+                          "name": "_marketplaceAddress",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 3522,
+                          "src": "377:19:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "!=",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "30",
+                              "id": 3528,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "number",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "408:1:11",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              },
+                              "value": "0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              }
+                            ],
+                            "id": 3527,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "lValueRequested": false,
+                            "nodeType": "ElementaryTypeNameExpression",
+                            "src": "400:7:11",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_address_$",
+                              "typeString": "type(address)"
+                            },
+                            "typeName": "address"
+                          },
+                          "id": 3529,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "typeConversion",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "400:10:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "377:33:11",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 3525,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7011,
+                      "src": "369:7:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 3531,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "369:42:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 3532,
+                  "nodeType": "ExpressionStatement",
+                  "src": "369:42:11"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 3535,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 3533,
+                      "name": "marketplaceAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3518,
+                      "src": "415:18:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 3534,
+                      "name": "_marketplaceAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3522,
+                      "src": "438:19:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "415:42:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 3536,
+                  "nodeType": "ExpressionStatement",
+                  "src": "415:42:11"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 3541,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 3537,
+                      "name": "marketplaceInterface",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3520,
+                      "src": "461:20:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                        "typeString": "contract MarketplaceInterface"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 3539,
+                          "name": "_marketplaceAddress",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 3522,
+                          "src": "505:19:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 3538,
+                        "name": "MarketplaceInterface",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 3620,
+                        "src": "484:20:11",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3620_$",
+                          "typeString": "type(contract MarketplaceInterface)"
+                        }
+                      },
+                      "id": 3540,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "484:41:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                        "typeString": "contract MarketplaceInterface"
+                      }
+                    },
+                    "src": "461:64:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                      "typeString": "contract MarketplaceInterface"
+                    }
+                  },
+                  "id": 3542,
+                  "nodeType": "ExpressionStatement",
+                  "src": "461:64:11"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 3544,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "MarketplaceAccessor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3523,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3522,
+                  "name": "_marketplaceAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3544,
+                  "src": "328:27:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3521,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "328:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "327:29:11"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 3524,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "365:0:11"
+            },
+            "scope": 3545,
+            "src": "299:230:11",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 3546,
+        "src": "64:467:11"
+      }
+    ],
+    "src": "0:532:11"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/MarketplaceAccessor.sol",
+    "exportedSymbols": {
+      "MarketplaceAccessor": [
+        3545
+      ]
+    },
+    "id": 3546,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3515,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".21"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:11"
+      },
+      {
+        "absolutePath": "/Users/fbranci/iexecdev/PoCo/contracts/MarketplaceInterface.sol",
+        "file": "./MarketplaceInterface.sol",
+        "id": 3516,
+        "nodeType": "ImportDirective",
+        "scope": 3546,
+        "sourceUnit": 3621,
+        "src": "26:36:11",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 3545,
+        "linearizedBaseContracts": [
+          3545
+        ],
+        "name": "MarketplaceAccessor",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 3518,
+            "name": "marketplaceAddress",
+            "nodeType": "VariableDeclaration",
+            "scope": 3545,
+            "src": "96:48:11",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 3517,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "96:7:11",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 3520,
+            "name": "marketplaceInterface",
+            "nodeType": "VariableDeclaration",
+            "scope": 3545,
+            "src": "147:50:11",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+              "typeString": "contract MarketplaceInterface"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 3519,
+              "name": "MarketplaceInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 3620,
+              "src": "147:20:11",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                "typeString": "contract MarketplaceInterface"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 3543,
+              "nodeType": "Block",
+              "src": "365:164:11",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 3530,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "id": 3526,
+                          "name": "_marketplaceAddress",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 3522,
+                          "src": "377:19:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "!=",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "30",
+                              "id": 3528,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "number",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "408:1:11",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              },
+                              "value": "0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              }
+                            ],
+                            "id": 3527,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "lValueRequested": false,
+                            "nodeType": "ElementaryTypeNameExpression",
+                            "src": "400:7:11",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_address_$",
+                              "typeString": "type(address)"
+                            },
+                            "typeName": "address"
+                          },
+                          "id": 3529,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "typeConversion",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "400:10:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "377:33:11",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 3525,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7011,
+                      "src": "369:7:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 3531,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "369:42:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 3532,
+                  "nodeType": "ExpressionStatement",
+                  "src": "369:42:11"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 3535,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 3533,
+                      "name": "marketplaceAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3518,
+                      "src": "415:18:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 3534,
+                      "name": "_marketplaceAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3522,
+                      "src": "438:19:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "415:42:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 3536,
+                  "nodeType": "ExpressionStatement",
+                  "src": "415:42:11"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 3541,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 3537,
+                      "name": "marketplaceInterface",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3520,
+                      "src": "461:20:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                        "typeString": "contract MarketplaceInterface"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 3539,
+                          "name": "_marketplaceAddress",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 3522,
+                          "src": "505:19:11",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 3538,
+                        "name": "MarketplaceInterface",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 3620,
+                        "src": "484:20:11",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_MarketplaceInterface_$3620_$",
+                          "typeString": "type(contract MarketplaceInterface)"
+                        }
+                      },
+                      "id": 3540,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "484:41:11",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                        "typeString": "contract MarketplaceInterface"
+                      }
+                    },
+                    "src": "461:64:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_MarketplaceInterface_$3620",
+                      "typeString": "contract MarketplaceInterface"
+                    }
+                  },
+                  "id": 3542,
+                  "nodeType": "ExpressionStatement",
+                  "src": "461:64:11"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 3544,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "MarketplaceAccessor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3523,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3522,
+                  "name": "_marketplaceAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3544,
+                  "src": "328:27:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3521,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "328:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "327:29:11"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 3524,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "365:0:11"
+            },
+            "scope": 3545,
+            "src": "299:230:11",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 3546,
+        "src": "64:467:11"
+      }
+    ],
+    "src": "0:532:11"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-06-12T14:56:21.149Z"
+}
