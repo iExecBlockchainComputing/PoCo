@@ -61,10 +61,10 @@ contract Marketplace is Escrow, IexecHubAccessor
 		return m_deals[_id];
 	}
 
-	function viewConsumed(bytes32 _hash)
+	function viewConsumed(bytes32 _id)
 	public view returns (uint256)
 	{
-		return m_consumed[_hash];
+		return m_consumed[_id];
 	}
 
 	/***************************************************************************

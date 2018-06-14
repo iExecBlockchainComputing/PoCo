@@ -520,10 +520,32 @@ contract('IexecHub', async (accounts) => {
 
 	});
 
+
+	/***************************************************************************
+	 *                      TEST: check balances - before                      *
+	 ***************************************************************************/
+	it("[RUN] check Balances - Before", async () => {
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+	});
+
 	/***************************************************************************
 	 *                           TEST: Market making                           *
 	 ***************************************************************************/
-	it("Make market", async () => {
+	it("[RUN] matchOrders", async () => {
 		MarketplaceInstanceEther.matchOrders(
 			DappOrder,
 			DataOrder,
@@ -534,6 +556,16 @@ contract('IexecHub', async (accounts) => {
 			// event OrdersMatched
 		});
 	});
+
+	//it("viewDeal", async () => {});
+	//it("viewWorkorder", async () => {});
+	it("[RUN] allowWorkerToContribute", async () => {});
+	it("[RUN] contribute", async () => {});
+	//it("viewContribution", async () => {});
+	it("[RUN] revealConsensus", async () => {});
+	it("[RUN] reveal", async () => {});
+	it("[RUN] finalizeWork", async () => {});
+	it("[RUN] check Balances - After", async () => {});
 
 
 
