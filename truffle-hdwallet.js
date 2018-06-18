@@ -196,7 +196,82 @@ module.exports = {
         network_id: "1",
         gas: 4400000,
         gasPrice: 22000000000,
-    },*/
+    },
+    Using network 'mainnet'.
+
+    Running migration: 1_initial_migration.js
+      Deploying Migrations...
+      ... 0xa961d67e562c2252d195c1f2d99e37a68768f173fccbe65e36217acd04d1a8f8
+      Migrations: 0x016dffb35cf40f8723417e5aa2c0bd7adb8a9a62
+    Saving successful migration to network...
+      ... 0x0655be0e98854e2029fcbdbb2af6b40f20a1511537216f142a65d64c0463893a
+    Saving artifacts...
+    Running migration: 2_deploy_contracts.js
+    sleeping...
+      Deploying WorkerPoolHub...
+      ... 0xd7c68a10d9c0666b2b10130808138c7fa113287b3b302c6af656753838bae29f
+      WorkerPoolHub: 0x897dc0cca9bb43f7601e477e721ef4dea4453f07
+    WorkerPoolHub deployed at address: 0x897dc0cca9bb43f7601e477e721ef4dea4453f07
+    sleeping...
+      Deploying AppHub...
+      ... 0xfea5e3122cea6830157eb8c4b28319e62d65a64c53c4546160d31aadfb5d6ff6
+      AppHub: 0xb4f226150bdc6cf901c15e4ed1caeda7ea5c512c
+    AppHub deployed at address: 0xb4f226150bdc6cf901c15e4ed1caeda7ea5c512c
+    sleeping...
+      Deploying DatasetHub...
+      ... 0x32e88b373ae05c173eb3d743879f98acbbccde8192a7056ce4a44e7a03cc2896
+      DatasetHub: 0xd0bb45fd58e357c9b3a5e7a36a5c6b6b5d1cf9b2
+    DatasetHub deployed at address: 0xd0bb45fd58e357c9b3a5e7a36a5c6b6b5d1cf9b2
+    sleeping...
+      Deploying IexecHub...
+      ... 0x931349936f3b358dc84c873e30d76258cf67ac64c953d11335211234b5ceee43
+      IexecHub: 0x0d5ef019ca4c5cc413ee892ced89d7107c5f424d
+    IexecHub deployed at address: 0x0d5ef019ca4c5cc413ee892ced89d7107c5f424d
+    sleeping...
+      ... 0xd4e5b2df39b43534823c9ab01f651dc8ffdd91bce4918405954972d8a64ba86e
+    setImmutableOwnership of WorkerPoolHub to IexecHub
+    sleeping...
+      ... 0xe895f549a93b68c9d8ff978b3312b67212d87470a68968b7c80563fdaa656508
+    setImmutableOwnership of AppHub to IexecHub
+    sleeping...
+      ... 0x60b03139251d363495ba2601eda1f2d1ec71ed2f86b5db57ea925159ec4ededb
+    setImmutableOwnership of DatasetHub to IexecHub
+    sleeping...
+      Deploying Marketplace...
+      ... 0xc0c911f0899002e7216f2c99730813e30c4764988b3cb8fcbab0e625afec5f56
+      Marketplace: 0xfb7703c74f14930f8871c34056d5db6693e5a00b
+    Marketplace deployed at address: 0xfb7703c74f14930f8871c34056d5db6693e5a00b
+    sleeping...
+      ... 0xb16e055845689dd5163487bc6cc0fa3763887c1351bc6fc19914ceb6e5a02a1d
+    attach Contracts to IexecHub done
+    sleeping...
+      ... 0xd14a326d01fabda89e64630f6da88ddb9048f1915ac31da905e64792bff18919
+    setCategoriesCreator to 0xfDd76d2aFe65a4aB85943b6E0e1c22eDf4e8B548
+    create category : 1
+    sleeping...
+      ... 0xc384a4ec42139498873d7a241aa4f96d97a77d477bc5438f9d9216c8580a7cf9
+    create category : 2
+    sleeping...
+      ... 0xef1f2cec252e6857a4606e2b1d6c28cf2f5d77bd54c1810664bda3f04d22933b
+    create category : 3
+    sleeping...
+      ... 0xad749e6a5ca9e80e01c90b5effbfd1b2f745e8e820ff68c43b0347b03dbc9395
+    create category : 4
+    sleeping...
+      ... 0x3bf7642f5d44ba762d3090d93d0d5ca62a9a41e3c87d399011b4a04dd499e4e6
+    create category : 5
+    sleeping...
+      ... 0x3f644cf27044f8ac76b1d3bbe469a5db98161bbffacdf58d36858c247137f424
+    m_categoriesCount is now: 5
+    Saving successful migration to network...
+      ... 0xa233c95039e3638a3a9933b4ec87c2e16cc3e4c5cb98a6155571180ec4a7d67b
+    Saving artifacts...
+
+
+
+
+
+    */
   },
     solc: {
         optimizer: {
