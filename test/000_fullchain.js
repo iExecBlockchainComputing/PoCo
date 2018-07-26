@@ -12,9 +12,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
 const OxTools   = require('../utils/OxTools');
 
-
-
-
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
 // const fs              = require("fs-extra");

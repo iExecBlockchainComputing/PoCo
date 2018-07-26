@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import "../tools/Ownable.sol";
 import "../tools/SafeMathOZ.sol";
 
-contract HubBase is OwnableMutable // is Owned by IexecHub
+contract RegistryBase is OwnableMutable // is Owned by IexecHub
 {
 
 	using SafeMathOZ for uint256;

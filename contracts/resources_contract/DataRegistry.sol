@@ -2,9 +2,9 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./Data.sol";
-import "./HubBase.sol";
+import "./RegistryBase.sol";
 
-contract DataHub is HubBase
+contract DataRegistry is RegistryBase
 {
 	/**
 	 * Constructor

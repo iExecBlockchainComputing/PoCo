@@ -22,6 +22,13 @@ module.exports = {
       gas: 0xfffffffffff,   // <-- Use this high gas value
       gasPrice: 0x01        // <-- Use this low gas price
     },
+		ropsten:  {
+			network_id: 3,
+			host: "localhost",
+			port:  8545,
+      gas: 4710000,
+      gasPrice: 22000000000,
+		},
   },
     solc: {
         optimizer: {

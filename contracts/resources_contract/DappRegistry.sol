@@ -2,9 +2,9 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import './Dapp.sol';
-import "./HubBase.sol";
+import "./RegistryBase.sol";
 
-contract DappHub is HubBase
+contract DappRegistry is RegistryBase
 {
 	/**
 	 * Constructor

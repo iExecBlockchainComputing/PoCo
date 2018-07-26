@@ -7,9 +7,9 @@ import "./tools/SafeMathOZ.sol";
 import "./CategoryManager.sol";
 
 import "./Marketplace.sol";
-import "./resources_contract/DappHub.sol";
-import "./resources_contract/DataHub.sol";
-import "./resources_contract/PoolHub.sol";
+import "./resources_contract/DappRegistry.sol";
+import "./resources_contract/DataRegistry.sol";
+import "./resources_contract/PoolRegistry.sol";
 
 contract IexecHub is CategoryManager
 {
@@ -25,10 +25,10 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                             Other contracts                             *
 	 ***************************************************************************/
-	Marketplace marketplace;
-	DappHub     dapphub;
-	DataHub     datahub;
-	PoolHub     poolhub;
+	Marketplace  marketplace;
+	DappRegistry dappregistry;
+	DataRegistry dataregistry;
+	PoolRegistry poolregistry;
 
 	/***************************************************************************
 	 *                               Consensuses                               *
@@ -89,16 +89,16 @@ contract IexecHub is CategoryManager
 
 	function attachContracts(
 		address _marketplaceAddress,
-	  address _dappHubAddress,
-	  address _dataHubAddress,
-	  address _poolHubAddress)
+		address _dappRegistryAddress,
+		address _dataRegistryAddress,
+		address _poolRegistryAddress)
 	public onlyOwner
 	{
 		require(address(marketplace) == address(0));
-		marketplace = Marketplace(_marketplaceAddress);
-		dapphub     = DappHub    (_dappHubAddress    );
-		datahub     = DataHub    (_dataHubAddress    );
-		poolhub     = PoolHub    (_poolHubAddress    );
+		marketplace  = Marketplace (_marketplaceAddress );
+		dappregistry = DappRegistry(_dappRegistryAddress);
+		dataregistry = DataRegistry(_dataRegistryAddress);
+		poolregistry = PoolRegistry(_poolRegistryAddress);
 	}
 
 	/***************************************************************************
@@ -131,9 +131,9 @@ contract IexecHub is CategoryManager
 	function checkResources(address daap, address data, address pool)
 	public view returns (bool)
 	{
-		return dapphub.isRegistered(daap)
-		    && datahub.isRegistered(data)
-		    && poolhub.isRegistered(pool);
+		return dappregistry.isRegistered(daap)
+		    && dataregistry.isRegistered(data)
+		    && poolregistry.isRegistered(pool);
 	}
 
 	/***************************************************************************
@@ -426,7 +426,7 @@ contract IexecHub is CategoryManager
 	function subscribe(Pool _pool)
 	public returns (bool)
 	{
-		require(poolhub.isRegistered(_pool));
+		require(poolregistry.isRegistered(_pool));
 
 		require(m_workerAffectations[msg.sender] == address(0));
 		require(marketplace.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
@@ -474,7 +474,7 @@ contract IexecHub is CategoryManager
 		string  _dappParams)
 	public returns (Dapp)
 	{
-		Dapp newDapp = dapphub.createDapp(msg.sender, _dappName, _dappParams);
+		Dapp newDapp = dappregistry.createDapp(msg.sender, _dappName, _dappParams);
 		emit CreateDapp(msg.sender, newDapp, _dappName, _dappParams);
 		return newDapp;
 	}
@@ -484,7 +484,7 @@ contract IexecHub is CategoryManager
 		string  _dataParams)
 	public returns (Data)
 	{
-		Data newData = datahub.createData(msg.sender, _dataName, _dataParams);
+		Data newData = dataregistry.createData(msg.sender, _dataName, _dataParams);
 		emit CreateData(msg.sender, newData, _dataName, _dataParams);
 		return newData;
 	}
@@ -496,7 +496,7 @@ contract IexecHub is CategoryManager
 		uint256 _subscriptionMinimumScorePolicy)
 	public returns (Pool)
 	{
-		Pool newPool = poolhub.createPool(
+		Pool newPool = poolregistry.createPool(
 			msg.sender,
 			_poolDescription,
 			_subscriptionLockStakePolicy,

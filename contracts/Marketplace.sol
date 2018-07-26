@@ -7,9 +7,9 @@ import "./tools/SafeMathOZ.sol";
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
 
-import "./resources_contract/DappHub.sol";
-import "./resources_contract/DataHub.sol";
-import "./resources_contract/PoolHub.sol";
+import "./resources_contract/DappRegistry.sol";
+import "./resources_contract/DataRegistry.sol";
+import "./resources_contract/PoolRegistry.sol";
 
 contract Marketplace is Escrow, IexecHubAccessor
 {
