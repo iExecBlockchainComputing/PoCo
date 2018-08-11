@@ -154,12 +154,84 @@ contract IexecHub is CategoryManager
 		emit ConsensusInitialize(_woid, marketplace.viewDeal(_woid).pool.owner);
 	}
 
+	// NEW → contribute that skips the allowWorkerToContribute step with scheduler signature
+	function signedContribute(
+		bytes32              _woid,
+		bytes32              _resultHash,
+		bytes32              _resultSign,
+		address              _enclaveChallenge,
+		Iexec0xLib.signature _enclaveSign,
+		Iexec0xLib.signature _poolSign)
+	public
+	{
+		/**
+		 * Check that the worker + woid + enclave combo is
+		 *  authorized to contribute (scheduler signature)
+		 */
+		require(marketplace.viewDeal(_woid).pool.pointer == ecrecover(
+			keccak256(
+				"\x19Ethereum Signed Message:\n32",
+				keccak256(msg.sender, _woid, _enclaveChallenge)
+			),
+			_poolSign.v,
+			_poolSign.r,
+			_poolSign.s)
+		);
+
+		// If first byte of tag is active then an enclave must be specified
+		require(_enclaveChallenge != address(0) || marketplace.viewDeal(_woid).tag & 0x1 == 0);
+
+		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
+		require(workorder.consensusDeadline >  now                                  );
+
+		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
+		require(contribution.status == Iexec0xLib.ContributionStatusEnum.UNSET);
+
+		// worker must be subscribed to the pool
+		// TODO: required ?
+		require(m_workerAffectations[msg.sender] == marketplace.viewDeal(_woid).pool.pointer);
+
+		require(_resultHash != 0x0);
+		require(_resultSign != 0x0);
+		// Check enclave signature
+		if (_enclaveChallenge != address(0))
+		{
+			require(_enclaveChallenge == ecrecover(
+				keccak256(
+					"\x19Ethereum Signed Message:\n64",
+					_resultHash,
+					_resultSign
+				),
+				_enclaveSign.v,
+				_enclaveSign.r,
+				_enclaveSign.s)
+			);
+		}
+
+		// update contribution entry
+		contribution.status           = Iexec0xLib.ContributionStatusEnum.CONTRIBUTED;
+		contribution.enclaveChallenge = _enclaveChallenge;
+		contribution.resultHash       = _resultHash;
+		contribution.resultSign       = _resultSign;
+		contribution.score            = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
+		contribution.weight           = 1 + contribution.score.log();
+		workorder.contributors.push(msg.sender);
+
+		require(marketplace.lockContribution(_woid, msg.sender));
+
+		emit ConsensusContribute(_woid, msg.sender, _resultHash);
+	}
+
 	function allowWorkerToContribute(
 		bytes32 _woid,
 		address _worker,
 		address _enclaveChallenge)
 	public onlyScheduler(_woid)
 	{
+		// If first byte of tag is active then an enclave must be specified
+		require(_enclaveChallenge != address(0) || marketplace.viewDeal(_woid).tag & 0x1 == 0);
+
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
 		require(workorder.consensusDeadline >  now                                  );
