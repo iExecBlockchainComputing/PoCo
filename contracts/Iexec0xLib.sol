@@ -60,6 +60,7 @@ library Iexec0xLib
 		// settings
 		uint256   category;
 		uint256   trust;
+		uint256   tag;
 		// extra
 		bytes32   salt;
 		signature sign;
@@ -67,16 +68,20 @@ library Iexec0xLib
 	struct UserOrder
 	{
 		// market
+		/* address[3] ressources; */
+		/* uint256[3] maxprices; */
 		address   dapp;
-		uint256   dapppricemax;
+		uint256   dappmaxprice;
 		address   data;
-		uint256   datapricemax;
+		uint256   datamaxprice;
 		address   pool;
-		uint256   poolpricemax;
+		uint256   poolmaxprice;
 		address   requester;
 		// settings
 		uint256   category;
 		uint256   trust;
+		uint256   tag;
+		/* uint256   batchsize; */
 		address   beneficiary;
 		address   callback;
 		string    params;
@@ -102,6 +107,10 @@ library Iexec0xLib
 		// execution settings
 		uint256 category;
 		uint256 trust;
+		uint256 tag;
+		// bag of task
+		/* uint256 batchsize; */
+		/* uint256 batchoffset; */
 		// execution details
 		address requester;
 		address beneficiary;

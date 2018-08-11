@@ -386,18 +386,30 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dappProvider,
-			(obj) => OxTools.getDappOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.dappPartialHash(obj), obj.salt)
 		);
 
 		MarketplaceInstanceEther.getDappOrderHash(
 			DappOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, OxTools.getDappOrderHash(Marketplace.address, DappOrder), "Error with DappOrder hash computation");
+			assert.strictEqual(
+				hash,
+				OxTools.getFullHash(
+					Marketplace.address,
+					OxTools.dappPartialHash(DappOrder),
+					DappOrder.salt
+				),
+				"Error with DappOrder hash computation"
+			);
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			dappProvider,
-			OxTools.getDappOrderHash(Marketplace.address, DappOrder),
+			OxTools.getFullHash(
+				Marketplace.address,
+				OxTools.dappPartialHash(DappOrder),
+				DappOrder.salt
+			),
 			DappOrder.sign
 		).then(function(result) {
 			assert.strictEqual(result, true, "Error with the validation of the DappOrder signature");
@@ -419,18 +431,30 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dataProvider,
-			(obj) => OxTools.getDataOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.dataPartialHash(obj), obj.salt)
 		);
 
 		MarketplaceInstanceEther.getDataOrderHash(
 			DataOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, OxTools.getDataOrderHash(Marketplace.address, DataOrder), "Error with DataOrder hash computation");
+			assert.strictEqual(
+				hash,
+				OxTools.getFullHash(
+					Marketplace.address,
+					OxTools.dataPartialHash(DataOrder),
+					DataOrder.salt
+				),
+				"Error with DataOrder hash computation"
+			);
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			dataProvider,
-			OxTools.getDataOrderHash(Marketplace.address, DataOrder),
+			OxTools.getFullHash(
+				Marketplace.address,
+				OxTools.dataPartialHash(DataOrder),
+				DataOrder.salt
+			),
 			DataOrder.sign
 		).then(function(result) {
 			assert.strictEqual(result, true, "Error with the validation of the DataOrder signature");
@@ -451,22 +475,35 @@ contract('IexecHub', async (accounts) => {
 				// settings
 				category:     4,
 				trust:        1000,
+				tag:          0,
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
 			poolScheduler,
-			(obj) => OxTools.getPoolOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.poolPartialHash(obj), obj.salt)
 		);
 
 		MarketplaceInstanceEther.getPoolOrderHash(
 			PoolOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, OxTools.getPoolOrderHash(Marketplace.address, PoolOrder), "Error with PoolOrder hash computation");
+			assert.strictEqual(
+				hash,
+				OxTools.getFullHash(
+					Marketplace.address,
+					OxTools.poolPartialHash(PoolOrder),
+					PoolOrder.salt
+				),
+				"Error with PoolOrder hash computation"
+			);
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			poolScheduler,
-			OxTools.getPoolOrderHash(Marketplace.address, PoolOrder),
+			OxTools.getFullHash(
+				Marketplace.address,
+				OxTools.poolPartialHash(PoolOrder),
+				PoolOrder.salt
+			),
 			PoolOrder.sign
 		).then(function(result) {
 			assert.strictEqual(result, true, "Error with the validation of the PoolOrder signature");
@@ -482,14 +519,15 @@ contract('IexecHub', async (accounts) => {
 			{
 				// market
 				dapp:         DappInstance.address,
-				dapppricemax: 3,
+				dappmaxprice: 3,
 				data:         DataInstance.address,
-				datapricemax: 1,
+				datamaxprice: 1,
 				pool:         PoolInstance.address,
-				poolpricemax: 25,
+				poolmaxprice: 25,
 				// settings
 				category:     4,
 				trust:        1000,
+				tag:          0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     '0x0000000000000000000000000000000000000000',
@@ -498,18 +536,30 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			user,
-			(obj) => OxTools.getUserOrderHash(Marketplace.address, obj)
+			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.userPartialHash(obj), obj.salt)
 		);
 
 		MarketplaceInstanceEther.getUserOrderHash(
 			UserOrder
 		).then(function (hash) {
-			assert.strictEqual(hash, OxTools.getUserOrderHash(Marketplace.address, UserOrder), "Error with UserOrder hash computation");
+			assert.strictEqual(
+				hash,
+				OxTools.getFullHash(
+					Marketplace.address,
+					OxTools.userPartialHash(UserOrder),
+					UserOrder.salt
+				),
+				"Error with UserOrder hash computation"
+			);
 		});
 
 		MarketplaceInstanceEther.isValidSignature(
 			user,
-			OxTools.getUserOrderHash(Marketplace.address, UserOrder),
+			OxTools.getFullHash(
+				Marketplace.address,
+				OxTools.userPartialHash(UserOrder),
+				UserOrder.salt
+			),
 			UserOrder.sign
 		).then(function(result) {
 			assert.strictEqual(result, true, "Error with the validation of the UserOrder signature");

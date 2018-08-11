@@ -18,15 +18,16 @@ contract Marketplace is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                Constants                                *
 	 ***************************************************************************/
-	uint256 public constant POOL_STAKE_RATIO    = 30;
-	uint256 public constant KITTY_RATIO         = 10;
-	uint256 public constant KITTY_MIN           = 1000;
+	uint256 public constant POOL_STAKE_RATIO = 30;
+	uint256 public constant KITTY_RATIO      = 10;
+	uint256 public constant KITTY_MIN        = 1000;
 
 	/***************************************************************************
 	 *                            Marketplace data                             *
 	 ***************************************************************************/
 	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
 	mapping(bytes32 => uint256        ) public m_consumed;
+	mapping(bytes32 => bool           ) public m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *
@@ -35,6 +36,8 @@ contract Marketplace is Escrow, IexecHubAccessor
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
 	                      bytes32 userHash);
+												/* uint256 batchsize, */
+												/* uint256 batchoffset, */
 	event ClosedDappOrder(bytes32 dappHash);
 	event ClosedDataOrder(bytes32 dataHash);
 	event ClosedPoolOrder(bytes32 poolHash);
@@ -74,44 +77,37 @@ contract Marketplace is Escrow, IexecHubAccessor
 		address              _signer,
 		bytes32              _hash,
 		Iexec0xLib.signature _signature)
-	public pure returns (bool)
+	public view returns (bool)
 	{
-		return _signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", _hash), _signature.v, _signature.r, _signature.s);
+		return _signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", _hash), _signature.v, _signature.r, _signature.s) || m_presigned[_hash];
 	}
 
 	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
 	public view returns (bytes32)
 	{
-		return keccak256(
-			address(this),
+		return keccak256(address(this), keccak256(
 			// market
 			_dapporder.dapp,
 			_dapporder.dappprice,
-			_dapporder.volume,
-			// extra
-			_dapporder.salt
-		);
+			_dapporder.volume
+		), _dapporder.salt);
 	}
 
 	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
-			address(this),
+		return keccak256(address(this), keccak256(
 			// market
 			_dataorder.data,
 			_dataorder.dataprice,
-			_dataorder.volume,
-			// extra
-			_dataorder.salt
-		);
+			_dataorder.volume
+		), _dataorder.salt);
 	}
 
 	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
-			address(this),
+		return keccak256(address(this), keccak256(
 			// market
 			_poolorder.pool,
 			_poolorder.poolprice,
@@ -119,33 +115,66 @@ contract Marketplace is Escrow, IexecHubAccessor
 			// settings
 			_poolorder.category,
 			_poolorder.trust,
-			// extra
-			_poolorder.salt
-		);
+			_poolorder.tag
+		), _poolorder.salt);
 	}
 
 	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
-			address(this),
+		return keccak256(address(this), keccak256(
 			// market
 			_userorder.dapp,
-			_userorder.dapppricemax,
+			_userorder.dappmaxprice,
 			_userorder.data,
-			_userorder.datapricemax,
+			_userorder.datamaxprice,
 			_userorder.pool,
-			_userorder.poolpricemax,
+			_userorder.poolmaxprice,
 			// settings
 			_userorder.category,
 			_userorder.trust,
+			_userorder.tag,
+			/* _userorder.batchsize, */
 			_userorder.requester,
 			_userorder.beneficiary,
 			_userorder.callback,
-			_userorder.params,
-			// extra
-			_userorder.salt
-		);
+			_userorder.params
+		), _userorder.salt);
+	}
+
+	/***************************************************************************
+	 *                            pre-signing tools                            *
+	 ***************************************************************************/
+	function signDappOrder(Iexec0xLib.DappOrder _dapporder)
+	public returns (bool)
+	{
+		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
+		m_presigned[getDappOrderHash(_dapporder)] = true;
+		return true;
+	}
+
+	function signDataOrder(Iexec0xLib.DataOrder _dataorder)
+	public returns (bool)
+	{
+		require(msg.sender == Data(_dataorder.data).m_owner());
+		m_presigned[getDataOrderHash(_dataorder)] = true;
+		return true;
+	}
+
+	function signPoolOrder(Iexec0xLib.PoolOrder _poolorder)
+	public returns (bool)
+	{
+		require(msg.sender == Pool(_poolorder.pool).m_owner());
+		m_presigned[getPoolOrderHash(_poolorder)] = true;
+		return true;
+	}
+
+	function signUserOrder(Iexec0xLib.UserOrder _userorder)
+	public returns (bool)
+	{
+		require(msg.sender == _userorder.requester);
+		m_presigned[getUserOrderHash(_userorder)] = true;
+		return true;
 	}
 
 	/***************************************************************************
@@ -162,13 +191,13 @@ contract Marketplace is Escrow, IexecHubAccessor
 		 * Check orders compatibility
 		 */
 		// computation environment
-		require(_userorder.category == _poolorder.category );
-		require(_userorder.trust    == _poolorder.trust    );
-
-		// user allowed enugh ressources.
-		require(_userorder.dapppricemax >= _dapporder.dappprice);
-		require(_userorder.datapricemax >= _dataorder.dataprice);
-		require(_userorder.poolpricemax >= _poolorder.poolprice);
+		require(_userorder.category     == _poolorder.category );
+		require(_userorder.trust        <= _poolorder.trust    );
+		require(_userorder.tag          == _poolorder.tag      );
+		// user allowed enough ressources.
+		require(_userorder.dappmaxprice >= _dapporder.dappprice);
+		require(_userorder.datamaxprice >= _dataorder.dataprice);
+		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
 		// pairing is valid
 		require(_userorder.dapp == _dapporder.dapp);
@@ -207,6 +236,19 @@ contract Marketplace is Escrow, IexecHubAccessor
 		/**
 		 * Check and update availability
 		 */
+		// require(m_consumed[dapporderHash] < _dapporder.volume);
+		// require(m_consumed[dataorderHash] < _dataorder.volume);
+		// require(m_consumed[poolorderHash] < _poolorder.volume);
+		// require(m_consumed[userorderHash] < _userorder.batchsize);
+		// uint256 batchoffset = m_consumed[userorderHash];
+		// uint256 batchsize   = _userorder.batchsize.sub(batchoffset);
+		// batchsize = batchsize.min(_dapporder.volume.sub(m_consumed[dapporderHash]));
+		// batchsize = batchsize.min(_dataorder.volume.sub(m_consumed[dataorderHash]));
+		// batchsize = batchsize.min(_poolorder.volume.sub(m_consumed[poolorderHash]));
+		// m_consumed[dapporderHash] = m_consumed[dapporderHash].add(batchsize);
+		// m_consumed[dataorderHash] = m_consumed[dataorderHash].add(batchsize);
+		// m_consumed[poolorderHash] = m_consumed[poolorderHash].add(batchsize);
+		// m_consumed[userorderHash] = m_consumed[userorderHash].add(batchsize);
 		require(m_consumed[dapporderHash] <  _dapporder.volume);
 		require(m_consumed[dataorderHash] <  _dataorder.volume);
 		require(m_consumed[poolorderHash] <  _poolorder.volume);
@@ -229,8 +271,11 @@ contract Marketplace is Escrow, IexecHubAccessor
 		deal.pool.pointer         = _poolorder.pool;
 		deal.pool.owner           = poolowner;
 		deal.pool.price           = _poolorder.poolprice;
-		deal.category             = _userorder.category;
-		deal.trust                = _userorder.trust;
+		deal.category             = _poolorder.category;
+		deal.trust                = _poolorder.trust;
+		deal.tag                  = _poolorder.tag;
+		/* deal.batchsize            = batchsize; */
+		/* deal.batchoffset          = batchoffset; */
 		deal.requester            = _userorder.requester;
 		deal.beneficiary          = _userorder.beneficiary;
 		deal.callback             = _userorder.callback;
@@ -246,11 +291,13 @@ contract Marketplace is Escrow, IexecHubAccessor
 			deal.dapp.price
 			.add(deal.data.price)
 			.add(deal.pool.price)
+			/* .mul(deal.batchsize) */
 		));
 		require(lock(
 			deal.pool.owner,
 			deal.pool.price
 			.percentage(POOL_STAKE_RATIO)
+			/* .mul(deal.batchsize) */
 		));
 
 		/**
@@ -266,6 +313,8 @@ contract Marketplace is Escrow, IexecHubAccessor
 			dataorderHash,
 			poolorderHash,
 			userorderHash
+			/* batchsize, */
+			/* batchoffset */
 		);
 		return userorderHash;
 	}

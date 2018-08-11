@@ -6,67 +6,70 @@ module.exports = {
 		object.sign = ethers.utils.splitSignature(web3.eth.sign(wallet, hashing(object)));
 		return object
 	},
-	getDappOrderHash: function(marketplace, dappmarket)
+	getFullHash: function(marketplace, partialHash, salt)
 	{
 		return ethers.utils.solidityKeccak256([
 			'address',
-			'address',
-			'uint256',
-			'uint256',
+			'bytes32',
 			'bytes32',
 		],[
 			marketplace,
+			partialHash,
+			salt,
+		]);
+
+	},
+	dappPartialHash: function(dappmarket)
+	{
+		return ethers.utils.solidityKeccak256([
+			'address',
+			'uint256',
+			'uint256',
+		],[
 			dappmarket.dapp,
 			dappmarket.dappprice,
 			dappmarket.volume,
-			dappmarket.salt,
 		]);
 	},
-	getDataOrderHash: function(marketplace, datamarket)
+	dataPartialHash: function(datamarket)
 	{
 		return ethers.utils.solidityKeccak256([
 			'address',
-			'address',
 			'uint256',
 			'uint256',
-			'bytes32',
 		],[
-			marketplace,
 			datamarket.data,
 			datamarket.dataprice,
 			datamarket.volume,
-			datamarket.salt,
 		]);
 	},
-	getPoolOrderHash: function(marketplace, poolmarket)
+	poolPartialHash: function(poolmarket)
 	{
 		return ethers.utils.solidityKeccak256([
 			'address',
-			'address',
 			'uint256',
 			'uint256',
 			'uint256',
 			'uint256',
-			'bytes32',
+			'uint256',
 		],[
-			marketplace,
 			poolmarket.pool,
 			poolmarket.poolprice,
 			poolmarket.volume,
 			poolmarket.category,
 			poolmarket.trust,
-			poolmarket.salt,
+			poolmarket.tag,
 		]);
 	},
-	getUserOrderHash: function(marketplace, usermarket)
+	userPartialHash: function(usermarket)
 	{
 		return ethers.utils.solidityKeccak256([
 			'address',
-			'address',
 			'uint256',
 			'address',
 			'uint256',
 			'address',
+			'uint256',
 			'uint256',
 			'uint256',
 			'uint256',
@@ -74,22 +77,20 @@ module.exports = {
 			'address',
 			'address',
 			'string',
-			'bytes32',
 		],[
-			marketplace,
 			usermarket.dapp,
-			usermarket.dapppricemax,
+			usermarket.dappmaxprice,
 			usermarket.data,
-			usermarket.datapricemax,
+			usermarket.datamaxprice,
 			usermarket.pool,
-			usermarket.poolpricemax,
+			usermarket.poolmaxprice,
 			usermarket.category,
 			usermarket.trust,
+			usermarket.tag,
 			usermarket.requester,
 			usermarket.beneficiary,
 			usermarket.callback,
 			usermarket.params,
-			usermarket.salt,
 		]);
 	},
 
