@@ -79,45 +79,45 @@ contract Marketplace is Escrow, IexecHubAccessor
 		Iexec0xLib.signature _signature)
 	public view returns (bool)
 	{
-		return _signer == ecrecover(keccak256("\x19Ethereum Signed Message:\n32", _hash), _signature.v, _signature.r, _signature.s) || m_presigned[_hash];
+		return _signer == ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash)), _signature.v, _signature.r, _signature.s) || m_presigned[_hash];
 	}
 
 	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
 	public view returns (bytes32)
 	{
-		return keccak256(
+		return keccak256(abi.encodePacked(
 			address(this),
-			keccak256(
+			keccak256(abi.encodePacked(
 				// market
 				_dapporder.dapp,
 				_dapporder.dappprice,
 				_dapporder.volume
-			),
+			)),
 			_dapporder.salt
-		);
+		));
 	}
 
 	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
+		return keccak256(abi.encodePacked(
 			address(this),
-			keccak256(
+			keccak256(abi.encodePacked(
 				// market
 				_dataorder.data,
 				_dataorder.dataprice,
 				_dataorder.volume
-			),
+			)),
 			_dataorder.salt
-		);
+		));
 	}
 
 	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
+		return keccak256(abi.encodePacked(
 			address(this),
-			keccak256(
+			keccak256(abi.encodePacked(
 				// market
 				_poolorder.pool,
 				_poolorder.poolprice,
@@ -126,17 +126,17 @@ contract Marketplace is Escrow, IexecHubAccessor
 				_poolorder.category,
 				_poolorder.trust,
 				_poolorder.tag
-			),
+			)),
 			_poolorder.salt
-		);
+		));
 	}
 
 	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
 	public view returns (bytes32)
 	{
-		return keccak256(
+		return keccak256(abi.encodePacked(
 			address(this),
-			keccak256(
+			keccak256(abi.encodePacked(
 				// market
 				_userorder.dapp,
 				_userorder.dappmaxprice,
@@ -153,9 +153,9 @@ contract Marketplace is Escrow, IexecHubAccessor
 				_userorder.beneficiary,
 				_userorder.callback,
 				_userorder.params
-			),
+			)),
 		_userorder.salt
-		);
+		));
 	}
 
 	/***************************************************************************

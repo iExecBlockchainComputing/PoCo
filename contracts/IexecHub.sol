@@ -7,9 +7,10 @@ import "./tools/SafeMathOZ.sol";
 import "./CategoryManager.sol";
 
 import "./Marketplace.sol";
-import "./resources_contract/DappRegistry.sol";
-import "./resources_contract/DataRegistry.sol";
-import "./resources_contract/PoolRegistry.sol";
+import "./resources_contract/RegistryBase.sol";
+/* import "./resources_contract/DappRegistry.sol"; */
+/* import "./resources_contract/DataRegistry.sol"; */
+/* import "./resources_contract/PoolRegistry.sol"; */
 
 contract IexecHub is CategoryManager
 {
@@ -26,9 +27,12 @@ contract IexecHub is CategoryManager
 	 *                             Other contracts                             *
 	 ***************************************************************************/
 	Marketplace  marketplace;
-	DappRegistry dappregistry;
-	DataRegistry dataregistry;
-	PoolRegistry poolregistry;
+	RegistryBase dappregistry;
+	RegistryBase dataregistry;
+	RegistryBase poolregistry;
+	/* DappRegistry dappregistry; */
+	/* DataRegistry dataregistry; */
+	/* PoolRegistry poolregistry; */
 
 	/***************************************************************************
 	 *                               Consensuses                               *
@@ -92,9 +96,12 @@ contract IexecHub is CategoryManager
 	{
 		require(address(marketplace) == address(0));
 		marketplace  = Marketplace (_marketplaceAddress );
-		dappregistry = DappRegistry(_dappRegistryAddress);
-		dataregistry = DataRegistry(_dataRegistryAddress);
-		poolregistry = PoolRegistry(_poolRegistryAddress);
+		dappregistry = RegistryBase(_dappRegistryAddress);
+		dataregistry = RegistryBase(_dataRegistryAddress);
+		poolregistry = RegistryBase(_poolRegistryAddress);
+		/* dappregistry = DappRegistry(_dappRegistryAddress); */
+		/* dataregistry = DataRegistry(_dataRegistryAddress); */
+		/* poolregistry = PoolRegistry(_poolRegistryAddress); */
 	}
 
 	/***************************************************************************
@@ -151,7 +158,7 @@ contract IexecHub is CategoryManager
 	}
 
 	// NEW → contribute that skips the allowWorkerToContribute step with scheduler signature
-	/*
+	///*
 	function signedContribute(
 		bytes32              _woid,
 		bytes32              _resultHash,
@@ -163,10 +170,14 @@ contract IexecHub is CategoryManager
 	{
 		//Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
 		require(marketplace.viewDeal(_woid).pool.pointer == ecrecover(
-			keccak256(
+			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
-				keccak256(msg.sender, _woid, _enclaveChallenge)
-			),
+				keccak256(abi.encodePacked(
+					msg.sender,
+					_woid,
+					_enclaveChallenge
+				))
+			)),
 			_poolSign.v,
 			_poolSign.r,
 			_poolSign.s)
@@ -193,11 +204,11 @@ contract IexecHub is CategoryManager
 		if (_enclaveChallenge != address(0))
 		{
 			require(_enclaveChallenge == ecrecover(
-				keccak256(
+				keccak256(abi.encodePacked(
 					"\x19Ethereum Signed Message:\n64",
 					_resultHash,
 					_resultSign
-				),
+				)),
 				_enclaveSign.v,
 				_enclaveSign.r,
 				_enclaveSign.s)
@@ -217,8 +228,10 @@ contract IexecHub is CategoryManager
 
 		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
-	*/
 
+	// OLD → allow then contribute
+	//*/
+	/*
 	function allowWorkerToContribute(
 		bytes32 _woid,
 		address _worker,
@@ -275,10 +288,10 @@ contract IexecHub is CategoryManager
 		require(_resultSign != 0x0);
 		if (contribution.enclaveChallenge != address(0))
 		{
-			require(contribution.enclaveChallenge == ecrecover(keccak256(
+			require(contribution.enclaveChallenge == ecrecover(keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n64",
 				_resultHash,
-				_resultSign),
+				_resultSign)),
 				_challengeSign.v,
 				_challengeSign.r,
 				_challengeSign.s)
@@ -296,6 +309,7 @@ contract IexecHub is CategoryManager
 
 		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
+	*/
 
 	function revealConsensus(
 		bytes32 _woid,
@@ -344,9 +358,9 @@ contract IexecHub is CategoryManager
 
 		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 		require(contribution.status         == Iexec0xLib.ContributionStatusEnum.CONTRIBUTED);
-		require(contribution.resultHash     == workorder.consensusValue                     );
-		require(contribution.resultHash     == keccak256(_result                        )   );
-		require(contribution.resultSign     == keccak256(_result ^ keccak256(msg.sender))   );
+		require(contribution.resultHash     == workorder.consensusValue);
+		require(contribution.resultHash     == keccak256(abi.encodePacked(_result)));
+		require(contribution.resultSign     == keccak256(abi.encodePacked(_result ^ keccak256(abi.encodePacked(msg.sender)))));
 
 		contribution.status     = Iexec0xLib.ContributionStatusEnum.PROVED;
 		workorder.revealCounter = workorder.revealCounter.add(1);
