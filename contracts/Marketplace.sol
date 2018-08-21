@@ -36,8 +36,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
 	                      bytes32 userHash);
-												/* uint256 batchsize, */
-												/* uint256 batchoffset, */
 	event ClosedDappOrder(bytes32 dappHash);
 	event ClosedDataOrder(bytes32 dataHash);
 	event ClosedPoolOrder(bytes32 poolHash);
@@ -79,7 +77,12 @@ contract Marketplace is Escrow, IexecHubAccessor
 		Iexec0xLib.signature _signature)
 	public view returns (bool)
 	{
-		return _signer == ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash)), _signature.v, _signature.r, _signature.s) || m_presigned[_hash];
+		return _signer == ecrecover(
+			keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash)),
+			_signature.v,
+			_signature.r,
+			_signature.s
+		) || m_presigned[_hash];
 	}
 
 	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
@@ -148,7 +151,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 				_userorder.category,
 				_userorder.trust,
 				_userorder.tag,
-				/* _userorder.batchsize, */
 				_userorder.requester,
 				_userorder.beneficiary,
 				_userorder.callback,
@@ -252,19 +254,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 		/**
 		 * Check and update availability
 		 */
-		// require(m_consumed[dapporderHash] < _dapporder.volume);
-		// require(m_consumed[dataorderHash] < _dataorder.volume);
-		// require(m_consumed[poolorderHash] < _poolorder.volume);
-		// require(m_consumed[userorderHash] < _userorder.batchsize);
-		// uint256 batchoffset = m_consumed[userorderHash];
-		// uint256 batchsize   = _userorder.batchsize.sub(batchoffset);
-		// batchsize = batchsize.min(_dapporder.volume.sub(m_consumed[dapporderHash]));
-		// batchsize = batchsize.min(_dataorder.volume.sub(m_consumed[dataorderHash]));
-		// batchsize = batchsize.min(_poolorder.volume.sub(m_consumed[poolorderHash]));
-		// m_consumed[dapporderHash] = m_consumed[dapporderHash].add(batchsize);
-		// m_consumed[dataorderHash] = m_consumed[dataorderHash].add(batchsize);
-		// m_consumed[poolorderHash] = m_consumed[poolorderHash].add(batchsize);
-		// m_consumed[userorderHash] = m_consumed[userorderHash].add(batchsize);
 		require(m_consumed[dapporderHash] <  _dapporder.volume);
 		require(m_consumed[dataorderHash] <  _dataorder.volume);
 		require(m_consumed[poolorderHash] <  _poolorder.volume);
@@ -290,8 +279,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 		deal.category             = _poolorder.category;
 		deal.trust                = _poolorder.trust;
 		deal.tag                  = _poolorder.tag;
-		/* deal.batchsize            = batchsize; */
-		/* deal.batchoffset          = batchoffset; */
 		deal.requester            = _userorder.requester;
 		deal.beneficiary          = _userorder.beneficiary;
 		deal.callback             = _userorder.callback;
@@ -307,19 +294,17 @@ contract Marketplace is Escrow, IexecHubAccessor
 			deal.dapp.price
 			.add(deal.data.price)
 			.add(deal.pool.price)
-			/* .mul(deal.batchsize) */
 		));
 		require(lock(
 			deal.pool.owner,
 			deal.pool.price
 			.percentage(POOL_STAKE_RATIO)
-			/* .mul(deal.batchsize) */
 		));
 
 		/**
 		 * Initiate workorder & consensus
 		 */
-		iexechub.initialize(userorderHash);
+		iexechub.initialize(userorderHash); // enables woid
 
 		/**
 		 * Advertize
@@ -329,8 +314,6 @@ contract Marketplace is Escrow, IexecHubAccessor
 			dataorderHash,
 			poolorderHash,
 			userorderHash
-			/* batchsize, */
-			/* batchoffset */
 		);
 		return userorderHash;
 	}

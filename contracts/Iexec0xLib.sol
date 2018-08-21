@@ -68,8 +68,6 @@ library Iexec0xLib
 	struct UserOrder
 	{
 		// market
-		/* address[3] ressources; */
-		/* uint256[3] maxprices; */
 		address   dapp;
 		uint256   dappmaxprice;
 		address   data;
@@ -81,7 +79,6 @@ library Iexec0xLib
 		uint256   category;
 		uint256   trust;
 		uint256   tag;
-		/* uint256   batchsize; */
 		address   beneficiary;
 		address   callback;
 		string    params;
@@ -108,9 +105,6 @@ library Iexec0xLib
 		uint256 category;
 		uint256 trust;
 		uint256 tag;
-		// bag of task
-		/* uint256 batchsize; */
-		/* uint256 batchoffset; */
 		// execution details
 		address requester;
 		address beneficiary;
@@ -163,6 +157,5 @@ library Iexec0xLib
 		uint256 score;
 		uint256 weight;
 	}
-
 
 }
