@@ -1,9 +1,9 @@
-var RLC         = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub    = artifacts.require("./IexecHub.sol");
-var Marketplace = artifacts.require("./Marketplace.sol");
-var DappHub     = artifacts.require("./DappHub.sol");
-var DataHub     = artifacts.require("./DataHub.sol");
-var PoolHub     = artifacts.require("./PoolHub.sol");
+var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub     = artifacts.require("./IexecHub.sol");
+var Marketplace  = artifacts.require("./Marketplace.sol");
+var DappRegistry = artifacts.require("./DappRegistry.sol");
+var DataRegistry = artifacts.require("./DataRegistry.sol");
+var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 
 const fs            = require("fs-extra");
 const Promise       = require("bluebird");
@@ -13,9 +13,9 @@ module.exports = function(deployer, network, accounts) {
 	let aRLCInstance;
 	let aIexecHub;
 	let aMarketplaceInstance;
-	let aDappHubInstance;
-	let aDataHubInstance;
-	let aPoolHubInstance;
+	let aDappRegistryInstance;
+	let aDataRegistryInstance;
+	let aPoolRegistryInstance;
 	let creator;
 
 	return deployer.deploy(RLC)
@@ -48,41 +48,43 @@ module.exports = function(deployer, network, accounts) {
 		.then(instance => {
 			aMarketplaceInstance = instance;
 			console.log("Marketplace deployed at address: " + instance.address);
-			return deployer.deploy(DappHub);
+			return deployer.deploy(DappRegistry);
 		})
-		.then(() => DappHub.deployed())
+		.then(() => DappRegistry.deployed())
 		.then(instance => {
-			aDappHubInstance = instance;
-			console.log("DappHub deployed at address: " + instance.address);
-			return deployer.deploy(DataHub);
+			aDappRegistryInstance = instance;
+			console.log("DappRegistry deployed at address: " + instance.address);
+			return deployer.deploy(DataRegistry);
 		})
-		.then(() => DataHub.deployed())
+		.then(() => DataRegistry.deployed())
 		.then(instance => {
-			aDataHubInstance = instance;
-			console.log("DataHub deployed at address: " + instance.address);
-			return deployer.deploy(PoolHub);
+			aDataRegistryInstance = instance;
+			console.log("DataRegistry deployed at address: " + instance.address);
+			return deployer.deploy(PoolRegistry);
 		})
-		.then(() => PoolHub.deployed())
+		.then(() => PoolRegistry.deployed())
 		.then(instance => {
-			aPoolHubInstance = instance;
-			console.log("PoolHub deployed at address: " + instance.address);
-			return aDappHubInstance.transferOwnership(aIexecHub.address);
+			aPoolRegistryInstance = instance;
+			console.log("PoolRegistry deployed at address: " + instance.address);
+			/*
+			return aDappRegistryInstance.transferOwnership(aIexecHub.address);
 		})
 		.then(() => {
-			console.log("transferOwnership of DappHub to IexecHub");
-			return aDataHubInstance.transferOwnership(aIexecHub.address);
+			console.log("transferOwnership of DappRegistry to IexecHub");
+			return aDataRegistryInstance.transferOwnership(aIexecHub.address);
 		})
 		.then(() => {
-			console.log("transferOwnership of DataHub to IexecHub");
-			return aPoolHubInstance.transferOwnership(aIexecHub.address);
+			console.log("transferOwnership of DataRegistry to IexecHub");
+			return aPoolRegistryInstance.transferOwnership(aIexecHub.address);
 		})
 		.then(() => {
-			console.log("transferOwnership of PoolHub to IexecHub");
+			console.log("transferOwnership of PoolRegistry to IexecHub");
+			*/
 			return aIexecHub.attachContracts(
 				aMarketplaceInstance.address,
-				aDappHubInstance.address,
-				aDataHubInstance.address,
-				aPoolHubInstance.address
+				aDappRegistryInstance.address,
+				aDataRegistryInstance.address,
+				aPoolRegistryInstance.address
 			);
 		})
 		.then(() => {
@@ -127,7 +129,7 @@ module.exports = function(deployer, network, accounts) {
 /*
 module.exports = function(deployer) {
 	let aRLCInstance;
-	let aWorkerPoolHubInstance;
+	let aWorkerPoolRegistryInstance;
 	let aAppHubInstance;
 	let aDatasetHubInstance;
 	let aIexecHub;
@@ -136,11 +138,11 @@ module.exports = function(deployer) {
 	let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
 	aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
 
-	return deployer.deploy(WorkerPoolHub)
-		.then(() => WorkerPoolHub.deployed())
+	return deployer.deploy(WorkerPoolRegistry)
+		.then(() => WorkerPoolRegistry.deployed())
 		.then(instance => {
-			aWorkerPoolHubInstance = instance;
-			console.log("WorkerPoolHub deployed at address: " + instance.address);
+			aWorkerPoolRegistryInstance = instance;
+			console.log("WorkerPoolRegistry deployed at address: " + instance.address);
 			return deployer.deploy(AppHub);
 		})
 		.then(() => AppHub.deployed())
@@ -159,10 +161,10 @@ module.exports = function(deployer) {
 		.then(instance => {
 			aIexecHub = instance;
 			console.log("IexecHub deployed at address: " + aIexecHub.address);
-			return aWorkerPoolHubInstance.transferOwnership(aIexecHub.address);
+			return aWorkerPoolRegistryInstance.transferOwnership(aIexecHub.address);
 		})
 		.then(() => {
-			console.log("transferOwnership of WorkerPoolHub to IexecHub");
+			console.log("transferOwnership of WorkerPoolRegistry to IexecHub");
 			return aAppHubInstance.transferOwnership(aIexecHub.address);
 		})
 		.then(() => {
@@ -177,7 +179,7 @@ module.exports = function(deployer) {
 		.then(instance => {
 			aMarketplaceInstance = instance;
 			console.log("Marketplace deployed at address: " + instance.address);
-			return aIexecHub.attachContracts(aRLCInstance,aMarketplaceInstance.address,aWorkerPoolHubInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
+			return aIexecHub.attachContracts(aRLCInstance,aMarketplaceInstance.address,aWorkerPoolRegistryInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
 		})
 		.then(() => {
 			console.log("attach Contracts to IexecHub done");

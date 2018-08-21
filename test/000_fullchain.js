@@ -1,12 +1,12 @@
-var RLC         = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub    = artifacts.require("./IexecHub.sol");
-var Marketplace = artifacts.require("./Marketplace.sol");
-var DappHub     = artifacts.require("./DappHub.sol");
-var DataHub     = artifacts.require("./DataHub.sol");
-var PoolHub     = artifacts.require("./PoolHub.sol");
-var Dapp        = artifacts.require("./Dapp.sol");
-var Data        = artifacts.require("./Data.sol");
-var Pool        = artifacts.require("./Pool.sol");
+var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub     = artifacts.require("./IexecHub.sol");
+var Marketplace  = artifacts.require("./Marketplace.sol");
+var DappRegistry = artifacts.require("./DappRegistry.sol");
+var DataRegistry = artifacts.require("./DataRegistry.sol");
+var PoolRegistry = artifacts.require("./PoolRegistry.sol");
+var Dapp         = artifacts.require("./Dapp.sol");
+var Data         = artifacts.require("./Data.sol");
+var Pool         = artifacts.require("./Pool.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
@@ -45,21 +45,24 @@ contract('IexecHub', async (accounts) => {
 	let user          = accounts[7];
 	let sgxEnclave    = accounts[8];
 
-	var RLCInstance         = null;
-	var IexecHubInstance    = null;
-	var MarketplaceInstance = null;
-	var DappHubInstance     = null;
-	var DataHubInstance     = null;
-	var PoolHubInstance     = null;
-	var DappInstance        = null;
-	var DataInstance        = null;
-	var PoolInstance        = null;
-	var DappOrder           = null;
-	var DataOrder           = null;
-	var PoolOrder           = null;
-	var UserOrder           = null;
+	var RLCInstance          = null;
+	var IexecHubInstance     = null;
+	var MarketplaceInstance  = null;
+	var DappRegistryInstance = null;
+	var DataRegistryInstance = null;
+	var PoolRegistryInstance = null;
+	var DappInstance         = null;
+	var DataInstance         = null;
+	var PoolInstance         = null;
+	var DappOrder            = null;
+	var DataOrder            = null;
+	var PoolOrder            = null;
+	var UserOrder            = null;
 
-	var MarketplaceInstanceEther = null;
+	var MarketplaceInstanceEther  = null;
+	var DappRegistryInstance = null;
+	var DataRegistryInstance = null;
+	var PoolRegistryInstance = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -68,19 +71,21 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance         = await RLC.deployed();
-		IexecHubInstance    = await IexecHub.deployed();
-		MarketplaceInstance = await Marketplace.deployed();
-		DappHubInstance     = await DappHub.deployed();
-		DataHubInstance     = await DataHub.deployed();
-		PoolHubInstance     = await PoolHub.deployed();
+		RLCInstance          = await RLC.deployed();
+		IexecHubInstance     = await IexecHub.deployed();
+		MarketplaceInstance  = await Marketplace.deployed();
+		DappRegistryInstance = await DappRegistry.deployed();
+		DataRegistryInstance = await DataRegistry.deployed();
+		PoolRegistryInstance = await PoolRegistry.deployed();
 
 		/**
 		 * For ABIEncoderV2
 		 */
-		let abi                  = JSON.stringify(Marketplace.abi);
-		let provider             = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-		MarketplaceInstanceEther = new ethers.Contract(MarketplaceInstance.address, abi, provider);
+		let provider              = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+		MarketplaceInstanceEther  = new ethers.Contract(MarketplaceInstance.address,  JSON.stringify(Marketplace.abi),  provider);
+		// DappRegistryInstance = new ethers.Contract(DappRegistryInstance.address, JSON.stringify(DappRegistry.abi), provider);
+		// DataRegistryInstance = new ethers.Contract(DataRegistryInstance.address, JSON.stringify(DataRegistry.abi), provider);
+		// PoolRegistryInstance = new ethers.Contract(PoolRegistryInstance.address, JSON.stringify(PoolRegistry.abi), provider);
 
 		/**
 		 * Token distribution
@@ -142,21 +147,21 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: Dapp creation (by dappProvider)                  *
 	 ***************************************************************************/
 	it("Dapp Creation", async () => {
-		txMined = await IexecHubInstance.createDapp("R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
+		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await Extensions.getEventsPromise(IexecHubInstance.CreateDapp({}));
-		events = extractEvents(txMined, IexecHubInstance.address, "CreateDapp");
+		// events = await Extensions.getEventsPromise(DappRegistryInstance.CreateDapp({}));
+		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
 		assert.strictEqual(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
 		assert.strictEqual(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
 		assert.strictEqual(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
 
 		DappInstance = await Dapp.at(events[0].args.dapp);
 
-		let count = await DappHubInstance.viewCount(dappProvider);
+		let count = await DappRegistryInstance.viewCount(dappProvider);
 		assert.strictEqual(count.toNumber(), 1, "dappProvider must have 1 dapp now");
 
-		let dappAddress = await DappHubInstance.viewEntry(dappProvider, 1);
+		let dappAddress = await DappRegistryInstance.viewEntry(dappProvider, 1);
 		assert.strictEqual(dappAddress, DappInstance.address, "check dappAddress");
 	});
 
@@ -164,21 +169,21 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: Data creation (by dataProvider)                  *
 	 ***************************************************************************/
 	it("Data Creation", async () => {
-		txMined = await IexecHubInstance.createData("Pi", "3.1415926535", { from: dataProvider });
+		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await Extensions.getEventsPromise(IexecHubInstance.CreateData({}));
-		events = extractEvents(txMined, IexecHubInstance.address, "CreateData");
+		// events = await Extensions.getEventsPromise(DataRegistryInstance.CreateData({}));
+		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
 		assert.strictEqual(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
 		assert.strictEqual(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
 		assert.strictEqual(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
 
 		DataInstance = await Data.at(events[0].args.data);
 
-		let count = await DataHubInstance.viewCount(dataProvider);
+		let count = await DataRegistryInstance.viewCount(dataProvider);
 		assert.strictEqual(count.toNumber(), 1, "dataProvider must have 1 data now");
 
-		let dataAddress = await DataHubInstance.viewEntry(dataProvider, 1);
+		let dataAddress = await DataRegistryInstance.viewEntry(dataProvider, 1);
 		assert.strictEqual(dataAddress, DataInstance.address, "check dataAddress");
 	});
 
@@ -186,7 +191,8 @@ contract('IexecHub', async (accounts) => {
 	 *                 TEST: Pool creation (by poolScheduler)                  *
 	 ***************************************************************************/
 	it("Pool Creation", async () => {
-		txMined = await IexecHubInstance.createPool(
+		txMined = await PoolRegistryInstance.createPool(
+			poolScheduler,
 			"A test workerpool",
 			10, // lock
 			10, // minimum stake
@@ -195,17 +201,17 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// events = await Extensions.getEventsPromise(IexecHubInstance.CreatePool({}));
-		events = extractEvents(txMined, IexecHubInstance.address, "CreatePool");
+		// events = await Extensions.getEventsPromise(PoolRegistryInstance.CreatePool({}));
+		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
 		assert.strictEqual(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
 		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
 
 		PoolInstance = await Pool.at(events[0].args.pool);
 
-		let count = await PoolHubInstance.viewCount(poolScheduler);
+		let count = await PoolRegistryInstance.viewCount(poolScheduler);
 		assert.strictEqual(count.toNumber(), 1, "poolScheduler must have 1 pool now");
 
-		let poolAddress = await PoolHubInstance.viewEntry(poolScheduler, 1);
+		let poolAddress = await PoolRegistryInstance.viewEntry(poolScheduler, 1);
 		assert.strictEqual(poolAddress, PoolInstance.address, "check poolAddress");
 	});
 

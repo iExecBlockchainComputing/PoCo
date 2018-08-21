@@ -4,8 +4,10 @@ pragma experimental ABIEncoderV2;
 import "./Data.sol";
 import "./RegistryBase.sol";
 
-contract DataRegistry is RegistryBase
+contract DataRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
+	event CreateData(address indexed dataOwner, address indexed data, string dataName, string dataParams);
+
 	/**
 	 * Constructor
 	 */
@@ -21,10 +23,11 @@ contract DataRegistry is RegistryBase
 		address _dataOwner,
 		string  _dataName,
 		string  _dataParams)
-	public onlyOwner /*owner == IexecHub*/ returns (Data)
+	public /* onlyOwner /*owner == IexecHub*/ returns (Data)
 	{
 		Data newData = new Data(_dataOwner, _dataName, _dataParams);
 		require(insert(newData, _dataOwner));
+		emit CreateData(_dataOwner, newData, _dataName, _dataParams);
 		return newData;
 	}
 }

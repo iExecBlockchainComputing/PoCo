@@ -85,61 +85,77 @@ contract Marketplace is Escrow, IexecHubAccessor
 	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
 	public view returns (bytes32)
 	{
-		return keccak256(address(this), keccak256(
-			// market
-			_dapporder.dapp,
-			_dapporder.dappprice,
-			_dapporder.volume
-		), _dapporder.salt);
+		return keccak256(
+			address(this),
+			keccak256(
+				// market
+				_dapporder.dapp,
+				_dapporder.dappprice,
+				_dapporder.volume
+			),
+			_dapporder.salt
+		);
 	}
 
 	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
-		return keccak256(address(this), keccak256(
-			// market
-			_dataorder.data,
-			_dataorder.dataprice,
-			_dataorder.volume
-		), _dataorder.salt);
+		return keccak256(
+			address(this),
+			keccak256(
+				// market
+				_dataorder.data,
+				_dataorder.dataprice,
+				_dataorder.volume
+			),
+			_dataorder.salt
+		);
 	}
 
 	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
 	public view returns (bytes32)
 	{
-		return keccak256(address(this), keccak256(
-			// market
-			_poolorder.pool,
-			_poolorder.poolprice,
-			_poolorder.volume,
-			// settings
-			_poolorder.category,
-			_poolorder.trust,
-			_poolorder.tag
-		), _poolorder.salt);
+		return keccak256(
+			address(this),
+			keccak256(
+				// market
+				_poolorder.pool,
+				_poolorder.poolprice,
+				_poolorder.volume,
+				// settings
+				_poolorder.category,
+				_poolorder.trust,
+				_poolorder.tag
+			),
+			_poolorder.salt
+		);
 	}
 
 	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
 	public view returns (bytes32)
 	{
-		return keccak256(address(this), keccak256(
-			// market
-			_userorder.dapp,
-			_userorder.dappmaxprice,
-			_userorder.data,
-			_userorder.datamaxprice,
-			_userorder.pool,
-			_userorder.poolmaxprice,
-			// settings
-			_userorder.category,
-			_userorder.trust,
-			_userorder.tag,
-			/* _userorder.batchsize, */
-			_userorder.requester,
-			_userorder.beneficiary,
-			_userorder.callback,
-			_userorder.params
-		), _userorder.salt);
+		return keccak256(
+			address(this),
+			keccak256(
+				// market
+				_userorder.dapp,
+				_userorder.dappmaxprice,
+				_userorder.data,
+				_userorder.datamaxprice,
+				_userorder.pool,
+				_userorder.poolmaxprice,
+				// settings
+				_userorder.category,
+				_userorder.trust,
+				_userorder.tag,
+				/* _userorder.batchsize, */
+				_userorder.requester,
+				_userorder.beneficiary,
+				_userorder.callback,
+				_userorder.params
+			),
+		_userorder.salt
+		);
 	}
 
 	/***************************************************************************
