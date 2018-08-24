@@ -34,56 +34,68 @@ library Iexec0xLib
 	struct DappOrder
 	{
 		// market
-		address   dapp;
-		uint256   dappprice;
-		uint256   volume;
+		address dapp;
+		uint256 dappprice;
+		uint256 volume;
+		// restrict
+		address datarestrict;
+		address poolrestrict;
+		address userrestrict;
 		// extra
-		bytes32   salt;
+		bytes32 salt;
 		signature sign;
 	}
 	struct DataOrder
 	{
 		// market
-		address   data;
-		uint256   dataprice;
-		uint256   volume;
+		address data;
+		uint256 dataprice;
+		uint256 volume;
+		// restrict
+		address dapprestrict;
+		address poolrestrict;
+		address userrestrict;
 		// extra
-		bytes32   salt;
+		bytes32 salt;
 		signature sign;
 	}
 	struct PoolOrder
 	{
 		// market
-		address   pool;
-		uint256   poolprice;
-		uint256   volume;
+		address pool;
+		uint256 poolprice;
+		uint256 volume;
 		// settings
-		uint256   category;
-		uint256   trust;
-		uint256   tag;
+		uint256 category;
+		uint256 trust;
+		uint256 tag;
+		// restrict
+		address dapprestrict;
+		address datarestrict;
+		address userrestrict;
 		// extra
-		bytes32   salt;
+		bytes32 salt;
 		signature sign;
 	}
 	struct UserOrder
 	{
 		// market
-		address   dapp;
-		uint256   dappmaxprice;
-		address   data;
-		uint256   datamaxprice;
-		address   pool;
-		uint256   poolmaxprice;
-		address   requester;
+		address dapp;
+		uint256 dappmaxprice;
+		address data;
+		uint256 datamaxprice;
+		address pool;
+		uint256 poolmaxprice;
+		address requester;
 		// settings
-		uint256   category;
-		uint256   trust;
-		uint256   tag;
-		address   beneficiary;
-		address   callback;
-		string    params;
+		uint256 category;
+		uint256 trust;
+		uint256 tag;
+		address beneficiary;
+		address callback;
+		string  params;
 		// extra
-		bytes32   salt;
+		bytes32 salt;
 		signature sign;
 	}
 	/**

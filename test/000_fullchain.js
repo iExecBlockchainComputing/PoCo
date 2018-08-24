@@ -388,6 +388,10 @@ contract('IexecHub', async (accounts) => {
 				dapp:         DappInstance.address,
 				dappprice:    3,
 				volume:       1000,
+				// restrict
+				datarestrict: '0x0000000000000000000000000000000000000000',
+				poolrestrict: '0x0000000000000000000000000000000000000000',
+				userrestrict: '0x0000000000000000000000000000000000000000',
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -433,6 +437,10 @@ contract('IexecHub', async (accounts) => {
 				data:         DataInstance.address,
 				dataprice:    1,
 				volume:       1000,
+				// restrict
+				dapprestrict: '0x0000000000000000000000000000000000000000',
+				poolrestrict: '0x0000000000000000000000000000000000000000',
+				userrestrict: '0x0000000000000000000000000000000000000000',
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -482,6 +490,10 @@ contract('IexecHub', async (accounts) => {
 				category:     4,
 				trust:        1000,
 				tag:          0,
+				// restrict
+				dapprestrict: '0x0000000000000000000000000000000000000000',
+				datarestrict: '0x0000000000000000000000000000000000000000',
+				userrestrict: '0x0000000000000000000000000000000000000000',
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -528,7 +540,8 @@ contract('IexecHub', async (accounts) => {
 				dappmaxprice: 3,
 				data:         DataInstance.address,
 				datamaxprice: 1,
-				pool:         PoolInstance.address,
+				// pool:         PoolInstance.address,
+				pool:         '0x0000000000000000000000000000000000000000',
 				poolmaxprice: 25,
 				// settings
 				category:     4,

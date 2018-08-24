@@ -94,8 +94,13 @@ contract Marketplace is Escrow, IexecHubAccessor
 				// market
 				_dapporder.dapp,
 				_dapporder.dappprice,
-				_dapporder.volume
+				_dapporder.volume,
+				// restrict
+				_dapporder.datarestrict,
+				_dapporder.poolrestrict,
+				_dapporder.userrestrict
 			)),
+			// extra
 			_dapporder.salt
 		));
 	}
@@ -109,8 +114,13 @@ contract Marketplace is Escrow, IexecHubAccessor
 				// market
 				_dataorder.data,
 				_dataorder.dataprice,
-				_dataorder.volume
+				_dataorder.volume,
+				// restrict
+				_dataorder.dapprestrict,
+				_dataorder.poolrestrict,
+				_dataorder.userrestrict
 			)),
+			// extra
 			_dataorder.salt
 		));
 	}
@@ -125,11 +135,16 @@ contract Marketplace is Escrow, IexecHubAccessor
 				_poolorder.pool,
 				_poolorder.poolprice,
 				_poolorder.volume,
-				// settings
+				//settings
 				_poolorder.category,
 				_poolorder.trust,
-				_poolorder.tag
+				_poolorder.tag,
+				// restrict
+				_poolorder.dapprestrict,
+				_poolorder.datarestrict,
+				_poolorder.userrestrict
 			)),
+			// extra
 			_poolorder.salt
 		));
 	}
@@ -156,7 +171,8 @@ contract Marketplace is Escrow, IexecHubAccessor
 				_userorder.callback,
 				_userorder.params
 			)),
-		_userorder.salt
+			// extra
+			_userorder.salt
 		));
 	}
 
@@ -208,6 +224,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 		/**
 		 * Check orders compatibility
 		 */
+
 		// computation environment
 		require(_userorder.category     == _poolorder.category );
 		require(_userorder.trust        <= _poolorder.trust    );
@@ -217,11 +234,19 @@ contract Marketplace is Escrow, IexecHubAccessor
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
-		// pairing is valid
-		require(_userorder.dapp == _dapporder.dapp);
-		require(_userorder.data == _dataorder.data);
-		require(_userorder.pool == address(0)
-		     || _userorder.pool == _poolorder.pool);
+		// check restrictions
+		require(_dapporder.datarestrict == address(0) || _dapporder.datarestrict == _dataorder.data     );
+		require(_dapporder.poolrestrict == address(0) || _dapporder.poolrestrict == _poolorder.pool     );
+		require(_dapporder.userrestrict == address(0) || _dapporder.userrestrict == _userorder.requester);
+		require(_dataorder.dapprestrict == address(0) || _dataorder.dapprestrict == _dapporder.dapp     );
+		require(_dataorder.poolrestrict == address(0) || _dataorder.poolrestrict == _poolorder.pool     );
+		require(_dataorder.userrestrict == address(0) || _dataorder.userrestrict == _userorder.requester);
+		require(_poolorder.dapprestrict == address(0) || _poolorder.dapprestrict == _dapporder.dapp     );
+		require(_poolorder.datarestrict == address(0) || _poolorder.datarestrict == _dataorder.data     );
+		require(_poolorder.userrestrict == address(0) || _poolorder.userrestrict == _userorder.requester);
+		require(                                         _userorder.dapp         == _dapporder.dapp     );
+		require(                                         _userorder.data         == _dataorder.data     );
+		require(_userorder.pool         == address(0) || _userorder.pool         == _poolorder.pool     );
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 

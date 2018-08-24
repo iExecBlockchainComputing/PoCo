@@ -25,10 +25,16 @@ module.exports = {
 			'address',
 			'uint256',
 			'uint256',
+			'address',
+			'address',
+			'address',
 		],[
 			dappmarket.dapp,
 			dappmarket.dappprice,
 			dappmarket.volume,
+			dappmarket.datarestrict,
+			dappmarket.poolrestrict,
+			dappmarket.userrestrict,
 		]);
 	},
 	dataPartialHash: function(datamarket)
@@ -37,10 +43,16 @@ module.exports = {
 			'address',
 			'uint256',
 			'uint256',
+			'address',
+			'address',
+			'address',
 		],[
 			datamarket.data,
 			datamarket.dataprice,
 			datamarket.volume,
+			datamarket.dapprestrict,
+			datamarket.poolrestrict,
+			datamarket.userrestrict,
 		]);
 	},
 	poolPartialHash: function(poolmarket)
@@ -52,6 +64,9 @@ module.exports = {
 			'uint256',
 			'uint256',
 			'uint256',
+			'address',
+			'address',
+			'address',
 		],[
 			poolmarket.pool,
 			poolmarket.poolprice,
@@ -59,6 +74,9 @@ module.exports = {
 			poolmarket.category,
 			poolmarket.trust,
 			poolmarket.tag,
+			poolmarket.dapprestrict,
+			poolmarket.datarestrict,
+			poolmarket.userrestrict,
 		]);
 	},
 	userPartialHash: function(usermarket)
