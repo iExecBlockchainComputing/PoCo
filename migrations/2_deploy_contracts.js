@@ -4,6 +4,8 @@ var Marketplace  = artifacts.require("./Marketplace.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");
 var DataRegistry = artifacts.require("./DataRegistry.sol");
 var PoolRegistry = artifacts.require("./PoolRegistry.sol");
+var Beacon       = artifacts.require("./Beacon.sol");
+var Broker       = artifacts.require("./Broker.sol");
 
 const fs            = require("fs-extra");
 const Promise       = require("bluebird");
@@ -16,6 +18,8 @@ module.exports = function(deployer, network, accounts) {
 	let aDappRegistryInstance;
 	let aDataRegistryInstance;
 	let aPoolRegistryInstance;
+	let aBeacon;
+	let aBroker;
 	let creator;
 
 	return deployer.deploy(RLC)
@@ -114,7 +118,19 @@ module.exports = function(deployer, network, accounts) {
 		})
 		.then(countCategory => {
 			console.log("countCategory is now: "+countCategory)
-		});
+			return deployer.deploy(Beacon);
+		})
+		.then(() => Beacon.deployed())
+		.then(instance => {
+			aBeacon = instance;
+			console.log("Beacon deployed at address: " + instance.address);
+			return deployer.deploy(Broker, aMarketplaceInstance.address);
+		})
+		.then(() => Broker.deployed())
+		.then(instance => {
+			aBroker = instance;
+			console.log("Broker deployed at address: " + instance.address);
+		})
 };
 
 /**

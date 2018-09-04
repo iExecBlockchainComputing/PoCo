@@ -7,6 +7,8 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Dapp         = artifacts.require("./Dapp.sol");
 var Data         = artifacts.require("./Data.sol");
 var Pool         = artifacts.require("./Pool.sol");
+var Beacon       = artifacts.require("./Beacon.sol");
+var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
@@ -51,6 +53,8 @@ contract('IexecHub', async (accounts) => {
 	var DappRegistryInstance = null;
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
+	var BeaconInstance       = null;
+	var BrokerInstance       = null;
 	var DappInstance         = null;
 	var DataInstance         = null;
 	var PoolInstance         = null;
@@ -58,11 +62,15 @@ contract('IexecHub', async (accounts) => {
 	var DataOrder            = null;
 	var PoolOrder            = null;
 	var UserOrder            = null;
+
 	var woid                 = null;
+	var authorization        = null;
 
 	var jsonRpcProvider           = null;
 	var IexecHubInstanceEthers    = null;
 	var MarketplaceInstanceEthers = null;
+	var BeaconInstanceEthers      = null;
+	var BrokerInstanceEthers      = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -77,6 +85,8 @@ contract('IexecHub', async (accounts) => {
 		DappRegistryInstance = await DappRegistry.deployed();
 		DataRegistryInstance = await DataRegistry.deployed();
 		PoolRegistryInstance = await PoolRegistry.deployed();
+		BeaconInstance       = await Beacon.deployed();
+		BrokerInstance       = await Broker.deployed();
 
 		/**
 		 * For ABIEncoderV2
@@ -84,6 +94,8 @@ contract('IexecHub', async (accounts) => {
 		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
 		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,    IexecHub.abi,            jsonRpcProvider);
 		MarketplaceInstanceEther = new ethers.Contract(MarketplaceInstance.address, MarketplaceInstance.abi, jsonRpcProvider);
+		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,      BeaconInstance.abi,      jsonRpcProvider);
+		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,      BrokerInstance.abi,      jsonRpcProvider);
 
 		/**
 		 * Token distribution
@@ -298,11 +310,11 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Worker join", async () => {
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
-		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
-		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
-		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 
 		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -361,9 +373,9 @@ contract('IexecHub', async (accounts) => {
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
 		assert.strictEqual(affectation, PoolInstance.address,                         "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
-		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
-		assert.strictEqual(affectation, "0x0000000000000000000000000000000000000000", "affectation issue");
+		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 
 		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
@@ -387,9 +399,9 @@ contract('IexecHub', async (accounts) => {
 				dappprice:    3,
 				volume:       1000,
 				// restrict
-				datarestrict: '0x0000000000000000000000000000000000000000',
-				poolrestrict: '0x0000000000000000000000000000000000000000',
-				userrestrict: '0x0000000000000000000000000000000000000000',
+				datarestrict: constants.NULL.ADDRESS,
+				poolrestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -436,9 +448,9 @@ contract('IexecHub', async (accounts) => {
 				dataprice:    1,
 				volume:       1000,
 				// restrict
-				dapprestrict: '0x0000000000000000000000000000000000000000',
-				poolrestrict: '0x0000000000000000000000000000000000000000',
-				userrestrict: '0x0000000000000000000000000000000000000000',
+				dapprestrict: constants.NULL.ADDRESS,
+				poolrestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -489,9 +501,9 @@ contract('IexecHub', async (accounts) => {
 				trust:        1000,
 				tag:          0,
 				// restrict
-				dapprestrict: '0x0000000000000000000000000000000000000000',
-				datarestrict: '0x0000000000000000000000000000000000000000',
-				userrestrict: '0x0000000000000000000000000000000000000000',
+				dapprestrict: constants.NULL.ADDRESS,
+				datarestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
 				// extra
 				salt:         ethers.utils.randomBytes(32),
 			},
@@ -539,7 +551,7 @@ contract('IexecHub', async (accounts) => {
 				data:         DataInstance.address,
 				datamaxprice: 1,
 				// pool:         PoolInstance.address,
-				pool:         '0x0000000000000000000000000000000000000000',
+				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
 				// settings
 				category:     4,
@@ -547,7 +559,7 @@ contract('IexecHub', async (accounts) => {
 				tag:          0,
 				requester:    user,
 				beneficiary:  user,
-				callback:     '0x0000000000000000000000000000000000000000',
+				callback:     constants.NULL.ADDRESS,
 				params:       "echo HelloWorld",
 				// extra
 				salt:         ethers.utils.randomBytes(32),
@@ -620,10 +632,10 @@ contract('IexecHub', async (accounts) => {
 			UserOrder,
 			{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
 		);
-		console.log("txNotMined:", txNotMined);
+		// console.log("txNotMined:", txNotMined);
 
 		txReceipt = await txNotMined.wait();
-		console.log("txReceipt:", txReceipt);
+		// console.log("txReceipt:", txReceipt);
 
 		// events = extractEvents(txMined, MarketplaceInstance.address, "OrdersMatched");
 		// events = extractEvents(txMined, IexecHubInstance.address,    "ConsensusInitialize");
@@ -646,7 +658,7 @@ contract('IexecHub', async (accounts) => {
 			assert.strictEqual(deal.pool.pointer.toLowerCase(),      PoolInstance.address,                          "check deal (deal.pool.pointer)"        );
 			assert.strictEqual(deal.pool.owner.toLowerCase(),        poolScheduler,                                 "check deal (deal.pool.owner)"          );
 			assert.strictEqual(deal.pool.price.toNumber(),           PoolOrder.poolprice,                           "check deal (deal.pool.price)"          );
-			if( UserOrder.pool != '0x0000000000000000000000000000000000000000')
+			if( UserOrder.pool != constants.NULL.ADDRESS)
 			assert.strictEqual(deal.pool.pointer.toLowerCase(),      UserOrder.pool,                                "check deal (deal.pool.pointer)"        );
 			assert.isAtMost   (deal.pool.price.toNumber(),           UserOrder.poolmaxprice,                        "check deal (deal.pool.price)"          );
 			assert.strictEqual(deal.category.toNumber(),             PoolOrder.category,                            "check deal (deal.category)"            );
@@ -664,8 +676,20 @@ contract('IexecHub', async (accounts) => {
 		});
 	});
 
-	// it("viewWorkorder", async () => {});
-	// it("[RUN] allowWorkerToContribute", async () => {});
+	it("viewWorkorder", async () => {
+		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
+			// console.log(workorder);
+			assert.strictEqual    (workorder.status,                       constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
+			assert.strictEqual    (workorder.consensusValue,               constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
+		//assert.strictEqual    (workorder.consensusDeadline.toNumber(), "",                                   "check workorder (workorder.consensusDeadline)");
+		//assert.strictEqual    (workorder.revealDeadline.toNumber(),    "",                                   "check workorder (workorder.revealDeadline)"   );
+			assert.strictEqual    (workorder.revealCounter.toNumber(),     0,                                    "check workorder (workorder.revealCounter)"    );
+			assert.strictEqual    (workorder.winnerCounter.toNumber(),     0,                                    "check workorder (workorder.winnerCounter)"    );
+			assert.deepStrictEqual(workorder.contributors,                 [],                                   "check workorder (workorder.contributors)"     );
+		});
+	});
+
+	// it("allowWorkerToContribute", async () => {});
 	// it("[RUN] contribute", async () => {});
 	//it("viewContribution", async () => {});
 	// it("[RUN] revealConsensus", async () => {});
