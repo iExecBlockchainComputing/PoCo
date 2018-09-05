@@ -158,7 +158,6 @@ contract IexecHub is CategoryManager
 	}
 
 	// NEW → contribute that skips the allowWorkerToContribute step with scheduler signature
-	///*
 	function signedContribute(
 		bytes32              _woid,
 		bytes32              _resultHash,
@@ -169,7 +168,7 @@ contract IexecHub is CategoryManager
 	public
 	{
 		//Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
-		require(marketplace.viewDeal(_woid).pool.pointer == ecrecover(
+		require(marketplace.viewDeal(_woid).pool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
 				keccak256(abi.encodePacked(
@@ -230,7 +229,6 @@ contract IexecHub is CategoryManager
 	}
 
 	// OLD → allow then contribute
-	//*/
 	/*
 	function allowWorkerToContribute(
 		bytes32 _woid,

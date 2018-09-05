@@ -272,7 +272,7 @@ module.exports = {
   hashByteResult: function(byteresult)
   {
     const resultHash    = web3.sha3(byteresult,  {encoding: 'hex'}); // Vote
-    return resultHash;
+    return { raw: byteresult, hash: resultHash };
   },
   signByteResult: function(byteresult, address)
   {
@@ -281,7 +281,7 @@ module.exports = {
     var   xor           = '0x';
     for(i=2; i<66; ++i) xor += (parseInt(byteresult.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
     const sign          = web3.sha3(xor, {encoding: 'hex'}); // Sign
-    return {hash: resultHash, sign: sign};
+    return { raw: byteresult, hash: resultHash, sign: sign };
   },
   hashResult: function(result)          { return this.hashByteResult(web3.sha3(result)         ); },
   signResult: function(result, address) { return this.signByteResult(web3.sha3(result), address); },

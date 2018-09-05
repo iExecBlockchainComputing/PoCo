@@ -65,6 +65,7 @@ contract('IexecHub', async (accounts) => {
 
 	var woid                 = null;
 	var authorization        = null;
+	var signedResult         = null;
 
 	var jsonRpcProvider           = null;
 	var IexecHubInstanceEthers    = null;
@@ -371,7 +372,7 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
 
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
-		assert.strictEqual(affectation, PoolInstance.address,                         "affectation issue");
+		assert.strictEqual(affectation, PoolInstance.address,   "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
 		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
@@ -389,10 +390,22 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
+	 *                           TEST: Worker score                            *
+	 ***************************************************************************/
+	it("Worker score", async () => {
+		score = await IexecHubInstance.viewScore.call(poolWorker1);
+		assert.strictEqual(score.toNumber(), 0, "score issue");
+		score = await IexecHubInstance.viewScore.call(poolWorker2);
+		assert.strictEqual(score.toNumber(), 0, "score issue");
+		score = await IexecHubInstance.viewScore.call(poolWorker3);
+		assert.strictEqual(score.toNumber(), 0, "score issue");
+	});
+
+	/***************************************************************************
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("Generate dapp order", async () => {
-		DappOrder = OxTools.signMarket(
+		DappOrder = OxTools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -441,7 +454,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Data order signature (by dataProvider)               *
 	 ***************************************************************************/
 	it("Generate data order", async () => {
-		DataOrder = OxTools.signMarket(
+		DataOrder = OxTools.signObject(
 			{
 				//market
 				data:         DataInstance.address,
@@ -490,7 +503,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Pool order signature (by poolProvider)               *
 	 ***************************************************************************/
 	it("Generate pool order", async () => {
-		PoolOrder = OxTools.signMarket(
+		PoolOrder = OxTools.signObject(
 			{
 				// market
 				pool:         PoolInstance.address,
@@ -543,7 +556,7 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: User order signature (by user)                   *
 	 ***************************************************************************/
 	it("Generate user order", async () => {
-		UserOrder = OxTools.signMarket(
+		UserOrder = OxTools.signObject(
 			{
 				// market
 				dapp:         DappInstance.address,
@@ -598,7 +611,13 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                      TEST: check balances - before                      *
 	 ***************************************************************************/
-	it("[RUN] check Balances - Before", async () => {
+	it("check Balances - Before", async () => {
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider)
+		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider)
+		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
@@ -634,49 +653,67 @@ contract('IexecHub', async (accounts) => {
 		);
 		// console.log("txNotMined:", txNotMined);
 
-		txReceipt = await txNotMined.wait();
+		// txReceipt = await txNotMined.wait(); // SLOW!!!
 		// console.log("txReceipt:", txReceipt);
 
-		// events = extractEvents(txMined, MarketplaceInstance.address, "OrdersMatched");
-		// events = extractEvents(txMined, IexecHubInstance.address,    "ConsensusInitialize");
+		// TODO: check gas, events ...
 
 	});
 
-	it("viewDeal", async () => {
+	/***************************************************************************
+	 *                      TEST: deal is written onchain                      *
+	 ***************************************************************************/
+	it("checkDeal", async () => {
 		MarketplaceInstanceEther.viewDeal(woid).then(function(deal) {
 			// console.log(deal);
-			assert.strictEqual(deal.dapp.pointer.toLowerCase(),      DappInstance.address,                          "check deal (deal.dapp.pointer)"        );
-			assert.strictEqual(deal.dapp.owner.toLowerCase(),        dappProvider,                                  "check deal (deal.dapp.owner)"          );
-			assert.strictEqual(deal.dapp.price.toNumber(),           DappOrder.dappprice,                           "check deal (deal.dapp.price)"          );
-			assert.strictEqual(deal.dapp.pointer.toLowerCase(),      UserOrder.dapp,                                "check deal (deal.dapp.pointer)"        );
-			assert.isAtMost   (deal.dapp.price.toNumber(),           UserOrder.dappmaxprice,                        "check deal (deal.dapp.price)"          );
-			assert.strictEqual(deal.data.pointer.toLowerCase(),      DataInstance.address,                          "check deal (deal.data.pointer)"        );
-			assert.strictEqual(deal.data.owner.toLowerCase(),        dataProvider,                                  "check deal (deal.data.owner)"          );
-			assert.strictEqual(deal.data.price.toNumber(),           DataOrder.dataprice,                           "check deal (deal.data.price)"          );
-			assert.strictEqual(deal.data.pointer.toLowerCase(),      UserOrder.data,                                "check deal (deal.data.pointer)"        );
-			assert.isAtMost   (deal.data.price.toNumber(),           UserOrder.datamaxprice,                        "check deal (deal.data.price)"          );
-			assert.strictEqual(deal.pool.pointer.toLowerCase(),      PoolInstance.address,                          "check deal (deal.pool.pointer)"        );
-			assert.strictEqual(deal.pool.owner.toLowerCase(),        poolScheduler,                                 "check deal (deal.pool.owner)"          );
-			assert.strictEqual(deal.pool.price.toNumber(),           PoolOrder.poolprice,                           "check deal (deal.pool.price)"          );
+			assert.strictEqual(deal.dapp.pointer.toLowerCase(),      DappInstance.address,                       "check deal (deal.dapp.pointer)"        );
+			assert.strictEqual(deal.dapp.owner.toLowerCase(),        dappProvider,                               "check deal (deal.dapp.owner)"          );
+			assert.strictEqual(deal.dapp.price.toNumber(),           DappOrder.dappprice,                        "check deal (deal.dapp.price)"          );
+			assert.strictEqual(deal.dapp.pointer.toLowerCase(),      UserOrder.dapp,                             "check deal (deal.dapp.pointer)"        );
+			assert.isAtMost   (deal.dapp.price.toNumber(),           UserOrder.dappmaxprice,                     "check deal (deal.dapp.price)"          );
+			assert.strictEqual(deal.data.pointer.toLowerCase(),      DataInstance.address,                       "check deal (deal.data.pointer)"        );
+			assert.strictEqual(deal.data.owner.toLowerCase(),        dataProvider,                               "check deal (deal.data.owner)"          );
+			assert.strictEqual(deal.data.price.toNumber(),           DataOrder.dataprice,                        "check deal (deal.data.price)"          );
+			assert.strictEqual(deal.data.pointer.toLowerCase(),      UserOrder.data,                             "check deal (deal.data.pointer)"        );
+			assert.isAtMost   (deal.data.price.toNumber(),           UserOrder.datamaxprice,                     "check deal (deal.data.price)"          );
+			assert.strictEqual(deal.pool.pointer.toLowerCase(),      PoolInstance.address,                       "check deal (deal.pool.pointer)"        );
+			assert.strictEqual(deal.pool.owner.toLowerCase(),        poolScheduler,                              "check deal (deal.pool.owner)"          );
+			assert.strictEqual(deal.pool.price.toNumber(),           PoolOrder.poolprice,                        "check deal (deal.pool.price)"          );
 			if( UserOrder.pool != constants.NULL.ADDRESS)
-			assert.strictEqual(deal.pool.pointer.toLowerCase(),      UserOrder.pool,                                "check deal (deal.pool.pointer)"        );
-			assert.isAtMost   (deal.pool.price.toNumber(),           UserOrder.poolmaxprice,                        "check deal (deal.pool.price)"          );
-			assert.strictEqual(deal.category.toNumber(),             PoolOrder.category,                            "check deal (deal.category)"            );
-			assert.strictEqual(deal.category.toNumber(),             UserOrder.category,                            "check deal (deal.category)"            );
-			assert.strictEqual(deal.trust.toNumber(),                PoolOrder.trust,                               "check deal (deal.trust)"               );
-			assert.isAtLeast  (deal.trust.toNumber(),                UserOrder.trust,                               "check deal (deal.trust)"               );
-			assert.strictEqual(deal.tag.toNumber(),                  PoolOrder.tag,                                 "check deal (deal.tag)"                 );
-			assert.strictEqual(deal.tag.toNumber(),                  UserOrder.tag,                                 "check deal (deal.tag)"                 );
-			assert.strictEqual(deal.requester.toLowerCase(),         user,                                          "check deal (deal.requester)"           );
-			assert.strictEqual(deal.beneficiary.toLowerCase(),       user,                                          "check deal (deal.beneficiary)"         );
-			assert.strictEqual(deal.callback.toLowerCase(),          UserOrder.callback,                            "check deal (deal.callback)"            );
-			assert.strictEqual(deal.params,                          UserOrder.params,                              "check deal (deal.params)"              );
-			assert.strictEqual(deal.workerStake.toNumber(),          Math.floor(deal.pool.price.toNumber()*35/100), "check deal (deal.workerStake)"         );
-			assert.strictEqual(deal.schedulerRewardRatio.toNumber(), 5,                                             "check deal (deal.schedulerRewardRatio)");
+			assert.strictEqual(deal.pool.pointer.toLowerCase(),      UserOrder.pool,                             "check deal (deal.pool.pointer)"        );
+			assert.isAtMost   (deal.pool.price.toNumber(),           UserOrder.poolmaxprice,                     "check deal (deal.pool.price)"          );
+			assert.strictEqual(deal.category.toNumber(),             PoolOrder.category,                         "check deal (deal.category)"            );
+			assert.strictEqual(deal.category.toNumber(),             UserOrder.category,                         "check deal (deal.category)"            );
+			assert.strictEqual(deal.trust.toNumber(),                PoolOrder.trust,                            "check deal (deal.trust)"               );
+			assert.isAtLeast  (deal.trust.toNumber(),                UserOrder.trust,                            "check deal (deal.trust)"               );
+			assert.strictEqual(deal.tag.toNumber(),                  PoolOrder.tag,                              "check deal (deal.tag)"                 );
+			assert.strictEqual(deal.tag.toNumber(),                  UserOrder.tag,                              "check deal (deal.tag)"                 );
+			assert.strictEqual(deal.requester.toLowerCase(),         user,                                       "check deal (deal.requester)"           );
+			assert.strictEqual(deal.beneficiary.toLowerCase(),       user,                                       "check deal (deal.beneficiary)"         );
+			assert.strictEqual(deal.callback.toLowerCase(),          UserOrder.callback,                         "check deal (deal.callback)"            );
+			assert.strictEqual(deal.params,                          UserOrder.params,                           "check deal (deal.params)"              );
+			assert.strictEqual(deal.workerStake.toNumber(),          Math.floor(deal.pool.price.toNumber()*.35), "check deal (deal.workerStake)"         );
+			assert.strictEqual(deal.schedulerRewardRatio.toNumber(), 5,                                          "check deal (deal.schedulerRewardRatio)");
 		});
+
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider)
+		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider)
+		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		assert.strictEqual(balance[0].toNumber(), 1000-Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
+		assert.strictEqual(balance[1].toNumber(),      Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
+		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		assert.strictEqual(balance[0].toNumber(), 1000-          (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
+		assert.strictEqual(balance[1].toNumber(),                (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
 	});
 
-	it("viewWorkorder", async () => {
+	/***************************************************************************
+	 *                  TEST: work order has been initialized                  *
+	 ***************************************************************************/
+	it("checkWorkorder", async () => {
 		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
 			// console.log(workorder);
 			assert.strictEqual    (workorder.status,                       constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
@@ -689,13 +726,152 @@ contract('IexecHub', async (accounts) => {
 		});
 	});
 
-	// it("allowWorkerToContribute", async () => {});
-	// it("[RUN] contribute", async () => {});
-	//it("viewContribution", async () => {});
-	// it("[RUN] revealConsensus", async () => {});
-	// it("[RUN] reveal", async () => {});
-	// it("[RUN] finalizeWork", async () => {});
-	// it("[RUN] check Balances - After", async () => {});
+	/***************************************************************************
+	 *           TEST: scheduler authorizes the worker to contribute           *
+	 ***************************************************************************/
+	it("allowWorkerToContribute", async () => {
+		authorization = OxTools.signObject(
+			{
+				worker:  poolWorker1,
+				woid:    woid,
+				enclave: sgxEnclave // constants.NULL.ADDRESS
+			},
+			poolScheduler,
+			(obj) => OxTools.authorizeHash(obj)
+		);
+	});
+
+	/***************************************************************************
+	 *                    TEST: worker runs its application                    *
+	 ***************************************************************************/
+	it("execution", async () => {
+		processedResult = OxTools.signResult("iExec the wanderer", poolWorker1);
+
+		if (sgxEnclave != constants.NULL.ADDRESS)
+		{
+			// With SGX
+			OxTools.signObject(
+				processedResult,
+				sgxEnclave,
+				(obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64)
+			);
+		}
+		else
+		{
+			// Without SGX
+			processedResult.sign = constants.NULL.SIGNATURE;
+		}
+	});
+
+	/***************************************************************************
+	 *           TEST: scheduler authorizes the worker to contribute           *
+	 ***************************************************************************/
+	it("[RUN] signedContribute", async () => {
+		txNotMined = await IexecHubInstanceEthers
+		.connect(jsonRpcProvider.getSigner(poolWorker1))
+		.signedContribute(
+			woid,                              // worker    (authorization)
+			processedResult.contribution.hash, // common    (result)
+			processedResult.contribution.sign, // unique    (result)
+			sgxEnclave,                        // address   (enclave)
+			processedResult.sign,              // signature (enclave)
+			authorization.sign,                // signature (authorization)
+			{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
+		);
+		// console.log("txNotMined:", txNotMined);
+
+		// txReceipt = await txNotMined.wait(); // SLOW!!!
+		// console.log("txReceipt:", txReceipt);
+
+		// TODO: check gas, events ...
+
+
+	});
+
+	/***************************************************************************
+	 *                   TEST: contribution has been filled                    *
+	 ***************************************************************************/
+	it("checkContribution", async () => {
+		IexecHubInstanceEthers.viewContribution(woid, poolWorker1).then(function(contribution) {
+			// console.log(contribution);
+			assert.strictEqual(contribution.status,                         constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
+			assert.strictEqual(contribution.resultHash,                     processedResult.contribution.hash,            "check contribution (contribution.resultHash)"      );
+			assert.strictEqual(contribution.resultSign,                     processedResult.contribution.sign,            "check contribution (contribution.resultSign)"      );
+			assert.strictEqual(contribution.enclaveChallenge.toLowerCase(), sgxEnclave,                                   "check contribution (contribution.enclaveChallenge)");
+			assert.strictEqual(contribution.score.toNumber(),               0,                                            "check contribution (contribution.score)"           );
+			assert.strictEqual(contribution.weight.toNumber(),              1,                                            "check contribution (contribution.weight)"          );
+		});
+
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		assert.strictEqual(balance[0].toNumber(), 990-Math.floor(25*0.35), "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),  10+Math.floor(25*0.35), "check balance stake locked");
+	});
+
+
+
+
+
+
+	it("[RUN] revealConsensus", async () => {
+		txMined = await IexecHubInstance.revealConsensus(
+			woid,
+			OxTools.hashResult("iExec the wanderer").contribution.hash,
+			{ from: poolScheduler }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		// TODO: check status + events
+	});
+
+	it("[RUN] reveal", async () => {
+		txMined = await IexecHubInstance.reveal(
+			woid,
+			processedResult.base,
+			{ from: poolWorker1 }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		// TODO: check status + events
+	});
+
+	it("[RUN] finalizeWork", async () => {
+		txMined = await IexecHubInstance.finalizeWork(
+			woid,
+			"aStdout",
+			"aStderr",
+			"anUri",
+			{ from: poolScheduler }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		// TODO: check status + events
+	});
+
+
+	it("check Balances - After", async () => {
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider);
+		assert.strictEqual(balance[0].toNumber(),    1, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider);
+		assert.strictEqual(balance[0].toNumber(),    3, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler);
+		assert.strictEqual(balance[0].toNumber(), 1002, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1);
+		assert.strictEqual(balance[0].toNumber(), 1013, "check balance stake locked"); // 990 + 23
+		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked"); // lock for workerpool
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2);
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3);
+		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+		balance = await MarketplaceInstance.viewAccountLegacy.call(user);
+		assert.strictEqual(balance[0].toNumber(),  971, "check balance stake locked");
+		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
+	});
+
 	it("FINISHED", async () => {});
 
 });

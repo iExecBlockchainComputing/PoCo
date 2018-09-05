@@ -1,7 +1,7 @@
 const ethers = require('ethers');
 
 module.exports = {
-	signMarket: function(object, wallet, hashing)
+	signObject: function(object, wallet, hashing)
 	{
 		object.sign = ethers.utils.splitSignature(web3.eth.sign(wallet, hashing(object)));
 		return object
@@ -111,5 +111,35 @@ module.exports = {
 			usermarket.params,
 		]);
 	},
+	authorizeHash: function(authorization)
+	{
+		return ethers.utils.solidityKeccak256([
+			'address',
+			'bytes32',
+			'address',
+		],[
+			authorization.worker,
+			authorization.woid,
+			authorization.enclave,
+		]);
+	},
+
+
+	hashByteResult: function(byteresult)
+	{
+		const resultHash    = web3.sha3(byteresult,  {encoding: 'hex'}); // Vote
+		return { base: byteresult, contribution: {hash: resultHash }};
+	},
+	signByteResult: function(byteresult, address)
+	{
+		const resultHash    = web3.sha3(byteresult, {encoding: 'hex'}); // Vote
+		const addressHash   = web3.sha3(address,    {encoding: 'hex'});
+		var   xor           = '0x';
+		for(i=2; i<66; ++i) xor += (parseInt(byteresult.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
+		const sign          = web3.sha3(xor, {encoding: 'hex'}); // Sign
+		return { base: byteresult, contribution: {hash: resultHash, sign: sign }};
+	},
+	hashResult: function(result)          { return this.hashByteResult(web3.sha3(result)         ); },
+	signResult: function(result, address) { return this.signByteResult(web3.sha3(result), address); },
 
 };
