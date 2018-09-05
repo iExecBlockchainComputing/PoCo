@@ -29,7 +29,7 @@ library Iexec0xLib
 	}
 
 	/**
-	 * Marketplace - Orders
+	 * Clerk - Orders
 	 */
 	struct DappOrder
 	{
@@ -99,7 +99,7 @@ library Iexec0xLib
 		signature sign;
 	}
 	/**
-	 * Marketplace - Deals
+	 * Clerk - Deals
 	 */
 	struct Resource
 	{

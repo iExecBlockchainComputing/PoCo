@@ -1,6 +1,6 @@
 var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 var IexecHub     = artifacts.require("./IexecHub.sol");
-var Marketplace  = artifacts.require("./Marketplace.sol");
+var IexecClerk   = artifacts.require("./IexecClerk.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");
 var DataRegistry = artifacts.require("./DataRegistry.sol");
 var PoolRegistry = artifacts.require("./PoolRegistry.sol");
@@ -49,7 +49,7 @@ contract('IexecHub', async (accounts) => {
 
 	var RLCInstance          = null;
 	var IexecHubInstance     = null;
-	var MarketplaceInstance  = null;
+	var IexecClerkInstance   = null;
 	var DappRegistryInstance = null;
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
@@ -67,11 +67,11 @@ contract('IexecHub', async (accounts) => {
 	var authorization        = null;
 	var signedResult         = null;
 
-	var jsonRpcProvider           = null;
-	var IexecHubInstanceEthers    = null;
-	var MarketplaceInstanceEthers = null;
-	var BeaconInstanceEthers      = null;
-	var BrokerInstanceEthers      = null;
+	var jsonRpcProvider          = null;
+	var IexecHubInstanceEthers   = null;
+	var IexecClerkInstanceEthers = null;
+	var BeaconInstanceEthers     = null;
+	var BrokerInstanceEthers     = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -82,7 +82,7 @@ contract('IexecHub', async (accounts) => {
 		 */
 		RLCInstance          = await RLC.deployed();
 		IexecHubInstance     = await IexecHub.deployed();
-		MarketplaceInstance  = await Marketplace.deployed();
+		IexecClerkInstance   = await IexecClerk.deployed();
 		DappRegistryInstance = await DappRegistry.deployed();
 		DataRegistryInstance = await DataRegistry.deployed();
 		PoolRegistryInstance = await PoolRegistry.deployed();
@@ -93,10 +93,10 @@ contract('IexecHub', async (accounts) => {
 		 * For ABIEncoderV2
 		 */
 		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,    IexecHub.abi,            jsonRpcProvider);
-		MarketplaceInstanceEther = new ethers.Contract(MarketplaceInstance.address, MarketplaceInstance.abi, jsonRpcProvider);
-		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,      BeaconInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,      BrokerInstance.abi,      jsonRpcProvider);
+		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
+		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
+		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,     BeaconInstance.abi,     jsonRpcProvider);
+		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 
 		/**
 		 * Token distribution
@@ -137,13 +137,13 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(balances[6].toNumber(), 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(Marketplace.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(Marketplace.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -252,36 +252,36 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                     TEST: Check marketplace escrow                      *
+	 *                           TEST: Check escrow                            *
 	 ***************************************************************************/
 	it("Check escrow balances", async () => {
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
 	});
 
 	/***************************************************************************
-	 *                   TEST: Deposit funds to marketplace                    *
+	 *                      TEST: Deposit funds to escrow                      *
 	 ***************************************************************************/
-	it("Marketplace deposit", async () => {
+	it("Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			MarketplaceInstance.deposit(1000, { from: poolScheduler }),
-			MarketplaceInstance.deposit(1000, { from: poolWorker1   }),
-			MarketplaceInstance.deposit(1000, { from: poolWorker2   }),
-			MarketplaceInstance.deposit(1000, { from: poolWorker3   }),
-			MarketplaceInstance.deposit(1000, { from: user          }),
+			IexecClerkInstance.deposit(1000, { from: poolScheduler }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker1   }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker2   }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker3   }),
+			IexecClerkInstance.deposit(1000, { from: user          }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -289,19 +289,19 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -342,13 +342,13 @@ contract('IexecHub', async (accounts) => {
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
 		assert.strictEqual(affectation, PoolInstance.address, "affectation issue");
 
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
 	});
@@ -378,13 +378,13 @@ contract('IexecHub', async (accounts) => {
 		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
 		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -419,16 +419,16 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dappProvider,
-			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.dappPartialHash(obj), obj.salt)
+			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.dappPartialHash(obj), obj.salt)
 		);
 
-		MarketplaceInstanceEther.getDappOrderHash(
+		IexecClerkInstanceEthers.getDappOrderHash(
 			DappOrder
 		).then(function (hash) {
 			assert.strictEqual(
 				hash,
 				OxTools.getFullHash(
-					Marketplace.address,
+					IexecClerkInstance.address,
 					OxTools.dappPartialHash(DappOrder),
 					DappOrder.salt
 				),
@@ -436,10 +436,10 @@ contract('IexecHub', async (accounts) => {
 			);
 		});
 
-		MarketplaceInstanceEther.isValidSignature(
+		IexecClerkInstanceEthers.isValidSignature(
 			dappProvider,
 			OxTools.getFullHash(
-				Marketplace.address,
+				IexecClerkInstance.address,
 				OxTools.dappPartialHash(DappOrder),
 				DappOrder.salt
 			),
@@ -468,16 +468,16 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dataProvider,
-			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.dataPartialHash(obj), obj.salt)
+			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.dataPartialHash(obj), obj.salt)
 		);
 
-		MarketplaceInstanceEther.getDataOrderHash(
+		IexecClerkInstanceEthers.getDataOrderHash(
 			DataOrder
 		).then(function (hash) {
 			assert.strictEqual(
 				hash,
 				OxTools.getFullHash(
-					Marketplace.address,
+					IexecClerkInstance.address,
 					OxTools.dataPartialHash(DataOrder),
 					DataOrder.salt
 				),
@@ -485,10 +485,10 @@ contract('IexecHub', async (accounts) => {
 			);
 		});
 
-		MarketplaceInstanceEther.isValidSignature(
+		IexecClerkInstanceEthers.isValidSignature(
 			dataProvider,
 			OxTools.getFullHash(
-				Marketplace.address,
+				IexecClerkInstance.address,
 				OxTools.dataPartialHash(DataOrder),
 				DataOrder.salt
 			),
@@ -521,16 +521,16 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			poolScheduler,
-			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.poolPartialHash(obj), obj.salt)
+			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.poolPartialHash(obj), obj.salt)
 		);
 
-		MarketplaceInstanceEther.getPoolOrderHash(
+		IexecClerkInstanceEthers.getPoolOrderHash(
 			PoolOrder
 		).then(function (hash) {
 			assert.strictEqual(
 				hash,
 				OxTools.getFullHash(
-					Marketplace.address,
+					IexecClerkInstance.address,
 					OxTools.poolPartialHash(PoolOrder),
 					PoolOrder.salt
 				),
@@ -538,10 +538,10 @@ contract('IexecHub', async (accounts) => {
 			);
 		});
 
-		MarketplaceInstanceEther.isValidSignature(
+		IexecClerkInstanceEthers.isValidSignature(
 			poolScheduler,
 			OxTools.getFullHash(
-				Marketplace.address,
+				IexecClerkInstance.address,
 				OxTools.poolPartialHash(PoolOrder),
 				PoolOrder.salt
 			),
@@ -578,16 +578,16 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			user,
-			(obj) => OxTools.getFullHash(Marketplace.address, OxTools.userPartialHash(obj), obj.salt)
+			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.userPartialHash(obj), obj.salt)
 		);
 
-		MarketplaceInstanceEther.getUserOrderHash(
+		IexecClerkInstanceEthers.getUserOrderHash(
 			UserOrder
 		).then(function (hash) {
 			assert.strictEqual(
 				hash,
 				OxTools.getFullHash(
-					Marketplace.address,
+					IexecClerkInstance.address,
 					OxTools.userPartialHash(UserOrder),
 					UserOrder.salt
 				),
@@ -595,10 +595,10 @@ contract('IexecHub', async (accounts) => {
 			);
 		});
 
-		MarketplaceInstanceEther.isValidSignature(
+		IexecClerkInstanceEthers.isValidSignature(
 			user,
 			OxTools.getFullHash(
-				Marketplace.address,
+				IexecClerkInstance.address,
 				OxTools.userPartialHash(UserOrder),
 				UserOrder.salt
 			),
@@ -612,25 +612,25 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check balances - before                      *
 	 ***************************************************************************/
 	it("check Balances - Before", async () => {
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider)
 		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider)
 		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -640,9 +640,9 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[RUN] matchOrders", async () => {
 
-		woid = OxTools.getFullHash(Marketplace.address, OxTools.userPartialHash(UserOrder), UserOrder.salt);
+		woid = OxTools.getFullHash(IexecClerkInstance.address, OxTools.userPartialHash(UserOrder), UserOrder.salt);
 
-		txNotMined = await MarketplaceInstanceEther
+		txNotMined = await IexecClerkInstanceEthers
 		.connect(jsonRpcProvider.getSigner(user))
 		.matchOrders(
 			DappOrder,
@@ -664,7 +664,7 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: deal is written onchain                      *
 	 ***************************************************************************/
 	it("checkDeal", async () => {
-		MarketplaceInstanceEther.viewDeal(woid).then(function(deal) {
+		IexecClerkInstanceEthers.viewDeal(woid).then(function(deal) {
 			// console.log(deal);
 			assert.strictEqual(deal.dapp.pointer.toLowerCase(),      DappInstance.address,                       "check deal (deal.dapp.pointer)"        );
 			assert.strictEqual(deal.dapp.owner.toLowerCase(),        dappProvider,                               "check deal (deal.dapp.owner)"          );
@@ -696,16 +696,16 @@ contract('IexecHub', async (accounts) => {
 			assert.strictEqual(deal.schedulerRewardRatio.toNumber(), 5,                                          "check deal (deal.schedulerRewardRatio)");
 		});
 
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider)
 		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider)
 		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000-Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
 		assert.strictEqual(balance[1].toNumber(),      Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
-		balance = await MarketplaceInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
 		assert.strictEqual(balance[0].toNumber(), 1000-          (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
 		assert.strictEqual(balance[1].toNumber(),                (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
 	});
@@ -802,7 +802,7 @@ contract('IexecHub', async (accounts) => {
 			assert.strictEqual(contribution.weight.toNumber(),              1,                                            "check contribution (contribution.weight)"          );
 		});
 
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 990-Math.floor(25*0.35), "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10+Math.floor(25*0.35), "check balance stake locked");
 	});
@@ -849,25 +849,25 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("check Balances - After", async () => {
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dataProvider);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider);
 		assert.strictEqual(balance[0].toNumber(),    1, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(dappProvider);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider);
 		assert.strictEqual(balance[0].toNumber(),    3, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolScheduler);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler);
 		assert.strictEqual(balance[0].toNumber(), 1002, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker1);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1);
 		assert.strictEqual(balance[0].toNumber(), 1013, "check balance stake locked"); // 990 + 23
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked"); // lock for workerpool
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker2);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2);
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(poolWorker3);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3);
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await MarketplaceInstance.viewAccountLegacy.call(user);
+		balance = await IexecClerkInstance.viewAccountLegacy.call(user);
 		assert.strictEqual(balance[0].toNumber(),  971, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});

@@ -6,14 +6,14 @@ module.exports = {
 		object.sign = ethers.utils.splitSignature(web3.eth.sign(wallet, hashing(object)));
 		return object
 	},
-	getFullHash: function(marketplace, partialHash, salt)
+	getFullHash: function(iexecclerk, partialHash, salt)
 	{
 		return ethers.utils.solidityKeccak256([
 			'address',
 			'bytes32',
 			'bytes32',
 		],[
-			marketplace,
+			iexecclerk,
 			partialHash,
 			salt,
 		]);

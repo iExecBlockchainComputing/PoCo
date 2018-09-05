@@ -1,6 +1,6 @@
 var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
 var IexecHub     = artifacts.require("./IexecHub.sol");
-var Marketplace  = artifacts.require("./Marketplace.sol");
+var IexecClerk   = artifacts.require("./IexecClerk.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");
 var DataRegistry = artifacts.require("./DataRegistry.sol");
 var PoolRegistry = artifacts.require("./PoolRegistry.sol");
@@ -13,13 +13,13 @@ const readFileAsync = Promise.promisify(fs.readFile);
 
 module.exports = function(deployer, network, accounts) {
 	let aRLCInstance;
-	let aIexecHub;
-	let aMarketplaceInstance;
+	let aIexecHubInstance;
+	let aIexecClerkInstance;
 	let aDappRegistryInstance;
 	let aDataRegistryInstance;
 	let aPoolRegistryInstance;
-	let aBeacon;
-	let aBroker;
+	let aBeaconInstance;
+	let aBrokerInstance;
 	let creator;
 
 	return deployer.deploy(RLC)
@@ -44,14 +44,14 @@ module.exports = function(deployer, network, accounts) {
 		})
 		.then(() => IexecHub.deployed())
 		.then(instance => {
-			aIexecHub = instance;
-			console.log("IexecHub deployed at address: " + aIexecHub.address);
-			return deployer.deploy(Marketplace, aRLCInstance.address, aIexecHub.address);
+			aIexecHubInstance = instance;
+			console.log("IexecHub deployed at address: " + aIexecHubInstance.address);
+			return deployer.deploy(IexecClerk, aRLCInstance.address, aIexecHubInstance.address);
 		})
-		.then(() => Marketplace.deployed())
+		.then(() => IexecClerk.deployed())
 		.then(instance => {
-			aMarketplaceInstance = instance;
-			console.log("Marketplace deployed at address: " + instance.address);
+			aIexecClerkInstance = instance;
+			console.log("IexecClerk deployed at address: " + instance.address);
 			return deployer.deploy(DappRegistry);
 		})
 		.then(() => DappRegistry.deployed())
@@ -71,21 +71,21 @@ module.exports = function(deployer, network, accounts) {
 			aPoolRegistryInstance = instance;
 			console.log("PoolRegistry deployed at address: " + instance.address);
 			/*
-			return aDappRegistryInstance.transferOwnership(aIexecHub.address);
+			return aDappRegistryInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of DappRegistry to IexecHub");
-			return aDataRegistryInstance.transferOwnership(aIexecHub.address);
+			return aDataRegistryInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of DataRegistry to IexecHub");
-			return aPoolRegistryInstance.transferOwnership(aIexecHub.address);
+			return aPoolRegistryInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of PoolRegistry to IexecHub");
 			*/
-			return aIexecHub.attachContracts(
-				aMarketplaceInstance.address,
+			return aIexecHubInstance.attachContracts(
+				aIexecClerkInstance.address,
 				aDappRegistryInstance.address,
 				aDataRegistryInstance.address,
 				aPoolRegistryInstance.address
@@ -93,7 +93,7 @@ module.exports = function(deployer, network, accounts) {
 		})
 		.then(() => {
 			console.log("attach Contracts to IexecHub done");
-			return aIexecHub.transferOwnership(creator);
+			return aIexecHubInstance.transferOwnership(creator);
 		})
 		.then(() => {
 			console.log("setCategoriesCreator to "+creator);
@@ -105,7 +105,7 @@ module.exports = function(deployer, network, accounts) {
 			for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
 			{
 				console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-				createCatagoriesPromises.push(aIexecHub.createCategory(
+				createCatagoriesPromises.push(aIexecHubInstance.createCategory(
 					categoriesConfigFileJson.categories[i].name,
 					JSON.stringify(categoriesConfigFileJson.categories[i].description),
 					categoriesConfigFileJson.categories[i].workClockTimeRef
@@ -114,7 +114,7 @@ module.exports = function(deployer, network, accounts) {
 			return Promise.all(createCatagoriesPromises);
 		})
 		.then(categoriesCreated => {
-			return aIexecHub.countCategory.call()
+			return aIexecHubInstance.countCategory.call()
 		})
 		.then(countCategory => {
 			console.log("countCategory is now: "+countCategory)
@@ -122,13 +122,13 @@ module.exports = function(deployer, network, accounts) {
 		})
 		.then(() => Beacon.deployed())
 		.then(instance => {
-			aBeacon = instance;
+			aBeaconInstance = instance;
 			console.log("Beacon deployed at address: " + instance.address);
-			return deployer.deploy(Broker, aMarketplaceInstance.address);
+			return deployer.deploy(Broker, aIexecClerkInstance.address);
 		})
 		.then(() => Broker.deployed())
 		.then(instance => {
-			aBroker = instance;
+			aBrokerInstance = instance;
 			console.log("Broker deployed at address: " + instance.address);
 		})
 };
@@ -148,8 +148,8 @@ module.exports = function(deployer) {
 	let aWorkerPoolRegistryInstance;
 	let aAppHubInstance;
 	let aDatasetHubInstance;
-	let aIexecHub;
-	let aMarketplaceInstance;
+	let aIexecHubInstance;
+	let aIexecClerkInstance;
 	let categoriesConfigFileJson;
 	let creator ='0xcd7CcF952E0482ca41b46c6BBAd3A1852faD69dC';
 	aRLCInstance='0xc57538846ec405ea25deb00e0f9b29a432d53507';
@@ -175,31 +175,31 @@ module.exports = function(deployer) {
 		})
 		.then(() => IexecHub.deployed())
 		.then(instance => {
-			aIexecHub = instance;
-			console.log("IexecHub deployed at address: " + aIexecHub.address);
-			return aWorkerPoolRegistryInstance.transferOwnership(aIexecHub.address);
+			aIexecHubInstance = instance;
+			console.log("IexecHub deployed at address: " + aIexecHubInstance.address);
+			return aWorkerPoolRegistryInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of WorkerPoolRegistry to IexecHub");
-			return aAppHubInstance.transferOwnership(aIexecHub.address);
+			return aAppHubInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of AppHub to IexecHub");
-			return aDatasetHubInstance.transferOwnership(aIexecHub.address);
+			return aDatasetHubInstance.transferOwnership(aIexecHubInstance.address);
 		})
 		.then(() => {
 			console.log("transferOwnership of DatasetHub to IexecHub");
-			return deployer.deploy(Marketplace, aIexecHub.address);
+			return deployer.deploy(Marketplace, aIexecHubInstance.address);
 		})
 		.then(() => Marketplace.deployed())
 		.then(instance => {
-			aMarketplaceInstance = instance;
+			aIexecClerkInstance = instance;
 			console.log("Marketplace deployed at address: " + instance.address);
-			return aIexecHub.attachContracts(aRLCInstance,aMarketplaceInstance.address,aWorkerPoolRegistryInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
+			return aIexecHubInstance.attachContracts(aRLCInstance,aIexecClerkInstance.address,aWorkerPoolRegistryInstance.address, aAppHubInstance.address, aDatasetHubInstance.address);
 		})
 		.then(() => {
 			console.log("attach Contracts to IexecHub done");
-			return aIexecHub.setCategoriesCreator(creator);
+			return aIexecHubInstance.setCategoriesCreator(creator);
 		})
 		.then(() => {
 			console.log("setCategoriesCreator to "+creator);
@@ -208,30 +208,30 @@ module.exports = function(deployer) {
 		.then(categories => {
 			categoriesConfigFileJson = JSON.parse(categories);
 			console.log("create category : "+categoriesConfigFileJson.categories[0].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[0].name,JSON.stringify(categoriesConfigFileJson.categories[0].description),categoriesConfigFileJson.categories[0].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[0].name,JSON.stringify(categoriesConfigFileJson.categories[0].description),categoriesConfigFileJson.categories[0].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
 			console.log("create category : "+categoriesConfigFileJson.categories[1].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[1].name,JSON.stringify(categoriesConfigFileJson.categories[1].description),categoriesConfigFileJson.categories[1].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[1].name,JSON.stringify(categoriesConfigFileJson.categories[1].description),categoriesConfigFileJson.categories[1].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
 			console.log("create category : "+categoriesConfigFileJson.categories[2].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[2].name,JSON.stringify(categoriesConfigFileJson.categories[2].description),categoriesConfigFileJson.categories[2].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[2].name,JSON.stringify(categoriesConfigFileJson.categories[2].description),categoriesConfigFileJson.categories[2].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
 			console.log("create category : "+categoriesConfigFileJson.categories[3].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[3].name,JSON.stringify(categoriesConfigFileJson.categories[3].description),categoriesConfigFileJson.categories[3].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[3].name,JSON.stringify(categoriesConfigFileJson.categories[3].description),categoriesConfigFileJson.categories[3].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
 			console.log("create category : "+categoriesConfigFileJson.categories[4].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[4].name,JSON.stringify(categoriesConfigFileJson.categories[4].description),categoriesConfigFileJson.categories[4].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[4].name,JSON.stringify(categoriesConfigFileJson.categories[4].description),categoriesConfigFileJson.categories[4].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
 			console.log("create category : "+categoriesConfigFileJson.categories[5].name);
-			return aIexecHub.createCategory(categoriesConfigFileJson.categories[5].name,JSON.stringify(categoriesConfigFileJson.categories[5].description),categoriesConfigFileJson.categories[5].workClockTimeRef);
+			return aIexecHubInstance.createCategory(categoriesConfigFileJson.categories[5].name,JSON.stringify(categoriesConfigFileJson.categories[5].description),categoriesConfigFileJson.categories[5].workClockTimeRef);
 		})
 		.then(categoriesCreated => {
-			return aIexecHub.m_categoriesCount.call()
+			return aIexecHubInstance.m_categoriesCount.call()
 		})
 		.then(m_categoriesCount => console.log("m_categoriesCount is now: "+m_categoriesCount))
 		;

@@ -6,7 +6,7 @@ import "./tools/SafeMathOZ.sol";
 
 import "./CategoryManager.sol";
 
-import "./Marketplace.sol";
+import "./IexecClerk.sol";
 import "./resources_contract/RegistryBase.sol";
 /* import "./resources_contract/DappRegistry.sol"; */
 /* import "./resources_contract/DataRegistry.sol"; */
@@ -26,7 +26,7 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                             Other contracts                             *
 	 ***************************************************************************/
-	Marketplace  marketplace;
+	IexecClerk   iexecclerk;
 	RegistryBase dappregistry;
 	RegistryBase dataregistry;
 	RegistryBase poolregistry;
@@ -67,15 +67,15 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                Modifiers                                *
 	 ***************************************************************************/
-	modifier onlyMarketplace()
+	modifier onlyIexecClerk()
 	{
-		require(msg.sender == address(marketplace));
+		require(msg.sender == address(iexecclerk));
 		_;
 	}
 
 	modifier onlyScheduler(bytes32 _woid)
 	{
-		require(msg.sender == marketplace.viewDeal(_woid).pool.owner);
+		require(msg.sender == iexecclerk.viewDeal(_woid).pool.owner);
 		_;
 	}
 
@@ -88,14 +88,14 @@ contract IexecHub is CategoryManager
 	}
 
 	function attachContracts(
-		address _marketplaceAddress,
+		address _iexecclerkAddress,
 		address _dappRegistryAddress,
 		address _dataRegistryAddress,
 		address _poolRegistryAddress)
 	public onlyOwner
 	{
-		require(address(marketplace) == address(0));
-		marketplace  = Marketplace (_marketplaceAddress );
+		require(address(iexecclerk) == address(0));
+		iexecclerk   = IexecClerk  (_iexecclerkAddress  );
 		dappregistry = RegistryBase(_dappRegistryAddress);
 		dataregistry = RegistryBase(_dataRegistryAddress);
 		poolregistry = RegistryBase(_poolRegistryAddress);
@@ -144,17 +144,17 @@ contract IexecHub is CategoryManager
 	 ***************************************************************************/
 	function initialize(
 		bytes32 _woid)
-	public onlyMarketplace
+	public onlyIexecClerk
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status == Iexec0xLib.WorkOrderStatusEnum.UNSET);
 
 		workorder.status            = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
-		workorder.consensusDeadline = viewCategory(marketplace.viewDeal(_woid).category).workClockTimeRef
+		workorder.consensusDeadline = viewCategory(iexecclerk.viewDeal(_woid).category).workClockTimeRef
 		                              .mul(CONSENSUS_DURATION_RATIO)
 		                              .add(now);
 
-		emit ConsensusInitialize(_woid, marketplace.viewDeal(_woid).pool.owner);
+		emit ConsensusInitialize(_woid, iexecclerk.viewDeal(_woid).pool.owner);
 	}
 
 	// NEW → contribute that skips the allowWorkerToContribute step with scheduler signature
@@ -168,7 +168,7 @@ contract IexecHub is CategoryManager
 	public
 	{
 		//Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
-		require(marketplace.viewDeal(_woid).pool.owner == ecrecover(
+		require(iexecclerk.viewDeal(_woid).pool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
 				keccak256(abi.encodePacked(
@@ -183,7 +183,7 @@ contract IexecHub is CategoryManager
 		);
 
 		// If first byte of tag is active then an enclave must be specified
-		require(_enclaveChallenge != address(0) || marketplace.viewDeal(_woid).tag & 0x1 == 0);
+		require(_enclaveChallenge != address(0) || iexecclerk.viewDeal(_woid).tag & 0x1 == 0);
 
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
@@ -195,7 +195,7 @@ contract IexecHub is CategoryManager
 
 		// worker must be subscribed to the pool
 		// TODO: required ?
-		require(m_workerAffectations[msg.sender] == marketplace.viewDeal(_woid).pool.pointer);
+		require(m_workerAffectations[msg.sender] == iexecclerk.viewDeal(_woid).pool.pointer);
 
 		require(_resultHash != 0x0);
 		require(_resultSign != 0x0);
@@ -223,7 +223,7 @@ contract IexecHub is CategoryManager
 		contribution.weight           = 1 + contribution.score.log();
 		workorder.contributors.push(msg.sender);
 
-		require(marketplace.lockContribution(_woid, msg.sender));
+		require(iexecclerk.lockContribution(_woid, msg.sender));
 
 		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
@@ -237,7 +237,7 @@ contract IexecHub is CategoryManager
 	public onlyScheduler(_woid)
 	{
 		// If first byte of tag is active then an enclave must be specified
-		require(_enclaveChallenge != address(0) || marketplace.viewDeal(_woid).tag & 0x1 == 0);
+		require(_enclaveChallenge != address(0) || iexecclerk.viewDeal(_woid).tag & 0x1 == 0);
 
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
@@ -247,7 +247,7 @@ contract IexecHub is CategoryManager
 		require(contribution.status == Iexec0xLib.ContributionStatusEnum.UNSET);
 
 		// worker must be subscribed to the pool
-		require(m_workerAffectations[_worker] == marketplace.viewDeal(_woid).pool.pointer);
+		require(m_workerAffectations[_worker] == iexecclerk.viewDeal(_woid).pool.pointer);
 
 		// authorize contribution
 		contribution.status           = Iexec0xLib.ContributionStatusEnum.AUTHORIZED;
@@ -303,7 +303,7 @@ contract IexecHub is CategoryManager
 		contribution.weight     = 1 + contribution.score.log();
 		workorder.contributors.push(msg.sender);
 
-		require(marketplace.lockContribution(_woid, msg.sender));
+		require(iexecclerk.lockContribution(_woid, msg.sender));
 
 		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
@@ -335,7 +335,7 @@ contract IexecHub is CategoryManager
 
 		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.REVEALING;
 		workorder.consensusValue = _consensus;
-		workorder.revealDeadline = viewCategory(marketplace.viewDeal(_woid).category).workClockTimeRef
+		workorder.revealDeadline = viewCategory(iexecclerk.viewDeal(_woid).category).workClockTimeRef
 		                           .mul(REVEAL_DURATION_RATIO)
 		                           .add(now);
 		workorder.revealCounter  = 0;
@@ -411,7 +411,7 @@ contract IexecHub is CategoryManager
 		/**
 		 * Stake and reward management
 		 */
-		require(marketplace.successWork(_woid));
+		require(iexecclerk.successWork(_woid));
 		__distributeRewards(_woid);
 
 		emit ConsensusFinalized(_woid, _stdout, _stderr, _uri);
@@ -431,13 +431,13 @@ contract IexecHub is CategoryManager
 		/**
 		 * Stake management
 		 */
-		require(marketplace.failedWork(_woid));
+		require(iexecclerk.failedWork(_woid));
 		for (uint256 i = 0; i < workorder.contributors.length; ++i)
 		{
 			address worker = workorder.contributors[i];
 			if (m_contributions[_woid][worker].status != Iexec0xLib.ContributionStatusEnum.AUTHORIZED) // Contributed, proved or rejected
 			{
-				require(marketplace.unlockContribution(_woid, worker));
+				require(iexecclerk.unlockContribution(_woid, worker));
 			}
 		}
 
@@ -453,8 +453,8 @@ contract IexecHub is CategoryManager
 		address worker;
 
 		uint256 totalWeight = 0;
-		uint256 totalReward = marketplace.viewDeal(_woid).pool.price;
-		uint256 workerStake = marketplace.viewDeal(_woid).workerStake;
+		uint256 totalReward = iexecclerk.viewDeal(_woid).pool.price;
+		uint256 workerStake = iexecclerk.viewDeal(_woid).workerStake;
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
@@ -471,7 +471,7 @@ contract IexecHub is CategoryManager
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(marketplace.viewDeal(_woid).schedulerRewardRatio));
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(iexecclerk.viewDeal(_woid).schedulerRewardRatio));
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
@@ -481,8 +481,8 @@ contract IexecHub is CategoryManager
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(marketplace.unlockContribution   (_woid, worker));
-				require(marketplace.rewardForContribution(_woid, worker, workerReward));
+				require(iexecclerk.unlockContribution   (_woid, worker));
+				require(iexecclerk.rewardForContribution(_woid, worker, workerReward));
 				m_workerScores[worker] = m_workerScores[worker].add(1);
 
 				emit AccurateContribution(_woid, worker);
@@ -490,14 +490,14 @@ contract IexecHub is CategoryManager
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
-				require(marketplace.seizeContribution(_woid, worker));
+				require(iexecclerk.seizeContribution(_woid, worker));
 				m_workerScores[worker] = m_workerScores[worker].sub(SCORE_UNITARY_SLASH);
 
 				emit FaultyContribution(_woid, worker);
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(marketplace.rewardForScheduling(_woid, totalReward));
+		require(iexecclerk.rewardForScheduling(_woid, totalReward));
 	}
 
 	/***************************************************************************
@@ -509,8 +509,8 @@ contract IexecHub is CategoryManager
 		require(poolregistry.isRegistered(_pool));
 
 		require(m_workerAffectations[msg.sender] == address(0));
-		require(marketplace.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
-		require(marketplace.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
+		require(iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
+		require(iexecclerk.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
 		require(m_workerScores[msg.sender]                >= _pool.m_subscriptionMinimumScorePolicy());
 		m_workerAffectations[msg.sender] = address(_pool);
 
@@ -524,7 +524,7 @@ contract IexecHub is CategoryManager
 		Pool pool = Pool(m_workerAffectations[msg.sender]);
 		require(address(pool) != address(0));
 
-		require(marketplace.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy()));
+		require(iexecclerk.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy()));
 		m_workerAffectations[msg.sender] = address(0);
 
 		emit WorkerUnsubscription(address(pool), msg.sender);
@@ -538,7 +538,7 @@ contract IexecHub is CategoryManager
 		require(address(pool)  != address(0));
 		require(pool.m_owner() == msg.sender);
 
-		require(marketplace.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy()));
+		require(iexecclerk.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy()));
 		m_workerAffectations[_worker] = address(0);
 
 		emit WorkerEviction(address(pool), _worker);

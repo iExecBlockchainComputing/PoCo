@@ -2,21 +2,21 @@ pragma solidity ^0.4.21;
 pragma experimental ABIEncoderV2;
 
 import "./Iexec0xLib.sol";
-import "./Marketplace.sol";
+import "./IexecClerk.sol";
 import "./tools/SafeMathOZ.sol";
 
 contract Broker
 {
 	using SafeMathOZ for uint256;
 
-	Marketplace                 public m_marketplace;
+	IexecClerk                  public iexecclerk;
 	uint256                     public m_price = 0.01 ether;
 	mapping(address => uint256) public m_balance;
 
-	constructor(Marketplace _marketplace)
+	constructor(address _iexecclerk)
 	public
 	{
-		m_marketplace = _marketplace;
+		iexecclerk = IexecClerk(_iexecclerk);
 	}
 
 	function deposit()
@@ -49,7 +49,7 @@ contract Broker
 		m_balance[account] = m_balance[account].sub(m_price);
 		msg.sender.transfer(m_price);
 
-		return m_marketplace.matchOrders(
+		return iexecclerk.matchOrders(
 			_dapporder,
 			_dataorder,
 			_poolorder,
@@ -67,7 +67,7 @@ contract Broker
 		m_balance[account] = m_balance[account].sub(m_price);
 		msg.sender.transfer(m_price);
 
-		return m_marketplace.matchOrders(
+		return iexecclerk.matchOrders(
 			_dapporder,
 			_dataorder,
 			_poolorder,

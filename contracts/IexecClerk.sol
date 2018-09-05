@@ -11,7 +11,7 @@ import "./resources_contract/DappRegistry.sol";
 import "./resources_contract/DataRegistry.sol";
 import "./resources_contract/PoolRegistry.sol";
 
-contract Marketplace is Escrow, IexecHubAccessor
+contract IexecClerk is Escrow, IexecHubAccessor
 {
 	using SafeMathOZ for uint256;
 
@@ -23,7 +23,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 	uint256 public constant KITTY_MIN        = 1000;
 
 	/***************************************************************************
-	 *                            Marketplace data                             *
+	 *                               Clerk data                                *
 	 ***************************************************************************/
 	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
 	mapping(bytes32 => uint256        ) public m_consumed;
@@ -212,7 +212,7 @@ contract Marketplace is Escrow, IexecHubAccessor
 	}
 
 	/***************************************************************************
-	 *                           Marketplace methods                           *
+	 *                              Clerk methods                              *
 	 ***************************************************************************/
 	function matchOrders(
 		Iexec0xLib.DappOrder _dapporder,
