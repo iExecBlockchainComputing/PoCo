@@ -12,8 +12,8 @@ contract Pool is OwnableImmutable
 	 * Parameters
 	 */
 	string  public m_poolDescription;
-	uint256 public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
 	uint256 public m_workerStakeRatioPolicy;         // % of reward to stake
+	uint256 public m_schedulerRewardRatioPolicy;     // % of reward given to scheduler
 	uint256 public m_subscriptionLockStakePolicy;    // Stake locked when in workerpool - Constant set by constructor, do not update
 	uint256 public m_subscriptionMinimumStakePolicy; // Minimum stake for subscribing
 	uint256 public m_subscriptionMinimumScorePolicy; // Minimum score for subscribing
