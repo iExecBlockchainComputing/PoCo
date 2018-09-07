@@ -176,18 +176,6 @@ contract('IexecHub', async (accounts) => {
 	it("Dapp Creation", async () => {
 		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
-		assert.equal(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
-		assert.equal(events[0].args.dappName,   "R Clifford Attractors",       "Erroneous Dapp name"  );
-		assert.equal(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
-
-		DappInstance = await Dapp.at(events[0].args.dapp);
-		assert.equal(await DappInstance.m_owner(),                                    dappProvider,                  "Erroneous Dapp owner" );
-		assert.equal(await DappInstance.m_dappName(),                                 "R Clifford Attractors",       "Erroneous Dapp name"  );
-		assert.equal(await DappInstance.m_dappParams(),                               constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
-		assert.equal((await DappRegistryInstance.viewCount(dappProvider)).toNumber(), 1,                             "dappProvider must have 1 dapp now");
-		assert.equal(await DappRegistryInstance.viewEntry(dappProvider, 1),           DappInstance.address,          "check dappAddress");
 	});
 
 	/***************************************************************************
@@ -196,18 +184,6 @@ contract('IexecHub', async (accounts) => {
 	it("Data Creation", async () => {
 		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-		assert.equal(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
-		assert.equal(events[0].args.dataName,   "Pi",           "Erroneous Data name"  );
-		assert.equal(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
-
-		DataInstance = await Data.at(events[0].args.data);
-		assert.equal(await DataInstance.m_owner(),                                    dataProvider,         "Erroneous Data owner" );
-		assert.equal(await DataInstance.m_dataName(),                                 "Pi",                 "Erroneous Data name"  );
-		assert.equal(await DataInstance.m_dataParams(),                               "3.1415926535",       "Erroneous Data params");
-		assert.equal((await DataRegistryInstance.viewCount(dataProvider)).toNumber(), 1,                    "dataProvider must have 1 dapp now");
-		assert.equal(await DataRegistryInstance.viewEntry(dataProvider, 1),           DataInstance.address, "check dataAddress");
 	});
 
 	/***************************************************************************
@@ -223,21 +199,6 @@ contract('IexecHub', async (accounts) => {
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		assert.equal(events[0].args.poolOwner,       poolScheduler,       "Erroneous Pool owner"      );
-		assert.equal(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
-
-		PoolInstance = await Pool.at(events[0].args.pool);
-		assert.equal( await PoolInstance.m_owner(),                           poolScheduler,        "Erroneous Pool owner"              );
-		assert.equal( await PoolInstance.m_poolDescription(),                 "A test workerpool",  "Erroneous Pool description"        );
-		assert.equal((await PoolInstance.m_workerStakeRatioPolicy()),         30,                   "Erroneous Pool params"             );
-		assert.equal((await PoolInstance.m_schedulerRewardRatioPolicy()),     1,                    "Erroneous Pool params"             );
-		assert.equal((await PoolInstance.m_subscriptionLockStakePolicy()),    10,                   "Erroneous Pool params"             );
-		assert.equal((await PoolInstance.m_subscriptionMinimumStakePolicy()), 10,                   "Erroneous Pool params"             );
-		assert.equal((await PoolInstance.m_subscriptionMinimumScorePolicy()), 10,                   "Erroneous Pool params"             );
-		assert.equal((await PoolRegistryInstance.viewCount(poolScheduler)),   1,                    "poolScheduler must have 1 pool now");
-		assert.equal( await PoolRegistryInstance.viewEntry(poolScheduler, 1), PoolInstance.address, "check poolAddress"                 );
 	});
 
 	/***************************************************************************
@@ -252,25 +213,6 @@ contract('IexecHub', async (accounts) => {
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		// events = await Extensions.getEventsPromise(PoolInstance.PoolPolicyUpdate({}));
-		events = extractEvents(txMined, PoolInstance.address, "PoolPolicyUpdate");
-		assert.equal(events[0].args.oldWorkerStakeRatioPolicy,         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.newWorkerStakeRatioPolicy,         35,  "Erroneous newWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy,     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.newSchedulerRewardRatioPolicy,     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.oldSubscriptionMinimumStakePolicy, 10,  "Erroneous oldSubscriptionMinimumStakePolicy");
-		assert.equal(events[0].args.newSubscriptionMinimumStakePolicy, 100, "Erroneous newSubscriptionMinimumStakePolicy");
-		assert.equal(events[0].args.oldSubscriptionMinimumScorePolicy, 10,  "Erroneous oldSubscriptionMinimumScorePolicy");
-		assert.equal(events[0].args.newSubscriptionMinimumScorePolicy, 0,   "Erroneous newSubscriptionMinimumScorePolicy");
-
-		assert.equal( await PoolInstance.m_owner(),                           poolScheduler,        "Erroneous Pool owner"      );
-		assert.equal( await PoolInstance.m_poolDescription(),                 "A test workerpool",  "Erroneous Pool description");
-		assert.equal((await PoolInstance.m_workerStakeRatioPolicy()),         35,                   "Erroneous Pool params"     );
-		assert.equal((await PoolInstance.m_schedulerRewardRatioPolicy()),     5,                    "Erroneous Pool params"     );
-		assert.equal((await PoolInstance.m_subscriptionLockStakePolicy()),    10,                   "Erroneous Pool params"     );
-		assert.equal((await PoolInstance.m_subscriptionMinimumStakePolicy()), 100,                  "Erroneous Pool params"     );
-		assert.equal((await PoolInstance.m_subscriptionMinimumScorePolicy()), 0,                    "Erroneous Pool params"     );
 	});
 
 	/***************************************************************************
@@ -300,13 +242,12 @@ contract('IexecHub', async (accounts) => {
 			"Error with dapporder hash computation"
 		);
 
-		assert.equal(
+		assert.isTrue(
 			await IexecClerkInstanceEthers.isValidSignature(
 				dappProvider,
 				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(dapporder), dapporder.salt),
 				dapporder.sign
 			),
-			true,
 			"Error with the validation of the dapporder signature"
 		);
 
@@ -339,13 +280,12 @@ contract('IexecHub', async (accounts) => {
 			"Error with dataorder hash computation"
 		);
 
-		assert.equal(
+		assert.isTrue(
 			await IexecClerkInstanceEthers.isValidSignature(
 				dataProvider,
 				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(dataorder), dataorder.salt),
 				dataorder.sign
 			),
-			true,
 			"Error with the validation of the dataorder signature"
 		);
 	});
@@ -381,13 +321,12 @@ contract('IexecHub', async (accounts) => {
 			"Error with poolorder hash computation"
 		);
 
-		assert.equal(
+		assert.isTrue(
 			await IexecClerkInstanceEthers.isValidSignature(
 				poolScheduler,
 				obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(poolorder), poolorder.salt),
 				poolorder.sign
 			),
-			true,
 			"Error with the validation of the poolorder signature"
 		);
 	});
@@ -427,13 +366,12 @@ contract('IexecHub', async (accounts) => {
 			"Error with userorder hash computation"
 		);
 
-		assert.equal(
+		assert.isTrue(
 			await IexecClerkInstanceEthers.isValidSignature(
 				user,
 				obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
 				userorder.sign
 			),
-			true,
 			"Error with the validation of the userorder signature"
 		);
 	});
