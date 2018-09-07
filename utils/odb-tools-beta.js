@@ -1,24 +1,20 @@
-const ethers = require('ethers');
+// const ethers = require('ethers');
 
 module.exports = {
 	signObject: function(object, wallet, hashing)
 	{
 		return web3.eth.sign(hashing(object), wallet).then(function(signature) {
-			object.sign = ethers.utils.splitSignature(signature);
+			// object.sign = ethers.utils.splitSignature(signature);
+			object.sign = {
+				r:             "0x" + signature.substr( 2, 64),
+				s:             "0x" + signature.substr(66, 64),
+				v: 27 + Number("0x" + signature.substr(    -2)),
+			};
 			return object
 		});
 	},
 	getFullHash: function(iexecclerk, partialHash, salt)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'bytes32',
-		// 	'bytes32',
-		// ],[
-		// 	iexecclerk,
-		// 	partialHash,
-		// 	salt,
-		// ]);
 		return web3.utils.soliditySha3(
 			iexecclerk,
 			partialHash,
@@ -27,21 +23,6 @@ module.exports = {
 	},
 	dappPartialHash: function(dappmarket)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'address',
-		// 	'address',
-		// 	'address',
-		// ],[
-		// 	dappmarket.dapp,
-		// 	dappmarket.dappprice,
-		// 	dappmarket.volume,
-		// 	dappmarket.datarestrict,
-		// 	dappmarket.poolrestrict,
-		// 	dappmarket.userrestrict,
-		// ]);
 		return web3.utils.soliditySha3(
 			dappmarket.dapp,
 			dappmarket.dappprice,
@@ -53,21 +34,6 @@ module.exports = {
 	},
 	dataPartialHash: function(datamarket)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'address',
-		// 	'address',
-		// 	'address',
-		// ],[
-		// 	datamarket.data,
-		// 	datamarket.dataprice,
-		// 	datamarket.volume,
-		// 	datamarket.dapprestrict,
-		// 	datamarket.poolrestrict,
-		// 	datamarket.userrestrict,
-		// ]);
 		return web3.utils.soliditySha3(
 			dappmarket.dapp,
 			dappmarket.dappprice,
@@ -79,27 +45,6 @@ module.exports = {
 	},
 	poolPartialHash: function(poolmarket)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'address',
-		// 	'address',
-		// 	'address',
-		// ],[
-		// 	poolmarket.pool,
-		// 	poolmarket.poolprice,
-		// 	poolmarket.volume,
-		// 	poolmarket.category,
-		// 	poolmarket.trust,
-		// 	poolmarket.tag,
-		// 	poolmarket.dapprestrict,
-		// 	poolmarket.datarestrict,
-		// 	poolmarket.userrestrict,
-		// ]);
 		return web3.utils.soliditySha3(
 			dappmarket.dapp,
 			dappmarket.dappprice,
@@ -111,35 +56,6 @@ module.exports = {
 	},
 	userPartialHash: function(usermarket)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'uint256',
-		// 	'address',
-		// 	'uint256',
-		// 	'address',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'uint256',
-		// 	'address',
-		// 	'address',
-		// 	'address',
-		// 	'string',
-		// ],[
-		// 	usermarket.dapp,
-		// 	usermarket.dappmaxprice,
-		// 	usermarket.data,
-		// 	usermarket.datamaxprice,
-		// 	usermarket.pool,
-		// 	usermarket.poolmaxprice,
-		// 	usermarket.category,
-		// 	usermarket.trust,
-		// 	usermarket.tag,
-		// 	usermarket.requester,
-		// 	usermarket.beneficiary,
-		// 	usermarket.callback,
-		// 	usermarket.params,
-		// ]);
 		return web3.utils.soliditySha3(
 				usermarket.dapp,
 				usermarket.dappmaxprice,
@@ -158,15 +74,6 @@ module.exports = {
 	},
 	authorizeHash: function(authorization)
 	{
-		// return ethers.utils.solidityKeccak256([
-		// 	'address',
-		// 	'bytes32',
-		// 	'address',
-		// ],[
-		// 	authorization.worker,
-		// 	authorization.woid,
-		// 	authorization.enclave,
-		// ]);
 		return web3.utils.soliditySha3(
 			authorization.worker,
 			authorization.woid,
