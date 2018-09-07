@@ -101,7 +101,7 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Token distribution
 		 */
-		assert.strictEqual(iexecAdmin, await RLCInstance.owner.call(), "iexecAdmin should own the RLC smart contract");
+		assert.strictEqual(iexecAdmin, await RLCInstance.owner(), "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
 			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
@@ -168,9 +168,9 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
 
 		DappInstance = await Dapp.at(events[0].args.dapp);
-		assert.strictEqual(await DappInstance.m_owner.call(),                               dappProvider,                  "Erroneous Dapp owner" );
-		assert.strictEqual(await DappInstance.m_dappName.call(),                            "R Clifford Attractors",       "Erroneous Dapp name"  );
-		assert.strictEqual(await DappInstance.m_dappParams.call(),                          constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
+		assert.strictEqual(await DappInstance.m_owner(),                                    dappProvider,                  "Erroneous Dapp owner" );
+		assert.strictEqual(await DappInstance.m_dappName(),                                 "R Clifford Attractors",       "Erroneous Dapp name"  );
+		assert.strictEqual(await DappInstance.m_dappParams(),                               constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
 		assert.strictEqual((await DappRegistryInstance.viewCount(dappProvider)).toNumber(), 1,                             "dappProvider must have 1 dapp now");
 		assert.strictEqual(await DappRegistryInstance.viewEntry(dappProvider, 1),           DappInstance.address,          "check dappAddress");
 	});
@@ -189,9 +189,9 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
 
 		DataInstance = await Data.at(events[0].args.data);
-		assert.strictEqual(await DataInstance.m_owner.call(),                               dataProvider,         "Erroneous Data owner" );
-		assert.strictEqual(await DataInstance.m_dataName.call(),                            "Pi",                 "Erroneous Data name"  );
-		assert.strictEqual(await DataInstance.m_dataParams.call(),                          "3.1415926535",       "Erroneous Data params");
+		assert.strictEqual(await DataInstance.m_owner(),                                    dataProvider,         "Erroneous Data owner" );
+		assert.strictEqual(await DataInstance.m_dataName(),                                 "Pi",                 "Erroneous Data name"  );
+		assert.strictEqual(await DataInstance.m_dataParams(),                               "3.1415926535",       "Erroneous Data params");
 		assert.strictEqual((await DataRegistryInstance.viewCount(dataProvider)).toNumber(), 1,                    "dataProvider must have 1 dapp now");
 		assert.strictEqual(await DataRegistryInstance.viewEntry(dataProvider, 1),           DataInstance.address, "check dataAddress");
 	});
@@ -216,15 +216,15 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.poolDescription, "A test workerpool", "Erroneous Pool description");
 
 		PoolInstance = await Pool.at(events[0].args.pool);
-		assert.strictEqual( await PoolInstance.m_owner.call(),                                      poolScheduler,        "Erroneous Pool owner"              );
-		assert.strictEqual( await PoolInstance.m_poolDescription.call(),                            "A test workerpool",  "Erroneous Pool description"        );
-		assert.strictEqual((await PoolInstance.m_workerStakeRatioPolicy.call()).toNumber(),         30,                   "Erroneous Pool params"             );
-		assert.strictEqual((await PoolInstance.m_schedulerRewardRatioPolicy.call()).toNumber(),     1,                    "Erroneous Pool params"             );
-		assert.strictEqual((await PoolInstance.m_subscriptionLockStakePolicy.call()).toNumber(),    10,                   "Erroneous Pool params"             );
-		assert.strictEqual((await PoolInstance.m_subscriptionMinimumStakePolicy.call()).toNumber(), 10,                   "Erroneous Pool params"             );
-		assert.strictEqual((await PoolInstance.m_subscriptionMinimumScorePolicy.call()).toNumber(), 10,                   "Erroneous Pool params"             );
-		assert.strictEqual((await PoolRegistryInstance.viewCount(poolScheduler)).toNumber(),        1,                    "poolScheduler must have 1 pool now");
-		assert.strictEqual( await PoolRegistryInstance.viewEntry(poolScheduler, 1),                 PoolInstance.address, "check poolAddress"                 );
+		assert.strictEqual( await PoolInstance.m_owner(),                                      poolScheduler,        "Erroneous Pool owner"              );
+		assert.strictEqual( await PoolInstance.m_poolDescription(),                            "A test workerpool",  "Erroneous Pool description"        );
+		assert.strictEqual((await PoolInstance.m_workerStakeRatioPolicy()).toNumber(),         30,                   "Erroneous Pool params"             );
+		assert.strictEqual((await PoolInstance.m_schedulerRewardRatioPolicy()).toNumber(),     1,                    "Erroneous Pool params"             );
+		assert.strictEqual((await PoolInstance.m_subscriptionLockStakePolicy()).toNumber(),    10,                   "Erroneous Pool params"             );
+		assert.strictEqual((await PoolInstance.m_subscriptionMinimumStakePolicy()).toNumber(), 10,                   "Erroneous Pool params"             );
+		assert.strictEqual((await PoolInstance.m_subscriptionMinimumScorePolicy()).toNumber(), 10,                   "Erroneous Pool params"             );
+		assert.strictEqual((await PoolRegistryInstance.viewCount(poolScheduler)).toNumber(),   1,                    "poolScheduler must have 1 pool now");
+		assert.strictEqual( await PoolRegistryInstance.viewEntry(poolScheduler, 1),            PoolInstance.address, "check poolAddress"                 );
 	});
 
 	/***************************************************************************
@@ -251,13 +251,13 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.oldSubscriptionMinimumScorePolicy.toNumber(), 10,  "Erroneous oldSubscriptionMinimumScorePolicy");
 		assert.strictEqual(events[0].args.newSubscriptionMinimumScorePolicy.toNumber(), 0,   "Erroneous newSubscriptionMinimumScorePolicy");
 
-		assert.strictEqual( await PoolInstance.m_owner.call(),                                      poolScheduler,        "Erroneous Pool owner"      );
-		assert.strictEqual( await PoolInstance.m_poolDescription.call(),                            "A test workerpool",  "Erroneous Pool description");
-		assert.strictEqual((await PoolInstance.m_workerStakeRatioPolicy.call()).toNumber(),         35,                   "Erroneous Pool params"     );
-		assert.strictEqual((await PoolInstance.m_schedulerRewardRatioPolicy.call()).toNumber(),     5,                    "Erroneous Pool params"     );
-		assert.strictEqual((await PoolInstance.m_subscriptionLockStakePolicy.call()).toNumber(),    10,                   "Erroneous Pool params"     );
-		assert.strictEqual((await PoolInstance.m_subscriptionMinimumStakePolicy.call()).toNumber(), 100,                  "Erroneous Pool params"     );
-		assert.strictEqual((await PoolInstance.m_subscriptionMinimumScorePolicy.call()).toNumber(), 0,                    "Erroneous Pool params"     );
+		assert.strictEqual( await PoolInstance.m_owner(),                                      poolScheduler,        "Erroneous Pool owner"      );
+		assert.strictEqual( await PoolInstance.m_poolDescription(),                            "A test workerpool",  "Erroneous Pool description");
+		assert.strictEqual((await PoolInstance.m_workerStakeRatioPolicy()).toNumber(),         35,                   "Erroneous Pool params"     );
+		assert.strictEqual((await PoolInstance.m_schedulerRewardRatioPolicy()).toNumber(),     5,                    "Erroneous Pool params"     );
+		assert.strictEqual((await PoolInstance.m_subscriptionLockStakePolicy()).toNumber(),    10,                   "Erroneous Pool params"     );
+		assert.strictEqual((await PoolInstance.m_subscriptionMinimumStakePolicy()).toNumber(), 100,                  "Erroneous Pool params"     );
+		assert.strictEqual((await PoolInstance.m_subscriptionMinimumScorePolicy()).toNumber(), 0,                    "Erroneous Pool params"     );
 	});
 
 	/***************************************************************************
@@ -281,31 +281,21 @@ contract('IexecHub', async (accounts) => {
 			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.dappPartialHash(obj), obj.salt)
 		);
 
-		IexecClerkInstanceEthers.getDappOrderHash(
-			DappOrder
-		).then(function (hash) {
-			assert.strictEqual(
-				hash,
-				OxTools.getFullHash(
-					IexecClerkInstance.address,
-					OxTools.dappPartialHash(DappOrder),
-					DappOrder.salt
-				),
-				"Error with DappOrder hash computation"
-			);
-		});
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.getDappOrderHash(DappOrder),
+			OxTools.getFullHash(IexecClerkInstance.address, OxTools.dappPartialHash(DappOrder), DappOrder.salt),
+			"Error with DappOrder hash computation"
+		);
 
-		IexecClerkInstanceEthers.isValidSignature(
-			dappProvider,
-			OxTools.getFullHash(
-				IexecClerkInstance.address,
-				OxTools.dappPartialHash(DappOrder),
-				DappOrder.salt
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.isValidSignature(
+				dappProvider,
+				OxTools.getFullHash(IexecClerkInstance.address, OxTools.dappPartialHash(DappOrder), DappOrder.salt),
+				DappOrder.sign
 			),
-			DappOrder.sign
-		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the DappOrder signature");
-		});
+			true,
+			"Error with the validation of the DappOrder signature"
+		);
 
 	});
 
@@ -330,32 +320,21 @@ contract('IexecHub', async (accounts) => {
 			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.dataPartialHash(obj), obj.salt)
 		);
 
-		IexecClerkInstanceEthers.getDataOrderHash(
-			DataOrder
-		).then(function (hash) {
-			assert.strictEqual(
-				hash,
-				OxTools.getFullHash(
-					IexecClerkInstance.address,
-					OxTools.dataPartialHash(DataOrder),
-					DataOrder.salt
-				),
-				"Error with DataOrder hash computation"
-			);
-		});
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.getDataOrderHash(DataOrder),
+			OxTools.getFullHash(IexecClerkInstance.address, OxTools.dataPartialHash(DataOrder), DataOrder.salt),
+			"Error with DataOrder hash computation"
+		);
 
-		IexecClerkInstanceEthers.isValidSignature(
-			dataProvider,
-			OxTools.getFullHash(
-				IexecClerkInstance.address,
-				OxTools.dataPartialHash(DataOrder),
-				DataOrder.salt
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.isValidSignature(
+				dataProvider,
+				OxTools.getFullHash(IexecClerkInstance.address, OxTools.dataPartialHash(DataOrder), DataOrder.salt),
+				DataOrder.sign
 			),
-			DataOrder.sign
-		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the DataOrder signature");
-		});
-
+			true,
+			"Error with the validation of the DataOrder signature"
+		);
 	});
 
 	/***************************************************************************
@@ -383,32 +362,21 @@ contract('IexecHub', async (accounts) => {
 			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.poolPartialHash(obj), obj.salt)
 		);
 
-		IexecClerkInstanceEthers.getPoolOrderHash(
-			PoolOrder
-		).then(function (hash) {
-			assert.strictEqual(
-				hash,
-				OxTools.getFullHash(
-					IexecClerkInstance.address,
-					OxTools.poolPartialHash(PoolOrder),
-					PoolOrder.salt
-				),
-				"Error with PoolOrder hash computation"
-			);
-		});
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.getPoolOrderHash(PoolOrder),
+			OxTools.getFullHash(IexecClerkInstance.address, OxTools.poolPartialHash(PoolOrder), PoolOrder.salt),
+			"Error with PoolOrder hash computation"
+		);
 
-		IexecClerkInstanceEthers.isValidSignature(
-			poolScheduler,
-			OxTools.getFullHash(
-				IexecClerkInstance.address,
-				OxTools.poolPartialHash(PoolOrder),
-				PoolOrder.salt
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.isValidSignature(
+				poolScheduler,
+				OxTools.getFullHash(IexecClerkInstance.address, OxTools.poolPartialHash(PoolOrder), PoolOrder.salt),
+				PoolOrder.sign
 			),
-			PoolOrder.sign
-		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the PoolOrder signature");
-		});
-
+			true,
+			"Error with the validation of the PoolOrder signature"
+		);
 	});
 
 	/***************************************************************************
@@ -440,31 +408,21 @@ contract('IexecHub', async (accounts) => {
 			(obj) => OxTools.getFullHash(IexecClerkInstance.address, OxTools.userPartialHash(obj), obj.salt)
 		);
 
-		IexecClerkInstanceEthers.getUserOrderHash(
-			UserOrder
-		).then(function (hash) {
-			assert.strictEqual(
-				hash,
-				OxTools.getFullHash(
-					IexecClerkInstance.address,
-					OxTools.userPartialHash(UserOrder),
-					UserOrder.salt
-				),
-				"Error with UserOrder hash computation"
-			);
-		});
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.getUserOrderHash(UserOrder),
+			OxTools.getFullHash(IexecClerkInstance.address, OxTools.userPartialHash(UserOrder), UserOrder.salt),
+			"Error with UserOrder hash computation"
+		);
 
-		IexecClerkInstanceEthers.isValidSignature(
-			user,
-			OxTools.getFullHash(
-				IexecClerkInstance.address,
-				OxTools.userPartialHash(UserOrder),
-				UserOrder.salt
+		assert.strictEqual(
+			await IexecClerkInstanceEthers.isValidSignature(
+				user,
+				OxTools.getFullHash(IexecClerkInstance.address, OxTools.userPartialHash(UserOrder), UserOrder.salt),
+				UserOrder.sign
 			),
-			UserOrder.sign
-		).then(function(result) {
-			assert.strictEqual(result, true, "Error with the validation of the UserOrder signature");
-		});
+			true,
+			"Error with the validation of the UserOrder signature"
+		);
 	});
 
 
@@ -472,19 +430,19 @@ contract('IexecHub', async (accounts) => {
 	 *                           TEST: Check escrow                            *
 	 ***************************************************************************/
 	it("Check balances - Initial", async () => {
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy(user)
 		assert.strictEqual(balance[0].toNumber(), 0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(), 0, "check balance stake locked");
 	});
@@ -525,19 +483,19 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.amount.toNumber(), 1000,          "check deposit amount");
 		*/
 
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy(user)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -546,9 +504,9 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: Worker join the pool                        *
 	 ***************************************************************************/
 	it("Worker join", async () => {
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker1), constants.NULL.ADDRESS, "affectation issue");
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker2), constants.NULL.ADDRESS, "affectation issue");
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker1), constants.NULL.ADDRESS, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker2), constants.NULL.ADDRESS, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
 
 		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -568,17 +526,17 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
 
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker1), PoolInstance.address, "affectation issue");
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker2), PoolInstance.address, "affectation issue");
-		assert.strictEqual(await IexecHubInstance.viewAffectation.call(poolWorker3), PoolInstance.address, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
+		assert.strictEqual(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance.address, "affectation issue");
 
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),  10, "check balance stake locked");
 	});
@@ -601,20 +559,20 @@ contract('IexecHub', async (accounts) => {
 		assert.strictEqual(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.strictEqual(events[0].args.worker, poolWorker3,          "check worker");
 
-		affectation = await IexecHubInstance.viewAffectation.call(poolWorker1);
+		affectation = await IexecHubInstance.viewAffectation(poolWorker1);
 		assert.strictEqual(affectation, PoolInstance.address,   "affectation issue");
-		affectation = await IexecHubInstance.viewAffectation.call(poolWorker2);
+		affectation = await IexecHubInstance.viewAffectation(poolWorker2);
 		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
-		affectation = await IexecHubInstance.viewAffectation.call(poolWorker3);
+		affectation = await IexecHubInstance.viewAffectation(poolWorker3);
 		assert.strictEqual(affectation, constants.NULL.ADDRESS, "affectation issue");
 
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -623,25 +581,25 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check balances - before                      *
 	 ***************************************************************************/
 	it("Check balances - Before", async () => {
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider)
 		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider)
 		assert.strictEqual(balance[0].toNumber(),    0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy(user)
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -650,9 +608,9 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: check score - before                        *
 	 ***************************************************************************/
 	it("Check score - Before", async () => {
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker1)).toNumber(), 0, "score issue");
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker2)).toNumber(), 0, "score issue");
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker3)).toNumber(), 0, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 0, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
 	});
 
 	/***************************************************************************
@@ -735,16 +693,16 @@ contract('IexecHub', async (accounts) => {
 	 *                     TEST: check balances - locked 1                     *
 	 ***************************************************************************/
 	it("Check balances - Locked #1", async () => {
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider)
 		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider)
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider)
 		assert.strictEqual(balance[0].toNumber(),                      0, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),                      0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler)
 		assert.strictEqual(balance[0].toNumber(), 1000-Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
 		assert.strictEqual(balance[1].toNumber(),      Math.floor(25*0.3), "check balance stake locked"); // POOL_STAKE_RATIO is 35 (SC constant)
-		balance = await IexecClerkInstance.viewAccountLegacy.call(user)
+		balance = await IexecClerkInstance.viewAccountLegacy(user)
 		assert.strictEqual(balance[0].toNumber(), 1000-          (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
 		assert.strictEqual(balance[1].toNumber(),                (25+3+1), "check balance stake locked"); // Dapp + Data + Pool prices
 	});
@@ -808,7 +766,6 @@ contract('IexecHub', async (accounts) => {
 
 		// TODO: check gas, events ...
 
-
 	});
 
 	/***************************************************************************
@@ -829,7 +786,7 @@ contract('IexecHub', async (accounts) => {
 	 *                     TEST: check balances - locked 2                     *
 	 ***************************************************************************/
 	it("Check balances - Locked #2", async () => {
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1)
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1)
 		assert.strictEqual(balance[0].toNumber(),  990-Math.floor(25*0.35), "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),   10+Math.floor(25*0.35), "check balance stake locked");
 	});
@@ -955,25 +912,25 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("check balances - After", async () => {
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dataProvider);
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider);
 		assert.strictEqual(balance[0].toNumber(),    1, "check balance stake locked"); // 0 + 1
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(dappProvider);
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider);
 		assert.strictEqual(balance[0].toNumber(),    3, "check balance stake locked"); // 0 + 3
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolScheduler);
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler);
 		assert.strictEqual(balance[0].toNumber(), 1002, "check balance stake locked"); // 1000 + 2
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker1);
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1);
 		assert.strictEqual(balance[0].toNumber(), 1013, "check balance stake locked"); // 990 + 23
 		assert.strictEqual(balance[1].toNumber(),   10, "check balance stake locked"); // lock for workerpool
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker2);
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2);
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(poolWorker3);
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3);
 		assert.strictEqual(balance[0].toNumber(), 1000, "check balance stake locked");
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
-		balance = await IexecClerkInstance.viewAccountLegacy.call(user);
+		balance = await IexecClerkInstance.viewAccountLegacy(user);
 		assert.strictEqual(balance[0].toNumber(),  971, "check balance stake locked"); // 1000 - 25 - 3 - 1
 		assert.strictEqual(balance[1].toNumber(),    0, "check balance stake locked");
 	});
@@ -982,9 +939,9 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
 	it("check score - After", async () => {
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker1)).toNumber(), 1, "score issue");
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker2)).toNumber(), 0, "score issue");
-		assert.strictEqual((await IexecHubInstance.viewScore.call(poolWorker3)).toNumber(), 0, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 1, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
+		assert.strictEqual((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
 	});
 
 	it("FINISHED", async () => {});

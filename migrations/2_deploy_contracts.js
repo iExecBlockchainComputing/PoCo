@@ -39,7 +39,7 @@ module.exports = function(deployer, network, accounts) {
 			return aRLCInstance.balanceOf.call(owner);
 		})
 		.then(faucetSupply => {
-			console.log("RLC faucet supply is " + faucetSupply.toNumber());
+			console.log("RLC faucet supply is " + faucetSupply);
 			return deployer.deploy(IexecHub);
 		})
 		.then(() => IexecHub.deployed())
