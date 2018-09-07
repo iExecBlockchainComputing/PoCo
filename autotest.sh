@@ -2,8 +2,11 @@
 
 trap catch INT
 
-TESTRPC="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/testrpc"
-TRUFFLE="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/truffle"
+#TESTRPC="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/testrpc"
+#TRUFFLE="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/truffle"
+TESTRPC="ganache-cli"
+TRUFFLE="truffle"
+
 
 function print_style
 {

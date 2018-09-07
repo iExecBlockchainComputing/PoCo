@@ -11,7 +11,7 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const constants = require("./constants");
-const obdtools   = require('../utils/odb-tools-beta');
+const obdtools  = require('../utils/odb-tools-beta');
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
@@ -35,7 +35,7 @@ function extractEvents(txMined, address, name)
 
 contract('IexecHub', async (accounts) => {
 
-	assert.isAtLeast(accounts.length, 9, "should have at least 9 accounts");
+	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin    = accounts[0];
 	let dappProvider  = accounts[1];
 	let dataProvider  = accounts[2];
@@ -43,8 +43,9 @@ contract('IexecHub', async (accounts) => {
 	let poolWorker1   = accounts[4];
 	let poolWorker2   = accounts[5];
 	let poolWorker3   = accounts[6];
-	let user          = accounts[7];
-	let sgxEnclave    = accounts[8];
+	let poolWorker4   = accounts[7];
+	let user          = accounts[8];
+	let sgxEnclave    = accounts[9];
 
 	var RLCInstance          = null;
 	var IexecHubInstance     = null;
@@ -66,6 +67,12 @@ contract('IexecHub', async (accounts) => {
 	var woid           = null;
 	var authorizations = {};
 	var results        = {};
+
+	var workers =
+	[
+		{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
+		{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec the wanderer" },
+	];
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -90,13 +97,14 @@ contract('IexecHub', async (accounts) => {
 		 */
 		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
-			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin }),
-			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin })
+			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker4,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -105,6 +113,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		let balances = await Promise.all([
 			RLCInstance.balanceOf(dappProvider),
@@ -113,6 +122,7 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.balanceOf(poolWorker1),
 			RLCInstance.balanceOf(poolWorker2),
 			RLCInstance.balanceOf(poolWorker3),
+			RLCInstance.balanceOf(poolWorker4),
 			RLCInstance.balanceOf(user)
 		]);
 		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
@@ -122,6 +132,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(balances[4], 1000000000, "1000000000 nRLC here");
 		assert.equal(balances[5], 1000000000, "1000000000 nRLC here");
 		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
+		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider  }),
@@ -130,6 +141,7 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1   }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2   }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3   }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker4   }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user          })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -139,6 +151,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************

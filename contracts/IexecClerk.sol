@@ -480,17 +480,23 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	{
 		return unlock(_worker, m_deals[_woid].workerStake);
 	}
+/*
+	function rewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
+	public onlyIexecHub returns (bool)
+	{
+		return reward(_worker, _amount);
+	}
+*/
+	function unlockAndRewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
+	public onlyIexecHub returns (bool)
+	{
+		return unlock(_worker, m_deals[_woid].workerStake) && reward(_worker, _amount);
+	}
 
 	function seizeContribution(bytes32 _woid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
 		return seize(_worker, m_deals[_woid].workerStake);
-	}
-
-	function rewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
-	{
-		return reward(_worker, _amount);
 	}
 
 	function rewardForScheduling(bytes32 _woid, uint256 _amount)

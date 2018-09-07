@@ -547,39 +547,6 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance.address, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance.address, "affectation issue");
-
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-	});
-
-	/***************************************************************************
-	 *                       TEST: Worker leave the pool                       *
-	 ***************************************************************************/
-	it("Worker unsubscription & eviction", async () => {
-
-		txMined = await IexecHubInstance.unsubscribe({ from: poolWorker3 }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerUnsubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,          "check worker");
-
-		txMined = await IexecHubInstance.evict(poolWorker4, { from: poolScheduler }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerEviction");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,          "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
-
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1)).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2)).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -591,8 +558,8 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 	});
 
@@ -689,8 +656,8 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [  993,  7 ], "check balance"); // 8 = floor(25*.3)
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971, 29 ], "check balance"); // 29 = 25+3+1
 	});
 
@@ -782,8 +749,8 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [  993,  7 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  982, 18 ], "check balance"); // 8 = floor(25*.35)
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  982, 18 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971, 29 ], "check balance");
 	});
 
@@ -912,8 +879,8 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1003,  0 ], "check balance"); //  +3
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1001, 10 ], "check balance"); // +11
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1001, 10 ], "check balance"); // +11
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971,  0 ], "check balance");
 	});
 

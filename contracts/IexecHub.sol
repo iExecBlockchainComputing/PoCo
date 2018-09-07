@@ -228,87 +228,6 @@ contract IexecHub is CategoryManager
 		emit ConsensusContribute(_woid, msg.sender, _resultHash);
 	}
 
-	// OLD → allow then contribute
-	/*
-	function allowWorkerToContribute(
-		bytes32 _woid,
-		address _worker,
-		address _enclaveChallenge)
-	public onlyScheduler(_woid)
-	{
-		// If first byte of tag is active then an enclave must be specified
-		require(_enclaveChallenge != address(0) || iexecclerk.viewDeal(_woid).tag & 0x1 == 0);
-
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.consensusDeadline >  now                                  );
-
-		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][_worker];
-		require(contribution.status == Iexec0xLib.ContributionStatusEnum.UNSET);
-
-		// worker must be subscribed to the pool
-		require(m_workerAffectations[_worker] == iexecclerk.viewDeal(_woid).pool.pointer);
-
-		// authorize contribution
-		contribution.status           = Iexec0xLib.ContributionStatusEnum.AUTHORIZED;
-		contribution.enclaveChallenge = _enclaveChallenge;
-
-		emit ConsensusAllowContribution(_woid, _worker);
-	}
-
-	function allowWorkersToContribute(
-		bytes32   _woid,
-		address[] _workers,
-		address   _enclaveChallenge)
-	public onlyScheduler(_woid)
-	{
-		for (uint i = 0; i < _workers.length; ++i)
-		{
-			allowWorkerToContribute(_woid, _workers[i], _enclaveChallenge);
-		}
-	}
-
-	function contribute(
-		bytes32              _woid,
-		bytes32              _resultHash,
-		bytes32              _resultSign,
-		Iexec0xLib.signature _challengeSign)
-	public // worker
-	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.consensusDeadline >  now                                  );
-
-		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(contribution.status == Iexec0xLib.ContributionStatusEnum.AUTHORIZED);
-
-		require(_resultHash != 0x0);
-		require(_resultSign != 0x0);
-		if (contribution.enclaveChallenge != address(0))
-		{
-			require(contribution.enclaveChallenge == ecrecover(keccak256(abi.encodePacked(
-				"\x19Ethereum Signed Message:\n64",
-				_resultHash,
-				_resultSign)),
-				_challengeSign.v,
-				_challengeSign.r,
-				_challengeSign.s)
-			);
-		}
-
-		contribution.status     = Iexec0xLib.ContributionStatusEnum.CONTRIBUTED;
-		contribution.resultHash = _resultHash;
-		contribution.resultSign = _resultSign;
-		contribution.score      = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
-		contribution.weight     = 1 + contribution.score.log();
-		workorder.contributors.push(msg.sender);
-
-		require(iexecclerk.lockContribution(_woid, msg.sender));
-
-		emit ConsensusContribute(_woid, msg.sender, _resultHash);
-	}
-	*/
-
 	function revealConsensus(
 		bytes32 _woid,
 		bytes32 _consensus)
@@ -481,18 +400,15 @@ contract IexecHub is CategoryManager
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(iexecclerk.unlockContribution   (_woid, worker));
-				require(iexecclerk.rewardForContribution(_woid, worker, workerReward));
+				require(iexecclerk.unlockAndRewardForContribution(_woid, worker, workerReward));
 				m_workerScores[worker] = m_workerScores[worker].add(1);
-
 				emit AccurateContribution(_woid, worker);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				require(iexecclerk.seizeContribution(_woid, worker));
-				m_workerScores[worker] = m_workerScores[worker].sub(SCORE_UNITARY_SLASH);
-
+				m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
 				emit FaultyContribution(_woid, worker);
 			}
 		}
@@ -511,7 +427,7 @@ contract IexecHub is CategoryManager
 		require(m_workerAffectations[msg.sender] == address(0));
 		require(iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
 		require(iexecclerk.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
-		require(m_workerScores[msg.sender]                >= _pool.m_subscriptionMinimumScorePolicy());
+		require(m_workerScores[msg.sender]               >= _pool.m_subscriptionMinimumScorePolicy());
 		m_workerAffectations[msg.sender] = address(_pool);
 
 		emit WorkerSubscription(address(_pool), msg.sender);
