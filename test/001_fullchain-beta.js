@@ -54,22 +54,25 @@ contract('IexecHub', async (accounts) => {
 	var PoolRegistryInstance = null;
 	var BeaconInstance       = null;
 	var BrokerInstance       = null;
-	var DappInstance         = null;
-	var DataInstance         = null;
-	var PoolInstance         = null;
-	var DappOrder            = null;
-	var DataOrder            = null;
-	var PoolOrder            = null;
-	var UserOrder            = null;
 
-	var woid                 = null;
-	var authorization        = null;
-	var signedResult         = null;
+	var DappInstance = null;
+	var DataInstance = null;
+	var PoolInstance = null;
+
+	var dapporder      = null;
+	var dataorder      = null;
+	var poolorder      = null;
+	var userorder      = null;
+	var woid           = null;
+	var authorizations = {};
+	var results        = {};
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
+		console.log("# web3 version:", web3.version);
+
 		/**
 		 * Retreive deployed contracts
 		 */
@@ -87,13 +90,13 @@ contract('IexecHub', async (accounts) => {
 		 */
 		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
-			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin }),
+			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -121,13 +124,13 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider  }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dataProvider  }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolScheduler }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1   }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2   }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3   }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user          })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -245,7 +248,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("Generate dapp order", async () => {
-		DappOrder = await obdtools.signObject(
+		dapporder = await obdtools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -262,9 +265,7 @@ contract('IexecHub', async (accounts) => {
 			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(obj), obj.salt)
 		);
 
-		console.log(web3.version);
-
-		hash = await IexecClerkInstance.getDappOrderHash([]);
+		hash = await IexecClerkInstance.getDappOrderHash(dapporder);
 		console.log(hash);
 
 		// result = await IexecClerkInstance.isValidSignature(
@@ -286,13 +287,13 @@ contract('IexecHub', async (accounts) => {
 		// });
 
 		// assert.equal(
-		// 	await IexecClerkInstanceEthers.getDappOrderHash(DappOrder),
+		// 	await IexecClerkInstance.getDappOrderHash(DappOrder),
 		// 	obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
 		// 	"Error with DappOrder hash computation"
 		// );
 		//
 		// assert.equal(
-		// 	await IexecClerkInstanceEthers.isValidSignature(
+		// 	await IexecClerkInstance.isValidSignature(
 		// 		dappProvider,
 		// 		obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
 		// 		DappOrder.sign

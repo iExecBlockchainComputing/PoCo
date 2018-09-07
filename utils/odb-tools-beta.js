@@ -1,10 +1,7 @@
-// const ethers = require('ethers');
-
 module.exports = {
 	signObject: function(object, wallet, hashing)
 	{
 		return web3.eth.sign(hashing(object), wallet).then(function(signature) {
-			// object.sign = ethers.utils.splitSignature(signature);
 			object.sign = {
 				r:             "0x" + signature.substr( 2, 64),
 				s:             "0x" + signature.substr(66, 64),

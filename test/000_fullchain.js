@@ -12,7 +12,7 @@ var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
-const obdtools   = require('../utils/obd-tools');
+const obdtools  = require('../utils/obd-tools');
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
@@ -36,7 +36,7 @@ function extractEvents(txMined, address, name)
 
 contract('IexecHub', async (accounts) => {
 
-	assert.isAtLeast(accounts.length, 9, "should have at least 9 accounts");
+	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin    = accounts[0];
 	let dappProvider  = accounts[1];
 	let dataProvider  = accounts[2];
@@ -44,8 +44,9 @@ contract('IexecHub', async (accounts) => {
 	let poolWorker1   = accounts[4];
 	let poolWorker2   = accounts[5];
 	let poolWorker3   = accounts[6];
-	let user          = accounts[7];
-	let sgxEnclave    = accounts[8];
+	let poolWorker4   = accounts[7];
+	let user          = accounts[8];
+	let sgxEnclave    = accounts[9];
 
 	var RLCInstance          = null;
 	var IexecHubInstance     = null;
@@ -55,17 +56,24 @@ contract('IexecHub', async (accounts) => {
 	var PoolRegistryInstance = null;
 	var BeaconInstance       = null;
 	var BrokerInstance       = null;
-	var DappInstance         = null;
-	var DataInstance         = null;
-	var PoolInstance         = null;
-	var DappOrder            = null;
-	var DataOrder            = null;
-	var PoolOrder            = null;
-	var UserOrder            = null;
 
-	var woid                 = null;
-	var authorization        = null;
-	var signedResult         = null;
+	var DappInstance = null;
+	var DataInstance = null;
+	var PoolInstance = null;
+
+	var dapporder      = null;
+	var dataorder      = null;
+	var poolorder      = null;
+	var userorder      = null;
+	var woid           = null;
+	var authorizations = {};
+	var results        = {};
+
+	var workers        =
+	[
+		{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
+		{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec the wanderer" },
+	];
 
 	var jsonRpcProvider          = null;
 	var IexecHubInstanceEthers   = null;
@@ -77,6 +85,8 @@ contract('IexecHub', async (accounts) => {
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
+		console.log("# web3 version:", web3.version);
+
 		/**
 		 * Retreive deployed contracts
 		 */
@@ -109,6 +119,7 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker4,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -118,6 +129,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		let balances = await Promise.all([
 			RLCInstance.balanceOf(dappProvider),
@@ -126,6 +138,7 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.balanceOf(poolWorker1),
 			RLCInstance.balanceOf(poolWorker2),
 			RLCInstance.balanceOf(poolWorker3),
+			RLCInstance.balanceOf(poolWorker4),
 			RLCInstance.balanceOf(user)
 		]);
 		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
@@ -135,6 +148,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(balances[4], 1000000000, "1000000000 nRLC here");
 		assert.equal(balances[5], 1000000000, "1000000000 nRLC here");
 		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
+		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
@@ -143,6 +157,7 @@ contract('IexecHub', async (accounts) => {
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
 			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -152,6 +167,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
@@ -261,7 +277,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("Generate dapp order", async () => {
-		DappOrder = obdtools.signObject(
+		dapporder = obdtools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -279,19 +295,19 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		assert.equal(
-			await IexecClerkInstanceEthers.getDappOrderHash(DappOrder),
-			obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
-			"Error with DappOrder hash computation"
+			await IexecClerkInstanceEthers.getDappOrderHash(dapporder),
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(dapporder), dapporder.salt),
+			"Error with dapporder hash computation"
 		);
 
 		assert.equal(
 			await IexecClerkInstanceEthers.isValidSignature(
 				dappProvider,
-				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
-				DappOrder.sign
+				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(dapporder), dapporder.salt),
+				dapporder.sign
 			),
 			true,
-			"Error with the validation of the DappOrder signature"
+			"Error with the validation of the dapporder signature"
 		);
 
 	});
@@ -300,7 +316,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Data order signature (by dataProvider)               *
 	 ***************************************************************************/
 	it("Generate data order", async () => {
-		DataOrder = obdtools.signObject(
+		dataorder = obdtools.signObject(
 			{
 				//market
 				data:         DataInstance.address,
@@ -318,19 +334,19 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		assert.equal(
-			await IexecClerkInstanceEthers.getDataOrderHash(DataOrder),
-			obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(DataOrder), DataOrder.salt),
-			"Error with DataOrder hash computation"
+			await IexecClerkInstanceEthers.getDataOrderHash(dataorder),
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(dataorder), dataorder.salt),
+			"Error with dataorder hash computation"
 		);
 
 		assert.equal(
 			await IexecClerkInstanceEthers.isValidSignature(
 				dataProvider,
-				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(DataOrder), DataOrder.salt),
-				DataOrder.sign
+				obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(dataorder), dataorder.salt),
+				dataorder.sign
 			),
 			true,
-			"Error with the validation of the DataOrder signature"
+			"Error with the validation of the dataorder signature"
 		);
 	});
 
@@ -338,7 +354,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Pool order signature (by poolProvider)               *
 	 ***************************************************************************/
 	it("Generate pool order", async () => {
-		PoolOrder = obdtools.signObject(
+		poolorder = obdtools.signObject(
 			{
 				// market
 				pool:         PoolInstance.address,
@@ -360,19 +376,19 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		assert.equal(
-			await IexecClerkInstanceEthers.getPoolOrderHash(PoolOrder),
-			obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(PoolOrder), PoolOrder.salt),
-			"Error with PoolOrder hash computation"
+			await IexecClerkInstanceEthers.getPoolOrderHash(poolorder),
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(poolorder), poolorder.salt),
+			"Error with poolorder hash computation"
 		);
 
 		assert.equal(
 			await IexecClerkInstanceEthers.isValidSignature(
 				poolScheduler,
-				obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(PoolOrder), PoolOrder.salt),
-				PoolOrder.sign
+				obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(poolorder), poolorder.salt),
+				poolorder.sign
 			),
 			true,
-			"Error with the validation of the PoolOrder signature"
+			"Error with the validation of the poolorder signature"
 		);
 	});
 
@@ -380,7 +396,7 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: User order signature (by user)                   *
 	 ***************************************************************************/
 	it("Generate user order", async () => {
-		UserOrder = obdtools.signObject(
+		userorder = obdtools.signObject(
 			{
 				// market
 				dapp:         DappInstance.address,
@@ -406,19 +422,19 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		assert.equal(
-			await IexecClerkInstanceEthers.getUserOrderHash(UserOrder),
-			obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(UserOrder), UserOrder.salt),
-			"Error with UserOrder hash computation"
+			await IexecClerkInstanceEthers.getUserOrderHash(userorder),
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
+			"Error with userorder hash computation"
 		);
 
 		assert.equal(
 			await IexecClerkInstanceEthers.isValidSignature(
 				user,
-				obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(UserOrder), UserOrder.salt),
-				UserOrder.sign
+				obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
+				userorder.sign
 			),
 			true,
-			"Error with the validation of the UserOrder signature"
+			"Error with the validation of the userorder signature"
 		);
 	});
 
@@ -433,6 +449,7 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 0, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 0, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 0, 0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 0, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 0, 0 ], "check balance");
 	});
 
@@ -445,6 +462,7 @@ contract('IexecHub', async (accounts) => {
 			IexecClerkInstance.deposit(1000, { from: poolWorker1   }),
 			IexecClerkInstance.deposit(1000, { from: poolWorker2   }),
 			IexecClerkInstance.deposit(1000, { from: poolWorker3   }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker4   }),
 			IexecClerkInstance.deposit(1000, { from: user          }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -452,6 +470,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// UNSAFE TEST: Promise all doest not handle events correctly
 		/*
@@ -468,6 +487,9 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.owner,  poolWorker3,   "check deposit recipient");
 		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
 		events = extractEvents(txsMined[4], IexecClerkInstance.address, "Deposit");
+		assert.equal(events[0].args.owner,  poolWorker4,   "check deposit recipient");
+		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
+		events = extractEvents(txsMined[5], IexecClerkInstance.address, "Deposit");
 		assert.equal(events[0].args.owner,  user,          "check deposit recipient");
 		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
 		*/
@@ -483,6 +505,7 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1000, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000, 0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000, 0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000, 0 ], "check balance");
 	});
 
@@ -493,6 +516,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), constants.NULL.ADDRESS, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), constants.NULL.ADDRESS, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
 
 		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -512,43 +536,49 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.equal(events[0].args.worker, poolWorker3,          "check worker");
 
+		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker4 });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
+		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(events[0].args.worker, poolWorker4,          "check worker");
+
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance.address, "affectation issue");
 
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4)).map(x => x.toNumber()), [ 990, 10 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                       TEST: Worker leave the pool                       *
 	 ***************************************************************************/
 	it("Worker unsubscription & eviction", async () => {
-		txsMined = await Promise.all([
-			IexecHubInstance.unsubscribe(             { from: poolWorker2   }),
-			IexecHubInstance.evict      (poolWorker3, { from: poolScheduler }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txsMined[0], IexecHubInstance.address, "WorkerUnsubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker2,          "check worker");
-		events = extractEvents(txsMined[1], IexecHubInstance.address, "WorkerEviction");
+		txMined = await IexecHubInstance.unsubscribe({ from: poolWorker3 }),
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerUnsubscription");
 		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
 		assert.equal(events[0].args.worker, poolWorker3,          "check worker");
 
-		affectation = await IexecHubInstance.viewAffectation(poolWorker1);
-		assert.equal(affectation, PoolInstance.address,   "affectation issue");
-		affectation = await IexecHubInstance.viewAffectation(poolWorker2);
-		assert.equal(affectation, constants.NULL.ADDRESS, "affectation issue");
-		affectation = await IexecHubInstance.viewAffectation(poolWorker3);
-		assert.equal(affectation, constants.NULL.ADDRESS, "affectation issue");
+		txMined = await IexecHubInstance.evict(poolWorker4, { from: poolScheduler }),
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "WorkerEviction");
+		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(events[0].args.worker, poolWorker4,          "check worker");
 
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
+
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1)).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2)).map(x => x.toNumber()), [  990, 10 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -559,7 +589,7 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 	});
@@ -571,6 +601,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal((await IexecHubInstance.viewScore(poolWorker1)), 0, "score issue");
 		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 0, "score issue");
 		assert.equal((await IexecHubInstance.viewScore(poolWorker3)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker4)), 0, "score issue");
 	});
 
 	/***************************************************************************
@@ -578,15 +609,15 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[RUN] matchOrders", async () => {
 
-		woid = obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(UserOrder), UserOrder.salt);
+		woid = obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt);
 
 		txNotMined = await IexecClerkInstanceEthers
 		.connect(jsonRpcProvider.getSigner(user))
 		.matchOrders(
-			DappOrder,
-			DataOrder,
-			PoolOrder,
-			UserOrder,
+			dapporder,
+			dataorder,
+			poolorder,
+			userorder,
 			{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
 		);
 		// console.log("txNotMined:", txNotMined);
@@ -602,51 +633,49 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: deal is written onchain                      *
 	 ***************************************************************************/
 	it("Check deal", async () => {
-		IexecClerkInstanceEthers.viewDeal(woid).then(function(deal) {
-			assert.equal    (deal.dapp.pointer.toLowerCase(), DappInstance.address,   "check deal (deal.dapp.pointer)"        );
-			assert.equal    (deal.dapp.owner.toLowerCase(),   dappProvider,           "check deal (deal.dapp.owner)"          );
-			assert.equal    (deal.dapp.price,                 DappOrder.dappprice,    "check deal (deal.dapp.price)"          );
-			assert.equal    (deal.dapp.pointer.toLowerCase(), UserOrder.dapp,         "check deal (deal.dapp.pointer)"        );
-			assert.isAtMost (deal.dapp.price.toNumber(),      UserOrder.dappmaxprice, "check deal (deal.dapp.price)"          );
-			assert.equal    (deal.data.pointer.toLowerCase(), DataInstance.address,   "check deal (deal.data.pointer)"        );
-			assert.equal    (deal.data.owner.toLowerCase(),   dataProvider,           "check deal (deal.data.owner)"          );
-			assert.equal    (deal.data.price,                 DataOrder.dataprice,    "check deal (deal.data.price)"          );
-			assert.equal    (deal.data.pointer.toLowerCase(), UserOrder.data,         "check deal (deal.data.pointer)"        );
-			assert.isAtMost (deal.data.price.toNumber(),      UserOrder.datamaxprice, "check deal (deal.data.price)"          );
-			assert.equal    (deal.pool.pointer.toLowerCase(), PoolInstance.address,   "check deal (deal.pool.pointer)"        );
-			assert.equal    (deal.pool.owner.toLowerCase(),   poolScheduler,          "check deal (deal.pool.owner)"          );
-			assert.equal    (deal.pool.price,                 PoolOrder.poolprice,    "check deal (deal.pool.price)"          );
-			if( UserOrder.pool != constants.NULL.ADDRESS)
-			assert.equal    (deal.pool.pointer.toLowerCase(), UserOrder.pool,         "check deal (deal.pool.pointer)"        );
-			assert.isAtMost (deal.pool.price.toNumber(),      UserOrder.poolmaxprice, "check deal (deal.pool.price)"          );
-			assert.equal    (deal.category,                   PoolOrder.category,     "check deal (deal.category)"            );
-			assert.equal    (deal.category,                   UserOrder.category,     "check deal (deal.category)"            );
-			assert.equal    (deal.trust,                      PoolOrder.trust,        "check deal (deal.trust)"               );
-			assert.isAtLeast(deal.trust.toNumber(),           UserOrder.trust,        "check deal (deal.trust)"               );
-			assert.equal    (deal.tag,                        PoolOrder.tag,          "check deal (deal.tag)"                 );
-			assert.equal    (deal.tag,                        UserOrder.tag,          "check deal (deal.tag)"                 );
-			assert.equal    (deal.requester.toLowerCase(),    user,                   "check deal (deal.requester)"           );
-			assert.equal    (deal.beneficiary.toLowerCase(),  user,                   "check deal (deal.beneficiary)"         );
-			assert.equal    (deal.callback.toLowerCase(),     UserOrder.callback,     "check deal (deal.callback)"            );
-			assert.equal    (deal.params,                     UserOrder.params,       "check deal (deal.params)"              );
-			assert.equal    (deal.workerStake,                8,                      "check deal (deal.workerStake)"         ); // 8 = floor(25*.3)
-			assert.equal    (deal.schedulerRewardRatio,       5,                      "check deal (deal.schedulerRewardRatio)");
-		});
+		deal = await IexecClerkInstanceEthers.viewDeal(woid);
+		assert.equal    (deal.dapp.pointer.toLowerCase(), DappInstance.address,   "check deal (deal.dapp.pointer)"        );
+		assert.equal    (deal.dapp.owner.toLowerCase(),   dappProvider,           "check deal (deal.dapp.owner)"          );
+		assert.equal    (deal.dapp.price,                 dapporder.dappprice,    "check deal (deal.dapp.price)"          );
+		assert.equal    (deal.dapp.pointer.toLowerCase(), userorder.dapp,         "check deal (deal.dapp.pointer)"        );
+		assert.isAtMost (deal.dapp.price.toNumber(),      userorder.dappmaxprice, "check deal (deal.dapp.price)"          );
+		assert.equal    (deal.data.pointer.toLowerCase(), DataInstance.address,   "check deal (deal.data.pointer)"        );
+		assert.equal    (deal.data.owner.toLowerCase(),   dataProvider,           "check deal (deal.data.owner)"          );
+		assert.equal    (deal.data.price,                 dataorder.dataprice,    "check deal (deal.data.price)"          );
+		assert.equal    (deal.data.pointer.toLowerCase(), userorder.data,         "check deal (deal.data.pointer)"        );
+		assert.isAtMost (deal.data.price.toNumber(),      userorder.datamaxprice, "check deal (deal.data.price)"          );
+		assert.equal    (deal.pool.pointer.toLowerCase(), PoolInstance.address,   "check deal (deal.pool.pointer)"        );
+		assert.equal    (deal.pool.owner.toLowerCase(),   poolScheduler,          "check deal (deal.pool.owner)"          );
+		assert.equal    (deal.pool.price,                 poolorder.poolprice,    "check deal (deal.pool.price)"          );
+		if( userorder.pool != constants.NULL.ADDRESS)
+		assert.equal    (deal.pool.pointer.toLowerCase(), userorder.pool,         "check deal (deal.pool.pointer)"        );
+		assert.isAtMost (deal.pool.price.toNumber(),      userorder.poolmaxprice, "check deal (deal.pool.price)"          );
+		assert.equal    (deal.category,                   poolorder.category,     "check deal (deal.category)"            );
+		assert.equal    (deal.category,                   userorder.category,     "check deal (deal.category)"            );
+		assert.equal    (deal.trust,                      poolorder.trust,        "check deal (deal.trust)"               );
+		assert.isAtLeast(deal.trust.toNumber(),           userorder.trust,        "check deal (deal.trust)"               );
+		assert.equal    (deal.tag,                        poolorder.tag,          "check deal (deal.tag)"                 );
+		assert.equal    (deal.tag,                        userorder.tag,          "check deal (deal.tag)"                 );
+		assert.equal    (deal.requester.toLowerCase(),    user,                   "check deal (deal.requester)"           );
+		assert.equal    (deal.beneficiary.toLowerCase(),  user,                   "check deal (deal.beneficiary)"         );
+		assert.equal    (deal.callback.toLowerCase(),     userorder.callback,     "check deal (deal.callback)"            );
+		assert.equal    (deal.params,                     userorder.params,       "check deal (deal.params)"              );
+		assert.equal    (deal.workerStake,                8,                      "check deal (deal.workerStake)"         ); // 8 = floor(25*.3)
+		assert.equal    (deal.schedulerRewardRatio,       5,                      "check deal (deal.schedulerRewardRatio)");
 	});
 
 	/***************************************************************************
 	 *                  TEST: work order has been initialized                  *
 	 ***************************************************************************/
 	it("Check workorder", async () => {
-		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
-			assert.equal    (workorder.status,            constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
-			assert.equal    (workorder.consensusValue,    constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
-		//assert.equal    (workorder.consensusDeadline, "",                                   "check workorder (workorder.consensusDeadline)");
-		//assert.equal    (workorder.revealDeadline,    "",                                   "check workorder (workorder.revealDeadline)"   );
-			assert.equal    (workorder.revealCounter,     0,                                    "check workorder (workorder.revealCounter)"    );
-			assert.equal    (workorder.winnerCounter,     0,                                    "check workorder (workorder.winnerCounter)"    );
-			assert.deepEqual(workorder.contributors,      [],                                   "check workorder (workorder.contributors)"     );
-		});
+		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
+		assert.equal    (workorder.status,            constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,    constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
+	//assert.equal    (workorder.consensusDeadline, "",                                   "check workorder (workorder.consensusDeadline)");
+	//assert.equal    (workorder.revealDeadline,    "",                                   "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter,     0,                                    "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter,     0,                                    "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors,      [],                                   "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -657,8 +686,9 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [  993,  7 ], "check balance"); // 8 = floor(25*.3)
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971, 29 ], "check balance"); // 29 = 25+3+1
 	});
 
@@ -666,36 +696,35 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: scheduler authorizes the worker to contribute           *
 	 ***************************************************************************/
 	it("Sign contribution authorization", async () => {
-		authorization = obdtools.signObject(
-			{
-				worker:  poolWorker1,
-				woid:    woid,
-				enclave: sgxEnclave // constants.NULL.ADDRESS
-			},
-			poolScheduler,
-			(obj) => obdtools.authorizeHash(obj)
-		);
+		for (w of workers)
+		{
+			authorizations[w.address] = obdtools.signObject(
+				{ worker: w.address, woid: woid, enclave: w.enclave },
+				poolScheduler,
+				(obj) => obdtools.authorizeHash(obj)
+			);
+		}
+
 	});
 
 	/***************************************************************************
 	 *                    TEST: worker runs its application                    *
 	 ***************************************************************************/
 	it("Run job", async () => {
-		processedResult = obdtools.signResult("iExec the wanderer", poolWorker1);
+		for (w of workers)
+		{
+			results[w.address] = obdtools.signResult(w.raw, w.address);
 
-		if (sgxEnclave != constants.NULL.ADDRESS)
-		{
-			// With SGX
-			obdtools.signObject(
-				processedResult,
-				sgxEnclave,
-				(obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64)
-			);
-		}
-		else
-		{
-			// Without SGX
-			processedResult.sign = constants.NULL.SIGNATURE;
+			if (w.enclave != constants.NULL.ADDRESS)
+			{
+				// With SGX
+				obdtools.signObject(results[w.address], w.enclave, (obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64));
+			}
+			else
+			{
+				// Without SGX
+				results[w.address].sign = constants.NULL.SIGNATURE;
+			}
 		}
 	});
 
@@ -703,23 +732,26 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: worker contributes                         *
 	 ***************************************************************************/
 	it("[RUN] signedContribute", async () => {
-		txNotMined = await IexecHubInstanceEthers
-		.connect(jsonRpcProvider.getSigner(poolWorker1))
-		.signedContribute(
-			woid,                              // worker    (authorization)
-			processedResult.contribution.hash, // common    (result)
-			processedResult.contribution.sign, // unique    (result)
-			sgxEnclave,                        // address   (enclave)
-			processedResult.sign,              // signature (enclave)
-			authorization.sign,                // signature (authorization)
-			{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
-		);
-		// console.log("txNotMined:", txNotMined);
+		for (w of workers)
+		{
+			txNotMined = await IexecHubInstanceEthers
+			.connect(jsonRpcProvider.getSigner(w.address))
+			.signedContribute(
+				authorizations[w.address].woid,       // workorder (authorization)
+				results[w.address].contribution.hash, // common    (result)
+				results[w.address].contribution.sign, // unique    (result)
+				w.enclave,                            // address   (enclave)
+				results[w.address].sign,              // signature (enclave)
+				authorizations[w.address].sign,       // signature (authorization)
+				{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
+			);
+			// console.log("txNotMined:", txNotMined);
 
-		// txReceipt = await txNotMined.wait(); // SLOW!!!
-		// console.log("txReceipt:", txReceipt);
+			// txReceipt = await txNotMined.wait(); // SLOW!!!
+			// console.log("txReceipt:", txReceipt);
 
-		// TODO: check gas, events ...
+			// TODO: check gas, events ...
+		}
 
 	});
 
@@ -727,14 +759,16 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: contribution has been filled                    *
 	 ***************************************************************************/
 	it("Check contribution", async () => {
-		IexecHubInstanceEthers.viewContribution(woid, poolWorker1).then(function(contribution) {
+		for (w of workers)
+		{
+			contribution = await IexecHubInstanceEthers.viewContribution(woid, w.address);
 			assert.equal(contribution.status,                         constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
-			assert.equal(contribution.resultHash,                     processedResult.contribution.hash,            "check contribution (contribution.resultHash)"      );
-			assert.equal(contribution.resultSign,                     processedResult.contribution.sign,            "check contribution (contribution.resultSign)"      );
-			assert.equal(contribution.enclaveChallenge.toLowerCase(), sgxEnclave,                                   "check contribution (contribution.enclaveChallenge)");
+			assert.equal(contribution.resultHash,                     results[w.address].contribution.hash,         "check contribution (contribution.resultHash)"      );
+			assert.equal(contribution.resultSign,                     results[w.address].contribution.sign,         "check contribution (contribution.resultSign)"      );
+			assert.equal(contribution.enclaveChallenge.toLowerCase(), w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
 			assert.equal(contribution.score,                          0,                                            "check contribution (contribution.score)"           );
 			assert.equal(contribution.weight,                         1,                                            "check contribution (contribution.weight)"          );
-		});
+		}
 	});
 
 	/***************************************************************************
@@ -745,8 +779,9 @@ contract('IexecHub', async (accounts) => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [  993,  7 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  982, 18 ], "check balance"); // 8 = floor(25*.35)
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  982, 18 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971, 29 ], "check balance");
 	});
 
@@ -754,15 +789,14 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check workorder status                       *
 	 ***************************************************************************/
 	it("Check workorder", async () => {
-		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
-			assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
-			assert.equal    (workorder.consensusValue,                         constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
-		//assert.equal    (workorder.consensusDeadline,                      "",                                   "check workorder (workorder.consensusDeadline)");
-		//assert.equal    (workorder.revealDeadline,                         "",                                   "check workorder (workorder.revealDeadline)"   );
-			assert.equal    (workorder.revealCounter,                          0,                                    "check workorder (workorder.revealCounter)"    );
-			assert.equal    (workorder.winnerCounter,                          0,                                    "check workorder (workorder.winnerCounter)"    );
-			assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), [poolWorker1],                        "check workorder (workorder.contributors)"     );
-		});
+		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
+		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,                         constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
+	//assert.equal    (workorder.consensusDeadline,                      "",                                   "check workorder (workorder.consensusDeadline)");
+	//assert.equal    (workorder.revealDeadline,                         "",                                   "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter,                          0,                                    "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter,                          0,                                    "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), workers.map(x => x.address),          "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -785,47 +819,48 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check workorder status                       *
 	 ***************************************************************************/
 	it("Check workorder", async () => {
-		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
-			assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING,                    "check workorder (workorder.status)"           );
-			assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
-		//assert.equal    (workorder.consensusDeadline,                      "",                                                         "check workorder (workorder.consensusDeadline)");
-		//assert.equal    (workorder.revealDeadline,                         "",                                                         "check workorder (workorder.revealDeadline)"   );
-			assert.equal    (workorder.revealCounter,                          0,                                                          "check workorder (workorder.revealCounter)"    );
-			assert.equal    (workorder.winnerCounter,                          1,                                                          "check workorder (workorder.winnerCounter)"    );
-			assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), [poolWorker1],                                              "check workorder (workorder.contributors)"     );
-		});
+		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
+		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING,                     "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
+	//assert.equal    (workorder.consensusDeadline,                      "",                                                          "check workorder (workorder.consensusDeadline)");
+	//assert.equal    (workorder.revealDeadline,                         "",                                                          "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter,                          0,                                                           "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter,                          workers.length,                                              "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), workers.map(x => x.address),                                 "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
 	 *                          TEST: worker reveals                           *
 	 ***************************************************************************/
 	it("[RUN] reveal", async () => {
-		txMined = await IexecHubInstance.reveal(
-			woid,
-			processedResult.base,
-			{ from: poolWorker1 }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		for (w of workers)
+		{
+			txMined = await IexecHubInstance.reveal(
+				woid,
+				results[w.address].base,
+				{ from: w.address }
+			);
+			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusReveal");
-		assert.equal(events[0].args.woid,   woid,                 "check woid"  );
-		assert.equal(events[0].args.worker, poolWorker1,          "check worker");
-		assert.equal(events[0].args.result, processedResult.base, "check result");
+			events = extractEvents(txMined, IexecHubInstance.address, "ConsensusReveal");
+			assert.equal(events[0].args.woid,   woid,                    "check woid"  );
+			assert.equal(events[0].args.worker, w.address,               "check worker");
+			assert.equal(events[0].args.result, results[w.address].base, "check result");
+		}
 	});
 
 	/***************************************************************************
 	 *                      TEST: check workorder status                       *
 	 ***************************************************************************/
 	it("Check workorder", async () => {
-		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
-			assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING,                    "check workorder (workorder.status)"           );
-			assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
-		//assert.equal    (workorder.consensusDeadline,                      "",                                                         "check workorder (workorder.consensusDeadline)");
-		//assert.equal    (workorder.revealDeadline,                         "",                                                         "check workorder (workorder.revealDeadline)"   );
-			assert.equal    (workorder.revealCounter,                          1,                                                          "check workorder (workorder.revealCounter)"    );
-			assert.equal    (workorder.winnerCounter,                          1,                                                          "check workorder (workorder.winnerCounter)"    );
-			assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), [poolWorker1],                                              "check workorder (workorder.contributors)"     );
-		});
+		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
+		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING,                     "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
+	//assert.equal    (workorder.consensusDeadline,                      "",                                                          "check workorder (workorder.consensusDeadline)");
+	//assert.equal    (workorder.revealDeadline,                         "",                                                          "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter,                          workers.length,                                              "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter,                          workers.length,                                              "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), workers.map(x => x.address),                                 "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -846,9 +881,12 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.stdout, "aStdout", "check consensus (stdout)");
 		assert.equal(events[0].args.stderr, "aStderr", "check consensus (stderr)");
 		assert.equal(events[0].args.uri,    "anUri",   "check consensus (   uri)");
-		events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		assert.equal(events[0].args.woid,                 woid,        "check AccurateContribution (  woid)");
-		assert.equal(events[0].args.worker.toLowerCase(), poolWorker1, "check AccurateContribution (worker)");
+
+		// TODO: check 2 events by w.address for w in workers
+		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
+		// assert.equal(events[0].args.woid,                 woid,      "check AccurateContribution (  woid)");
+		// assert.equal(events[0].args.worker.toLowerCase(), w.address, "check AccurateContribution (worker)");
+
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
 
@@ -856,15 +894,14 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check workorder status                       *
 	 ***************************************************************************/
 	it("Check workorder", async () => {
-		IexecHubInstanceEthers.viewWorkorder(woid).then(function(workorder) {
-			assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED,                    "check workorder (workorder.status)"           );
-			assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
-		//assert.equal    (workorder.consensusDeadline,                      "",                                                         "check workorder (workorder.consensusDeadline)");
-		//assert.equal    (workorder.revealDeadline,                         "",                                                         "check workorder (workorder.revealDeadline)"   );
-			assert.equal    (workorder.revealCounter,                          1,                                                          "check workorder (workorder.revealCounter)"    );
-			assert.equal    (workorder.winnerCounter,                          1,                                                          "check workorder (workorder.winnerCounter)"    );
-			assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), [poolWorker1],                                              "check workorder (workorder.contributors)"     );
-		});
+		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
+		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED,                     "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,                         obdtools.hashResult("iExec the wanderer").contribution.hash, "check workorder (workorder.consensusValue)"   );
+	//assert.equal    (workorder.consensusDeadline,                      "",                                                          "check workorder (workorder.consensusDeadline)");
+	//assert.equal    (workorder.revealDeadline,                         "",                                                          "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter,                          workers.length,                                              "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter,                          workers.length,                                              "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), workers.map(x => x.address),                                 "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -873,10 +910,11 @@ contract('IexecHub', async (accounts) => {
 	it("Check balances - After", async () => {
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    1,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    3,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1002,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1013, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1003,  0 ], "check balance"); //  +3
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1001, 10 ], "check balance"); // +11
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1001, 10 ], "check balance"); // +11
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
 		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [  971,  0 ], "check balance");
 	});
 
@@ -885,8 +923,9 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Check score - After", async () => {
 		assert.equal((await IexecHubInstance.viewScore(poolWorker1)), 1, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 1, "score issue");
 		assert.equal((await IexecHubInstance.viewScore(poolWorker3)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker4)), 0, "score issue");
 	});
 
 	it("FINISHED", async () => {});
