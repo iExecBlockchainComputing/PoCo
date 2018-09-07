@@ -160,6 +160,8 @@ contract('IexecHub', async (accounts) => {
 	it("Dapp Creation", async () => {
 		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
+		DappInstance = await Dapp.at(events[0].args.dapp);
 	});
 
 	/***************************************************************************
@@ -168,6 +170,8 @@ contract('IexecHub', async (accounts) => {
 	it("Data Creation", async () => {
 		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
+		DataInstance = await Data.at(events[0].args.data);
 	});
 
 	/***************************************************************************
@@ -183,6 +187,8 @@ contract('IexecHub', async (accounts) => {
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
+		PoolInstance = await Pool.at(events[0].args.pool);
 	});
 
 	/***************************************************************************

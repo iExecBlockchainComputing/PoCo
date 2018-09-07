@@ -7,10 +7,10 @@ import "./tools/SafeMathOZ.sol";
 import "./CategoryManager.sol";
 
 import "./IexecClerk.sol";
-import "./resources_contract/RegistryBase.sol";
-/* import "./resources_contract/DappRegistry.sol"; */
-/* import "./resources_contract/DataRegistry.sol"; */
-/* import "./resources_contract/PoolRegistry.sol"; */
+import "./registries/RegistryBase.sol";
+/* import "./registries/DappRegistry.sol"; */
+/* import "./registries/DataRegistry.sol"; */
+/* import "./registries/PoolRegistry.sol"; */
 
 contract IexecHub is CategoryManager
 {

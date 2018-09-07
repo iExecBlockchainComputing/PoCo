@@ -7,9 +7,9 @@ import "./tools/SafeMathOZ.sol";
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
 
-import "./resources_contract/DappRegistry.sol";
-import "./resources_contract/DataRegistry.sol";
-import "./resources_contract/PoolRegistry.sol";
+import "./registries/Dapp.sol";
+import "./registries/Data.sol";
+import "./registries/Pool.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor
 {
