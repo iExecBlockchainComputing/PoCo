@@ -245,6 +245,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
+		// check matching
+		require(                                         _userorder.dapp         == _dapporder.dapp     );
+		require(                                         _userorder.data         == _dataorder.data     );
+		require(_userorder.pool         == address(0) || _userorder.pool         == _poolorder.pool     );
+
 		// check restrictions
 		require(_dapporder.datarestrict == address(0) || _dapporder.datarestrict == _dataorder.data     );
 		require(_dapporder.poolrestrict == address(0) || _dapporder.poolrestrict == _poolorder.pool     );
@@ -255,9 +260,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_poolorder.dapprestrict == address(0) || _poolorder.dapprestrict == _dapporder.dapp     );
 		require(_poolorder.datarestrict == address(0) || _poolorder.datarestrict == _dataorder.data     );
 		require(_poolorder.userrestrict == address(0) || _poolorder.userrestrict == _userorder.requester);
-		require(                                         _userorder.dapp         == _dapporder.dapp     );
-		require(                                         _userorder.data         == _dataorder.data     );
-		require(_userorder.pool         == address(0) || _userorder.pool         == _poolorder.pool     );
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 
@@ -266,6 +268,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 */
 		 bytes32[4] memory hashes;
 		 address[3] memory owners;
+		 bool              hasData = _dataorder.data != address(0);
 
 		// dapp
 		hashes[0] = getDappOrderHash(_dapporder);
@@ -273,9 +276,9 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(isValidSignature(owners[0], hashes[0], _dapporder.sign));
 
 		// data
-		hashes[1] = getDataOrderHash(_dataorder);
-		if (_dataorder.data != address(0)) // only check if dataset is enabled
+		if (hasData) // only check if dataset is enabled
 		{
+			hashes[1] = getDataOrderHash(_dataorder);
 			owners[1] = Data(_dataorder.data).m_owner();
 			require(isValidSignature(owners[1], hashes[1], _dataorder.sign));
 		}
@@ -297,10 +300,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// require(m_consumed[hashes[2]] < _poolorder.volume); // checked by volume
 		// require(m_consumed[hashes[3]] < _userorder.volume); // checked by volume
 		uint256 volume;
-		volume =            _dapporder.volume.sub(m_consumed[hashes[0]]);
-		volume = volume.min(_dataorder.volume.sub(m_consumed[hashes[1]]));
-		volume = volume.min(_poolorder.volume.sub(m_consumed[hashes[2]]));
-		volume = volume.min(_userorder.volume.sub(m_consumed[hashes[3]]));
+		volume =                      _dapporder.volume.sub(m_consumed[hashes[0]]);
+		volume = hasData ? volume.min(_dataorder.volume.sub(m_consumed[hashes[1]])) : volume;
+		volume =           volume.min(_poolorder.volume.sub(m_consumed[hashes[2]]));
+		volume =           volume.min(_userorder.volume.sub(m_consumed[hashes[3]]));
 		require(volume > 0);
 
 		/**
@@ -317,7 +320,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.dapp.price   = _dapporder.dappprice;
 		deal.data.owner   = owners[1];
 		deal.data.pointer = _dataorder.data;
-		deal.data.price   = _dataorder.dataprice;
+		deal.data.price   = hasData ? _dataorder.dataprice : 0;
 		deal.pool.pointer = _poolorder.pool;
 		deal.pool.owner   = owners[2];
 		deal.pool.price   = _poolorder.poolprice;
@@ -339,10 +342,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Update consumed
 		 */
-		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(volume);
-		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(volume);
-		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(volume);
-		m_consumed[hashes[3]] = m_consumed[hashes[3]].add(volume);
+		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(          volume    );
+		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(hasData ? volume : 0);
+		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(          volume    );
+		m_consumed[hashes[3]] = m_consumed[hashes[3]].add(          volume    );
 
 		/**
 		 * Lock

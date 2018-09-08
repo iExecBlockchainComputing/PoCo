@@ -128,9 +128,10 @@ contract IexecHub is CategoryManager
 	function checkResources(address daap, address data, address pool)
 	public view returns (bool)
 	{
-		return dappregistry.isRegistered(daap)
-		    && dataregistry.isRegistered(data)
-		    && poolregistry.isRegistered(pool);
+		require(                      dappregistry.isRegistered(daap));
+		require(data == address(0) || dataregistry.isRegistered(data));
+		require(                      poolregistry.isRegistered(pool));
+		return true;
 	}
 
 	/***************************************************************************
