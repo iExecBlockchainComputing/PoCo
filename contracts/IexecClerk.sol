@@ -26,13 +26,15 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                               Clerk data                                *
 	 ***************************************************************************/
 	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
+	mapping(bytes32 => Iexec0xLib.Spec) public m_specs;
 	mapping(bytes32 => uint256        ) public m_consumed;
 	mapping(bytes32 => bool           ) public m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event OrdersMatched  (bytes32 dappHash,
+	event OrdersMatched  (bytes32 dealid,
+	                      bytes32 dappHash,
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
 	                      bytes32 userHash);
@@ -40,6 +42,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	event ClosedDataOrder(bytes32 dataHash);
 	event ClosedPoolOrder(bytes32 poolHash);
 	event ClosedUserOrder(bytes32 userHash);
+
+	event SchedulerNotice(address indexed pool, bytes32 dealid);
 
 	/***************************************************************************
 	 *                               Constructor                               *
@@ -60,6 +64,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public view returns (Iexec0xLib.Deal)
 	{
 		return m_deals[_id];
+	}
+
+	function viewSpec(bytes32 _id)
+	public view returns (Iexec0xLib.Spec)
+	{
+		return m_specs[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
@@ -253,63 +263,71 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check orders authenticity
 		 */
+		 bytes32[4] memory hashes;
+		 address[3] memory owners;
+
 		// dapp
-		bytes32 dapporderHash = getDappOrderHash(_dapporder);
-		address dappowner     = Dapp(_dapporder.dapp).m_owner();
-		require(isValidSignature(dappowner, dapporderHash, _dapporder.sign));
+		hashes[0] = getDappOrderHash(_dapporder);
+		owners[0] = Dapp(_dapporder.dapp).m_owner();
+		require(isValidSignature(owners[0], hashes[0], _dapporder.sign));
 
 		// data
-		bytes32 dataorderHash = getDataOrderHash(_dataorder);
-		address dataowner     = 0;
+		hashes[1] = getDataOrderHash(_dataorder);
 		if (_dataorder.data != address(0)) // only check if dataset is enabled
 		{
-			dataowner = Data(_dataorder.data).m_owner();
-			require(isValidSignature(dataowner, dataorderHash, _dataorder.sign));
+			owners[1] = Data(_dataorder.data).m_owner();
+			require(isValidSignature(owners[1], hashes[1], _dataorder.sign));
 		}
 
 		// pool
-		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
-		address poolowner     = Pool(_poolorder.pool).m_owner();
-		require(isValidSignature(poolowner, poolorderHash, _poolorder.sign));
+		hashes[2] = getPoolOrderHash(_poolorder);
+		owners[2] = Pool(_poolorder.pool).m_owner();
+		require(isValidSignature(owners[2], hashes[2], _poolorder.sign));
 
 		// user
-		bytes32 userorderHash = getUserOrderHash(_userorder);
-		require(isValidSignature(_userorder.requester, userorderHash, _userorder.sign));
+		hashes[3] = getUserOrderHash(_userorder);
+		require(isValidSignature(_userorder.requester, hashes[3], _userorder.sign));
 
 		/**
 		 * Check and update availability
 		 */
-		require(m_consumed[dapporderHash] <  _dapporder.volume);
-		require(m_consumed[dataorderHash] <  _dataorder.volume);
-		require(m_consumed[poolorderHash] <  _poolorder.volume);
-		require(m_consumed[userorderHash] == 0);
-		m_consumed[dapporderHash] = m_consumed[dapporderHash].add(1);
-		m_consumed[dataorderHash] = m_consumed[dataorderHash].add(1);
-		m_consumed[poolorderHash] = m_consumed[poolorderHash].add(1);
-		m_consumed[userorderHash] = 1;
+		require(m_consumed[hashes[0]] <  _dapporder.volume);
+		require(m_consumed[hashes[1]] <  _dataorder.volume);
+		require(m_consumed[hashes[2]] <  _poolorder.volume);
+		require(m_consumed[hashes[3]] == 0);
+		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(1);
+		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(1);
+		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(1);
+		m_consumed[hashes[3]] = 1;
 
 		/**
 		 * Record
 		 */
-		Iexec0xLib.Deal storage deal = m_deals[userorderHash];
-		deal.dapp.pointer         = _dapporder.dapp;
-		deal.dapp.owner           = dappowner;
-		deal.dapp.price           = _dapporder.dappprice;
-		deal.data.owner           = dataowner;
-		deal.data.pointer         = _dataorder.data;
-		deal.data.price           = _dataorder.dataprice;
-		deal.pool.pointer         = _poolorder.pool;
-		deal.pool.owner           = poolowner;
-		deal.pool.price           = _poolorder.poolprice;
-		deal.category             = _poolorder.category;
-		deal.trust                = _poolorder.trust;
-		deal.tag                  = _poolorder.tag;
-		deal.requester            = _userorder.requester;
-		deal.beneficiary          = _userorder.beneficiary;
-		deal.callback             = _userorder.callback;
-		deal.params               = _userorder.params;
-		deal.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
-		deal.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
+		 bytes32 dealid = hashes[3];
+		/* bytes32 dealid = keccak256(abi.encodePacked(hashes[3], uint256(0))); // TODO: idx for BOT */
+
+		Iexec0xLib.Deal storage deal = m_deals[dealid];
+		deal.dapp.pointer = _dapporder.dapp;
+		deal.dapp.owner   = owners[0];
+		deal.dapp.price   = _dapporder.dappprice;
+		deal.data.owner   = owners[1];
+		deal.data.pointer = _dataorder.data;
+		deal.data.price   = _dataorder.dataprice;
+		deal.pool.pointer = _poolorder.pool;
+		deal.pool.owner   = owners[2];
+		deal.pool.price   = _poolorder.poolprice;
+		deal.category     = _poolorder.category;
+		deal.trust        = _poolorder.trust;
+		deal.tag          = _poolorder.tag;
+		deal.requester    = _userorder.requester;
+		deal.beneficiary  = _userorder.beneficiary;
+		deal.callback     = _userorder.callback;
+		deal.params       = _userorder.params;
+
+		Iexec0xLib.Spec storage spec = m_specs[dealid];
+		spec.start                = now;
+		spec.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
+		spec.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
 
 		/**
 		 * Lock
@@ -327,20 +345,23 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		));
 
 		/**
-		 * Initiate workorder & consensus
+		 * Initiate workorder & consensus - Removed for BOT
 		 */
-		iexechub.initialize(userorderHash); // enables woid
+		// iexechub.initialize(dealid); // enables woid
+		emit SchedulerNotice(deal.pool.pointer, dealid);
 
 		/**
 		 * Advertize
 		 */
 		emit OrdersMatched(
-			dapporderHash,
-			dataorderHash,
-			poolorderHash,
-			userorderHash
+			dealid,
+			hashes[0],
+			hashes[1],
+			hashes[2],
+			hashes[3]
 		);
-		return userorderHash;
+
+		return dealid;
 	}
 
 	function cancelDappOrder(Iexec0xLib.DappOrder _dapporder)
@@ -469,46 +490,40 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
-	function lockContribution(bytes32 _woid, address _worker)
+	function lockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return lock(_worker, m_deals[_woid].workerStake);
+		return lock(_worker, m_specs[_dealid].workerStake);
 	}
 
-	function unlockContribution(bytes32 _woid, address _worker)
+	function unlockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return unlock(_worker, m_deals[_woid].workerStake);
-	}
-/*
-	function rewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
-	{
-		return reward(_worker, _amount);
-	}
-*/
-	function unlockAndRewardForContribution(bytes32 _woid, address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
-	{
-		return unlock(_worker, m_deals[_woid].workerStake) && reward(_worker, _amount);
+		return unlock(_worker, m_specs[_dealid].workerStake);
 	}
 
-	function seizeContribution(bytes32 _woid, address _worker)
+	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
 	public onlyIexecHub returns (bool)
 	{
-		return seize(_worker, m_deals[_woid].workerStake);
+		return unlock(_worker, m_specs[_dealid].workerStake) && reward(_worker, _amount);
 	}
 
-	function rewardForScheduling(bytes32 _woid, uint256 _amount)
+	function seizeContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return reward(m_deals[_woid].pool.owner, _amount);
+		return seize(_worker, m_specs[_dealid].workerStake);
 	}
 
-	function successWork(bytes32 _woid)
+	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
 	public onlyIexecHub returns (bool)
 	{
-		Iexec0xLib.Deal memory deal = m_deals[_woid];
+		return reward(m_deals[_dealid].pool.owner, _amount);
+	}
+
+	function successWork(bytes32 _dealid)
+	public onlyIexecHub returns (bool)
+	{
+		Iexec0xLib.Deal memory deal = m_deals[_dealid];
 
 		uint256 userstake = deal.dapp.price
 		                    .add(deal.data.price)
@@ -535,10 +550,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function failedWork(bytes32 _woid)
+	function failedWork(bytes32 _dealid)
 	public onlyIexecHub returns (bool)
 	{
-		Iexec0xLib.Deal memory deal = m_deals[_woid];
+		Iexec0xLib.Deal memory deal = m_deals[_dealid];
 
 		uint256 userstake = deal.dapp.price
 		                    .add(deal.data.price)

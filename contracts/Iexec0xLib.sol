@@ -122,7 +122,10 @@ library Iexec0xLib
 		address beneficiary;
 		address callback;
 		string  params;
-		// other settings
+	}
+	struct Spec
+	{
+		uint256 start;
 		uint256 workerStake;
 		uint256 schedulerRewardRatio;
 	}
@@ -141,6 +144,8 @@ library Iexec0xLib
 	struct WorkOrder
 	{
 		WorkOrderStatusEnum status;
+		bytes32   dealid;
+		uint256   idx;
 		bytes32   consensusValue;
 		uint256   consensusDeadline;
 		uint256   revealDeadline;

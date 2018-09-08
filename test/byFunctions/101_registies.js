@@ -163,62 +163,6 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *               TEST: Pool configuration (by poolScheduler)               *
-	 ***************************************************************************/
-	it("Pool Configuration - owner can configure", async () => {
-		txMined = await PoolInstances[1].changePoolPolicy(
-			35,  // worker stake ratio
-			5,   // scheduler reward ratio
-			100, // minimum stake
-			0,   // minimum score
-			{ from: poolScheduler }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, PoolInstances[1].address, "PoolPolicyUpdate");
-		assert.equal(events[0].args.oldWorkerStakeRatioPolicy,         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.newWorkerStakeRatioPolicy,         35,  "Erroneous newWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy,     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.newSchedulerRewardRatioPolicy,     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.oldSubscriptionMinimumStakePolicy, 10,  "Erroneous oldSubscriptionMinimumStakePolicy");
-		assert.equal(events[0].args.newSubscriptionMinimumStakePolicy, 100, "Erroneous newSubscriptionMinimumStakePolicy");
-		assert.equal(events[0].args.oldSubscriptionMinimumScorePolicy, 10,  "Erroneous oldSubscriptionMinimumScorePolicy");
-		assert.equal(events[0].args.newSubscriptionMinimumScorePolicy, 0,   "Erroneous newSubscriptionMinimumScorePolicy");
-
-		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
-		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
-	});
-
-	/***************************************************************************
-	 *                   TEST: Pool configuration (by user)                    *
-	 ***************************************************************************/
-	it("Pool Configuration #2 - owner restriction apply", async () => {
-		try
-		{
-			await PoolInstances[1].changePoolPolicy(0, 0, 0, 0, { from: user });
-			assert.fail("user should not be able to cahnge policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-
-		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
-		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
-	});
-
-	/***************************************************************************
 	 *                         TEST: internal methods                          *
 	 ***************************************************************************/
 	it("Check internals", async () => {
