@@ -139,12 +139,10 @@ contract IexecHub is CategoryManager
 	function initialize(bytes32 _dealid, uint256 idx)
 	public returns (bytes32)
 	{
-		Iexec0xLib.Deal memory deal = iexecclerk.viewDeal(_dealid);
-		Iexec0xLib.Spec memory spec = iexecclerk.viewSpec(_dealid);
+		Iexec0xLib.Config memory config = iexecclerk.viewConfig(_dealid);
 
-		// TODO: BOT
-		// replace with check idx
-		require(spec.start != 0);
+		require(idx >= config.botFirst                    );
+		require(idx <  config.botFirst.add(config.botSize));
 
 		bytes32 woid = keccak256(abi.encodePacked(_dealid, idx));
 
@@ -153,11 +151,11 @@ contract IexecHub is CategoryManager
 		workorder.status            = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
 		workorder.dealid            = _dealid;
 		workorder.idx               = idx;
-		workorder.consensusDeadline = viewCategory(deal.category).workClockTimeRef
+		workorder.consensusDeadline = viewCategory(config.category).workClockTimeRef
 		                              .mul(CONSENSUS_DURATION_RATIO)
-		                              .add(spec.start);
+		                              .add(config.startTime);
 
-		emit ConsensusInitialize(woid, deal.pool.pointer);
+		emit ConsensusInitialize(woid, iexecclerk.viewDeal(_dealid).pool.pointer);
 
 		return woid;
 	}
@@ -259,7 +257,7 @@ contract IexecHub is CategoryManager
 
 		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.REVEALING;
 		workorder.consensusValue = _consensus;
-		workorder.revealDeadline = viewCategory(iexecclerk.viewDeal(workorder.dealid).category).workClockTimeRef
+		workorder.revealDeadline = viewCategory(iexecclerk.viewConfig(workorder.dealid).category).workClockTimeRef
 		                           .mul(REVEAL_DURATION_RATIO)
 		                           .add(now);
 		workorder.revealCounter  = 0;
@@ -378,7 +376,7 @@ contract IexecHub is CategoryManager
 
 		uint256 totalWeight = 0;
 		uint256 totalReward = iexecclerk.viewDeal(workorder.dealid).pool.price;
-		uint256 workerStake = iexecclerk.viewSpec(workorder.dealid).workerStake;
+		uint256 workerStake = iexecclerk.viewConfig(workorder.dealid).workerStake;
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
@@ -395,7 +393,7 @@ contract IexecHub is CategoryManager
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(iexecclerk.viewSpec(workorder.dealid).schedulerRewardRatio));
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(iexecclerk.viewConfig(workorder.dealid).schedulerRewardRatio));
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{

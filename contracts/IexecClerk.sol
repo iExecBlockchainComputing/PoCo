@@ -25,19 +25,19 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
-	mapping(bytes32 => Iexec0xLib.Deal) public m_deals;
-	mapping(bytes32 => Iexec0xLib.Spec) public m_specs;
-	mapping(bytes32 => uint256        ) public m_consumed;
-	mapping(bytes32 => bool           ) public m_presigned;
+	mapping(bytes32 => Iexec0xLib.Deal  ) public m_deals;
+	mapping(bytes32 => Iexec0xLib.Config) public m_configs;
+	mapping(bytes32 => uint256          ) public m_consumed;
+	mapping(bytes32 => bool             ) public m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event OrdersMatched  (bytes32 dealid,
-	                      bytes32 dappHash,
+	event OrdersMatched  (bytes32 dappHash,
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
-	                      bytes32 userHash);
+	                      bytes32 userHash,
+												uint256 volume);
 	event ClosedDappOrder(bytes32 dappHash);
 	event ClosedDataOrder(bytes32 dataHash);
 	event ClosedPoolOrder(bytes32 poolHash);
@@ -66,10 +66,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return m_deals[_id];
 	}
 
-	function viewSpec(bytes32 _id)
-	public view returns (Iexec0xLib.Spec)
+	function viewConfig(bytes32 _id)
+	public view returns (Iexec0xLib.Config)
 	{
-		return m_specs[_id];
+		return m_configs[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
@@ -172,6 +172,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 				_userorder.datamaxprice,
 				_userorder.pool,
 				_userorder.poolmaxprice,
+				_userorder.volume,
 				// settings
 				_userorder.category,
 				_userorder.trust,
@@ -289,22 +290,26 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(isValidSignature(_userorder.requester, hashes[3], _userorder.sign));
 
 		/**
-		 * Check and update availability
+		 * Check availability
 		 */
-		require(m_consumed[hashes[0]] <  _dapporder.volume);
-		require(m_consumed[hashes[1]] <  _dataorder.volume);
-		require(m_consumed[hashes[2]] <  _poolorder.volume);
-		require(m_consumed[hashes[3]] == 0);
-		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(1);
-		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(1);
-		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(1);
-		m_consumed[hashes[3]] = 1;
+		// require(m_consumed[hashes[0]] < _dapporder.volume); // checked by volume
+		// require(m_consumed[hashes[1]] < _dataorder.volume); // checked by volume
+		// require(m_consumed[hashes[2]] < _poolorder.volume); // checked by volume
+		// require(m_consumed[hashes[3]] < _userorder.volume); // checked by volume
+		uint256 volume;
+		volume =            _dapporder.volume.sub(m_consumed[hashes[0]]);
+		volume = volume.min(_dataorder.volume.sub(m_consumed[hashes[1]]));
+		volume = volume.min(_poolorder.volume.sub(m_consumed[hashes[2]]));
+		volume = volume.min(_userorder.volume.sub(m_consumed[hashes[3]]));
+		require(volume > 0);
 
 		/**
 		 * Record
 		 */
-		 bytes32 dealid = hashes[3];
-		/* bytes32 dealid = keccak256(abi.encodePacked(hashes[3], uint256(0))); // TODO: idx for BOT */
+		bytes32 dealid = keccak256(abi.encodePacked(
+			hashes[3],            // userHash
+			m_consumed[hashes[3]] // idx of first subtask
+		));
 
 		Iexec0xLib.Deal storage deal = m_deals[dealid];
 		deal.dapp.pointer = _dapporder.dapp;
@@ -316,7 +321,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.pool.pointer = _poolorder.pool;
 		deal.pool.owner   = owners[2];
 		deal.pool.price   = _poolorder.poolprice;
-		deal.category     = _poolorder.category;
 		deal.trust        = _poolorder.trust;
 		deal.tag          = _poolorder.tag;
 		deal.requester    = _userorder.requester;
@@ -324,10 +328,21 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.callback     = _userorder.callback;
 		deal.params       = _userorder.params;
 
-		Iexec0xLib.Spec storage spec = m_specs[dealid];
-		spec.start                = now;
-		spec.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
-		spec.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
+		Iexec0xLib.Config storage config = m_configs[dealid];
+		config.category             = _poolorder.category;
+		config.startTime            = now;
+		config.botFirst             = m_consumed[hashes[3]];
+		config.botSize              = volume;
+		config.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
+		config.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
+
+		/**
+		 * Update consumed
+		 */
+		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(volume);
+		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(volume);
+		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(volume);
+		m_consumed[hashes[3]] = m_consumed[hashes[3]].add(volume);
 
 		/**
 		 * Lock
@@ -337,28 +352,29 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			deal.dapp.price
 			.add(deal.data.price)
 			.add(deal.pool.price)
+			.mul(volume)
 		));
 		require(lock(
 			deal.pool.owner,
 			deal.pool.price
 			.percentage(POOL_STAKE_RATIO)
+			.mul(volume)
 		));
 
 		/**
-		 * Initiate workorder & consensus - Removed for BOT
+		 * Advertize deal
 		 */
-		// iexechub.initialize(dealid); // enables woid
 		emit SchedulerNotice(deal.pool.pointer, dealid);
 
 		/**
-		 * Advertize
+		 * Advertize consumption
 		 */
 		emit OrdersMatched(
-			dealid,
 			hashes[0],
 			hashes[1],
 			hashes[2],
-			hashes[3]
+			hashes[3],
+			volume
 		);
 
 		return dealid;
@@ -466,7 +482,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Cancel market by marking it consumed
 		 */
-		m_consumed[userorderHash] = 1;
+		m_consumed[userorderHash] = _userorder.volume;
 
 		emit ClosedUserOrder(userorderHash);
 		return true;
@@ -493,25 +509,25 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function lockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return lock(_worker, m_specs[_dealid].workerStake);
+		return lock(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return unlock(_worker, m_specs[_dealid].workerStake);
+		return unlock(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
 	public onlyIexecHub returns (bool)
 	{
-		return unlock(_worker, m_specs[_dealid].workerStake) && reward(_worker, _amount);
+		return unlock(_worker, m_configs[_dealid].workerStake) && reward(_worker, _amount);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub returns (bool)
 	{
-		return seize(_worker, m_specs[_dealid].workerStake);
+		return seize(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount)

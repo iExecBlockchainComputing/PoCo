@@ -354,6 +354,7 @@ contract('IexecHub', async (accounts) => {
 				// pool:         PoolInstance.address,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
+				volume:       1, // CHANGE FOR BOT
 				// settings
 				category:     4,
 				trust:        1000,
@@ -546,10 +547,10 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: check score - before                        *
 	 ***************************************************************************/
 	it("[Initial] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker3)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker4)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
 	});
 
 	/***************************************************************************
@@ -573,7 +574,14 @@ contract('IexecHub', async (accounts) => {
 
 		// TODO: check gas, events ...
 
-		dealid = obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt);
+		// TODO: get that from event
+		dealid = ethers.utils.solidityKeccak256([
+			'bytes32',
+			'uint256',
+		],[
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
+			0,
+		]);
 	});
 
 	/***************************************************************************
@@ -583,26 +591,24 @@ contract('IexecHub', async (accounts) => {
 		deal = await IexecClerkInstanceEthers.viewDeal(dealid);
 		assert.equal    (deal.dapp.pointer.toLowerCase(), DappInstance.address,   "check deal (deal.dapp.pointer)"        );
 		assert.equal    (deal.dapp.owner.toLowerCase(),   dappProvider,           "check deal (deal.dapp.owner)"          );
-		assert.equal    (deal.dapp.price,                 dapporder.dappprice,    "check deal (deal.dapp.price)"          );
+		assert.equal    (deal.dapp.price.toNumber(),      dapporder.dappprice,    "check deal (deal.dapp.price)"          );
 		assert.equal    (deal.dapp.pointer.toLowerCase(), userorder.dapp,         "check deal (deal.dapp.pointer)"        );
 		assert.isAtMost (deal.dapp.price.toNumber(),      userorder.dappmaxprice, "check deal (deal.dapp.price)"          );
 		assert.equal    (deal.data.pointer.toLowerCase(), DataInstance.address,   "check deal (deal.data.pointer)"        );
 		assert.equal    (deal.data.owner.toLowerCase(),   dataProvider,           "check deal (deal.data.owner)"          );
-		assert.equal    (deal.data.price,                 dataorder.dataprice,    "check deal (deal.data.price)"          );
+		assert.equal    (deal.data.price.toNumber(),      dataorder.dataprice,    "check deal (deal.data.price)"          );
 		assert.equal    (deal.data.pointer.toLowerCase(), userorder.data,         "check deal (deal.data.pointer)"        );
 		assert.isAtMost (deal.data.price.toNumber(),      userorder.datamaxprice, "check deal (deal.data.price)"          );
 		assert.equal    (deal.pool.pointer.toLowerCase(), PoolInstance.address,   "check deal (deal.pool.pointer)"        );
 		assert.equal    (deal.pool.owner.toLowerCase(),   poolScheduler,          "check deal (deal.pool.owner)"          );
-		assert.equal    (deal.pool.price,                 poolorder.poolprice,    "check deal (deal.pool.price)"          );
+		assert.equal    (deal.pool.price.toNumber(),      poolorder.poolprice,    "check deal (deal.pool.price)"          );
 		if( userorder.pool != constants.NULL.ADDRESS)
 		assert.equal    (deal.pool.pointer.toLowerCase(), userorder.pool,         "check deal (deal.pool.pointer)"        );
 		assert.isAtMost (deal.pool.price.toNumber(),      userorder.poolmaxprice, "check deal (deal.pool.price)"          );
-		assert.equal    (deal.category,                   poolorder.category,     "check deal (deal.category)"            );
-		assert.equal    (deal.category,                   userorder.category,     "check deal (deal.category)"            );
-		assert.equal    (deal.trust,                      poolorder.trust,        "check deal (deal.trust)"               );
+		assert.equal    (deal.trust.toNumber(),           poolorder.trust,        "check deal (deal.trust)"               );
 		assert.isAtLeast(deal.trust.toNumber(),           userorder.trust,        "check deal (deal.trust)"               );
-		assert.equal    (deal.tag,                        poolorder.tag,          "check deal (deal.tag)"                 );
-		assert.equal    (deal.tag,                        userorder.tag,          "check deal (deal.tag)"                 );
+		assert.equal    (deal.tag.toNumber(),             poolorder.tag,          "check deal (deal.tag)"                 );
+		assert.equal    (deal.tag.toNumber(),             userorder.tag,          "check deal (deal.tag)"                 );
 		assert.equal    (deal.requester.toLowerCase(),    user,                   "check deal (deal.requester)"           );
 		assert.equal    (deal.beneficiary.toLowerCase(),  user,                   "check deal (deal.beneficiary)"         );
 		assert.equal    (deal.callback.toLowerCase(),     userorder.callback,     "check deal (deal.callback)"            );
@@ -612,11 +618,15 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                     TEST: specs are written onchain                     *
 	 ***************************************************************************/
-	it("[Market] Check spec", async () => {
-		spec = await IexecClerkInstanceEthers.viewSpec(dealid);
-		assert.isAbove(spec.start.toNumber(),     0, "check spec (spec.start)"               ); // 8 = floor(25*.3)
-		assert.equal  (spec.workerStake,          8, "check spec (spec.workerStake)"         ); // 8 = floor(25*.3)
-		assert.equal  (spec.schedulerRewardRatio, 5, "check spec (spec.schedulerRewardRatio)");
+	it("[Market] Check config", async () => {
+		config = await IexecClerkInstanceEthers.viewConfig(dealid);
+		assert.equal  (config.category.toNumber(),             poolorder.category,     "check config (config.category)"            );
+		assert.equal  (config.category.toNumber(),             userorder.category,     "check config (config.category)"            );
+		assert.isAbove(config.startTime.toNumber(),            0,                      "check config (config.start)"               );
+		assert.equal  (config.botFirst.toNumber(),             0,                      "check config (config.botFirst)"            );
+		assert.equal  (config.botSize.toNumber(),              1,                      "check config (config.botSize)"             );
+		assert.equal  (config.workerStake.toNumber(),          8,                      "check config (config.workerStake)"         ); // 8 = floor(25*.3)
+		assert.equal  (config.schedulerRewardRatio.toNumber(), 5,                      "check config (config.schedulerRewardRatio)");
 	});
 
 	/***************************************************************************
@@ -653,7 +663,7 @@ contract('IexecHub', async (accounts) => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
 		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
 		assert.equal    (workorder.dealid,                       dealid,                               "check workorder (workorder.dealid)"           );
-		assert.equal    (workorder.idx,                          0,                                    "check workorder (workorder.idx)"              );
+		assert.equal    (workorder.idx.toNumber(),               0,                                    "check workorder (workorder.idx)"              );
 		assert.equal    (workorder.consensusValue,               constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
 		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                    "check workorder (workorder.consensusDeadline)");
 		assert.equal    (workorder.revealDeadline.toNumber(),    0,                                    "check workorder (workorder.revealDeadline)"   );
@@ -730,8 +740,8 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(contribution.resultHash,                     results[w.address].contribution.hash,         "check contribution (contribution.resultHash)"      );
 			assert.equal(contribution.resultSign,                     results[w.address].contribution.sign,         "check contribution (contribution.resultSign)"      );
 			assert.equal(contribution.enclaveChallenge.toLowerCase(), w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
-			assert.equal(contribution.score,                          0,                                            "check contribution (contribution.score)"           );
-			assert.equal(contribution.weight,                         1,                                            "check contribution (contribution.weight)"          );
+			assert.equal(contribution.score.toNumber(),               0,                                            "check contribution (contribution.score)"           );
+			assert.equal(contribution.weight.toNumber(),              1,                                            "check contribution (contribution.weight)"          );
 		}
 	});
 
@@ -755,6 +765,8 @@ contract('IexecHub', async (accounts) => {
 	it("[Contributed] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
 		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.ACTIVE, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.dealid,                                 dealid,                               "check workorder (workorder.dealid)"           );
+		assert.equal    (workorder.idx.toNumber(),                         0,                                    "check workorder (workorder.idx)"              );
 		assert.equal    (workorder.consensusValue,                         constants.NULL.BYTES32,               "check workorder (workorder.consensusValue)"   );
 		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                    "check workorder (workorder.consensusDeadline)");
 		assert.equal    (workorder.revealDeadline.toNumber(),              0,                                    "check workorder (workorder.revealDeadline)"   );
@@ -781,6 +793,8 @@ contract('IexecHub', async (accounts) => {
 	it("[Consensus] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
 		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.dealid,                                 dealid,                               "check workorder (workorder.dealid)"           );
+		assert.equal    (workorder.idx.toNumber(),                         0,                                    "check workorder (workorder.idx)"              );
 		assert.equal    (workorder.consensusValue,                         consensus.contribution.hash,             "check workorder (workorder.consensusValue)"   );
 		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
 		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
@@ -816,6 +830,8 @@ contract('IexecHub', async (accounts) => {
 	it("[Reveal] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
 		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.REVEALING, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.dealid,                                 dealid,                               "check workorder (workorder.dealid)"           );
+		assert.equal    (workorder.idx.toNumber(),                         0,                                    "check workorder (workorder.idx)"              );
 		assert.equal    (workorder.consensusValue,                         consensus.contribution.hash,             "check workorder (workorder.consensusValue)"   );
 		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
 		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
@@ -857,6 +873,8 @@ contract('IexecHub', async (accounts) => {
 	it("[Finalized] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(woid);
 		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.dealid,                                 dealid,                               "check workorder (workorder.dealid)"           );
+		assert.equal    (workorder.idx.toNumber(),                         0,                                    "check workorder (workorder.idx)"              );
 		assert.equal    (workorder.consensusValue,                         consensus.contribution.hash,             "check workorder (workorder.consensusValue)"   );
 		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
 		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
@@ -883,10 +901,10 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
 	it("[Finalized] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)), 1, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 1, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker3)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker4)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 1, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 1, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
 	});
 
 	it("FINISHED", async () => {});

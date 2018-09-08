@@ -87,6 +87,7 @@ library Iexec0xLib
 		address pool;
 		uint256 poolmaxprice;
 		address requester;
+		uint256 volume;
 		// settings
 		uint256 category;
 		uint256 trust;
@@ -113,19 +114,22 @@ library Iexec0xLib
 		Resource dapp;
 		Resource data;
 		Resource pool;
-		// execution settings
-		uint256 category;
-		uint256 trust;
-		uint256 tag;
+		uint256  trust;
+		uint256  tag;
 		// execution details
 		address requester;
 		address beneficiary;
 		address callback;
 		string  params;
 	}
-	struct Spec
+	struct Config
 	{
-		uint256 start;
+		// execution settings
+		uint256 category;
+		uint256 startTime;
+		uint256 botFirst;
+		uint256 botSize;
+		// consistency
 		uint256 workerStake;
 		uint256 schedulerRewardRatio;
 	}

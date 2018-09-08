@@ -307,6 +307,7 @@ contract('IexecHub', async (accounts) => {
 				dappmaxprice: 3,
 				data:         DataInstance.address,
 				datamaxprice: 1,
+				volume:       1,
 				// pool:         PoolInstance.address,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
@@ -407,7 +408,14 @@ contract('IexecHub', async (accounts) => {
 
 		// TODO: check gas, events ...
 
-		dealid = obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt);
+		// TODO: get that from event
+		dealid = ethers.utils.solidityKeccak256([
+			'bytes32',
+			'uint256',
+		],[
+			obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
+			0,
+		]);
 	});
 
 	/***************************************************************************
