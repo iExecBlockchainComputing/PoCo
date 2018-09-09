@@ -137,7 +137,7 @@ module.exports = {
 		const resultHash    = web3.sha3(byteresult, {encoding: 'hex'}); // Vote
 		const addressHash   = web3.sha3(address,    {encoding: 'hex'});
 		var   xor           = '0x';
-		for(i=2; i<66; ++i) xor += (parseInt(byteresult.charAt(i), 16) ^ parseInt(addressHash.charAt(i), 16)).toString(16); // length 64, with starting 0x
+		for(var _i=2; _i<66; ++_i) xor += (parseInt(byteresult.charAt(_i), 16) ^ parseInt(addressHash.charAt(_i), 16)).toString(16); // length 64, with starting 0x
 		const sign          = web3.sha3(xor, {encoding: 'hex'}); // Sign
 		return { base: byteresult, contribution: {hash: resultHash, sign: sign }};
 	},

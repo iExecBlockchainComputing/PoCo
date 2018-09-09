@@ -25,6 +25,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
+	mapping(bytes32 => bytes32[]        ) public m_userdeals;
 	mapping(bytes32 => Iexec0xLib.Deal  ) public m_deals;
 	mapping(bytes32 => Iexec0xLib.Config) public m_configs;
 	mapping(bytes32 => uint256          ) public m_consumed;
@@ -33,7 +34,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event OrdersMatched  (bytes32 dappHash,
+	event OrdersMatched  (bytes32 dealid,
+	                      bytes32 dappHash,
 	                      bytes32 dataHash,
 	                      bytes32 poolHash,
 	                      bytes32 userHash,
@@ -60,6 +62,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                Accessor                                 *
 	 ***************************************************************************/
+	function viewUserDeals(bytes32 _id)
+	public view returns (bytes32[])
+	{
+		return m_userdeals[_id];
+	}
+
 	function viewDeal(bytes32 _id)
 	public view returns (Iexec0xLib.Deal)
 	{
@@ -339,6 +347,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		config.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
 		config.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
 
+		m_userdeals[hashes[3]].push(dealid);
+
 		/**
 		 * Update consumed
 		 */
@@ -373,6 +383,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Advertize consumption
 		 */
 		emit OrdersMatched(
+			dealid,
 			hashes[0],
 			hashes[1],
 			hashes[2],
