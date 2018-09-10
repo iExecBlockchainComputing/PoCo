@@ -1,0 +1,119 @@
+@startuml
+box "Smart contracts" #LightBlue
+	participant IexecClerk
+	participant IexecHub
+end box
+
+box "Off chain" #TECHNOLOGY
+	participant Marketplace
+end box
+
+box "iExec Core" #Bisque
+	participant Scheduler
+	participant Worker
+end box
+
+box "Ressources" #LightSalmon
+	participant Dapp
+	participant Dataset
+end box
+
+box "Users"
+	participant iExecCloudUser
+	participant anyone
+end box
+
+skinparam sequenceGroupBodyBackgroundColor transparent
+
+autonumber
+
+activate Marketplace
+
+activate Dapp
+Dapp -> Dapp : sign dapporder
+Dapp --> Marketplace : publish dapporder
+deactivate Dapp
+
+activate Dataset
+Dataset -> Dataset : sign dataorder
+Dataset --> Marketplace : publish dataorder
+deactivate Dataset
+
+activate Scheduler
+Scheduler -> Scheduler : checks availability
+Scheduler -> Scheduler : sign poolorder
+Scheduler --> Marketplace : publish poolorder
+deactivate Scheduler
+
+activate iExecCloudUser
+iExecCloudUser -> iExecCloudUser : sign userorder
+iExecCloudUser --> Marketplace : publish user order
+deactivate iExecCloudUser
+
+activate anyone
+Marketplace --> anyone  : read orders
+anyone -> anyone : match orders
+activate IexecClerk
+
+group Brokering
+	anyone --> IexecClerk : <b>matchOrders()
+	deactivate anyone
+	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
+	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+deactivate Marketplace
+activate Scheduler
+IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+activate IexecHub
+
+loop for all task in bag
+
+	Scheduler --> IexecHub : <b>initialize()
+	deactivate Scheduler
+	IexecHub <--> IexecHub : <font color=green><b>emit ConsensusInitialize()
+	activate Scheduler
+	IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusInitialize()
+
+	group workorder processing
+		Scheduler -> Scheduler : randomly choose worker
+		Scheduler -> Scheduler : build signed authorization
+		activate Worker
+		Scheduler --> Worker : send signed authorization
+
+		group Worker execution
+			Worker  <--> Dapp : getApp
+			Worker  <--> Dataset : getDataset
+			Worker -> Worker : execute the asked work
+			Worker -> Worker : resultHash  (vote)
+			Worker -> Worker : resultSigned(proof of knowledge)
+			Worker --> IexecHub : <b>contribute()
+			IexecHub <--> IexecHub : <font color=green><b>emit ConsensusContribute()
+		end
+
+		IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusContribute()
+		Scheduler --> IexecHub : <b>revealConsensus()
+		IexecHub <--> IexecHub : <font color=green><b>emit ConsensusRevealConsensus()
+
+		group Worker reveal
+			IexecHub o-> Worker : <font color=blue><b> watch ConsensusRevealConsensus()
+			Worker --> IexecHub : <b>reveal()
+			IexecHub <--> IexecHub : <font color=green><b>emit ConsensusReveal()
+			end
+
+		deactivate  Worker
+
+		IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusReveal()
+		Scheduler --> IexecHub : <b>finalizeWork()
+		deactivate Scheduler
+		IexecHub --> IexecClerk : notify
+		note over IexecClerk : RLC reward/seize for actors
+		deactivate IexecClerk
+		IexecHub <--> IexecHub : <font color=green><b>emit ConsensusFinalized()
+		deactivate IexecHub
+
+	end
+end
+
+@enduml
