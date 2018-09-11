@@ -1,0 +1,64 @@
+@startuml
+:iExecCloudUser:
+:iExecSCUser:
+:DappProvider:
+:DataProvider:
+:ScheduleProvider:
+:ResourceProvider:
+:Broker:
+
+cloud {
+  [IexecBeacon]
+}
+component [IexecBeacon]
+iExecSCUser -down-> [IexecBeacon]: use
+
+component [Marketplace]
+[IexecBeacon] -down-> [Marketplace]: broadcast userorder
+iExecCloudUser -down-> [Marketplace]: broadcast userorder
+DappProvider -down-> [Marketplace]: broadcast dapporder
+DataProvider -down-> [Marketplace]: broadcast dataorder
+ScheduleProvider -down-> [Marketplace]: broadcast poolorder
+Broker -up-> [Marketplace]: read order
+
+cloud {
+  [IexecClerk]
+  [IexecHub]
+  [RLC Token]
+}
+component [IexecClerk]
+component [IexecHub]
+component [RLC Token]
+[IexecHub] <-right-> [IexecClerk]
+[IexecClerk] <-right-> [RLC Token]
+
+Broker -down-> [IexecClerk]: push matched orders
+[IexecClerk] -up-> [Marketplace]: notification events
+
+[iexec-scheduler] <-up-> [IexecHub]
+[iexec-worker] <-up-> [IexecHub]
+
+
+
+
+
+component [AppRepository]
+component [DatasetRepository]
+component [iexec-scheduler]
+component [iexec-worker]
+component [ResultRepository]
+
+DappProvider -down-> AppRepository: expose
+DataProvider -down-> DatasetRepository: expose
+ScheduleProvider -down-> [iexec-scheduler]: control
+ScheduleProvider -down-> [ResultRepository]: control and expose
+ResultRepository <-right-> [iexec-scheduler]
+
+
+
+[ResourceProvider] -right-> [iexec-worker]: control
+
+[iexec-worker] <-right-> [iexec-scheduler]
+[iexec-worker] <-up-> [AppRepository]
+[iexec-worker] <-up-> [DatasetRepository]
+@enduml
