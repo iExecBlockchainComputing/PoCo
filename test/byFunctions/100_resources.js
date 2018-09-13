@@ -178,7 +178,13 @@ contract('IexecHub', async (accounts) => {
 	it("Pool Configuration #2 - owner restriction apply", async () => {
 		try
 		{
-			await PoolInstances[1].changePoolPolicy(0, 0, 0, 0, { from: user });
+			await PoolInstances[1].changePoolPolicy(
+				0,
+				0,
+				0,
+				0,
+				{ from: user }
+			);
 			assert.fail("user should not be able to cahnge policy");
 		}
 		catch (error)

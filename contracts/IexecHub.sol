@@ -371,13 +371,13 @@ contract IexecHub is CategoryManager
 	private
 	{
 		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
+		Iexec0xLib.Config    memory  config    = iexecclerk.viewConfig(workorder.dealid);
 
 		uint256 i;
 		address worker;
 
 		uint256 totalWeight = 0;
 		uint256 totalReward = iexecclerk.viewDeal(workorder.dealid).pool.price;
-		uint256 workerStake = iexecclerk.viewConfig(workorder.dealid).workerStake;
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
@@ -388,13 +388,13 @@ contract IexecHub is CategoryManager
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
-				totalReward = totalReward.add(workerStake);
+				totalReward = totalReward.add(config.workerStake);
 			}
 		}
 		require(totalWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(iexecclerk.viewConfig(workorder.dealid).schedulerRewardRatio));
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(config.schedulerRewardRatio));
 
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
