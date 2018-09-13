@@ -11,7 +11,7 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const constants = require("./constants");
-const obdtools  = require('../utils/odb-tools-beta');
+const odbtools  = require('../utils/odb-tools-beta');
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
@@ -209,7 +209,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("Generate dapp order", async () => {
-		dapporder = await obdtools.signObject(
+		dapporder = await odbtools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -223,7 +223,7 @@ contract('IexecHub', async (accounts) => {
 				salt:         web3.utils.randomHex(32),
 			},
 			dappProvider,
-			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(obj), obj.salt)
+			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(obj), obj.salt)
 		);
 
 		hash = await IexecClerkInstance.getDappOrderHash(dapporder);
@@ -231,9 +231,9 @@ contract('IexecHub', async (accounts) => {
 
 		// result = await IexecClerkInstance.isValidSignature(
 		// 	dappProvider,
-		// 	obdtools.getFullHash(
+		// 	odbtools.getFullHash(
 		// 		IexecClerkInstance.address,
-		// 		obdtools.dappPartialHash(DappOrder),
+		// 		odbtools.dappPartialHash(DappOrder),
 		// 		DappOrder.salt
 		// 	),
 		// 	DappOrder.sign,
@@ -249,14 +249,14 @@ contract('IexecHub', async (accounts) => {
 
 		// assert.equal(
 		// 	await IexecClerkInstance.getDappOrderHash(DappOrder),
-		// 	obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
+		// 	odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(DappOrder), DappOrder.salt),
 		// 	"Error with DappOrder hash computation"
 		// );
 		//
 		// assert.equal(
 		// 	await IexecClerkInstance.isValidSignature(
 		// 		dappProvider,
-		// 		obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(DappOrder), DappOrder.salt),
+		// 		odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(DappOrder), DappOrder.salt),
 		// 		DappOrder.sign
 		// 	),
 		// 	true,

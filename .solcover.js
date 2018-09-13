@@ -4,5 +4,9 @@ module.exports = {
 	testCommand: 'truffle test --network coverage',
 	norpc: false,
 	copyPackages: ['rlc-token'],
-	skipFiles: ['Migrations.sol',]
+	skipFiles: [
+		'IexecHub.sol',
+		'IexecClerk.sol',
+		'tools/Migrations.sol',
+	]
 };

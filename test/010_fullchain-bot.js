@@ -12,7 +12,7 @@ var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
-const obdtools  = require('../utils/obd-tools');
+const odbtools  = require('../utils/odb-tools');
 
 // const BN              = require("bn");
 // const keccak256       = require("solidity-sha3");
@@ -73,7 +73,7 @@ contract('IexecHub', async (accounts) => {
 			woid: null,
 			authorizations: {},
 			results: {},
-			consensus: obdtools.hashResult("iExec BOT 0"),
+			consensus: odbtools.hashResult("iExec BOT 0"),
 			workers :
 			[
 				{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec BOT 0" },
@@ -85,7 +85,7 @@ contract('IexecHub', async (accounts) => {
 			woid: null,
 			authorizations: {},
 			results: {},
-			consensus: obdtools.hashResult("iExec BOT 1"),
+			consensus: odbtools.hashResult("iExec BOT 1"),
 			workers :
 			[
 				{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec BOT 1" },
@@ -98,7 +98,7 @@ contract('IexecHub', async (accounts) => {
 			woid: null,
 			authorizations: {},
 			results: {},
-			consensus: obdtools.hashResult("iExec BOT 2"),
+			consensus: odbtools.hashResult("iExec BOT 2"),
 			workers :
 			[
 				{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec BOT 2" },
@@ -260,7 +260,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate dapp order", async () => {
-		dapporder = obdtools.signObject(
+		dapporder = odbtools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -274,7 +274,7 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dappProvider,
-			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.dappPartialHash(obj), obj.salt)
+			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(obj), obj.salt)
 		);
 	});
 
@@ -282,7 +282,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Data order signature (by dataProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate data order", async () => {
-		dataorder = obdtools.signObject(
+		dataorder = odbtools.signObject(
 			{
 				//market
 				data:         DataInstance.address,
@@ -296,7 +296,7 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			dataProvider,
-			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.dataPartialHash(obj), obj.salt)
+			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dataPartialHash(obj), obj.salt)
 		);
 	});
 
@@ -304,7 +304,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Pool order signature (by poolProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate pool order", async () => {
-		poolorder = obdtools.signObject(
+		poolorder = odbtools.signObject(
 			{
 				// market
 				pool:         PoolInstance.address,
@@ -322,7 +322,7 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			poolScheduler,
-			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.poolPartialHash(obj), obj.salt)
+			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.poolPartialHash(obj), obj.salt)
 		);
 	});
 
@@ -330,7 +330,7 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: User order signature (by user)                   *
 	 ***************************************************************************/
 	it("[Genesis] Generate user order", async () => {
-		userorder = obdtools.signObject(
+		userorder = odbtools.signObject(
 			{
 				// market
 				dapp:         DappInstance.address,
@@ -353,7 +353,7 @@ contract('IexecHub', async (accounts) => {
 				salt:         ethers.utils.randomBytes(32),
 			},
 			user,
-			(obj) => obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(obj), obj.salt)
+			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(obj), obj.salt)
 		);
 	});
 
@@ -443,7 +443,7 @@ contract('IexecHub', async (accounts) => {
 			'bytes32',
 			'uint256',
 		],[
-			obdtools.getFullHash(IexecClerkInstance.address, obdtools.userPartialHash(userorder), userorder.salt),
+			odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt),
 			0,
 		]);
 	});
@@ -471,10 +471,10 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].authorizations[worker.address] = obdtools.signObject(
+			tasks[taskid].authorizations[worker.address] = odbtools.signObject(
 				{ worker: worker.address, woid: tasks[taskid].woid, enclave: worker.enclave },
 				poolScheduler,
-				(obj) => obdtools.authorizeHash(obj)
+				(obj) => odbtools.authorizeHash(obj)
 			);
 		}
 	});
@@ -486,10 +486,10 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].results[worker.address] = obdtools.signResult(worker.raw, worker.address);
+			tasks[taskid].results[worker.address] = odbtools.signResult(worker.raw, worker.address);
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				obdtools.signObject(tasks[taskid].results[worker.address], worker.enclave, (obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64));
+				odbtools.signObject(tasks[taskid].results[worker.address], worker.enclave, (obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64));
 			}
 			else // Without SGX
 			{

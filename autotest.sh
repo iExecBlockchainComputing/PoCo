@@ -7,7 +7,6 @@ trap catch INT
 TESTRPC="ganache-cli"
 TRUFFLE="truffle"
 
-
 function print_style
 {
 	if   [ "$1" == "info"    ]; then COLOR="96m";
