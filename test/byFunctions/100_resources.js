@@ -187,4 +187,34 @@ contract('IexecHub', async (accounts) => {
 		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
 	});
 
+	/***************************************************************************
+	 *           TEST: Invalid pool configuration (by poolScheduler)           *
+	 ***************************************************************************/
+	it("Pool Configuration #3 - invalid configuration refused", async () => {
+		try
+		{
+			await PoolInstances[1].changePoolPolicy(
+				100, // worker stake ratio
+				150, // scheduler reward ratio (should not be above 100%)
+				0,   // minimum stake
+				0,   // minimum score
+				{ from: poolScheduler }
+			);
+			assert.fail("user should not be able to cahnge policy");
+		}
+		catch (error)
+		{
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+
+		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
+		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
+		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
+		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
+		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
+		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
+		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
+	});
+
 });
