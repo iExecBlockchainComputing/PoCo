@@ -7,7 +7,7 @@
     "test": "./node_modules/.bin/truffle test",
     "pretest": "./node_modules/.bin/testrpc > /dev/null &",
     "posttest": "kill $(ps aux | grep testrpc |grep node|awk '{print $2}')",
-    "coverage": "./node_modules/.bin/solidity-coverage"
+    "coverage": "./node_modules/.bin/solidity-coverage | tee coverage_$(date +'%Y%m%d:%H%M').txt"
   },
   "repository": {
     "type": "git",

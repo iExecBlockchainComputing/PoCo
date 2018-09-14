@@ -208,9 +208,11 @@ contract IexecHub is CategoryManager
 		{
 			require(_enclaveChallenge == ecrecover(
 				keccak256(abi.encodePacked(
-					"\x19Ethereum Signed Message:\n64",
+					"\x19Ethereum Signed Message:\n32",
+					keccak256(abi.encodePacked(
 					_resultHash,
 					_resultSign
+					))
 				)),
 				_enclaveSign.v,
 				_enclaveSign.r,
@@ -280,8 +282,8 @@ contract IexecHub is CategoryManager
 		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
 		require(contribution.status         == Iexec0xLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == workorder.consensusValue);
-		require(contribution.resultHash     == keccak256(abi.encodePacked(_result)));
-		require(contribution.resultSign     == keccak256(abi.encodePacked(_result ^ keccak256(abi.encodePacked(msg.sender)))));
+		require(contribution.resultHash     == keccak256(abi.encodePacked(            _result)));
+		require(contribution.resultSign     == keccak256(abi.encodePacked(msg.sender, _result)));
 
 		contribution.status     = Iexec0xLib.ContributionStatusEnum.PROVED;
 		workorder.revealCounter = workorder.revealCounter.add(1);
