@@ -92,25 +92,6 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                         TEST: internal methods                          *
-	 ***************************************************************************/
-	it("check signature mechanism", async () => {
-		entry = odbtools.signObject({ hash: ethers.utils.solidityKeccak256(['bytes32'], [ethers.utils.randomBytes(32)]) }, iexecAdmin, (obj) => obj.hash);
-
-		assert.isFalse(await IexecClerkInstanceEthers.m_presigned(entry.hash),                                                                                                                                       "Error with the validation of signatures");
-		assert.isTrue (await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             entry.hash,                   { v: entry.sign.v, r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(user,                   entry.hash,                   { v: entry.sign.v, r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(constants.NULL.ADDRESS, entry.hash,                   { v: entry.sign.v, r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             ethers.utils.randomBytes(32), { v: entry.sign.v, r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             constants.NULL.BYTES32,       { v: entry.sign.v, r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             entry.hash,                   { v: 0,            r: entry.sign.r,                 s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             entry.hash,                   { v: entry.sign.v, r: ethers.utils.randomBytes(32), s: entry.sign.s                 }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             entry.hash,                   { v: entry.sign.v, r: entry.sign.r,                 s: ethers.utils.randomBytes(32) }), "Error with the validation of signatures");
-		assert.isFalse(await IexecClerkInstanceEthers.isValidSignature(iexecAdmin,             entry.hash,                   constants.NULL.SIGNATURE                                                             ), "Error with the validation of signatures");
-	});
-
-
-	/***************************************************************************
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
 	it("[Genesis] Dapp Creation", async () => {
@@ -145,7 +126,7 @@ contract('IexecHub', async (accounts) => {
 			poolrestrict: PoolInstance.address,
 			userrestrict: user,
 			// extra
-			salt:         ethers.utils.randomBytes(32),
+			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		dataorder = {
@@ -158,7 +139,7 @@ contract('IexecHub', async (accounts) => {
 			poolrestrict: PoolInstance.address,
 			userrestrict: user,
 			// extra
-			salt:         ethers.utils.randomBytes(32),
+			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		poolorder = {
@@ -175,7 +156,7 @@ contract('IexecHub', async (accounts) => {
 			datarestrict: DataInstance.address,
 			userrestrict: user,
 			// extra
-			salt:         ethers.utils.randomBytes(32),
+			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		userorder = {
@@ -196,7 +177,7 @@ contract('IexecHub', async (accounts) => {
 			callback:     constants.NULL.ADDRESS,
 			params:       "app params",
 			// extra
-			salt:         ethers.utils.randomBytes(32),
+			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		dapporder_hash = odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(dapporder), dapporder.salt);

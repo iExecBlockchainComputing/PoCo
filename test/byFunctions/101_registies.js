@@ -14,21 +14,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
-// const BN              = require("bn");
-// const keccak256       = require("solidity-sha3");
-// const fs              = require("fs-extra");
-// const web3utils       = require('web3-utils');
-// const readFileAsync   = Promise.promisify(fs.readFile);
-// const Promise         = require("bluebird");
-// const addEvmFunctions = require("../utils/evmFunctions.js");
-// const Extensions      = require("../utils/extensions.js");
-
-// addEvmFunctions(web3);
-// Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
-// Promise.promisifyAll(web3.version, { suffix: "Promise" });
-// Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-// Extensions.init(web3, assert);
-
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -95,12 +80,12 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
 
 			DappInstances[i] = await Dapp.at(events[0].args.dapp);
-			assert.equal ( await DappInstances[i].m_owner(),                                  dappProvider,                  "Erroneous Dapp owner"                  );
-			assert.equal ( await DappInstances[i].m_dappName(),                               "Dapp #"+i,                    "Erroneous Dapp name"                   );
-			assert.equal ( await DappInstances[i].m_dappParams(),                             constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params"                 );
-			assert.equal ((await DappRegistryInstance.viewCount(dappProvider)),               i,                             "dappProvider must have 1 more dapp now");
-			assert.equal ( await DappRegistryInstance.viewEntry(dappProvider, i),             DappInstances[i].address,      "check dappAddress"                     );
-			assert.isTrue( await DappRegistryInstance.isRegistered(DappInstances[i].address),                                "check dapp registration"               );
+			assert.equal (await DappInstances[i].m_owner(),                                  dappProvider,                  "Erroneous Dapp owner"                  );
+			assert.equal (await DappInstances[i].m_dappName(),                               "Dapp #"+i,                    "Erroneous Dapp name"                   );
+			assert.equal (await DappInstances[i].m_dappParams(),                             constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params"                 );
+			assert.equal (await DappRegistryInstance.viewCount(dappProvider),                i,                             "dappProvider must have 1 more dapp now");
+			assert.equal (await DappRegistryInstance.viewEntry(dappProvider, i),             DappInstances[i].address,      "check dappAddress"                     );
+			assert.isTrue(await DappRegistryInstance.isRegistered(DappInstances[i].address),                                "check dapp registration"               );
 		}
 	});
 
@@ -119,12 +104,12 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
 
 			DataInstances[i] = await Data.at(events[0].args.data);
-			assert.equal ( await DataInstances[i].m_owner(),                                  dataProvider,             "Erroneous Data owner"                  );
-			assert.equal ( await DataInstances[i].m_dataName(),                               "Data #"+i,               "Erroneous Data name"                   );
-			assert.equal ( await DataInstances[i].m_dataParams(),                             "3.1415926535",           "Erroneous Data params"                 );
-			assert.equal ((await DataRegistryInstance.viewCount(dataProvider)),               i,                        "dataProvider must have 1 more data now");
-			assert.equal ( await DataRegistryInstance.viewEntry(dataProvider, i),             DataInstances[i].address, "check dataAddress"                     );
-			assert.isTrue( await DataRegistryInstance.isRegistered(DataInstances[i].address),                           "check data registration"               );
+			assert.equal (await DataInstances[i].m_owner(),                                  dataProvider,             "Erroneous Data owner"                  );
+			assert.equal (await DataInstances[i].m_dataName(),                               "Data #"+i,               "Erroneous Data name"                   );
+			assert.equal (await DataInstances[i].m_dataParams(),                             "3.1415926535",           "Erroneous Data params"                 );
+			assert.equal (await DataRegistryInstance.viewCount(dataProvider),                i,                        "dataProvider must have 1 more data now");
+			assert.equal (await DataRegistryInstance.viewEntry(dataProvider, i),             DataInstances[i].address, "check dataAddress"                     );
+			assert.isTrue(await DataRegistryInstance.isRegistered(DataInstances[i].address),                           "check data registration"               );
 		}
 	});
 
@@ -149,16 +134,16 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.poolDescription, "Pool #"+i,      "Erroneous Pool description");
 
 			PoolInstances[i] = await Pool.at(events[0].args.pool);
-			assert.equal ( await PoolInstances[i].m_owner(),                                  poolScheduler,            "Erroneous Pool owner"                   );
-			assert.equal ( await PoolInstances[i].m_poolDescription(),                        "Pool #"+i,               "Erroneous Pool description"             );
-			assert.equal ((await PoolInstances[i].m_workerStakeRatioPolicy()),                30,                       "Erroneous Pool params"                  );
-			assert.equal ((await PoolInstances[i].m_schedulerRewardRatioPolicy()),            1,                        "Erroneous Pool params"                  );
-			assert.equal ((await PoolInstances[i].m_subscriptionLockStakePolicy()),           10,                       "Erroneous Pool params"                  );
-			assert.equal ((await PoolInstances[i].m_subscriptionMinimumStakePolicy()),        10,                       "Erroneous Pool params"                  );
-			assert.equal ((await PoolInstances[i].m_subscriptionMinimumScorePolicy()),        10,                       "Erroneous Pool params"                  );
-			assert.equal ((await PoolRegistryInstance.viewCount(poolScheduler)),              i,                        "poolScheduler must have 1 more pool now");
-			assert.equal ( await PoolRegistryInstance.viewEntry(poolScheduler, i),            PoolInstances[i].address, "check poolAddress"                      );
-			assert.isTrue( await PoolRegistryInstance.isRegistered(PoolInstances[i].address),                           "check pool registration"                );
+			assert.equal (await PoolInstances[i].m_owner(),                                  poolScheduler,            "Erroneous Pool owner"                   );
+			assert.equal (await PoolInstances[i].m_poolDescription(),                        "Pool #"+i,               "Erroneous Pool description"             );
+			assert.equal (await PoolInstances[i].m_workerStakeRatioPolicy(),                 30,                       "Erroneous Pool params"                  );
+			assert.equal (await PoolInstances[i].m_schedulerRewardRatioPolicy(),             1,                        "Erroneous Pool params"                  );
+			assert.equal (await PoolInstances[i].m_subscriptionLockStakePolicy(),            10,                       "Erroneous Pool params"                  );
+			assert.equal (await PoolInstances[i].m_subscriptionMinimumStakePolicy(),         10,                       "Erroneous Pool params"                  );
+			assert.equal (await PoolInstances[i].m_subscriptionMinimumScorePolicy(),         10,                       "Erroneous Pool params"                  );
+			assert.equal (await PoolRegistryInstance.viewCount(poolScheduler),               i,                        "poolScheduler must have 1 more pool now");
+			assert.equal (await PoolRegistryInstance.viewEntry(poolScheduler, i),            PoolInstances[i].address, "check poolAddress"                      );
+			assert.isTrue(await PoolRegistryInstance.isRegistered(PoolInstances[i].address),                           "check pool registration"                );
 		}
 	});
 

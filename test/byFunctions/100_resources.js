@@ -14,21 +14,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
-// const BN              = require("bn");
-// const keccak256       = require("solidity-sha3");
-// const fs              = require("fs-extra");
-// const web3utils       = require('web3-utils');
-// const readFileAsync   = Promise.promisify(fs.readFile);
-// const Promise         = require("bluebird");
-// const addEvmFunctions = require("../utils/evmFunctions.js");
-// const Extensions      = require("../utils/extensions.js");
-
-// addEvmFunctions(web3);
-// Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
-// Promise.promisifyAll(web3.version, { suffix: "Promise" });
-// Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-// Extensions.init(web3, assert);
-
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -190,7 +175,7 @@ contract('IexecHub', async (accounts) => {
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
 		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );

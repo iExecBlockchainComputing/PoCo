@@ -14,21 +14,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
 const odbtools  = require('../utils/odb-tools');
 
-// const BN              = require("bn");
-// const keccak256       = require("solidity-sha3");
-// const fs              = require("fs-extra");
-// const web3utils       = require('web3-utils');
-// const readFileAsync   = Promise.promisify(fs.readFile);
-// const Promise         = require("bluebird");
-// const addEvmFunctions = require("../utils/evmFunctions.js");
-// const Extensions      = require("../utils/extensions.js");
-
-// addEvmFunctions(web3);
-// Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
-// Promise.promisifyAll(web3.version, { suffix: "Promise" });
-// Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-// Extensions.init(web3, assert);
-
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -260,7 +245,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Dapp order signature (by dappProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate dapp order", async () => {
-		dapporder = odbtools.signObject(
+		dapporder = await odbtools.signObject(
 			{
 				//market
 				dapp:         DappInstance.address,
@@ -271,7 +256,8 @@ contract('IexecHub', async (accounts) => {
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
 				// extra
-				salt:         ethers.utils.randomBytes(32),
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
 			},
 			dappProvider,
 			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(obj), obj.salt)
@@ -282,7 +268,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Data order signature (by dataProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate data order", async () => {
-		dataorder = odbtools.signObject(
+		dataorder = await odbtools.signObject(
 			{
 				//market
 				data:         DataInstance.address,
@@ -293,7 +279,8 @@ contract('IexecHub', async (accounts) => {
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
 				// extra
-				salt:         ethers.utils.randomBytes(32),
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
 			},
 			dataProvider,
 			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dataPartialHash(obj), obj.salt)
@@ -304,7 +291,7 @@ contract('IexecHub', async (accounts) => {
 	 *              TEST: Pool order signature (by poolProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Generate pool order", async () => {
-		poolorder = odbtools.signObject(
+		poolorder = await odbtools.signObject(
 			{
 				// market
 				pool:         PoolInstance.address,
@@ -319,7 +306,8 @@ contract('IexecHub', async (accounts) => {
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
 				// extra
-				salt:         ethers.utils.randomBytes(32),
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
 			},
 			poolScheduler,
 			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.poolPartialHash(obj), obj.salt)
@@ -330,17 +318,17 @@ contract('IexecHub', async (accounts) => {
 	 *                  TEST: User order signature (by user)                   *
 	 ***************************************************************************/
 	it("[Genesis] Generate user order", async () => {
-		userorder = odbtools.signObject(
+		userorder = await odbtools.signObject(
 			{
 				// market
 				dapp:         DappInstance.address,
 				dappmaxprice: 3,
 				data:         DataInstance.address,
 				datamaxprice: 1,
-				volume:       3,
 				// pool:         PoolInstance.address,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
+				volume:       3,
 				// settings
 				category:     4,
 				trust:        1000,
@@ -348,9 +336,10 @@ contract('IexecHub', async (accounts) => {
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
-				params:       "echo HelloWorld",
+				params:       "<parameters>",
 				// extra
-				salt:         ethers.utils.randomBytes(32),
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
 			},
 			user,
 			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(obj), obj.salt)
@@ -397,24 +386,24 @@ contract('IexecHub', async (accounts) => {
 	 *                      TEST: check balances - before                      *
 	 ***************************************************************************/
 	it("[Initial] Check balances", async () => {
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    0,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [  990, 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000,  0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0,  0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0,  0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000,  0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [  990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [  990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [  990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [  990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(user         ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000,  0 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                       TEST: check score - before                        *
 	 ***************************************************************************/
 	it("[Initial] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker3)), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker4)), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
 	});
 
 	/***************************************************************************
@@ -439,13 +428,10 @@ contract('IexecHub', async (accounts) => {
 		// TODO: check gas, events ...
 
 		// TODO: get that from event
-		dealid = ethers.utils.solidityKeccak256([
-			'bytes32',
-			'uint256',
-		],[
-			odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt),
-			0,
-		]);
+		dealid = web3.utils.soliditySha3(
+			{ t: 'bytes32', v: odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt) },
+			{ t: 'uint256', v: 0                                                                                                     },
+		);
 	});
 
 	/***************************************************************************
@@ -471,8 +457,13 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].authorizations[worker.address] = odbtools.signObject(
-				{ worker: worker.address, woid: tasks[taskid].woid, enclave: worker.enclave },
+			tasks[taskid].authorizations[worker.address] = await odbtools.signObject(
+				{
+					worker:  worker.address,
+					woid:    tasks[taskid].woid,
+					enclave: worker.enclave,
+					sign:    constants.NULL.SIGNATURE,
+				},
 				poolScheduler,
 				(obj) => odbtools.authorizeHash(obj)
 			);
@@ -489,7 +480,7 @@ contract('IexecHub', async (accounts) => {
 			tasks[taskid].results[worker.address] = odbtools.signResult(worker.raw, worker.address);
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				odbtools.signObject(tasks[taskid].results[worker.address], worker.enclave, (obj) => obj.contribution.hash.substr(2,64) + obj.contribution.sign.substr(2,64));
+				await odbtools.signObject(tasks[taskid].results[worker.address], worker.enclave, (obj) => odbtools.contributionHash(obj));
 			}
 			else // Without SGX
 			{
@@ -564,15 +555,14 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("[Revealed] Check balances", async () => {
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    0      +  0 +  0 +  0, 0                     ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0      +  0 +  0 +  0, 0                     ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000      -  7 -  7 -  7, 0      +  7 +  7 +  7 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1000 - 10 -  8      -  8, 0 + 10 +  8      +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000 - 10 -  8 -  8 -  8, 0 + 10 +  8 +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000 - 10      -  8 -  8, 0 + 10      +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000 - 10      -  8 -  8, 0 + 10      +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000      - 29 - 29 - 29, 0      + 29 + 29 + 29 ], "check balance");
-
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  0 +  0 +  0, 0                     ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  0 +  0 +  0, 0                     ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      -  7 -  7 -  7, 0      +  7 +  7 +  7 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 -  8      -  8, 0 + 10 +  8      +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 -  8 -  8 -  8, 0 + 10 +  8 +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      -  8 -  8, 0 + 10      +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      -  8 -  8, 0 + 10      +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(user         ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      - 29 - 29 - 29, 0      + 29 + 29 + 29 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -596,8 +586,8 @@ contract('IexecHub', async (accounts) => {
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		// assert.equal(events[0].args.woid,                 woid,      "check AccurateContribution (  woid)");
-		// assert.equal(events[0].args.worker.toLowerCase(), w.address, "check AccurateContribution (worker)");
+		// assert.equal(events[0].args.woid,   woid,      "check AccurateContribution (  woid)");
+		// assert.equal(events[0].args.worker, w.address, "check AccurateContribution (worker)");
 
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
@@ -607,27 +597,27 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 1] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[0].woid);
-		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,                         tasks[0].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),               2,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),               2,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), tasks[0].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,               tasks[0].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
+		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
+		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter.toNumber(),     2,                                       "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter.toNumber(),     2,                                       "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a),     tasks[0].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("[Finalized 1] Check balances", async () => {
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    0      +  1 +  0 +  0, 0                ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0      +  3 +  0 +  0, 0                ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000      +  3 -  7 -  7, 0      +  7 +  7 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1000 - 10 + 11      -  8, 0 + 10      +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000 - 10 + 11 -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000 - 10      -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000 - 10      -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000      - 29 - 29 - 29, 0      + 29 + 29 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  1 +  0 +  0, 0                ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  3 +  0 +  0, 0                ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      +  3 -  7 -  7, 0      +  7 +  7 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11      -  8, 0 + 10      +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11 -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      -  8 -  8, 0 + 10 +  8 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(user         ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      - 29 - 29 - 29, 0      + 29 + 29 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -672,27 +662,27 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 2] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[1].woid);
-		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,                         tasks[1].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),               3,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),               3,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), tasks[1].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,               tasks[1].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
+		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
+		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter.toNumber(),     3,                                       "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter.toNumber(),     3,                                       "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a),     tasks[1].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("[Finalized 2] Check balances", async () => {
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    0      +  1 +  1 +  0, 0           ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0      +  3 +  3 +  0, 0           ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000      +  3 +  4 -  7, 0      +  7 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1000 - 10 + 11      -  8, 0 + 10 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000 - 10 + 11 +  7 -  8, 0 + 10 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000 - 10      +  7 -  8, 0 + 10 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000 - 10      +  7 -  8, 0 + 10 +  8 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000      - 29 - 29 - 29, 0      + 29 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  1 +  1 +  0, 0           ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  3 +  3 +  0, 0           ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      +  3 +  4 -  7, 0      +  7 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11      -  8, 0 + 10 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11 +  7 -  8, 0 + 10 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      +  7 -  8, 0 + 10 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      +  7 -  8, 0 + 10 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(user         ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      - 29 - 29 - 29, 0      + 29 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -737,27 +727,27 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 3] Check workorder", async () => {
 		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[2].woid);
-		assert.equal    (workorder.status,                                 constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,                         tasks[2].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(),           0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),              0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),               3,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),               3,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a.toLowerCase()), tasks[2].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
+		assert.equal    (workorder.consensusValue,               tasks[2].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
+		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
+		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
+		assert.equal    (workorder.revealCounter.toNumber(),     3,                                       "check workorder (workorder.revealCounter)"    );
+		assert.equal    (workorder.winnerCounter.toNumber(),     3,                                       "check workorder (workorder.winnerCounter)"    );
+		assert.deepEqual(workorder.contributors.map(a => a),     tasks[2].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
 	});
 
 	/***************************************************************************
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("[Finalized 3] Check balances", async () => {
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dataProvider )).map(x => x.toNumber()), [    0      +  1 +  1 +  1, 0      ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(dappProvider )).map(x => x.toNumber()), [    0      +  3 +  3 +  3, 0      ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolScheduler)).map(x => x.toNumber()), [ 1000      +  3 +  4 +  3, 0      ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker1  )).map(x => x.toNumber()), [ 1000 - 10 + 11      + 10, 0 + 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker2  )).map(x => x.toNumber()), [ 1000 - 10 + 11 +  7 + 10, 0 + 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker3  )).map(x => x.toNumber()), [ 1000 - 10      +  7 -  8, 0 + 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(poolWorker4  )).map(x => x.toNumber()), [ 1000 - 10      +  7 + 10, 0 + 10 ], "check balance");
-		assert.deepEqual((await IexecClerkInstance.viewAccountLegacy(user         )).map(x => x.toNumber()), [ 1000      - 29 - 29 - 29, 0      ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dataProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  1 +  1 +  1, 0      ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(dappProvider ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [    0      +  3 +  3 +  3, 0      ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolScheduler); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      +  3 +  4 +  3, 0      ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11      + 10, 0 + 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10 + 11 +  7 + 10, 0 + 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      +  7 -  8, 0 + 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4  ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000 - 10      +  7 + 10, 0 + 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccountLegacy(user         ); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000      - 29 - 29 - 29, 0      ], "check balance");
 	});
 
 	/***************************************************************************
