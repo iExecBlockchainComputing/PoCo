@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-library Iexec0xLib
+library IexecODBLib
 {
 	/**
 	* Tools

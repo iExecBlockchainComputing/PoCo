@@ -1,19 +1,19 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Iexec0xLib.sol";
+import "./IexecODBLib.sol";
 
 contract Beacon
 {
-	event BroadcastDappOrder(Iexec0xLib.DappOrder);
-	event BroadcastDataOrder(Iexec0xLib.DataOrder);
-	event BroadcastPoolOrder(Iexec0xLib.PoolOrder);
-	event BroadcastUserOrder(Iexec0xLib.UserOrder);
+	event BroadcastDappOrder(IexecODBLib.DappOrder);
+	event BroadcastDataOrder(IexecODBLib.DataOrder);
+	event BroadcastPoolOrder(IexecODBLib.PoolOrder);
+	event BroadcastUserOrder(IexecODBLib.UserOrder);
 
 	constructor() public {}
 
-	function broadcastDappOrder(Iexec0xLib.DappOrder _dapporder) public { emit BroadcastDappOrder(_dapporder); }
-	function broadcastDataOrder(Iexec0xLib.DataOrder _dataorder) public { emit BroadcastDataOrder(_dataorder); }
-	function broadcastPoolOrder(Iexec0xLib.PoolOrder _poolorder) public { emit BroadcastPoolOrder(_poolorder); }
-	function broadcastUserOrder(Iexec0xLib.UserOrder _userorder) public { emit BroadcastUserOrder(_userorder); }
+	function broadcastDappOrder(IexecODBLib.DappOrder _dapporder) public { emit BroadcastDappOrder(_dapporder); }
+	function broadcastDataOrder(IexecODBLib.DataOrder _dataorder) public { emit BroadcastDataOrder(_dataorder); }
+	function broadcastPoolOrder(IexecODBLib.PoolOrder _poolorder) public { emit BroadcastPoolOrder(_poolorder); }
+	function broadcastUserOrder(IexecODBLib.UserOrder _userorder) public { emit BroadcastUserOrder(_userorder); }
 }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Iexec0xLib.sol";
+import "./IexecODBLib.sol";
 import "./tools/SafeMathOZ.sol";
 
 import "./CategoryManager.sol";
@@ -37,8 +37,8 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                               Consensuses                               *
 	 ***************************************************************************/
-	mapping(bytes32 => Iexec0xLib.WorkOrder)                        m_workorders;
-	mapping(bytes32 => mapping(address => Iexec0xLib.Contribution)) m_contributions;
+	mapping(bytes32 => IexecODBLib.WorkOrder)                        m_workorders;
+	mapping(bytes32 => mapping(address => IexecODBLib.Contribution)) m_contributions;
 
 	/***************************************************************************
 	 *                                 Workers                                 *
@@ -102,13 +102,13 @@ contract IexecHub is CategoryManager
 	 *                                Accessors                                *
 	 ***************************************************************************/
 	function viewWorkorder(bytes32 _woid)
-	public view returns (Iexec0xLib.WorkOrder)
+	public view returns (IexecODBLib.WorkOrder)
 	{
 		return m_workorders[_woid];
 	}
 
 	function viewContribution(bytes32 _woid, address _worker)
-	public view returns (Iexec0xLib.Contribution)
+	public view returns (IexecODBLib.Contribution)
 	{
 		return m_contributions[_woid][_worker];
 	}
@@ -140,16 +140,16 @@ contract IexecHub is CategoryManager
 	function initialize(bytes32 _dealid, uint256 idx)
 	public returns (bytes32)
 	{
-		Iexec0xLib.Config memory config = iexecclerk.viewConfig(_dealid);
+		IexecODBLib.Config memory config = iexecclerk.viewConfig(_dealid);
 
 		require(idx >= config.botFirst                    );
 		require(idx <  config.botFirst.add(config.botSize));
 
 		bytes32 woid = keccak256(abi.encodePacked(_dealid, idx));
 
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[woid];
-		require(workorder.status == Iexec0xLib.WorkOrderStatusEnum.UNSET);
-		workorder.status            = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		IexecODBLib.WorkOrder storage workorder = m_workorders[woid];
+		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.UNSET);
+		workorder.status            = IexecODBLib.WorkOrderStatusEnum.ACTIVE;
 		workorder.dealid            = _dealid;
 		workorder.idx               = idx;
 		workorder.consensusDeadline = viewCategory(config.category).workClockTimeRef
@@ -166,15 +166,15 @@ contract IexecHub is CategoryManager
 		bytes32              _resultHash,
 		bytes32              _resultSign,
 		address              _enclaveChallenge,
-		Iexec0xLib.signature _enclaveSign,
-		Iexec0xLib.signature _poolSign)
+		IexecODBLib.signature _enclaveSign,
+		IexecODBLib.signature _poolSign)
 	public
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE);
 		require(workorder.consensusDeadline >  now                                  );
 
-		Iexec0xLib.Deal memory deal = iexecclerk.viewDeal(workorder.dealid);
+		IexecODBLib.Deal memory deal = iexecclerk.viewDeal(workorder.dealid);
 		//Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
 		require(deal.pool.owner == ecrecover(
 			keccak256(abi.encodePacked(
@@ -190,9 +190,9 @@ contract IexecHub is CategoryManager
 			_poolSign.s)
 		);
 
-		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(contribution.status == Iexec0xLib.ContributionStatusEnum.UNSET
-		     || contribution.status == Iexec0xLib.ContributionStatusEnum.AUTHORIZED);
+		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
+		require(contribution.status == IexecODBLib.ContributionStatusEnum.UNSET
+		     || contribution.status == IexecODBLib.ContributionStatusEnum.AUTHORIZED);
 
 		// worker must be subscribed to the pool
 		// TODO: required ?
@@ -221,7 +221,7 @@ contract IexecHub is CategoryManager
 		}
 
 		// update contribution entry
-		contribution.status           = Iexec0xLib.ContributionStatusEnum.CONTRIBUTED;
+		contribution.status           = IexecODBLib.ContributionStatusEnum.CONTRIBUTED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 		contribution.resultHash       = _resultHash;
 		contribution.resultSign       = _resultSign;
@@ -239,8 +239,8 @@ contract IexecHub is CategoryManager
 		bytes32 _consensus)
 	public onlyScheduler(_woid)
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.ACTIVE);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE);
 		require(workorder.consensusDeadline >  now                                  );
 
 		uint256 winnerCounter = 0;
@@ -250,7 +250,7 @@ contract IexecHub is CategoryManager
 			if (
 				m_contributions[_woid][w].resultHash == _consensus
 				&&
-				m_contributions[_woid][w].status == Iexec0xLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+				m_contributions[_woid][w].status == IexecODBLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
 			)
 			{
 				winnerCounter = winnerCounter.add(1);
@@ -258,7 +258,7 @@ contract IexecHub is CategoryManager
 		}
 		require(winnerCounter > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
-		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.REVEALING;
+		workorder.status         = IexecODBLib.WorkOrderStatusEnum.REVEALING;
 		workorder.consensusValue = _consensus;
 		workorder.revealDeadline = viewCategory(iexecclerk.viewConfig(workorder.dealid).category).workClockTimeRef
 		                           .mul(REVEAL_DURATION_RATIO)
@@ -274,18 +274,18 @@ contract IexecHub is CategoryManager
 		bytes32 _result)
 	public // worker
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
 		require(workorder.consensusDeadline >  now                                     );
 		require(workorder.revealDeadline    >  now                                     );
 
-		Iexec0xLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(contribution.status         == Iexec0xLib.ContributionStatusEnum.CONTRIBUTED);
+		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
+		require(contribution.status         == IexecODBLib.ContributionStatusEnum.CONTRIBUTED);
 		require(contribution.resultHash     == workorder.consensusValue);
 		require(contribution.resultHash     == keccak256(abi.encodePacked(            _result)));
 		require(contribution.resultSign     == keccak256(abi.encodePacked(msg.sender, _result)));
 
-		contribution.status     = Iexec0xLib.ContributionStatusEnum.PROVED;
+		contribution.status     = IexecODBLib.ContributionStatusEnum.PROVED;
 		workorder.revealCounter = workorder.revealCounter.add(1);
 
 		emit ConsensusReveal(_woid, msg.sender, _result);
@@ -295,8 +295,8 @@ contract IexecHub is CategoryManager
 		bytes32 _woid)
 	public onlyScheduler(_woid)
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
 		require(workorder.consensusDeadline >  now                                     );
 		require(workorder.revealDeadline    <= now
 		     && workorder.revealCounter     == 0                                       );
@@ -306,11 +306,11 @@ contract IexecHub is CategoryManager
 			address worker = workorder.contributors[i];
 			if (m_contributions[_woid][worker].resultHash == workorder.consensusValue)
 			{
-				m_contributions[_woid][worker].status = Iexec0xLib.ContributionStatusEnum.REJECTED;
+				m_contributions[_woid][worker].status = IexecODBLib.ContributionStatusEnum.REJECTED;
 			}
 		}
 
-		workorder.status         = Iexec0xLib.WorkOrderStatusEnum.ACTIVE;
+		workorder.status         = IexecODBLib.WorkOrderStatusEnum.ACTIVE;
 		workorder.consensusValue = 0x0;
 		workorder.revealDeadline = 0;
 		workorder.winnerCounter  = 0;
@@ -325,13 +325,13 @@ contract IexecHub is CategoryManager
 		string  _uri)
 	public onlyScheduler(_woid)
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
 		require(workorder.consensusDeadline >  now                                     );
 		require(workorder.revealCounter     == workorder.winnerCounter
 		    || (workorder.revealCounter     >  0  && workorder.revealDeadline <= now)  );
 
-		workorder.status = Iexec0xLib.WorkOrderStatusEnum.COMPLETED;
+		workorder.status = IexecODBLib.WorkOrderStatusEnum.COMPLETED;
 
 		/**
 		 * Stake and reward management
@@ -346,12 +346,12 @@ contract IexecHub is CategoryManager
 		bytes32 _woid)
 	public
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status == Iexec0xLib.WorkOrderStatusEnum.ACTIVE
-		     || workorder.status == Iexec0xLib.WorkOrderStatusEnum.REVEALING);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.ACTIVE
+		     || workorder.status == IexecODBLib.WorkOrderStatusEnum.REVEALING);
 		require(workorder.consensusDeadline <= now);
 
-		workorder.status = Iexec0xLib.WorkOrderStatusEnum.FAILLED;
+		workorder.status = IexecODBLib.WorkOrderStatusEnum.FAILLED;
 
 		/**
 		 * Stake management
@@ -360,7 +360,7 @@ contract IexecHub is CategoryManager
 		for (uint256 i = 0; i < workorder.contributors.length; ++i)
 		{
 			address worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status != Iexec0xLib.ContributionStatusEnum.AUTHORIZED) // Contributed, proved or rejected
+			if (m_contributions[_woid][worker].status != IexecODBLib.ContributionStatusEnum.AUTHORIZED) // Contributed, proved or rejected
 			{
 				require(iexecclerk.unlockContribution(workorder.dealid, worker));
 			}
@@ -372,8 +372,8 @@ contract IexecHub is CategoryManager
 	function __distributeRewards(bytes32 _woid)
 	private
 	{
-		Iexec0xLib.WorkOrder storage workorder = m_workorders[_woid];
-		Iexec0xLib.Config    memory  config    = iexecclerk.viewConfig(workorder.dealid);
+		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
+		IexecODBLib.Config    memory  config    = iexecclerk.viewConfig(workorder.dealid);
 
 		uint256 i;
 		address worker;
@@ -384,7 +384,7 @@ contract IexecHub is CategoryManager
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
 			worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status == Iexec0xLib.ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
 			{
 				totalWeight  = totalWeight.add(m_contributions[_woid][worker].weight);
 			}
@@ -401,7 +401,7 @@ contract IexecHub is CategoryManager
 		for (i = 0; i<workorder.contributors.length; ++i)
 		{
 			worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status == Iexec0xLib.ContributionStatusEnum.PROVED)
+			if (m_contributions[_woid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
 			{
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);

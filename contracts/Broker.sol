@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Iexec0xLib.sol";
+import "./IexecODBLib.sol";
 import "./IexecClerk.sol";
 import "./tools/SafeMathOZ.sol";
 
@@ -20,13 +20,13 @@ contract Broker
 	}
 
 	function deposit()
-	payable
+	public payable
 	{
 		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
 	}
 
 	function depositFrom(address _account)
-	payable
+	public payable
 	{
 		m_balance[_account] = m_balance[_account].add(msg.value);
 	}
@@ -39,10 +39,10 @@ contract Broker
 	}
 
 	function matchOrdersForUser(
-		Iexec0xLib.DappOrder _dapporder,
-		Iexec0xLib.DataOrder _dataorder,
-		Iexec0xLib.PoolOrder _poolorder,
-		Iexec0xLib.UserOrder _userorder)
+		IexecODBLib.DappOrder _dapporder,
+		IexecODBLib.DataOrder _dataorder,
+		IexecODBLib.PoolOrder _poolorder,
+		IexecODBLib.UserOrder _userorder)
 	public /* onlyOwner */ returns (bytes32)
 	{
 		address account = _userorder.requester;
@@ -57,10 +57,10 @@ contract Broker
 	}
 
 	function matchOrdersForPool(
-		Iexec0xLib.DappOrder _dapporder,
-		Iexec0xLib.DataOrder _dataorder,
-		Iexec0xLib.PoolOrder _poolorder,
-		Iexec0xLib.UserOrder _userorder)
+		IexecODBLib.DappOrder _dapporder,
+		IexecODBLib.DataOrder _dataorder,
+		IexecODBLib.PoolOrder _poolorder,
+		IexecODBLib.UserOrder _userorder)
 	public /* onlyOwner */ returns (bytes32)
 	{
 		address account = Pool(_poolorder.pool).m_owner();

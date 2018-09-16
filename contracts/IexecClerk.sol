@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Iexec0xLib.sol";
+import "./IexecODBLib.sol";
 import "./tools/SafeMathOZ.sol";
 
 import "./Escrow.sol";
@@ -26,8 +26,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                               Clerk data                                *
 	 ***************************************************************************/
 	mapping(bytes32 => bytes32[]        ) public m_userdeals;
-	mapping(bytes32 => Iexec0xLib.Deal  ) public m_deals;
-	mapping(bytes32 => Iexec0xLib.Config) public m_configs;
+	mapping(bytes32 => IexecODBLib.Deal  ) public m_deals;
+	mapping(bytes32 => IexecODBLib.Config) public m_configs;
 	mapping(bytes32 => uint256          ) public m_consumed;
 	mapping(bytes32 => bool             ) public m_presigned;
 
@@ -69,13 +69,13 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 
 	function viewDeal(bytes32 _id)
-	public view returns (Iexec0xLib.Deal)
+	public view returns (IexecODBLib.Deal)
 	{
 		return m_deals[_id];
 	}
 
 	function viewConfig(bytes32 _id)
-	public view returns (Iexec0xLib.Config)
+	public view returns (IexecODBLib.Config)
 	{
 		return m_configs[_id];
 	}
@@ -92,7 +92,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function isValidSignature(
 		address              _signer,
 		bytes32              _hash,
-		Iexec0xLib.signature _signature)
+		IexecODBLib.signature _signature)
 	public view returns (bool)
 	{
 		return _signer == ecrecover(
@@ -103,7 +103,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		) || m_presigned[_hash];
 	}
 
-	function getDappOrderHash(Iexec0xLib.DappOrder _dapporder)
+	function getDappOrderHash(IexecODBLib.DappOrder _dapporder)
 	public view returns (bytes32)
 	{
 		return keccak256(abi.encodePacked(
@@ -123,7 +123,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		));
 	}
 
-	function getDataOrderHash(Iexec0xLib.DataOrder _dataorder)
+	function getDataOrderHash(IexecODBLib.DataOrder _dataorder)
 	public view returns (bytes32)
 	{
 		return keccak256(abi.encodePacked(
@@ -143,7 +143,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		));
 	}
 
-	function getPoolOrderHash(Iexec0xLib.PoolOrder _poolorder)
+	function getPoolOrderHash(IexecODBLib.PoolOrder _poolorder)
 	public view returns (bytes32)
 	{
 		return keccak256(abi.encodePacked(
@@ -167,7 +167,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		));
 	}
 
-	function getUserOrderHash(Iexec0xLib.UserOrder _userorder)
+	function getUserOrderHash(IexecODBLib.UserOrder _userorder)
 	public view returns (bytes32)
 	{
 		return keccak256(abi.encodePacked(
@@ -198,7 +198,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                            pre-signing tools                            *
 	 ***************************************************************************/
-	function signDappOrder(Iexec0xLib.DappOrder _dapporder)
+	function signDappOrder(IexecODBLib.DappOrder _dapporder)
 	public returns (bool)
 	{
 		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
@@ -206,7 +206,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signDataOrder(Iexec0xLib.DataOrder _dataorder)
+	function signDataOrder(IexecODBLib.DataOrder _dataorder)
 	public returns (bool)
 	{
 		require(msg.sender == Data(_dataorder.data).m_owner());
@@ -214,7 +214,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signPoolOrder(Iexec0xLib.PoolOrder _poolorder)
+	function signPoolOrder(IexecODBLib.PoolOrder _poolorder)
 	public returns (bool)
 	{
 		require(msg.sender == Pool(_poolorder.pool).m_owner());
@@ -222,7 +222,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signUserOrder(Iexec0xLib.UserOrder _userorder)
+	function signUserOrder(IexecODBLib.UserOrder _userorder)
 	public returns (bool)
 	{
 		require(msg.sender == _userorder.requester);
@@ -234,10 +234,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                              Clerk methods                              *
 	 ***************************************************************************/
 	function matchOrders(
-		Iexec0xLib.DappOrder _dapporder,
-		Iexec0xLib.DataOrder _dataorder,
-		Iexec0xLib.PoolOrder _poolorder,
-		Iexec0xLib.UserOrder _userorder)
+		IexecODBLib.DappOrder _dapporder,
+		IexecODBLib.DataOrder _dataorder,
+		IexecODBLib.PoolOrder _poolorder,
+		IexecODBLib.UserOrder _userorder)
 	public returns (bytes32)
 	{
 		/**
@@ -322,7 +322,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			m_consumed[hashes[3]] // idx of first subtask
 		));
 
-		Iexec0xLib.Deal storage deal = m_deals[dealid];
+		IexecODBLib.Deal storage deal = m_deals[dealid];
 		deal.dapp.pointer = _dapporder.dapp;
 		deal.dapp.owner   = owners[0];
 		deal.dapp.price   = _dapporder.dappprice;
@@ -339,7 +339,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.callback     = _userorder.callback;
 		deal.params       = _userorder.params;
 
-		Iexec0xLib.Config storage config = m_configs[dealid];
+		IexecODBLib.Config storage config = m_configs[dealid];
 		config.category             = _poolorder.category;
 		config.startTime            = now;
 		config.botFirst             = m_consumed[hashes[3]];
@@ -394,7 +394,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return dealid;
 	}
 
-	function cancelDappOrder(Iexec0xLib.DappOrder _dapporder)
+	function cancelDappOrder(IexecODBLib.DappOrder _dapporder)
 	public returns (bool)
 	{
 		/**
@@ -421,7 +421,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelDataOrder(Iexec0xLib.DataOrder _dataorder)
+	function cancelDataOrder(IexecODBLib.DataOrder _dataorder)
 	public returns (bool)
 	{
 		/**
@@ -448,7 +448,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelPoolOrder(Iexec0xLib.PoolOrder _poolorder)
+	function cancelPoolOrder(IexecODBLib.PoolOrder _poolorder)
 	public returns (bool)
 	{
 		/**
@@ -475,7 +475,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelUserOrder(Iexec0xLib.UserOrder _userorder)
+	function cancelUserOrder(IexecODBLib.UserOrder _userorder)
 	public returns (bool)
 	{
 		/**
@@ -553,7 +553,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function successWork(bytes32 _dealid)
 	public onlyIexecHub returns (bool)
 	{
-		Iexec0xLib.Deal memory deal = m_deals[_dealid];
+		IexecODBLib.Deal memory deal = m_deals[_dealid];
 
 		uint256 userstake = deal.dapp.price
 		                    .add(deal.data.price)
@@ -583,7 +583,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function failedWork(bytes32 _dealid)
 	public onlyIexecHub returns (bool)
 	{
-		Iexec0xLib.Deal memory deal = m_deals[_dealid];
+		IexecODBLib.Deal memory deal = m_deals[_dealid];
 
 		uint256 userstake = deal.dapp.price
 		                    .add(deal.data.price)

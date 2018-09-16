@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Iexec0xLib.sol";
+import "./IexecODBLib.sol";
 import "./tools/Ownable.sol";
 
 contract CategoryManager is OwnableMutable
@@ -9,7 +9,7 @@ contract CategoryManager is OwnableMutable
 	/**
 	 * Content
 	 */
-	Iexec0xLib.Category[] public m_categories;
+	IexecODBLib.Category[] public m_categories;
 
 	/**
 	 * Event
@@ -32,7 +32,7 @@ contract CategoryManager is OwnableMutable
 	 * Accessors
 	 */
 	function viewCategory(uint256 _catid)
-	public view returns (Iexec0xLib.Category)
+	public view returns (IexecODBLib.Category)
 	{
 		return m_categories[_catid];
 	}
@@ -52,7 +52,7 @@ contract CategoryManager is OwnableMutable
 		uint256 workClockTimeRef)
 	public onlyOwner returns (uint256)
 	{
-		uint256 catid = m_categories.push(Iexec0xLib.Category(
+		uint256 catid = m_categories.push(IexecODBLib.Category(
 			name,
 			description,
 			workClockTimeRef
@@ -68,7 +68,7 @@ contract CategoryManager is OwnableMutable
 	/**
 	 * TODO: move to struct based initialization ?
 	 *
-	function createCategory(Iexec0xLib.Category _category)
+	function createCategory(IexecODBLib.Category _category)
 	public onlyOwner returns (uint256)
 	{
 		uint256 catid = m_categories.push(_category);
