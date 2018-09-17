@@ -10,8 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-var CategoryManager = artifacts.require("./CategoryManager.sol");
-
 const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
@@ -103,7 +101,7 @@ contract('IexecHub', async (accounts) => {
 		try
 		{
 			await IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin });
-			assert.fail("user should not be able to cahnge policy");
+			assert.fail("user should not be able to transfer ownership");
 		}
 		catch (error)
 		{
@@ -121,7 +119,7 @@ contract('IexecHub', async (accounts) => {
 		try
 		{
 			category = await IexecHubInstanceEthers.viewCategory(6);
-			assert.fail("user should not be able to cahnge policy");
+			assert.fail("user should not be able to view category");
 		}
 		catch (error)
 		{
@@ -136,7 +134,7 @@ contract('IexecHub', async (accounts) => {
 		try
 		{
 			txMined = await IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user });
-			assert.fail("user should not be able to cahnge policy");
+			assert.fail("user should not be able to create category");
 		}
 		catch (error)
 		{

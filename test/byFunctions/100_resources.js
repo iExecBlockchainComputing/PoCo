@@ -170,7 +170,7 @@ contract('IexecHub', async (accounts) => {
 				0,
 				{ from: user }
 			);
-			assert.fail("user should not be able to cahnge policy");
+			assert.fail("user should not be able to change policy");
 		}
 		catch (error)
 		{
@@ -200,7 +200,7 @@ contract('IexecHub', async (accounts) => {
 				0,   // minimum score
 				{ from: poolScheduler }
 			);
-			assert.fail("user should not be able to cahnge policy");
+			assert.fail("user should not be able to set invalid policy");
 		}
 		catch (error)
 		{
