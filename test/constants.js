@@ -28,10 +28,9 @@ define("WorkOrderStatusEnum", {
 });
 define("ContributionStatusEnum", {
 	UNSET       : 0,
-	AUTHORIZED  : 1,
-	CONTRIBUTED : 2,
-	PROVED      : 3,
-	REJECTED    : 4
+	CONTRIBUTED : 1,
+	PROVED      : 2,
+	REJECTED    : 3
 });
 
 

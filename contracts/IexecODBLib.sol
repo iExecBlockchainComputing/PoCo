@@ -150,8 +150,12 @@ library IexecODBLib
 		WorkOrderStatusEnum status;
 		bytes32   dealid;
 		uint256   idx;
-		bytes32   consensusValue;
 		uint256   consensusDeadline;
+		bytes32   consensusValue;
+		/*
+		// TODO: results for oracle?
+		bytes     results;
+		*/
 		uint256   revealDeadline;
 		uint256   revealCounter;
 		uint256   winnerCounter;
@@ -164,7 +168,6 @@ library IexecODBLib
 	enum ContributionStatusEnum
 	{
 		UNSET,
-		AUTHORIZED,
 		CONTRIBUTED,
 		PROVED,
 		REJECTED

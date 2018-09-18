@@ -170,12 +170,16 @@ contract IexecHub is CategoryManager
 		IexecODBLib.signature _poolSign)
 	public
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.consensusDeadline >  now                                  );
+		IexecODBLib.WorkOrder    storage workorder    = m_workorders[_woid];
+		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
+		IexecODBLib.Deal         memory  deal         = iexecclerk.viewDeal(workorder.dealid);
 
-		IexecODBLib.Deal memory deal = iexecclerk.viewDeal(workorder.dealid);
-		//Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE  );
+		require(workorder.consensusDeadline >  now                                     );
+		require(contribution.status         == IexecODBLib.ContributionStatusEnum.UNSET);
+
+		// Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
+		// Skip check if authorized?
 		require(deal.pool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
@@ -190,19 +194,16 @@ contract IexecHub is CategoryManager
 			_poolSign.s)
 		);
 
-		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(contribution.status == IexecODBLib.ContributionStatusEnum.UNSET
-		     || contribution.status == IexecODBLib.ContributionStatusEnum.AUTHORIZED);
-
-		// worker must be subscribed to the pool
-		// TODO: required ?
+		// worker must be subscribed to the pool, keep?
 		require(m_workerAffectations[msg.sender] == deal.pool.pointer);
+
+		// Not needed
+		/* require(_resultHash != 0x0); */
+		/* require(_resultSign != 0x0); */
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || deal.tag & 0x1 == 0);
 
-		require(_resultHash != 0x0);
-		require(_resultSign != 0x0);
 		// Check enclave signature
 		if (_enclaveChallenge != address(0))
 		{
@@ -241,7 +242,7 @@ contract IexecHub is CategoryManager
 	{
 		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.consensusDeadline >  now                                  );
+		require(workorder.consensusDeadline >  now                                   );
 
 		uint256 winnerCounter = 0;
 		for (uint256 i = 0; i<workorder.contributors.length; ++i)
@@ -272,21 +273,29 @@ contract IexecHub is CategoryManager
 	function reveal(
 		bytes32 _woid,
 		bytes32 _result)
+		/*
+		// TODO: results for oracle?
+		bytes _result)
+		*/
 	public // worker
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline >  now                                     );
-		require(workorder.revealDeadline    >  now                                     );
-
+		IexecODBLib.WorkOrder    storage workorder    = m_workorders[_woid];
 		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(contribution.status         == IexecODBLib.ContributionStatusEnum.CONTRIBUTED);
-		require(contribution.resultHash     == workorder.consensusValue);
+		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING       );
+		require(workorder.consensusDeadline >  now                                             );
+		require(workorder.revealDeadline    >  now                                             );
+		require(contribution.status         == IexecODBLib.ContributionStatusEnum.CONTRIBUTED  );
+		require(contribution.resultHash     == workorder.consensusValue                        );
 		require(contribution.resultHash     == keccak256(abi.encodePacked(            _result)));
 		require(contribution.resultSign     == keccak256(abi.encodePacked(msg.sender, _result)));
 
 		contribution.status     = IexecODBLib.ContributionStatusEnum.PROVED;
 		workorder.revealCounter = workorder.revealCounter.add(1);
+
+		/*
+		// TODO: results for oracle?
+		if (workorder.result == bytes(0)) workorder.result = _results;
+		*/
 
 		emit ConsensusReveal(_woid, msg.sender, _result);
 	}
@@ -297,9 +306,9 @@ contract IexecHub is CategoryManager
 	{
 		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline >  now                                     );
+		require(workorder.consensusDeadline >  now                                      );
 		require(workorder.revealDeadline    <= now
-		     && workorder.revealCounter     == 0                                       );
+		     && workorder.revealCounter     == 0                                        );
 
 		for (uint256 i = 0; i < workorder.contributors.length; ++i)
 		{
@@ -342,6 +351,15 @@ contract IexecHub is CategoryManager
 		emit ConsensusFinalized(_woid, _stdout, _stderr, _uri);
 	}
 
+	/*
+	function resultFor(bytes32 id) external view returns (bytes result)
+	{
+		IexecODBLib.WorkOrder storage workorder = m_workorders[id];
+		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.COMPLETED);
+		return workorder.results;
+	}
+	*/
+
 	function claimfailed(
 		bytes32 _woid)
 	public
@@ -360,10 +378,7 @@ contract IexecHub is CategoryManager
 		for (uint256 i = 0; i < workorder.contributors.length; ++i)
 		{
 			address worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status != IexecODBLib.ContributionStatusEnum.AUTHORIZED) // Contributed, proved or rejected
-			{
-				require(iexecclerk.unlockContribution(workorder.dealid, worker));
-			}
+			require(iexecclerk.unlockContribution(workorder.dealid, worker));
 		}
 
 		emit ConsensusClaimed(_woid);
