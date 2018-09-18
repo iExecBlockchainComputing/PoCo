@@ -5,5 +5,7 @@ module.exports = {
 	copyPackages: ['rlc-token'],
 	skipFiles: [
 		'tools/Migrations.sol',
+		'Beacon.sol',
+		'Broker.sol',
 	]
 };
