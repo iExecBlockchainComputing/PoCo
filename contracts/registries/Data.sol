@@ -9,8 +9,9 @@ contract Data is OwnableImmutable
 	/**
 	 * Members
 	 */
-	string public m_dataName;
-	string public m_dataParams;
+	string  public m_dataName;
+	string  public m_dataParams;
+	bytes32 public m_dataHash;
 
 	/**
 	 * Constructor
@@ -18,12 +19,14 @@ contract Data is OwnableImmutable
 	constructor(
 		address _dataOwner,
 		string  _dataName,
-		string  _dataParams)
+		string  _dataParams,
+		bytes32 _dataHash)
 	public
 	OwnableImmutable(_dataOwner)
 	{
 		m_dataName   = _dataName;
 		m_dataParams = _dataParams;
+		m_dataHash   = _dataHash;
 	}
 
 }

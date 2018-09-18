@@ -6,7 +6,12 @@ import "./RegistryBase.sol";
 
 contract DataRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
-	event CreateData(address indexed dataOwner, address indexed data, string dataName, string dataParams);
+	event CreateData(
+		address indexed dataOwner,
+		address data,
+		string  dataName,
+		string  dataParams,
+		bytes32 dataHash);
 
 	/**
 	 * Constructor
@@ -22,12 +27,13 @@ contract DataRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 	function createData(
 		address _dataOwner,
 		string  _dataName,
-		string  _dataParams)
+		string  _dataParams,
+		bytes32 _dataHash)
 	public /* onlyOwner /*owner == IexecHub*/ returns (Data)
 	{
-		Data newData = new Data(_dataOwner, _dataName, _dataParams);
+		Data newData = new Data(_dataOwner, _dataName, _dataParams, _dataHash);
 		require(insert(newData, _dataOwner));
-		emit CreateData(_dataOwner, newData, _dataName, _dataParams);
+		emit CreateData(_dataOwner, newData, _dataName, _dataParams, _dataHash);
 		return newData;
 	}
 }

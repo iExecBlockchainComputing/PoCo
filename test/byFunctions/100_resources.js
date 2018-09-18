@@ -75,11 +75,13 @@ contract('IexecHub', async (accounts) => {
 				dappProvider,
 				"Dapp #"+i,
 				constants.DAPP_PARAMS_EXAMPLE,
+				constants.NULL.BYTES32,
 				{ from: dappProvider }
 			);
 			assert.equal ( await DappInstances[i].m_owner(),      dappProvider,                  "Erroneous Dapp owner" );
 			assert.equal ( await DappInstances[i].m_dappName(),   "Dapp #"+i,                    "Erroneous Dapp name"  );
 			assert.equal ( await DappInstances[i].m_dappParams(), constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
+			assert.equal ( await DappInstances[i].m_dappHash(),   constants.NULL.BYTES32,        "Erroneous Dapp hash"  );
 		}
 	});
 
@@ -93,11 +95,13 @@ contract('IexecHub', async (accounts) => {
 				dataProvider,
 				"Data #"+i,
 				"3.1415926535",
+				constants.NULL.BYTES32,
 				{ from: dataProvider }
 			);
-			assert.equal ( await DataInstances[i].m_owner(),      dataProvider,   "Erroneous Data owner" );
-			assert.equal ( await DataInstances[i].m_dataName(),   "Data #"+i,     "Erroneous Data name"  );
-			assert.equal ( await DataInstances[i].m_dataParams(), "3.1415926535", "Erroneous Data params");
+			assert.equal ( await DataInstances[i].m_owner(),      dataProvider,           "Erroneous Data owner" );
+			assert.equal ( await DataInstances[i].m_dataName(),   "Data #"+i,             "Erroneous Data name"  );
+			assert.equal ( await DataInstances[i].m_dataParams(), "3.1415926535",         "Erroneous Data params");
+			assert.equal ( await DataInstances[i].m_dataHash(),   constants.NULL.BYTES32, "Erroneous Data hash"  );
 		}
 	});
 

@@ -95,14 +95,14 @@ contract('IexecHub', async (accounts) => {
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
 	it("[Genesis] Dapp Creation", async () => {
-		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
+		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
 		DappInstance = await Dapp.at(events[0].args.dapp);
 	});
 
 	it("[Genesis] Data Creation", async () => {
-		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", { from: dataProvider });
+		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
 		DataInstance = await Data.at(events[0].args.data);

@@ -71,13 +71,14 @@ contract('IexecHub', async (accounts) => {
 	it("Dapp Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DappRegistryInstance.createDapp(dappProvider, "Dapp #"+i, constants.DAPP_PARAMS_EXAMPLE, { from: dappProvider });
+			txMined = await DappRegistryInstance.createDapp(dappProvider, "Dapp #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
 			assert.equal(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
 			assert.equal(events[0].args.dappName,   "Dapp #"+i,                    "Erroneous Dapp name"  );
 			assert.equal(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
+			assert.equal(events[0].args.dappHash,   constants.NULL.BYTES32,        "Erroneous Dapp hash"  );
 
 			DappInstances[i] = await Dapp.at(events[0].args.dapp);
 			assert.equal (await DappInstances[i].m_owner(),                                  dappProvider,                  "Erroneous Dapp owner"                  );
@@ -95,13 +96,14 @@ contract('IexecHub', async (accounts) => {
 	it("Data Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DataRegistryInstance.createData(dataProvider, "Data #"+i, "3.1415926535", { from: dataProvider });
+			txMined = await DataRegistryInstance.createData(dataProvider, "Data #"+i, "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-			assert.equal(events[0].args.dataOwner,  dataProvider,   "Erroneous Data owner" );
-			assert.equal(events[0].args.dataName,   "Data #"+i,     "Erroneous Data name"  );
-			assert.equal(events[0].args.dataParams, "3.1415926535", "Erroneous Data params");
+			assert.equal(events[0].args.dataOwner,  dataProvider,           "Erroneous Data owner" );
+			assert.equal(events[0].args.dataName,   "Data #"+i,             "Erroneous Data name"  );
+			assert.equal(events[0].args.dataParams, "3.1415926535",         "Erroneous Data params");
+			assert.equal(events[0].args.dataHash,   constants.NULL.BYTES32, "Erroneous Data hash"  );
 
 			DataInstances[i] = await Data.at(events[0].args.data);
 			assert.equal (await DataInstances[i].m_owner(),                                  dataProvider,             "Erroneous Data owner"                  );
