@@ -233,6 +233,18 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                              Clerk methods                              *
 	 ***************************************************************************/
+	struct Identities
+	{
+		bytes32 dappHash;
+		bytes32 dataHash;
+		bytes32 poolHash;
+		bytes32 userHash;
+		address dappOwner;
+		address dataOwner;
+		address poolOwner;
+		bool    hasData;
+	}
+
 	function matchOrders(
 		IexecODBLib.DappOrder _dapporder,
 		IexecODBLib.DataOrder _dataorder,
@@ -274,31 +286,30 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check orders authenticity
 		 */
-		 bytes32[4] memory hashes;
-		 address[3] memory owners;
-		 bool              hasData = _dataorder.data != address(0);
+		Identities memory ids;
+		ids.hasData = _dataorder.data != address(0);
 
 		// dapp
-		hashes[0] = getDappOrderHash(_dapporder);
-		owners[0] = Dapp(_dapporder.dapp).m_owner();
-		require(isValidSignature(owners[0], hashes[0], _dapporder.sign));
+		ids.dappHash  = getDappOrderHash(_dapporder);
+		ids.dappOwner = Dapp(_dapporder.dapp).m_owner();
+		require(isValidSignature(ids.dappOwner, ids.dappHash, _dapporder.sign));
 
 		// data
-		if (hasData) // only check if dataset is enabled
+		if (ids.hasData) // only check if dataset is enabled
 		{
-			hashes[1] = getDataOrderHash(_dataorder);
-			owners[1] = Data(_dataorder.data).m_owner();
-			require(isValidSignature(owners[1], hashes[1], _dataorder.sign));
+			ids.dataHash  = getDataOrderHash(_dataorder);
+			ids.dataOwner = Data(_dataorder.data).m_owner();
+			require(isValidSignature(ids.dataOwner, ids.dataHash, _dataorder.sign));
 		}
 
 		// pool
-		hashes[2] = getPoolOrderHash(_poolorder);
-		owners[2] = Pool(_poolorder.pool).m_owner();
-		require(isValidSignature(owners[2], hashes[2], _poolorder.sign));
+		ids.poolHash  = getPoolOrderHash(_poolorder);
+		ids.poolOwner = Pool(_poolorder.pool).m_owner();
+		require(isValidSignature(ids.poolOwner, ids.poolHash, _poolorder.sign));
 
 		// user
-		hashes[3] = getUserOrderHash(_userorder);
-		require(isValidSignature(_userorder.requester, hashes[3], _userorder.sign));
+		ids.userHash = getUserOrderHash(_userorder);
+		require(isValidSignature(_userorder.requester, ids.userHash, _userorder.sign));
 
 		/**
 		 * Check availability
@@ -308,29 +319,29 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// require(m_consumed[hashes[2]] < _poolorder.volume); // checked by volume
 		// require(m_consumed[hashes[3]] < _userorder.volume); // checked by volume
 		uint256 volume;
-		volume =                      _dapporder.volume.sub(m_consumed[hashes[0]]);
-		volume = hasData ? volume.min(_dataorder.volume.sub(m_consumed[hashes[1]])) : volume;
-		volume =           volume.min(_poolorder.volume.sub(m_consumed[hashes[2]]));
-		volume =           volume.min(_userorder.volume.sub(m_consumed[hashes[3]]));
+		volume =                          _dapporder.volume.sub(m_consumed[ids.dappHash]);
+		volume = ids.hasData ? volume.min(_dataorder.volume.sub(m_consumed[ids.dataHash])) : volume;
+		volume =               volume.min(_poolorder.volume.sub(m_consumed[ids.poolHash]));
+		volume =               volume.min(_userorder.volume.sub(m_consumed[ids.userHash]));
 		require(volume > 0);
 
 		/**
 		 * Record
 		 */
 		bytes32 dealid = keccak256(abi.encodePacked(
-			hashes[3],            // userHash
-			m_consumed[hashes[3]] // idx of first subtask
+			ids.userHash,            // userHash
+			m_consumed[ids.userHash] // idx of first subtask
 		));
 
 		IexecODBLib.Deal storage deal = m_deals[dealid];
 		deal.dapp.pointer = _dapporder.dapp;
-		deal.dapp.owner   = owners[0];
+		deal.dapp.owner   = ids.dappOwner;
 		deal.dapp.price   = _dapporder.dappprice;
-		deal.data.owner   = owners[1];
+		deal.data.owner   = ids.dataOwner;
 		deal.data.pointer = _dataorder.data;
-		deal.data.price   = hasData ? _dataorder.dataprice : 0;
+		deal.data.price   = ids.hasData ? _dataorder.dataprice : 0;
 		deal.pool.pointer = _poolorder.pool;
-		deal.pool.owner   = owners[2];
+		deal.pool.owner   = ids.poolOwner;
 		deal.pool.price   = _poolorder.poolprice;
 		deal.trust        = _poolorder.trust;
 		deal.tag          = _poolorder.tag;
@@ -342,20 +353,20 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		IexecODBLib.Config storage config = m_configs[dealid];
 		config.category             = _poolorder.category;
 		config.startTime            = now;
-		config.botFirst             = m_consumed[hashes[3]];
+		config.botFirst             = m_consumed[ids.userHash];
 		config.botSize              = volume;
 		config.workerStake          = _poolorder.poolprice.percentage(Pool(_poolorder.pool).m_workerStakeRatioPolicy());
 		config.schedulerRewardRatio = Pool(_poolorder.pool).m_schedulerRewardRatioPolicy();
 
-		m_userdeals[hashes[3]].push(dealid);
+		m_userdeals[ids.userHash].push(dealid);
 
 		/**
 		 * Update consumed
 		 */
-		m_consumed[hashes[0]] = m_consumed[hashes[0]].add(          volume    );
-		m_consumed[hashes[1]] = m_consumed[hashes[1]].add(hasData ? volume : 0);
-		m_consumed[hashes[2]] = m_consumed[hashes[2]].add(          volume    );
-		m_consumed[hashes[3]] = m_consumed[hashes[3]].add(          volume    );
+		m_consumed[ids.dappHash] = m_consumed[ids.dappHash].add(              volume    );
+		m_consumed[ids.dataHash] = m_consumed[ids.dataHash].add(ids.hasData ? volume : 0);
+		m_consumed[ids.poolHash] = m_consumed[ids.poolHash].add(              volume    );
+		m_consumed[ids.userHash] = m_consumed[ids.userHash].add(              volume    );
 
 		/**
 		 * Lock
@@ -384,10 +395,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 */
 		emit OrdersMatched(
 			dealid,
-			hashes[0],
-			hashes[1],
-			hashes[2],
-			hashes[3],
+			ids.dappHash,
+			ids.dataHash,
+			ids.poolHash,
+			ids.userHash,
 			volume
 		);
 
