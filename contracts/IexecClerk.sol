@@ -11,7 +11,7 @@ import "./registries/Dapp.sol";
 import "./registries/Data.sol";
 import "./registries/Pool.sol";
 
-import "./enterprise/GroupInterface.sol";
+import "./permissions/GroupInterface.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor
 {
@@ -103,7 +103,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 	*/
 
-	// Fails fail for wrong simple addresses 
+	// Fails fail for wrong simple addresses
 	function checkRestriction(address _restriction, address _candidate)
 	public view returns (bool)
 	{
@@ -292,9 +292,9 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
 		// check matching
-		require(                                         _userorder.dapp         == _dapporder.dapp     );
-		require(                                         _userorder.data         == _dataorder.data     );
-		require(_userorder.pool         == address(0) || _userorder.pool         == _poolorder.pool     );
+		require(                                 _userorder.dapp == _dapporder.dapp);
+		require(                                 _userorder.data == _dataorder.data);
+		require(_userorder.pool == address(0) || _userorder.pool == _poolorder.pool);
 
 		// check restrictions
 		require(checkRestriction(_dapporder.datarestrict, _dataorder.data     ));
@@ -306,15 +306,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp     ));
 		require(checkRestriction(_poolorder.datarestrict, _dataorder.data     ));
 		require(checkRestriction(_poolorder.userrestrict, _userorder.requester));
-		/* require(_dapporder.datarestrict == address(0) || _dapporder.datarestrict == _dataorder.data     ); */
-		/* require(_dapporder.poolrestrict == address(0) || _dapporder.poolrestrict == _poolorder.pool     ); */
-		/* require(_dapporder.userrestrict == address(0) || _dapporder.userrestrict == _userorder.requester); */
-		/* require(_dataorder.dapprestrict == address(0) || _dataorder.dapprestrict == _dapporder.dapp     ); */
-		/* require(_dataorder.poolrestrict == address(0) || _dataorder.poolrestrict == _poolorder.pool     ); */
-		/* require(_dataorder.userrestrict == address(0) || _dataorder.userrestrict == _userorder.requester); */
-		/* require(_poolorder.dapprestrict == address(0) || _poolorder.dapprestrict == _dapporder.dapp     ); */
-		/* require(_poolorder.datarestrict == address(0) || _poolorder.datarestrict == _dataorder.data     ); */
-		/* require(_poolorder.userrestrict == address(0) || _poolorder.userrestrict == _userorder.requester); */
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 
