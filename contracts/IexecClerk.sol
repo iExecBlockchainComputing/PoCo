@@ -25,11 +25,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
-	mapping(bytes32 => bytes32[]        ) public m_userdeals;
+	mapping(bytes32 => bytes32[]         ) public m_userdeals;
 	mapping(bytes32 => IexecODBLib.Deal  ) public m_deals;
 	mapping(bytes32 => IexecODBLib.Config) public m_configs;
-	mapping(bytes32 => uint256          ) public m_consumed;
-	mapping(bytes32 => bool             ) public m_presigned;
+	mapping(bytes32 => uint256           ) public m_consumed;
+	mapping(bytes32 => bool              ) public m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *

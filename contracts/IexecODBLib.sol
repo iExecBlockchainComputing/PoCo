@@ -136,6 +136,7 @@ library IexecODBLib
 
 	/**
 	 * Workorders
+	 // TODO: rename Workorder → Task
 	 */
 	enum WorkOrderStatusEnum
 	{

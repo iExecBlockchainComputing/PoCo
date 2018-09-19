@@ -336,9 +336,9 @@ contract IexecHub is CategoryManager
 	{
 		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
 		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline >  now                                     );
+		require(workorder.consensusDeadline >  now                                      );
 		require(workorder.revealCounter     == workorder.winnerCounter
-		    || (workorder.revealCounter     >  0  && workorder.revealDeadline <= now)  );
+		    || (workorder.revealCounter     >  0  && workorder.revealDeadline <= now)   );
 
 		workorder.status = IexecODBLib.WorkOrderStatusEnum.COMPLETED;
 
@@ -387,8 +387,8 @@ contract IexecHub is CategoryManager
 	function __distributeRewards(bytes32 _woid)
 	private
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		IexecODBLib.Config    memory  config    = iexecclerk.viewConfig(workorder.dealid);
+		IexecODBLib.WorkOrder memory workorder = m_workorders[_woid];
+		IexecODBLib.Config    memory config    = iexecclerk.viewConfig(workorder.dealid);
 
 		uint256 i;
 		address worker;
