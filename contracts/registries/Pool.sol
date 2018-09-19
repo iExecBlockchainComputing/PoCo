@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
-import "../tools/SafeMathOZ.sol";
+import '../tools/SafeMathOZ.sol';
 
 contract Pool is OwnableImmutable
 {

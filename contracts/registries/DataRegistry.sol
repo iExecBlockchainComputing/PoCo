@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Data.sol";
-import "./RegistryBase.sol";
+import './Data.sol';
+import './RegistryBase.sol';
 
 contract DataRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {

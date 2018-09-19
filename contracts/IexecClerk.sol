@@ -11,6 +11,8 @@ import "./registries/Dapp.sol";
 import "./registries/Data.sol";
 import "./registries/Pool.sol";
 
+import "./enterprise/GroupInterface.sol";
+
 contract IexecClerk is Escrow, IexecHubAccessor
 {
 	using SafeMathOZ for uint256;
@@ -84,6 +86,30 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public view returns (uint256)
 	{
 		return m_consumed[_id];
+	}
+
+
+	/***************************************************************************
+	 *                         Enterprise restriction                          *
+	 ***************************************************************************/
+	/*
+	function isContract(address addr)
+	public view returns (bool)
+	{
+		assert(false);
+		uint size;
+		assembly { size := extcodesize(addr) }
+		return size > 0;
+	}
+	*/
+
+	// Fails fail for wrong simple addresses 
+	function checkRestriction(address _restriction, address _candidate)
+	public view returns (bool)
+	{
+		return _restriction == address(0) // No restriction
+		    || _restriction == _candidate // Simple address
+		    || GroupInterface(_restriction).viewPermissions(_candidate) != bytes1(0);  // Permission group
 	}
 
 	/***************************************************************************
@@ -271,15 +297,24 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_userorder.pool         == address(0) || _userorder.pool         == _poolorder.pool     );
 
 		// check restrictions
-		require(_dapporder.datarestrict == address(0) || _dapporder.datarestrict == _dataorder.data     );
-		require(_dapporder.poolrestrict == address(0) || _dapporder.poolrestrict == _poolorder.pool     );
-		require(_dapporder.userrestrict == address(0) || _dapporder.userrestrict == _userorder.requester);
-		require(_dataorder.dapprestrict == address(0) || _dataorder.dapprestrict == _dapporder.dapp     );
-		require(_dataorder.poolrestrict == address(0) || _dataorder.poolrestrict == _poolorder.pool     );
-		require(_dataorder.userrestrict == address(0) || _dataorder.userrestrict == _userorder.requester);
-		require(_poolorder.dapprestrict == address(0) || _poolorder.dapprestrict == _dapporder.dapp     );
-		require(_poolorder.datarestrict == address(0) || _poolorder.datarestrict == _dataorder.data     );
-		require(_poolorder.userrestrict == address(0) || _poolorder.userrestrict == _userorder.requester);
+		require(checkRestriction(_dapporder.datarestrict, _dataorder.data     ));
+		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool     ));
+		require(checkRestriction(_dapporder.userrestrict, _userorder.requester));
+		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp     ));
+		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool     ));
+		require(checkRestriction(_dataorder.userrestrict, _userorder.requester));
+		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp     ));
+		require(checkRestriction(_poolorder.datarestrict, _dataorder.data     ));
+		require(checkRestriction(_poolorder.userrestrict, _userorder.requester));
+		/* require(_dapporder.datarestrict == address(0) || _dapporder.datarestrict == _dataorder.data     ); */
+		/* require(_dapporder.poolrestrict == address(0) || _dapporder.poolrestrict == _poolorder.pool     ); */
+		/* require(_dapporder.userrestrict == address(0) || _dapporder.userrestrict == _userorder.requester); */
+		/* require(_dataorder.dapprestrict == address(0) || _dataorder.dapprestrict == _dapporder.dapp     ); */
+		/* require(_dataorder.poolrestrict == address(0) || _dataorder.poolrestrict == _poolorder.pool     ); */
+		/* require(_dataorder.userrestrict == address(0) || _dataorder.userrestrict == _userorder.requester); */
+		/* require(_poolorder.dapprestrict == address(0) || _poolorder.dapprestrict == _dapporder.dapp     ); */
+		/* require(_poolorder.datarestrict == address(0) || _poolorder.datarestrict == _dataorder.data     ); */
+		/* require(_poolorder.userrestrict == address(0) || _poolorder.userrestrict == _userorder.requester); */
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 

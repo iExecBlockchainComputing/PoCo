@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./Pool.sol";
-import "./RegistryBase.sol";
+import './Pool.sol';
+import './RegistryBase.sol';
 
 contract PoolRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {

@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import './Dapp.sol';
-import "./RegistryBase.sol";
+import './RegistryBase.sol';
 
 contract DappRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
