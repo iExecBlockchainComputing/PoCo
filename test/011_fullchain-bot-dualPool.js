@@ -56,7 +56,7 @@ contract('IexecHub', async (accounts) => {
 	var tasks  = {
 		0:
 		{
-			woid: null,
+			taskid: null,
 			authorizations: {},
 			results: {},
 			consensus: odbtools.hashResult("iExec BOT 0"),
@@ -68,7 +68,7 @@ contract('IexecHub', async (accounts) => {
 		},
 		1:
 		{
-			woid: null,
+			taskid: null,
 			authorizations: {},
 			results: {},
 			consensus: odbtools.hashResult("iExec BOT 1"),
@@ -81,7 +81,7 @@ contract('IexecHub', async (accounts) => {
 		},
 		2:
 		{
-			woid: null,
+			taskid: null,
 			authorizations: {},
 			results: {},
 			consensus: odbtools.hashResult("iExec BOT 2"),
@@ -473,26 +473,26 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: scheduler initializes workorder                  *
+	 *                  TEST: scheduler initializes task                  *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
 		txMined = await IexecHubInstance.initialize(deals[0], 0, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusInitialize");
 		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
-		tasks[0].woid = events[0].args.woid;
+		tasks[0].taskid = events[0].args.taskid;
 
 		txMined = await IexecHubInstance.initialize(deals[0], 1, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusInitialize");
 		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
-		tasks[1].woid = events[0].args.woid;
+		tasks[1].taskid = events[0].args.taskid;
 
 		txMined = await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusInitialize");
 		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
-		tasks[2].woid = events[0].args.woid;
+		tasks[2].taskid = events[0].args.taskid;
 	});
 
 	/***************************************************************************
@@ -505,7 +505,7 @@ contract('IexecHub', async (accounts) => {
 			tasks[taskid].authorizations[worker.address] = await odbtools.signObject(
 				{
 					worker:  worker.address,
-					woid:    tasks[taskid].woid,
+					taskid:  tasks[taskid].taskid,
 					enclave: worker.enclave,
 					sign:    constants.NULL.SIGNATURE,
 				},
@@ -544,7 +544,7 @@ contract('IexecHub', async (accounts) => {
 			txNotMined = await IexecHubInstanceEthers
 			.connect(jsonRpcProvider.getSigner(worker.address))
 			.signedContribute(
-				tasks[taskid].authorizations[worker.address].woid,       // workorder (authorization)
+				tasks[taskid].authorizations[worker.address].taskid,       // task (authorization)
 				tasks[taskid].results[worker.address].contribution.hash, // common    (result)
 				tasks[taskid].results[worker.address].contribution.sign, // unique    (result)
 				worker.enclave,                                          // address   (enclave)
@@ -565,11 +565,11 @@ contract('IexecHub', async (accounts) => {
 	it(">> revealConsensus", async () => {
 		for (taskid in tasks)
 		{
-			txMined = await IexecHubInstance.revealConsensus(tasks[taskid].woid, tasks[taskid].consensus.contribution.hash, { from: poolScheduler });
+			txMined = await IexecHubInstance.revealConsensus(tasks[taskid].taskid, tasks[taskid].consensus.contribution.hash, { from: poolScheduler });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "ConsensusRevealConsensus");
-			assert.equal(events[0].args.woid,      tasks[taskid].woid,                        "check woid"     );
+			assert.equal(events[0].args.taskid,    tasks[taskid].taskid,                      "check taskid"   );
 			assert.equal(events[0].args.consensus, tasks[taskid].consensus.contribution.hash, "check consensus");
 		}
 	});
@@ -583,16 +583,16 @@ contract('IexecHub', async (accounts) => {
 		if (tasks[taskid].results[worker.address].contribution.hash == tasks[taskid].consensus.contribution.hash)
 		{
 			txMined = await IexecHubInstance.reveal(
-				tasks[taskid].authorizations[worker.address].woid,
+				tasks[taskid].authorizations[worker.address].taskid,
 				tasks[taskid].results[worker.address].base,
 				{ from: worker.address }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "ConsensusReveal");
-			assert.equal(events[0].args.woid,   tasks[taskid].authorizations[worker.address].woid, "check woid"  );
-			assert.equal(events[0].args.worker, worker.address,                                    "check worker");
-			assert.equal(events[0].args.result, tasks[taskid].results[worker.address].base,        "check result");
+			assert.equal(events[0].args.taskid, tasks[taskid].authorizations[worker.address].taskid, "check taskid");
+			assert.equal(events[0].args.worker, worker.address,                                      "check worker");
+			assert.equal(events[0].args.result, tasks[taskid].results[worker.address].base,          "check result");
 		}
 	});
 
@@ -615,7 +615,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> finalizeWork (1)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
-			tasks[0].woid,
+			tasks[0].taskid,
 			"aStdout 1",
 			"aStderr 1",
 			"anUri 1",
@@ -624,31 +624,31 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.woid,   tasks[0].woid, "check consensus (  woid)");
-		assert.equal(events[0].args.stdout, "aStdout 1",   "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 1",   "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 1",     "check consensus (   uri)");
+		assert.equal(events[0].args.taskid, tasks[0].taskid, "check consensus (taskid)");
+		assert.equal(events[0].args.stdout, "aStdout 1",     "check consensus (stdout)");
+		assert.equal(events[0].args.stderr, "aStderr 1",     "check consensus (stderr)");
+		assert.equal(events[0].args.uri,    "anUri 1",       "check consensus (   uri)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		// assert.equal(events[0].args.woid,   woid,      "check AccurateContribution (  woid)");
+		// assert.equal(events[0].args.taskid,   taskid,      "check AccurateContribution (  taskid)");
 		// assert.equal(events[0].args.worker, w.address, "check AccurateContribution (worker)");
 
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
 
 	/***************************************************************************
-	 *                      TEST: check workorder status                       *
+	 *                      TEST: check task status                       *
 	 ***************************************************************************/
-	it("[Finalized 1] Check workorder", async () => {
-		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[0].woid);
-		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,               tasks[0].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),     2,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),     2,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a),     tasks[0].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+	it("[Finalized 1] Check task", async () => {
+		task = await IexecHubInstanceEthers.viewTask(tasks[0].taskid);
+		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
+		assert.equal    (task.consensusValue,               tasks[0].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
+		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
+		assert.equal    (task.revealCounter.toNumber(),     2,                                    "check task (task.revealCounter)"    );
+		assert.equal    (task.winnerCounter.toNumber(),     2,                                    "check task (task.winnerCounter)"    );
+		assert.deepEqual(task.contributors.map(a => a),     tasks[0].workers.map(x => x.address), "check task (task.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -680,7 +680,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> finalizeWork (2)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
-			tasks[1].woid,
+			tasks[1].taskid,
 			"aStdout 2",
 			"aStderr 2",
 			"anUri 2",
@@ -689,31 +689,31 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.woid,   tasks[1].woid, "check consensus (  woid)");
-		assert.equal(events[0].args.stdout, "aStdout 2",   "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 2",   "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 2",     "check consensus (   uri)");
+		assert.equal(events[0].args.taskid, tasks[1].taskid, "check consensus (taskid)");
+		assert.equal(events[0].args.stdout, "aStdout 2",     "check consensus (stdout)");
+		assert.equal(events[0].args.stderr, "aStderr 2",     "check consensus (stderr)");
+		assert.equal(events[0].args.uri,    "anUri 2",       "check consensus (   uri)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		// assert.equal(events[0].args.woid,                 woid,      "check AccurateContribution (  woid)");
+		// assert.equal(events[0].args.taskid,                 taskid,      "check AccurateContribution (  taskid)");
 		// assert.equal(events[0].args.worker.toLowerCase(), w.address, "check AccurateContribution (worker)");
 
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
 
 	/***************************************************************************
-	 *                      TEST: check workorder status                       *
+	 *                      TEST: check task status                       *
 	 ***************************************************************************/
-	it("[Finalized 2] Check workorder", async () => {
-		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[1].woid);
-		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,               tasks[1].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),     3,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),     3,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a),     tasks[1].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+	it("[Finalized 2] Check task", async () => {
+		task = await IexecHubInstanceEthers.viewTask(tasks[1].taskid);
+		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
+		assert.equal    (task.consensusValue,               tasks[1].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
+		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
+		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
+		assert.equal    (task.winnerCounter.toNumber(),     3,                                    "check task (task.winnerCounter)"    );
+		assert.deepEqual(task.contributors.map(a => a),     tasks[1].workers.map(x => x.address), "check task (task.contributors)"     );
 	});
 
 	/***************************************************************************
@@ -745,7 +745,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> finalizeWork (3)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
-			tasks[2].woid,
+			tasks[2].taskid,
 			"aStdout 3",
 			"aStderr 3",
 			"anUri 3",
@@ -754,31 +754,31 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.woid,   tasks[2].woid, "check consensus (  woid)");
-		assert.equal(events[0].args.stdout, "aStdout 3",   "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 3",   "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 3",     "check consensus (   uri)");
+		assert.equal(events[0].args.taskid, tasks[2].taskid, "check consensus (taskid)");
+		assert.equal(events[0].args.stdout, "aStdout 3",     "check consensus (stdout)");
+		assert.equal(events[0].args.stderr, "aStderr 3",     "check consensus (stderr)");
+		assert.equal(events[0].args.uri,    "anUri 3",       "check consensus (   uri)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		// assert.equal(events[0].args.woid,                 woid,      "check AccurateContribution (  woid)");
+		// assert.equal(events[0].args.taskid,                 taskid,      "check AccurateContribution (  taskid)");
 		// assert.equal(events[0].args.worker.toLowerCase(), w.address, "check AccurateContribution (worker)");
 
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
 
 	/***************************************************************************
-	 *                      TEST: check workorder status                       *
+	 *                      TEST: check task status                       *
 	 ***************************************************************************/
-	it("[Finalized 3] Check workorder", async () => {
-		workorder = await IexecHubInstanceEthers.viewWorkorder(tasks[2].woid);
-		assert.equal    (workorder.status,                       constants.WorkOrderStatusEnum.COMPLETED, "check workorder (workorder.status)"           );
-		assert.equal    (workorder.consensusValue,               tasks[2].consensus.contribution.hash,    "check workorder (workorder.consensusValue)"   );
-		assert.isAbove  (workorder.consensusDeadline.toNumber(), 0,                                       "check workorder (workorder.consensusDeadline)");
-		assert.isAbove  (workorder.revealDeadline.toNumber(),    0,                                       "check workorder (workorder.revealDeadline)"   );
-		assert.equal    (workorder.revealCounter.toNumber(),     3,                                       "check workorder (workorder.revealCounter)"    );
-		assert.equal    (workorder.winnerCounter.toNumber(),     3,                                       "check workorder (workorder.winnerCounter)"    );
-		assert.deepEqual(workorder.contributors.map(a => a),     tasks[2].workers.map(x => x.address),    "check workorder (workorder.contributors)"     );
+	it("[Finalized 3] Check task", async () => {
+		task = await IexecHubInstanceEthers.viewTask(tasks[2].taskid);
+		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
+		assert.equal    (task.consensusValue,               tasks[2].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
+		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
+		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
+		assert.equal    (task.winnerCounter.toNumber(),     3,                                    "check task (task.winnerCounter)"    );
+		assert.deepEqual(task.contributors.map(a => a),     tasks[2].workers.map(x => x.address), "check task (task.contributors)"     );
 	});
 
 	/***************************************************************************

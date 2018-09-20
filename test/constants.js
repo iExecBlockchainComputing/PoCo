@@ -19,7 +19,7 @@ define("NULL", {
 });
 
 // ENUM
-define("WorkOrderStatusEnum", {
+define("TaskStatusEnum", {
 	UNSET:     0,
 	ACTIVE:    1,
 	REVEALING: 2,

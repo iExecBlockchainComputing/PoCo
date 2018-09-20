@@ -37,7 +37,7 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                               Consensuses                               *
 	 ***************************************************************************/
-	mapping(bytes32 => IexecODBLib.WorkOrder)                        m_workorders;
+	mapping(bytes32 => IexecODBLib.Task)                             m_tasks;
 	mapping(bytes32 => mapping(address => IexecODBLib.Contribution)) m_contributions;
 
 	/***************************************************************************
@@ -49,16 +49,16 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event ConsensusInitialize       (bytes32 indexed woid, address indexed pool);
-	event ConsensusAllowContribution(bytes32 indexed woid, address indexed worker);
-	event ConsensusContribute       (bytes32 indexed woid, address indexed worker, bytes32 resultHash);
-	event ConsensusRevealConsensus  (bytes32 indexed woid, bytes32 consensus);
-	event ConsensusReveal           (bytes32 indexed woid, address indexed worker, bytes32 result);
-	event ConsensusReopen           (bytes32 indexed woid);
-	event ConsensusFinalized        (bytes32 indexed woid, string stdout, string stderr, string uri);
-	event ConsensusClaimed          (bytes32 indexed woid);
-	event AccurateContribution      (bytes32 indexed woid, address indexed worker);
-	event FaultyContribution        (bytes32 indexed woid, address indexed worker);
+	event ConsensusInitialize       (bytes32 indexed taskid, address indexed pool);
+	event ConsensusAllowContribution(bytes32 indexed taskid, address indexed worker);
+	event ConsensusContribute       (bytes32 indexed taskid, address indexed worker, bytes32 resultHash);
+	event ConsensusRevealConsensus  (bytes32 indexed taskid, bytes32 consensus);
+	event ConsensusReveal           (bytes32 indexed taskid, address indexed worker, bytes32 result);
+	event ConsensusReopen           (bytes32 indexed taskid);
+	event ConsensusFinalized        (bytes32 indexed taskid, string stdout, string stderr, string uri);
+	event ConsensusClaimed          (bytes32 indexed taskid);
+	event AccurateContribution      (bytes32 indexed taskid, address indexed worker);
+	event FaultyContribution        (bytes32 indexed taskid, address indexed worker);
 
 	event WorkerSubscription  (address indexed pool, address worker);
 	event WorkerUnsubscription(address indexed pool, address worker);
@@ -67,9 +67,9 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                Modifiers                                *
 	 ***************************************************************************/
-	modifier onlyScheduler(bytes32 _woid)
+	modifier onlyScheduler(bytes32 _taskid)
 	{
-		require(msg.sender == iexecclerk.viewDeal(m_workorders[_woid].dealid).pool.owner);
+		require(msg.sender == iexecclerk.viewDeal(m_tasks[_taskid].dealid).pool.owner);
 		_;
 	}
 
@@ -101,16 +101,16 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                                Accessors                                *
 	 ***************************************************************************/
-	function viewWorkorder(bytes32 _woid)
-	public view returns (IexecODBLib.WorkOrder)
+	function viewTask(bytes32 _taskid)
+	public view returns (IexecODBLib.Task)
 	{
-		return m_workorders[_woid];
+		return m_tasks[_taskid];
 	}
 
-	function viewContribution(bytes32 _woid, address _worker)
+	function viewContribution(bytes32 _taskid, address _worker)
 	public view returns (IexecODBLib.Contribution)
 	{
-		return m_contributions[_woid][_worker];
+		return m_contributions[_taskid][_worker];
 	}
 
 	function viewScore(address _worker)
@@ -145,24 +145,24 @@ contract IexecHub is CategoryManager
 		require(idx >= config.botFirst                    );
 		require(idx <  config.botFirst.add(config.botSize));
 
-		bytes32 woid = keccak256(abi.encodePacked(_dealid, idx));
+		bytes32 taskid = keccak256(abi.encodePacked(_dealid, idx));
 
-		IexecODBLib.WorkOrder storage workorder = m_workorders[woid];
-		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.UNSET);
-		workorder.status            = IexecODBLib.WorkOrderStatusEnum.ACTIVE;
-		workorder.dealid            = _dealid;
-		workorder.idx               = idx;
-		workorder.consensusDeadline = viewCategory(config.category).workClockTimeRef
-		                              .mul(CONSENSUS_DURATION_RATIO)
-		                              .add(config.startTime);
+		IexecODBLib.Task storage task = m_tasks[taskid];
+		require(task.status == IexecODBLib.TaskStatusEnum.UNSET);
+		task.status            = IexecODBLib.TaskStatusEnum.ACTIVE;
+		task.dealid            = _dealid;
+		task.idx               = idx;
+		task.consensusDeadline = viewCategory(config.category).workClockTimeRef
+		                         .mul(CONSENSUS_DURATION_RATIO)
+		                         .add(config.startTime);
 
-		emit ConsensusInitialize(woid, iexecclerk.viewDeal(_dealid).pool.pointer);
+		emit ConsensusInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
 
-		return woid;
+		return taskid;
 	}
 
 	function signedContribute(
-		bytes32              _woid,
+		bytes32              _taskid,
 		bytes32              _resultHash,
 		bytes32              _resultSign,
 		address              _enclaveChallenge,
@@ -170,22 +170,22 @@ contract IexecHub is CategoryManager
 		IexecODBLib.signature _poolSign)
 	public
 	{
-		IexecODBLib.WorkOrder    storage workorder    = m_workorders[_woid];
-		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		IexecODBLib.Deal         memory  deal         = iexecclerk.viewDeal(workorder.dealid);
+		IexecODBLib.Task         storage task         = m_tasks[_taskid];
+		IexecODBLib.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLib.Deal         memory  deal         = iexecclerk.viewDeal(task.dealid);
 
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE  );
-		require(workorder.consensusDeadline >  now                                     );
-		require(contribution.status         == IexecODBLib.ContributionStatusEnum.UNSET);
+		require(task.status            == IexecODBLib.TaskStatusEnum.ACTIVE       );
+		require(task.consensusDeadline >  now                                     );
+		require(contribution.status    == IexecODBLib.ContributionStatusEnum.UNSET);
 
-		// Check that the worker + woid + enclave combo is authorized to contribute (scheduler signature)
+		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		// Skip check if authorized?
 		require(deal.pool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
 				keccak256(abi.encodePacked(
 					msg.sender,
-					_woid,
+					_taskid,
 					_enclaveChallenge
 				))
 			)),
@@ -228,30 +228,30 @@ contract IexecHub is CategoryManager
 		contribution.resultSign       = _resultSign;
 		contribution.score            = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
 		contribution.weight           = 1 + contribution.score.log();
-		workorder.contributors.push(msg.sender);
+		task.contributors.push(msg.sender);
 
-		require(iexecclerk.lockContribution(workorder.dealid, msg.sender));
+		require(iexecclerk.lockContribution(task.dealid, msg.sender));
 
-		emit ConsensusContribute(_woid, msg.sender, _resultHash);
+		emit ConsensusContribute(_taskid, msg.sender, _resultHash);
 	}
 
 	function revealConsensus(
-		bytes32 _woid,
+		bytes32 _taskid,
 		bytes32 _consensus)
-	public onlyScheduler(_woid)
+	public onlyScheduler(_taskid)
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.ACTIVE);
-		require(workorder.consensusDeadline >  now                                   );
+		IexecODBLib.Task storage task = m_tasks[_taskid];
+		require(task.status            == IexecODBLib.TaskStatusEnum.ACTIVE);
+		require(task.consensusDeadline >  now                              );
 
 		uint256 winnerCounter = 0;
-		for (uint256 i = 0; i<workorder.contributors.length; ++i)
+		for (uint256 i = 0; i<task.contributors.length; ++i)
 		{
-			address w = workorder.contributors[i];
+			address w = task.contributors[i];
 			if (
-				m_contributions[_woid][w].resultHash == _consensus
+				m_contributions[_taskid][w].resultHash == _consensus
 				&&
-				m_contributions[_woid][w].status == IexecODBLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+				m_contributions[_taskid][w].status == IexecODBLib.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
 			)
 			{
 				winnerCounter = winnerCounter.add(1);
@@ -259,19 +259,19 @@ contract IexecHub is CategoryManager
 		}
 		require(winnerCounter > 0); // you cannot revealConsensus if no worker has contributed to this hash
 
-		workorder.status         = IexecODBLib.WorkOrderStatusEnum.REVEALING;
-		workorder.consensusValue = _consensus;
-		workorder.revealDeadline = viewCategory(iexecclerk.viewConfig(workorder.dealid).category).workClockTimeRef
+		task.status         = IexecODBLib.TaskStatusEnum.REVEALING;
+		task.consensusValue = _consensus;
+		task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
 		                           .mul(REVEAL_DURATION_RATIO)
 		                           .add(now);
-		workorder.revealCounter  = 0;
-		workorder.winnerCounter  = winnerCounter;
+		task.revealCounter  = 0;
+		task.winnerCounter  = winnerCounter;
 
-		emit ConsensusRevealConsensus(_woid, _consensus);
+		emit ConsensusRevealConsensus(_taskid, _consensus);
 	}
 
 	function reveal(
-		bytes32 _woid,
+		bytes32 _taskid,
 		bytes32 _result)
 		/*
 		// TODO: results for oracle?
@@ -279,129 +279,129 @@ contract IexecHub is CategoryManager
 		*/
 	public // worker
 	{
-		IexecODBLib.WorkOrder    storage workorder    = m_workorders[_woid];
-		IexecODBLib.Contribution storage contribution = m_contributions[_woid][msg.sender];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING       );
-		require(workorder.consensusDeadline >  now                                             );
-		require(workorder.revealDeadline    >  now                                             );
-		require(contribution.status         == IexecODBLib.ContributionStatusEnum.CONTRIBUTED  );
-		require(contribution.resultHash     == workorder.consensusValue                        );
-		require(contribution.resultHash     == keccak256(abi.encodePacked(            _result)));
-		require(contribution.resultSign     == keccak256(abi.encodePacked(msg.sender, _result)));
+		IexecODBLib.Task         storage task         = m_tasks[_taskid];
+		IexecODBLib.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		require(task.status             == IexecODBLib.TaskStatusEnum.REVEALING            );
+		require(task.consensusDeadline  >  now                                             );
+		require(task.revealDeadline     >  now                                             );
+		require(contribution.status     == IexecODBLib.ContributionStatusEnum.CONTRIBUTED  );
+		require(contribution.resultHash == task.consensusValue                             );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _result)));
+		require(contribution.resultSign == keccak256(abi.encodePacked(msg.sender, _result)));
 
 		contribution.status     = IexecODBLib.ContributionStatusEnum.PROVED;
-		workorder.revealCounter = workorder.revealCounter.add(1);
+		task.revealCounter = task.revealCounter.add(1);
 
 		/*
 		// TODO: results for oracle?
-		if (workorder.result == bytes(0)) workorder.result = _results;
+		if (task.result == bytes(0)) task.result = _results;
 		*/
 
-		emit ConsensusReveal(_woid, msg.sender, _result);
+		emit ConsensusReveal(_taskid, msg.sender, _result);
 	}
 
 	function reopen(
-		bytes32 _woid)
-	public onlyScheduler(_woid)
+		bytes32 _taskid)
+	public onlyScheduler(_taskid)
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline >  now                                      );
-		require(workorder.revealDeadline    <= now
-		     && workorder.revealCounter     == 0                                        );
+		IexecODBLib.Task storage task = m_tasks[_taskid];
+		require(task.status            == IexecODBLib.TaskStatusEnum.REVEALING);
+		require(task.consensusDeadline >  now                                 );
+		require(task.revealDeadline    <= now
+		     && task.revealCounter     == 0                                   );
 
-		for (uint256 i = 0; i < workorder.contributors.length; ++i)
+		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
-			address worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].resultHash == workorder.consensusValue)
+			address worker = task.contributors[i];
+			if (m_contributions[_taskid][worker].resultHash == task.consensusValue)
 			{
-				m_contributions[_woid][worker].status = IexecODBLib.ContributionStatusEnum.REJECTED;
+				m_contributions[_taskid][worker].status = IexecODBLib.ContributionStatusEnum.REJECTED;
 			}
 		}
 
-		workorder.status         = IexecODBLib.WorkOrderStatusEnum.ACTIVE;
-		workorder.consensusValue = 0x0;
-		workorder.revealDeadline = 0;
-		workorder.winnerCounter  = 0;
+		task.status         = IexecODBLib.TaskStatusEnum.ACTIVE;
+		task.consensusValue = 0x0;
+		task.revealDeadline = 0;
+		task.winnerCounter  = 0;
 
-		emit ConsensusReopen(_woid);
+		emit ConsensusReopen(_taskid);
 	}
 
 	function finalizeWork(
-		bytes32 _woid,
+		bytes32 _taskid,
 		string  _stdout,
 		string  _stderr,
 		string  _uri)
-	public onlyScheduler(_woid)
+	public onlyScheduler(_taskid)
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status            == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline >  now                                      );
-		require(workorder.revealCounter     == workorder.winnerCounter
-		    || (workorder.revealCounter     >  0  && workorder.revealDeadline <= now)   );
+		IexecODBLib.Task storage task = m_tasks[_taskid];
+		require(task.status            == IexecODBLib.TaskStatusEnum.REVEALING);
+		require(task.consensusDeadline >  now                                 );
+		require(task.revealCounter     == task.winnerCounter
+		    || (task.revealCounter     >  0  && task.revealDeadline <= now)   );
 
-		workorder.status = IexecODBLib.WorkOrderStatusEnum.COMPLETED;
+		task.status = IexecODBLib.TaskStatusEnum.COMPLETED;
 
 		/**
 		 * Stake and reward management
 		 */
-		require(iexecclerk.successWork(workorder.dealid));
-		__distributeRewards(_woid);
+		require(iexecclerk.successWork(task.dealid));
+		__distributeRewards(_taskid);
 
-		emit ConsensusFinalized(_woid, _stdout, _stderr, _uri);
+		emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
 	}
 
 	/*
 	function resultFor(bytes32 id) external view returns (bytes result)
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[id];
-		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.COMPLETED);
-		return workorder.results;
+		IexecODBLib.Task storage task = m_tasks[id];
+		require(task.status == IexecODBLib.TaskStatusEnum.COMPLETED);
+		return task.results;
 	}
 	*/
 
 	function claimfailed(
-		bytes32 _woid)
+		bytes32 _taskid)
 	public
 	{
-		IexecODBLib.WorkOrder storage workorder = m_workorders[_woid];
-		require(workorder.status == IexecODBLib.WorkOrderStatusEnum.ACTIVE
-		     || workorder.status == IexecODBLib.WorkOrderStatusEnum.REVEALING);
-		require(workorder.consensusDeadline <= now);
+		IexecODBLib.Task storage task = m_tasks[_taskid];
+		require(task.status == IexecODBLib.TaskStatusEnum.ACTIVE
+		     || task.status == IexecODBLib.TaskStatusEnum.REVEALING);
+		require(task.consensusDeadline <= now);
 
-		workorder.status = IexecODBLib.WorkOrderStatusEnum.FAILLED;
+		task.status = IexecODBLib.TaskStatusEnum.FAILLED;
 
 		/**
 		 * Stake management
 		 */
-		require(iexecclerk.failedWork(workorder.dealid));
-		for (uint256 i = 0; i < workorder.contributors.length; ++i)
+		require(iexecclerk.failedWork(task.dealid));
+		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
-			address worker = workorder.contributors[i];
-			require(iexecclerk.unlockContribution(workorder.dealid, worker));
+			address worker = task.contributors[i];
+			require(iexecclerk.unlockContribution(task.dealid, worker));
 		}
 
-		emit ConsensusClaimed(_woid);
+		emit ConsensusClaimed(_taskid);
 	}
 
-	function __distributeRewards(bytes32 _woid)
+	function __distributeRewards(bytes32 _taskid)
 	private
 	{
-		IexecODBLib.WorkOrder memory workorder = m_workorders[_woid];
-		IexecODBLib.Config    memory config    = iexecclerk.viewConfig(workorder.dealid);
+		IexecODBLib.Task   memory task   = m_tasks[_taskid];
+		IexecODBLib.Config memory config = iexecclerk.viewConfig(task.dealid);
 
 		uint256 i;
 		address worker;
 
 		uint256 totalWeight = 0;
-		uint256 totalReward = iexecclerk.viewDeal(workorder.dealid).pool.price;
+		uint256 totalReward = iexecclerk.viewDeal(task.dealid).pool.price;
 
-		for (i = 0; i<workorder.contributors.length; ++i)
+		for (i = 0; i<task.contributors.length; ++i)
 		{
-			worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
+			worker = task.contributors[i];
+			if (m_contributions[_taskid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
 			{
-				totalWeight  = totalWeight.add(m_contributions[_woid][worker].weight);
+				totalWeight = totalWeight.add(m_contributions[_taskid][worker].weight);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -413,28 +413,28 @@ contract IexecHub is CategoryManager
 		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(config.schedulerRewardRatio));
 
-		for (i = 0; i<workorder.contributors.length; ++i)
+		for (i = 0; i<task.contributors.length; ++i)
 		{
-			worker = workorder.contributors[i];
-			if (m_contributions[_woid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
+			worker = task.contributors[i];
+			if (m_contributions[_taskid][worker].status == IexecODBLib.ContributionStatusEnum.PROVED)
 			{
-				uint256 workerReward = workersReward.mulByFraction(m_contributions[_woid][worker].weight, totalWeight);
+				uint256 workerReward = workersReward.mulByFraction(m_contributions[_taskid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(iexecclerk.unlockAndRewardForContribution(workorder.dealid, worker, workerReward));
+				require(iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward));
 				m_workerScores[worker] = m_workerScores[worker].add(1);
-				emit AccurateContribution(_woid, worker);
+				emit AccurateContribution(_taskid, worker);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
-				require(iexecclerk.seizeContribution(workorder.dealid, worker));
+				require(iexecclerk.seizeContribution(task.dealid, worker));
 				m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
-				emit FaultyContribution(_woid, worker);
+				emit FaultyContribution(_taskid, worker);
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecclerk.rewardForScheduling(workorder.dealid, totalReward));
+		require(iexecclerk.rewardForScheduling(task.dealid, totalReward));
 	}
 
 	/***************************************************************************

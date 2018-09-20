@@ -135,10 +135,10 @@ library IexecODBLib
 	}
 
 	/**
-	 * Workorders
+	 * Tasks
 	 // TODO: rename Workorder → Task
 	 */
-	enum WorkOrderStatusEnum
+	enum TaskStatusEnum
 	{
 		UNSET,     // Work order not yet initialized (invalid address)
 		ACTIVE,    // Marketed → constributions are open
@@ -146,9 +146,9 @@ library IexecODBLib
 		COMPLETED, // Concensus achieved
 		FAILLED    // Failled consensus
 	}
-	struct WorkOrder
+	struct Task
 	{
-		WorkOrderStatusEnum status;
+		TaskStatusEnum status;
 		bytes32   dealid;
 		uint256   idx;
 		uint256   consensusDeadline;
