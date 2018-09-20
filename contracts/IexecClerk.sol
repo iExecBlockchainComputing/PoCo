@@ -116,8 +116,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
 	function isValidSignature(
-		address              _signer,
-		bytes32              _hash,
+		address               _signer,
+		bytes32               _hash,
 		IexecODBLib.signature _signature)
 	public view returns (bool)
 	{
