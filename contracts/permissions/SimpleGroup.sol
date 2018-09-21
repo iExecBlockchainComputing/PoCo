@@ -11,25 +11,31 @@ contract SimpleGroup is GroupInterface, OwnableMutable
 	 */
 	mapping(address => bytes1) public m_permissions;
 
+	modifier onlyAdmin()
+	{
+		require(msg.sender == m_owner || viewPermissions(msg.sender) & PERMISSION_ADMIN == PERMISSION_ADMIN);
+		_;
+	}
+
 	/**
 	 * Constructor
 	 */
 	constructor() public {}
 
 	function setPermissions(address _user, bytes1 _permissions)
-	public onlyOwner returns (bytes1)
+	public onlyAdmin returns (bytes1)
 	{
 		m_permissions[_user] = _permissions;
 		return m_permissions[_user];
 	}
 	function addPermissions(address _user, bytes1 _permissions)
-	public onlyOwner returns (bytes1)
+	public onlyAdmin returns (bytes1)
 	{
 		m_permissions[_user] = m_permissions[_user] | _permissions;
 		return m_permissions[_user];
 	}
 	function remPermissions(address _user, bytes1 _permissions)
-	public onlyOwner returns (bytes1)
+	public onlyAdmin returns (bytes1)
 	{
 		m_permissions[_user] = m_permissions[_user] & ~_permissions;
 		return m_permissions[_user];

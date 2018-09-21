@@ -104,12 +104,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	*/
 
 	// Fails fail for wrong simple addresses
-	function checkRestriction(address _restriction, address _candidate)
+	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
 	public view returns (bool)
 	{
 		return _restriction == address(0) // No restriction
 		    || _restriction == _candidate // Simple address
-		    || GroupInterface(_restriction).viewPermissions(_candidate) != bytes1(0);  // Permission group
+		    || GroupInterface(_restriction).viewPermissions(_candidate) & _mask == _mask;  // Permission group
 	}
 
 	/***************************************************************************
@@ -297,15 +297,15 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_userorder.pool == address(0) || _userorder.pool == _poolorder.pool);
 
 		// check restrictions
-		require(checkRestriction(_dapporder.datarestrict, _dataorder.data     ));
-		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool     ));
-		require(checkRestriction(_dapporder.userrestrict, _userorder.requester));
-		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp     ));
-		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool     ));
-		require(checkRestriction(_dataorder.userrestrict, _userorder.requester));
-		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp     ));
-		require(checkRestriction(_poolorder.datarestrict, _dataorder.data     ));
-		require(checkRestriction(_poolorder.userrestrict, _userorder.requester));
+		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
+		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_dataorder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
+		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_poolorder.datarestrict, _dataorder.data,      0x02)); // 0x02: Permission submit
+		require(checkRestriction(_poolorder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 
