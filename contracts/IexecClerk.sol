@@ -286,26 +286,28 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(_userorder.category     == _poolorder.category );
 		require(_userorder.trust        <= _poolorder.trust    );
 		require(_userorder.tag          == _poolorder.tag      );
+
 		// user allowed enough ressources.
 		require(_userorder.dappmaxprice >= _dapporder.dappprice);
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
 		// check matching
-		require(                                 _userorder.dapp == _dapporder.dapp);
-		require(                                 _userorder.data == _dataorder.data);
-		require(_userorder.pool == address(0) || _userorder.pool == _poolorder.pool);
+		require(_userorder.dapp == _dapporder.dapp);
+		require(_userorder.data == _dataorder.data);
+		require(checkRestriction(_userorder.pool, _poolorder.pool, 0x01));
 
-		// check restrictions
-		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
-		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_dataorder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
-		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_poolorder.datarestrict, _dataorder.data,      0x02)); // 0x02: Permission submit
-		require(checkRestriction(_poolorder.userrestrict, _userorder.requester, 0x02)); // 0x02: Permission submit
+		// Check restrictions
+		// TODO: permission encoding?
+		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
+		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_dataorder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
+		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_poolorder.datarestrict, _dataorder.data,      0x01)); // 0x01: Permission submit
+		require(checkRestriction(_poolorder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 
