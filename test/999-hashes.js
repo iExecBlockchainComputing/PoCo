@@ -51,81 +51,7 @@ var userorder = null;
 
 function DomainStructHash(domain)
 {
-	return web3.utils.soliditySha3(
-		{ t: "bytes32", v: EIP712DOMAIN_TYPEHASH                },
-		{ t: "bytes32", v: web3.utils.keccak256(domain.name   ) },
-		{ t: "bytes32", v: web3.utils.keccak256(domain.version) },
-		{ t: "uint256", v: domain.chainId                       },
-		{ t: "address", v: domain.verifyingContract             },
-	);
-}
-function DappOrderStructHash(dapporder)
-{
-	return web3.utils.soliditySha3(
-		{ t: "bytes32", v: DAPPORDER_TYPEHASH     },
-		{ t: "address", v: dapporder.dapp         },
-		{ t: "uint256", v: dapporder.dappprice    },
-		{ t: "uint256", v: dapporder.volume       },
-		{ t: "address", v: dapporder.datarestrict },
-		{ t: "address", v: dapporder.poolrestrict },
-		{ t: "address", v: dapporder.userrestrict },
-		{ t: "bytes32", v: dapporder.salt         },
-	);
-}
-function DataOrderStructHash(dataorder)
-{
-	return web3.utils.soliditySha3(
-		{ t: "bytes32", v: DATAORDER_TYPEHASH     },
-		{ t: "address", v: dataorder.data         },
-		{ t: "uint256", v: dataorder.dataprice    },
-		{ t: "uint256", v: dataorder.volume       },
-		{ t: "address", v: dataorder.dapprestrict },
-		{ t: "address", v: dataorder.poolrestrict },
-		{ t: "address", v: dataorder.userrestrict },
-		{ t: "bytes32", v: dataorder.salt         },
-	);
-}
-function PoolOrderStructHash(poolorder)
-{
-	return web3.utils.soliditySha3(
-		{ t: "bytes32", v: POOLORDER_TYPEHASH     },
-		{ t: "address", v: poolorder.pool         },
-		{ t: "uint256", v: poolorder.poolprice    },
-		{ t: "uint256", v: poolorder.volume       },
-		{ t: "uint256", v: poolorder.category     },
-		{ t: "uint256", v: poolorder.trust        },
-		{ t: "uint256", v: poolorder.tag          },
-		{ t: "address", v: poolorder.dapprestrict },
-		{ t: "address", v: poolorder.datarestrict },
-		{ t: "address", v: poolorder.userrestrict },
-		{ t: "bytes32", v: poolorder.salt         },
-	);
-}
-function UserOrderStructHash(userorder)
-{
-	return web3.utils.soliditySha3(
-		{ t: "bytes32", v: USERORDER_TYPEHASH                     },
-		{ t: "address", v: userorder.dapp                         },
-		{ t: "uint256", v: userorder.dappmaxprice                 },
-		{ t: "address", v: userorder.data                         },
-		{ t: "uint256", v: userorder.datamaxprice                 },
-		{ t: "address", v: userorder.pool                         },
-		{ t: "uint256", v: userorder.poolmaxprice                 },
-		{ t: "address", v: userorder.requester                    },
-		{ t: "uint256", v: userorder.volume                       },
-		{ t: "uint256", v: userorder.category                     },
-		{ t: "uint256", v: userorder.trust                        },
-		{ t: "uint256", v: userorder.tag                          },
-		{ t: "address", v: userorder.beneficiary                  },
-		{ t: "address", v: userorder.callback                     },
-		{ t: "bytes32", v: web3.utils.keccak256(userorder.params) },
-		{ t: "bytes32", v: userorder.salt                         },
-	);
-}
-
-function DomainStructHashASM(domain)
-{
-	return ethUtil.bufferToHex(ethUtil.sha3(abi.rawEncode([
+	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 		"bytes32",
 		"bytes32",
 		"bytes32",
@@ -137,11 +63,11 @@ function DomainStructHashASM(domain)
 		web3.utils.keccak256(domain.version),
 		domain.chainId,
 		domain.verifyingContract,
-	])));
+	]));
 }
-function DappOrderStructHashASM(dapporder)
+function DappOrderStructHash(dapporder)
 {
-	return ethUtil.bufferToHex(ethUtil.sha3(abi.rawEncode([
+	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 		"bytes32",
 		"address",
 		"uint256",
@@ -159,11 +85,11 @@ function DappOrderStructHashASM(dapporder)
 		dapporder.poolrestrict,
 		dapporder.userrestrict,
 		dapporder.salt,
-	])));
+	]));
 }
-function DataOrderStructHashASM(dataorder)
+function DataOrderStructHash(dataorder)
 {
-	return ethUtil.bufferToHex(ethUtil.sha3(abi.rawEncode([
+	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 		"bytes32",
 		"address",
 		"uint256",
@@ -181,11 +107,11 @@ function DataOrderStructHashASM(dataorder)
 		dataorder.poolrestrict,
 		dataorder.userrestrict,
 		dataorder.salt,
-	])));
+	]));
 }
-function PoolOrderStructHashASM(poolorder)
+function PoolOrderStructHash(poolorder)
 {
-	return ethUtil.bufferToHex(ethUtil.sha3(abi.rawEncode([
+	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 		"bytes32",
 		"address",
 		"uint256",
@@ -209,11 +135,11 @@ function PoolOrderStructHashASM(poolorder)
 		poolorder.datarestrict,
 		poolorder.userrestrict,
 		poolorder.salt,
-	])));
+	]));
 }
-function UserOrderStructHashASM(userorder)
+function UserOrderStructHash(userorder)
 {
-	return ethUtil.bufferToHex(ethUtil.sha3(abi.rawEncode([
+	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 		"bytes32",
 		"address",
 		"uint256",
@@ -247,7 +173,7 @@ function UserOrderStructHashASM(userorder)
 		userorder.callback,
 		web3.utils.keccak256(userorder.params),
 		userorder.salt,
-	])));
+	]));
 }
 
 
@@ -563,7 +489,6 @@ function signHash()
 		console.log("[domain hash] ref:", ethUtil.bufferToHex(structHash("EIP712Domain", domain)));
 		console.log("[domain hash] js: ", DomainStructHash(domain)                               );
 		console.log("[domain hash] sc: ", await TestInstance.EIP712DOMAIN_SEPARATOR()            );
-		console.log("[domain hash] jsa:", DomainStructHashASM(domain)                               );
 
 		EIP712DOMAIN_SEPARATOR = await TestInstance.EIP712DOMAIN_SEPARATOR();
 	});
@@ -572,34 +497,24 @@ function signHash()
 		console.log("[dapporder hash] ref:", ethUtil.bufferToHex(structHash("DappOrder", dapporder)));
 		console.log("[dapporder hash] js: ", DappOrderStructHash(dapporder));
 		console.log("[dapporder hash] sc: ", await TestEthersInstance.getDappOrderHash(dapporder)   );
-		console.log("[dapporder hash] jsa:", DappOrderStructHashASM(dapporder));
-		console.log("[dapporder hash] sca:", await TestEthersInstance.getDappOrderHashASM(dapporder));
 	});
 
 	it("dataorder hash", async () => {
 		console.log("[dataorder hash] ref:", ethUtil.bufferToHex(structHash("DataOrder", dataorder)));
 		console.log("[dataorder hash] js: ", DataOrderStructHash(dataorder));
 		console.log("[dataorder hash] sc: ", await TestEthersInstance.getDataOrderHash(dataorder));
-		console.log("[dapporder hash] jsa:", DataOrderStructHashASM(dataorder));
-		console.log("[dapporder hash] sca:", await TestEthersInstance.getDataOrderHashASM(dataorder));
 	});
 
 	it("poolorder hash", async () => {
 		console.log("[poolorder hash] ref:", ethUtil.bufferToHex(structHash("PoolOrder", poolorder)));
 		console.log("[poolorder hash] js: ", PoolOrderStructHash(poolorder));
 		console.log("[poolorder hash] sc: ", await TestEthersInstance.getPoolOrderHash(poolorder));
-		console.log("[dapporder hash] jsa:", PoolOrderStructHashASM(poolorder));
-		console.log("[dapporder hash] sca:", await TestEthersInstance.getPoolOrderHashASM(poolorder));
 	});
 
 	it("userorder hash", async () => {
 		console.log("[userorder hash] ref:", ethUtil.bufferToHex(structHash("UserOrder", userorder)));
 		console.log("[userorder hash] js: ", UserOrderStructHash(userorder));
 		console.log("[userorder hash] sc: ", await TestEthersInstance.getUserOrderHash(userorder));
-		console.log("[userorder hash] jsa:", UserOrderStructHashASM(userorder));
-		console.log("[userorder hash] sca:", await TestEthersInstance.getUserOrderHashASM(userorder));
 	});
-
-
 
 });

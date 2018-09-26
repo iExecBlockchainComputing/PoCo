@@ -21,91 +21,58 @@ contract TestContract
 	}
 
 	function getDomainHash(EIP712Domain _domain)
-	public pure returns (bytes32)
+	public pure returns (bytes32 hash)
 	{
-		return keccak256(abi.encode( // PACKED ?
-			EIP712DOMAIN_TYPEHASH
-		, keccak256(bytes(_domain.name))
-		, keccak256(bytes(_domain.version))
-		, _domain.chainId
-		, _domain.verifyingContract
-		));
+		/**
+		 * Readeable but expensive
+		 */
+		// return keccak256(abi.encode(
+		// 	EIP712DOMAIN_TYPEHASH
+		// , keccak256(bytes(_domain.name))
+		// , keccak256(bytes(_domain.version))
+		// , _domain.chainId
+		// , _domain.verifyingContract
+		// ));
+
+		// Compute sub-hashes
+		bytes32 typeHash    = EIP712DOMAIN_TYPEHASH;
+		bytes32 nameHash    = keccak256(bytes(_domain.name));
+		bytes32 versionHash = keccak256(bytes(_domain.version));
+		assembly {
+			// Back up select memory
+			let temp1 := mload(sub(_domain, 32))
+			let temp2 := mload(add(_domain,  0))
+			let temp3 := mload(add(_domain, 32))
+			// Write typeHash and sub-hashes
+			mstore(sub(_domain, 32),    typeHash)
+			mstore(add(_domain,  0),    nameHash)
+			mstore(add(_domain, 32), versionHash)
+			// Compute hash
+			hash := keccak256(sub(_domain, 32), 160) // 160 = 32 + 128
+			// Restore memory
+			mstore(sub(_domain, 32), temp1)
+			mstore(add(_domain,  0), temp2)
+			mstore(add(_domain, 32), temp3)
+		}
 	}
 
 	function getDappOrderHash(IexecODBLib.DappOrder _dapporder)
-	public pure returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			DAPPORDER_TYPEHASH
-		, _dapporder.dapp
-		, _dapporder.dappprice
-		, _dapporder.volume
-		, _dapporder.datarestrict
-		, _dapporder.poolrestrict
-		, _dapporder.userrestrict
-		, _dapporder.salt
-		));
-	}
-	function getDataOrderHash(IexecODBLib.DataOrder _dataorder)
-	public pure returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			DATAORDER_TYPEHASH
-		, _dataorder.data
-		, _dataorder.dataprice
-		, _dataorder.volume
-		, _dataorder.dapprestrict
-		, _dataorder.poolrestrict
-		, _dataorder.userrestrict
-		, _dataorder.salt
-		));
-	}
-	function getPoolOrderHash(IexecODBLib.PoolOrder _poolorder)
-	public pure returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			POOLORDER_TYPEHASH
-		, _poolorder.pool
-		, _poolorder.poolprice
-		, _poolorder.volume
-		, _poolorder.category
-		, _poolorder.trust
-		, _poolorder.tag
-		, _poolorder.dapprestrict
-		, _poolorder.datarestrict
-		, _poolorder.userrestrict
-		, _poolorder.salt
-		));
-	}
-	function getUserOrderHash(IexecODBLib.UserOrder _userorder)
-	public pure returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			abi.encodePacked(
-				USERORDER_TYPEHASH
-			, _userorder.dapp
-			, _userorder.dappmaxprice
-			, _userorder.data
-			, _userorder.datamaxprice
-			, _userorder.pool
-			, _userorder.poolmaxprice
-			, _userorder.requester
-			), abi.encodePacked(
-				_userorder.volume
-			, _userorder.category
-			, _userorder.trust
-			, _userorder.tag
-			, _userorder.beneficiary
-			, _userorder.callback
-			, keccak256(bytes(_userorder.params))
-			, _userorder.salt
-			)
-		));
-	}
-
-	function getDappOrderHashASM(IexecODBLib.DappOrder _dapporder)
 	public pure returns (bytes32 hash)
 	{
+		/**
+		 * Readeable but expensive
+		 */
+		// return keccak256(abi.encode(
+		// 	DAPPORDER_TYPEHASH
+		// , _dapporder.dapp
+		// , _dapporder.dappprice
+		// , _dapporder.volume
+		// , _dapporder.datarestrict
+		// , _dapporder.poolrestrict
+		// , _dapporder.userrestrict
+		// , _dapporder.salt
+		// ));
+
 		// Compute sub-hashes
 		bytes32 typeHash = DAPPORDER_TYPEHASH;
 		assembly {
@@ -119,9 +86,23 @@ contract TestContract
 			mstore(sub(_dapporder, 32), temp1)
 		}
 	}
-	function getDataOrderHashASM(IexecODBLib.DataOrder _dataorder)
+	function getDataOrderHash(IexecODBLib.DataOrder _dataorder)
 	public pure returns (bytes32 hash)
 	{
+		/**
+		 * Readeable but expensive
+		 */
+		// return keccak256(abi.encode(
+		// 	DATAORDER_TYPEHASH
+		// , _dataorder.data
+		// , _dataorder.dataprice
+		// , _dataorder.volume
+		// , _dataorder.dapprestrict
+		// , _dataorder.poolrestrict
+		// , _dataorder.userrestrict
+		// , _dataorder.salt
+		// ));
+
 		// Compute sub-hashes
 		bytes32 typeHash = DATAORDER_TYPEHASH;
 		assembly {
@@ -135,9 +116,26 @@ contract TestContract
 			mstore(sub(_dataorder, 32), temp1)
 		}
 	}
-	function getPoolOrderHashASM(IexecODBLib.PoolOrder _poolorder)
+	function getPoolOrderHash(IexecODBLib.PoolOrder _poolorder)
 	public pure returns (bytes32 hash)
 	{
+		/**
+		 * Readeable but expensive
+		 */
+		// return keccak256(abi.encode(
+		// 	POOLORDER_TYPEHASH
+		// , _poolorder.pool
+		// , _poolorder.poolprice
+		// , _poolorder.volume
+		// , _poolorder.category
+		// , _poolorder.trust
+		// , _poolorder.tag
+		// , _poolorder.dapprestrict
+		// , _poolorder.datarestrict
+		// , _poolorder.userrestrict
+		// , _poolorder.salt
+		// ));
+
 		// Compute sub-hashes
 		bytes32 typeHash = POOLORDER_TYPEHASH;
 		assembly {
@@ -151,16 +149,41 @@ contract TestContract
 			mstore(sub(_poolorder, 32), temp1)
 		}
 	}
-	function getUserOrderHashASM(IexecODBLib.UserOrder _userorder)
+	function getUserOrderHash(IexecODBLib.UserOrder _userorder)
 	public pure returns (bytes32 hash)
 	{
+		/**
+		 * Readeable but expensive
+		 */
+		//return keccak256(abi.encodePacked(
+		//	abi.encode(
+		//		USERORDER_TYPEHASH
+		//	, _userorder.dapp
+		//	, _userorder.dappmaxprice
+		//	, _userorder.data
+		//	, _userorder.datamaxprice
+		//	, _userorder.pool
+		//	, _userorder.poolmaxprice
+		//	, _userorder.requester
+		//	), abi.encode(
+		//		_userorder.volume
+		//	, _userorder.category
+		//	, _userorder.trust
+		//	, _userorder.tag
+		//	, _userorder.beneficiary
+		//	, _userorder.callback
+		//	, keccak256(bytes(_userorder.params))
+		//	, _userorder.salt
+		//	)
+		//));
+
 		// Compute sub-hashes
 		bytes32 typeHash = USERORDER_TYPEHASH;
-		bytes32 paramsHash = keccak256(_userorder.params);
+		bytes32 paramsHash = keccak256(bytes(_userorder.params));
 		assembly {
 			// Back up select memory
 			let temp1 := mload(sub(_userorder,  32))
-			/* let temp2 := mload(add(_userorder, 416)) */
+			let temp2 := mload(add(_userorder, 416))
 			// Write typeHash and sub-hashes
 			mstore(sub(_userorder,  32), typeHash)
 			mstore(add(_userorder, 416), paramsHash)
@@ -168,7 +191,7 @@ contract TestContract
 			hash := keccak256(sub(_userorder, 32), 512) // 512 = 32 + 480
 			// Restore memory
 			mstore(sub(_userorder,  32), temp1)
-			/* mstore(add(_userorder, 416), temp2) */
+			mstore(add(_userorder, 416), temp2)
 		}
 	}
 
