@@ -293,16 +293,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// Check matching and restrictions
 		require(_userorder.dapp == _dapporder.dapp);
 		require(_userorder.data == _dataorder.data);
-		require(checkRestriction(_userorder.pool,         _poolorder.pool,      0x01)); // userorder.pool is a restriction
-		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
-		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_dataorder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
-		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_poolorder.datarestrict, _dataorder.data,      0x01)); // 0x01: Permission submit
-		require(checkRestriction(_poolorder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
+		require(checkRestriction(_userorder.pool,         _poolorder.pool,      0x01 /*IexecPermission.SUBMIT*/ )); // userorder.pool is a restriction
+		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_dataorder.dapprestrict, _dapporder.dapp,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_dataorder.poolrestrict, _poolorder.pool,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_dataorder.userrestrict, _userorder.requester, 0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_poolorder.dapprestrict, _dapporder.dapp,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_poolorder.datarestrict, _dataorder.data,      0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_poolorder.userrestrict, _userorder.requester, 0x01 /*IexecPermission.SUBMIT*/ ));
 
 		require(iexechub.checkResources(_dapporder.dapp, _dataorder.data, _poolorder.pool));
 

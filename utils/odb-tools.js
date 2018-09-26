@@ -1,4 +1,147 @@
 module.exports = {
+
+	EIP712DOMAIN_SEPARATOR: null,
+	EIP712DOMAIN_TYPEHASH:  web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+	DAPPORDER_TYPEHASH:     web3.utils.keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
+	DATAORDER_TYPEHASH:     web3.utils.keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
+	POOLORDER_TYPEHASH:     web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)"),
+	USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)"),
+
+	DomainStructHash: function(domain)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"bytes32",
+			"bytes32",
+			"uint256",
+			"address",
+		],[
+			this.EIP712DOMAIN_TYPEHASH,
+			web3.utils.keccak256(domain.name   ),
+			web3.utils.keccak256(domain.version),
+			domain.chainId,
+			domain.verifyingContract,
+		]));
+	},
+	DappOrderStructHash: function(dapporder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			this.DAPPORDER_TYPEHASH,
+			dapporder.dapp,
+			dapporder.dappprice,
+			dapporder.volume,
+			dapporder.datarestrict,
+			dapporder.poolrestrict,
+			dapporder.userrestrict,
+			dapporder.salt,
+		]));
+	},
+	DataOrderStructHash: function(dataorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			this.DATAORDER_TYPEHASH,
+			dataorder.data,
+			dataorder.dataprice,
+			dataorder.volume,
+			dataorder.dapprestrict,
+			dataorder.poolrestrict,
+			dataorder.userrestrict,
+			dataorder.salt,
+		]));
+	},
+	PoolOrderStructHash: function(poolorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			this.POOLORDER_TYPEHASH,
+			poolorder.pool,
+			poolorder.poolprice,
+			poolorder.volume,
+			poolorder.category,
+			poolorder.trust,
+			poolorder.tag,
+			poolorder.dapprestrict,
+			poolorder.datarestrict,
+			poolorder.userrestrict,
+			poolorder.salt,
+		]));
+	},
+	UserOrderStructHash: function(userorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"bytes32",
+			"bytes32",
+		],[
+			this.USERORDER_TYPEHASH,
+			userorder.dapp,
+			userorder.dappmaxprice,
+			userorder.data,
+			userorder.datamaxprice,
+			userorder.pool,
+			userorder.poolmaxprice,
+			userorder.requester,
+			userorder.volume,
+			userorder.category,
+			userorder.trust,
+			userorder.tag,
+			userorder.beneficiary,
+			userorder.callback,
+			web3.utils.keccak256(userorder.params),
+			userorder.salt,
+		]));
+	},
+	setup: function(domain)
+	{
+		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
+	},
+
+
+
+
+
 	signObject: function(object, wallet, hashing)
 	{
 		return web3.eth.sign(hashing(object), wallet).then(function(signature) {

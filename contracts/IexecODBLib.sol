@@ -31,55 +31,51 @@ library IexecODBLib
 	/**
 	 * Clerk - Orders
 	 */
+	struct EIP712Domain
+	{
+		string  name;
+		string  version;
+		uint256 chainId;
+		address verifyingContract;
+	}
 	struct DappOrder
 	{
-		// market
 		address dapp;
 		uint256 dappprice;
 		uint256 volume;
-		// restrict
 		address datarestrict;
 		address poolrestrict;
 		address userrestrict;
-		// extra
 		bytes32 salt;
 		signature sign;
 	}
 	struct DataOrder
 	{
-		// market
 		address data;
 		uint256 dataprice;
 		uint256 volume;
-		// restrict
 		address dapprestrict;
 		address poolrestrict;
 		address userrestrict;
-		// extra
 		bytes32 salt;
 		signature sign;
 	}
 	struct PoolOrder
 	{
-		// market
 		address pool;
 		uint256 poolprice;
 		uint256 volume;
-		// settings
 		uint256 category;
 		uint256 trust;
 		uint256 tag;
-		// restrict
 		address dapprestrict;
 		address datarestrict;
 		address userrestrict;
-		// extra
 		bytes32 salt;
 		signature sign;
 	}
 	struct UserOrder
 	{
-		// market
 		address dapp;
 		uint256 dappmaxprice;
 		address data;
@@ -88,14 +84,12 @@ library IexecODBLib
 		uint256 poolmaxprice;
 		address requester;
 		uint256 volume;
-		// settings
 		uint256 category;
 		uint256 trust;
 		uint256 tag;
 		address beneficiary;
 		address callback;
 		string  params;
-		// extra
 		bytes32 salt;
 		signature sign;
 	}

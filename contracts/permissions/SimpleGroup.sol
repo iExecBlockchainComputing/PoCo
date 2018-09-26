@@ -13,7 +13,7 @@ contract SimpleGroup is GroupInterface, OwnableMutable
 
 	modifier onlyAdmin()
 	{
-		require(msg.sender == m_owner || viewPermissions(msg.sender) & PERMISSION_ADMIN == PERMISSION_ADMIN);
+		require(msg.sender == m_owner || viewPermissions(msg.sender) & 0x04 == 0x04 /* IexecPermission.ADMIN */);
 		_;
 	}
 

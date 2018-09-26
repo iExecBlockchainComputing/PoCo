@@ -14,13 +14,9 @@ var TestContract = artifacts.require("./TestContract.sol");
 const ethers    = require("ethers"); // for ABIEncoderV2
 const constants = require("./constants");
 const odbtools  = require("../utils/odb-tools");
+
 const ethUtil   = require("ethereumjs-util");
 const abi       = require("ethereumjs-abi");
-
-const chai      = require("chai");
-const expect    = chai.expect;
-
-
 
 var RLCInstance          = null;
 var IexecHubInstance     = null;
@@ -36,147 +32,11 @@ var PoolInstance         = null;
 var TestInstance         = null;
 var TestEthersInstance   = null;
 
-var EIP712DOMAIN_TYPEHASH  = null;
-var EIP712DOMAIN_SEPARATOR = null;
-var DAPPORDER_TYPEHASH     = null;
-var DATAORDER_TYPEHASH     = null;
-var POOLORDER_TYPEHASH     = null;
-var USERORDER_TYPEHASH     = null;
-
 var domain    = null;
 var dapporder = null;
 var dataorder = null;
 var poolorder = null;
 var userorder = null;
-
-function DomainStructHash(domain)
-{
-	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-		"bytes32",
-		"bytes32",
-		"bytes32",
-		"uint256",
-		"address",
-	],[
-		EIP712DOMAIN_TYPEHASH,
-		web3.utils.keccak256(domain.name   ),
-		web3.utils.keccak256(domain.version),
-		domain.chainId,
-		domain.verifyingContract,
-	]));
-}
-function DappOrderStructHash(dapporder)
-{
-	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-		"bytes32",
-		"address",
-		"uint256",
-		"uint256",
-		"address",
-		"address",
-		"address",
-		"bytes32",
-	],[
-		DAPPORDER_TYPEHASH,
-		dapporder.dapp,
-		dapporder.dappprice,
-		dapporder.volume,
-		dapporder.datarestrict,
-		dapporder.poolrestrict,
-		dapporder.userrestrict,
-		dapporder.salt,
-	]));
-}
-function DataOrderStructHash(dataorder)
-{
-	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-		"bytes32",
-		"address",
-		"uint256",
-		"uint256",
-		"address",
-		"address",
-		"address",
-		"bytes32",
-	],[
-		DATAORDER_TYPEHASH,
-		dataorder.data,
-		dataorder.dataprice,
-		dataorder.volume,
-		dataorder.dapprestrict,
-		dataorder.poolrestrict,
-		dataorder.userrestrict,
-		dataorder.salt,
-	]));
-}
-function PoolOrderStructHash(poolorder)
-{
-	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-		"bytes32",
-		"address",
-		"uint256",
-		"uint256",
-		"uint256",
-		"uint256",
-		"uint256",
-		"address",
-		"address",
-		"address",
-		"bytes32",
-	],[
-		POOLORDER_TYPEHASH,
-		poolorder.pool,
-		poolorder.poolprice,
-		poolorder.volume,
-		poolorder.category,
-		poolorder.trust,
-		poolorder.tag,
-		poolorder.dapprestrict,
-		poolorder.datarestrict,
-		poolorder.userrestrict,
-		poolorder.salt,
-	]));
-}
-function UserOrderStructHash(userorder)
-{
-	return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-		"bytes32",
-		"address",
-		"uint256",
-		"address",
-		"uint256",
-		"address",
-		"uint256",
-		"address",
-		"uint256",
-		"uint256",
-		"uint256",
-		"uint256",
-		"address",
-		"address",
-		"bytes32",
-		"bytes32",
-	],[
-		USERORDER_TYPEHASH,
-		userorder.dapp,
-		userorder.dappmaxprice,
-		userorder.data,
-		userorder.datamaxprice,
-		userorder.pool,
-		userorder.poolmaxprice,
-		userorder.requester,
-		userorder.volume,
-		userorder.category,
-		userorder.trust,
-		userorder.tag,
-		userorder.beneficiary,
-		userorder.callback,
-		web3.utils.keccak256(userorder.params),
-		userorder.salt,
-	]));
-}
-
-
 
 function extractEvents(txMined, address, name) { return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name }); }
 
@@ -376,6 +236,7 @@ function signHash()
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
+		// TestInstance         = await TestContract.deployed();
 		TestInstance         = await TestContract.new({ from: iexecAdmin });
 
 		jsonRpcProvider      = new ethers.providers.JsonRpcProvider();
@@ -466,55 +327,58 @@ function signHash()
 		assert.equal(encodeType("PoolOrder"   ), "PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)",                                                                              "[ERROR] poolorder type encode");
 		assert.equal(encodeType("UserOrder"   ), "UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)", "[ERROR] userorder type encode");
 
-		EIP712DOMAIN_TYPEHASH = web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-		DAPPORDER_TYPEHASH    = web3.utils.keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-		DATAORDER_TYPEHASH    = web3.utils.keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-		POOLORDER_TYPEHASH    = web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
-		USERORDER_TYPEHASH    = web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)");
+		assert.equal(ethUtil.bufferToHex(typeHash("EIP712Domain")), odbtools.EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash"   );
+		assert.equal(ethUtil.bufferToHex(typeHash("DappOrder"   )), odbtools.DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash");
+		assert.equal(ethUtil.bufferToHex(typeHash("DataOrder"   )), odbtools.DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash");
+		assert.equal(ethUtil.bufferToHex(typeHash("PoolOrder"   )), odbtools.POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash");
+		assert.equal(ethUtil.bufferToHex(typeHash("UserOrder"   )), odbtools.USERORDER_TYPEHASH,    "[ERROR] userorder type hash");
 
-		assert.equal(ethUtil.bufferToHex(typeHash("EIP712Domain")), EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash");
-		assert.equal(ethUtil.bufferToHex(typeHash("DappOrder"   )), DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash");
-		assert.equal(ethUtil.bufferToHex(typeHash("DataOrder"   )), DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash");
-		assert.equal(ethUtil.bufferToHex(typeHash("PoolOrder"   )), POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash");
-		assert.equal(ethUtil.bufferToHex(typeHash("UserOrder"   )), USERORDER_TYPEHASH,    "[ERROR] userorder type hash");
-
-		assert.equal(await TestInstance.EIP712DOMAIN_TYPEHASH(), EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash (SC)");
-		assert.equal(await TestInstance.DAPPORDER_TYPEHASH(),    DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash (SC)");
-		assert.equal(await TestInstance.DATAORDER_TYPEHASH(),    DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash (SC)");
-		assert.equal(await TestInstance.POOLORDER_TYPEHASH(),    POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash (SC)");
-		assert.equal(await TestInstance.USERORDER_TYPEHASH(),    USERORDER_TYPEHASH,    "[ERROR] userorder type hash (SC)");
+		assert.equal(await TestInstance.EIP712DOMAIN_TYPEHASH(), odbtools.EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash (SC)"   );
+		assert.equal(await TestInstance.DAPPORDER_TYPEHASH(),    odbtools.DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash (SC)");
+		assert.equal(await TestInstance.DATAORDER_TYPEHASH(),    odbtools.DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash (SC)");
+		assert.equal(await TestInstance.POOLORDER_TYPEHASH(),    odbtools.POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash (SC)");
+		assert.equal(await TestInstance.USERORDER_TYPEHASH(),    odbtools.USERORDER_TYPEHASH,    "[ERROR] userorder type hash (SC)");
 	});
 
 	it("domain hash", async () => {
 		console.log("[domain hash] ref:", ethUtil.bufferToHex(structHash("EIP712Domain", domain)));
-		console.log("[domain hash] js: ", DomainStructHash(domain)                               );
+		console.log("[domain hash] js: ", odbtools.DomainStructHash(domain)                      );
 		console.log("[domain hash] sc: ", await TestInstance.EIP712DOMAIN_SEPARATOR()            );
 
-		EIP712DOMAIN_SEPARATOR = await TestInstance.EIP712DOMAIN_SEPARATOR();
+		odbtools.setup(domain);
 	});
 
 	it("dapporder hash", async () => {
 		console.log("[dapporder hash] ref:", ethUtil.bufferToHex(structHash("DappOrder", dapporder)));
-		console.log("[dapporder hash] js: ", DappOrderStructHash(dapporder));
+		console.log("[dapporder hash] js: ", odbtools.DappOrderStructHash(dapporder));
 		console.log("[dapporder hash] sc: ", await TestEthersInstance.getDappOrderHash(dapporder)   );
 	});
 
 	it("dataorder hash", async () => {
 		console.log("[dataorder hash] ref:", ethUtil.bufferToHex(structHash("DataOrder", dataorder)));
-		console.log("[dataorder hash] js: ", DataOrderStructHash(dataorder));
+		console.log("[dataorder hash] js: ", odbtools.DataOrderStructHash(dataorder));
 		console.log("[dataorder hash] sc: ", await TestEthersInstance.getDataOrderHash(dataorder));
 	});
 
 	it("poolorder hash", async () => {
 		console.log("[poolorder hash] ref:", ethUtil.bufferToHex(structHash("PoolOrder", poolorder)));
-		console.log("[poolorder hash] js: ", PoolOrderStructHash(poolorder));
+		console.log("[poolorder hash] js: ", odbtools.PoolOrderStructHash(poolorder));
 		console.log("[poolorder hash] sc: ", await TestEthersInstance.getPoolOrderHash(poolorder));
 	});
 
 	it("userorder hash", async () => {
 		console.log("[userorder hash] ref:", ethUtil.bufferToHex(structHash("UserOrder", userorder)));
-		console.log("[userorder hash] js: ", UserOrderStructHash(userorder));
+		console.log("[userorder hash] js: ", odbtools.UserOrderStructHash(userorder));
 		console.log("[userorder hash] sc: ", await TestEthersInstance.getUserOrderHash(userorder));
 	});
+
+
+	it("sign domain", async () => {
+
+
+
+	});
+
+
 
 });

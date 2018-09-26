@@ -12,15 +12,7 @@ contract TestContract
 	bytes32 public constant POOLORDER_TYPEHASH    = keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
 	bytes32 public constant USERORDER_TYPEHASH    = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)");
 
-	struct EIP712Domain
-	{
-		string  name;
-		string  version;
-		uint256 chainId;
-		address verifyingContract;
-	}
-
-	function getDomainHash(EIP712Domain _domain)
+	function getEIP712DomainHash(IexecODBLib.EIP712Domain _domain)
 	public pure returns (bytes32 hash)
 	{
 		/**
@@ -55,7 +47,6 @@ contract TestContract
 			mstore(add(_domain, 32), temp3)
 		}
 	}
-
 	function getDappOrderHash(IexecODBLib.DappOrder _dapporder)
 	public pure returns (bytes32 hash)
 	{
@@ -209,7 +200,7 @@ contract TestContract
 	constructor()
 	public
 	{
-		EIP712DOMAIN_SEPARATOR = getDomainHash(EIP712Domain({
+		EIP712DOMAIN_SEPARATOR = getEIP712DomainHash(IexecODBLib.EIP712Domain({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           1,
