@@ -99,6 +99,7 @@ library IexecODBLib
 		bytes32 salt;
 		signature sign;
 	}
+
 	/**
 	 * Clerk - Deals
 	 */

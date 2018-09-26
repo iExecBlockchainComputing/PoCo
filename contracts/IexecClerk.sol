@@ -282,23 +282,18 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Check orders compatibility
 		 */
 
-		// computation environment
+		// computation environment & allowed enough funds
 		require(_userorder.category     == _poolorder.category );
 		require(_userorder.trust        <= _poolorder.trust    );
 		require(_userorder.tag          == _poolorder.tag      );
-
-		// user allowed enough ressources.
 		require(_userorder.dappmaxprice >= _dapporder.dappprice);
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
 
-		// check matching
+		// Check matching and restrictions
 		require(_userorder.dapp == _dapporder.dapp);
 		require(_userorder.data == _dataorder.data);
-		require(checkRestriction(_userorder.pool, _poolorder.pool, 0x01));
-
-		// Check restrictions
-		// TODO: permission encoding?
+		require(checkRestriction(_userorder.pool,         _poolorder.pool,      0x01)); // userorder.pool is a restriction
 		require(checkRestriction(_dapporder.datarestrict, _dataorder.data,      0x01)); // 0x01: Permission submit
 		require(checkRestriction(_dapporder.poolrestrict, _poolorder.pool,      0x01)); // 0x01: Permission submit
 		require(checkRestriction(_dapporder.userrestrict, _userorder.requester, 0x01)); // 0x01: Permission submit
