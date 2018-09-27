@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./IexecODBLib.sol";
-import "./IexecClerk.sol";
+import "./tools/IexecODBLibOrders.sol";
 import "./tools/SafeMathOZ.sol";
+
+import "./IexecClerk.sol";
 
 contract Broker
 {
@@ -39,10 +40,10 @@ contract Broker
 	}
 
 	function matchOrdersForUser(
-		IexecODBLib.DappOrder _dapporder,
-		IexecODBLib.DataOrder _dataorder,
-		IexecODBLib.PoolOrder _poolorder,
-		IexecODBLib.UserOrder _userorder)
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
 	public /* onlyOwner */ returns (bytes32)
 	{
 		address account = _userorder.requester;
@@ -57,10 +58,10 @@ contract Broker
 	}
 
 	function matchOrdersForPool(
-		IexecODBLib.DappOrder _dapporder,
-		IexecODBLib.DataOrder _dataorder,
-		IexecODBLib.PoolOrder _poolorder,
-		IexecODBLib.UserOrder _userorder)
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
 	public /* onlyOwner */ returns (bytes32)
 	{
 		address account = Pool(_poolorder.pool).m_owner();

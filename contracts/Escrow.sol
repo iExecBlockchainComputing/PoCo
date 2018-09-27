@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "rlc-token/contracts/RLC.sol";
 
-import "./IexecODBLib.sol";
+import "./tools/IexecODBLibCore.sol";
 import "./tools/SafeMathOZ.sol";
 
 contract Escrow
@@ -18,7 +18,7 @@ contract Escrow
 	/**
 	 * Escrow content
 	 */
-	mapping(address => IexecODBLib.Account) public m_accounts;
+	mapping(address => IexecODBLibCore.Account) public m_accounts;
 
 	/**
 	 * Events
@@ -42,7 +42,7 @@ contract Escrow
 	 * Accessor
 	 */
 	function viewAccount(address _user)
-	public view returns (IexecODBLib.Account)
+	public view returns (IexecODBLibCore.Account)
 	{
 		return m_accounts[_user];
 	}

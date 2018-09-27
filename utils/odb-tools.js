@@ -142,6 +142,12 @@ module.exports = {
 
 
 
+
+
+
+
+
+
 	signObject: function(object, wallet, hashing)
 	{
 		return web3.eth.sign(hashing(object), wallet).then(function(signature) {

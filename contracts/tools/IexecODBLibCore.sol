@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-library IexecODBLib
+library IexecODBLibCore
 {
 	/**
 	* Tools
@@ -16,82 +16,6 @@ library IexecODBLib
 		string  name;
 		string  description;
 		uint256 workClockTimeRef;
-	}
-
-	/**
-	 * Generic
-	 */
-	struct signature
-	{
-		uint8   v;
-		bytes32 r;
-		bytes32 s;
-	}
-
-	/**
-	 * Clerk - Orders
-	 */
-	struct EIP712Domain
-	{
-		string  name;
-		string  version;
-		uint256 chainId;
-		address verifyingContract;
-	}
-	struct DappOrder
-	{
-		address dapp;
-		uint256 dappprice;
-		uint256 volume;
-		address datarestrict;
-		address poolrestrict;
-		address userrestrict;
-		bytes32 salt;
-		signature sign;
-	}
-	struct DataOrder
-	{
-		address data;
-		uint256 dataprice;
-		uint256 volume;
-		address dapprestrict;
-		address poolrestrict;
-		address userrestrict;
-		bytes32 salt;
-		signature sign;
-	}
-	struct PoolOrder
-	{
-		address pool;
-		uint256 poolprice;
-		uint256 volume;
-		uint256 category;
-		uint256 trust;
-		uint256 tag;
-		address dapprestrict;
-		address datarestrict;
-		address userrestrict;
-		bytes32 salt;
-		signature sign;
-	}
-	struct UserOrder
-	{
-		address dapp;
-		uint256 dappmaxprice;
-		address data;
-		uint256 datamaxprice;
-		address pool;
-		uint256 poolmaxprice;
-		address requester;
-		uint256 volume;
-		uint256 category;
-		uint256 trust;
-		uint256 tag;
-		address beneficiary;
-		address callback;
-		string  params;
-		bytes32 salt;
-		signature sign;
 	}
 
 	/**

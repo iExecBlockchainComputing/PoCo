@@ -1,129 +1,58 @@
-var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
-var Broker       = artifacts.require("./Broker.sol");
-var TestContract = artifacts.require("./TestContract.sol");
-
-const ethers    = require("ethers"); // for ABIEncoderV2
-const constants = require("./constants");
-const odbtools  = require("../utils/odb-tools");
-
-const ethUtil   = require("ethereumjs-util");
-const abi       = require("ethereumjs-abi");
-
-var RLCInstance          = null;
-var IexecHubInstance     = null;
-var IexecClerkInstance   = null;
-var DappRegistryInstance = null;
-var DataRegistryInstance = null;
-var PoolRegistryInstance = null;
-var BeaconInstance       = null;
-var BrokerInstance       = null;
-var DappInstance         = null;
-var DataInstance         = null;
-var PoolInstance         = null;
-var TestInstance         = null;
-var TestEthersInstance   = null;
-
-var domain    = null;
-var dapporder = null;
-var dataorder = null;
-var poolorder = null;
-var userorder = null;
-
-function extractEvents(txMined, address, name) { return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name }); }
-
-contract("IexecHub", async (accounts) => {
-
-	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	let types = {
-		EIP712Domain: [
-			{ name: "name",              type: "string"  },
-			{ name: "version",           type: "string"  },
-			{ name: "chainId",           type: "uint256" },
-			{ name: "verifyingContract", type: "address" },
-		],
-		DappOrder: [
-			{ name: "dapp",         type: "address" },
-			{ name: "dappprice",    type: "uint256" },
-			{ name: "volume",       type: "uint256" },
-			{ name: "datarestrict", type: "address" },
-			{ name: "poolrestrict", type: "address" },
-			{ name: "userrestrict", type: "address" },
-			{ name: "salt",         type: "bytes32" }
-		],
-		DataOrder: [
-			{ name: "data",         type: "address" },
-			{ name: "dataprice",    type: "uint256" },
-			{ name: "volume",       type: "uint256" },
-			{ name: "dapprestrict", type: "address" },
-			{ name: "poolrestrict", type: "address" },
-			{ name: "userrestrict", type: "address" },
-			{ name: "salt",         type: "bytes32" }
-		],
-		PoolOrder: [
-			{ name: "pool",         type: "address" },
-			{ name: "poolprice",    type: "uint256" },
-			{ name: "volume",       type: "uint256" },
-			{ name: "category",     type: "uint256" },
-			{ name: "trust",        type: "uint256" },
-			{ name: "tag",          type: "uint256" },
-			{ name: "dapprestrict", type: "address" },
-			{ name: "datarestrict", type: "address" },
-			{ name: "userrestrict", type: "address" },
-			{ name: "salt",         type: "bytes32" }
-		],
-		UserOrder: [
-			{ name: "dapp",         type: "address" },
-			{ name: "dappmaxprice", type: "uint256" },
-			{ name: "data",         type: "address" },
-			{ name: "datamaxprice", type: "uint256" },
-			{ name: "pool",         type: "address" },
-			{ name: "poolmaxprice", type: "uint256" },
-			{ name: "requester",    type: "address" },
-			{ name: "volume",       type: "uint256" },
-			{ name: "category",     type: "uint256" },
-			{ name: "trust",        type: "uint256" },
-			{ name: "tag",          type: "uint256" },
-			{ name: "beneficiary",  type: "address" },
-			{ name: "callback",     type: "address" },
-			{ name: "params",       type: "string"  },
-			{ name: "salt",         type: "bytes32" }
-		],
-	}
+let types = {
+	EIP712Domain: [
+		{ name: "name",              type: "string"  },
+		{ name: "version",           type: "string"  },
+		{ name: "chainId",           type: "uint256" },
+		{ name: "verifyingContract", type: "address" },
+	],
+	DappOrder: [
+		{ name: "dapp",         type: "address" },
+		{ name: "dappprice",    type: "uint256" },
+		{ name: "volume",       type: "uint256" },
+		{ name: "datarestrict", type: "address" },
+		{ name: "poolrestrict", type: "address" },
+		{ name: "userrestrict", type: "address" },
+		{ name: "salt",         type: "bytes32" }
+	],
+	DataOrder: [
+		{ name: "data",         type: "address" },
+		{ name: "dataprice",    type: "uint256" },
+		{ name: "volume",       type: "uint256" },
+		{ name: "dapprestrict", type: "address" },
+		{ name: "poolrestrict", type: "address" },
+		{ name: "userrestrict", type: "address" },
+		{ name: "salt",         type: "bytes32" }
+	],
+	PoolOrder: [
+		{ name: "pool",         type: "address" },
+		{ name: "poolprice",    type: "uint256" },
+		{ name: "volume",       type: "uint256" },
+		{ name: "category",     type: "uint256" },
+		{ name: "trust",        type: "uint256" },
+		{ name: "tag",          type: "uint256" },
+		{ name: "dapprestrict", type: "address" },
+		{ name: "datarestrict", type: "address" },
+		{ name: "userrestrict", type: "address" },
+		{ name: "salt",         type: "bytes32" }
+	],
+	UserOrder: [
+		{ name: "dapp",         type: "address" },
+		{ name: "dappmaxprice", type: "uint256" },
+		{ name: "data",         type: "address" },
+		{ name: "datamaxprice", type: "uint256" },
+		{ name: "pool",         type: "address" },
+		{ name: "poolmaxprice", type: "uint256" },
+		{ name: "requester",    type: "address" },
+		{ name: "volume",       type: "uint256" },
+		{ name: "category",     type: "uint256" },
+		{ name: "trust",        type: "uint256" },
+		{ name: "tag",          type: "uint256" },
+		{ name: "beneficiary",  type: "address" },
+		{ name: "callback",     type: "address" },
+		{ name: "params",       type: "string"  },
+		{ name: "salt",         type: "bytes32" }
+	],
+}
 
 function dependencies(primaryType, found = [])
 {
@@ -225,6 +154,67 @@ function signHash()
 
 
 
+
+
+
+var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var IexecHub     = artifacts.require("./IexecHub.sol");
+var IexecClerk   = artifacts.require("./IexecClerk.sol");
+var DappRegistry = artifacts.require("./DappRegistry.sol");
+var DataRegistry = artifacts.require("./DataRegistry.sol");
+var PoolRegistry = artifacts.require("./PoolRegistry.sol");
+var Dapp         = artifacts.require("./Dapp.sol");
+var Data         = artifacts.require("./Data.sol");
+var Pool         = artifacts.require("./Pool.sol");
+var Beacon       = artifacts.require("./Beacon.sol");
+var Broker       = artifacts.require("./Broker.sol");
+
+var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
+var TestContract      = artifacts.require("./TestContract.sol");
+
+const ethers    = require("ethers"); // for ABIEncoderV2
+const constants = require("./constants");
+const odbtools  = require("../utils/odb-tools");
+
+const ethUtil   = require("ethereumjs-util");
+const abi       = require("ethereumjs-abi");
+
+var RLCInstance          = null;
+var IexecHubInstance     = null;
+var IexecClerkInstance   = null;
+var DappRegistryInstance = null;
+var DataRegistryInstance = null;
+var PoolRegistryInstance = null;
+var BeaconInstance       = null;
+var BrokerInstance       = null;
+var DappInstance         = null;
+var DataInstance         = null;
+var PoolInstance         = null;
+var TestInstance         = null;
+var TestEthersInstance   = null;
+
+var domain    = null;
+var dapporder = null;
+var dataorder = null;
+var poolorder = null;
+var userorder = null;
+
+function extractEvents(txMined, address, name) { return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name }); }
+
+contract("IexecHub", async (accounts) => {
+
+	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let iexecAdmin    = accounts[0];
+	let dappProvider  = accounts[1];
+	let dataProvider  = accounts[2];
+	let poolScheduler = accounts[3];
+	let poolWorker1   = accounts[4];
+	let poolWorker2   = accounts[5];
+	let poolWorker3   = accounts[6];
+	let poolWorker4   = accounts[7];
+	let user          = accounts[8];
+	let sgxEnclave    = accounts[9];
+
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
@@ -236,11 +226,13 @@ function signHash()
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
-		// TestInstance         = await TestContract.deployed();
-		TestInstance         = await TestContract.new({ from: iexecAdmin });
 
-		jsonRpcProvider      = new ethers.providers.JsonRpcProvider();
-		TestEthersInstance   = new ethers.Contract(TestInstance.address, TestContract.abi, jsonRpcProvider);
+		TestInstance              = await TestContract.deployed();
+		IexecODBLibOrdersInstance = await IexecODBLibOrders.deployed()
+
+		jsonRpcProvider                 = new ethers.providers.JsonRpcProvider();
+		TestEthersInstance              = new ethers.Contract(TestInstance.address,              TestContract.abi,      jsonRpcProvider);
+		IexecODBLibOrdersEthersInstance = new ethers.Contract(IexecODBLibOrdersInstance.address, IexecODBLibOrders.abi, jsonRpcProvider);
 	});
 
 	it("initiate resources", async () => {
@@ -333,11 +325,11 @@ function signHash()
 		assert.equal(ethUtil.bufferToHex(typeHash("PoolOrder"   )), odbtools.POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash");
 		assert.equal(ethUtil.bufferToHex(typeHash("UserOrder"   )), odbtools.USERORDER_TYPEHASH,    "[ERROR] userorder type hash");
 
-		assert.equal(await TestInstance.EIP712DOMAIN_TYPEHASH(), odbtools.EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash (SC)"   );
-		assert.equal(await TestInstance.DAPPORDER_TYPEHASH(),    odbtools.DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash (SC)");
-		assert.equal(await TestInstance.DATAORDER_TYPEHASH(),    odbtools.DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash (SC)");
-		assert.equal(await TestInstance.POOLORDER_TYPEHASH(),    odbtools.POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash (SC)");
-		assert.equal(await TestInstance.USERORDER_TYPEHASH(),    odbtools.USERORDER_TYPEHASH,    "[ERROR] userorder type hash (SC)");
+		assert.equal(await IexecODBLibOrdersInstance.EIP712DOMAIN_TYPEHASH(), odbtools.EIP712DOMAIN_TYPEHASH, "[ERROR] domain type hash (SC)"   );
+		assert.equal(await IexecODBLibOrdersInstance.DAPPORDER_TYPEHASH(),    odbtools.DAPPORDER_TYPEHASH,    "[ERROR] dapporder type hash (SC)");
+		assert.equal(await IexecODBLibOrdersInstance.DATAORDER_TYPEHASH(),    odbtools.DATAORDER_TYPEHASH,    "[ERROR] dataorder type hash (SC)");
+		assert.equal(await IexecODBLibOrdersInstance.POOLORDER_TYPEHASH(),    odbtools.POOLORDER_TYPEHASH,    "[ERROR] poolorder type hash (SC)");
+		assert.equal(await IexecODBLibOrdersInstance.USERORDER_TYPEHASH(),    odbtools.USERORDER_TYPEHASH,    "[ERROR] userorder type hash (SC)");
 	});
 
 	it("domain hash", async () => {
@@ -351,7 +343,7 @@ function signHash()
 	it("dapporder hash", async () => {
 		console.log("[dapporder hash] ref:", ethUtil.bufferToHex(structHash("DappOrder", dapporder)));
 		console.log("[dapporder hash] js: ", odbtools.DappOrderStructHash(dapporder));
-		console.log("[dapporder hash] sc: ", await TestEthersInstance.getDappOrderHash(dapporder)   );
+		console.log("[dapporder hash] sc: ", await TestEthersInstance.getDappOrderHash(dapporder));
 	});
 
 	it("dataorder hash", async () => {
@@ -373,8 +365,44 @@ function signHash()
 	});
 
 
-	it("sign domain", async () => {
+	it("signature", async () => {
 
+		privateKey = ethUtil.sha3('cow');
+		address = ethUtil.privateToAddress(privateKey);
+
+		signUserOrder = function(obj, key)
+		{
+			sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
+					{ t: 'bytes',   v: "0x1901"                          },
+					{ t: 'bytes32', v: odbtools.EIP712DOMAIN_SEPARATOR   },
+					{ t: 'bytes32', v: odbtools.UserOrderStructHash(obj) },
+				).substr(2), 'hex'), key);
+			obj.sign.r = ethUtil.bufferToHex(sig.r);
+			obj.sign.s = ethUtil.bufferToHex(sig.s);
+			obj.sign.v = sig.v;
+			return obj;
+		};
+
+		__userorder = signUserOrder({
+			dapp:         DappInstance.address,
+			dappmaxprice: 3,
+			data:         DataInstance.address,
+			datamaxprice: 1,
+			pool:         constants.NULL.ADDRESS,
+			poolmaxprice: 25,
+			volume:       1,
+			category:     4,
+			trust:        1000,
+			tag:          0,
+			requester:    ethUtil.bufferToHex(address),
+			beneficiary:  ethUtil.bufferToHex(address),
+			callback:     constants.NULL.ADDRESS,
+			params:       "<parameters>",
+			salt:         web3.utils.randomHex(32),
+			sign:         constants.NULL.SIGNATURE,
+		}, privateKey);
+
+		console.log(await TestEthersInstance.checkUserOrder(__userorder));
 
 
 	});

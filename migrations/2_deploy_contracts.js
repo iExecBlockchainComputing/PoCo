@@ -7,131 +7,86 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const fs            = require("fs-extra");
-const Promise       = require("bluebird");
-const readFileAsync = Promise.promisify(fs.readFile);
+var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
+var TestContract      = artifacts.require("./TestContract.sol");
 
-module.exports = function(deployer, network, accounts) {
-	let aRLCInstance;
-	let aIexecHubInstance;
-	let aIexecClerkInstance;
-	let aDappRegistryInstance;
-	let aDataRegistryInstance;
-	let aPoolRegistryInstance;
-	let aBeaconInstance;
-	let aBrokerInstance;
-	let creator;
+const fs = require("fs-extra");
 
-	return deployer.deploy(RLC)
-		.then(() => RLC.deployed())
-		.then(instance => {
-			aRLCInstance = instance;
-			console.log("RLC deployed at address: " + instance.address);
-			return aRLCInstance.unlock();
-		})
-		.then(() => {
-			console.log("RLC unlocked");
-			return aRLCInstance.owner.call();
-		})
-		.then(owner => {
-			console.log("RLC faucet wallet is " + owner);
-			creator = owner;
-			return aRLCInstance.balanceOf.call(owner);
-		})
-		.then(faucetSupply => {
-			console.log("RLC faucet supply is " + faucetSupply);
-			return deployer.deploy(IexecHub);
-		})
-		.then(() => IexecHub.deployed())
-		.then(instance => {
-			aIexecHubInstance = instance;
-			console.log("IexecHub deployed at address: " + aIexecHubInstance.address);
-			return deployer.deploy(IexecClerk, aRLCInstance.address, aIexecHubInstance.address);
-		})
-		.then(() => IexecClerk.deployed())
-		.then(instance => {
-			aIexecClerkInstance = instance;
-			console.log("IexecClerk deployed at address: " + instance.address);
-			return deployer.deploy(DappRegistry);
-		})
-		.then(() => DappRegistry.deployed())
-		.then(instance => {
-			aDappRegistryInstance = instance;
-			console.log("DappRegistry deployed at address: " + instance.address);
-			return deployer.deploy(DataRegistry);
-		})
-		.then(() => DataRegistry.deployed())
-		.then(instance => {
-			aDataRegistryInstance = instance;
-			console.log("DataRegistry deployed at address: " + instance.address);
-			return deployer.deploy(PoolRegistry);
-		})
-		.then(() => PoolRegistry.deployed())
-		.then(instance => {
-			aPoolRegistryInstance = instance;
-			console.log("PoolRegistry deployed at address: " + instance.address);
-			/*
-			return aDappRegistryInstance.transferOwnership(aIexecHubInstance.address);
-		})
-		.then(() => {
-			console.log("transferOwnership of DappRegistry to IexecHub");
-			return aDataRegistryInstance.transferOwnership(aIexecHubInstance.address);
-		})
-		.then(() => {
-			console.log("transferOwnership of DataRegistry to IexecHub");
-			return aPoolRegistryInstance.transferOwnership(aIexecHubInstance.address);
-		})
-		.then(() => {
-			console.log("transferOwnership of PoolRegistry to IexecHub");
-			*/
-			return aIexecHubInstance.attachContracts(
-				aIexecClerkInstance.address,
-				aDappRegistryInstance.address,
-				aDataRegistryInstance.address,
-				aPoolRegistryInstance.address
-			);
-		})
-		.then(() => {
-			console.log("attach Contracts to IexecHub done");
-			return aIexecHubInstance.transferOwnership(creator);
-		})
-		.then(() => {
-			console.log("setCategoriesCreator to "+creator);
-			return readFileAsync("./config/categories.json");
-		})
-		.then(categories => {
-			createCatagoriesPromises = [];
-			var categoriesConfigFileJson = JSON.parse(categories);
-			for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
-			{
-				console.log("create category : "+categoriesConfigFileJson.categories[i].name);
-				createCatagoriesPromises.push(aIexecHubInstance.createCategory(
-					categoriesConfigFileJson.categories[i].name,
-					JSON.stringify(categoriesConfigFileJson.categories[i].description),
-					categoriesConfigFileJson.categories[i].workClockTimeRef
-				));
-			}
-			return Promise.all(createCatagoriesPromises);
-		})
-		.then(categoriesCreated => {
-			return aIexecHubInstance.countCategory.call()
-		})
-		.then(countCategory => {
-			console.log("countCategory is now: "+countCategory)
-			return deployer.deploy(Beacon);
-		})
-		.then(() => Beacon.deployed())
-		.then(instance => {
-			aBeaconInstance = instance;
-			console.log("Beacon deployed at address: " + instance.address);
-			return deployer.deploy(Broker, aIexecClerkInstance.address);
-		})
-		.then(() => Broker.deployed())
-		.then(instance => {
-			aBrokerInstance = instance;
-			console.log("Broker deployed at address: " + instance.address);
-		})
+module.exports = async function(deployer, network, accounts)
+{
+
+	await deployer.deploy(RLC);
+	RLCInstance = await RLC.deployed();
+	console.log("RLC deployed at address: " + RLCInstance.address);
+
+	await RLCInstance.unlock();
+	console.log("RLC unlocked");
+
+	owner = await RLCInstance.owner.call()
+	console.log("RLC faucet wallet is " + owner);
+	console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));
+
+	await deployer.deploy(IexecHub);
+	IexecHubInstance = await IexecHub.deployed();
+	console.log("IexecHub deployed at address: " + IexecHubInstance.address);
+
+	await deployer.deploy(IexecClerk, RLCInstance.address, IexecHubInstance.address);
+	IexecClerkInstance = await IexecClerk.deployed();
+	console.log("IexecClerk deployed at address: " + IexecClerkInstance.address);
+
+	await deployer.deploy(DappRegistry);
+	await deployer.deploy(DataRegistry);
+	await deployer.deploy(PoolRegistry);
+	DappRegistryInstance = await DappRegistry.deployed();
+	DataRegistryInstance = await DataRegistry.deployed();
+	PoolRegistryInstance = await PoolRegistry.deployed();
+	console.log("DappRegistry deployed at address: " + DappRegistryInstance.address);
+	console.log("DataRegistry deployed at address: " + DataRegistryInstance.address);
+	console.log("PoolRegistry deployed at address: " + PoolRegistryInstance.address);
+	// transferOwnership if ownable
+
+	await IexecHubInstance.attachContracts(
+		IexecClerkInstance.address
+	, DappRegistryInstance.address
+	, DataRegistryInstance.address
+	, PoolRegistryInstance.address
+	);
+	console.log("attach Contracts to IexecHub done");
+	await IexecHubInstance.transferOwnership(owner);
+	console.log("setCategoriesCreator to " + owner);
+
+	var categoriesConfigFileJson = JSON.parse(fs.readFileSync("./config/categories.json"));
+	for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
+	{
+		console.log("create category : " + categoriesConfigFileJson.categories[i].name);
+		await IexecHubInstance.createCategory(
+			categoriesConfigFileJson.categories[i].name
+		,	JSON.stringify(categoriesConfigFileJson.categories[i].description)
+		,	categoriesConfigFileJson.categories[i].workClockTimeRef
+		);
+	}
+	console.log("countCategory is now: " + await IexecHubInstance.countCategory());
+
+	await deployer.deploy(Beacon);
+	await deployer.deploy(Broker, IexecClerkInstance.address);
+	BeaconInstance = await Beacon.deployed();
+	BrokerInstance = await Broker.deployed();
+	console.log("Beacon deployed at address: " + BeaconInstance.address);
+	console.log("Broker deployed at address: " + BrokerInstance.address);
+
+	await deployer.deploy(IexecODBLibOrders);
+	await deployer.link(IexecODBLibOrders, TestContract);
+	await deployer.deploy(TestContract);
+	IexecODBLibOrdersInstance = await IexecODBLibOrders.deployed();
+	TestContractInstance      = await TestContract.deployed();
+	console.log("IexecODBLibOrders deployed at address: " + IexecODBLibOrdersInstance.address);
+	console.log("TestContract deployed at address: " + TestContractInstance.address);
+
 };
+
+
+
+
 
 /**
 
