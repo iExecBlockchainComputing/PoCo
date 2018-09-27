@@ -26,6 +26,11 @@ module.exports = async function(deployer, network, accounts)
 	console.log("RLC faucet wallet is " + owner);
 	console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));
 
+
+	await deployer.deploy(IexecODBLibOrders);
+	await deployer.link(IexecODBLibOrders, IexecClerk);
+	await deployer.link(IexecODBLibOrders, TestContract);
+
 	await deployer.deploy(IexecHub);
 	IexecHubInstance = await IexecHub.deployed();
 	console.log("IexecHub deployed at address: " + IexecHubInstance.address);
@@ -74,8 +79,6 @@ module.exports = async function(deployer, network, accounts)
 	console.log("Beacon deployed at address: " + BeaconInstance.address);
 	console.log("Broker deployed at address: " + BrokerInstance.address);
 
-	await deployer.deploy(IexecODBLibOrders);
-	await deployer.link(IexecODBLibOrders, TestContract);
 	await deployer.deploy(TestContract);
 	IexecODBLibOrdersInstance = await IexecODBLibOrders.deployed();
 	TestContractInstance      = await TestContract.deployed();

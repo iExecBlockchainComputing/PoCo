@@ -16,20 +16,7 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
-// const BN              = require("bn");
-// const keccak256       = require("solidity-sha3");
-// const fs              = require("fs-extra");
-// const web3utils       = require('web3-utils');
-// const readFileAsync   = Promise.promisify(fs.readFile);
-// const Promise         = require("bluebird");
-// const addEvmFunctions = require("../utils/evmFunctions.js");
-// const Extensions      = require("../utils/extensions.js");
-
-// addEvmFunctions(web3);
-// Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
-// Promise.promisifyAll(web3.version, { suffix: "Promise" });
-// Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
-// Extensions.init(web3, assert);
+const wallets   = require('./wallets');
 
 function extractEvents(txMined, address, name)
 {

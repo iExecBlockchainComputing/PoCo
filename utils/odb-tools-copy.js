@@ -1,5 +1,3 @@
-const ethUtil = require("ethereumjs-util");
-
 module.exports = {
 
 	EIP712DOMAIN_SEPARATOR: null,
@@ -8,11 +6,6 @@ module.exports = {
 	DATAORDER_TYPEHASH:     web3.utils.keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
 	POOLORDER_TYPEHASH:     web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)"),
 	USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)"),
-
-	setup: function(domain)
-	{
-		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
-	},
 
 	DomainStructHash: function(domain)
 	{
@@ -140,39 +133,95 @@ module.exports = {
 			userorder.salt,
 		]));
 	},
-
-	signDappOrder: function(dapporder, key) { return this.signStruct(dapporder, this.DappOrderStructHash(dapporder), key); },
-	signDataOrder: function(dataorder, key) { return this.signStruct(dataorder, this.DataOrderStructHash(dataorder), key); },
-	signPoolOrder: function(poolorder, key) { return this.signStruct(poolorder, this.PoolOrderStructHash(poolorder), key); },
-	signUserOrder: function(userorder, key) { return this.signStruct(userorder, this.UserOrderStructHash(userorder), key); },
-
-	signStruct: function(struct, hash, key)
+	setup: function(domain)
 	{
-		sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
-			{ t: 'bytes',   v: "0x1901"                    },
-			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
-			{ t: 'bytes32', v: hash                        },
-		).substr(2), 'hex'), key);
-		struct.sign = {
-			r: ethUtil.bufferToHex(sig.r),
-			s: ethUtil.bufferToHex(sig.s),
-			v: sig.v,
-		}
-		return struct;
+		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
 	},
-	signMessage: function(obj, hashing, wallet)
+
+
+
+
+
+
+
+
+
+
+
+	signObject: function(object, wallet, hashing)
 	{
-		return web3.eth.sign(hashing(obj), wallet).then(function(signature) {
-			obj.sign = {
+		return web3.eth.sign(hashing(object), wallet).then(function(signature) {
+			object.sign = {
 				r:             "0x" + signature.substr( 2, 64),
 				s:             "0x" + signature.substr(66, 64),
 				v: 27 + Number("0x" + signature.substr(    -2)),
 			};
-			return obj
+			return object
 		});
 	},
-
-
+	getFullHash: function(iexecclerk, partialHash, salt)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'address', v: iexecclerk  },
+			{ t: 'bytes32', v: partialHash },
+			{ t: 'bytes32', v: salt        },
+		);
+	},
+	dappPartialHash: function(dappmarket)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'address', v: dappmarket.dapp         },
+			{ t: 'uint256', v: dappmarket.dappprice    },
+			{ t: 'uint256', v: dappmarket.volume       },
+			{ t: 'address', v: dappmarket.datarestrict },
+			{ t: 'address', v: dappmarket.poolrestrict },
+			{ t: 'address', v: dappmarket.userrestrict },
+		);
+	},
+	dataPartialHash: function(datamarket)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'address', v: datamarket.data         },
+			{ t: 'uint256', v: datamarket.dataprice    },
+			{ t: 'uint256', v: datamarket.volume       },
+			{ t: 'address', v: datamarket.dapprestrict },
+			{ t: 'address', v: datamarket.poolrestrict },
+			{ t: 'address', v: datamarket.userrestrict },
+		);
+	},
+	poolPartialHash: function(poolmarket)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'address', v: poolmarket.pool         },
+			{ t: 'uint256', v: poolmarket.poolprice    },
+			{ t: 'uint256', v: poolmarket.volume       },
+			{ t: 'uint256', v: poolmarket.category     },
+			{ t: 'uint256', v: poolmarket.trust        },
+			{ t: 'uint256', v: poolmarket.tag          },
+			{ t: 'address', v: poolmarket.dapprestrict },
+			{ t: 'address', v: poolmarket.datarestrict },
+			{ t: 'address', v: poolmarket.userrestrict },
+		);
+	},
+	userPartialHash: function(usermarket)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'address', v: usermarket.dapp         },
+			{ t: 'uint256', v: usermarket.dappmaxprice },
+			{ t: 'address', v: usermarket.data         },
+			{ t: 'uint256', v: usermarket.datamaxprice },
+			{ t: 'address', v: usermarket.pool         },
+			{ t: 'uint256', v: usermarket.poolmaxprice },
+			{ t: 'uint256', v: usermarket.volume       },
+			{ t: 'uint256', v: usermarket.category     },
+			{ t: 'uint256', v: usermarket.trust        },
+			{ t: 'uint256', v: usermarket.tag          },
+			{ t: 'address', v: usermarket.requester    },
+			{ t: 'address', v: usermarket.beneficiary  },
+			{ t: 'address', v: usermarket.callback     },
+			{ t: 'string',  v: usermarket.params       },
+		);
+	},
 	authorizeHash: function(authorization)
 	{
 		return web3.utils.soliditySha3(

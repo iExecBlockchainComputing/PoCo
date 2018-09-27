@@ -14,6 +14,8 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("./constants");
 const odbtools  = require('../utils/odb-tools');
 
+const wallets   = require('./wallets');
+
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -119,6 +121,13 @@ contract('IexecHub', async (accounts) => {
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
+
+		odbtools.setup({
+			name:              "iExecODB",
+			version:           "3.0-alpha",
+			chainId:           1,
+			verifyingContract: IexecClerkInstance.address,
+		});
 
 		/**
 		 * For ABIEncoderV2
@@ -243,115 +252,76 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *              TEST: Dapp order signature (by dappProvider)               *
+	 *                         TEST: orders signature                          *
 	 ***************************************************************************/
-	it("[Genesis] Generate dapp order", async () => {
-		dapporder = await odbtools.signObject(
+	it("[Genesis] Generate orders", async () => {
+		dapporder = odbtools.signDappOrder(
 			{
-				//market
 				dapp:         DappInstance.address,
 				dappprice:    3,
 				volume:       1000,
-				// restrict
 				datarestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
-				// extra
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
-			dappProvider,
-			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(obj), obj.salt)
+			wallets.addressToPrivate(dappProvider)
 		);
-	});
-
-	/***************************************************************************
-	 *              TEST: Data order signature (by dataProvider)               *
-	 ***************************************************************************/
-	it("[Genesis] Generate data order", async () => {
-		dataorder = await odbtools.signObject(
+		dataorder = odbtools.signDataOrder(
 			{
-				//market
 				data:         DataInstance.address,
 				dataprice:    1,
 				volume:       1000,
-				// restrict
 				dapprestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
-				// extra
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
-			dataProvider,
-			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.dataPartialHash(obj), obj.salt)
+			wallets.addressToPrivate(dataProvider)
 		);
-	});
-
-	/***************************************************************************
-	 *              TEST: Pool order signature (by poolProvider)               *
-	 ***************************************************************************/
-	it("[Genesis] Generate pool order", async () => {
-		poolorder1 = await odbtools.signObject(
+		poolorder1 = odbtools.signPoolOrder(
 			{
-				// market
 				pool:         PoolInstance.address,
 				poolprice:    15,
 				volume:       2,
-				// settings
 				category:     4,
 				trust:        1000,
 				tag:          0,
-				// restrict
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
-				// extra
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
-			poolScheduler,
-			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.poolPartialHash(obj), obj.salt)
+			wallets.addressToPrivate(poolScheduler)
 		);
-		poolorder2 = await odbtools.signObject(
+		poolorder2 = odbtools.signPoolOrder(
 			{
-				// market
 				pool:         PoolInstance.address,
 				poolprice:    25,
 				volume:       10,
-				// settings
 				category:     4,
 				trust:        1000,
 				tag:          0,
-				// restrict
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
-				// extra
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
-			poolScheduler,
-			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.poolPartialHash(obj), obj.salt)
+			wallets.addressToPrivate(poolScheduler)
 		);
-	});
-
-	/***************************************************************************
-	 *                  TEST: User order signature (by user)                   *
-	 ***************************************************************************/
-	it("[Genesis] Generate user order", async () => {
-		userorder = await odbtools.signObject(
+		userorder = odbtools.signUserOrder(
 			{
-				// market
 				dapp:         DappInstance.address,
 				dappmaxprice: 3,
 				data:         DataInstance.address,
 				datamaxprice: 1,
-				// pool:         PoolInstance.address,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
 				volume:       3,
-				// settings
 				category:     4,
 				trust:        1000,
 				tag:          0,
@@ -359,14 +329,14 @@ contract('IexecHub', async (accounts) => {
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
 				params:       "<parameters>",
-				// extra
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
-			user,
-			(obj) => odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(obj), obj.salt)
+			wallets.addressToPrivate(user)
 		);
 	});
+
+
 
 	/***************************************************************************
 	 *                      TEST: Deposit funds to escrow                      *
@@ -467,9 +437,9 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[matched] Check user deals", async () => {
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt) }, { t: 'uint256', v: 0 }), "check dealid");
-		assert.equal(deals[1], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt) }, { t: 'uint256', v: 2 }), "check dealid");
+		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		assert.equal(deals[1], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 2 }), "check dealid");
 	});
 
 	/***************************************************************************
@@ -502,15 +472,15 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].authorizations[worker.address] = await odbtools.signObject(
+			tasks[taskid].authorizations[worker.address] = await odbtools.signMessage(
 				{
 					worker:  worker.address,
 					taskid:  tasks[taskid].taskid,
 					enclave: worker.enclave,
 					sign:    constants.NULL.SIGNATURE,
 				},
-				poolScheduler,
-				(obj) => odbtools.authorizeHash(obj)
+				(obj) => odbtools.authorizeHash(obj),
+				poolScheduler
 			);
 		}
 	});
@@ -525,7 +495,7 @@ contract('IexecHub', async (accounts) => {
 			tasks[taskid].results[worker.address] = odbtools.signResult(worker.raw, worker.address);
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				await odbtools.signObject(tasks[taskid].results[worker.address], worker.enclave, (obj) => odbtools.contributionHash(obj));
+				await odbtools.signMessage(tasks[taskid].results[worker.address], (obj) => odbtools.contributionHash(obj), worker.enclave);
 			}
 			else // Without SGX
 			{

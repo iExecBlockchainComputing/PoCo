@@ -179,6 +179,7 @@ const odbtools  = require("../utils/odb-tools");
 const ethUtil   = require("ethereumjs-util");
 const abi       = require("ethereumjs-abi");
 
+
 var RLCInstance          = null;
 var IexecHubInstance     = null;
 var IexecClerkInstance   = null;
@@ -198,6 +199,22 @@ var dapporder = null;
 var dataorder = null;
 var poolorder = null;
 var userorder = null;
+
+var privateKeys = {
+	"0x7bd4783fdcad405a28052a0d1f11236a741da593": "0x564a9db84969c8159f7aa3d5393c5ecd014fce6a375842a45b12af6677b12407",
+	"0xdfa2585c16caf9c853086f36d2a37e9b8d1eab87": "0xde43b282c2931fc41ca9e1486fedc2c45227a3b9b4115c89d37f6333c8816d89",
+	"0xbc11bf07a83c7e04daef3dd5c6f9a046f8c5fa7b": "0xfb9d8a917d85d7d9a052745248ecbf6a2268110945004dd797e82e8d4c071e79",
+	"0x2d29bfbec903479fe4ba991918bab99b494f2bef": "0x2a46e8c1535792f6689b10d5c882c9363910c30751ec193ae71ec71630077909",
+	"0x748e091bf16048cb5103e0e10f9d5a8b7fbdd860": "0xf26f9219bde27cc44b578268852e9745cd465653b554ae6ff2e6f037e68d00a0",
+	"0x892407e8e2440def7a8854ab0a936d94784d658f": "0x3b4930efee657739a4bec2eb1785920a13d861b052555b1f24e4710716a31fe0",
+	"0x6e741c5bcd85d027260f9a24d171525e0ea5f497": "0xf5b8d40ba60c8c5d6bc7e57e30c531dc0197bf74a8ab305956dc3a2500da5647",
+	"0x4962930004739a3bc8d849a528fbbffebd9c193b": "0x5c45629b930885efbacc578a3fdb65a84808ab2cad81cccab9721a898a026afb",
+	"0x0ad5797bc72f14430e4887c2bc6f9b478107b9d3": "0x99b028c43624ddbee330574a18334a0b77000a527bb836e17b778e7b87d0ad6f",
+	"0x9a43bb008b7a657e1936ebf5d8e28e5c5e021596": "0x2d56307fa167c72a88b1a417bf9dde36b68839fdb674115c48a29f184a6b7304",
+};
+addressToPrivate = function(account) { return Buffer.from(privateKeys[account.toLowerCase()].substring(2), 'hex') };
+
+
 
 function extractEvents(txMined, address, name) { return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name }); }
 
@@ -364,46 +381,17 @@ contract("IexecHub", async (accounts) => {
 		console.log("[userorder hash] sc: ", await TestEthersInstance.getUserOrderHash(userorder));
 	});
 
-
 	it("signature", async () => {
 
-		privateKey = ethUtil.sha3('cow');
-		address = ethUtil.privateToAddress(privateKey);
+		odbtools.signDappOrder(dapporder, addressToPrivate(dappProvider ));
+		odbtools.signDataOrder(dataorder, addressToPrivate(dataProvider ));
+		odbtools.signPoolOrder(poolorder, addressToPrivate(poolScheduler));
+		odbtools.signUserOrder(userorder, addressToPrivate(user         ));
 
-		signUserOrder = function(obj, key)
-		{
-			sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
-					{ t: 'bytes',   v: "0x1901"                          },
-					{ t: 'bytes32', v: odbtools.EIP712DOMAIN_SEPARATOR   },
-					{ t: 'bytes32', v: odbtools.UserOrderStructHash(obj) },
-				).substr(2), 'hex'), key);
-			obj.sign.r = ethUtil.bufferToHex(sig.r);
-			obj.sign.s = ethUtil.bufferToHex(sig.s);
-			obj.sign.v = sig.v;
-			return obj;
-		};
-
-		__userorder = signUserOrder({
-			dapp:         DappInstance.address,
-			dappmaxprice: 3,
-			data:         DataInstance.address,
-			datamaxprice: 1,
-			pool:         constants.NULL.ADDRESS,
-			poolmaxprice: 25,
-			volume:       1,
-			category:     4,
-			trust:        1000,
-			tag:          0,
-			requester:    ethUtil.bufferToHex(address),
-			beneficiary:  ethUtil.bufferToHex(address),
-			callback:     constants.NULL.ADDRESS,
-			params:       "<parameters>",
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
-		}, privateKey);
-
-		console.log(await TestEthersInstance.checkUserOrder(__userorder));
-
+		assert(await TestEthersInstance.checkDappOrder(dapporder), "[ERROR] invalid dapporder signature");
+		assert(await TestEthersInstance.checkDataOrder(dataorder), "[ERROR] invalid dataorder signature");
+		assert(await TestEthersInstance.checkPoolOrder(poolorder), "[ERROR] invalid poolorder signature");
+		assert(await TestEthersInstance.checkUserOrder(userorder), "[ERROR] invalid userorder signature");
 
 	});
 

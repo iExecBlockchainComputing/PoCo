@@ -3,6 +3,10 @@ pragma experimental ABIEncoderV2;
 
 import "./tools/IexecODBLibOrders.sol";
 
+import "./registries/Dapp.sol";
+import "./registries/Data.sol";
+import "./registries/Pool.sol";
+
 contract TestContract
 {
 	using IexecODBLibOrders for *;
@@ -16,7 +20,7 @@ contract TestContract
 	function getUserOrderHash(IexecODBLibOrders.UserOrder _userorder) public pure returns (bytes32) { return _userorder.hash(); }
 
 	/***************************************************************************
-	 *                              EIP712 domain                              *
+	 *                            EIP712 signature                             *
 	 ***************************************************************************/
 	bytes32 public EIP712DOMAIN_SEPARATOR;
 
@@ -28,6 +32,11 @@ contract TestContract
 	{
 		return _signer == ecrecover(keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)), _signature.v, _signature.r, _signature.s);
 	}
+
+	function checkDappOrder(IexecODBLibOrders.DappOrder _dapporder) public view returns (bool) { return verifySignature(Dapp(_dapporder.dapp).m_owner(), _dapporder.hash(), _dapporder.sign); }
+	function checkDataOrder(IexecODBLibOrders.DataOrder _dataorder) public view returns (bool) { return verifySignature(Data(_dataorder.data).m_owner(), _dataorder.hash(), _dataorder.sign); }
+	function checkPoolOrder(IexecODBLibOrders.PoolOrder _poolorder) public view returns (bool) { return verifySignature(Pool(_poolorder.pool).m_owner(), _poolorder.hash(), _poolorder.sign); }
+	function checkUserOrder(IexecODBLibOrders.UserOrder _userorder) public view returns (bool) { return verifySignature(_userorder.requester,            _userorder.hash(), _userorder.sign); }
 
 	/***************************************************************************
 	 *                               Constructor                               *
@@ -46,10 +55,5 @@ contract TestContract
 		}).hash();
 	}
 
-	function checkUserOrder(IexecODBLibOrders.UserOrder _userorder)
-	public view returns (bool)
-	{
-		return verifySignature(_userorder.requester, _userorder.hash(), _userorder.sign);
-	}
 
 }

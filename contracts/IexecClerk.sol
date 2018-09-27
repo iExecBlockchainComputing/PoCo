@@ -17,6 +17,7 @@ import "./permissions/GroupInterface.sol";
 contract IexecClerk is Escrow, IexecHubAccessor
 {
 	using SafeMathOZ for uint256;
+	using IexecODBLibOrders for *;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -24,6 +25,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	uint256 public constant POOL_STAKE_RATIO = 30;
 	uint256 public constant KITTY_RATIO      = 10;
 	uint256 public constant KITTY_MIN        = 1000;
+
+	/***************************************************************************
+	 *                            EIP712 signature                             *
+	 ***************************************************************************/
+	bytes32 public EIP712DOMAIN_SEPARATOR;
 
 	/***************************************************************************
 	 *                               Clerk data                                *
@@ -60,6 +66,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	Escrow(_rlctoken)
 	IexecHubAccessor(_iexechub)
 	{
+		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
+			name:              "iExecODB"
+		, version:           "3.0-alpha"
+		, chainId:           1
+		, verifyingContract: this
+		}).hash();
 	}
 
 	/***************************************************************************
@@ -70,6 +82,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	{
 		return m_userdeals[_id];
 	}
+
 	function viewDeal(bytes32 _id)
 	public view returns (IexecODBLibCore.Deal)
 	{
@@ -82,12 +95,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return m_configs[_id];
 	}
 
-	function viewConsumed(bytes32 _id)
-	public view returns (uint256)
-	{
-		return m_consumed[_id];
-	}
-	
 	/***************************************************************************
 	 *                         Enterprise restriction                          *
 	 ***************************************************************************/
@@ -114,110 +121,18 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
-	function isValidSignature(
+	function verifySignature(
 		address                     _signer,
 		bytes32                     _hash,
 		IexecODBLibOrders.signature _signature)
 	public view returns (bool)
 	{
 		return _signer == ecrecover(
-			keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash)),
+			keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
 			_signature.v,
 			_signature.r,
 			_signature.s
 		) || m_presigned[_hash];
-	}
-
-	function getDappOrderHash(IexecODBLibOrders.DappOrder _dapporder)
-	public view returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			address(this),
-			keccak256(abi.encodePacked(
-				// market
-				_dapporder.dapp,
-				_dapporder.dappprice,
-				_dapporder.volume,
-				// restrict
-				_dapporder.datarestrict,
-				_dapporder.poolrestrict,
-				_dapporder.userrestrict
-			)),
-			// extra
-			_dapporder.salt
-		));
-	}
-
-	function getDataOrderHash(IexecODBLibOrders.DataOrder _dataorder)
-	public view returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			address(this),
-			keccak256(abi.encodePacked(
-				// market
-				_dataorder.data,
-				_dataorder.dataprice,
-				_dataorder.volume,
-				// restrict
-				_dataorder.dapprestrict,
-				_dataorder.poolrestrict,
-				_dataorder.userrestrict
-			)),
-			// extra
-			_dataorder.salt
-		));
-	}
-
-	function getPoolOrderHash(IexecODBLibOrders.PoolOrder _poolorder)
-	public view returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			address(this),
-			keccak256(abi.encodePacked(
-				// market
-				_poolorder.pool,
-				_poolorder.poolprice,
-				_poolorder.volume,
-				//settings
-				_poolorder.category,
-				_poolorder.trust,
-				_poolorder.tag,
-				// restrict
-				_poolorder.dapprestrict,
-				_poolorder.datarestrict,
-				_poolorder.userrestrict
-			)),
-			// extra
-			_poolorder.salt
-		));
-	}
-
-	function getUserOrderHash(IexecODBLibOrders.UserOrder _userorder)
-	public view returns (bytes32)
-	{
-		return keccak256(abi.encodePacked(
-			address(this),
-			keccak256(abi.encodePacked(
-				// market
-				_userorder.dapp,
-				_userorder.dappmaxprice,
-				_userorder.data,
-				_userorder.datamaxprice,
-				_userorder.pool,
-				_userorder.poolmaxprice,
-				_userorder.volume,
-				// settings
-				_userorder.category,
-				_userorder.trust,
-				_userorder.tag,
-				_userorder.requester,
-				_userorder.beneficiary,
-				_userorder.callback,
-				_userorder.params
-			)),
-			// extra
-			_userorder.salt
-		));
 	}
 
 	/***************************************************************************
@@ -227,7 +142,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public returns (bool)
 	{
 		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
-		m_presigned[getDappOrderHash(_dapporder)] = true;
+		m_presigned[_dapporder.hash()] = true;
 		return true;
 	}
 
@@ -235,7 +150,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public returns (bool)
 	{
 		require(msg.sender == Data(_dataorder.data).m_owner());
-		m_presigned[getDataOrderHash(_dataorder)] = true;
+		m_presigned[_dataorder.hash()] = true;
 		return true;
 	}
 
@@ -243,7 +158,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public returns (bool)
 	{
 		require(msg.sender == Pool(_poolorder.pool).m_owner());
-		m_presigned[getPoolOrderHash(_poolorder)] = true;
+		m_presigned[_poolorder.hash()] = true;
 		return true;
 	}
 
@@ -251,7 +166,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public returns (bool)
 	{
 		require(msg.sender == _userorder.requester);
-		m_presigned[getUserOrderHash(_userorder)] = true;
+		m_presigned[_userorder.hash()] = true;
 		return true;
 	}
 
@@ -312,26 +227,26 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		ids.hasData = _dataorder.data != address(0);
 
 		// dapp
-		ids.dappHash  = getDappOrderHash(_dapporder);
+		ids.dappHash  = _dapporder.hash();
 		ids.dappOwner = Dapp(_dapporder.dapp).m_owner();
-		require(isValidSignature(ids.dappOwner, ids.dappHash, _dapporder.sign));
+		require(verifySignature(ids.dappOwner, ids.dappHash, _dapporder.sign));
 
 		// data
 		if (ids.hasData) // only check if dataset is enabled
 		{
-			ids.dataHash  = getDataOrderHash(_dataorder);
+			ids.dataHash  = _dataorder.hash();
 			ids.dataOwner = Data(_dataorder.data).m_owner();
-			require(isValidSignature(ids.dataOwner, ids.dataHash, _dataorder.sign));
+			require(verifySignature(ids.dataOwner, ids.dataHash, _dataorder.sign));
 		}
 
 		// pool
-		ids.poolHash  = getPoolOrderHash(_poolorder);
+		ids.poolHash  = _poolorder.hash();
 		ids.poolOwner = Pool(_poolorder.pool).m_owner();
-		require(isValidSignature(ids.poolOwner, ids.poolHash, _poolorder.sign));
+		require(verifySignature(ids.poolOwner, ids.poolHash, _poolorder.sign));
 
 		// user
-		ids.userHash = getUserOrderHash(_userorder);
-		require(isValidSignature(_userorder.requester, ids.userHash, _userorder.sign));
+		ids.userHash = _userorder.hash();
+		require(verifySignature(_userorder.requester, ids.userHash, _userorder.sign));
 
 		/**
 		 * Check availability
@@ -438,8 +353,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check authenticity
 		 */
-		bytes32 dapporderHash = getDappOrderHash(_dapporder);
-		require(isValidSignature(
+		bytes32 dapporderHash = _dapporder.hash();
+		require(verifySignature(
 			msg.sender, // dapp owner
 			dapporderHash,
 			_dapporder.sign
@@ -465,8 +380,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check authenticity
 		 */
-		bytes32 dataorderHash = getDataOrderHash(_dataorder);
-		require(isValidSignature(
+		bytes32 dataorderHash = _dataorder.hash();
+		require(verifySignature(
 			msg.sender, // dataset owner
 			dataorderHash,
 			_dataorder.sign
@@ -492,8 +407,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check authenticity
 		 */
-		bytes32 poolorderHash = getPoolOrderHash(_poolorder);
-		require(isValidSignature(
+		bytes32 poolorderHash = _poolorder.hash();
+		require(verifySignature(
 			msg.sender, // workerpool owner
 			poolorderHash,
 			_poolorder.sign
@@ -519,8 +434,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Check authenticity
 		 */
-		bytes32 userorderHash = getUserOrderHash(_userorder);
-		require(isValidSignature(
+		bytes32 userorderHash = _userorder.hash();
+		require(verifySignature(
 			msg.sender, // requester
 			userorderHash,
 			_userorder.sign
@@ -600,16 +515,17 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		require(reward(deal.data.owner, deal.data.price));
 		// pool reward performed by consensus manager
 
-		uint256 kitty = viewAccount(this).locked;
+		uint256 kitty = viewAccount(0x0).locked;
 		if (kitty > 0)
 		{
 			kitty = kitty
 			        .percentage(KITTY_RATIO) // fraction
 			        .max(KITTY_MIN)          // at least this
 			        .min(kitty);             // but not more than available
-			require(seize (this,            kitty));
+			require(seize (0x0 ,            kitty));
 			require(reward(deal.pool.owner, kitty));
 		}
+
 		return true;
 	}
 
@@ -626,8 +542,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 
 		require(unlock(deal.requester,  userstake));
 		require(seize (deal.pool.owner, poolstake));
-		require(reward(this,            poolstake)); // → Kitty
-		require(lock  (this,            poolstake)); // → Kitty
+		require(reward(0x0,             poolstake)); // → Kitty
+		require(lock  (0x0,             poolstake)); // → Kitty
 
 		return true;
 	}
