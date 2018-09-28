@@ -14,8 +14,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
-const wallets   = require('./wallets');
-
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -104,50 +102,39 @@ contract('IexecHub', async (accounts) => {
 
 	it("[Genesis] create orders", async () => {
 		dapporder = {
-			//market
 			dapp:         DappInstance.address,
 			dappprice:    3,
 			volume:       1000,
-			// restrict
 			datarestrict: DataInstance.address,
 			poolrestrict: PoolInstance.address,
 			userrestrict: user,
-			// extra
 			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		dataorder = {
-			//market
 			data:         DataInstance.address,
 			dataprice:    3,
 			volume:       1000,
-			// restrict
 			dapprestrict: DappInstance.address,
 			poolrestrict: PoolInstance.address,
 			userrestrict: user,
-			// extra
 			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		poolorder = {
-			// market
 			pool:         PoolInstance.address,
 			poolprice:    25,
 			volume:       3,
-			// settings
 			category:     4,
 			trust:        1000,
 			tag:          0,
-			// restrict
 			dapprestrict: DappInstance.address,
 			datarestrict: DataInstance.address,
 			userrestrict: user,
-			// extra
 			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
 		userorder = {
-			// market
 			dapp:         DappInstance.address,
 			dappmaxprice: 3,
 			data:         DataInstance.address,
@@ -155,7 +142,6 @@ contract('IexecHub', async (accounts) => {
 			pool:         PoolInstance.address,
 			poolmaxprice: 25,
 			volume:       1, // CHANGE FOR BOT
-			// settings
 			category:     4,
 			trust:        1000,
 			tag:          0,
@@ -163,14 +149,13 @@ contract('IexecHub', async (accounts) => {
 			beneficiary:  user,
 			callback:     constants.NULL.ADDRESS,
 			params:       "app params",
-			// extra
 			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE
 		};
-		dapporder_hash = odbtools.getFullHash(IexecClerkInstance.address, odbtools.dappPartialHash(dapporder), dapporder.salt);
-		dataorder_hash = odbtools.getFullHash(IexecClerkInstance.address, odbtools.dataPartialHash(dataorder), dataorder.salt);
-		poolorder_hash = odbtools.getFullHash(IexecClerkInstance.address, odbtools.poolPartialHash(poolorder), poolorder.salt);
-		userorder_hash = odbtools.getFullHash(IexecClerkInstance.address, odbtools.userPartialHash(userorder), userorder.salt);
+		dapporder_hash = odbtools.DappOrderStructHash(dapporder);
+		dataorder_hash = odbtools.DataOrderStructHash(dataorder);
+		poolorder_hash = odbtools.PoolOrderStructHash(poolorder);
+		userorder_hash = odbtools.UserOrderStructHash(userorder);
 	});
 
 	/***************************************************************************

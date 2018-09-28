@@ -73,28 +73,28 @@ contract Escrow
 	/**
 	 * Wallet methods: Internal
 	 */
-	function reward(address _user, uint256 _amount) internal returns (bool)
+	function reward(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
 		emit Reward(_user, _amount);
-		return true;
+		/* return true; */
 	}
-	function seize(address _user, uint256 _amount) internal returns (bool)
+	function seize(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		emit Seize(_user, _amount);
-		return true;
+		/* return true; */
 	}
-	function lock(address _user, uint256 _amount) internal returns (bool)
+	function lock(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
-		return true;
+		/* return true; */
 	}
-	function unlock(address _user, uint256 _amount) internal returns (bool)
+	function unlock(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
-		return true;
+		/* return true; */
 	}
 }

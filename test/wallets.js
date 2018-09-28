@@ -1,5 +1,5 @@
 module.exports = {
-
+	mnemonic: "actual surround disorder swim upgrade devote digital misery truly verb slide final",
 	privateKeys: {
 		"0x7bd4783fdcad405a28052a0d1f11236a741da593": "0x564a9db84969c8159f7aa3d5393c5ecd014fce6a375842a45b12af6677b12407",
 		"0xdfa2585c16caf9c853086f36d2a37e9b8d1eab87": "0xde43b282c2931fc41ca9e1486fedc2c45227a3b9b4115c89d37f6333c8816d89",

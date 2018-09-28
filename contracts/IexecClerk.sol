@@ -121,7 +121,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
-	function verifySignature(
+	function verify(
 		address                     _signer,
 		bytes32                     _hash,
 		IexecODBLibOrders.signature _signature)
@@ -229,24 +229,24 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// dapp
 		ids.dappHash  = _dapporder.hash();
 		ids.dappOwner = Dapp(_dapporder.dapp).m_owner();
-		require(verifySignature(ids.dappOwner, ids.dappHash, _dapporder.sign));
+		require(verify(ids.dappOwner, ids.dappHash, _dapporder.sign));
 
 		// data
 		if (ids.hasData) // only check if dataset is enabled
 		{
 			ids.dataHash  = _dataorder.hash();
 			ids.dataOwner = Data(_dataorder.data).m_owner();
-			require(verifySignature(ids.dataOwner, ids.dataHash, _dataorder.sign));
+			require(verify(ids.dataOwner, ids.dataHash, _dataorder.sign));
 		}
 
 		// pool
 		ids.poolHash  = _poolorder.hash();
 		ids.poolOwner = Pool(_poolorder.pool).m_owner();
-		require(verifySignature(ids.poolOwner, ids.poolHash, _poolorder.sign));
+		require(verify(ids.poolOwner, ids.poolHash, _poolorder.sign));
 
 		// user
 		ids.userHash = _userorder.hash();
-		require(verifySignature(_userorder.requester, ids.userHash, _userorder.sign));
+		require(verify(_userorder.requester, ids.userHash, _userorder.sign));
 
 		/**
 		 * Check availability
@@ -308,19 +308,19 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		/**
 		 * Lock
 		 */
-		require(lock(
+		lock(
 			deal.requester,
 			deal.dapp.price
 			.add(deal.data.price)
 			.add(deal.pool.price)
 			.mul(volume)
-		));
-		require(lock(
+		);
+		lock(
 			deal.pool.owner,
 			deal.pool.price
-			.percentage(POOL_STAKE_RATIO)
-			.mul(volume)
-		));
+			.percentage(POOL_STAKE_RATIO) // ORDER IS IMPORTANT HERE!
+			.mul(volume)                  // ORDER IS IMPORTANT HERE!
+		);
 
 		/**
 		 * Advertize deal
@@ -354,7 +354,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Check authenticity
 		 */
 		bytes32 dapporderHash = _dapporder.hash();
-		require(verifySignature(
+		require(verify(
 			msg.sender, // dapp owner
 			dapporderHash,
 			_dapporder.sign
@@ -381,7 +381,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Check authenticity
 		 */
 		bytes32 dataorderHash = _dataorder.hash();
-		require(verifySignature(
+		require(verify(
 			msg.sender, // dataset owner
 			dataorderHash,
 			_dataorder.sign
@@ -408,7 +408,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Check authenticity
 		 */
 		bytes32 poolorderHash = _poolorder.hash();
-		require(verifySignature(
+		require(verify(
 			msg.sender, // workerpool owner
 			poolorderHash,
 			_poolorder.sign
@@ -435,7 +435,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Check authenticity
 		 */
 		bytes32 userorderHash = _userorder.hash();
-		require(verifySignature(
+		require(verify(
 			msg.sender, // requester
 			userorderHash,
 			_userorder.sign
@@ -453,53 +453,45 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                     Escrow overhead for affectation                     *
 	 ***************************************************************************/
-	function lockSubscription(address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
-	{
-		return lock(_worker, _amount);
-	}
-
-	function unlockSubscription(address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
-	{
-		return unlock(_worker, _amount);
-	}
+	function lockSubscription  (address _worker, uint256 _amount) public onlyIexecHub { lock(_worker, _amount);   }
+	function unlockSubscription(address _worker, uint256 _amount) public onlyIexecHub { unlock(_worker, _amount); }
 
 	/***************************************************************************
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
 	function lockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
-		return lock(_worker, m_configs[_dealid].workerStake);
+		lock(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
-		return unlock(_worker, m_configs[_dealid].workerStake);
+		unlock(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
-		return unlock(_worker, m_configs[_dealid].workerStake) && reward(_worker, _amount);
+		unlock(_worker, m_configs[_dealid].workerStake);
+		reward(_worker, _amount);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
-		return seize(_worker, m_configs[_dealid].workerStake);
+		seize(_worker, m_configs[_dealid].workerStake);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
-		return reward(m_deals[_dealid].pool.owner, _amount);
+		reward(m_deals[_dealid].pool.owner, _amount);
 	}
 
 	function successWork(bytes32 _dealid)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
 		IexecODBLibCore.Deal memory deal = m_deals[_dealid];
 
@@ -509,28 +501,28 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		uint256 poolstake = deal.pool.price
 		                    .percentage(POOL_STAKE_RATIO);
 
-		require(seize (deal.requester,  userstake));
-		require(unlock(deal.pool.owner, poolstake));
-		require(reward(deal.dapp.owner, deal.dapp.price));
-		require(reward(deal.data.owner, deal.data.price));
+		seize (deal.requester,  userstake);
+		unlock(deal.pool.owner, poolstake);
+		reward(deal.dapp.owner, deal.dapp.price);
+		reward(deal.data.owner, deal.data.price);
 		// pool reward performed by consensus manager
 
-		uint256 kitty = viewAccount(0x0).locked;
+/*
+		uint256 kitty = viewAccount(address(0)).locked;
 		if (kitty > 0)
 		{
 			kitty = kitty
 			        .percentage(KITTY_RATIO) // fraction
 			        .max(KITTY_MIN)          // at least this
 			        .min(kitty);             // but not more than available
-			require(seize (0x0 ,            kitty));
-			require(reward(deal.pool.owner, kitty));
+			seize (address(0),      kitty);
+			reward(deal.pool.owner, kitty);
 		}
-
-		return true;
+*/
 	}
 
 	function failedWork(bytes32 _dealid)
-	public onlyIexecHub returns (bool)
+	public onlyIexecHub
 	{
 		IexecODBLibCore.Deal memory deal = m_deals[_dealid];
 
@@ -540,12 +532,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		uint256 poolstake = deal.pool.price
 		                    .percentage(POOL_STAKE_RATIO);
 
-		require(unlock(deal.requester,  userstake));
-		require(seize (deal.pool.owner, poolstake));
-		require(reward(0x0,             poolstake)); // → Kitty
-		require(lock  (0x0,             poolstake)); // → Kitty
-
-		return true;
+		unlock(deal.requester,  userstake);
+		seize (deal.pool.owner, poolstake);
+		reward(address(0),      poolstake); // → Kitty / Burn
+		lock  (address(0),      poolstake); // → Kitty / Burn
 	}
 
 }

@@ -244,7 +244,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		*/
 		assert.isTrue(
-			await IexecClerkInstanceEthers.verifySignature(
+			await IexecClerkInstanceEthers.verify(
 				dappProvider,
 				odbtools.DappOrderStructHash(dapporder),
 				dapporder.sign
@@ -278,7 +278,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		*/
 		assert.isTrue(
-			await IexecClerkInstanceEthers.verifySignature(
+			await IexecClerkInstanceEthers.verify(
 				dataProvider,
 				odbtools.DataOrderStructHash(dataorder),
 				dataorder.sign
@@ -315,7 +315,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		*/
 		assert.isTrue(
-			await IexecClerkInstanceEthers.verifySignature(
+			await IexecClerkInstanceEthers.verify(
 				poolScheduler,
 				odbtools.PoolOrderStructHash(poolorder),
 				poolorder.sign
@@ -357,7 +357,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		*/
 		assert.isTrue(
-			await IexecClerkInstanceEthers.verifySignature(
+			await IexecClerkInstanceEthers.verify(
 				user,
 				odbtools.UserOrderStructHash(userorder),
 				userorder.sign
@@ -655,14 +655,13 @@ contract('IexecHub', async (accounts) => {
 	it(">> Sign contribution authorization", async () => {
 		for (w of workers)
 		{
-			authorizations[w.address] = await odbtools.signMessage(
+			authorizations[w.address] = await odbtools.signAuthorization(
 				{
 					worker:  w.address,
 					taskid:  taskid,
 					enclave: w.enclave,
 					sign:    constants.NULL.SIGNATURE,
 				},
-				(obj) => odbtools.authorizeHash(obj),
 				poolScheduler
 			);
 		}
@@ -677,7 +676,7 @@ contract('IexecHub', async (accounts) => {
 			results[w.address] = odbtools.signResult(w.raw, w.address);
 			if (w.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				await odbtools.signMessage(results[w.address], (obj) => odbtools.contributionHash(obj), w.enclave);
+				await odbtools.signContribution(results[w.address], w.enclave);
 			}
 			else // Without SGX
 			{

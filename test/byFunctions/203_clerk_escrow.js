@@ -16,8 +16,6 @@ const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
-const wallets   = require('./wallets');
-
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });

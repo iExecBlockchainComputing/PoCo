@@ -14,6 +14,7 @@ module.exports = {
 		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
 	},
 
+	/* EIP712 compliant structure hashes */
 	DomainStructHash: function(domain)
 	{
 		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
@@ -140,40 +141,8 @@ module.exports = {
 			userorder.salt,
 		]));
 	},
-
-	signDappOrder: function(dapporder, key) { return this.signStruct(dapporder, this.DappOrderStructHash(dapporder), key); },
-	signDataOrder: function(dataorder, key) { return this.signStruct(dataorder, this.DataOrderStructHash(dataorder), key); },
-	signPoolOrder: function(poolorder, key) { return this.signStruct(poolorder, this.PoolOrderStructHash(poolorder), key); },
-	signUserOrder: function(userorder, key) { return this.signStruct(userorder, this.UserOrderStructHash(userorder), key); },
-
-	signStruct: function(struct, hash, key)
-	{
-		sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
-			{ t: 'bytes',   v: "0x1901"                    },
-			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
-			{ t: 'bytes32', v: hash                        },
-		).substr(2), 'hex'), key);
-		struct.sign = {
-			r: ethUtil.bufferToHex(sig.r),
-			s: ethUtil.bufferToHex(sig.s),
-			v: sig.v,
-		}
-		return struct;
-	},
-	signMessage: function(obj, hashing, wallet)
-	{
-		return web3.eth.sign(hashing(obj), wallet).then(function(signature) {
-			obj.sign = {
-				r:             "0x" + signature.substr( 2, 64),
-				s:             "0x" + signature.substr(66, 64),
-				v: 27 + Number("0x" + signature.substr(    -2)),
-			};
-			return obj
-		});
-	},
-
-
-	authorizeHash: function(authorization)
+	/* NOT EIP712 compliant */
+	authorizationHash: function(authorization)
 	{
 		return web3.utils.soliditySha3(
 			{ t: 'address', v: authorization.worker  },
@@ -188,6 +157,45 @@ module.exports = {
 			{ t: 'bytes32', v: result.contribution.sign },
 		);
 	},
+
+	/* signature schemes */
+	signStruct: function(struct, hash, key)
+	{
+		sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
+			{ t: 'bytes',   v: "0x1901"                    },
+			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
+			{ t: 'bytes32', v: hash                        },
+		).substr(2), 'hex'), key);
+		struct.sign = {
+			r: ethUtil.bufferToHex(sig.r),
+			s: ethUtil.bufferToHex(sig.s),
+			v: sig.v,
+		}
+		return struct;
+	},
+	signMessage: function(obj, hash, wallet)
+	{
+		return web3.eth.sign(hash, wallet).then(function(signature) {
+			obj.sign = {
+				r:             "0x" + signature.substr( 2, 64),
+				s:             "0x" + signature.substr(66, 64),
+				v: 27 + Number("0x" + signature.substr(    -2)),
+			};
+			return obj
+		});
+	},
+
+	/* wrappers */
+	signDappOrder:     function(dapporder,     key    ) { return this.signStruct (dapporder,     this.DappOrderStructHash(dapporder),     key    ); },
+	signDataOrder:     function(dataorder,     key    ) { return this.signStruct (dataorder,     this.DataOrderStructHash(dataorder),     key    ); },
+	signPoolOrder:     function(poolorder,     key    ) { return this.signStruct (poolorder,     this.PoolOrderStructHash(poolorder),     key    ); },
+	signUserOrder:     function(userorder,     key    ) { return this.signStruct (userorder,     this.UserOrderStructHash(userorder),     key    ); },
+	signAuthorization: function(authorization, address) { return this.signMessage(authorization, this.authorizationHash  (authorization), address); },
+	signContribution:  function(contribution,  address) { return this.signMessage(contribution,  this.contributionHash   (contribution ), address); },
+
+
+
+
 	hashByteResult: function(byteresult)
 	{
 		return {

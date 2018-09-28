@@ -231,7 +231,7 @@ contract IexecHub is CategoryManager
 		contribution.weight           = 1 + contribution.score.log();
 		task.contributors.push(msg.sender);
 
-		require(iexecclerk.lockContribution(task.dealid, msg.sender));
+		iexecclerk.lockContribution(task.dealid, msg.sender);
 
 		emit ConsensusContribute(_taskid, msg.sender, _resultHash);
 	}
@@ -346,7 +346,7 @@ contract IexecHub is CategoryManager
 		/**
 		 * Stake and reward management
 		 */
-		require(iexecclerk.successWork(task.dealid));
+		iexecclerk.successWork(task.dealid);
 		__distributeRewards(_taskid);
 
 		emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
@@ -375,11 +375,11 @@ contract IexecHub is CategoryManager
 		/**
 		 * Stake management
 		 */
-		require(iexecclerk.failedWork(task.dealid));
+		iexecclerk.failedWork(task.dealid);
 		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
 			address worker = task.contributors[i];
-			require(iexecclerk.unlockContribution(task.dealid, worker));
+			iexecclerk.unlockContribution(task.dealid, worker);
 		}
 
 		emit ConsensusClaimed(_taskid);
@@ -422,20 +422,20 @@ contract IexecHub is CategoryManager
 				uint256 workerReward = workersReward.mulByFraction(m_contributions[_taskid][worker].weight, totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				require(iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward));
+				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
 				m_workerScores[worker] = m_workerScores[worker].add(1);
 				emit AccurateContribution(_taskid, worker);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
-				require(iexecclerk.seizeContribution(task.dealid, worker));
+				iexecclerk.seizeContribution(task.dealid, worker);
 				m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
 				emit FaultyContribution(_taskid, worker);
 			}
 		}
 		// totalReward now contains the scheduler share
-		require(iexecclerk.rewardForScheduling(task.dealid, totalReward));
+		iexecclerk.rewardForScheduling(task.dealid, totalReward);
 	}
 
 	/***************************************************************************
@@ -444,12 +444,18 @@ contract IexecHub is CategoryManager
 	function subscribe(Pool _pool)
 	public returns (bool)
 	{
+		// check pools validity
 		require(poolregistry.isRegistered(_pool));
 
+		// check worker is not previously affected: AUTO unsubscribe ???
 		require(m_workerAffectations[msg.sender] == address(0));
-		require(iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy()));
+
+		// Lock stake & check funds/reputation
+		iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy());
 		require(iexecclerk.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
 		require(m_workerScores[msg.sender]               >= _pool.m_subscriptionMinimumScorePolicy());
+
+		// update affectation
 		m_workerAffectations[msg.sender] = address(_pool);
 
 		emit WorkerSubscription(address(_pool), msg.sender);
@@ -459,10 +465,14 @@ contract IexecHub is CategoryManager
 	function unsubscribe()
 	public returns (bool)
 	{
+		// check affectation
 		Pool pool = Pool(m_workerAffectations[msg.sender]);
 		require(address(pool) != address(0));
 
-		require(iexecclerk.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy()));
+		// Unlock stake
+		iexecclerk.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy());
+
+		// update affectation
 		m_workerAffectations[msg.sender] = address(0);
 
 		emit WorkerUnsubscription(address(pool), msg.sender);
@@ -472,11 +482,15 @@ contract IexecHub is CategoryManager
 	function evict(address _worker)
 	public returns (bool)
 	{
+		// check affectation & authorization
 		Pool pool = Pool(m_workerAffectations[_worker]);
 		require(address(pool)  != address(0));
 		require(pool.m_owner() == msg.sender);
 
-		require(iexecclerk.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy()));
+		// Unlock stake
+		iexecclerk.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy());
+
+		// update affectation
 		m_workerAffectations[_worker] = address(0);
 
 		emit WorkerEviction(address(pool), _worker);

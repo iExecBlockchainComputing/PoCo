@@ -472,14 +472,13 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].authorizations[worker.address] = await odbtools.signMessage(
+			tasks[taskid].authorizations[worker.address] = await odbtools.signAuthorization(
 				{
 					worker:  worker.address,
 					taskid:  tasks[taskid].taskid,
 					enclave: worker.enclave,
 					sign:    constants.NULL.SIGNATURE,
 				},
-				(obj) => odbtools.authorizeHash(obj),
 				poolScheduler
 			);
 		}
@@ -495,7 +494,7 @@ contract('IexecHub', async (accounts) => {
 			tasks[taskid].results[worker.address] = odbtools.signResult(worker.raw, worker.address);
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				await odbtools.signMessage(tasks[taskid].results[worker.address], (obj) => odbtools.contributionHash(obj), worker.enclave);
+				await odbtools.signContribution(tasks[taskid].results[worker.address], worker.enclave);
 			}
 			else // Without SGX
 			{

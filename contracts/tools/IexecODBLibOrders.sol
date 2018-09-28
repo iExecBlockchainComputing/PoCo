@@ -10,11 +10,16 @@ library IexecODBLibOrders
 		bytes32 s;
 	}
 
-	bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	bytes32 public constant DAPPORDER_TYPEHASH    = keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-	bytes32 public constant DATAORDER_TYPEHASH    = keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-	bytes32 public constant POOLORDER_TYPEHASH    = keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
-	bytes32 public constant USERORDER_TYPEHASH    = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)");
+	// bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+	// bytes32 public constant DAPPORDER_TYPEHASH    = keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
+	// bytes32 public constant DATAORDER_TYPEHASH    = keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
+	// bytes32 public constant POOLORDER_TYPEHASH    = keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
+	// bytes32 public constant USERORDER_TYPEHASH    = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)");
+	bytes32 public constant EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+	bytes32 public constant DAPPORDER_TYPEHASH    = 0x54d6dfd5b0b205c769bfa2e658d0deb04041feb55aa2b45aa83254ecd37fec7f;
+	bytes32 public constant DATAORDER_TYPEHASH    = 0xe69a76440c3875f3ffb3612d713679e576cddc58f8dcb10bf74d1950f105c61b;
+	bytes32 public constant POOLORDER_TYPEHASH    = 0x83c35d50702bb5cd84ca58dcb61dbd00fb330c574f351202cdabc71a16642252;
+	bytes32 public constant USERORDER_TYPEHASH    = 0x9cf6d00e15aa47bf59fe58f2b674c24c51a6942718b382678707689fe95c7185;
 
 	struct EIP712Domain
 	{
