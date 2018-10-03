@@ -366,6 +366,16 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
+	it("[LOG] show order", async () => {
+		console.log("=== dapporder ===");
+		console.log(dapporder);
+		console.log("=== dataorder ===");
+		console.log(dataorder);
+		console.log("=== poolorder ===");
+		console.log(poolorder);
+		console.log("=== userorder ===");
+		console.log(userorder);
+	});
 
 	/***************************************************************************
 	 *                           TEST: Check escrow                            *

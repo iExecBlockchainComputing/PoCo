@@ -11,6 +11,7 @@ module.exports = {
 
 	setup: function(domain)
 	{
+		console.log("Using domain:", domain);
 		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
 	},
 
