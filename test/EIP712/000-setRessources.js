@@ -13,10 +13,6 @@ var Broker       = artifacts.require("./Broker.sol");
 const ethers    = require("ethers"); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require("../../utils/odb-tools");
-const wallets   = require("../wallets");
-
-var IexecClerkInstance       = null;
-var IexecClerkEthersInstance = null;
 
 function extractEvents(txMined, address, name)
 {
@@ -37,6 +33,9 @@ contract('IexecHub', async (accounts) => {
 	let user          = accounts[8];
 	let sgxEnclave    = accounts[9];
 
+	var DappRegistryInstance = null;
+	var DataRegistryInstance = null;
+	var PoolRegistryInstance = null;
 
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);

@@ -1,0 +1,108 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+</head>
+<body>
+
+	[content]
+
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+	<script src="iExecODBLibOrders.js"></script>
+
+	<script>
+		window.addEventListener('load', () => {
+			if (typeof web3 == 'undefined') {
+				web3 = new Web3();
+				console.error("web3 is not connected");
+			}
+			else
+			{
+				console.log("web3 is connected to metamask")
+				run();
+			}
+		});
+
+		function randomHex(bytes) { return '0x'+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(''); }
+
+
+
+		function run()
+		{
+
+			iExecODBLibOrders.signStruct(
+				"DappOrder",
+				{
+					dapp:         '0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09',
+					dappprice:    .1*10**9,
+					volume:       1000,
+					datarestrict: '0x0000000000000000000000000000000000000000',
+					poolrestrict: '0x0000000000000000000000000000000000000000',
+					userrestrict: '0x0000000000000000000000000000000000000000',
+					salt:         randomHex(32),
+				},
+				"0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87",
+				signedorder => console.log("dapporder:\n", JSON.stringify(signedorder))
+			);
+
+			// iExecODBLibOrders.signStruct(
+			// 	"DataOrder",
+			// 	{
+			// 		data:         '0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415',
+			// 		dataprice:    1,
+			// 		volume:       1000,
+			// 		dapprestrict: '0x0000000000000000000000000000000000000000',
+			// 		poolrestrict: '0x0000000000000000000000000000000000000000',
+			// 		userrestrict: '0x0000000000000000000000000000000000000000',
+			// 		salt:         randomHex(32),
+			// 	},
+			// 	"0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b",
+			// 	signedorder => console.log("dataorder:\n", JSON.stringify(signedorder))
+			// );
+			//
+			// iExecODBLibOrders.signStruct(
+			// 	"PoolOrder",
+			// 	{
+			// 		pool:         '0xd69663e2263C7D8002500361C742de967Ca488e2',
+			// 		poolprice:    25,
+			// 		volume:       3,
+			// 		category:     4,
+			// 		trust:        1000,
+			// 		tag:          0,
+			// 		dapprestrict: '0x0000000000000000000000000000000000000000',
+			// 		datarestrict: '0x0000000000000000000000000000000000000000',
+			// 		userrestrict: '0x0000000000000000000000000000000000000000',
+			// 		salt:         randomHex(32),
+			// 	},
+			// 	"0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf",
+			// 	signedorder => console.log("poolorder:\n", JSON.stringify(signedorder))
+			// );
+
+			// iExecODBLibOrders.signStruct(
+			// 	"UserOrder",
+			// 	{
+			// 		dapp:         '0x270d4754925D371bCD06E64ED6F541d9db88D64c',
+			// 		dappmaxprice: 3,
+			// 		data:         '0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11',
+			// 		datamaxprice: 1,
+			// 		pool:         '0x0000000000000000000000000000000000000000',
+			// 		poolmaxprice: 25,
+			// 		volume:       1,
+			// 		category:     4,
+			// 		trust:        1000,
+			// 		tag:          0,
+			// 		requester:    '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
+			// 		beneficiary:  '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
+			// 		callback:     '0x0000000000000000000000000000000000000000',
+			// 		params:       '<parameters>',
+			// 		salt:         randomHex(32),
+			// 	},
+			// 	"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3",
+			// 	signedorder => console.log("userorder:\n", JSON.stringify(signedorder))
+			// );
+
+		};
+
+	</script>
+
+</body>
+</html>

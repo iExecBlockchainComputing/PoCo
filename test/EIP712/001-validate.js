@@ -13,15 +13,7 @@ var Broker       = artifacts.require("./Broker.sol");
 const ethers    = require("ethers"); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require("../../utils/odb-tools");
-const wallets   = require("../wallets");
 
-var IexecClerkInstance       = null;
-var IexecClerkEthersInstance = null;
-
-verifyDappOrder = async dapporder => IexecClerkEthersInstance.verify(await (await Dapp.at(dapporder.dapp)).m_owner(), odbtools.DappOrderStructHash(dapporder), dapporder.sign);
-verifyDataOrder = async dataorder => IexecClerkEthersInstance.verify(await (await Data.at(dataorder.data)).m_owner(), odbtools.DataOrderStructHash(dataorder), dataorder.sign);
-verifyPoolOrder = async poolorder => IexecClerkEthersInstance.verify(await (await Pool.at(poolorder.pool)).m_owner(), odbtools.PoolOrderStructHash(poolorder), poolorder.sign);
-verifyUserOrder = async userorder => IexecClerkEthersInstance.verify(userorder.requester,                             odbtools.UserOrderStructHash(userorder), userorder.sign);
 
 contract("IexecHub", async (accounts) => {
 
@@ -37,22 +29,26 @@ contract("IexecHub", async (accounts) => {
 	let user          = accounts[8];
 	let sgxEnclave    = accounts[9];
 
+	var IexecClerkEthersInstance = null;
+
+	verifyDappOrder = async dapporder => IexecClerkEthersInstance.verify(await (await Dapp.at(dapporder.dapp)).m_owner(), odbtools.DappOrderStructHash(dapporder), dapporder.sign);
+	verifyDataOrder = async dataorder => IexecClerkEthersInstance.verify(await (await Data.at(dataorder.data)).m_owner(), odbtools.DataOrderStructHash(dataorder), dataorder.sign);
+	verifyPoolOrder = async poolorder => IexecClerkEthersInstance.verify(await (await Pool.at(poolorder.pool)).m_owner(), odbtools.PoolOrderStructHash(poolorder), poolorder.sign);
+	verifyUserOrder = async userorder => IexecClerkEthersInstance.verify(userorder.requester,                             odbtools.UserOrderStructHash(userorder), userorder.sign);
+
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
-		IexecClerkInstance       = await IexecClerk.at("0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5");
 		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecClerkEthersInstance = new ethers.Contract(IexecClerkInstance.address, IexecClerk.abi, jsonRpcProvider);
+		IexecClerkEthersInstance = new ethers.Contract("0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5", IexecClerk.abi, jsonRpcProvider);
 
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           3,
-			verifyingContract: IexecClerkInstance.address,
+			verifyingContract: IexecClerkEthersInstance.address,
 		});
-
 	});
-
 
 
 	it("verifyDappOrder", async () => assert(await verifyDappOrder(

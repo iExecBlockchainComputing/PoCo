@@ -11,7 +11,7 @@ module.exports = {
 
 	setup: function(domain)
 	{
-		console.log("Using domain:", domain);
+		console.log("# iExec domain:", JSON.stringify(domain));
 		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
 	},
 
