@@ -27,10 +27,10 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                             Other contracts                             *
 	 ***************************************************************************/
-	IexecClerk   iexecclerk;
-	RegistryBase dappregistry;
-	RegistryBase dataregistry;
-	RegistryBase poolregistry;
+	IexecClerk   public iexecclerk;
+	RegistryBase public dappregistry;
+	RegistryBase public dataregistry;
+	RegistryBase public poolregistry;
 	/* DappRegistry dappregistry; */
 	/* DataRegistry dataregistry; */
 	/* PoolRegistry poolregistry; */

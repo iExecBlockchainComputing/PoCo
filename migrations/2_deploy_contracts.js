@@ -26,7 +26,6 @@ module.exports = async function(deployer, network, accounts)
 	console.log("RLC faucet wallet is " + owner);
 	console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));
 
-
 	await deployer.deploy(IexecODBLibOrders);
 	await deployer.link(IexecODBLibOrders, IexecClerk);
 	await deployer.link(IexecODBLibOrders, TestContract);
@@ -71,6 +70,10 @@ module.exports = async function(deployer, network, accounts)
 		);
 	}
 	console.log("countCategory is now: " + await IexecHubInstance.countCategory());
+
+
+	
+
 
 	await deployer.deploy(Beacon);
 	await deployer.deploy(Broker, IexecClerkInstance.address);
