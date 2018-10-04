@@ -10,9 +10,7 @@ var Pool         = artifacts.require("./Pool.sol");
 var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require("ethers"); // for ABIEncoderV2
 const constants = require("../constants");
-const odbtools  = require("../../utils/odb-tools");
 
 function extractEvents(txMined, address, name)
 {
@@ -45,13 +43,6 @@ contract('IexecHub', async (accounts) => {
 		DappRegistryInstance = await DappRegistry.at(await IexecHubInstance.dappregistry());
 		DataRegistryInstance = await DataRegistry.at(await IexecHubInstance.dataregistry());
 		PoolRegistryInstance = await PoolRegistry.at(await IexecHubInstance.poolregistry());
-
-		odbtools.setup({
-			name:              "iExecODB",
-			version:           "3.0-alpha",
-			chainId:           3,
-			verifyingContract: IexecClerkInstance.address,
-		});
 	});
 
 	/***************************************************************************
