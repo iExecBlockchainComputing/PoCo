@@ -94,9 +94,6 @@ contract IexecHub is CategoryManager
 		dappregistry = RegistryBase(_dappRegistryAddress);
 		dataregistry = RegistryBase(_dataRegistryAddress);
 		poolregistry = RegistryBase(_poolRegistryAddress);
-		/* dappregistry = DappRegistry(_dappRegistryAddress); */
-		/* dataregistry = DataRegistry(_dataRegistryAddress); */
-		/* poolregistry = PoolRegistry(_poolRegistryAddress); */
 	}
 
 	/***************************************************************************

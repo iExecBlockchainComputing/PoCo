@@ -29,7 +29,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                            EIP712 signature                             *
 	 ***************************************************************************/
-	bytes32 public EIP712DOMAIN_SEPARATOR;
+	bytes32 public /* immutable */ EIP712DOMAIN_SEPARATOR;
 
 	/***************************************************************************
 	 *                               Clerk data                                *
