@@ -4,7 +4,7 @@ var iExecODBLibOrders =
 	{
 		name:              "iExecODB",
 		version:           "3.0-alpha",
-		chainId:           3,
+		chainId:           26,
 		verifyingContract: "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5",
 	},
 
@@ -65,21 +65,28 @@ var iExecODBLibOrders =
 		],
 	},
 
-	signStruct: (typename, message, wallet, callback = null) =>
+	signStruct: (typename, message, wallet) =>
 	{
-		web3.currentProvider.sendAsync({
-			method: "eth_signTypedData_v3",
-			params: [ wallet, JSON.stringify({ types: iExecODBLibOrders.TYPES, domain: iExecODBLibOrders.DOMAIN, primaryType: typename, message: message }) ],
-			from: wallet,
-		}, (err, result) => {
-			if (result.error == undefined)
-			{
-				const r = "0x" + result.result.substring(2, 66);
-				const s = "0x" + result.result.substring(66, 130);
-				const v = parseInt(result.result.substring(130, 132), 16);
-				message.sign = { r: r, s: s, v: v };
-				if (callback) { callback(message); }
-			};
+		return new Promise(function (resolve, reject)
+		{
+			web3.currentProvider.sendAsync({
+				method: "eth_signTypedData_v3",
+				params: [ wallet, JSON.stringify({ types: iExecODBLibOrders.TYPES, domain: iExecODBLibOrders.DOMAIN, primaryType: typename, message: message }) ],
+				from: wallet,
+			}, (err, result) => {
+				if (result.error == undefined)
+				{
+					const r = "0x" + result.result.substring(2, 66);
+					const s = "0x" + result.result.substring(66, 130);
+					const v = parseInt(result.result.substring(130, 132), 16);
+					message.sign = { r: r, s: s, v: v };
+					resolve(message);
+				}
+				else
+				{
+					reject(result);
+				}
+			});
 		});
 	}
 

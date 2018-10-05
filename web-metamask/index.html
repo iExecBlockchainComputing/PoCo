@@ -6,101 +6,148 @@
 
 	[content]
 
-	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+
 	<script src="iExecODBLibOrders.js"></script>
 
+
+
 	<script>
+
+		var IexecHub          = null;
+		var IexecClerk        = null;
+		var IexecODBLibOrders = null;
+
+		var dapporder         = null;
+		var dataorder         = null;
+		var poolorder         = null;
+		var userorder         = null;
+
 		window.addEventListener('load', () => {
 			if (typeof web3 == 'undefined') {
-				web3 = new Web3();
+				Web3 = new Web3();
 				console.error("web3 is not connected");
 			}
 			else
 			{
+				Web3 = new Web3(web3.currentProvider);
 				console.log("web3 is connected to metamask")
-				run();
+
+				array = [];
+				array.push($.getJSON("contracts/IexecClerk.json",        json => { IexecClerk        = new Web3.eth.Contract(json.abi, "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5"); }));
+				array.push($.getJSON("contracts/IexecODBLibOrders.json", json => { IexecODBLibOrders = new Web3.eth.Contract(json.abi, "0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1"); }));
+				$.when.apply($, array).done(run);
 			}
 		});
 
+
 		function randomHex(bytes) { return '0x'+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(''); }
-
-
+		function toRLC(rlc) { return rlc*10**9; }
 
 		function run()
 		{
+			// signNewOrders();
 
-			iExecODBLibOrders.signStruct(
+			dapporder = {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappprice":300000000,"volume":1000,"datarestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x1e7479c72c0620c799876a4ed3c7b2bd","sign":{"r":"0xef2d340a825a646dfe67615c91f98f054cb7a1fa26c7f3d9cfcd64bb8abdc027","s":"0x051c738d647dd6229b77e1e028c151bf10e0f0ab9cf61c71044c1a7290dffa6d","v":28}}
+			dataorder = {"data":"0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415","dataprice":100000000,"volume":1000,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x804733892ca9caa586128674d5b56def","sign":{"r":"0xcc9193bb0c98f3cebba35a5907f560a171e4cb6e75e9943077419a6432bc9248","s":"0x3701bf68d382e600a6ed930e6a5d84cf5c489aff41ff83069536cfd01847ff31","v":27}}
+			poolorder = {"pool":"0xd69663e2263C7D8002500361C742de967Ca488e2","poolprice":2500000000,"volume":3,"category":4,"trust":1000,"tag":0,"dapprestrict":"0x0000000000000000000000000000000000000000","datarestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x9f5f421b61254fef5056eef8c17b23c1","sign":{"r":"0xd5dc46e61e1fd24d0d96b42350d9dc410f393bfbf7c919013f47b3847ed4180b","s":"0x53045863083dcac41a181f385d78438d9e62f612e58674843841a01c5da0658e","v":28}}
+			userorder = {"dapp":"0x270d4754925D371bCD06E64ED6F541d9db88D64c","dappmaxprice":1000000000,"data":"0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11","datamaxprice":1000000000,"pool":"0x0000000000000000000000000000000000000000","poolmaxprice":5000000000,"volume":1,"category":4,"trust":1000,"tag":0,"requester":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","beneficiary":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","callback":"0x0000000000000000000000000000000000000000","params":"<parameters>","salt":"0x474d00107c39c650c14d594d6ef61b4e","sign":{"r":"0xf65ef84388c443f2a6cea2c6ef2fa151e3be48211ddfe7958958ce72a709090f","s":"0x19e0e6209bf73a93aa80ffd743c4b07fc7624d85b918dabd50d3a20f42b6c945","v":27}}
+
+			// IexecClerk.methods.cancelDappOrder(dapporder).send({ from: "0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87", gas: 100000 }).then(console.log);
+			// IexecClerk.methods.cancelDataOrder(dataorder).send({ from: "0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b", gas: 100000 }).then(console.log);
+			// IexecClerk.methods.cancelPoolOrder(poolorder).send({ from: "0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf", gas: 100000 }).then(console.log);
+			// IexecClerk.methods.cancelUserOrder(userorder).send({ from: "0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3", gas: 100000 }).then(console.log);
+
+			IexecClerk.methods.matchOrders(dapporder, dataorder, poolorder, userorder).send({ from: "0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3", gas: 800000 }).then(console.log);
+		}
+
+		function signNewOrders()
+		{
+			dapppromise = iExecODBLibOrders.signStruct(
 				"DappOrder",
 				{
 					dapp:         '0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09',
-					dappprice:    .1*10**9,
+					dappprice:    toRLC(0.3),
 					volume:       1000,
 					datarestrict: '0x0000000000000000000000000000000000000000',
 					poolrestrict: '0x0000000000000000000000000000000000000000',
 					userrestrict: '0x0000000000000000000000000000000000000000',
 					salt:         randomHex(32),
 				},
-				"0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87",
-				signedorder => console.log("dapporder:\n", JSON.stringify(signedorder))
+				"0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87"
 			);
 
-			// iExecODBLibOrders.signStruct(
-			// 	"DataOrder",
-			// 	{
-			// 		data:         '0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415',
-			// 		dataprice:    1,
-			// 		volume:       1000,
-			// 		dapprestrict: '0x0000000000000000000000000000000000000000',
-			// 		poolrestrict: '0x0000000000000000000000000000000000000000',
-			// 		userrestrict: '0x0000000000000000000000000000000000000000',
-			// 		salt:         randomHex(32),
-			// 	},
-			// 	"0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b",
-			// 	signedorder => console.log("dataorder:\n", JSON.stringify(signedorder))
-			// );
-			//
-			// iExecODBLibOrders.signStruct(
-			// 	"PoolOrder",
-			// 	{
-			// 		pool:         '0xd69663e2263C7D8002500361C742de967Ca488e2',
-			// 		poolprice:    25,
-			// 		volume:       3,
-			// 		category:     4,
-			// 		trust:        1000,
-			// 		tag:          0,
-			// 		dapprestrict: '0x0000000000000000000000000000000000000000',
-			// 		datarestrict: '0x0000000000000000000000000000000000000000',
-			// 		userrestrict: '0x0000000000000000000000000000000000000000',
-			// 		salt:         randomHex(32),
-			// 	},
-			// 	"0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf",
-			// 	signedorder => console.log("poolorder:\n", JSON.stringify(signedorder))
-			// );
+			datapromise = iExecODBLibOrders.signStruct(
+				"DataOrder",
+				{
+					data:         '0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415',
+					dataprice:    toRLC(0.1),
+					volume:       1000,
+					dapprestrict: '0x0000000000000000000000000000000000000000',
+					poolrestrict: '0x0000000000000000000000000000000000000000',
+					userrestrict: '0x0000000000000000000000000000000000000000',
+					salt:         randomHex(32),
+				},
+				"0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b"
+			);
 
-			// iExecODBLibOrders.signStruct(
-			// 	"UserOrder",
-			// 	{
-			// 		dapp:         '0x270d4754925D371bCD06E64ED6F541d9db88D64c',
-			// 		dappmaxprice: 3,
-			// 		data:         '0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11',
-			// 		datamaxprice: 1,
-			// 		pool:         '0x0000000000000000000000000000000000000000',
-			// 		poolmaxprice: 25,
-			// 		volume:       1,
-			// 		category:     4,
-			// 		trust:        1000,
-			// 		tag:          0,
-			// 		requester:    '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
-			// 		beneficiary:  '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
-			// 		callback:     '0x0000000000000000000000000000000000000000',
-			// 		params:       '<parameters>',
-			// 		salt:         randomHex(32),
-			// 	},
-			// 	"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3",
-			// 	signedorder => console.log("userorder:\n", JSON.stringify(signedorder))
-			// );
+			poolpromise = iExecODBLibOrders.signStruct(
+				"PoolOrder",
+				{
+					pool:         '0xd69663e2263C7D8002500361C742de967Ca488e2',
+					poolprice:    toRLC(2.5),
+					volume:       3,
+					category:     4,
+					trust:        1000,
+					tag:          0,
+					dapprestrict: '0x0000000000000000000000000000000000000000',
+					datarestrict: '0x0000000000000000000000000000000000000000',
+					userrestrict: '0x0000000000000000000000000000000000000000',
+					salt:         randomHex(32),
+				},
+				"0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf"
+			);
 
-		};
+			userpromise = iExecODBLibOrders.signStruct(
+				"UserOrder",
+				{
+					dapp:         '0x270d4754925D371bCD06E64ED6F541d9db88D64c',
+					dappmaxprice: toRLC(1),
+					data:         '0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11',
+					datamaxprice: toRLC(1),
+					pool:         '0x0000000000000000000000000000000000000000',
+					poolmaxprice: toRLC(5),
+					volume:       1,
+					category:     4,
+					trust:        1000,
+					tag:          0,
+					requester:    '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
+					beneficiary:  '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
+					callback:     '0x0000000000000000000000000000000000000000',
+					params:       '<parameters>',
+					salt:         randomHex(32),
+				},
+				"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3"
+			);
+
+			dapppromise.then(signed => dapporder = signed);
+			datapromise.then(signed => dataorder = signed);
+			poolpromise.then(signed => poolorder = signed);
+			userpromise.then(signed => userorder = signed);
+
+			$.when.apply($, [ dapppromise, datapromise, poolpromise, userpromise ]).done(() => {
+				console.log("signatures done!!!");
+				console.log([
+					"dapporder = "+JSON.stringify(dapporder),
+					"dataorder = "+JSON.stringify(dataorder),
+					"poolorder = "+JSON.stringify(poolorder),
+					"userorder = "+JSON.stringify(userorder),
+				].join('\n'));
+
+			});
+		}
 
 	</script>
 

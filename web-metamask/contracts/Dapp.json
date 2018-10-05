@@ -1,0 +1,1043 @@
+{
+  "contractName": "Dapp",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "m_dappName",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "m_dappParams",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "m_dappHash",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "m_owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_dappOwner",
+          "type": "address"
+        },
+        {
+          "name": "_dappName",
+          "type": "string"
+        },
+        {
+          "name": "_dappParams",
+          "type": "string"
+        },
+        {
+          "name": "_dappHash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516105c23803806105c28339810180604052610032919081019061018f565b60008054600160a060020a031916600160a060020a0386161790558251610060906001906020860190610081565b508151610074906002906020850190610081565b50600355506102a7915050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100c257805160ff19168380011785556100ef565b828001600101855582156100ef579182015b828111156100ef5782518255916020019190600101906100d4565b506100fb9291506100ff565b5090565b61011991905b808211156100fb5760008155600101610105565b90565b6000610128825161026b565b9392505050565b60006101288251610119565b6000601f8201831361014c57600080fd5b815161015f61015a82610244565b61021e565b9150808252602083016020830185838301111561017b57600080fd5b610186838284610277565b50505092915050565b600080600080608085870312156101a557600080fd5b60006101b1878761011c565b94505060208501516001604060020a038111156101cd57600080fd5b6101d98782880161013b565b93505060408501516001604060020a038111156101f557600080fd5b6102018782880161013b565b92505060606102128782880161012f565b91505092959194509250565b6040518181016001604060020a038111828210171561023c57600080fd5b604052919050565b60006001604060020a0382111561025a57600080fd5b506020601f91909101601f19160190565b600160a060020a031690565b60005b8381101561029257818101518382015260200161027a565b838111156102a1576000848401525b50505050565b61030c806102b66000396000f3006080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663422063d0811461006657806367042a8c14610091578063b1066456146100a6578063deff41c1146100c8575b600080fd5b34801561007257600080fd5b5061007b6100ea565b6040516100889190610260565b60405180910390f35b34801561009d57600080fd5b5061007b610177565b3480156100b257600080fd5b506100bb6101cf565b6040516100889190610252565b3480156100d457600080fd5b506100dd6101d5565b604051610088919061023e565b60018054604080516020600284861615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561016f5780601f106101445761010080835404028352916020019161016f565b820191906000526020600020905b81548152906001019060200180831161015257829003601f168201915b505050505081565b6002805460408051602060018416156101000260001901909316849004601f8101849004840282018401909252818152929183018282801561016f5780601f106101445761010080835404028352916020019161016f565b60035481565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b6101fa8161027c565b82525050565b6101fa81610295565b600061021482610278565b808452610228816020860160208601610298565b610231816102c8565b9093016020019392505050565b6020810161024c82846101f1565b92915050565b6020810161024c8284610200565b602080825281016102718184610209565b9392505050565b5190565b73ffffffffffffffffffffffffffffffffffffffff1690565b90565b60005b838110156102b357818101518382015260200161029b565b838111156102c2576000848401525b50505050565b601f01601f1916905600a265627a7a723058209640ba4073af60f084f0cc43b768dcb831bae3d8668fee2c18469867e4f1da686c6578706572696d656e74616cf50037",
+  "deployedBytecode": "0x6080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663422063d0811461006657806367042a8c14610091578063b1066456146100a6578063deff41c1146100c8575b600080fd5b34801561007257600080fd5b5061007b6100ea565b6040516100889190610260565b60405180910390f35b34801561009d57600080fd5b5061007b610177565b3480156100b257600080fd5b506100bb6101cf565b6040516100889190610252565b3480156100d457600080fd5b506100dd6101d5565b604051610088919061023e565b60018054604080516020600284861615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561016f5780601f106101445761010080835404028352916020019161016f565b820191906000526020600020905b81548152906001019060200180831161015257829003601f168201915b505050505081565b6002805460408051602060018416156101000260001901909316849004601f8101849004840282018401909252818152929183018282801561016f5780601f106101445761010080835404028352916020019161016f565b60035481565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b6101fa8161027c565b82525050565b6101fa81610295565b600061021482610278565b808452610228816020860160208601610298565b610231816102c8565b9093016020019392505050565b6020810161024c82846101f1565b92915050565b6020810161024c8284610200565b602080825281016102718184610209565b9392505050565b5190565b73ffffffffffffffffffffffffffffffffffffffff1690565b90565b60005b838110156102b357818101518382015260200161029b565b838111156102c2576000848401525b50505050565b601f01601f1916905600a265627a7a723058209640ba4073af60f084f0cc43b768dcb831bae3d8668fee2c18469867e4f1da686c6578706572696d656e74616cf50037",
+  "sourceMap": "92:405:13:-;;;265:229;8:9:-1;5:2;;;30:1;27;20:12;5:2;265:229:13;;;;;;;;;;;;;;;;;;;;;;;;374:7:23;:16;;-1:-1:-1;;;;;;374:16:23;-1:-1:-1;;;;;374:16:23;;;;;408:24:13;;;;-1:-1:-1;;408:24:13;;;;;:::i;:::-;-1:-1:-1;436:26:13;;;;:12;;:26;;;;;:::i;:::-;-1:-1:-1;466:10:13;:24;-1:-1:-1;92:405:13;;-1:-1:-1;;92:405:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;92:405:13;;;-1:-1:-1;92:405:13;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o;5:122:-1:-;;83:39;114:6;108:13;83:39;;;74:48;68:59;-1:-1;;;68:59;134:122;;212:39;243:6;237:13;212:39;;264:444;;370:4;358:17;;354:27;-1:-1;344:2;;395:1;392;385:12;344:2;425:6;419:13;447:65;462:49;504:6;462:49;;;447:65;;;438:74;;532:6;525:5;518:21;568:4;560:6;556:17;601:4;594:5;590:16;636:3;627:6;622:3;618:16;615:25;612:2;;;653:1;650;643:12;612:2;663:39;695:6;690:3;685;663:39;;;337:371;;;;;;;;716:870;;;;;902:3;890:9;881:7;877:23;873:33;870:2;;;919:1;916;909:12;870:2;954:1;971:64;1027:7;1007:9;971:64;;;961:74;;933:108;1093:2;1082:9;1078:18;1072:25;-1:-1;;;;;1109:6;1106:30;1103:2;;;1149:1;1146;1139:12;1103:2;1169:74;1235:7;1226:6;1215:9;1211:22;1169:74;;;1159:84;;1051:198;1301:2;1290:9;1286:18;1280:25;-1:-1;;;;;1317:6;1314:30;1311:2;;;1357:1;1354;1347:12;1311:2;1377:74;1443:7;1434:6;1423:9;1419:22;1377:74;;;1367:84;;1259:198;1488:2;1506:64;1562:7;1553:6;1542:9;1538:22;1506:64;;;1496:74;;1467:109;864:722;;;;;;;;1593:256;1655:2;1649:9;1681:17;;;-1:-1;;;;;1741:34;;1777:22;;;1738:62;1735:2;;;1813:1;1810;1803:12;1735:2;1829;1822:22;1633:216;;-1:-1;1633:216;1856:259;;-1:-1;;;;;1992:6;1989:30;1986:2;;;2032:1;2029;2022:12;1986:2;-1:-1;2105:4;2076;2053:17;;;;-1:-1;;2049:33;2095:15;;1923:192;2122:128;-1:-1;;;;;2191:54;;2174:76;2344:268;2409:1;2416:101;2430:6;2427:1;2424:13;2416:101;;;2497:11;;;2491:18;2478:11;;;2471:39;2452:2;2445:10;2416:101;;;2532:6;2529:1;2526:13;2523:2;;;2597:1;2588:6;2583:3;2579:16;2572:27;2523:2;2393:219;;;;;;92:405:13;;;;;;",
+  "deployedSourceMap": "92:405:13:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;152:25;;8:9:-1;5:2;;;30:1;27;20:12;5:2;152:25:13;;;;;;;;;;;;;;;;;;;;180:27;;8:9:-1;5:2;;;30:1;27;20:12;5:2;180:27:13;;;;210:25;;8:9:-1;5:2;;;30:1;27;20:12;5:2;210:25:13;;;;;;;;;;;;55:22:23;;8:9:-1;5:2;;;30:1;27;20:12;5:2;55:22:23;;;;;;;;;;;;152:25:13;;;;;;;;;;;;;;;-1:-1:-1;;152:25:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;180:27::-;;;;;;;;;;;;;;-1:-1:-1;;180:27:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;210:25;;;;:::o;55:22:23:-;;;;;;:::o;5:110:-1:-;78:31;103:5;78:31;;;73:3;66:44;60:55;;;122:110;195:31;220:5;195:31;;239:292;;337:35;366:5;337:35;;;389:6;384:3;377:19;401:63;457:6;450:4;445:3;441:14;434:4;427:5;423:16;401:63;;;496:29;518:6;496:29;;;476:50;;;489:4;476:50;;317:214;-1:-1;;;317:214;538:193;646:2;631:18;;660:61;635:9;694:6;660:61;;;617:114;;;;;738:193;846:2;831:18;;860:61;835:9;894:6;860:61;;938:273;1062:2;1076:47;;;1047:18;;1137:64;1047:18;1187:6;1137:64;;;1129:72;1033:178;-1:-1;;;1033:178;1218:88;1289:12;;1273:33;1313:128;1393:42;1382:54;;1365:76;1448:79;1517:5;1500:27;1535:268;1600:1;1607:101;1621:6;1618:1;1615:13;1607:101;;;1688:11;;;1682:18;1669:11;;;1662:39;1643:2;1636:10;1607:101;;;1723:6;1720:1;1717:13;1714:2;;;1788:1;1779:6;1774:3;1770:16;1763:27;1714:2;1584:219;;;;;1811:97;1899:2;1879:14;-1:-1;;1875:28;;1859:49",
+  "source": "pragma solidity ^0.4.24;\npragma experimental ABIEncoderV2;\n\nimport '../tools/Ownable.sol';\n\ncontract Dapp is OwnableImmutable\n{\n\n\t/**\n\t * Members\n\t */\n\tstring  public m_dappName;\n\tstring  public m_dappParams;\n\tbytes32 public m_dappHash;\n\n\t/**\n\t * Constructor\n\t */\n\tconstructor(\n\t\taddress _dappOwner,\n\t\tstring  _dappName,\n\t\tstring  _dappParams,\n\t\tbytes32 _dappHash)\n\tpublic\n\tOwnableImmutable(_dappOwner)\n\t{\n\t\tm_dappName   = _dappName;\n\t\tm_dappParams = _dappParams;\n\t\tm_dappHash   = _dappHash;\n\t}\n\n}\n",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dapp.sol",
+  "ast": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dapp.sol",
+    "exportedSymbols": {
+      "Dapp": [
+        4448
+      ]
+    },
+    "id": 4449,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4410,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:13"
+      },
+      {
+        "id": 4411,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "25:33:13"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/tools/Ownable.sol",
+        "file": "../tools/Ownable.sol",
+        "id": 4412,
+        "nodeType": "ImportDirective",
+        "scope": 4449,
+        "sourceUnit": 5359,
+        "src": "60:30:13",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 4413,
+              "name": "OwnableImmutable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5316,
+              "src": "109:16:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_OwnableImmutable_$5316",
+                "typeString": "contract OwnableImmutable"
+              }
+            },
+            "id": 4414,
+            "nodeType": "InheritanceSpecifier",
+            "src": "109:16:13"
+          }
+        ],
+        "contractDependencies": [
+          5316
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 4448,
+        "linearizedBaseContracts": [
+          4448,
+          5316
+        ],
+        "name": "Dapp",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 4416,
+            "name": "m_dappName",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "152:25:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 4415,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "152:6:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 4418,
+            "name": "m_dappParams",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "180:27:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 4417,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "180:6:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 4420,
+            "name": "m_dappHash",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "210:25:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 4419,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "210:7:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 4446,
+              "nodeType": "Block",
+              "src": "404:90:13",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4436,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4434,
+                      "name": "m_dappName",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4416,
+                      "src": "408:10:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4435,
+                      "name": "_dappName",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4424,
+                      "src": "423:9:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "408:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 4437,
+                  "nodeType": "ExpressionStatement",
+                  "src": "408:24:13"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4440,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4438,
+                      "name": "m_dappParams",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4418,
+                      "src": "436:12:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4439,
+                      "name": "_dappParams",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4426,
+                      "src": "451:11:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "436:26:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 4441,
+                  "nodeType": "ExpressionStatement",
+                  "src": "436:26:13"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4444,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4442,
+                      "name": "m_dappHash",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4420,
+                      "src": "466:10:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4443,
+                      "name": "_dappHash",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4428,
+                      "src": "481:9:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "466:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 4445,
+                  "nodeType": "ExpressionStatement",
+                  "src": "466:24:13"
+                }
+              ]
+            },
+            "documentation": "Constructor",
+            "id": 4447,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 4431,
+                    "name": "_dappOwner",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 4422,
+                    "src": "391:10:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 4432,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 4430,
+                  "name": "OwnableImmutable",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 5316,
+                  "src": "374:16:13",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_OwnableImmutable_$5316_$",
+                    "typeString": "type(contract OwnableImmutable)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "374:28:13"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4429,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4422,
+                  "name": "_dappOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "280:18:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4421,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "280:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4424,
+                  "name": "_dappName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "302:17:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4423,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "302:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4426,
+                  "name": "_dappParams",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "323:19:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4425,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "323:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4428,
+                  "name": "_dappHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "346:17:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4427,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "346:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "276:88:13"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 4433,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "404:0:13"
+            },
+            "scope": 4448,
+            "src": "265:229:13",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 4449,
+        "src": "92:405:13"
+      }
+    ],
+    "src": "0:498:13"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dapp.sol",
+    "exportedSymbols": {
+      "Dapp": [
+        4448
+      ]
+    },
+    "id": 4449,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4410,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:13"
+      },
+      {
+        "id": 4411,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "25:33:13"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/tools/Ownable.sol",
+        "file": "../tools/Ownable.sol",
+        "id": 4412,
+        "nodeType": "ImportDirective",
+        "scope": 4449,
+        "sourceUnit": 5359,
+        "src": "60:30:13",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 4413,
+              "name": "OwnableImmutable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5316,
+              "src": "109:16:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_OwnableImmutable_$5316",
+                "typeString": "contract OwnableImmutable"
+              }
+            },
+            "id": 4414,
+            "nodeType": "InheritanceSpecifier",
+            "src": "109:16:13"
+          }
+        ],
+        "contractDependencies": [
+          5316
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 4448,
+        "linearizedBaseContracts": [
+          4448,
+          5316
+        ],
+        "name": "Dapp",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 4416,
+            "name": "m_dappName",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "152:25:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 4415,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "152:6:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 4418,
+            "name": "m_dappParams",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "180:27:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 4417,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "180:6:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 4420,
+            "name": "m_dappHash",
+            "nodeType": "VariableDeclaration",
+            "scope": 4448,
+            "src": "210:25:13",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 4419,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "210:7:13",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 4446,
+              "nodeType": "Block",
+              "src": "404:90:13",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4436,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4434,
+                      "name": "m_dappName",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4416,
+                      "src": "408:10:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4435,
+                      "name": "_dappName",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4424,
+                      "src": "423:9:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "408:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 4437,
+                  "nodeType": "ExpressionStatement",
+                  "src": "408:24:13"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4440,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4438,
+                      "name": "m_dappParams",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4418,
+                      "src": "436:12:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4439,
+                      "name": "_dappParams",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4426,
+                      "src": "451:11:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "436:26:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 4441,
+                  "nodeType": "ExpressionStatement",
+                  "src": "436:26:13"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 4444,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 4442,
+                      "name": "m_dappHash",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4420,
+                      "src": "466:10:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 4443,
+                      "name": "_dappHash",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4428,
+                      "src": "481:9:13",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "466:24:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 4445,
+                  "nodeType": "ExpressionStatement",
+                  "src": "466:24:13"
+                }
+              ]
+            },
+            "documentation": "Constructor",
+            "id": 4447,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 4431,
+                    "name": "_dappOwner",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 4422,
+                    "src": "391:10:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 4432,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 4430,
+                  "name": "OwnableImmutable",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 5316,
+                  "src": "374:16:13",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_OwnableImmutable_$5316_$",
+                    "typeString": "type(contract OwnableImmutable)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "374:28:13"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4429,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4422,
+                  "name": "_dappOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "280:18:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4421,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "280:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4424,
+                  "name": "_dappName",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "302:17:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4423,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "302:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4426,
+                  "name": "_dappParams",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "323:19:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4425,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "323:6:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4428,
+                  "name": "_dappHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4447,
+                  "src": "346:17:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4427,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "346:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "276:88:13"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 4433,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "404:0:13"
+            },
+            "scope": 4448,
+            "src": "265:229:13",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 4449,
+        "src": "92:405:13"
+      }
+    ],
+    "src": "0:498:13"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.0-beta.1",
+  "updatedAt": "2018-10-05T12:37:37.175Z"
+}

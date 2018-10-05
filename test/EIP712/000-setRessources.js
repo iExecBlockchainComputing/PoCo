@@ -35,14 +35,73 @@ contract('IexecHub', async (accounts) => {
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
 
+	function toRLC(rlc) { return rlc*10**9; }
+
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
 		IexecClerkInstance   = await IexecClerk.at("0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5");
+		RLCInstance          = await RLC.at(await IexecClerkInstance.rlc());
 		IexecHubInstance     = await IexecHub.at(await IexecClerkInstance.iexechub());
 		DappRegistryInstance = await DappRegistry.at(await IexecHubInstance.dappregistry());
 		DataRegistryInstance = await DataRegistry.at(await IexecHubInstance.dataregistry());
 		PoolRegistryInstance = await PoolRegistry.at(await IexecHubInstance.poolregistry());
+
+		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
+		txsMined = await Promise.all([
+			RLCInstance.transfer(dappProvider,  toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(dataProvider,  toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolScheduler, toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker1,   toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker2,   toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker3,   toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(poolWorker4,   toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(user,          toRLC(100), { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txsMined = await Promise.all([
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: poolWorker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: user,          gas: constants.AMOUNT_GAS_PROVIDED }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txsMined = await Promise.all([
+			IexecClerkInstance.deposit(toRLC(100), { from: dappProvider  }),
+			IexecClerkInstance.deposit(toRLC(100), { from: dataProvider  }),
+			IexecClerkInstance.deposit(toRLC(100), { from: poolScheduler }),
+			IexecClerkInstance.deposit(toRLC(100), { from: poolWorker1   }),
+			IexecClerkInstance.deposit(toRLC(100), { from: poolWorker2   }),
+			IexecClerkInstance.deposit(toRLC(100), { from: poolWorker3   }),
+			IexecClerkInstance.deposit(toRLC(100), { from: poolWorker4   }),
+			IexecClerkInstance.deposit(toRLC(100), { from: user          }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************

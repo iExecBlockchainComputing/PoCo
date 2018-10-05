@@ -50,7 +50,7 @@ contract TestContract
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
-		, chainId:           1
+		, chainId:           26
 		, verifyingContract: this
 		}).hash();
 	}

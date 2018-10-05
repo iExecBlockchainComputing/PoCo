@@ -69,7 +69,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
-		, chainId:           3
+		, chainId:           26
 		, verifyingContract: this
 		}).hash();
 	}
@@ -507,7 +507,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		reward(deal.data.owner, deal.data.price);
 		// pool reward performed by consensus manager
 
-/*
 		uint256 kitty = viewAccount(address(0)).locked;
 		if (kitty > 0)
 		{
@@ -518,7 +517,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			seize (address(0),      kitty);
 			reward(deal.pool.owner, kitty);
 		}
-*/
 	}
 
 	function failedWork(bytes32 _dealid)

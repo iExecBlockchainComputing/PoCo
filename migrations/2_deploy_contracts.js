@@ -72,7 +72,7 @@ module.exports = async function(deployer, network, accounts)
 	console.log("countCategory is now: " + await IexecHubInstance.countCategory());
 
 
-	
+
 
 
 	await deployer.deploy(Beacon);
