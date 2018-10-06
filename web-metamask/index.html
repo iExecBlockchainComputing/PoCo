@@ -1,155 +1,528 @@
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
 
-	[content]
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<!-- <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script> -->
+
+
+
+
+
+
+
+
+
+
+
+	<div class="container">
+
+		<div class="card text-center">
+			<nav class="card-header navbar navbar-expand-lg navbar-dark bg-dark">
+				<a class="navbar-brand" href="#">iExec ODB</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarText">
+					<div class="nav navbar-nav mr-auto" id="order-sign" role="tablist">
+						<a class="nav-item nav-link active" id="match-tab"          data-toggle="tab" href="#match"          role="tab" aria-controls="match"          aria-selected="true" >Match orders</a>
+						<a class="nav-item nav-link"        id="dapporder-sign-tab" data-toggle="tab" href="#dapporder-sign" role="tab" aria-controls="dapporder-sign" aria-selected="false">Sign dapporder</a>
+						<a class="nav-item nav-link"        id="dataorder-sign-tab" data-toggle="tab" href="#dataorder-sign" role="tab" aria-controls="dataorder-sign" aria-selected="false">Sign dataorder</a>
+						<a class="nav-item nav-link"        id="poolorder-sign-tab" data-toggle="tab" href="#poolorder-sign" role="tab" aria-controls="poolorder-sign" aria-selected="false">Sign poolorder</a>
+						<a class="nav-item nav-link"        id="userorder-sign-tab" data-toggle="tab" href="#userorder-sign" role="tab" aria-controls="userorder-sign" aria-selected="false">Sign userorder</a>
+					</div>
+					<span class="navbar-text">
+						Get metamask!
+					</span>
+				</div>
+			</nav>
+
+			<div class="card-body">
+				<div class="tab-content" id="order-sign">
+
+					<div class="tab-pane fade show active" id="match" role="tabpanel" aria-labelledby="match-tab">
+						<h5 class="card-title">Match orders</h5>
+						<form>
+							<div class="form-row">
+								<label for="match-dapporder" class="col-sm-2 col-form-label">Dapp</label>
+								<div class="col-sm-10"><textarea id="match-dapporder" class="form-control" rows="5"></textarea></div>
+							</div>
+
+							<div class="form-row">
+								<label for="match-dataorder" class="col-sm-2 col-form-label">Data</label>
+								<div class="col-sm-10"><textarea id="match-dataorder" class="form-control" rows="5"></textarea></div>
+							</div>
+
+							<div class="form-row">
+								<label for="match-poolorder" class="col-sm-2 col-form-label">Pool</label>
+								<div class="col-sm-10"><textarea id="match-poolorder" class="form-control" rows="5"></textarea></div>
+							</div>
+
+							<div class="form-row">
+								<label for="match-userorder" class="col-sm-2 col-form-label">User</label>
+								<div class="col-sm-10"><textarea id="match-userorder" class="form-control" rows="5"></textarea></div>
+							</div>
+						</form>
+						<a id="submit-match" href="#" class="btn btn-danger btn-lg btn-block">Send to clerk</a>
+					</div>
+
+					<!-- DappOrder Signing Tab-->
+					<div class="tab-pane fade" id="dapporder-sign" role="tabpanel" aria-labelledby="dapporder-sign-tab">
+						<h5 class="card-title">Sign a Dapp order</h5>
+						<form>
+							<div class="form-row">
+								<label for="dapporder-dapp" class="col-sm-2 col-form-label">Address</label>
+								<div class="col-sm-8"><input id="dapporder-dapp" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-dapp">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-dappprice" class="col-sm-2 col-form-label">Price</label>
+								<div class="col-sm-8"><input id="dapporder-dappprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="dapporder-dappprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-volume" class="col-sm-2 col-form-label">Volume</label>
+								<div class="col-sm-10"><input id="dapporder-volume" type="text" class="form-control form-control-sm" placeholder="1"></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-datarestrict" class="col-sm-2 col-form-label">Data restriction</label>
+								<div class="col-sm-8"><input id="dapporder-datarestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-datarestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-poolrestrict" class="col-sm-2 col-form-label">Pool restriction</label>
+								<div class="col-sm-8"><input id="dapporder-poolrestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-poolrestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-userrestrict" class="col-sm-2 col-form-label">User restriction</label>
+								<div class="col-sm-8"><input id="dapporder-userrestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-userrestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dapporder-salt" class="col-sm-2 col-form-label">Salt</label>
+								<div class="col-sm-8"><input id="dapporder-salt" type="text" class="form-control form-control-sm" placeholder="-"></div>
+								<div class="col-sm-2"><a id="dapporder-salt-button" href="#" class="btn btn-outline-secondary btn-sm btn-block">Random value</a></div>
+							</div>
+							<a id="submit-dapporder" href="#" class="btn btn-success">Sign order</a>
+						</form>
+					</div>
+
+
+
+
+					<!-- DataOrder Signing Tab-->
+					<div class="tab-pane fade" id="dataorder-sign" role="tabpanel" aria-labelledby="dataorder-sign-tab">
+						<h5 class="card-title">Sign a Data order</h5>
+						<form>
+							<div class="form-row">
+								<label for="dataorder-data" class="col-sm-2 col-form-label">Address</label>
+								<div class="col-sm-8"><input id="dataorder-data" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dataorder-data">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-dataprice" class="col-sm-2 col-form-label">Price</label>
+								<div class="col-sm-8"><input id="dataorder-dataprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="dataorder-dataprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-volume" class="col-sm-2 col-form-label">Volume</label>
+								<div class="col-sm-10"><input id="dataorder-volume" type="text" class="form-control form-control-sm" placeholder="1"></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-dapprestrict" class="col-sm-2 col-form-label">Data restriction</label>
+								<div class="col-sm-8"><input id="dataorder-datarestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dataorder-dapprestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-poolrestrict" class="col-sm-2 col-form-label">Pool restriction</label>
+								<div class="col-sm-8"><input id="dataorder-poolrestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dataorder-poolrestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-userrestrict" class="col-sm-2 col-form-label">User restriction</label>
+								<div class="col-sm-8"><input id="dataorder-userrestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dataorder-userrestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="dataorder-salt" class="col-sm-2 col-form-label">Salt</label>
+								<div class="col-sm-8"><input id="dataorder-salt" type="text" class="form-control form-control-sm" placeholder="-"></div>
+								<div class="col-sm-2"><a id="dataorder-salt-button" href="#" class="btn btn-outline-secondary btn-sm btn-block">Random value</a></div>
+							</div>
+							<a id="submit-dataorder" href="#" class="btn btn-success">Sign order</a>
+						</form>
+					</div>
+
+					<!-- PoolOrder Signing Tab-->
+					<div class="tab-pane fade" id="poolorder-sign" role="tabpanel" aria-labelledby="poolorder-sign-tab">
+						<h5 class="card-title">Sign a Pool order</h5>
+						<form>
+							<div class="form-row">
+								<label for="poolorder-pool" class="col-sm-2 col-form-label">Address</label>
+								<div class="col-sm-8"><input id="poolorder-pool" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#poolorder-pool">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-poolprice" class="col-sm-2 col-form-label">Price</label>
+								<div class="col-sm-8"><input id="poolorder-poolprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="poolorder-poolprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-volume" class="col-sm-2 col-form-label">Volume</label>
+								<div class="col-sm-10"><input id="poolorder-volume" type="text" class="form-control form-control-sm" placeholder="1"></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-category" class="col-sm-2 col-form-label">Category</label>
+								<div class="col-sm-10"><input id="poolorder-category" type="text" class="form-control form-control-sm" placeholder="4"></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-trust" class="col-sm-2 col-form-label">Trust</label>
+								<div class="col-sm-10"><input id="poolorder-trust" type="text" class="form-control form-control-sm" placeholder="100"></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-tag" class="col-sm-2 col-form-label">Tag</label>
+								<div class="col-sm-10"><input id="poolorder-tag" type="text" class="form-control form-control-sm" placeholder="0x0"></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-dapprestrict" class="col-sm-2 col-form-label">Dapp restriction</label>
+								<div class="col-sm-8"><input id="poolorder-dapprestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#poolorder-dapprestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-datarestrict" class="col-sm-2 col-form-label">Data restriction</label>
+								<div class="col-sm-8"><input id="poolorder-datarestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#poolorder-datarestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-userrestrict" class="col-sm-2 col-form-label">User restriction</label>
+								<div class="col-sm-8"><input id="poolorder-userrestrict" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#poolorder-userrestrict">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="poolorder-salt" class="col-sm-2 col-form-label">Salt</label>
+								<div class="col-sm-8"><input id="poolorder-salt" type="text" class="form-control form-control-sm" placeholder="-"></div>
+								<div class="col-sm-2"><a id="poolorder-salt-button" href="#" class="btn btn-outline-secondary btn-sm btn-block">Random value</a></div>
+							</div>
+							<a id="submit-poolorder" href="#" class="btn btn-success">Sign order</a>
+						</form>
+					</div>
+
+					<!-- UserOrder Signing Tab-->
+					<div class="tab-pane fade" id="userorder-sign" role="tabpanel" aria-labelledby="userorder-sign-tab">
+						<h5 class="card-title">Sign a User order</h5>
+						<form>
+							<div class="form-row">
+								<label for="userorder-dapp" class="col-sm-2 col-form-label">Dapp</label>
+								<div class="col-sm-8"><input id="userorder-dapp" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-dapp">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-dappmaxprice" class="col-sm-2 col-form-label">Dapp max price</label>
+								<div class="col-sm-8"><input id="userorder-dappmaxprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="userorder-dappmaxprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-data" class="col-sm-2 col-form-label">Data</label>
+								<div class="col-sm-8"><input id="userorder-data" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-data">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-datamaxprice" class="col-sm-2 col-form-label">Data max price</label>
+								<div class="col-sm-8"><input id="userorder-datamaxprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="userorder-datamaxprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-pool" class="col-sm-2 col-form-label">Pool</label>
+								<div class="col-sm-8"><input id="userorder-pool" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-pool">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-poolmaxprice" class="col-sm-2 col-form-label">Pool max price</label>
+								<div class="col-sm-8"><input id="userorder-poolmaxprice" type="text" class="form-control form-control-sm" placeholder="0"></div>
+								<div class="col-sm-2"><select class="form-control form-control-sm" id="userorder-poolmaxprice-unit"><option value=1000000000>RLC</option><option value=1>nRLC</option></select></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-volume" class="col-sm-2 col-form-label">Volume</label>
+								<div class="col-sm-10"><input id="userorder-volume" type="text" class="form-control form-control-sm" placeholder="1"></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-category" class="col-sm-2 col-form-label">Category</label>
+								<div class="col-sm-10"><input id="userorder-category" type="text" class="form-control form-control-sm" placeholder="4"></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-trust" class="col-sm-2 col-form-label">Trust</label>
+								<div class="col-sm-10"><input id="userorder-trust" type="text" class="form-control form-control-sm" placeholder="100"></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-tag" class="col-sm-2 col-form-label">Tag</label>
+								<div class="col-sm-10"><input id="userorder-tag" type="text" class="form-control form-control-sm" placeholder="0x0"></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-requester" class="col-sm-2 col-form-label">Requester</label>
+								<div class="col-sm-8"><input id="userorder-requester" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-requester">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-beneficiary" class="col-sm-2 col-form-label">Beneficiary</label>
+								<div class="col-sm-8"><input id="userorder-beneficiary" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-beneficiary">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-callback" class="col-sm-2 col-form-label">Callback</label>
+								<div class="col-sm-8"><input id="userorder-callback" type="text" class="form-control form-control-sm" placeholder="0x0000000000000000000000000000000000000000"></div>
+								<div class="col-sm-2"><button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="modal" data-target="#addressModal" data-location="#userorder-callback">Choose</button></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-params" class="col-sm-2 col-form-label">Params</label>
+								<div class="col-sm-10"><input id="userorder-params" type="text" class="form-control form-control-sm" placeholder="-"></div>
+							</div>
+							<div class="form-row">
+								<label for="userorder-salt" class="col-sm-2 col-form-label">Salt</label>
+								<div class="col-sm-8"><input id="userorder-salt" type="text" class="form-control form-control-sm" placeholder="-"></div>
+								<div class="col-sm-2"><a id="userorder-salt-button" href="#" class="btn btn-outline-secondary btn-sm btn-block">Random value</a></div>
+							</div>
+							<a id="submit-userorder" href="#" class="btn btn-success">Sign order</a>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Select an address</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<input id="addressModal-location" type="hidden">
+				<select id="addressModal-value" class="form-control">
+					<option value="0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09">myDapp (0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09)</option>
+					<option value="0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415">myData (0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415)</option>
+					<option value="0xd69663e2263C7D8002500361C742de967Ca488e2">myPool (0xd69663e2263C7D8002500361C742de967Ca488e2)</option>
+					<option value="0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3">user   (0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3)</option>
+				</select>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary"   data-dismiss="modal" id="addressModal-submit">Select</button>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
-
 	<script src="iExecODBLibOrders.js"></script>
-
-
+	<script src="iExecTest.js"></script>
 
 	<script>
+		var DappABI    = null;
+		var DataABI    = null;
+		var PoolABI    = null;
+		var IexecClerk = null;
 
-		var IexecHub          = null;
-		var IexecClerk        = null;
-		var IexecODBLibOrders = null;
+		function randomHex(bytes) { return '0x'+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(''); }
 
-		var dapporder         = null;
-		var dataorder         = null;
-		var poolorder         = null;
-		var userorder         = null;
+		$(() => {
 
-		window.addEventListener('load', () => {
 			if (typeof web3 == 'undefined') {
-				Web3 = new Web3();
+				web3 = new Web3();
 				console.error("web3 is not connected");
 			}
 			else
 			{
-				Web3 = new Web3(web3.currentProvider);
+				web3 = new Web3(window.web3.currentProvider);
 				console.log("web3 is connected to metamask")
 
 				array = [];
-				array.push($.getJSON("contracts/IexecClerk.json",        json => { IexecClerk        = new Web3.eth.Contract(json.abi, "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5"); }));
-				array.push($.getJSON("contracts/IexecODBLibOrders.json", json => { IexecODBLibOrders = new Web3.eth.Contract(json.abi, "0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1"); }));
-				$.when.apply($, array).done(run);
+				array.push($.getJSON("contracts/Dapp.json",       json => DappABI    = json.abi                                                                      ));
+				array.push($.getJSON("contracts/Data.json",       json => DataABI    = json.abi                                                                      ));
+				array.push($.getJSON("contracts/Pool.json",       json => PoolABI    = json.abi                                                                      ));
+				array.push($.getJSON("contracts/IexecClerk.json", json => IexecClerk = new web3.eth.Contract(json.abi, "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5") ));
+				$.when.apply($, array).done(() => console.log("let's dance!"));
 			}
-		});
 
+			$('#addressModal').on('show.bs.modal', event => $("#addressModal-location").val($(event.relatedTarget).data('location')));
+			$('#addressModal-submit').click(() => $($("#addressModal-location").val()).val($("#addressModal-value").val()));
 
-		function randomHex(bytes) { return '0x'+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(''); }
-		function toRLC(rlc) { return rlc*10**9; }
+			$('#dapporder-salt-button').click(() => $("#dapporder-salt").val(randomHex(32)))
+			$('#dataorder-salt-button').click(() => $("#dataorder-salt").val(randomHex(32)))
+			$('#poolorder-salt-button').click(() => $("#poolorder-salt").val(randomHex(32)))
+			$('#userorder-salt-button').click(() => $("#userorder-salt").val(randomHex(32)))
 
-		function run()
-		{
-			// signNewOrders();
-
-			dapporder = {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappprice":300000000,"volume":1000,"datarestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x1e7479c72c0620c799876a4ed3c7b2bd","sign":{"r":"0xef2d340a825a646dfe67615c91f98f054cb7a1fa26c7f3d9cfcd64bb8abdc027","s":"0x051c738d647dd6229b77e1e028c151bf10e0f0ab9cf61c71044c1a7290dffa6d","v":28}}
-			dataorder = {"data":"0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415","dataprice":100000000,"volume":1000,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x804733892ca9caa586128674d5b56def","sign":{"r":"0xcc9193bb0c98f3cebba35a5907f560a171e4cb6e75e9943077419a6432bc9248","s":"0x3701bf68d382e600a6ed930e6a5d84cf5c489aff41ff83069536cfd01847ff31","v":27}}
-			poolorder = {"pool":"0xd69663e2263C7D8002500361C742de967Ca488e2","poolprice":2500000000,"volume":3,"category":4,"trust":1000,"tag":0,"dapprestrict":"0x0000000000000000000000000000000000000000","datarestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x9f5f421b61254fef5056eef8c17b23c1","sign":{"r":"0xd5dc46e61e1fd24d0d96b42350d9dc410f393bfbf7c919013f47b3847ed4180b","s":"0x53045863083dcac41a181f385d78438d9e62f612e58674843841a01c5da0658e","v":28}}
-			userorder = {"dapp":"0x270d4754925D371bCD06E64ED6F541d9db88D64c","dappmaxprice":1000000000,"data":"0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11","datamaxprice":1000000000,"pool":"0x0000000000000000000000000000000000000000","poolmaxprice":5000000000,"volume":1,"category":4,"trust":1000,"tag":0,"requester":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","beneficiary":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","callback":"0x0000000000000000000000000000000000000000","params":"<parameters>","salt":"0x474d00107c39c650c14d594d6ef61b4e","sign":{"r":"0xf65ef84388c443f2a6cea2c6ef2fa151e3be48211ddfe7958958ce72a709090f","s":"0x19e0e6209bf73a93aa80ffd743c4b07fc7624d85b918dabd50d3a20f42b6c945","v":27}}
-
-			// IexecClerk.methods.cancelDappOrder(dapporder).send({ from: "0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87", gas: 100000 }).then(console.log);
-			// IexecClerk.methods.cancelDataOrder(dataorder).send({ from: "0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b", gas: 100000 }).then(console.log);
-			// IexecClerk.methods.cancelPoolOrder(poolorder).send({ from: "0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf", gas: 100000 }).then(console.log);
-			// IexecClerk.methods.cancelUserOrder(userorder).send({ from: "0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3", gas: 100000 }).then(console.log);
-
-			IexecClerk.methods.matchOrders(dapporder, dataorder, poolorder, userorder).send({ from: "0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3", gas: 800000 }).then(console.log);
-		}
-
-		function signNewOrders()
-		{
-			dapppromise = iExecODBLibOrders.signStruct(
-				"DappOrder",
+			$('#submit-match').click(() => {
+				match_dapporder = JSON.parse($("#match-dapporder").val());
+				match_poolorder = JSON.parse($("#match-poolorder").val());
+				match_userorder = JSON.parse($("#match-userorder").val());
+				if ($("#match-dataorder").val() != "")
 				{
-					dapp:         '0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09',
-					dappprice:    toRLC(0.3),
-					volume:       1000,
-					datarestrict: '0x0000000000000000000000000000000000000000',
-					poolrestrict: '0x0000000000000000000000000000000000000000',
-					userrestrict: '0x0000000000000000000000000000000000000000',
-					salt:         randomHex(32),
-				},
-				"0xdFa2585C16cAf9c853086F36d2A37e9b8d1eab87"
-			);
-
-			datapromise = iExecODBLibOrders.signStruct(
-				"DataOrder",
+					match_dataorder = JSON.parse($("#match-dataorder").val());
+				}
+				else
 				{
-					data:         '0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415',
-					dataprice:    toRLC(0.1),
-					volume:       1000,
-					dapprestrict: '0x0000000000000000000000000000000000000000',
-					poolrestrict: '0x0000000000000000000000000000000000000000',
-					userrestrict: '0x0000000000000000000000000000000000000000',
-					salt:         randomHex(32),
-				},
-				"0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7b"
-			);
-
-			poolpromise = iExecODBLibOrders.signStruct(
-				"PoolOrder",
-				{
-					pool:         '0xd69663e2263C7D8002500361C742de967Ca488e2',
-					poolprice:    toRLC(2.5),
-					volume:       3,
-					category:     4,
-					trust:        1000,
-					tag:          0,
-					dapprestrict: '0x0000000000000000000000000000000000000000',
-					datarestrict: '0x0000000000000000000000000000000000000000',
-					userrestrict: '0x0000000000000000000000000000000000000000',
-					salt:         randomHex(32),
-				},
-				"0x2D29bfBEc903479fe4Ba991918bAB99B494f2bEf"
-			);
-
-			userpromise = iExecODBLibOrders.signStruct(
-				"UserOrder",
-				{
-					dapp:         '0x270d4754925D371bCD06E64ED6F541d9db88D64c',
-					dappmaxprice: toRLC(1),
-					data:         '0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11',
-					datamaxprice: toRLC(1),
-					pool:         '0x0000000000000000000000000000000000000000',
-					poolmaxprice: toRLC(5),
-					volume:       1,
-					category:     4,
-					trust:        1000,
-					tag:          0,
-					requester:    '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
-					beneficiary:  '0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3',
-					callback:     '0x0000000000000000000000000000000000000000',
-					params:       '<parameters>',
-					salt:         randomHex(32),
-				},
-				"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3"
-			);
-
-			dapppromise.then(signed => dapporder = signed);
-			datapromise.then(signed => dataorder = signed);
-			poolpromise.then(signed => poolorder = signed);
-			userpromise.then(signed => userorder = signed);
-
-			$.when.apply($, [ dapppromise, datapromise, poolpromise, userpromise ]).done(() => {
-				console.log("signatures done!!!");
-				console.log([
-					"dapporder = "+JSON.stringify(dapporder),
-					"dataorder = "+JSON.stringify(dataorder),
-					"poolorder = "+JSON.stringify(poolorder),
-					"userorder = "+JSON.stringify(userorder),
-				].join('\n'));
-
+					match_dataorder = {"data":"0x0000000000000000000000000000000000000000","dataprice":0,"volume":0,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x0000000000000000000000000000000000000000","sign":{"r":"0x0000000000000000000000000000000000000000000000000000000000000000","s":"0x0000000000000000000000000000000000000000000000000000000000000000","v":0}}
+				}
+				web3.eth.getAccounts().then(account => {
+					IexecClerk.methods.matchOrders(match_dapporder, match_dataorder, match_poolorder, match_userorder).send({ from: account[0], gas: 800000 }).then(console.log);
+				});
 			});
-		}
 
-	</script>
+			$('#submit-dapporder').click(() => {
+				dapporder = {
+					dapp:                  $("#dapporder-dapp"        ).val(),
+					dappprice:    parseInt($("#dapporder-dappprice"   ).val()),
+					volume:       parseInt($("#dapporder-volume"      ).val()),
+					datarestrict:          $("#dapporder-datarestrict").val(),
+					poolrestrict:          $("#dapporder-poolrestrict").val(),
+					userrestrict:          $("#dapporder-userrestrict").val(),
+					salt:                  $("#dapporder-salt"        ).val(),
+				};
+				if (isNaN(dapporder.dappprice)  ) { dapporder.dappprice    = 0;                                            }
+				if (isNaN(dapporder.volume)     ) { dapporder.volume       = 1;                                            }
+				if (dapporder.datarestrict == "") { dapporder.datarestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dapporder.poolrestrict == "") { dapporder.poolrestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dapporder.userrestrict == "") { dapporder.userrestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dapporder.salt         == "") { dapporder.salt         = randomHex(32);                                }
+				dapporder.dappprice *= $("#dapporder-dappprice-unit").val();
+				if (!web3.utils.isAddress(dapporder.dapp)        ) { alert("Invalid dapp adress"        ); return;}
+				if (!web3.utils.isAddress(dapporder.datarestrict)) { alert("Invalid datarestrict adress"); return;}
+				if (!web3.utils.isAddress(dapporder.poolrestrict)) { alert("Invalid poolrestrict adress"); return;}
+				if (!web3.utils.isAddress(dapporder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
+				(new web3.eth.Contract(DappABI, dapporder.dapp)).methods.m_owner().call()
+				.then(owner => iExecODBLibOrders.signStruct("DappOrder", dapporder, owner).then(signed => {
+					$("#match-dapporder").val(JSON.stringify(signed));
+					console.log("dapporder =", JSON.stringify(signed));
+				}))
+				.catch(() => alert("Invalid Dapp address"));
+			});
 
-</body>
+			$('#submit-dataorder').click(() => {
+				dataorder = {
+					data:                  $("#dataorder-data"        ).val(),
+					dataprice:    parseInt($("#dataorder-dataprice"   ).val()),
+					volume:       parseInt($("#dataorder-volume"      ).val()),
+					dapprestrict:          $("#dataorder-datarestrict").val(),
+					poolrestrict:          $("#dataorder-poolrestrict").val(),
+					userrestrict:          $("#dataorder-userrestrict").val(),
+					salt:                  $("#dataorder-salt"        ).val(),
+				};
+				if (isNaN(dataorder.dataprice)  ) { dataorder.dataprice    = 0;                                            }
+				if (isNaN(dataorder.volume)     ) { dataorder.volume       = 1;                                            }
+				if (dataorder.dapprestrict == "") { dataorder.dapprestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dataorder.poolrestrict == "") { dataorder.poolrestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dataorder.userrestrict == "") { dataorder.userrestrict = "0x0000000000000000000000000000000000000000"; }
+				if (dataorder.salt         == "") { dataorder.salt         = randomHex(32);                                }
+				dataorder.dataprice *= $("#dataorder-dataprice-unit").val();
+				if (!web3.utils.isAddress(dataorder.data)        ) { alert("Invalid data adress"        ); return;}
+				if (!web3.utils.isAddress(dataorder.dapprestrict)) { alert("Invalid dapprestrict adress"); return;}
+				if (!web3.utils.isAddress(dataorder.poolrestrict)) { alert("Invalid poolrestrict adress"); return;}
+				if (!web3.utils.isAddress(dataorder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
+				(new web3.eth.Contract(DataABI, dataorder.data)).methods.m_owner().call()
+				.then(owner => iExecODBLibOrders.signStruct("DataOrder", dataorder, owner).then(signed => {
+					$("#match-dataorder").val(JSON.stringify(signed));
+					console.log("dataorder =", JSON.stringify(signed))
+				}))
+				.catch(() => alert("Invalid Data address"));
+			});
+
+			$('#submit-poolorder').click(() => {
+				poolorder = {
+					pool:                  $("#poolorder-pool"        ).val(),
+					poolprice:    parseInt($("#poolorder-poolprice"   ).val()),
+					volume:       parseInt($("#poolorder-volume"      ).val()),
+					category:     parseInt($("#poolorder-category"    ).val()),
+					trust:        parseInt($("#poolorder-trust"       ).val()),
+					tag:          parseInt($("#poolorder-tag"         ).val()),
+					dapprestrict:          $("#poolorder-dapprestrict").val(),
+					datarestrict:          $("#poolorder-datarestrict").val(),
+					userrestrict:          $("#poolorder-userrestrict").val(),
+					salt:                  $("#poolorder-salt"        ).val(),
+				};
+				if (isNaN(poolorder.poolprice)  ) { poolorder.poolprice    = 0;                                            }
+				if (isNaN(poolorder.volume)     ) { poolorder.volume       = 1;                                            }
+				if (isNaN(poolorder.category)   ) { poolorder.category     = 4;                                            }
+				if (isNaN(poolorder.trust)      ) { poolorder.trust        = 100;                                          }
+				if (isNaN(poolorder.tag)        ) { poolorder.tag          = 0x0;                                          }
+				if (poolorder.dapprestrict == "") { poolorder.dapprestrict = "0x0000000000000000000000000000000000000000"; }
+				if (poolorder.datarestrict == "") { poolorder.datarestrict = "0x0000000000000000000000000000000000000000"; }
+				if (poolorder.userrestrict == "") { poolorder.userrestrict = "0x0000000000000000000000000000000000000000"; }
+				if (poolorder.salt         == "") { poolorder.salt         = randomHex(32);                                }
+				poolorder.poolprice *= $("#poolorder-poolprice-unit").val();
+				if (!web3.utils.isAddress(poolorder.pool)        ) { alert("Invalid pool adress"        ); return;}
+				if (!web3.utils.isAddress(poolorder.dapprestrict)) { alert("Invalid dapprestrict adress"); return;}
+				if (!web3.utils.isAddress(poolorder.datarestrict)) { alert("Invalid datarestrict adress"); return;}
+				if (!web3.utils.isAddress(poolorder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
+				(new web3.eth.Contract(PoolABI, poolorder.pool)).methods.m_owner().call()
+				.then(owner => iExecODBLibOrders.signStruct("PoolOrder", poolorder, owner).then(signed => {
+					$("#match-poolorder").val(JSON.stringify(signed));
+					console.log("poolorder =", JSON.stringify(signed))
+				}))
+				.catch(() => alert("Invalid Pool address"));
+			});
+
+			$('#submit-userorder').click(() => {
+				userorder = {
+					dapp:                  $("#userorder-dapp"        ).val(),
+					dappmaxprice: parseInt($("#userorder-dappmaxprice").val()),
+					data:                  $("#userorder-data"        ).val(),
+					datamaxprice: parseInt($("#userorder-datamaxprice").val()),
+					pool:                  $("#userorder-pool"        ).val(),
+					poolmaxprice: parseInt($("#userorder-poolmaxprice").val()),
+					volume:       parseInt($("#userorder-volume"      ).val()),
+					category:     parseInt($("#userorder-category"    ).val()),
+					trust:        parseInt($("#userorder-trust"       ).val()),
+					tag:          parseInt($("#userorder-tag"         ).val()),
+					requester:             $("#userorder-requester"   ).val(),
+					beneficiary:           $("#userorder-beneficiary" ).val(),
+					callback:              $("#userorder-callback"    ).val(),
+					params:                $("#userorder-params"      ).val(),
+					salt:                  $("#userorder-salt"        ).val(),
+				};
+				if (userorder.data          == "") { userorder.data         = "0x0000000000000000000000000000000000000000"; }
+				if (userorder.pool          == "") { userorder.pool         = "0x0000000000000000000000000000000000000000"; }
+				if (isNaN(userorder.dappmaxprice)) { userorder.dappmaxprice = 0;                                            }
+				if (isNaN(userorder.datamaxprice)) { userorder.datamaxprice = 0;                                            }
+				if (isNaN(userorder.poolmaxprice)) { userorder.poolmaxprice = 0;                                            }
+				if (isNaN(userorder.volume)      ) { userorder.volume       = 1;                                            }
+				if (isNaN(userorder.category)    ) { userorder.category     = 4;                                            }
+				if (isNaN(userorder.trust)       ) { userorder.trust        = 100;                                          }
+				if (isNaN(userorder.tag)         ) { userorder.tag          = 0x0;                                          }
+				if (userorder.beneficiary   == "") { userorder.beneficiary  = userorder.requester;                          }
+				if (userorder.callback      == "") { userorder.callback     = "0x0000000000000000000000000000000000000000"; }
+				if (userorder.params        == "") { userorder.params       = "\0";                                         }
+				if (userorder.salt          == "") { userorder.salt         = randomHex(32);                                }
+				userorder.dappmaxprice *= $("#userorder-dappmaxprice-unit").val();
+				userorder.datamaxprice *= $("#userorder-datamaxprice-unit").val();
+				userorder.poolmaxprice *= $("#userorder-poolmaxprice-unit").val();
+				if (!web3.utils.isAddress(userorder.dapp)       ) { alert("Invalid dapp adress"       ); return;}
+				if (!web3.utils.isAddress(userorder.data)       ) { alert("Invalid data adress"       ); return;}
+				if (!web3.utils.isAddress(userorder.pool)       ) { alert("Invalid pool adress"       ); return;}
+				if (!web3.utils.isAddress(userorder.requester)  ) { alert("Invalid requester adress"  ); return;}
+				if (!web3.utils.isAddress(userorder.beneficiary)) { alert("Invalid beneficiary adress"); return;}
+				iExecODBLibOrders.signStruct("UserOrder", userorder, userorder.requester)
+				.then(signed => {
+					$("#match-userorder").val(JSON.stringify(signed));
+					console.log("userorder =", JSON.stringify(signed))
+				});
+			});
+		});
+		</script>
+
+	</body>
 </html>

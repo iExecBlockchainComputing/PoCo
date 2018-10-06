@@ -29,6 +29,7 @@ contract("IexecHub", async (accounts) => {
 	let user          = accounts[8];
 	let sgxEnclave    = accounts[9];
 
+	var jsonRpcProvider          = null;
 	var IexecClerkEthersInstance = null;
 
 	verifyDappOrder = async dapporder => IexecClerkEthersInstance.verify(await (await Dapp.at(dapporder.dapp)).m_owner(), odbtools.DappOrderStructHash(dapporder), dapporder.sign);
@@ -50,14 +51,62 @@ contract("IexecHub", async (accounts) => {
 		});
 	});
 
-	dapporder = {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappprice":300000000,"volume":1000,"datarestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x1e7479c72c0620c799876a4ed3c7b2bd","sign":{"r":"0xef2d340a825a646dfe67615c91f98f054cb7a1fa26c7f3d9cfcd64bb8abdc027","s":"0x051c738d647dd6229b77e1e028c151bf10e0f0ab9cf61c71044c1a7290dffa6d","v":28}}
-	dataorder = {"data":"0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415","dataprice":100000000,"volume":1000,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x804733892ca9caa586128674d5b56def","sign":{"r":"0xcc9193bb0c98f3cebba35a5907f560a171e4cb6e75e9943077419a6432bc9248","s":"0x3701bf68d382e600a6ed930e6a5d84cf5c489aff41ff83069536cfd01847ff31","v":27}}
-	poolorder = {"pool":"0xd69663e2263C7D8002500361C742de967Ca488e2","poolprice":2500000000,"volume":3,"category":4,"trust":1000,"tag":0,"dapprestrict":"0x0000000000000000000000000000000000000000","datarestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x9f5f421b61254fef5056eef8c17b23c1","sign":{"r":"0xd5dc46e61e1fd24d0d96b42350d9dc410f393bfbf7c919013f47b3847ed4180b","s":"0x53045863083dcac41a181f385d78438d9e62f612e58674843841a01c5da0658e","v":28}}
-	userorder = {"dapp":"0x270d4754925D371bCD06E64ED6F541d9db88D64c","dappmaxprice":1000000000,"data":"0x84dF4B4e219967F3f5ad93ee73fDE7197fff5b11","datamaxprice":1000000000,"pool":"0x0000000000000000000000000000000000000000","poolmaxprice":5000000000,"volume":1,"category":4,"trust":1000,"tag":0,"requester":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","beneficiary":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","callback":"0x0000000000000000000000000000000000000000","params":"<parameters>","salt":"0x474d00107c39c650c14d594d6ef61b4e","sign":{"r":"0xf65ef84388c443f2a6cea2c6ef2fa151e3be48211ddfe7958958ce72a709090f","s":"0x19e0e6209bf73a93aa80ffd743c4b07fc7624d85b918dabd50d3a20f42b6c945","v":27}}
+	dapporder = {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappprice":1,"volume":1,"datarestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x47ea654075450cb8cbc92f06ae0a3d60","sign":{"r":"0x8bdd04ac5839db9259e4abfd6374c49bdfc350522ab712f8dd1ec495318f27e0","s":"0x4983e069f5979c088fa6043847452b3597aa2a362728b57bf764f3bea2335104","v":27}}
+	dataorder = {"data":"0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415","dataprice":1,"volume":1,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x71aa9df495c2df08a774ab8994b39bad","sign":{"r":"0x62a873c756d0c9bc06fb965fc914497bbfdaffec6563c3987fdfbd395630b02e","s":"0x0f715eeb631a300b85c2b160c180aec4f777751e10f0fb75a40113e5b82b2f26","v":27}}
+	poolorder = {"pool":"0xd69663e2263C7D8002500361C742de967Ca488e2","poolprice":1,"volume":1,"category":4,"trust":100,"tag":0,"dapprestrict":"0x0000000000000000000000000000000000000000","datarestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0xd1a08cec8d166f4fd5fe0b54ded1e3a3","sign":{"r":"0xaa3cb5c998b3840e6afab66a0d10f87c3755b23d5106501a8c05ab9cc7ffde88","s":"0x4afb619d1dc48edce6b035c250c9214c033ec7195cc0848db4112dc046692a36","v":27}}
+	userorder = {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappmaxprice":1,"data":"0x82D7300c32daFcF6bfdFcf53a2aeDfEF1D6C3415","datamaxprice":1,"pool":"0x0000000000000000000000000000000000000000","poolmaxprice":1,"volume":1,"category":4,"trust":100,"tag":0,"requester":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","beneficiary":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","callback":"0x0000000000000000000000000000000000000000","params":"toto","salt":"0x4bd16fe8f78e2a5eee9facb56a812373","sign":{"r":"0xc2e056c29397ca600768625b290d94fe9d11b3f4da326218d2056fee9c199bd3","s":"0x3c110b187278def606162778754ac861ab2d38d39cd285e561926fcbd56ed3c9","v":28}}
 
 	it("verifyDappOrder", async () => assert(await verifyDappOrder(dapporder)));
 	it("verifyDataOrder", async () => assert(await verifyDataOrder(dataorder)));
 	it("verifyPoolOrder", async () => assert(await verifyPoolOrder(poolorder)));
 	it("verifyUserOrder", async () => assert(await verifyUserOrder(userorder)));
+
+
+	it("match", async () => {
+
+		assert.equal(await(await Dapp.at(dapporder.dapp)).m_owner(), dappProvider );
+		assert.equal(await(await Data.at(dataorder.data)).m_owner(), dataProvider );
+		assert.equal(await(await Pool.at(poolorder.pool)).m_owner(), poolScheduler);
+		IexecClerkEthersInstance.viewAccountLegacy(dappProvider ).then(balance => console.log("dappProvider  balance:", balance.stake.toNumber(), balance.locked.toNumber()));
+		IexecClerkEthersInstance.viewAccountLegacy(dataProvider ).then(balance => console.log("dataProvider  balance:", balance.stake.toNumber(), balance.locked.toNumber()));
+		IexecClerkEthersInstance.viewAccountLegacy(poolScheduler).then(balance => console.log("poolScheduler balance:", balance.stake.toNumber(), balance.locked.toNumber()));
+
+		dapphash = odbtools.DappOrderStructHash(dapporder);
+		datahash = odbtools.DataOrderStructHash(dataorder);
+		poolhash = odbtools.PoolOrderStructHash(poolorder);
+		userhash = odbtools.UserOrderStructHash(userorder);
+
+		console.log("dapp consumed:", (await IexecClerkEthersInstance.m_consumed(dapphash)).toNumber());
+		console.log("data consumed:", (await IexecClerkEthersInstance.m_consumed(datahash)).toNumber());
+		console.log("pool consumed:", (await IexecClerkEthersInstance.m_consumed(poolhash)).toNumber());
+		console.log("user consumed:", (await IexecClerkEthersInstance.m_consumed(userhash)).toNumber());
+
+/*
+		await IexecClerkEthersInstance.connect(jsonRpcProvider.getSigner(dappProvider )).cancelDappOrder(dapporder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkEthersInstance.connect(jsonRpcProvider.getSigner(dataProvider )).cancelDataOrder(dataorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkEthersInstance.connect(jsonRpcProvider.getSigner(poolScheduler)).cancelPoolOrder(poolorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkEthersInstance.connect(jsonRpcProvider.getSigner(user         )).cancelUserOrder(userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+*/
+
+/*
+		txNotMined = await IexecClerkEthersInstance
+		.connect(jsonRpcProvider.getSigner(user))
+		.matchOrders(
+			dapporder,
+			dataorder,
+			poolorder,
+			userorder,
+			{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
+		);
+		console.log("txNotMined:", txNotMined);
+*/
+
+		console.log("dapp consumed:", (await IexecClerkEthersInstance.m_consumed(dapphash)).toNumber());
+		console.log("data consumed:", (await IexecClerkEthersInstance.m_consumed(datahash)).toNumber());
+		console.log("pool consumed:", (await IexecClerkEthersInstance.m_consumed(poolhash)).toNumber());
+		console.log("user consumed:", (await IexecClerkEthersInstance.m_consumed(userhash)).toNumber());
+
+
+	});
 
 });
