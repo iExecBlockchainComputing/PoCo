@@ -370,9 +370,16 @@
 
 		function randomHex(bytes) { return "0x"+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(""); }
 
-		$(() => {
+		function activate()
+		{
+			console.log("let's dance!");
+			// TODO: enable webpage
+		}
 
-			if (typeof web3 == "undefined") {
+		$(() => {
+			// INITIALIZATION
+			if (typeof web3 == "undefined")
+			{
 				web3 = new Web3();
 				console.error("web3 is not connected");
 			}
@@ -381,17 +388,24 @@
 				web3 = new Web3(window.web3.currentProvider);
 				console.log("web3 is connected to metamask")
 
-				array = [];
-				array.push($.getJSON("contracts/Dapp.json",       json => DappABI    = json.abi                                                                      ));
-				array.push($.getJSON("contracts/Data.json",       json => DataABI    = json.abi                                                                      ));
-				array.push($.getJSON("contracts/Pool.json",       json => PoolABI    = json.abi                                                                      ));
-				array.push($.getJSON("contracts/IexecClerk.json", json => IexecClerk = new web3.eth.Contract(json.abi, "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5") ));
-				$.when.apply($, array).done(() => console.log("let's dance!"));
+
+				web3.eth.net.getId().then(chainId => {
+					iExecODBLibOrders.DOMAIN.chainId           = chainId;
+					iExecODBLibOrders.DOMAIN.verifyingContract = "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
+					array = [];
+					array.push($.getJSON("contracts/Dapp.json",       json => DappABI    = json.abi                                                                   ));
+					array.push($.getJSON("contracts/Data.json",       json => DataABI    = json.abi                                                                   ));
+					array.push($.getJSON("contracts/Pool.json",       json => PoolABI    = json.abi                                                                   ));
+					array.push($.getJSON("contracts/IexecClerk.json", json => IexecClerk = new web3.eth.Contract(json.abi, iExecODBLibOrders.DOMAIN.verifyingContract)));
+					$.when.apply($, array).done(() => activate());
+				});
 			}
 
+			// Modal configuration
 			$("#addressModal").on("show.bs.modal", event => $("#addressModal-location").val($(event.relatedTarget).data("location")));
 			$("#addressModal-submit").click(() => $($("#addressModal-location").val()).val($("#addressModal-value").val()));
 
+			// Button configuration
 			$("#dapporder-salt-button").click(() => $("#dapporder-salt").val(randomHex(32)))
 			$("#dataorder-salt-button").click(() => $("#dataorder-salt").val(randomHex(32)))
 			$("#poolorder-salt-button").click(() => $("#poolorder-salt").val(randomHex(32)))
@@ -416,13 +430,13 @@
 
 			$("#submit-dapporder-sign").click(() => {
 				dapporder = {
-					dapp:                  $("#dapporder-dapp"        ).val(),
-					dappprice:    parseInt($("#dapporder-dappprice"   ).val()) * $("#dapporder-dappprice-unit").val(),
-					volume:       parseInt($("#dapporder-volume"      ).val()),
-					datarestrict:          $("#dapporder-datarestrict").val(),
-					poolrestrict:          $("#dapporder-poolrestrict").val(),
-					userrestrict:          $("#dapporder-userrestrict").val(),
-					salt:                  $("#dapporder-salt"        ).val(),
+					dapp:                    $("#dapporder-dapp"        ).val(),
+					dappprice:    parseFloat($("#dapporder-dappprice"   ).val()) * $("#dapporder-dappprice-unit").val(),
+					volume:       parseInt  ($("#dapporder-volume"      ).val()),
+					datarestrict:            $("#dapporder-datarestrict").val(),
+					poolrestrict:            $("#dapporder-poolrestrict").val(),
+					userrestrict:            $("#dapporder-userrestrict").val(),
+					salt:                    $("#dapporder-salt"        ).val(),
 				};
 				if (isNaN(dapporder.dappprice)  ) { dapporder.dappprice    = 0;                                            }
 				if (isNaN(dapporder.volume)     ) { dapporder.volume       = 1;                                            }
@@ -435,24 +449,28 @@
 				if (!web3.utils.isAddress(dapporder.poolrestrict)) { alert("Invalid poolrestrict adress"); return;}
 				if (!web3.utils.isAddress(dapporder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
 				(new web3.eth.Contract(DappABI, dapporder.dapp)).methods.m_owner().call()
-				.then(owner => iExecODBLibOrders.signStruct("DappOrder", dapporder, owner).then(signed => {
-					console.log("dapporder =", JSON.stringify(signed));
-					// $("#match-dapporder").val(JSON.stringify(signed));
-					$("#resultModal-output").val(JSON.stringify(signed));
-					$("#resultModal").modal();
-				}))
-				.catch(() => alert("Invalid Dapp address"));
+				.then(owner => {
+					iExecODBLibOrders.signStruct("DappOrder", dapporder, owner)
+					.then(signed => {
+						console.log("dapporder =", JSON.stringify(signed));
+						// $("#match-dapporder").val(JSON.stringify(signed));
+						$("#resultModal-output").val(JSON.stringify(signed));
+						$("#resultModal").modal();
+					})//
+					.catch(console.log);
+				})
+				.catch(() => alert("Could not read dapp smartcontract"));
 			});
 
 			$("#submit-dataorder-sign").click(() => {
 				dataorder = {
-					data:                  $("#dataorder-data"        ).val(),
-					dataprice:    parseInt($("#dataorder-dataprice"   ).val()) * $("#dataorder-dataprice-unit").val(),
-					volume:       parseInt($("#dataorder-volume"      ).val()),
-					dapprestrict:          $("#dataorder-datarestrict").val(),
-					poolrestrict:          $("#dataorder-poolrestrict").val(),
-					userrestrict:          $("#dataorder-userrestrict").val(),
-					salt:                  $("#dataorder-salt"        ).val(),
+					data:                    $("#dataorder-data"        ).val(),
+					dataprice:    parseFloat($("#dataorder-dataprice"   ).val()) * $("#dataorder-dataprice-unit").val(),
+					volume:       parseInt  ($("#data0xbC11Bf07a83c7e04daef3dd5C6F9a046F8c5fA7border-volume"      ).val()),
+					dapprestrict:            $("#dataorder-datarestrict").val(),
+					poolrestrict:            $("#dataorder-poolrestrict").val(),
+					userrestrict:            $("#dataorder-userrestrict").val(),
+					salt:                    $("#dataorder-salt"        ).val(),
 				};
 				if (isNaN(dataorder.dataprice)  ) { dataorder.dataprice    = 0;                                            }
 				if (isNaN(dataorder.volume)     ) { dataorder.volume       = 1;                                            }
@@ -465,27 +483,31 @@
 				if (!web3.utils.isAddress(dataorder.poolrestrict)) { alert("Invalid poolrestrict adress"); return;}
 				if (!web3.utils.isAddress(dataorder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
 				(new web3.eth.Contract(DataABI, dataorder.data)).methods.m_owner().call()
-				.then(owner => iExecODBLibOrders.signStruct("DataOrder", dataorder, owner).then(signed => {
-					console.log("dataorder =", JSON.stringify(signed))
-					// $("#match-dataorder").val(JSON.stringify(signed));
-					$("#resultModal-output").val(JSON.stringify(signed));
-					$("#resultModal").modal();
-				}))
+				.then(owner => {
+					iExecODBLibOrders.signStruct("DataOrder", dataorder, owner)
+					.then(signed => {
+						console.log("dataorder =", JSON.stringify(signed));
+						// $("#match-dataorder").val(JSON.stringify(signed));
+						$("#resultModal-output").val(JSON.stringify(signed));
+						$("#resultModal").modal();
+					})
+					.catch(console.log);
+				})
 				.catch(() => alert("Invalid Data address"));
 			});
 
 			$("#submit-poolorder-sign").click(() => {
 				poolorder = {
-					pool:                  $("#poolorder-pool"        ).val(),
-					poolprice:    parseInt($("#poolorder-poolprice"   ).val()) * $("#poolorder-poolprice-unit").val(),
-					volume:       parseInt($("#poolorder-volume"      ).val()),
-					category:     parseInt($("#poolorder-category"    ).val()),
-					trust:        parseInt($("#poolorder-trust"       ).val()),
-					tag:          parseInt($("#poolorder-tag"         ).val()),
-					dapprestrict:          $("#poolorder-dapprestrict").val(),
-					datarestrict:          $("#poolorder-datarestrict").val(),
-					userrestrict:          $("#poolorder-userrestrict").val(),
-					salt:                  $("#poolorder-salt"        ).val(),
+					pool:                    $("#poolorder-pool"        ).val(),
+					poolprice:    parseFloat($("#poolorder-poolprice"   ).val()) * $("#poolorder-poolprice-unit").val(),
+					volume:       parseInt  ($("#poolorder-volume"      ).val()),
+					category:     parseInt  ($("#poolorder-category"    ).val()),
+					trust:        parseInt  ($("#poolorder-trust"       ).val()),
+					tag:          parseInt  ($("#poolorder-tag"         ).val()),
+					dapprestrict:            $("#poolorder-dapprestrict").val(),
+					datarestrict:            $("#poolorder-datarestrict").val(),
+					userrestrict:            $("#poolorder-userrestrict").val(),
+					salt:                    $("#poolorder-salt"        ).val(),
 				};
 				if (isNaN(poolorder.poolprice)  ) { poolorder.poolprice    = 0;                                            }
 				if (isNaN(poolorder.volume)     ) { poolorder.volume       = 1;                                            }
@@ -501,32 +523,36 @@
 				if (!web3.utils.isAddress(poolorder.datarestrict)) { alert("Invalid datarestrict adress"); return;}
 				if (!web3.utils.isAddress(poolorder.userrestrict)) { alert("Invalid userrestrict adress"); return;}
 				(new web3.eth.Contract(PoolABI, poolorder.pool)).methods.m_owner().call()
-				.then(owner => iExecODBLibOrders.signStruct("PoolOrder", poolorder, owner).then(signed => {
-					console.log("poolorder =", JSON.stringify(signed))
-					// $("#match-poolorder").val(JSON.stringify(signed));
-					$("#resultModal-output").val(JSON.stringify(signed));
-					$("#resultModal").modal();
-				}))
+				.then(owner => {
+					iExecODBLibOrders.signStruct("PoolOrder", poolorder, owner)
+					.then(signed => {
+						console.log("poolorder =", JSON.stringify(signed));
+						// $("#match-poolorder").val(JSON.stringify(signed));
+						$("#resultModal-output").val(JSON.stringify(signed));
+						$("#resultModal").modal();
+					})
+					.catch(console.log);
+				})
 				.catch(() => alert("Invalid Pool address"));
 			});
 
 			$("#submit-userorder-sign").click(() => {
 				userorder = {
-					dapp:                  $("#userorder-dapp"        ).val(),
-					dappmaxprice: parseInt($("#userorder-dappmaxprice").val()) * $("#userorder-dappmaxprice-unit").val(),
-					data:                  $("#userorder-data"        ).val(),
-					datamaxprice: parseInt($("#userorder-datamaxprice").val()) * $("#userorder-datamaxprice-unit").val(),
-					pool:                  $("#userorder-pool"        ).val(),
-					poolmaxprice: parseInt($("#userorder-poolmaxprice").val()) * $("#userorder-poolmaxprice-unit").val(),
-					volume:       parseInt($("#userorder-volume"      ).val()),
-					category:     parseInt($("#userorder-category"    ).val()),
-					trust:        parseInt($("#userorder-trust"       ).val()),
-					tag:          parseInt($("#userorder-tag"         ).val()),
-					requester:             $("#userorder-requester"   ).val(),
-					beneficiary:           $("#userorder-beneficiary" ).val(),
-					callback:              $("#userorder-callback"    ).val(),
-					params:                $("#userorder-params"      ).val(),
-					salt:                  $("#userorder-salt"        ).val(),
+					dapp:                    $("#userorder-dapp"        ).val(),
+					dappmaxprice: parseFloat($("#userorder-dappmaxprice").val()) * $("#userorder-dappmaxprice-unit").val(),
+					data:                    $("#userorder-data"        ).val(),
+					datamaxprice: parseFloat($("#userorder-datamaxprice").val()) * $("#userorder-datamaxprice-unit").val(),
+					pool:                    $("#userorder-pool"        ).val(),
+					poolmaxprice: parseFloat($("#userorder-poolmaxprice").val()) * $("#userorder-poolmaxprice-unit").val(),
+					volume:       parseInt  ($("#userorder-volume"      ).val()),
+					category:     parseInt  ($("#userorder-category"    ).val()),
+					trust:        parseInt  ($("#userorder-trust"       ).val()),
+					tag:          parseInt  ($("#userorder-tag"         ).val()),
+					requester:               $("#userorder-requester"   ).val(),
+					beneficiary:             $("#userorder-beneficiary" ).val(),
+					callback:                $("#userorder-callback"    ).val(),
+					params:                  $("#userorder-params"      ).val(),
+					salt:                    $("#userorder-salt"        ).val(),
 				};
 				if (userorder.data          == "") { userorder.data         = "0x0000000000000000000000000000000000000000"; }
 				if (userorder.pool          == "") { userorder.pool         = "0x0000000000000000000000000000000000000000"; }
@@ -548,17 +574,22 @@
 				if (!web3.utils.isAddress(userorder.beneficiary)) { alert("Invalid beneficiary adress"); return;}
 				iExecODBLibOrders.signStruct("UserOrder", userorder, userorder.requester)
 				.then(signed => {
-					console.log("userorder =", JSON.stringify(signed))
+					console.log("userorder =", JSON.stringify(signed));
 					// $("#match-userorder").val(JSON.stringify(signed));
 					$("#resultModal-output").val(JSON.stringify(signed));
 					$("#resultModal").modal();
-				});
+				})
+				.catch(console.log);
 			});
 
 			$("#submit-dapporder-cancel").click(() => {
 				dapporder_cancel = JSON.parse($("#dapporder-cancel-input").val());
 				(new web3.eth.Contract(DappABI, dapporder_cancel.dapp)).methods.m_owner().call()
-				.then(owner => IexecClerk.methods.cancelDappOrder(dapporder_cancel).send({ from: owner, gas: 80000 }).then(console.log))
+				.then(owner => {
+					IexecClerk.methods.cancelDappOrder(dapporder_cancel)
+					.send({ from: owner, gas: 80000 })
+					.then(console.log)
+				})
 				.catch(console.log);
 			});
 
@@ -580,22 +611,6 @@
 				userorder_cancel = JSON.parse($("#userorder-cancel-input").val());
 				IexecClerk.methods.cancelUserOrder(userorder_cancel).send({ from: userorder_cancel.requester, gas: 80000 }).then(console.log);
 			});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		});
 		</script>

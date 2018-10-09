@@ -4,8 +4,8 @@ var iExecODBLibOrders =
 	{
 		name:              "iExecODB",
 		version:           "3.0-alpha",
-		chainId:           26,
-		verifyingContract: "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5",
+		chainId:           null,
+		verifyingContract: null,
 	},
 
 	TYPES:
