@@ -345,26 +345,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function cancelDappOrder(IexecODBLibOrders.DappOrder _dapporder)
 	public returns (bool)
 	{
-		/**
-		 * Only Dapp owner can cancel
-		 */
-		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
-
-		/**
-		 * Check authenticity
-		 */
 		bytes32 dapporderHash = _dapporder.hash();
-		require(verify(
-			msg.sender, // dapp owner
-			dapporderHash,
-			_dapporder.sign
-		));
-
-		/**
-		 * Cancel market by marking it consumed
-		 */
+		require(msg.sender == Dapp(_dapporder.dapp).m_owner());
+		// require(verify(msg.sender, dapporderHash, _dapporder.sign));
 		m_consumed[dapporderHash] = _dapporder.volume;
-
 		emit ClosedDappOrder(dapporderHash);
 		return true;
 	}
@@ -372,26 +356,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function cancelDataOrder(IexecODBLibOrders.DataOrder _dataorder)
 	public returns (bool)
 	{
-		/**
-		 * Only dataset owner can cancel
-		 */
-		require(msg.sender == Data(_dataorder.data).m_owner());
-
-		/**
-		 * Check authenticity
-		 */
 		bytes32 dataorderHash = _dataorder.hash();
-		require(verify(
-			msg.sender, // dataset owner
-			dataorderHash,
-			_dataorder.sign
-		));
-
-		/**
-		 * Cancel market by marking it consumed
-		 */
+		require(msg.sender == Data(_dataorder.data).m_owner());
+		// require(verify(msg.sender, dataorderHash, _dataorder.sign));
 		m_consumed[dataorderHash] = _dataorder.volume;
-
 		emit ClosedDataOrder(dataorderHash);
 		return true;
 	}
@@ -399,26 +367,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function cancelPoolOrder(IexecODBLibOrders.PoolOrder _poolorder)
 	public returns (bool)
 	{
-		/**
-		 * Only workerpool owner can cancel
-		 */
-		require(msg.sender == Pool(_poolorder.pool).m_owner());
-
-		/**
-		 * Check authenticity
-		 */
 		bytes32 poolorderHash = _poolorder.hash();
-		require(verify(
-			msg.sender, // workerpool owner
-			poolorderHash,
-			_poolorder.sign
-		));
-
-		/**
-		 * Cancel market by marking it consumed
-		 */
+		require(msg.sender == Pool(_poolorder.pool).m_owner());
+		// require(verify(msg.sender, poolorderHash, _poolorder.sign));
 		m_consumed[poolorderHash] = _poolorder.volume;
-
 		emit ClosedPoolOrder(poolorderHash);
 		return true;
 	}
@@ -426,26 +378,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function cancelUserOrder(IexecODBLibOrders.UserOrder _userorder)
 	public returns (bool)
 	{
-		/**
-		 * Only requester can cancel
-		 */
-		require(msg.sender == _userorder.requester);
-
-		/**
-		 * Check authenticity
-		 */
 		bytes32 userorderHash = _userorder.hash();
-		require(verify(
-			msg.sender, // requester
-			userorderHash,
-			_userorder.sign
-		));
-
-		/**
-		 * Cancel market by marking it consumed
-		 */
+		require(msg.sender == _userorder.requester);
+		// require(verify(msg.sender, userorderHash, _userorder.sign));
 		m_consumed[userorderHash] = _userorder.volume;
-
 		emit ClosedUserOrder(userorderHash);
 		return true;
 	}
@@ -453,8 +389,17 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                     Escrow overhead for affectation                     *
 	 ***************************************************************************/
-	function lockSubscription  (address _worker, uint256 _amount) public onlyIexecHub { lock(_worker, _amount);   }
-	function unlockSubscription(address _worker, uint256 _amount) public onlyIexecHub { unlock(_worker, _amount); }
+	function lockSubscription  (address _worker, uint256 _amount)
+	public onlyIexecHub
+	{
+		lock(_worker, _amount);
+	}
+
+	function unlockSubscription(address _worker, uint256 _amount)
+	public onlyIexecHub
+	{
+		unlock(_worker, _amount);
+	}
 
 	/***************************************************************************
 	 *                    Escrow overhead for contribution                     *

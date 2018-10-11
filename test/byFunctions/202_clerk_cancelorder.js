@@ -65,7 +65,7 @@ contract('IexecHub', async (accounts) => {
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
-		
+
 		/**
 		 * For ABIEncoderV2
 		 */

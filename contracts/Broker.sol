@@ -26,7 +26,7 @@ contract Broker
 		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
 	}
 
-	function depositFrom(address _account)
+	function depositFor(address _account)
 	public payable
 	{
 		m_balance[_account] = m_balance[_account].add(msg.value);

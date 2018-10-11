@@ -24,65 +24,68 @@
 	.input-group-text    { width:     100%; }
 	</style>
 
-	<div class="container">
 
 
 
-
-		<div class="card text-center">
-			<nav class="card-header navbar navbar-expand-lg navbar-dark bg-dark">
-				<a class="navbar-brand" href="#">iExec ODB toolbox</a>
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsable">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbar-collapsable">
-					<ul class="nav navbar-nav mr-auto" role="tablist">
-						<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-view" role="tab">Inspect</a></li>
-						<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-match" role="tab">Submit</a></li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Create</a>
-							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-								<a class="dropdown-item" data-toggle="tab" href="#tab-dapporder" role="tab">Sign a dapporder</a>
-								<a class="dropdown-item" data-toggle="tab" href="#tab-dataorder" role="tab">Sign a dataorder</a>
-								<a class="dropdown-item" data-toggle="tab" href="#tab-poolorder" role="tab">Sign a poolorder</a>
-								<a class="dropdown-item" data-toggle="tab" href="#tab-userorder" role="tab">Sign a userorder</a>
-							</div>
-						</li>
-						<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-cancel" role="tab">Revocation</a></li>
-					</ul>
-					<span class="navbar-text">Powered by metamask</span>
-				</div>
-			</nav>
+	<div class="card text-center">
+		<nav class="card-header navbar navbar-expand-lg navbar-dark bg-dark">
+			<a class="navbar-brand" href="#">iExec ODB toolbox</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsable">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbar-collapsable">
+				<ul class="container nav navbar-nav mr-auto" role="tablist">
+					<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-view" role="tab">Inspect</a></li>
+					<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-match" role="tab">Submit</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Create</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<a class="dropdown-item" data-toggle="tab" href="#tab-dapporder" role="tab">Sign a dapporder</a>
+							<a class="dropdown-item" data-toggle="tab" href="#tab-dataorder" role="tab">Sign a dataorder</a>
+							<a class="dropdown-item" data-toggle="tab" href="#tab-poolorder" role="tab">Sign a poolorder</a>
+							<a class="dropdown-item" data-toggle="tab" href="#tab-userorder" role="tab">Sign a userorder</a>
+						</div>
+					</li>
+					<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-cancel" role="tab">Revocation</a></li>
+				</ul>
+				<span class="navbar-text">Powered by metamask</span>
+			</div>
+		</nav>
+		<div class="container">
 			<div class="card-body tab-content">
-
-
-
 
 				<!-- VIEW -->
 				<div class="tab-pane fade show active" id="tab-view" role="tabpanel">
 					<div class="input-group mb-3">
-						<textarea id="view-input" class="form-control" rows="5" placeholder="Paste an order here"></textarea>
+						<textarea id="view-input" class="form-control" rows="10" placeholder="Paste an order here"></textarea>
 					</div>
 					<div class="input-group mb-3">
 						<a id="view-submit" href="#" class="btn btn-secondary btn-block">View order</a>
 					</div>
-					<div id="view-progress" class="card card-body">
-  					<div class="form-group row">
-							<label class="col-sm-2 col-form-label">Deals</label>
-							<div class="col-sm-10">
-								<div id="view-progress-deals" class="progress" style="height: 100%;">
+
+					<div id="view-progress" class="card">
+						<div id="view-progress" class="card-header">
+							Order execution summary
+						</div>
+						<div id="view-progress" class="card-body">
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Deals</label>
+								<div class="col-sm-10">
+									<div id="view-progress-deals" class="progress" style="height: 100%;">
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="row">
-  					<!-- <div class="form-group row"> -->
-							<label class="col-sm-2 col-form-label">Tasks</label>
-							<div class="col-sm-10">
-								<div id="view-progress-tasks" class="progress" style="height: 100%;">
+							<div class="row">
+								<!-- <div class="form-group row"> -->
+								<label class="col-sm-2 col-form-label">Tasks</label>
+								<div class="col-sm-10">
+									<div id="view-progress-tasks" class="progress" style="height: 100%;">
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+
 				</div>
 
 				<!-- MATCH -->
@@ -683,10 +686,10 @@
 				var status = parseInt(task.status);
 				var style  = ["bg-secondary", "bg-primary progress-bar-striped progress-bar-animated", "bg-warning progress-bar-striped progress-bar-animated", "bg-success", "bg-danger"][status];
 				var width  = (100 / userorder.volume) + "%";
-				var title  = "Task " + (idx+1) + "/" + userorder.volume + ":" + ["unset", "active", "revealing", "completed", "failed"][status];
+				var title  = "Task " + (idx+1) + "/" + userorder.volume + ": " + ["Unset", "Active", "Revealing", "Completed", "Failed"][status];
 
 				var descr = []
-				if (status == 0) descr.push("Task in waiting initialization");
+				if (status == 0) descr.push("Task waiting initialization");
 				if (status >= 1) descr.push("Deadline: " + task.consensusDeadline);
 				if (status >= 1) descr.push(task.contributors.length + " contributions recieved");
 				if (status >= 2) descr.push("Consensus: " + task.consensusValue);
