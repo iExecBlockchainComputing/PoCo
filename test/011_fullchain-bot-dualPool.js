@@ -125,7 +125,7 @@ contract('IexecHub', async (accounts) => {
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
-			chainId:           3,
+			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
 
@@ -334,6 +334,10 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(user)
 		);
+
+		console.log("clerk:     ", IexecClerkInstance.address);
+		console.log("userorder: ", JSON.stringify(userorder));
+
 	});
 
 

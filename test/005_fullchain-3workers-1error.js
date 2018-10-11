@@ -94,7 +94,7 @@ contract('IexecHub', async (accounts) => {
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
-			chainId:           3,
+			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
 

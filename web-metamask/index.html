@@ -63,9 +63,26 @@
 					<div class="input-group mb-3">
 						<textarea id="view-input" class="form-control" rows="5" placeholder="Paste an order here"></textarea>
 					</div>
-					<!-- <div class="input-group mb-3"> -->
-					<a id="view-submit" href="#" class="btn btn-secondary btn-block">View order</a>
-					<!-- </div> -->
+					<div class="input-group mb-3">
+						<a id="view-submit" href="#" class="btn btn-secondary btn-block">View order</a>
+					</div>
+					<div id="view-progress" class="card card-body">
+  					<div class="form-group row">
+							<label class="col-sm-2 col-form-label">Deals</label>
+							<div class="col-sm-10">
+								<div id="view-progress-deals" class="progress" style="height: 100%;">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+  					<!-- <div class="form-group row"> -->
+							<label class="col-sm-2 col-form-label">Tasks</label>
+							<div class="col-sm-10">
+								<div id="view-progress-tasks" class="progress" style="height: 100%;">
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<!-- MATCH -->
@@ -518,6 +535,9 @@
 	function notify(content) { if (checkNotify()) { new Notification(content); } }
 
 	$(async () => {
+
+		setup();
+
 		// INITIALIZATION
 		if (typeof web3 == "undefined")
 		{
@@ -529,8 +549,9 @@
 			web3 = new Web3(window.web3.currentProvider);
 			console.log("web3 is connected to metamask")
 
+			urlParams = new URLSearchParams(window.location.search);
 			iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
-			iExecODBLibOrders.DOMAIN.verifyingContract = "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
+			iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
 
 			DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
 			DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
@@ -540,16 +561,13 @@
 			IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
 			IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
 
-			activate();
+			// activate();
+			console.log("let's dance!");
 		}
 	});
 
-	function activate()
+	function setup()
 	{
-		console.log("let's dance!");
-
-  	// $('[data-toggle="popover"]').popover()
-
 		// buttons
 		$("#dapporder-advanced-view").hide();
 		$("#dataorder-advanced-view").hide();
@@ -572,6 +590,8 @@
 			$("#match-dataorder").parent().show();
 		});
 
+		$("#view-progress").hide();
+
 		$("#dapporder-salt-random").click(() => $("#dapporder-salt").val(randomHex(32)))
 		$("#dataorder-salt-random").click(() => $("#dataorder-salt").val(randomHex(32)))
 		$("#poolorder-salt-random").click(() => $("#poolorder-salt").val(randomHex(32)))
@@ -586,35 +606,22 @@
 	 * VIEW ORDER DETAILS
 	 */
 	$("#view-submit").click(() => {
-		// __traversal = async (__hash, start=0, end=null) => {
-		// 	while (start < end || end == null)
-		// 	{
-		// 		dealid = web3.utils.soliditySha3({ type: "bytes32", value: __hash }, { type: "uint256", value: start });
-		// 		deal   = await IexecClerk.methods.m_deals(dealid).call();
-		// 		config = await IexecClerk.methods.m_configs(dealid).call();
-		// 		if (config.startTime == 0) break;
-		// 		start += config.botSize;
-		// 		console.log("deal:  ", JSON.stringify(deal  ));
-		// 		console.log("config:", JSON.stringify(config));
-		// 	}
-		// }
 		__order = JSON.parse($("#view-input").val());
 		if      (iExecODBLibOrders.isValidOrder("DappOrder", __order)) { __hash = iExecODBLibOrders.DappOrderStructHash(__order); }
 		else if (iExecODBLibOrders.isValidOrder("DataOrder", __order)) { __hash = iExecODBLibOrders.DataOrderStructHash(__order); }
 		else if (iExecODBLibOrders.isValidOrder("PoolOrder", __order)) { __hash = iExecODBLibOrders.PoolOrderStructHash(__order); }
 		else if (iExecODBLibOrders.isValidOrder("UserOrder", __order)) { __hash = iExecODBLibOrders.UserOrderStructHash(__order); }
 		IexecClerk.methods.m_consumed(__hash).call().then(value => {
-			notify(" status: " + value + " / " + __order.volume);
 			if (iExecODBLibOrders.isValidOrder("UserOrder", __order))
 			{
 				userOrderProgress(__hash, __order);
 			}
+			else
+			{
+				notify(" status: " + value + " / " + __order.volume);
+			}
 		});
 	});
-
-
-// {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappprice":0,"volume":1000,"datarestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0xd4b7c44a1d09bdf3d9fd34c0ad732701","sign":{"r":"0x9eb06d99302b1978badc94f432c0df0b1e037f1ac6bfa3d52c0465666868b5ab","s":"0x63d87da38bc3935f014e79ba51d688bffff6d2a3a3a081d4c0f320dd2f49f09c","v":27}}
-// {"dapp":"0x385fFe1c9Ec3d6a0798eD7a13445Cb2B2de9fd09","dappmaxprice":0,"data":"0x0000000000000000000000000000000000000000","datamaxprice":0,"pool":"0x0000000000000000000000000000000000000000","poolmaxprice":0,"volume":10,"category":5,"trust":100,"tag":0,"requester":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","beneficiary":"0x0ad5797Bc72F14430e4887c2bc6F9b478107b9d3","callback":"0x0000000000000000000000000000000000000000","params":"\u0000","salt":"0x91cb65feecfed3f56cb01dfca0b15297","sign":{"r":"0xd585b069689a7bc9a3b71a40bfdbe0941dfdba08d55fdfaae5384917d6865488","s":"0x46fd51c5336b0929ceeb546776bc70a12d388f48fe4a23042aeb86b20ea00793","v":28}}
 
 	function randomColor()
 	{
@@ -623,82 +630,88 @@
 
 	async function userOrderProgress(userhash, userorder)
 	{
-		$("#tab-view .card").remove()
-		__summary       = $("<div>").addClass("card card-body");;
-		__progressDeals = $("<div>").addClass("progress");
-		__progressTasks = $("<div>").addClass("progress");
-		$("#tab-view").append(__summary);
-		__summary.append(__progressDeals);
-		__summary.append(__progressTasks);
+		$("#view-progress").show();
+
+		$("#view-progress [data-toggle=popover]").popover('dispose');
+		$("#view-progress [data-toggle=popover]").remove();
 
 		deals = {};
 		tasks = {};
 
 		for (var idx = 0; idx < userorder.volume;)
 		{
-			dealid = web3.utils.soliditySha3({ type: "bytes32", value: __hash }, { type: "uint256", value: idx });
-			deal   = await IexecClerk.methods.m_deals(dealid).call();
-			config = await IexecClerk.methods.m_configs(dealid).call();
+			var dealid = web3.utils.soliditySha3({ type: "bytes32", value: __hash }, { type: "uint256", value: idx });
+			var deal   = await IexecClerk.methods.m_deals(dealid).call();
+			var config = await IexecClerk.methods.m_configs(dealid).call();
 			if (config.botSize == 0) break;
 			deals[idx] = { deal: deal, config: config };
 
-			first = parseInt(config.botFirst);
-			last  = first + parseInt(config.botSize);
-			style = [ "bg-primary", "bg-success "][__progressDeals.children().length % 2];
-			width = Math.floor(last*100/userorder.volume)-Math.floor(first*100/userorder.volume)+"%";
-			title = "Deal " + dealid;
-			descr = "Tasks " + first + " → " + last;
+			var first = parseInt(config.botFirst);
+			var last  = first + parseInt(config.botSize);
+			var style = [ "bg-primary", "bg-info "][$("#view-progress-deals").children().length % 2];
+			var width = (parseInt(config.botSize)*100/userorder.volume) + "%";
+			var title = "Deal " + dealid;
 
-			__progressDeals.append(
+			var descr = [];
+			descr.push("Tasks " + (first+1) + " → " + last);
+			descr.push("Pool: " + deal.pool.pointer);
+			descr.push("Category: " + config.category);
+			descr.push("Trust: " + deal.trust);
+			descr.push("Parameters: " + $('<div/>').text(deal.params).html());
+			descr.push("Beneficiary: " + deal.beneficiary);
+
+			$("#view-progress-deals").append(
 				$("<a>")
 				.attr("href", "#")
 				.attr("data-toggle", "popover")
 				.attr("title", title)
-				.attr("data-content", descr)
+				.attr("data-content", descr.join("<br/>"))
 				.attr("data-placement", "top")
 				.addClass("progress-bar")
 				.addClass(style)
 				.width(width)
-				.popover()
+				.text((first+1) + " → " + last)
+				.popover({ html: true })
 			);
 
 			for (var _ = 0; _ < parseInt(config.botSize); ++idx, ++_)
 			{
-				taskid = web3.utils.soliditySha3({ type: "bytes32", value: __hash }, { type: "uint256", value: idx });
-				task   = await IexecHub.methods.viewTask(taskid).call();
+				var taskid = web3.utils.soliditySha3({ type: "bytes32", value: dealid }, { type: "uint256", value: idx });
+				var task   = await IexecHub.methods.viewTask(taskid).call();
 				tasks[idx] = { deal: deal, task: task };
 
-				style = ["bg-secondary", "bg-primary", "bg-warning", "bg-success", "bg-danger"][parseInt(task.status)];
-				width = Math.floor((idx+1)*100/userorder.volume)-Math.floor(idx*100/userorder.volume) + "%";
-				title = "Task " + (idx+1) + "/" + userorder.volume;
-				descr = "Status: " + ["unset", "active", "revealing", "completed", "failed"][parseInt(task.status)];
+				var status = parseInt(task.status);
+				var style  = ["bg-secondary", "bg-primary progress-bar-striped progress-bar-animated", "bg-warning progress-bar-striped progress-bar-animated", "bg-success", "bg-danger"][status];
+				var width  = (100 / userorder.volume) + "%";
+				var title  = "Task " + (idx+1) + "/" + userorder.volume + ":" + ["unset", "active", "revealing", "completed", "failed"][status];
 
-				__progressTasks.append(
+				var descr = []
+				if (status == 0) descr.push("Task in waiting initialization");
+				if (status >= 1) descr.push("Deadline: " + task.consensusDeadline);
+				if (status >= 1) descr.push(task.contributors.length + " contributions recieved");
+				if (status >= 2) descr.push("Consensus: " + task.consensusValue);
+				if (status >= 2) descr.push("Reveal: " + task.revealCounter + "/" + task.winnerCounter);
+				if (status >= 3) descr.push("Task has been finalized");
+
+				$("#view-progress-tasks").append(
 					$("<a>")
 					.attr("href", "#")
 					.attr("data-toggle", "popover")
 					.attr("title", title)
-					.attr("data-content", descr)
+					.attr("data-content", descr.join("<br/>"))
 					.attr("data-placement", "bottom")
 					.addClass("progress-bar")
 					.addClass(style)
 					.width(width)
-					.popover()
+					.text(idx+1)
+					.popover({ html: true })
 				);
 
 			}
 		}
 		console.log(deals);
 		console.log(tasks);
-
-
-
-
 	}
-
-
-
-
 
 	/**
 	 * MATCHING ORDER

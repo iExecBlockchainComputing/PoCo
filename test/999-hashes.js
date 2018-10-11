@@ -259,7 +259,7 @@ contract("IexecHub", async (accounts) => {
 		domain = {
 			name:              "iExecODB",
 			version:           "3.0-alpha",
-			chainId:           3,
+			chainId:           await web3.eth.net.getId(),
 			verifyingContract: TestInstance.address,
 		};
 		dapporder = {
