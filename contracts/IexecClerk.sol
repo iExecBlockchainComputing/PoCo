@@ -95,6 +95,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return m_configs[_id];
 	}
 
+	function viewConsumed(bytes32 _id)
+	public view returns (uint256)
+	{
+		return m_consumed[_id];
+	}
+
 	/***************************************************************************
 	 *                         Enterprise restriction                          *
 	 ***************************************************************************/
