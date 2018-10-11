@@ -38,8 +38,8 @@ contract IexecHub is CategoryManager
 	/***************************************************************************
 	 *                               Consensuses                               *
 	 ***************************************************************************/
-	mapping(bytes32 => IexecODBLibCore.Task)                             m_tasks;
-	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) m_contributions;
+	mapping(bytes32 => IexecODBLibCore.Task)                             public m_tasks;
+	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) public m_contributions;
 
 	/***************************************************************************
 	 *                                 Workers                                 *

@@ -67,8 +67,7 @@ var iExecODBLibOrders =
 
 	signStruct: (typename, message, wallet) =>
 	{
-		return new Promise(function (resolve, reject)
-		{
+		return new Promise((resolve, reject) => {
 			web3.currentProvider.sendAsync({
 				method: "eth_signTypedData_v3",
 				params: [ wallet, JSON.stringify({ types: iExecODBLibOrders.TYPES, domain: iExecODBLibOrders.DOMAIN, primaryType: typename, message: message }) ],
@@ -88,6 +87,157 @@ var iExecODBLibOrders =
 				}
 			});
 		});
-	}
+	},
+
+	isValidOrder: (type, order) =>
+	{
+		return iExecODBLibOrders.TYPES[type].every(v => order[v.name] !== undefined);
+	},
+
+	getOrderOwner: (order) =>
+	{
+		return new Promise((resolve, reject) => {
+			if (iExecODBLibOrders.isValidOrder("DappOrder", order))
+			{
+				(new web3.eth.Contract(DappABI, order.dapp)).methods.m_owner().call().then(resolve);
+			}
+			else if (iExecODBLibOrders.isValidOrder("DataOrder", order))
+			{
+				(new web3.eth.Contract(DataABI, order.data)).methods.m_owner().call().then(resolve);
+			}
+			else if (iExecODBLibOrders.isValidOrder("PoolOrder", order))
+			{
+				(new web3.eth.Contract(PoolABI, order.pool)).methods.m_owner().call().then(resolve);
+			}
+			else if (iExecODBLibOrders.isValidOrder("UserOrder", order))
+			{
+				resolve(order.requester);
+			}
+			else
+			{
+				reject("Invalid order");
+			}
+		});
+	},
+
+	typeHash: (type) =>
+	{
+		return web3.utils.keccak256(type + "(" + iExecODBLibOrders.TYPES[type].map(o => o.type + " " + o.name).join(',') + ")");
+	},
+
+	DappOrderStructHash: function(dapporder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			// iExecODBLibOrders.DAPPORDER_TYPEHASH,
+			iExecODBLibOrders.typeHash("DappOrder"),
+			dapporder.dapp,
+			dapporder.dappprice,
+			dapporder.volume,
+			dapporder.datarestrict,
+			dapporder.poolrestrict,
+			dapporder.userrestrict,
+			dapporder.salt,
+		]));
+	},
+	DataOrderStructHash: function(dataorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			// iExecODBLibOrders.DATAORDER_TYPEHASH,
+			iExecODBLibOrders.typeHash("DataOrder"),
+			dataorder.data,
+			dataorder.dataprice,
+			dataorder.volume,
+			dataorder.dapprestrict,
+			dataorder.poolrestrict,
+			dataorder.userrestrict,
+			dataorder.salt,
+		]));
+	},
+	PoolOrderStructHash: function(poolorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"address",
+			"bytes32",
+		],[
+			// iExecODBLibOrders.POOLORDER_TYPEHASH,
+			iExecODBLibOrders.typeHash("PoolOrder"),
+			poolorder.pool,
+			poolorder.poolprice,
+			poolorder.volume,
+			poolorder.category,
+			poolorder.trust,
+			poolorder.tag,
+			poolorder.dapprestrict,
+			poolorder.datarestrict,
+			poolorder.userrestrict,
+			poolorder.salt,
+		]));
+	},
+	UserOrderStructHash: function(userorder)
+	{
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
+			"bytes32",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"address",
+			"uint256",
+			"uint256",
+			"uint256",
+			"uint256",
+			"address",
+			"address",
+			"bytes32",
+			"bytes32",
+		],[
+			// iExecODBLibOrders.USERORDER_TYPEHASH,
+			iExecODBLibOrders.typeHash("UserOrder"),
+			userorder.dapp,
+			userorder.dappmaxprice,
+			userorder.data,
+			userorder.datamaxprice,
+			userorder.pool,
+			userorder.poolmaxprice,
+			userorder.requester,
+			userorder.volume,
+			userorder.category,
+			userorder.trust,
+			userorder.tag,
+			userorder.beneficiary,
+			userorder.callback,
+			web3.utils.keccak256(userorder.params),
+			userorder.salt,
+		]));
+	},
 
 };
