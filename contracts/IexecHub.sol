@@ -279,16 +279,16 @@ contract IexecHub is CategoryManager
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING            );
-		require(task.consensusDeadline  >  now                                                 );
-		require(task.revealDeadline     >  now                                                 );
-		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED  );
-		require(contribution.resultHash == task.consensusValue                                 );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _result))    );
-		require(contribution.resultSign == keccak256(abi.encodePacked(msg.sender, _result))    );
+		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING          );
+		require(task.consensusDeadline  >  now                                               );
+		require(task.revealDeadline     >  now                                               );
+		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED);
+		require(contribution.resultHash == task.consensusValue                               );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _result))  );
+		require(contribution.resultSign == keccak256(abi.encodePacked(msg.sender, _result))  );
 
-		contribution.status     = IexecODBLibCore.ContributionStatusEnum.PROVED;
-		task.revealCounter = task.revealCounter.add(1);
+		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
+		task.revealCounter  = task.revealCounter.add(1);
 
 		/*
 		// TODO: results for oracle?
@@ -334,9 +334,9 @@ contract IexecHub is CategoryManager
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status            == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.consensusDeadline >  now                                 );
+		require(task.consensusDeadline >  now                                     );
 		require(task.revealCounter     == task.winnerCounter
-		    || (task.revealCounter     >  0  && task.revealDeadline <= now)   );
+		    || (task.revealCounter     >  0  && task.revealDeadline <= now)       );
 
 		task.status = IexecODBLibCore.TaskStatusEnum.COMPLETED;
 
@@ -365,7 +365,7 @@ contract IexecHub is CategoryManager
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
 		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.consensusDeadline <= now);
+		require(task.consensusDeadline <= now                          );
 
 		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
 
