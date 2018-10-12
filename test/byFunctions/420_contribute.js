@@ -330,13 +330,19 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true";
 
-		await sendContribution(
+		txMined = await sendContribution(
 			__taskid,
 			__worker,
 			odbtools.signResult(__raw, __worker),
 			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 			__enclave
 		);
+		// No return from etherjs
+		// assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		// events = extractEvents(txMined, IexecHubInstance.address, "ConsensusContribute");
+		// assert.equal(events[0].args.taskid,     __taskid,                                     "check taskid"    );
+		// assert.equal(events[0].args.worker,     __worker,                                     "check worker"    );
+		// assert.equal(events[0].args.resultHash, odbtools.hashResult(__raw).constibution.hash, "check resultHash");
 	});
 
 	it("[2.2] Contribute - Correct (sgx)", async () => {
@@ -352,6 +358,12 @@ contract('IexecHub', async (accounts) => {
 			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 			__enclave
 		);
+		// No return from etherjs
+		// assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		// events = extractEvents(txMined, IexecHubInstance.address, "ConsensusContribute");
+		// assert.equal(events[0].args.taskid,     __taskid,                                     "check taskid"    );
+		// assert.equal(events[0].args.worker,     __worker,                                     "check worker"    );
+		// assert.equal(events[0].args.resultHash, odbtools.hashResult(__raw).constibution.hash, "check resultHash");
 	});
 
 	it("[2.3] Contribute - Error (unset)", async () => {
