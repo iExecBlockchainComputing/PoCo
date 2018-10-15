@@ -14,6 +14,7 @@ const fs = require("fs-extra");
 
 module.exports = async function(deployer, network, accounts)
 {
+	console.log("# web3 version:", web3.version);
 
 	await deployer.deploy(RLC);
 	RLCInstance = await RLC.deployed();
