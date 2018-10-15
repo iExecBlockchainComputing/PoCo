@@ -274,7 +274,7 @@ contract('IexecHub', async (accounts) => {
 				datamaxprice: 1,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
-				volume:       1000,
+				volume:       10,
 				category:     4,
 				trust:        1000,
 				tag:          0,

@@ -274,7 +274,7 @@ contract('IexecHub', async (accounts) => {
 				datamaxprice: 1,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
-				volume:       1000,
+				volume:       10,
 				category:     4,
 				trust:        1000,
 				tag:          0,
@@ -539,5 +539,5 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	
+
 });
