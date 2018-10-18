@@ -72,14 +72,11 @@ library IexecODBLibCore
 		uint256   idx;
 		uint256   consensusDeadline;
 		bytes32   consensusValue;
-		/*
-		// TODO: results for oracle?
-		bytes     results;
-		*/
 		uint256   revealDeadline;
 		uint256   revealCounter;
 		uint256   winnerCounter;
 		address[] contributors;
+		bytes     results;
 	}
 
 	/**

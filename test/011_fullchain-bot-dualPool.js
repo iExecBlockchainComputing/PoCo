@@ -589,18 +589,14 @@ contract('IexecHub', async (accounts) => {
 	it(">> finalizeWork (1)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
 			tasks[0].taskid,
-			"aStdout 1",
-			"aStderr 1",
-			"anUri 1",
+			web3.utils.utf8ToHex("aResult 1"),
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.taskid, tasks[0].taskid, "check consensus (taskid)");
-		assert.equal(events[0].args.stdout, "aStdout 1",     "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 1",     "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 1",       "check consensus (   uri)");
+		assert.equal(events[0].args.taskid,  tasks[0].taskid,                   "check consensus (taskid)");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
@@ -622,6 +618,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (task.revealCounter.toNumber(),     2,                                    "check task (task.revealCounter)"    );
 		assert.equal    (task.winnerCounter.toNumber(),     2,                                    "check task (task.winnerCounter)"    );
 		assert.deepEqual(task.contributors.map(a => a),     tasks[0].workers.map(x => x.address), "check task (task.contributors)"     );
+		assert.equal    (task.results,                      web3.utils.utf8ToHex("aResult 1"),    "check task (task.results)"          );
 	});
 
 	/***************************************************************************
@@ -654,18 +651,14 @@ contract('IexecHub', async (accounts) => {
 	it(">> finalizeWork (2)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
 			tasks[1].taskid,
-			"aStdout 2",
-			"aStderr 2",
-			"anUri 2",
+			web3.utils.utf8ToHex("aResult 2"),
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.taskid, tasks[1].taskid, "check consensus (taskid)");
-		assert.equal(events[0].args.stdout, "aStdout 2",     "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 2",     "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 2",       "check consensus (   uri)");
+		assert.equal(events[0].args.taskid, tasks[1].taskid,                    "check consensus (taskid)");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 2"), "check consensus (results)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
@@ -687,6 +680,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
 		assert.equal    (task.winnerCounter.toNumber(),     3,                                    "check task (task.winnerCounter)"    );
 		assert.deepEqual(task.contributors.map(a => a),     tasks[1].workers.map(x => x.address), "check task (task.contributors)"     );
+		assert.equal    (task.results,                      web3.utils.utf8ToHex("aResult 2"),    "check task (task.results)"          );
 	});
 
 	/***************************************************************************
@@ -719,18 +713,14 @@ contract('IexecHub', async (accounts) => {
 	it(">> finalizeWork (3)", async () => {
 		txMined = await IexecHubInstance.finalizeWork(
 			tasks[2].taskid,
-			"aStdout 3",
-			"aStderr 3",
-			"anUri 3",
+			web3.utils.utf8ToHex("aResult 3"),
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.taskid, tasks[2].taskid, "check consensus (taskid)");
-		assert.equal(events[0].args.stdout, "aStdout 3",     "check consensus (stdout)");
-		assert.equal(events[0].args.stderr, "aStderr 3",     "check consensus (stderr)");
-		assert.equal(events[0].args.uri,    "anUri 3",       "check consensus (   uri)");
+		assert.equal(events[0].args.taskid,  tasks[2].taskid,                   "check consensus (taskid)");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
@@ -752,6 +742,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
 		assert.equal    (task.winnerCounter.toNumber(),     3,                                    "check task (task.winnerCounter)"    );
 		assert.deepEqual(task.contributors.map(a => a),     tasks[2].workers.map(x => x.address), "check task (task.contributors)"     );
+		assert.equal    (task.results,                      web3.utils.utf8ToHex("aResult 3"),    "check task (task.results)"          );
 	});
 
 	/***************************************************************************

@@ -364,7 +364,7 @@ contract('IexecHub', async (accounts) => {
 		await IexecHubInstance.reveal(tasks[6], odbtools.hashResult("true").base, { from: poolWorker1 });
 	});
 	it("[setup] Finalize", async () => {
-		await IexecHubInstance.finalizeWork(tasks[6], "stdout", "stderr", "uri", { from: poolScheduler });
+		await IexecHubInstance.finalizeWork(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
 	});
 
 

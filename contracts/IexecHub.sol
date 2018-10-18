@@ -3,6 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "./tools/IexecODBLibCore.sol";
 import "./tools/IexecODBLibOrders.sol";
+import "./tools/EIP1154.sol";
 import "./tools/SafeMathOZ.sol";
 
 import "./CategoryManager.sol";
@@ -13,7 +14,7 @@ import "./registries/RegistryBase.sol";
 /* import "./registries/DataRegistry.sol"; */
 /* import "./registries/PoolRegistry.sol"; */
 
-contract IexecHub is CategoryManager
+contract IexecHub is CategoryManager, Oracle
 {
 	using SafeMathOZ for uint256;
 
@@ -56,7 +57,8 @@ contract IexecHub is CategoryManager
 	event ConsensusRevealConsensus  (bytes32 indexed taskid, bytes32 consensus);
 	event ConsensusReveal           (bytes32 indexed taskid, address indexed worker, bytes32 result);
 	event ConsensusReopen           (bytes32 indexed taskid);
-	event ConsensusFinalized        (bytes32 indexed taskid, string stdout, string stderr, string uri);
+	// event ConsensusFinalized        (bytes32 indexed taskid, string stdout, string stderr, string uri);
+	event ConsensusFinalized        (bytes32 indexed taskid, bytes results);
 	event ConsensusClaimed          (bytes32 indexed taskid);
 	event AccurateContribution      (bytes32 indexed taskid, address indexed worker);
 	event FaultyContribution        (bytes32 indexed taskid, address indexed worker);
@@ -130,6 +132,16 @@ contract IexecHub is CategoryManager
 		require(data == address(0) || dataregistry.isRegistered(data));
 		require(                      poolregistry.isRegistered(pool));
 		return true;
+	}
+
+	/***************************************************************************
+	 *                         EIP 1154 PULL INTERFACE                         *
+	 ***************************************************************************/
+	function resultFor(bytes32 id) external view returns (bytes result)
+	{
+		IexecODBLibCore.Task storage task = m_tasks[id];
+		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);
+		return task.results;
 	}
 
 	/***************************************************************************
@@ -327,9 +339,10 @@ contract IexecHub is CategoryManager
 
 	function finalizeWork(
 		bytes32 _taskid,
-		string  _stdout,
-		string  _stderr,
-		string  _uri)
+		// string  _stdout,
+		// string  _stderr,
+		// string  _uri)
+		bytes  _results)
 	public onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
@@ -338,7 +351,8 @@ contract IexecHub is CategoryManager
 		require(task.revealCounter     == task.winnerCounter
 		    || (task.revealCounter     >  0  && task.revealDeadline <= now)       );
 
-		task.status = IexecODBLibCore.TaskStatusEnum.COMPLETED;
+		task.status  = IexecODBLibCore.TaskStatusEnum.COMPLETED;
+		task.results = _results;
 
 		/**
 		 * Stake and reward management
@@ -346,17 +360,9 @@ contract IexecHub is CategoryManager
 		iexecclerk.successWork(task.dealid);
 		__distributeRewards(_taskid);
 
-		emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
+		// emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
+		emit ConsensusFinalized(_taskid, _results);
 	}
-
-	/*
-	function resultFor(bytes32 id) external view returns (bytes result)
-	{
-		IexecODBLibCore.Task storage task = m_tasks[id];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);
-		return task.results;
-	}
-	*/
 
 	function claimfailed(
 		bytes32 _taskid)

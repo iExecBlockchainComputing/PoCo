@@ -407,18 +407,16 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[6.1] Finalize - Correct (full)", async () => {
-		txMined = await IexecHubInstance.finalizeWork(tasks[1], "stdout", "stderr", "uri", { from: poolScheduler });
+		txMined = await IexecHubInstance.finalizeWork(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.taskid, tasks[1], "check taskid");
-		assert.equal(events[0].args.stdout, "stdout", "check stdout");
-		assert.equal(events[0].args.stderr, "stderr", "check stderr");
-		assert.equal(events[0].args.uri,    "uri",    "check uri"   );
+		assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 	});
 
 	it("[6.2] Finalize - Error (partial - soon)", async () => {
 		try {
-			await IexecHubInstance.finalizeWork(tasks[2], "stdout", "stderr", "uri", { from: poolScheduler });
+			await IexecHubInstance.finalizeWork(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -433,18 +431,16 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.3] Finalize - Correct (partial - wait)", async () => {
-		txMined = await IexecHubInstance.finalizeWork(tasks[3], "stdout", "stderr", "uri", { from: poolScheduler });
+		txMined = await IexecHubInstance.finalizeWork(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
-		assert.equal(events[0].args.taskid, tasks[3], "check taskid");
-		assert.equal(events[0].args.stdout, "stdout", "check stdout");
-		assert.equal(events[0].args.stderr, "stderr", "check stderr");
-		assert.equal(events[0].args.uri,    "uri",    "check uri"   );
+		assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
 	});
 
 	it("[6.4] Finalize - Error (status #1)", async () => {
 		try {
-			await IexecHubInstance.finalizeWork(tasks[4], "stdout", "stderr", "uri", { from: poolScheduler });
+			await IexecHubInstance.finalizeWork(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -454,7 +450,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[6.5] Finalize - Error (status #2)", async () => {
 		try {
-			await IexecHubInstance.finalizeWork(tasks[5], "stdout", "stderr", "uri", { from: poolScheduler });
+			await IexecHubInstance.finalizeWork(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -464,7 +460,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[6.6] Finalize - Error (reveal)", async () => {
 		try {
-			await IexecHubInstance.finalizeWork(tasks[6], "stdout", "stderr", "uri", { from: poolScheduler });
+			await IexecHubInstance.finalizeWork(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -480,7 +476,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[6.7] Finalize - Error (late)", async () => {
 		try {
-			await IexecHubInstance.finalizeWork(tasks[7], "stdout", "stderr", "uri", { from: poolScheduler });
+			await IexecHubInstance.finalizeWork(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");

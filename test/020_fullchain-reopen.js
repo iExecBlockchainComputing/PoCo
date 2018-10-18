@@ -426,7 +426,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Finalize", async () => {
-		await IexecHubInstance.finalizeWork(tasks[0], "stdout", "stderr", "uri", { from: poolScheduler });
+		await IexecHubInstance.finalizeWork(tasks[0], web3.utils.utf8ToHex("aResult"), { from: poolScheduler });
 	});
 
 	it("[setup] Sanity check", async () => {
