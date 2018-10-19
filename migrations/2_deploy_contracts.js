@@ -8,7 +8,6 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
-var TestContract      = artifacts.require("./TestContract.sol");
 
 const fs = require("fs-extra");
 
@@ -29,7 +28,6 @@ module.exports = async function(deployer, network, accounts)
 
 	await deployer.deploy(IexecODBLibOrders);
 	await deployer.link(IexecODBLibOrders, IexecClerk);
-	await deployer.link(IexecODBLibOrders, TestContract);
 
 	await deployer.deploy(IexecHub);
 	IexecHubInstance = await IexecHub.deployed();
@@ -82,12 +80,6 @@ module.exports = async function(deployer, network, accounts)
 	BrokerInstance = await Broker.deployed();
 	console.log("Beacon deployed at address: " + BeaconInstance.address);
 	console.log("Broker deployed at address: " + BrokerInstance.address);
-
-	await deployer.deploy(TestContract);
-	IexecODBLibOrdersInstance = await IexecODBLibOrders.deployed();
-	TestContractInstance      = await TestContract.deployed();
-	console.log("IexecODBLibOrders deployed at address: " + IexecODBLibOrdersInstance.address);
-	console.log("TestContract deployed at address: " + TestContractInstance.address);
 
 };
 
