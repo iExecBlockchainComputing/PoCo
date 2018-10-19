@@ -408,7 +408,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: scheduler initializes task                  *
+	 *                    TEST: scheduler initializes task                     *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
 		for (taskid in tasks)
@@ -519,7 +519,7 @@ contract('IexecHub', async (accounts) => {
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
 			assert.equal(events[0].args.taskid, tasks[taskid].authorizations[worker.address].taskid, "check taskid");
 			assert.equal(events[0].args.worker, worker.address,                                      "check worker");
-			assert.equal(events[0].args.result, tasks[taskid].results[worker.address].base,          "check result");
+			assert.equal(events[0].args.hash,   tasks[taskid].results[worker.address].base,          "check result");
 		}
 	});
 
@@ -561,7 +561,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                      TEST: check task status                       *
+	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Finalized 1] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[0].taskid);
@@ -623,7 +623,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                      TEST: check task status                       *
+	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Finalized 2] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[1].taskid);
@@ -685,7 +685,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                      TEST: check task status                       *
+	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Finalized 3] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[2].taskid);

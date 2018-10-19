@@ -51,20 +51,20 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event TaskInitialize(bytes32 indexed taskid, address indexed pool);
-	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 resultHash);
-	event TaskConsensus (bytes32 indexed taskid, bytes32 consensus);
-	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 result);
-	event TaskReopen    (bytes32 indexed taskid);
-	event TaskFinalized (bytes32 indexed taskid, bytes results);
-	event TaskClaimed   (bytes32 indexed taskid);
+	event TaskInitialize(bytes32 indexed taskid, address indexed pool                     );
+	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 sealed   );
+	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
+	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 hash     );
+	event TaskReopen    (bytes32 indexed taskid                                           );
+	event TaskFinalized (bytes32 indexed taskid,                         bytes   results  );
+	event TaskClaimed   (bytes32 indexed taskid                                           );
 
-	event AccurateContribution(bytes32 indexed taskid, address indexed worker);
-	event FaultyContribution  (bytes32 indexed taskid, address indexed worker);
+	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
+	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
-	event WorkerSubscription  (address indexed pool, address worker);
-	event WorkerUnsubscription(address indexed pool, address worker);
-	event WorkerEviction      (address indexed pool, address worker);
+	event WorkerSubscription  (address indexed pool, address indexed worker);
+	event WorkerUnsubscription(address indexed pool, address indexed worker);
+	event WorkerEviction      (address indexed pool, address indexed worker);
 
 	/***************************************************************************
 	 *                                Modifiers                                *
@@ -438,14 +438,14 @@ contract IexecHub is CategoryManager, Oracle
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
 				m_workerScores[worker] = m_workerScores[worker].add(1);
-				emit AccurateContribution(_taskid, worker);
+				emit AccurateContribution(worker, _taskid);
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				iexecclerk.seizeContribution(task.dealid, worker);
 				m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
-				emit FaultyContribution(_taskid, worker);
+				emit FaultyContribution(worker, _taskid);
 			}
 		}
 		// totalReward now contains the scheduler share

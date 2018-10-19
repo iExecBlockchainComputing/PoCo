@@ -373,12 +373,12 @@ contract('IexecHub', async (accounts) => {
 		// TODO: get that from event
 		dealid = web3.utils.soliditySha3(
 			{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
-			{ t: 'uint256', v: 0                                                                                                     },
+			{ t: 'uint256', v: 0                                       },
 		);
 	});
 
 	/***************************************************************************
-	 *                  TEST: scheduler initializes task                  *
+	 *                    TEST: scheduler initializes task                     *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
 		txMined = await IexecHubInstance.initialize(dealid, 0, { from: poolScheduler });
@@ -479,7 +479,7 @@ contract('IexecHub', async (accounts) => {
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
 			assert.equal(events[0].args.taskid, taskid,                  "check taskid");
 			assert.equal(events[0].args.worker, w.address,               "check worker");
-			assert.equal(events[0].args.result, results[w.address].base, "check result");
+			assert.equal(events[0].args.hash,   results[w.address].base, "check result");
 		}
 	});
 
@@ -507,7 +507,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                      TEST: check task status                       *
+	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Finalized] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(taskid);

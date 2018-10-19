@@ -418,7 +418,7 @@ contract('IexecHub', async (accounts) => {
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
 		assert.equal(events[0].args.taskid, tasks[1],                         "check taskid");
 		assert.equal(events[0].args.worker, poolWorker1,                      "check worker");
-		assert.equal(events[0].args.result, odbtools.hashResult("true").base, "check result");
+		assert.equal(events[0].args.hash,   odbtools.hashResult("true").base, "check result");
 	});
 
 	it("[4.2] Reveal - Error (unset)", async () => {

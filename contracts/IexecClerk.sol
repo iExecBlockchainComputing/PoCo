@@ -24,7 +24,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 ***************************************************************************/
 	uint256 public constant POOL_STAKE_RATIO = 30;
 	uint256 public constant KITTY_RATIO      = 10;
-	uint256 public constant KITTY_MIN        = 1000;
+	uint256 public constant KITTY_MIN        = 1000000000; // TODO: 1RLC ?
 
 	/***************************************************************************
 	 *                            EIP712 signature                             *
@@ -465,6 +465,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		}
 		// pool reward performed by consensus manager
 
+		/**
+		 * Retrieve part of the kitty
+		 * TODO: remove / keep ?
+		 */
 		uint256 kitty = viewAccount(address(0)).locked;
 		if (kitty > 0)
 		{
