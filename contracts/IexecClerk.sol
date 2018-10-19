@@ -452,10 +452,17 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		uint256 poolstake = deal.pool.price
 		                    .percentage(POOL_STAKE_RATIO);
 
+		// seize requester funds
 		seize (deal.requester,  userstake);
+		// unlock pool stake
 		unlock(deal.pool.owner, poolstake);
+		// dapp reward
 		reward(deal.dapp.owner, deal.dapp.price);
-		reward(deal.data.owner, deal.data.price);
+		// data reward
+		if (deal.data.pointer != address(0))
+		{
+			reward(deal.data.owner, deal.data.price);
+		}
 		// pool reward performed by consensus manager
 
 		uint256 kitty = viewAccount(address(0)).locked;
