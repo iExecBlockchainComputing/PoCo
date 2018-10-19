@@ -95,7 +95,7 @@ contract('IexecHub', async (accounts) => {
 		TestClientInstance = await TestClient.new();
 		TestClientInstance
 			.GotResult()
-			.on('data', event => console.log("[on] GotResult:", event));
+			.on('data', event => console.log("GotResult:", event));
 
 		/**
 		 * For ABIEncoderV2
@@ -405,6 +405,8 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Finalize - Valid callback", async () => {
+		assert.equal(await TestClientInstance.store(tasks[3]), null, "Error in test client: store empty");
+
 		txMined = await IexecHubInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
