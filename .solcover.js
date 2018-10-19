@@ -7,7 +7,7 @@ module.exports = {
 	skipFiles: [
 		'Beacon.sol',
 		'Broker.sol',
-		'TestContract.sol',
+		'TestClient.sol',
 		'permissions/GroupInterface.sol',
 		'permissions/IntersectionGroup.sol',
 		'permissions/SimpleGroup.sol',

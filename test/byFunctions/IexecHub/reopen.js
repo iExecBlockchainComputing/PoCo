@@ -11,10 +11,10 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
-const constants = require("../constants");
-const odbtools  = require('../../utils/odb-tools');
+const constants = require("../../constants");
+const odbtools  = require('../../../utils/odb-tools');
 
-const wallets   = require('../wallets');
+const wallets   = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -299,19 +299,19 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[setup] Initialization", async () => {
-		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "ConsensusInitialize")[0].args.taskid;
-		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "ConsensusInitialize")[0].args.taskid;
+		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 		tasks[3] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 3 });
-		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "ConsensusInitialize")[0].args.taskid;
-		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "ConsensusInitialize")[0].args.taskid;
-		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "ConsensusInitialize")[0].args.taskid;
+		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
 	{
 		return IexecHubInstanceEthers
 			.connect(jsonRpcProvider.getSigner(worker))
-			.signedContribute(
+			.contribute(
 				taskid,                                                 // task (authorization)
 				results.contribution.hash,                              // common    (result)
 				results.contribution.sign,                              // unique    (result)
@@ -361,10 +361,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[setup] Consensus", async () => {
-		await IexecHubInstance.revealConsensus(tasks[1], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.revealConsensus(tasks[2], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.revealConsensus(tasks[5], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.revealConsensus(tasks[6], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {
@@ -391,7 +391,7 @@ contract('IexecHub', async (accounts) => {
 	it("[5.2] Reopen - Correct", async () => {
 		txMined = await IexecHubInstance.reopen(tasks[2], { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusReopen");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskReopen");
 		assert.equal(events[0].args.taskid, tasks[2], "check taskid");
 	});
 

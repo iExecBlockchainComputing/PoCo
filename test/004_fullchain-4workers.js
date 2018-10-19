@@ -385,7 +385,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.initialize(dealid, 0, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusInitialize");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
 		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
 
 		taskid = events[0].args.taskid;
@@ -435,7 +435,7 @@ contract('IexecHub', async (accounts) => {
 		{
 			txNotMined = await IexecHubInstanceEthers
 			.connect(jsonRpcProvider.getSigner(w.address))
-			.signedContribute(
+			.contribute(
 				authorizations[w.address].taskid,       // task (authorization)
 				results[w.address].contribution.hash, // common    (result)
 				results[w.address].contribution.sign, // unique    (result)
@@ -455,10 +455,10 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: scheduler reveal consensus                     *
 	 ***************************************************************************/
 	it(">> revealConsensus", async () => {
-		txMined = await IexecHubInstance.revealConsensus(taskid, consensus.contribution.hash, { from: poolScheduler });
+		txMined = await IexecHubInstance.consensus(taskid, consensus.contribution.hash, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusRevealConsensus");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
 		assert.equal(events[0].args.taskid,    taskid,                      "check taskid"   );
 		assert.equal(events[0].args.consensus, consensus.contribution.hash, "check consensus");
 	});
@@ -477,7 +477,7 @@ contract('IexecHub', async (accounts) => {
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, IexecHubInstance.address, "ConsensusReveal");
+			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
 			assert.equal(events[0].args.taskid, taskid,                  "check taskid");
 			assert.equal(events[0].args.worker, w.address,               "check worker");
 			assert.equal(events[0].args.result, results[w.address].base, "check result");
@@ -488,14 +488,14 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: scheduler finalizes                        *
 	 ***************************************************************************/
 	it(">> finalizeWork", async () => {
-		txMined = await IexecHubInstance.finalizeWork(
+		txMined = await IexecHubInstance.finalize(
 			taskid,
 			web3.utils.utf8ToHex("aResult"),
 			{ from: poolScheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "ConsensusFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
 		assert.equal(events[0].args.taskid,  taskid,                          "check consensus (taskid)");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
 

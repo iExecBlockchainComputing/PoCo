@@ -11,8 +11,10 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
-const constants = require("../constants");
-const odbtools  = require('../../utils/odb-tools');
+const constants = require("../../constants");
+const odbtools  = require('../../../utils/odb-tools');
+
+const wallets   = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -42,9 +44,15 @@ contract('IexecHub', async (accounts) => {
 	var BeaconInstance       = null;
 	var BrokerInstance       = null;
 
-	var PoolInstance1 = null;
-	var PoolInstance2 = null;
-	var PoolInstance3 = null;
+	var DappInstance = null;
+	var DataInstance = null;
+	var PoolInstance = null;
+
+	var dapporder  = null;
+	var dataorder  = null;
+	var poolorder1 = null;
+	var poolorder2 = null;
+	var userorder  = null;
 
 	var jsonRpcProvider          = null;
 	var IexecHubInstanceEthers   = null;
@@ -52,7 +60,8 @@ contract('IexecHub', async (accounts) => {
 	var BeaconInstanceEthers     = null;
 	var BrokerInstanceEthers     = null;
 
-	var categories = [];
+	var deals = {}
+	var tasks = {};
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -72,6 +81,13 @@ contract('IexecHub', async (accounts) => {
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
 
+		odbtools.setup({
+			name:              "iExecODB",
+			version:           "3.0-alpha",
+			chainId:           await web3.eth.net.getId(),
+			verifyingContract: IexecClerkInstance.address,
+		});
+
 		/**
 		 * For ABIEncoderV2
 		 */
@@ -80,9 +96,10 @@ contract('IexecHub', async (accounts) => {
 		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
 		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,     BeaconInstance.abi,     jsonRpcProvider);
 		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
-	});
 
-	it("[configuration] distribute tokens", async () => {
+		/**
+		 * Token distribution
+		 */
 		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
 			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
@@ -142,12 +159,12 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: poolScheduler }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker1   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker2   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker3   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker4   }),
-			IexecClerkInstance.deposit(1000, { from: user          }),
+			IexecClerkInstance.deposit(100000, { from: poolScheduler }),
+			IexecClerkInstance.deposit(100000, { from: poolWorker1   }),
+			IexecClerkInstance.deposit(100000, { from: poolWorker2   }),
+			IexecClerkInstance.deposit(100000, { from: poolWorker3   }),
+			IexecClerkInstance.deposit(100000, { from: poolWorker4   }),
+			IexecClerkInstance.deposit(100000, { from: user          }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -157,139 +174,165 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
-	it("[configuration] Workerpool", async () => {
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A first workerpool", 10, 10, 0, { from: poolScheduler });
+	/***************************************************************************
+	 *                  TEST: Dapp creation (by dappProvider)                  *
+	 ***************************************************************************/
+	it("[Setup]", async () => {
+		// Ressources
+		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
+		DappInstance = await Dapp.at(events[0].args.dapp);
+
+		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
+		DataInstance = await Data.at(events[0].args.data);
+
+		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance1 = await Pool.at(events[0].args.pool);
+		PoolInstance = await Pool.at(events[0].args.pool);
 
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A second workerpool", 100, 100, 0, { from: poolScheduler });
+		txMined = await PoolInstance.changePoolPolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, /* minimum stake */ 100, /* minimum score */ 0, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance2 = await Pool.at(events[0].args.pool);
 
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A third workerpool", 0, 0, 10, { from: poolScheduler });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance3 = await Pool.at(events[0].args.pool);
+		// Workers
+		txsMined = await Promise.all([
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 }),
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 }),
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		// Orders
+		dapporder = odbtools.signDappOrder(
+			{
+				dapp:         DappInstance.address,
+				dappprice:    3,
+				volume:       1000,
+				datarestrict: constants.NULL.ADDRESS,
+				poolrestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(dappProvider)
+		);
+		dataorder = odbtools.signDataOrder(
+			{
+				data:         DataInstance.address,
+				dataprice:    1,
+				volume:       1000,
+				dapprestrict: constants.NULL.ADDRESS,
+				poolrestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(dataProvider)
+		);
+		poolorder_offset = odbtools.signPoolOrder(
+			{
+				pool:         PoolInstance.address,
+				poolprice:    15,
+				volume:       1,
+				category:     4,
+				trust:        1000,
+				tag:          0,
+				dapprestrict: constants.NULL.ADDRESS,
+				datarestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(poolScheduler)
+		);
+		poolorder = odbtools.signPoolOrder(
+			{
+				pool:         PoolInstance.address,
+				poolprice:    25,
+				volume:       1000,
+				category:     4,
+				trust:        1000,
+				tag:          0,
+				dapprestrict: constants.NULL.ADDRESS,
+				datarestrict: constants.NULL.ADDRESS,
+				userrestrict: constants.NULL.ADDRESS,
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(poolScheduler)
+		);
+		userorder = odbtools.signUserOrder(
+			{
+				dapp:         DappInstance.address,
+				dappmaxprice: 3,
+				data:         DataInstance.address,
+				datamaxprice: 1,
+				pool:         constants.NULL.ADDRESS,
+				poolmaxprice: 25,
+				volume:       10,
+				category:     4,
+				trust:        1000,
+				tag:          0,
+				requester:    user,
+				beneficiary:  user,
+				callback:     constants.NULL.ADDRESS,
+				params:       "<parameters>",
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(user)
+		);
+
+		// Market
+		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder_offset, userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder,        userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+
+		// Deals
+		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		assert.equal(deals[1], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 1 }), "check dealid");
 	});
 
-	it("Subscription 1", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), constants.NULL.ADDRESS, "affectation issue");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance1.address, { from: poolWorker1 });
+	it("[1.1] Initialization - Correct", async () => {
+		txMined = await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance1.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker1,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker1); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990,  10 ], "check balance");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
+		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
 	});
 
-	it("Subscription 2", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), constants.NULL.ADDRESS, "affectation issue");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance2.address, { from: poolWorker2 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address,  "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance2.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker2,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker2); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
-	});
-
-	it("Subscription 3 - failure worker conditions", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-
+	it("[1.2] Initialization - Error (low id)", async () => {
 		try {
-			await IexecHubInstance.subscribe(PoolInstance3.address, { from: poolWorker3 });
+			await IexecHubInstance.initialize(deals[1], 0, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
 	});
 
-	it("Subscription 4 - failure registration", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-
+	it("[1.3] Initialization - Error (high id)", async () => {
 		try {
-			await IexecHubInstance.subscribe(constants.NULL.ADDRESS, { from: poolWorker3 });
+			await IexecHubInstance.initialize(deals[1], 1000, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
 	});
 
-	it("Subscription - Unsubscription", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance1.address, { from: poolWorker3 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance1.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990, 10 ], "check balance");
-
-		txMined = await IexecHubInstance.unsubscribe({ from: poolWorker3 }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerUnsubscription");
-		assert.equal(events[0].args.pool,   PoolInstance1.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance2.address, { from: poolWorker3 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance2.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
-	});
-
-	it("Subscription - Eviction", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance2.address, { from: poolWorker4 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance2.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
-
-		txMined = await IexecHubInstance.evict(poolWorker4, { from: poolScheduler }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerEviction");
-		assert.equal(events[0].args.pool,   PoolInstance2.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
-
-		txMined = await IexecHubInstance.subscribe(PoolInstance1.address, { from: poolWorker4 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance1.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccountLegacy(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990, 10 ], "check balance");
+	it("[1.4] Initialization - Error (already initialized)", async () => {
+		try {
+			await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
 	});
 
 });

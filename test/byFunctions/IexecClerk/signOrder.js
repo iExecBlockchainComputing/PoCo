@@ -11,8 +11,8 @@ var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
-const constants = require("../constants");
-const odbtools  = require('../../utils/odb-tools');
+const constants = require("../../constants");
+const odbtools  = require('../../../utils/odb-tools');
 
 function extractEvents(txMined, address, name)
 {

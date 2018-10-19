@@ -51,17 +51,16 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event ConsensusInitialize       (bytes32 indexed taskid, address indexed pool);
-	event ConsensusAllowContribution(bytes32 indexed taskid, address indexed worker);
-	event ConsensusContribute       (bytes32 indexed taskid, address indexed worker, bytes32 resultHash);
-	event ConsensusRevealConsensus  (bytes32 indexed taskid, bytes32 consensus);
-	event ConsensusReveal           (bytes32 indexed taskid, address indexed worker, bytes32 result);
-	event ConsensusReopen           (bytes32 indexed taskid);
-	// event ConsensusFinalized        (bytes32 indexed taskid, string stdout, string stderr, string uri);
-	event ConsensusFinalized        (bytes32 indexed taskid, bytes results);
-	event ConsensusClaimed          (bytes32 indexed taskid);
-	event AccurateContribution      (bytes32 indexed taskid, address indexed worker);
-	event FaultyContribution        (bytes32 indexed taskid, address indexed worker);
+	event TaskInitialize(bytes32 indexed taskid, address indexed pool);
+	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 resultHash);
+	event TaskConsensus (bytes32 indexed taskid, bytes32 consensus);
+	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 result);
+	event TaskReopen    (bytes32 indexed taskid);
+	event TaskFinalized (bytes32 indexed taskid, bytes results);
+	event TaskClaimed   (bytes32 indexed taskid);
+
+	event AccurateContribution(bytes32 indexed taskid, address indexed worker);
+	event FaultyContribution  (bytes32 indexed taskid, address indexed worker);
 
 	event WorkerSubscription  (address indexed pool, address worker);
 	event WorkerUnsubscription(address indexed pool, address worker);
@@ -166,12 +165,12 @@ contract IexecHub is CategoryManager, Oracle
 		                         .mul(CONSENSUS_DURATION_RATIO)
 		                         .add(config.startTime);
 
-		emit ConsensusInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
+		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
 
 		return taskid;
 	}
 
-	function signedContribute(
+	function contribute(
 		bytes32                     _taskid,
 		bytes32                     _resultHash,
 		bytes32                     _resultSign,
@@ -242,10 +241,10 @@ contract IexecHub is CategoryManager, Oracle
 
 		iexecclerk.lockContribution(task.dealid, msg.sender);
 
-		emit ConsensusContribute(_taskid, msg.sender, _resultHash);
+		emit TaskContribute(_taskid, msg.sender, _resultHash);
 	}
 
-	function revealConsensus(
+	function consensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
 	public onlyScheduler(_taskid)
@@ -277,16 +276,12 @@ contract IexecHub is CategoryManager, Oracle
 		task.revealCounter  = 0;
 		task.winnerCounter  = winnerCounter;
 
-		emit ConsensusRevealConsensus(_taskid, _consensus);
+		emit TaskConsensus(_taskid, _consensus);
 	}
 
 	function reveal(
 		bytes32 _taskid,
 		bytes32 _result)
-		/*
-		// TODO: results for oracle?
-		bytes _result)
-		*/
 	public // worker
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -302,12 +297,7 @@ contract IexecHub is CategoryManager, Oracle
 		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
 
-		/*
-		// TODO: results for oracle?
-		if (task.result == bytes(0)) task.result = _results;
-		*/
-
-		emit ConsensusReveal(_taskid, msg.sender, _result);
+		emit TaskReveal(_taskid, msg.sender, _result);
 	}
 
 	function reopen(
@@ -334,14 +324,11 @@ contract IexecHub is CategoryManager, Oracle
 		task.revealDeadline = 0;
 		task.winnerCounter  = 0;
 
-		emit ConsensusReopen(_taskid);
+		emit TaskReopen(_taskid);
 	}
 
-	function finalizeWork(
+	function finalize(
 		bytes32 _taskid,
-		// string  _stdout,
-		// string  _stderr,
-		// string  _uri)
 		bytes  _results)
 	public onlyScheduler(_taskid)
 	{
@@ -361,10 +348,34 @@ contract IexecHub is CategoryManager, Oracle
 		__distributeRewards(_taskid);
 
 		// emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
-		emit ConsensusFinalized(_taskid, _results);
+		emit TaskFinalized(_taskid, _results);
+
+		/**
+		 * Callback for smartcontracts using EIP1154
+		 */
+		address callbackTarget = iexecclerk.viewDeal(task.dealid).callback;
+		if (callbackTarget != address(0))
+		{
+			/**
+			 * Call does not revert if the target smart contract is incompatible or reverts
+			 *
+			 * ATTENTION!
+			 * This call is dangerous and target smart contract can charge the stack.
+			 * Assume invalid state after the call.
+			 * See: https://solidity.readthedocs.io/en/develop/types.html#members-of-addresses
+			 *
+			 * TODO: gas provided?
+			 */
+			require(gasleft() > 100000);
+			callbackTarget.call.gas(100000)(abi.encodeWithSignature(
+				"receiveResult(bytes32,bytes)",
+				_taskid,
+				_results
+			));
+		}
 	}
 
-	function claimfailed(
+	function claim(
 		bytes32 _taskid)
 	public
 	{
@@ -385,7 +396,7 @@ contract IexecHub is CategoryManager, Oracle
 			iexecclerk.unlockContribution(task.dealid, worker);
 		}
 
-		emit ConsensusClaimed(_taskid);
+		emit TaskClaimed(_taskid);
 	}
 
 	function __distributeRewards(bytes32 _taskid)
