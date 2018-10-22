@@ -314,8 +314,8 @@ contract('IexecHub', async (accounts) => {
 			.connect(jsonRpcProvider.getSigner(worker))
 			.contribute(
 				taskid,                                                 // task (authorization)
-				results.contribution.hash,                              // common    (result)
-				results.contribution.sign,                              // unique    (result)
+				results.hash,                              // common    (result)
+				results.seal,                              // unique    (result)
 				enclave,                                                // address   (enclave)
 				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
 				authorization.sign,                                     // signature (authorization)
@@ -327,82 +327,82 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[1],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[1],
 			poolWorker2,
-			odbtools.signResult("true", poolWorker2),
+			odbtools.sealResult("true", poolWorker2),
 			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[2],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[2],
 			poolWorker2,
-			odbtools.signResult("true", poolWorker2),
+			odbtools.sealResult("true", poolWorker2),
 			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[3],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[3],
 			poolWorker2,
-			odbtools.signResult("true", poolWorker2),
+			odbtools.sealResult("true", poolWorker2),
 			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[6],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[7],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[7], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 	});
 
 	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[3], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[7], odbtools.hashResult("true").contribution.hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[3], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[7], odbtools.hashResult("true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {
-		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult("true").base, { from: poolWorker1 });
-		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult("true").base, { from: poolWorker2 });
-		await IexecHubInstance.reveal(tasks[2], odbtools.hashResult("true").base, { from: poolWorker1 });
-		await IexecHubInstance.reveal(tasks[3], odbtools.hashResult("true").base, { from: poolWorker1 });
-		await IexecHubInstance.reveal(tasks[7], odbtools.hashResult("true").base, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult("true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult("true").digest, { from: poolWorker2 });
+		await IexecHubInstance.reveal(tasks[2], odbtools.hashResult("true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[3], odbtools.hashResult("true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[7], odbtools.hashResult("true").digest, { from: poolWorker1 });
 	});
 
 

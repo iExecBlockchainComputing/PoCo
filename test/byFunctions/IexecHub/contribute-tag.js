@@ -315,8 +315,8 @@ contract('IexecHub', async (accounts) => {
 			.connect(jsonRpcProvider.getSigner(worker))
 			.contribute(
 				taskid,                                                 // task (authorization)
-				results.contribution.hash,                              // common    (result)
-				results.contribution.sign,                              // unique    (result)
+				results.hash,                              // common    (result)
+				results.seal,                              // unique    (result)
 				enclave,                                                // address   (enclave)
 				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
 				authorization.sign,                                     // signature (authorization)
@@ -334,7 +334,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				odbtools.signResult(__raw, __worker),
+				odbtools.sealResult(__raw, __worker),
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 				__enclave
 			);
@@ -354,7 +354,7 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			__taskid,
 			__worker,
-			(await odbtools.signContribution (odbtools.signResult(__raw, __worker),                      __enclave    )),
+			(await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                      __enclave    )),
 			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 			__enclave
 		);
@@ -376,7 +376,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				(await odbtools.signContribution (odbtools.signResult(__raw, __worker),                      __enclave    )),
+				(await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                      __enclave    )),
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 				__enclave
 			);
@@ -393,7 +393,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		results       = (await odbtools.signContribution (odbtools.signResult(__raw, __worker),                      __enclave    )),
+		results       = (await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                      __enclave    )),
 		authorization = await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler);
 		// First ok
 		await sendContribution(
@@ -429,7 +429,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				(await odbtools.signContribution (odbtools.signResult(__raw, __worker),                       __enclave)),
+				(await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                       __enclave)),
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker )), // signature: scheduler → worker
 				__enclave
 			);
@@ -450,7 +450,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				(await odbtools.signContribution (odbtools.signResult(__raw, __worker),                       __enclave    )),
+				(await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                       __enclave    )),
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 				__enclave
 			);
@@ -471,7 +471,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				odbtools.signResult(__raw, __worker), // should be signed
+				odbtools.sealResult(__raw, __worker), // should be signed
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)), // signature: scheduler → worker
 				__enclave
 			);
@@ -498,7 +498,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				__taskid,
 				__worker,
-				(await odbtools.signContribution (odbtools.signResult(__raw, __worker),                       __enclave    )),
+				(await odbtools.signContribution (odbtools.sealResult(__raw, __worker),                       __enclave    )),
 				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)), // signature: scheduler → worker
 				__enclave
 			);

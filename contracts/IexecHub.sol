@@ -52,9 +52,9 @@ contract IexecHub is CategoryManager, Oracle
 	 *                                 Events                                  *
 	 ***************************************************************************/
 	event TaskInitialize(bytes32 indexed taskid, address indexed pool                     );
-	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 sealed   );
+	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash     );
 	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
-	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 hash     );
+	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
 	event TaskReopen    (bytes32 indexed taskid                                           );
 	event TaskFinalized (bytes32 indexed taskid,                         bytes   results  );
 	event TaskClaimed   (bytes32 indexed taskid                                           );
@@ -173,7 +173,7 @@ contract IexecHub is CategoryManager, Oracle
 	function contribute(
 		bytes32                     _taskid,
 		bytes32                     _resultHash,
-		bytes32                     _resultSign,
+		bytes32                     _resultSeal,
 		address                     _enclaveChallenge,
 		IexecODBLibOrders.signature _enclaveSign,
 		IexecODBLibOrders.signature _poolSign)
@@ -208,7 +208,7 @@ contract IexecHub is CategoryManager, Oracle
 
 		// Not needed
 		/* require(_resultHash != 0x0); */
-		/* require(_resultSign != 0x0); */
+		/* require(_resultSeal != 0x0); */
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || deal.tag & 0x1 == 0);
@@ -221,7 +221,7 @@ contract IexecHub is CategoryManager, Oracle
 					"\x19Ethereum Signed Message:\n32",
 					keccak256(abi.encodePacked(
 					_resultHash,
-					_resultSign
+					_resultSeal
 					))
 				)),
 				_enclaveSign.v,
@@ -234,7 +234,7 @@ contract IexecHub is CategoryManager, Oracle
 		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;
 		contribution.enclaveChallenge = _enclaveChallenge;
 		contribution.resultHash       = _resultHash;
-		contribution.resultSign       = _resultSign;
+		contribution.resultSeal       = _resultSeal;
 		contribution.score            = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
 		contribution.weight           = 1 + contribution.score.log();
 		task.contributors.push(msg.sender);
@@ -281,23 +281,23 @@ contract IexecHub is CategoryManager, Oracle
 
 	function reveal(
 		bytes32 _taskid,
-		bytes32 _result)
+		bytes32 _resultDigest)
 	public // worker
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING          );
-		require(task.consensusDeadline  >  now                                               );
-		require(task.revealDeadline     >  now                                               );
-		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED);
-		require(contribution.resultHash == task.consensusValue                               );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _result))  );
-		require(contribution.resultSign == keccak256(abi.encodePacked(msg.sender, _result))  );
+		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING              );
+		require(task.consensusDeadline  >  now                                                   );
+		require(task.revealDeadline     >  now                                                   );
+		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED    );
+		require(contribution.resultHash == task.consensusValue                                   );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _resultDigest)));
+		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _resultDigest)));
 
 		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
 
-		emit TaskReveal(_taskid, msg.sender, _result);
+		emit TaskReveal(_taskid, msg.sender, _resultDigest);
 	}
 
 	function reopen(

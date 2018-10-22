@@ -93,7 +93,7 @@ library IexecODBLibCore
 	{
 		ContributionStatusEnum status;
 		bytes32 resultHash;
-		bytes32 resultSign;
+		bytes32 resultSeal;
 		address enclaveChallenge;
 		uint256 score;
 		uint256 weight;

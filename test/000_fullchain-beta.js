@@ -415,44 +415,40 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: Worker join the pool                        *
 	 ***************************************************************************/
 	it("[Setup] Worker join", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), constants.NULL.ADDRESS, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), constants.NULL.ADDRESS, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker1).call(), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker2).call(), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker3).call(), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker4).call(), constants.NULL.ADDRESS, "affectation issue");
 
-		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker1,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.subscribe(PoolInstance.address).send({ from: poolWorker1, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerSubscription.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerSubscription.returnValues.worker, poolWorker1,          "check worker");
 
-		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker2,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.subscribe(PoolInstance.address).send({ from: poolWorker2, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerSubscription.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerSubscription.returnValues.worker, poolWorker2,          "check worker");
 
-		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.subscribe(PoolInstance.address).send({ from: poolWorker3, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerSubscription.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerSubscription.returnValues.worker, poolWorker3,          "check worker");
 
-		txMined = await IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker4 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.subscribe(PoolInstance.address).send({ from: poolWorker4, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerSubscription.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerSubscription.returnValues.worker, poolWorker4,          "check worker");
 
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance.address, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker1).call(), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker2).call(), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker3).call(), PoolInstance.address, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker4).call(), PoolInstance.address, "affectation issue");
 
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker1  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker2  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker3  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker4  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker1).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker2).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker3).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker4).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance"));
 	});
 
 	/***************************************************************************
@@ -460,27 +456,25 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Worker unsubscription & eviction", async () => {
 
-		txMined = await IexecHubInstance.unsubscribe({ from: poolWorker3 }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerUnsubscription");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker3,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.unsubscribe().send({ from: poolWorker3, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerUnsubscription.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerUnsubscription.returnValues.worker, poolWorker3,          "check worker");
 
-		txMined = await IexecHubInstance.evict(poolWorker4, { from: poolScheduler }),
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerEviction");
-		assert.equal(events[0].args.pool,   PoolInstance.address, "check pool"  );
-		assert.equal(events[0].args.worker, poolWorker4,          "check worker");
+		txMined = await IexecHubInstanceBeta.methods.evict(poolWorker4).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.WorkerEviction.returnValues.pool,   PoolInstance.address, "check pool"  );
+		assert.equal(txMined.events.WorkerEviction.returnValues.worker, poolWorker4,          "check worker");
 
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance.address,   "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance.address,   "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker1).call(), PoolInstance.address,   "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker2).call(), PoolInstance.address,   "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker3).call(), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstanceBeta.methods.viewAffectation(poolWorker4).call(), constants.NULL.ADDRESS, "affectation issue");
 
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker1  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990, 10 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker2  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990, 10 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker3  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
-		IexecClerkInstanceBeta.methods.viewAccount(poolWorker4  ).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker1).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker2).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990, 10 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker3).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
+		IexecClerkInstanceBeta.methods.viewAccount(poolWorker4).call().then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
 	});
 
 	/***************************************************************************
@@ -501,10 +495,10 @@ contract('IexecHub', async (accounts) => {
 	 *                       TEST: check score - before                        *
 	 ***************************************************************************/
 	it("[Initial] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker1).call()), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker2).call()), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker3).call()), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker4).call()), 0, "score issue");
 	});
 
 	/***************************************************************************
@@ -519,14 +513,14 @@ contract('IexecHub', async (accounts) => {
 			{ t: 'uint256', v: 0                                       },
 		);
 
-		assert(txMined.events.SchedulerNotice.returnValues.pool,   PoolInstance.address,                    "error");
-		assert(txMined.events.SchedulerNotice.returnValues.dealid, dealid,                                  "error");
-		assert(txMined.events.OrdersMatched.returnValues.dealid,   dealid,                                  "error");
-		assert(txMined.events.OrdersMatched.returnValues.dappHash, odbtools.DappOrderStructHash(dapporder), "error");
-		assert(txMined.events.OrdersMatched.returnValues.dataHash, odbtools.DataOrderStructHash(dataorder), "error");
-		assert(txMined.events.OrdersMatched.returnValues.poolHash, odbtools.PoolOrderStructHash(poolorder), "error");
-		assert(txMined.events.OrdersMatched.returnValues.userHash, odbtools.UserOrderStructHash(userorder), "error");
-		assert(txMined.events.OrdersMatched.returnValues.volume,   1,                                       "error");
+		assert.equal(txMined.events.SchedulerNotice.returnValues.pool,   PoolInstance.address,                    "error");
+		assert.equal(txMined.events.SchedulerNotice.returnValues.dealid, dealid,                                  "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.dealid,   dealid,                                  "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.dappHash, odbtools.DappOrderStructHash(dapporder), "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.dataHash, odbtools.DataOrderStructHash(dataorder), "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.poolHash, odbtools.PoolOrderStructHash(poolorder), "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.userHash, odbtools.UserOrderStructHash(userorder), "error");
+		assert.equal(txMined.events.OrdersMatched.returnValues.volume,   1,                                       "error");
 	});
 
 	/***************************************************************************
@@ -593,13 +587,11 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: scheduler initializes task                     *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
-		txMined = await IexecHubInstance.initialize(dealid, 0, { from: poolScheduler });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await IexecHubInstanceBeta.methods.initialize(dealid, 0).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.TaskInitialize.returnValues.pool, PoolInstance.address, "error");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
-		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
-
-		taskid = events[0].args.taskid;
+		taskid = txMined.events.TaskInitialize.returnValues.taskid;
 	});
 
 	/***************************************************************************
@@ -642,7 +634,7 @@ contract('IexecHub', async (accounts) => {
 	it(">> Run job", async () => {
 		for (w of workers)
 		{
-			results[w.address] = odbtools.signResult(w.raw, w.address);
+			results[w.address] = odbtools.sealResult(w.raw, w.address);
 			if (w.enclave != constants.NULL.ADDRESS) // With SGX
 			{
 				await odbtools.signContribution(results[w.address], w.enclave);
@@ -662,17 +654,16 @@ contract('IexecHub', async (accounts) => {
 		{
 			txMined = await IexecHubInstanceBeta.methods.contribute(
 				authorizations[w.address].taskid,     // task (authorization)
-				results[w.address].contribution.hash, // common    (result)
-				results[w.address].contribution.sign, // unique    (result)
+				results[w.address].hash, // common    (result)
+				results[w.address].seal, // unique    (result)
 				w.enclave,                            // address   (enclave)
 				results[w.address].sign,              // signature (enclave)
 				authorizations[w.address].sign,       // signature (authorization)
 			).send({ from: w.address, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-			assert(txMined.events.TaskContribute.returnValues.taskid, authorizations[w.address].taskid,     "error");
-			assert(txMined.events.TaskContribute.returnValues.worker, w.address,                            "error");
-			assert(txMined.events.TaskContribute.returnValues.sealed, results[w.address].contribution.hash, "error");
+			assert.equal(txMined.events.TaskContribute.returnValues.taskid, authorizations[w.address].taskid, "error");
+			assert.equal(txMined.events.TaskContribute.returnValues.worker, w.address,                        "error");
+			assert.equal(txMined.events.TaskContribute.returnValues.hash,   results[w.address].hash,          "error");
 		}
 	});
 
@@ -684,11 +675,11 @@ contract('IexecHub', async (accounts) => {
 		{
 			contribution = await IexecHubInstanceBeta.methods.viewContribution(taskid, w.address).call();
 			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
-			assert.equal(contribution.resultHash,       results[w.address].contribution.hash,         "check contribution (contribution.resultHash)"      );
-			assert.equal(contribution.resultSign,       results[w.address].contribution.sign,         "check contribution (contribution.resultSign)"      );
-			assert.equal(contribution.enclaveChallenge, w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
-			assert.equal(contribution.score,            0,                                            "check contribution (contribution.score)"           );
-			assert.equal(contribution.weight,           1,                                            "check contribution (contribution.weight)"          );
+			assert.equal(contribution.resultHash,       results[w.address].hash,         "check contribution (contribution.resultHash)"      );
+			assert.equal(contribution.resultSeal,       results[w.address].seal,         "check contribution (contribution.resultSeal)"      );
+			assert.equal(contribution.enclaveChallenge, w.enclave,                       "check contribution (contribution.enclaveChallenge)");
+			assert.equal(contribution.score,            0,                               "check contribution (contribution.score)"           );
+			assert.equal(contribution.weight,           1,                               "check contribution (contribution.weight)"          );
 		}
 	});
 
@@ -725,13 +716,11 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                    TEST: scheduler reveal consensus                     *
 	 ***************************************************************************/
-	it(">> revealConsensus", async () => {
-		txMined = await IexecHubInstance.consensus(taskid, consensus.contribution.hash, { from: poolScheduler });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
-		assert.equal(events[0].args.taskid,    taskid,                      "check taskid"     );
-		assert.equal(events[0].args.consensus, consensus.contribution.hash, "check consensus");
+	it(">> consensus", async () => {
+		txMined = await IexecHubInstanceBeta.methods.consensus(taskid, consensus.hash).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.TaskConsensus.returnValues.taskid,    taskid,         "error");
+		assert.equal(txMined.events.TaskConsensus.returnValues.consensus, consensus.hash, "error");
 	});
 
 	/***************************************************************************
@@ -742,7 +731,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.REVEALING, "check task (task.status)"           );
 		assert.equal    (       task.dealid,                   dealid,                             "check task (task.dealid)"           );
 		assert.equal    (Number(task.idx),                     0,                                  "check task (task.idx)"              );
-		assert.equal    (       task.consensusValue,           consensus.contribution.hash,        "check task (task.consensusValue)"   );
+		assert.equal    (       task.consensusValue,           consensus.hash,                     "check task (task.consensusValue)"   );
 		assert.isAbove  (Number(task.consensusDeadline),       0,                                  "check task (task.consensusDeadline)");
 		assert.isAbove  (Number(task.revealDeadline),          0,                                  "check task (task.revealDeadline)"   );
 		assert.equal    (Number(task.revealCounter),           0,                                  "check task (task.revealCounter)"    );
@@ -755,19 +744,13 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> reveal", async () => {
 		for (w of workers)
-		if (results[w.address].contribution.hash == consensus.contribution.hash)
+		if (results[w.address].hash == consensus.hash)
 		{
-			txMined = await IexecHubInstance.reveal(
-				taskid,
-				results[w.address].base,
-				{ from: w.address }
-			);
-			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
-			assert.equal(events[0].args.taskid, taskid,                  "check taskid");
-			assert.equal(events[0].args.worker, w.address,               "check worker");
-			assert.equal(events[0].args.hash,   results[w.address].base, "check hash");
+			txMined = await IexecHubInstanceBeta.methods.reveal(taskid, results[w.address].digest).send({ from: w.address, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+			assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			assert.equal(txMined.events.TaskReveal.returnValues.taskid, taskid,                    "check taskid");
+			assert.equal(txMined.events.TaskReveal.returnValues.worker, w.address,                 "check worker");
+			assert.equal(txMined.events.TaskReveal.returnValues.digest, results[w.address].digest, "check digest");
 		}
 	});
 
@@ -779,7 +762,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.REVEALING, "check task (task.status)"           );
 		assert.equal    (       task.dealid,                   dealid,                             "check task (task.dealid)"           );
 		assert.equal    (Number(task.idx),                     0,                                  "check task (task.idx)"              );
-		assert.equal    (       task.consensusValue,           consensus.contribution.hash,        "check task (task.consensusValue)"   );
+		assert.equal    (       task.consensusValue,           consensus.hash,                     "check task (task.consensusValue)"   );
 		assert.isAbove  (Number(task.consensusDeadline),       0,                                  "check task (task.consensusDeadline)");
 		assert.isAbove  (Number(task.revealDeadline),          0,                                  "check task (task.revealDeadline)"   );
 		assert.equal    (Number(task.revealCounter),           workers.length,                     "check task (task.revealCounter)"    );
@@ -791,22 +774,12 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: scheduler finalizes                        *
 	 ***************************************************************************/
 	it(">> finalizeWork", async () => {
-		txMined = await IexecHubInstance.finalize(
-			taskid,
-			web3.utils.utf8ToHex("aResult"),
-			{ from: poolScheduler }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
-		assert.equal(events[0].args.taskid,  taskid,                          "check consensus (taskid)");
-		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
+		txMined = await IexecHubInstanceBeta.methods.finalize(taskid, web3.utils.utf8ToHex("aResult")).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txMined.events.TaskFinalized.returnValues.taskid,  taskid,                          "check consensus (taskid)");
+		assert.equal(txMined.events.TaskFinalized.returnValues.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
 
 		// TODO: check 2 events by w.address for w in workers
-		// events = extractEvents(txMined, IexecHubInstance.address, "AccurateContribution");
-		// assert.equal(events[0].args.taskid,   taskid,      "check AccurateContribution (  taskid)");
-		// assert.equal(events[0].args.worker, w.address, "check AccurateContribution (worker)");
-
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
 	});
 
@@ -818,7 +791,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED, "check task (task.status)"           );
 		assert.equal    (       task.dealid,                   dealid,                             "check task (task.dealid)"           );
 		assert.equal    (Number(task.idx),                     0,                                  "check task (task.idx)"              );
-		assert.equal    (       task.consensusValue,           consensus.contribution.hash,        "check task (task.consensusValue)"   );
+		assert.equal    (       task.consensusValue,           consensus.hash,        "check task (task.consensusValue)"   );
 		assert.isAbove  (Number(task.consensusDeadline),       0,                                  "check task (task.consensusDeadline)");
 		assert.isAbove  (Number(task.revealDeadline),          0,                                  "check task (task.revealDeadline)"   );
 		assert.equal    (Number(task.revealCounter),           workers.length,                     "check task (task.revealCounter)"    );
@@ -845,10 +818,10 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
 	it("[Finalized] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 1, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 1, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
-		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker1).call()), 1, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker2).call()), 1, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker3).call()), 0, "score issue");
+		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker4).call()), 0, "score issue");
 	});
 
 	it("FINISHED", async () => {});

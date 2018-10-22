@@ -312,8 +312,8 @@ contract('IexecHub', async (accounts) => {
 			.connect(jsonRpcProvider.getSigner(worker))
 			.contribute(
 				taskid,                                                 // task (authorization)
-				results.contribution.hash,                              // common    (result)
-				results.contribution.sign,                              // unique    (result)
+				results.hash,                              // common    (result)
+				results.seal,                              // unique    (result)
 				enclave,                                                // address   (enclave)
 				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
 				authorization.sign,                                     // signature (authorization)
@@ -325,21 +325,21 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[1],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[4],
 			poolWorker1,
-			odbtools.signResult("false", poolWorker1),
+			odbtools.sealResult("false", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.signResult("true", poolWorker1),
+			odbtools.sealResult("true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
@@ -349,11 +349,11 @@ contract('IexecHub', async (accounts) => {
 		__taskid = tasks[1];
 		__result = odbtools.hashResult("true");
 
-		txMined = await IexecHubInstance.consensus(__taskid, __result.contribution.hash, { from: poolScheduler });
+		txMined = await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
 		assert.equal(events[0].args.taskid,    __taskid,                   "check taskid"   );
-		assert.equal(events[0].args.consensus, __result.contribution.hash, "check consensus");
+		assert.equal(events[0].args.consensus, __result.hash, "check consensus");
 	});
 
 	it("[Extra] cannot contribute after consensus", async () => {
@@ -361,7 +361,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				tasks[1],
 				poolWorker2,
-				odbtools.signResult("true", poolWorker2),
+				odbtools.sealResult("true", poolWorker2),
 				await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 				constants.NULL.ADDRESS
 			);
@@ -377,7 +377,7 @@ contract('IexecHub', async (accounts) => {
 		__result = odbtools.hashResult("true");
 
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.contribution.hash, { from: poolScheduler });
+			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -390,7 +390,7 @@ contract('IexecHub', async (accounts) => {
 		__result = odbtools.hashResult("true");
 
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.contribution.hash, { from: poolScheduler });
+			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -403,7 +403,7 @@ contract('IexecHub', async (accounts) => {
 		__result = odbtools.hashResult("true");
 
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.contribution.hash, { from: poolScheduler });
+			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -422,7 +422,7 @@ contract('IexecHub', async (accounts) => {
 		__result = odbtools.hashResult("true");
 
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.contribution.hash, { from: poolScheduler });
+			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");

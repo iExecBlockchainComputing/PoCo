@@ -495,7 +495,7 @@ contract('IexecHub', async (accounts) => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
 		{
-			tasks[taskid].results[worker.address] = odbtools.signResult(worker.raw, worker.address);
+			tasks[taskid].results[worker.address] = odbtools.sealResult(worker.raw, worker.address);
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
 				await odbtools.signContribution(tasks[taskid].results[worker.address], worker.enclave);
@@ -518,8 +518,8 @@ contract('IexecHub', async (accounts) => {
 			.connect(jsonRpcProvider.getSigner(worker.address))
 			.contribute(
 				tasks[taskid].authorizations[worker.address].taskid,       // task (authorization)
-				tasks[taskid].results[worker.address].contribution.hash, // common    (result)
-				tasks[taskid].results[worker.address].contribution.sign, // unique    (result)
+				tasks[taskid].results[worker.address].hash, // common    (result)
+				tasks[taskid].results[worker.address].seal, // unique    (result)
 				worker.enclave,                                          // address   (enclave)
 				tasks[taskid].results[worker.address].sign,              // signature (enclave)
 				tasks[taskid].authorizations[worker.address].sign,       // signature (authorization)
@@ -538,12 +538,12 @@ contract('IexecHub', async (accounts) => {
 	it(">> revealConsensus", async () => {
 		for (taskid in tasks)
 		{
-			txMined = await IexecHubInstance.consensus(tasks[taskid].taskid, tasks[taskid].consensus.contribution.hash, { from: poolScheduler });
+			txMined = await IexecHubInstance.consensus(tasks[taskid].taskid, tasks[taskid].consensus.hash, { from: poolScheduler });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
 			assert.equal(events[0].args.taskid,    tasks[taskid].taskid,                      "check taskid"   );
-			assert.equal(events[0].args.consensus, tasks[taskid].consensus.contribution.hash, "check consensus");
+			assert.equal(events[0].args.consensus, tasks[taskid].consensus.hash, "check consensus");
 		}
 	});
 
@@ -553,19 +553,19 @@ contract('IexecHub', async (accounts) => {
 	it(">> reveal", async () => {
 		for (taskid in tasks)
 		for (worker of tasks[taskid].workers)
-		if (tasks[taskid].results[worker.address].contribution.hash == tasks[taskid].consensus.contribution.hash)
+		if (tasks[taskid].results[worker.address].hash == tasks[taskid].consensus.hash)
 		{
 			txMined = await IexecHubInstance.reveal(
 				tasks[taskid].authorizations[worker.address].taskid,
-				tasks[taskid].results[worker.address].base,
+				tasks[taskid].results[worker.address].digest,
 				{ from: worker.address }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
 			assert.equal(events[0].args.taskid, tasks[taskid].authorizations[worker.address].taskid, "check taskid");
-			assert.equal(events[0].args.worker, worker.address,                                      "check worker");
-			assert.equal(events[0].args.hash,   tasks[taskid].results[worker.address].base,          "check result");
+			assert.equal(events[0].args.worker, worker.address,                               "check worker");
+			assert.equal(events[0].args.digest, tasks[taskid].results[worker.address].digest, "check result");
 		}
 	});
 
@@ -612,7 +612,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Finalized 1] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[0].taskid);
 		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (task.consensusValue,               tasks[0].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.equal    (task.consensusValue,               tasks[0].consensus.hash, "check task (task.consensusValue)"   );
 		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
 		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
 		assert.equal    (task.revealCounter.toNumber(),     2,                                    "check task (task.revealCounter)"    );
@@ -674,7 +674,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Finalized 2] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[1].taskid);
 		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (task.consensusValue,               tasks[1].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.equal    (task.consensusValue,               tasks[1].consensus.hash, "check task (task.consensusValue)"   );
 		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
 		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
 		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
@@ -736,7 +736,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Finalized 3] Check task", async () => {
 		task = await IexecHubInstanceEthers.viewTask(tasks[2].taskid);
 		assert.equal    (task.status,                       constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (task.consensusValue,               tasks[2].consensus.contribution.hash, "check task (task.consensusValue)"   );
+		assert.equal    (task.consensusValue,               tasks[2].consensus.hash, "check task (task.consensusValue)"   );
 		assert.isAbove  (task.consensusDeadline.toNumber(), 0,                                    "check task (task.consensusDeadline)");
 		assert.isAbove  (task.revealDeadline.toNumber(),    0,                                    "check task (task.revealDeadline)"   );
 		assert.equal    (task.revealCounter.toNumber(),     3,                                    "check task (task.revealCounter)"    );
