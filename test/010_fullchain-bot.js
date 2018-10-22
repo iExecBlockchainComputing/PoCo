@@ -548,7 +548,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[0].taskid,                   "check consensus (taskid)");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 
@@ -610,7 +610,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[1].taskid,                   "check consensus (taskid)");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 2"), "check consensus (results)");
 
@@ -672,7 +672,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[2].taskid,                   "check consensus (taskid)");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
 

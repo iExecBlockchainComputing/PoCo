@@ -73,8 +73,8 @@ contract('IexecHub', async (accounts) => {
 		console.log("# web3 version:", web3.version);
 
 		workers = [
-			{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
-			{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec the wanderer" },
+			{ address: poolWorker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
+			{ address: poolWorker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
 		];
 		consensus = odbtools.hashResult("iExec the wanderer");
 
@@ -841,7 +841,7 @@ contract('IexecHub', async (accounts) => {
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  taskid,                          "check consensus (taskid)");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
 

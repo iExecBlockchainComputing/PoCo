@@ -72,9 +72,9 @@ loop for all task in bag
 
 	Scheduler --> IexecHub : <b>initialize()
 	deactivate Scheduler
-	IexecHub <--> IexecHub : <font color=green><b>emit ConsensusInitialize()
+	IexecHub <--> IexecHub : <font color=green><b>emit TaskInitialize()
 	activate Scheduler
-	IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusInitialize()
+	IexecHub o-> Scheduler : <font color=blue><b> watch TaskInitialize()
 
 	group workorder processing
 		Scheduler -> Scheduler : randomly choose worker
@@ -85,35 +85,36 @@ loop for all task in bag
 		group Worker execution
 			Worker  <--> Dapp : getApp
 			Worker  <--> Dataset : getDataset
-			Worker -> Worker : execute the asked work
-			Worker -> Worker : resultHash  (vote)
-			Worker -> Worker : resultSigned(proof of knowledge)
+			Worker -> Worker : execute the asked work → Results //(raw data or uri)//
+			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
+			Worker -> Worker : resultHash = hash(ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | ResultDigest) //(proof of knowledge)//
 			Worker --> IexecHub : <b>contribute()
-			IexecHub <--> IexecHub : <font color=green><b>emit ConsensusContribute()
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
 		end
 
-		IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusContribute()
-		Scheduler --> IexecHub : <b>revealConsensus()
-		IexecHub <--> IexecHub : <font color=green><b>emit ConsensusRevealConsensus()
+		IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
+		Scheduler --> IexecHub : <b>consensus()
+		IexecHub <--> IexecHub : <font color=green><b>emit TeaskConsensus()
 
 		group Worker reveal
-			IexecHub o-> Worker : <font color=blue><b> watch ConsensusRevealConsensus()
+			IexecHub o-> Worker : <font color=blue><b> watch TaskConsensus()
+			Worker -> Worker : value to reveal is resultDigest
 			Worker --> IexecHub : <b>reveal()
-			IexecHub <--> IexecHub : <font color=green><b>emit ConsensusReveal()
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskReveal()
 			end
 
 		deactivate  Worker
 
-		IexecHub o-> Scheduler : <font color=blue><b> watch ConsensusReveal()
-		Scheduler --> IexecHub : <b>finalizeWork()
+		IexecHub o-> Scheduler : <font color=blue><b> watch TaskReveal()
+		Scheduler --> IexecHub : <b>finalize()
 		deactivate Scheduler
 		IexecHub --> IexecClerk : notify
 		note over IexecClerk : RLC reward/seize for actors
 		deactivate IexecClerk
-		IexecHub <--> IexecHub : <font color=green><b>emit ConsensusFinalized()
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskFinalize()
 		deactivate IexecHub
 
 	end
 end
-
 @enduml

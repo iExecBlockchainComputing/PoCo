@@ -56,7 +56,7 @@ contract IexecHub is CategoryManager, Oracle
 	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
 	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
 	event TaskReopen    (bytes32 indexed taskid                                           );
-	event TaskFinalized (bytes32 indexed taskid,                         bytes   results  );
+	event TaskFinalize  (bytes32 indexed taskid,                         bytes   results  );
 	event TaskClaimed   (bytes32 indexed taskid                                           );
 
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
@@ -348,7 +348,7 @@ contract IexecHub is CategoryManager, Oracle
 		__distributeRewards(_taskid);
 
 		// emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
-		emit TaskFinalized(_taskid, _results);
+		emit TaskFinalize(_taskid, _results);
 
 		/**
 		 * Callback for smartcontracts using EIP1154

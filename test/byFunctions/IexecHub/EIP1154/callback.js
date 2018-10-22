@@ -391,7 +391,7 @@ contract('IexecHub', async (accounts) => {
 	it("Finalize - No callback", async () => {
 		txMined = await IexecHubInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 	});
@@ -399,7 +399,7 @@ contract('IexecHub', async (accounts) => {
 	it("Finalize - Invalid callback", async () => {
 		txMined = await IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[2],                          "check taskid");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 2"), "check consensus (results)");
 	});
@@ -409,7 +409,7 @@ contract('IexecHub', async (accounts) => {
 
 		txMined = await IexecHubInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalized");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
 

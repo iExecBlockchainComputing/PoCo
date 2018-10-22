@@ -67,8 +67,8 @@ contract('IexecHub', async (accounts) => {
 		console.log("# web3 version:", web3.version);
 
 		workers = [
-			{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
-			{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec the wanderer" },
+			{ address: poolWorker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
+			{ address: poolWorker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
 		];
 		consensus = odbtools.hashResult("iExec the wanderer");
 
@@ -331,14 +331,14 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[LOG] show order", async () => {
-		console.log("=== dapporder ===");
-		console.log(dapporder);
-		console.log("=== dataorder ===");
-		console.log(dataorder);
-		console.log("=== poolorder ===");
-		console.log(poolorder);
-		console.log("=== userorder ===");
-		console.log(userorder);
+		// console.log("=== dapporder ===");
+		// console.log(dapporder);
+		// console.log("=== dataorder ===");
+		// console.log(dataorder);
+		// console.log("=== poolorder ===");
+		// console.log(poolorder);
+		// console.log("=== userorder ===");
+		// console.log(userorder);
 	});
 
 	/***************************************************************************
@@ -360,41 +360,31 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: poolScheduler }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker1   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker2   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker3   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker4   }),
-			IexecClerkInstance.deposit(1000, { from: user          }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker1,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker2,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker3,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker4,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: user,          gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		// UNSAFE TEST: Promise all doest not handle events correctly
-		/*
-		events = extractEvents(txsMined[0], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  poolScheduler, "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		events = extractEvents(txsMined[1], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  poolWorker1,   "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		events = extractEvents(txsMined[2], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  poolWorker2,   "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		events = extractEvents(txsMined[3], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  poolWorker3,   "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		events = extractEvents(txsMined[4], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  poolWorker4,   "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		events = extractEvents(txsMined[5], IexecClerkInstance.address, "Deposit");
-		assert.equal(events[0].args.owner,  user,          "check deposit recipient");
-		assert.equal(events[0].args.amount, 1000,          "check deposit amount");
-		*/
+		assert.isBelow(txsMined[0].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.equal(txsMined[0].events.Deposit.returnValues.owner,  poolScheduler, "check deposit recipient");
+		assert.equal(txsMined[0].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
+		assert.equal(txsMined[1].events.Deposit.returnValues.owner,  poolWorker1,   "check deposit recipient");
+		assert.equal(txsMined[1].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
+		assert.equal(txsMined[2].events.Deposit.returnValues.owner,  poolWorker2,   "check deposit recipient");
+		assert.equal(txsMined[2].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
+		assert.equal(txsMined[3].events.Deposit.returnValues.owner,  poolWorker3,   "check deposit recipient");
+		assert.equal(txsMined[3].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
+		assert.equal(txsMined[4].events.Deposit.returnValues.owner,  poolWorker4,   "check deposit recipient");
+		assert.equal(txsMined[4].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
+		assert.equal(txsMined[5].events.Deposit.returnValues.owner,  user,          "check deposit recipient");
+		assert.equal(txsMined[5].events.Deposit.returnValues.amount, 1000,          "check deposit amount"   );
 	});
 
 	/***************************************************************************
@@ -528,7 +518,6 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Market] Check deal", async () => {
 		deal = await IexecClerkInstanceBeta.methods.viewDeal(dealid).call();
-		console.log(deal);
 		assert.equal    (       deal.dapp.pointer, DappInstance.address,   "check deal (deal.dapp.pointer)"        );
 		assert.equal    (       deal.dapp.owner,   dappProvider,           "check deal (deal.dapp.owner)"          );
 		assert.equal    (Number(deal.dapp.price),  dapporder.dappprice,    "check deal (deal.dapp.price)"          );
@@ -589,9 +578,11 @@ contract('IexecHub', async (accounts) => {
 	it(">> initialize", async () => {
 		txMined = await IexecHubInstanceBeta.methods.initialize(dealid, 0).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.equal(txMined.events.TaskInitialize.returnValues.pool, PoolInstance.address, "error");
 
-		taskid = txMined.events.TaskInitialize.returnValues.taskid;
+		taskid = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
+
+		assert.equal(txMined.events.TaskInitialize.returnValues.taskid, taskid,               "error");
+		assert.equal(txMined.events.TaskInitialize.returnValues.pool,   PoolInstance.address, "error");
 	});
 
 	/***************************************************************************
@@ -675,11 +666,11 @@ contract('IexecHub', async (accounts) => {
 		{
 			contribution = await IexecHubInstanceBeta.methods.viewContribution(taskid, w.address).call();
 			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
-			assert.equal(contribution.resultHash,       results[w.address].hash,         "check contribution (contribution.resultHash)"      );
-			assert.equal(contribution.resultSeal,       results[w.address].seal,         "check contribution (contribution.resultSeal)"      );
-			assert.equal(contribution.enclaveChallenge, w.enclave,                       "check contribution (contribution.enclaveChallenge)");
-			assert.equal(contribution.score,            0,                               "check contribution (contribution.score)"           );
-			assert.equal(contribution.weight,           1,                               "check contribution (contribution.weight)"          );
+			assert.equal(contribution.resultHash,       results[w.address].hash,                      "check contribution (contribution.resultHash)"      );
+			assert.equal(contribution.resultSeal,       results[w.address].seal,                      "check contribution (contribution.resultSeal)"      );
+			assert.equal(contribution.enclaveChallenge, w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
+			assert.equal(contribution.score,            0,                                            "check contribution (contribution.score)"           );
+			assert.equal(contribution.weight,           1,                                            "check contribution (contribution.weight)"          );
 		}
 	});
 
@@ -776,8 +767,8 @@ contract('IexecHub', async (accounts) => {
 	it(">> finalizeWork", async () => {
 		txMined = await IexecHubInstanceBeta.methods.finalize(taskid, web3.utils.utf8ToHex("aResult")).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.equal(txMined.events.TaskFinalized.returnValues.taskid,  taskid,                          "check consensus (taskid)");
-		assert.equal(txMined.events.TaskFinalized.returnValues.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
+		assert.equal(txMined.events.TaskFinalize.returnValues.taskid,  taskid,                          "check consensus (taskid)");
+		assert.equal(txMined.events.TaskFinalize.returnValues.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
 
 		// TODO: check 2 events by w.address for w in workers
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
@@ -791,7 +782,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED, "check task (task.status)"           );
 		assert.equal    (       task.dealid,                   dealid,                             "check task (task.dealid)"           );
 		assert.equal    (Number(task.idx),                     0,                                  "check task (task.idx)"              );
-		assert.equal    (       task.consensusValue,           consensus.hash,        "check task (task.consensusValue)"   );
+		assert.equal    (       task.consensusValue,           consensus.hash,                     "check task (task.consensusValue)"   );
 		assert.isAbove  (Number(task.consensusDeadline),       0,                                  "check task (task.consensusDeadline)");
 		assert.isAbove  (Number(task.revealDeadline),          0,                                  "check task (task.revealDeadline)"   );
 		assert.equal    (Number(task.revealCounter),           workers.length,                     "check task (task.revealCounter)"    );
