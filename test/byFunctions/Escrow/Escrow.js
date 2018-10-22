@@ -102,7 +102,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw error #1", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		try
 		{
@@ -116,7 +116,7 @@ contract('IexecHub', async (accounts) => {
 		}
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -124,7 +124,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit error #1", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		try
 		{
@@ -138,7 +138,7 @@ contract('IexecHub', async (accounts) => {
 		}
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -146,19 +146,19 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Approve", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		txMined = await RLCInstance.transfer(user, 1000000000, { from: iexecAdmin });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		txMined = await RLCInstance.approve(IexecClerkInstance.address, 100000000, { from: user });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -166,7 +166,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit error #2", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		try
 		{
@@ -180,7 +180,7 @@ contract('IexecHub', async (accounts) => {
 		}
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -188,7 +188,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit success", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 0, 0 ], "check balance");
 
 		txMined = await IexecClerkInstance.deposit(50000000, {from: user});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -198,7 +198,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.amount, 50000000, "check amount");
 
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -206,7 +206,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw error #2", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
 
 		try
 		{
@@ -220,7 +220,7 @@ contract('IexecHub', async (accounts) => {
 		}
 
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -228,7 +228,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw success", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 50000000, 0 ], "check balance");
 
 		txMined = await IexecClerkInstance.withdraw(10000000, {from: user});
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -238,7 +238,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.amount, 10000000, "check amount");
 
 		assert.equal(await RLCInstance.balanceOf(user), 960000000, "wrong rlc balance");
-		balance = await IexecClerkInstance.viewAccountLegacy(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 40000000, 0 ], "check balance");
+		balance = await IexecClerkInstanceEthers.viewAccount(user); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 40000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
