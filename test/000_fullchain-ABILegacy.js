@@ -10,6 +10,9 @@ var Pool         = artifacts.require("./Pool.sol");
 var Beacon       = artifacts.require("./Beacon.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
+var IexecHubABILegacy   = artifacts.require("./IexecHubABILegacy.sol");
+var IexecClerkABILegacy = artifacts.require("./IexecClerkABILegacy.sol");
+
 const Web3      = require('web3')
 const constants = require("./constants");
 const odbtools  = require('../utils/odb-tools');
@@ -84,6 +87,15 @@ contract('IexecHub', async (accounts) => {
 		BeaconInstance       = await Beacon.deployed();
 		BrokerInstance       = await Broker.deployed();
 
+		/**
+		 * For ABILegacy
+		 */
+		IexecHubInstance   = await IexecHubABILegacy.at(IexecHubInstance.address);
+		IexecClerkInstance = await IexecClerkABILegacy.at(IexecClerkInstance.address);
+
+		/**
+		 * Domain setup
+		 */
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
@@ -95,8 +107,7 @@ contract('IexecHub', async (accounts) => {
 		 * For ABIEncoderV2
 		 */
 		web3 = new Web3(web3.currentProvider);
-		IexecHubInstanceBeta   = new web3.eth.Contract(IexecHubInstance.abi,   IexecHubInstance.address  );
-		IexecClerkInstanceBeta = new web3.eth.Contract(IexecClerkInstance.abi, IexecClerkInstance.address);
+		IexecClerkInstanceBeta = new web3.eth.Contract(IexecClerk.abi, IexecClerkInstance.address); // Full abi needed here
 
 		/**
 		 * Token distribution
@@ -360,19 +371,19 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: poolScheduler }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker1   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker2   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker3   }),
-			IexecClerkInstance.deposit(1000, { from: poolWorker4   }),
-			IexecClerkInstance.deposit(1000, { from: user          }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolScheduler }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker1   }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker2   }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker3   }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker4   }),
+			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: user          }),
 		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[0].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
