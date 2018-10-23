@@ -14,7 +14,12 @@ import "./registries/RegistryBase.sol";
 /* import "./registries/DataRegistry.sol"; */
 /* import "./registries/PoolRegistry.sol"; */
 
-contract IexecHub is CategoryManager, Oracle
+/**
+ * /!\ TEMPORARY LEGACY /!\
+ */
+import "./IexecHubABILegacy.sol";
+
+contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 {
 	using SafeMathOZ for uint256;
 
@@ -509,5 +514,106 @@ contract IexecHub is CategoryManager, Oracle
 
 		emit WorkerEviction(address(pool), _worker);
 		return true;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * /!\ TEMPORARY LEGACY /!\
+	 */
+
+	function viewTaskABILegacy(bytes32 _taskid)
+	public view returns
+	( IexecODBLibCore.TaskStatusEnum
+	, bytes32
+	, uint256
+	, uint256
+	, bytes32
+	, uint256
+	, uint256
+	, uint256
+	, address[]
+	, bytes
+	)
+	{
+		IexecODBLibCore.Task memory task = viewTask(_taskid);
+		return (
+			task.status,
+			task.dealid,
+			task.idx,
+			task.consensusDeadline,
+			task.consensusValue,
+			task.revealDeadline,
+			task.revealCounter,
+			task.winnerCounter,
+			task.contributors,
+			task.results
+		);
+	}
+
+	function viewContributionABILegacy(bytes32 _taskid, address _worker)
+	public view returns
+	( IexecODBLibCore.ContributionStatusEnum
+	, bytes32
+	, bytes32
+	, address
+	, uint256
+	, uint256
+	)
+	{
+		IexecODBLibCore.Contribution memory contribution = viewContribution(_taskid, _worker);
+		return (
+			contribution.status,
+			contribution.resultHash,
+			contribution.resultSeal,
+			contribution.enclaveChallenge,
+			contribution.score,
+			contribution.weight
+		);
+	}
+
+	function contributeABILegacy(
+		bytes32 _taskid,
+		bytes32 _resultHash,
+		bytes32 _resultSeal,
+		address _enclaveChallenge,
+		uint8   _enclaveSign_v,
+		bytes32 _enclaveSign_r,
+		bytes32 _enclaveSign_s,
+		uint8   _poolSign_v,
+		bytes32 _poolSign_r,
+		bytes32 _poolSign_s)
+	public
+	{
+		contribute(
+			_taskid,
+			_resultHash,
+			_resultSeal,
+			_enclaveChallenge,
+			IexecODBLibOrders.signature({ v: _enclaveSign_v, r: _enclaveSign_r, s: _enclaveSign_s }),
+			IexecODBLibOrders.signature({ v: _poolSign_v,    r: _poolSign_r,    s: _poolSign_s    })
+		);
+	}
+
+	function viewCategoryABILegacy(uint256 _catid)
+	public view returns (string, string, uint256)
+	{
+		IexecODBLibCore.Category memory category = viewCategory(_catid);
+		return ( category.name, category.description, category.workClockTimeRef );
 	}
 }

@@ -14,7 +14,12 @@ import "./registries/Pool.sol";
 
 import "./permissions/GroupInterface.sol";
 
-contract IexecClerk is Escrow, IexecHubAccessor
+/**
+ * /!\ TEMPORARY LEGACY /!\
+ */
+import "./IexecClerkABILegacy.sol";
+
+contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 {
 	using SafeMathOZ for uint256;
 	using IexecODBLibOrders for *;
@@ -498,4 +503,100 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		lock  (address(0),      poolstake); // → Kitty / Burn
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * /!\ TEMPORARY LEGACY /!\
+	 */
+
+	function viewDealABILegacy_pt1(bytes32 _id)
+	public view returns
+	( address
+	, address
+	, uint256
+	, address
+	, address
+	, uint256
+	, address
+	, address
+	, uint256
+	)
+	{
+		IexecODBLibCore.Deal memory deal = viewDeal(_id);
+		return (
+			deal.dapp.pointer,
+			deal.dapp.owner,
+			deal.dapp.price,
+			deal.data.pointer,
+			deal.data.owner,
+			deal.data.price,
+			deal.pool.pointer,
+			deal.pool.owner,
+			deal.pool.price
+		);
+	}
+
+	function viewDealABILegacy_pt2(bytes32 _id)
+	public view returns
+	( uint256
+	, uint256
+	, address
+	, address
+	, address
+	, string
+	)
+	{
+		IexecODBLibCore.Deal memory deal = viewDeal(_id);
+		return (
+			deal.trust,
+			deal.tag,
+			deal.requester,
+			deal.beneficiary,
+			deal.callback,
+			deal.params
+		);
+	}
+
+	function viewConfigABILegacy(bytes32 _id)
+	public view returns
+	( uint256
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	)
+	{
+		IexecODBLibCore.Config memory config = viewConfig(_id);
+		return (
+			config.category,
+			config.startTime,
+			config.botFirst,
+			config.botSize,
+			config.workerStake,
+			config.schedulerRewardRatio
+		);
+	}
+
+	function viewAccountABILegacy(address _user)
+	public view returns (uint256, uint256)
+	{
+		IexecODBLibCore.Account memory account = viewAccount(_user);
+		return ( account.stake, account.locked );
+	}
 }
