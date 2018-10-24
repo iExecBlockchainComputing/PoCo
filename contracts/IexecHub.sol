@@ -42,16 +42,12 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	/* PoolRegistry poolregistry; */
 
 	/***************************************************************************
-	 *                               Consensuses                               *
+	 *                          Consensuses & Workers                          *
 	 ***************************************************************************/
-	mapping(bytes32 => IexecODBLibCore.Task)                             public m_tasks;
-	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) public m_contributions;
-
-	/***************************************************************************
-	 *                                 Workers                                 *
-	 ***************************************************************************/
-	mapping(address => uint256) public m_workerScores;
-	mapping(address => address) public m_workerAffectations;
+	mapping(bytes32 =>                    IexecODBLibCore.Task         ) m_tasks;
+	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) m_contributions;
+	mapping(address =>                    uint256                      ) m_workerScores;
+	mapping(address =>                    address                      ) m_workerAffectations;
 
 	/***************************************************************************
 	 *                                 Events                                  *
