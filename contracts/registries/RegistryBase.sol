@@ -12,9 +12,9 @@ contract RegistryBase
 	/**
 	 * Members
 	 */
-	mapping(address => uint256                    ) public m_countByOwner;
-	mapping(address => mapping(uint256 => address)) public m_byOwnerByIndex;
-	mapping(address => bool                       ) public m_registered;
+	mapping(address => bool                       ) m_registered;
+	mapping(address => mapping(uint256 => address)) m_byOwnerByIndex;
+	mapping(address => uint256                    ) m_countByOwner;
 
 	/**
 	 * Constructor

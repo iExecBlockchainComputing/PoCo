@@ -18,7 +18,7 @@ contract Escrow
 	/**
 	 * Escrow content
 	 */
-	mapping(address => IexecODBLibCore.Account) public m_accounts;
+	mapping(address => IexecODBLibCore.Account) m_accounts;
 
 	/**
 	 * Events

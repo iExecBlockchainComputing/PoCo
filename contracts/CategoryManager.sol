@@ -9,7 +9,7 @@ contract CategoryManager is OwnableMutable
 	/**
 	 * Content
 	 */
-	IexecODBLibCore.Category[] public m_categories;
+	IexecODBLibCore.Category[] m_categories;
 
 	/**
 	 * Event
