@@ -34,11 +34,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
-	mapping(bytes32 => bytes32[]             ) public m_userdeals;
-	mapping(bytes32 => IexecODBLibCore.Deal  ) public m_deals;
-	mapping(bytes32 => IexecODBLibCore.Config) public m_configs;
-	mapping(bytes32 => uint256               ) public m_consumed;
-	mapping(bytes32 => bool                  ) public m_presigned;
+	mapping(bytes32 => bytes32[]             ) m_userdeals;
+	mapping(bytes32 => IexecODBLibCore.Deal  ) m_deals;
+	mapping(bytes32 => IexecODBLibCore.Config) m_configs;
+	mapping(bytes32 => uint256               ) m_consumed;
+	mapping(bytes32 => bool                  ) m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *
@@ -99,6 +99,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	public view returns (uint256)
 	{
 		return m_consumed[_id];
+	}
+
+	function viewPresigned(bytes32 _id)
+	public view returns (bool)
+	{
+		return m_presigned[_id];
 	}
 
 	/***************************************************************************

@@ -97,7 +97,7 @@ contract('IexecHub', async (accounts) => {
 		entry = { hash: web3.utils.soliditySha3({ t: 'bytes32', v: web3.utils.randomHex(32) }) };
 		odbtools.signStruct(entry, entry.hash, wallets.addressToPrivate(iexecAdmin));
 
-		assert.isFalse(await IexecClerkInstanceEthers.m_presigned(entry.hash),                                                                                                                 "Error with the validation of signatures");
+		assert.isFalse(await IexecClerkInstanceEthers.viewPresigned(entry.hash),                                                                                                               "Error with the validation of signatures");
 		assert.isTrue (await IexecClerkInstanceEthers.verify(iexecAdmin,             entry.hash,               { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }), "Error with the validation of signatures");
 		assert.isFalse(await IexecClerkInstanceEthers.verify(user,                   entry.hash,               { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }), "Error with the validation of signatures");
 		assert.isFalse(await IexecClerkInstanceEthers.verify(constants.NULL.ADDRESS, entry.hash,               { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }), "Error with the validation of signatures");
