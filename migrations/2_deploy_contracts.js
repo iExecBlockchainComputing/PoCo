@@ -14,6 +14,8 @@ const fs = require("fs-extra");
 module.exports = async function(deployer, network, accounts)
 {
 	console.log("# web3 version:", web3.version);
+	chainid = await web3.eth.net.getId();
+	console.log("Chainid is:", chainid);
 
 	await deployer.deploy(RLC);
 	RLCInstance = await RLC.deployed();
@@ -33,7 +35,7 @@ module.exports = async function(deployer, network, accounts)
 	IexecHubInstance = await IexecHub.deployed();
 	console.log("IexecHub deployed at address: " + IexecHubInstance.address);
 
-	await deployer.deploy(IexecClerk, RLCInstance.address, IexecHubInstance.address);
+	await deployer.deploy(IexecClerk, RLCInstance.address, IexecHubInstance.address, chainid);
 	IexecClerkInstance = await IexecClerk.deployed();
 	console.log("IexecClerk deployed at address: " + IexecClerkInstance.address);
 

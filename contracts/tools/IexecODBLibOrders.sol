@@ -57,9 +57,9 @@ library IexecODBLibOrders
 		address pool;
 		uint256 poolprice;
 		uint256 volume;
+		uint256 tag;
 		uint256 category;
 		uint256 trust;
-		uint256 tag;
 		address dapprestrict;
 		address datarestrict;
 		address userrestrict;
@@ -76,9 +76,9 @@ library IexecODBLibOrders
 		uint256 poolmaxprice;
 		address requester;
 		uint256 volume;
+		uint256 tag;
 		uint256 category;
 		uint256 trust;
-		uint256 tag;
 		address beneficiary;
 		address callback;
 		string  params;
