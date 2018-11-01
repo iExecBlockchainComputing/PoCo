@@ -48,6 +48,7 @@
 					</li>
 					<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-cancel" role="tab">Revocation</a></li>
 				</ul>
+				<span class="navbar-text"><a id="addRLC" href="#"><img src="ressources/rlc-logo.png" height=40/></a></span>
 				<span class="navbar-text">Powered by metamask</span>
 			</div>
 		</nav>
@@ -528,7 +529,8 @@
 	var DataABI    = null;
 	var PoolABI    = null;
 	var IexecClerk = null;
-	var IexecHub = null;
+	var IexecHub   = null;
+	var RLC        = null;
 
 	NULLDATASET = {"data":"0x0000000000000000000000000000000000000000","dataprice":0,"volume":0,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x0000000000000000000000000000000000000000","sign":{"r":"0x0000000000000000000000000000000000000000000000000000000000000000","s":"0x0000000000000000000000000000000000000000000000000000000000000000","v":0}}
 
@@ -542,32 +544,50 @@
 		setup();
 
 		// INITIALIZATION
-		if (typeof web3 == "undefined")
+		if (window.ethereum)
 		{
-			web3 = new Web3();
-			console.error("web3 is not connected");
+			web3 = new Web3(ethereum);
+			try
+			{
+				await ethereum.enable();
+			}
+			catch (error)
+			{
+				console.error("Access denied by user");
+				return;
+			}
+		}
+		else if (window.web3)
+		{
+			web3 = new Web3(window.web3.currentProvider);
 		}
 		else
 		{
-			web3 = new Web3(window.web3.currentProvider);
-			console.log("web3 is connected to metamask")
-
-			urlParams = new URLSearchParams(window.location.search);
-			iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
-			iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
-
-			DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
-			DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
-			PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
-			IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
-			IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
-			IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
-			IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
-
-			// activate();
-			console.log("let's dance!");
+			web3 = new Web3(new PortisProvider(portisConfig));
 		}
+
+		urlParams = new URLSearchParams(window.location.search);
+		iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
+		iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
+
+		DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
+		DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
+		PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
+		RLCABI        = (await $.getJSON("contracts/RLC.json"       )).abi;
+		IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
+		IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
+
+		IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
+		IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
+		RLC        = new web3.eth.Contract(RLCABI,        await IexecClerk.methods.rlc().call());
+
+		// activate();
+		console.log("let's dance!");
+
 	});
+
+
+
 
 	function setup()
 	{
@@ -603,6 +623,21 @@
 		// Address modal configuration
 		$("#addressModal").on("show.bs.modal", event => $("#addressModal-location").val($(event.relatedTarget).data("location")));
 		$("#addressModal-submit").click(() => $($("#addressModal-location").val()).val($("#addressModal-value").val()));
+
+		$("#addRLC").click(() => {
+			web3.currentProvider.sendAsync({
+				method: "metamask_watchAsset",
+				params: {
+					"type": "ERC20",
+					"options": {
+						"address": RLC._address,
+						"symbol": "RLC",
+						"decimals": 9,
+						"image": "http://127.0.0.1/web-metamask/ressources/rlc-logo.png",
+					},
+				},
+			}, console.log);
+		});
 	}
 
 	/**
