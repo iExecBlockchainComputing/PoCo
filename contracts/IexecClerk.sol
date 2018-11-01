@@ -61,7 +61,8 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 ***************************************************************************/
 	constructor(
 		address _rlctoken,
-		address _iexechub)
+		address _iexechub,
+		uint256 _chainid)
 	public
 	Escrow(_rlctoken)
 	IexecHubAccessor(_iexechub)
@@ -69,7 +70,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
-		, chainId:           26
+		, chainId:           _chainid
 		, verifyingContract: this
 		}).hash();
 	}
