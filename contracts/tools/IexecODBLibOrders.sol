@@ -11,13 +11,13 @@ library IexecODBLibOrders
 	}
 
 	// bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	// bytes32 public constant DAPPORDER_TYPEHASH    = keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-	// bytes32 public constant DATAORDER_TYPEHASH    = keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
+	// bytes32 public constant DAPPORDER_TYPEHASH    = keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,uint256 tag,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
+	// bytes32 public constant DATAORDER_TYPEHASH    = keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,uint256 tag,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
 	// bytes32 public constant POOLORDER_TYPEHASH    = keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
 	// bytes32 public constant USERORDER_TYPEHASH    = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)");
 	bytes32 public constant EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-	bytes32 public constant DAPPORDER_TYPEHASH    = 0x54d6dfd5b0b205c769bfa2e658d0deb04041feb55aa2b45aa83254ecd37fec7f;
-	bytes32 public constant DATAORDER_TYPEHASH    = 0xe69a76440c3875f3ffb3612d713679e576cddc58f8dcb10bf74d1950f105c61b;
+	bytes32 public constant DAPPORDER_TYPEHASH    = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
+	bytes32 public constant DATAORDER_TYPEHASH    = 0x25152fa69720eec3b3360dd907576b7ec55e2633342bf993e09e8f5148640930;
 	bytes32 public constant POOLORDER_TYPEHASH    = 0x83c35d50702bb5cd84ca58dcb61dbd00fb330c574f351202cdabc71a16642252;
 	bytes32 public constant USERORDER_TYPEHASH    = 0x9cf6d00e15aa47bf59fe58f2b674c24c51a6942718b382678707689fe95c7185;
 
@@ -33,6 +33,7 @@ library IexecODBLibOrders
 		address dapp;
 		uint256 dappprice;
 		uint256 volume;
+		uint256 tag;
 		address datarestrict;
 		address poolrestrict;
 		address userrestrict;
@@ -44,6 +45,7 @@ library IexecODBLibOrders
 		address data;
 		uint256 dataprice;
 		uint256 volume;
+		uint256 tag;
 		address dapprestrict;
 		address poolrestrict;
 		address userrestrict;
@@ -130,6 +132,7 @@ library IexecODBLibOrders
 		// , _dapporder.dapp
 		// , _dapporder.dappprice
 		// , _dapporder.volume
+		// , _dapporder.tag
 		// , _dapporder.datarestrict
 		// , _dapporder.poolrestrict
 		// , _dapporder.userrestrict
@@ -144,7 +147,7 @@ library IexecODBLibOrders
 			// Write typeHash and sub-hashes
 			mstore(sub(_dapporder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_dapporder, 32), 256) // 256 = 32 + 224
+			hash := keccak256(sub(_dapporder, 32), 288) // 288 = 32 + 256
 			// Restore memory
 			mstore(sub(_dapporder, 32), temp1)
 		}
@@ -160,6 +163,7 @@ library IexecODBLibOrders
 		// , _dataorder.data
 		// , _dataorder.dataprice
 		// , _dataorder.volume
+		// , _dataorder.tag
 		// , _dataorder.dapprestrict
 		// , _dataorder.poolrestrict
 		// , _dataorder.userrestrict
@@ -174,7 +178,7 @@ library IexecODBLibOrders
 			// Write typeHash and sub-hashes
 			mstore(sub(_dataorder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_dataorder, 32), 256) // 256 = 32 + 224
+			hash := keccak256(sub(_dataorder, 32), 288) // 288 = 32 + 256
 			// Restore memory
 			mstore(sub(_dataorder, 32), temp1)
 		}

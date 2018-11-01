@@ -24,7 +24,7 @@ contract IntersectionGroup is GroupInterface, OwnableMutable
 		if (m_subgroups.length == 0) return bytes1(0);
 
 		bytes1 permissions = bytes1(-1);
-		for (uint256 i = 0; i<m_subgroups.length; ++i)
+		for (uint256 i = 0; i < m_subgroups.length; ++i)
 		{
 			permissions = permissions & m_subgroups[i].viewPermissions(_user);
 		}

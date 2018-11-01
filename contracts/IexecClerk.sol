@@ -212,10 +212,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// computation environment & allowed enough funds
 		require(_userorder.category     == _poolorder.category );
 		require(_userorder.trust        <= _poolorder.trust    );
-		require(_userorder.tag          == _poolorder.tag      );
 		require(_userorder.dappmaxprice >= _dapporder.dappprice);
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
+		require((_dapporder.tag | _dataorder.tag | _userorder.tag) & ~_poolorder.tag == 0x0);
 
 		// Check matching and restrictions
 		require(_userorder.dapp == _dapporder.dapp);
