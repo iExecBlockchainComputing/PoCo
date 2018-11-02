@@ -6,8 +6,8 @@ module.exports = {
 	EIP712DOMAIN_TYPEHASH:  web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
 	DAPPORDER_TYPEHASH:     web3.utils.keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,uint256 tag,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
 	DATAORDER_TYPEHASH:     web3.utils.keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,uint256 tag,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
-	POOLORDER_TYPEHASH:     web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 category,uint256 trust,uint256 tag,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)"),
-	USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 category,uint256 trust,uint256 tag,address beneficiary,address callback,string params,bytes32 salt)"),
+	POOLORDER_TYPEHASH:     web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)"),
+	USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
 
 	setup: function(domain)
 	{
