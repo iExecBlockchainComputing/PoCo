@@ -4,7 +4,7 @@ var IexecClerk   = artifacts.require("./IexecClerk.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");
 var DataRegistry = artifacts.require("./DataRegistry.sol");
 var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
+var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
@@ -103,7 +103,7 @@ module.exports = async function(deployer, network, accounts)
 	await IexecHubInstance.transferOwnership(owner);
 	console.log("setCategoriesCreator to " + owner);
 
-	// await deployer.deploy(Beacon);
+	// await deployer.deploy(Relay);
 	// await deployer.deploy(Broker, IexecClerkInstance.address);
 	// BeaconInstance = await Beacon.deployed();
 	// BrokerInstance = await Broker.deployed();

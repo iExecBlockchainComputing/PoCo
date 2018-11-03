@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "./tools/IexecODBLibOrders.sol";
 
-contract Beacon
+contract Relay
 {
 	event BroadcastDappOrder(IexecODBLibOrders.DappOrder);
 	event BroadcastDataOrder(IexecODBLibOrders.DataOrder);

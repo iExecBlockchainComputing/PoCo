@@ -7,7 +7,7 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Dapp         = artifacts.require("./Dapp.sol");
 var Data         = artifacts.require("./Data.sol");
 var Pool         = artifacts.require("./Pool.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
+var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 var Escrow = artifacts.require("./Escrow.sol");
@@ -41,13 +41,13 @@ contract('IexecHub', async (accounts) => {
 	var DappRegistryInstance = null;
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
-	var BeaconInstance       = null;
+	var RelayInstance        = null;
 	var BrokerInstance       = null;
 
 	var jsonRpcProvider          = null;
 	var IexecHubInstanceEthers   = null;
 	var IexecClerkInstanceEthers = null;
-	var BeaconInstanceEthers     = null;
+	var RelayInstanceEthers      = null;
 	var BrokerInstanceEthers     = null;
 
 	var categories = [];
@@ -67,7 +67,7 @@ contract('IexecHub', async (accounts) => {
 		DappRegistryInstance = await DappRegistry.deployed();
 		DataRegistryInstance = await DataRegistry.deployed();
 		PoolRegistryInstance = await PoolRegistry.deployed();
-		BeaconInstance       = await Beacon.deployed();
+		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
 
 		/**
@@ -76,7 +76,7 @@ contract('IexecHub', async (accounts) => {
 		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
 		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
 		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,     BeaconInstance.abi,     jsonRpcProvider);
+		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
 		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 	});
 

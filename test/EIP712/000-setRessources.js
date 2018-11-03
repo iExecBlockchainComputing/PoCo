@@ -7,7 +7,7 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Dapp         = artifacts.require("./Dapp.sol");
 var Data         = artifacts.require("./Data.sol");
 var Pool         = artifacts.require("./Pool.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
+var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const constants = require("../constants");

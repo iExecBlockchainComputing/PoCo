@@ -33,7 +33,7 @@ module.exports =
 			host:       "localhost",
 			port:       8545,
 			gas:        5000000,
-			gasPrice:   22000000000,
+			gasPrice:   4000000000, //4Gwei
 		},
 		kovan:
 		{
