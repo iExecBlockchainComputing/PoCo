@@ -103,11 +103,15 @@ module.exports = async function(deployer, network, accounts)
 	await IexecHubInstance.transferOwnership(owner);
 	console.log("setCategoriesCreator to " + owner);
 
-	// await deployer.deploy(Relay);
-	// await deployer.deploy(Broker, IexecClerkInstance.address);
-	// BeaconInstance = await Beacon.deployed();
-	// BrokerInstance = await Broker.deployed();
-	// console.log("Beacon deployed at address: " + BeaconInstance.address);
-	// console.log("Broker deployed at address: " + BrokerInstance.address);
+	// experimental, do not deploy
+	if (chaintype == "private")
+	{
+		await deployer.deploy(Relay);
+		await deployer.deploy(Broker, IexecClerkInstance.address);
+		RelayInstance  = await Relay.deployed();
+		BrokerInstance = await Broker.deployed();
+		console.log("Relay deployed at address: " + RelayInstance.address);
+		console.log("Broker deployed at address: " + BrokerInstance.address);
+	}
 
 };
