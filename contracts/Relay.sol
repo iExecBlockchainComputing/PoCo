@@ -5,10 +5,10 @@ import "./tools/IexecODBLibOrders.sol";
 
 contract Relay
 {
-	event BroadcastDappOrder(IexecODBLibOrders.DappOrder);
-	event BroadcastDataOrder(IexecODBLibOrders.DataOrder);
-	event BroadcastPoolOrder(IexecODBLibOrders.PoolOrder);
-	event BroadcastUserOrder(IexecODBLibOrders.UserOrder);
+	event BroadcastDappOrder(IexecODBLibOrders.DappOrder dapporder);
+	event BroadcastDataOrder(IexecODBLibOrders.DataOrder dataorder);
+	event BroadcastPoolOrder(IexecODBLibOrders.PoolOrder poolorder);
+	event BroadcastUserOrder(IexecODBLibOrders.UserOrder userorder);
 
 	constructor() public {}
 
