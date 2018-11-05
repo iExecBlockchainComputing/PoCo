@@ -7,7 +7,7 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Dapp         = artifacts.require("./Dapp.sol");
 var Data         = artifacts.require("./Data.sol");
 var Pool         = artifacts.require("./Pool.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
+var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const Web3      = require('web3')
@@ -41,7 +41,7 @@ contract('IexecHub', async (accounts) => {
 	var DappRegistryInstance = null;
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
-	var BeaconInstance       = null;
+	var RelayInstance        = null;
 	var BrokerInstance       = null;
 
 	var DappInstance = null;
@@ -81,7 +81,7 @@ contract('IexecHub', async (accounts) => {
 		DappRegistryInstance = await DappRegistry.deployed();
 		DataRegistryInstance = await DataRegistry.deployed();
 		PoolRegistryInstance = await PoolRegistry.deployed();
-		BeaconInstance       = await Beacon.deployed();
+		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
 
 		odbtools.setup({
@@ -97,7 +97,7 @@ contract('IexecHub', async (accounts) => {
 		web3 = new Web3(web3.currentProvider);
 		IexecHubInstanceBeta   = new web3.eth.Contract(IexecHub.abi,   IexecHubInstance.address  );
 		IexecClerkInstanceBeta = new web3.eth.Contract(IexecClerk.abi, IexecClerkInstance.address);
-		BeaconInstanceBeta     = new web3.eth.Contract(Beacon.abi,     BeaconInstance.address    );
+		RelayInstanceBeta      = new web3.eth.Contract(Relay.abi,      RelayInstance.address     );
 
 		/**
 		 * Token distribution
@@ -221,6 +221,7 @@ contract('IexecHub', async (accounts) => {
 				dapp:         DappInstance.address,
 				dappprice:    3,
 				volume:       1000,
+				tag:          0,
 				datarestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -248,6 +249,7 @@ contract('IexecHub', async (accounts) => {
 				data:         DataInstance.address,
 				dataprice:    1,
 				volume:       1000,
+				tag:          0,
 				dapprestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -275,9 +277,9 @@ contract('IexecHub', async (accounts) => {
 				pool:         PoolInstance.address,
 				poolprice:    25,
 				volume:       3,
+				tag:          0,
 				category:     4,
 				trust:        1000,
-				tag:          0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -309,9 +311,9 @@ contract('IexecHub', async (accounts) => {
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
 				volume:       1, // CHANGE FOR BOT
+				tag:          0,
 				category:     4,
 				trust:        1000,
-				tag:          0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -343,7 +345,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broadcastDappOrder", async () => {
-		txMined = await BeaconInstanceBeta.methods.broadcastDappOrder(dapporder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await RelayInstanceBeta.methods.broadcastDappOrder(dapporder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.dapp,         dapporder.dapp,         "error");
@@ -359,7 +361,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broadcastDataOrder", async () => {
-		txMined = await BeaconInstanceBeta.methods.broadcastDataOrder(dataorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await RelayInstanceBeta.methods.broadcastDataOrder(dataorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.data,         dataorder.data,         "error");
@@ -375,7 +377,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broadcastPoolOrder", async () => {
-		txMined = await BeaconInstanceBeta.methods.broadcastPoolOrder(poolorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await RelayInstanceBeta.methods.broadcastPoolOrder(poolorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.pool,         poolorder.pool,         "error");
@@ -394,7 +396,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broadcastUserOrder", async () => {
-		txMined = await BeaconInstanceBeta.methods.broadcastUserOrder(userorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await RelayInstanceBeta.methods.broadcastUserOrder(userorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.dapp,         userorder.dapp,         "error");
