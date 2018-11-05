@@ -66,7 +66,8 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	 ***************************************************************************/
 	constructor(
 		address _rlctoken,
-		address _iexechub)
+		address _iexechub,
+		uint256 _chainid)
 	public
 	Escrow(_rlctoken)
 	IexecHubAccessor(_iexechub)
@@ -74,7 +75,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
-		, chainId:           26
+		, chainId:           _chainid
 		, verifyingContract: this
 		}).hash();
 	}
@@ -216,10 +217,10 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		// computation environment & allowed enough funds
 		require(_userorder.category     == _poolorder.category );
 		require(_userorder.trust        <= _poolorder.trust    );
-		require(_userorder.tag          == _poolorder.tag      );
 		require(_userorder.dappmaxprice >= _dapporder.dappprice);
 		require(_userorder.datamaxprice >= _dataorder.dataprice);
 		require(_userorder.poolmaxprice >= _poolorder.poolprice);
+		require((_dapporder.tag | _dataorder.tag | _userorder.tag) & ~_poolorder.tag == 0x0);
 
 		// Check matching and restrictions
 		require(_userorder.dapp == _dapporder.dapp);

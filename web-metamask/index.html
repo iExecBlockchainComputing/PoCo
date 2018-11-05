@@ -48,7 +48,8 @@
 					</li>
 					<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-cancel" role="tab">Revocation</a></li>
 				</ul>
-				<span class="navbar-text">Powered by metamask</span>
+				<span class="navbar-text"><a id="addRLC" href="#"><img src="ressources/rlc.png" height=40/></a></span>
+				<span class="navbar-text"><a href="https://metamask.io"><img src="ressources/metamask.png" height=40/></a></span>
 			</div>
 		</nav>
 		<div class="container">
@@ -148,6 +149,10 @@
 							</div>
 							<div id="dapporder-advanced-view">
 								<div class="input-group mb-3">
+									<div class="input-group-prepend"><span class="input-group-text">Tag</span></div>
+									<input type="text" id="dapporder-tag" class="form-control" placeholder="0x0">
+								</div>
+								<div class="input-group mb-3">
 									<div class="input-group-prepend"><span class="input-group-text">Data restriction</span></div>
 									<input type="text" id="dapporder-datarestrict" class="form-control" placeholder="0x0000000000000000000000000000000000000000">
 									<div class="input-group-append">
@@ -213,6 +218,10 @@
 								<input type="text" id="dataorder-volume" class="form-control" placeholder="1">
 							</div>
 							<div id="dataorder-advanced-view">
+								<div class="input-group mb-3">
+									<div class="input-group-prepend"><span class="input-group-text">Tag</span></div>
+									<input type="text" id="dataorder-tag" class="form-control" placeholder="0x0">
+								</div>
 								<div class="input-group mb-3">
 									<div class="input-group-prepend"><span class="input-group-text">Dapp restriction</span></div>
 									<input type="text" id="dataorder-dapprestrict" class="form-control" placeholder="0x0000000000000000000000000000000000000000">
@@ -528,9 +537,10 @@
 	var DataABI    = null;
 	var PoolABI    = null;
 	var IexecClerk = null;
-	var IexecHub = null;
+	var IexecHub   = null;
+	var RLC        = null;
 
-	NULLDATASET = {"data":"0x0000000000000000000000000000000000000000","dataprice":0,"volume":0,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x0000000000000000000000000000000000000000","sign":{"r":"0x0000000000000000000000000000000000000000000000000000000000000000","s":"0x0000000000000000000000000000000000000000000000000000000000000000","v":0}}
+	NULLDATASET = {"data":"0x0000000000000000000000000000000000000000","dataprice":0,"volume":0,"tag":0,"dapprestrict":"0x0000000000000000000000000000000000000000","poolrestrict":"0x0000000000000000000000000000000000000000","userrestrict":"0x0000000000000000000000000000000000000000","salt":"0x0000000000000000000000000000000000000000","sign":{"r":"0x0000000000000000000000000000000000000000000000000000000000000000","s":"0x0000000000000000000000000000000000000000000000000000000000000000","v":0}}
 
 	function randomHex(bytes) { return "0x"+[...Array(bytes)].map(i=>(~~(Math.random()*16)).toString(16)).join(""); }
 
@@ -542,32 +552,50 @@
 		setup();
 
 		// INITIALIZATION
-		if (typeof web3 == "undefined")
+		if (window.ethereum)
 		{
-			web3 = new Web3();
-			console.error("web3 is not connected");
+			web3 = new Web3(ethereum);
+			try
+			{
+				await ethereum.enable();
+			}
+			catch (error)
+			{
+				console.error("Access denied by user");
+				return;
+			}
+		}
+		else if (window.web3)
+		{
+			web3 = new Web3(window.web3.currentProvider);
 		}
 		else
 		{
-			web3 = new Web3(window.web3.currentProvider);
-			console.log("web3 is connected to metamask")
-
-			urlParams = new URLSearchParams(window.location.search);
-			iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
-			iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
-
-			DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
-			DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
-			PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
-			IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
-			IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
-			IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
-			IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
-
-			// activate();
-			console.log("let's dance!");
+			web3 = new Web3(new PortisProvider(portisConfig));
 		}
+
+		urlParams = new URLSearchParams(window.location.search);
+		iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
+		iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
+
+		DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
+		DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
+		PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
+		RLCABI        = (await $.getJSON("contracts/RLC.json"       )).abi;
+		IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
+		IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
+
+		IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
+		IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
+		RLC        = new web3.eth.Contract(RLCABI,        await IexecClerk.methods.rlc().call());
+
+		// activate();
+		console.log("let's dance!");
+
 	});
+
+
+
 
 	function setup()
 	{
@@ -603,6 +631,21 @@
 		// Address modal configuration
 		$("#addressModal").on("show.bs.modal", event => $("#addressModal-location").val($(event.relatedTarget).data("location")));
 		$("#addressModal-submit").click(() => $($("#addressModal-location").val()).val($("#addressModal-value").val()));
+
+		$("#addRLC").click(() => {
+			web3.currentProvider.sendAsync({
+				method: "metamask_watchAsset",
+				params: {
+					"type": "ERC20",
+					"options": {
+						"address": RLC._address,
+						"symbol": "RLC",
+						"decimals": 9,
+						"image": "http://127.0.0.1/web-metamask/ressources/rlc-logo.png",
+					},
+				},
+			}, console.log);
+		});
 	}
 
 	/**
@@ -614,14 +657,11 @@
 		else if (iExecODBLibOrders.isValidOrder("DataOrder", __order)) { __hash = iExecODBLibOrders.DataOrderStructHash(__order); }
 		else if (iExecODBLibOrders.isValidOrder("PoolOrder", __order)) { __hash = iExecODBLibOrders.PoolOrderStructHash(__order); }
 		else if (iExecODBLibOrders.isValidOrder("UserOrder", __order)) { __hash = iExecODBLibOrders.UserOrderStructHash(__order); }
-		IexecClerk.methods.m_consumed(__hash).call().then(value => {
+		IexecClerk.methods.viewConsumed(__hash).call().then(value => {
+			notify(" status: " + value + " / " + __order.volume);
 			if (iExecODBLibOrders.isValidOrder("UserOrder", __order))
 			{
 				userOrderProgress(__hash, __order);
-			}
-			else
-			{
-				notify(" status: " + value + " / " + __order.volume);
 			}
 		});
 	});
@@ -644,8 +684,8 @@
 		for (var idx = 0; idx < userorder.volume;)
 		{
 			var dealid = web3.utils.soliditySha3({ type: "bytes32", value: __hash }, { type: "uint256", value: idx });
-			var deal   = await IexecClerk.methods.m_deals(dealid).call();
-			var config = await IexecClerk.methods.m_configs(dealid).call();
+			var deal   = await IexecClerk.methods.viewDeal(dealid).call();
+			var config = await IexecClerk.methods.viewConfig(dealid).call();
 			if (config.botSize == 0) break;
 			deals[idx] = { deal: deal, config: config };
 
@@ -743,6 +783,7 @@
 			dapp:                    $("#dapporder-address"     ).val(),
 			dappprice:    parseFloat($("#dapporder-price-value" ).val()) * $("#dapporder-price-unit").val(),
 			volume:       parseInt  ($("#dapporder-volume"      ).val()),
+			tag:          parseInt  ($("#dapporder-tag"         ).val()),
 			datarestrict:            $("#dapporder-datarestrict").val(),
 			poolrestrict:            $("#dapporder-poolrestrict").val(),
 			userrestrict:            $("#dapporder-userrestrict").val(),
@@ -750,6 +791,7 @@
 		};
 		if (isNaN(dapporder.dappprice  )) { dapporder.dappprice    = 0;                                            }
 		if (isNaN(dapporder.volume     )) { dapporder.volume       = 1;                                            }
+		if (isNaN(dapporder.tag        )) { dapporder.tag          = 0x0;                                          }
 		if (dapporder.datarestrict == "") { dapporder.datarestrict = "0x0000000000000000000000000000000000000000"; }
 		if (dapporder.poolrestrict == "") { dapporder.poolrestrict = "0x0000000000000000000000000000000000000000"; }
 		if (dapporder.userrestrict == "") { dapporder.userrestrict = "0x0000000000000000000000000000000000000000"; }
@@ -779,6 +821,7 @@
 			data:                    $("#dataorder-address"     ).val(),
 			dataprice:    parseFloat($("#dataorder-price-value" ).val()) * $("#dataorder-price-unit").val(),
 			volume:       parseInt  ($("#dataorder-volume"      ).val()),
+			tag:          parseInt  ($("#dataorder-tag"         ).val()),
 			dapprestrict:            $("#dataorder-dapprestrict").val(),
 			poolrestrict:            $("#dataorder-poolrestrict").val(),
 			userrestrict:            $("#dataorder-userrestrict").val(),
@@ -786,6 +829,7 @@
 		};
 		if (isNaN(dataorder.dataprice  )) { dataorder.dataprice    = 0;                                            }
 		if (isNaN(dataorder.volume     )) { dataorder.volume       = 1;                                            }
+		if (isNaN(dataorder.tag        )) { dataorder.volume       = 0x0;                                          }
 		if (dataorder.dapprestrict == "") { dataorder.dapprestrict = "0x0000000000000000000000000000000000000000"; }
 		if (dataorder.poolrestrict == "") { dataorder.poolrestrict = "0x0000000000000000000000000000000000000000"; }
 		if (dataorder.userrestrict == "") { dataorder.userrestrict = "0x0000000000000000000000000000000000000000"; }
@@ -815,9 +859,9 @@
 			pool:                    $("#poolorder-address"     ).val(),
 			poolprice:    parseFloat($("#poolorder-price-value" ).val()) * $("#poolorder-price-unit").val(),
 			volume:       parseInt  ($("#poolorder-volume"      ).val()),
+			tag:          parseInt  ($("#poolorder-tag"         ).val()),
 			category:     parseInt  ($("#poolorder-category"    ).val()),
 			trust:        parseInt  ($("#poolorder-trust"       ).val()),
-			tag:          parseInt  ($("#poolorder-tag"         ).val()),
 			dapprestrict:            $("#poolorder-dapprestrict").val(),
 			datarestrict:            $("#poolorder-datarestrict").val(),
 			userrestrict:            $("#poolorder-userrestrict").val(),
@@ -861,9 +905,9 @@
 			pool:                    $("#userorder-pool"              ).val(),
 			poolmaxprice: parseFloat($("#userorder-poolmaxprice-value").val()) * $("#userorder-poolmaxprice-unit").val(),
 			volume:       parseInt  ($("#userorder-volume"            ).val()),
+			tag:          parseInt  ($("#userorder-tag"               ).val()),
 			category:     parseInt  ($("#userorder-category"          ).val()),
 			trust:        parseInt  ($("#userorder-trust"             ).val()),
-			tag:          parseInt  ($("#userorder-tag"               ).val()),
 			requester:               $("#userorder-requester"         ).val(),
 			beneficiary:             $("#userorder-beneficiary"       ).val(),
 			callback:                $("#userorder-callback"          ).val(),
@@ -876,9 +920,9 @@
 		if (isNaN(userorder.datamaxprice)) { userorder.datamaxprice = 0;                                            }
 		if (isNaN(userorder.poolmaxprice)) { userorder.poolmaxprice = 0;                                            }
 		if (isNaN(userorder.volume      )) { userorder.volume       = 1;                                            }
+		if (isNaN(userorder.tag         )) { userorder.tag          = 0x0;                                          }
 		if (isNaN(userorder.category    )) { userorder.category     = 5;                                            }
 		if (isNaN(userorder.trust       )) { userorder.trust        = 100;                                          }
-		if (isNaN(userorder.tag         )) { userorder.tag          = 0x0;                                          }
 		if (userorder.beneficiary   == "") { userorder.beneficiary  = userorder.requester;                          }
 		if (userorder.callback      == "") { userorder.callback     = "0x0000000000000000000000000000000000000000"; }
 		if (userorder.params        == "") { userorder.params       = "\0";                                         }

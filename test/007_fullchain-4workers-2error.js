@@ -7,7 +7,7 @@ var PoolRegistry = artifacts.require("./PoolRegistry.sol");
 var Dapp         = artifacts.require("./Dapp.sol");
 var Data         = artifacts.require("./Data.sol");
 var Pool         = artifacts.require("./Pool.sol");
-var Beacon       = artifacts.require("./Beacon.sol");
+var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
 const ethers    = require('ethers'); // for ABIEncoderV2
@@ -41,7 +41,7 @@ contract('IexecHub', async (accounts) => {
 	var DappRegistryInstance = null;
 	var DataRegistryInstance = null;
 	var PoolRegistryInstance = null;
-	var BeaconInstance       = null;
+	var RelayInstance        = null;
 	var BrokerInstance       = null;
 
 	var DappInstance = null;
@@ -63,7 +63,7 @@ contract('IexecHub', async (accounts) => {
 	var jsonRpcProvider          = null;
 	var IexecHubInstanceEthers   = null;
 	var IexecClerkInstanceEthers = null;
-	var BeaconInstanceEthers     = null;
+	var RelayInstanceEthers      = null;
 	var BrokerInstanceEthers     = null;
 
 	/***************************************************************************
@@ -89,7 +89,7 @@ contract('IexecHub', async (accounts) => {
 		DappRegistryInstance = await DappRegistry.deployed();
 		DataRegistryInstance = await DataRegistry.deployed();
 		PoolRegistryInstance = await PoolRegistry.deployed();
-		BeaconInstance       = await Beacon.deployed();
+		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
 
 		odbtools.setup({
@@ -105,7 +105,7 @@ contract('IexecHub', async (accounts) => {
 		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
 		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
 		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		BeaconInstanceEthers     = new ethers.Contract(BeaconInstance.address,     BeaconInstance.abi,     jsonRpcProvider);
+		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
 		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 
 		/**
@@ -230,6 +230,7 @@ contract('IexecHub', async (accounts) => {
 				dapp:         DappInstance.address,
 				dappprice:    3,
 				volume:       1000,
+				tag:          0x0,
 				datarestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,6 +244,7 @@ contract('IexecHub', async (accounts) => {
 				data:         DataInstance.address,
 				dataprice:    1,
 				volume:       1000,
+				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -258,7 +260,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       3,
 				category:     4,
 				trust:        1000,
-				tag:          0,
+				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -278,7 +280,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				category:     4,
 				trust:        1000,
-				tag:          0,
+				tag:          0x0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,

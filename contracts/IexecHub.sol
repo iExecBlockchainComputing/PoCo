@@ -255,7 +255,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		require(task.consensusDeadline >  now                                  );
 
 		uint256 winnerCounter = 0;
-		for (uint256 i = 0; i<task.contributors.length; ++i)
+		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
 			address w = task.contributors[i];
 			if (
@@ -412,7 +412,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		uint256 totalWeight = 0;
 		uint256 totalReward = iexecclerk.viewDeal(task.dealid).pool.price;
 
-		for (i = 0; i<task.contributors.length; ++i)
+		for (i = 0; i < task.contributors.length; ++i)
 		{
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
@@ -429,7 +429,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(config.schedulerRewardRatio));
 
-		for (i = 0; i<task.contributors.length; ++i)
+		for (i = 0; i < task.contributors.length; ++i)
 		{
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)

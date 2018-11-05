@@ -76,10 +76,10 @@ contract("IexecHub", async (accounts) => {
 		poolhash = odbtools.PoolOrderStructHash(poolorder);
 		userhash = odbtools.UserOrderStructHash(userorder);
 
-		console.log("dapp consumed:", (await IexecClerkEthersInstance.m_consumed(dapphash)).toNumber());
-		console.log("data consumed:", (await IexecClerkEthersInstance.m_consumed(datahash)).toNumber());
-		console.log("pool consumed:", (await IexecClerkEthersInstance.m_consumed(poolhash)).toNumber());
-		console.log("user consumed:", (await IexecClerkEthersInstance.m_consumed(userhash)).toNumber());
+		console.log("dapp consumed:", (await IexecClerkEthersInstance.viewConsumed(dapphash)).toNumber());
+		console.log("data consumed:", (await IexecClerkEthersInstance.viewConsumed(datahash)).toNumber());
+		console.log("pool consumed:", (await IexecClerkEthersInstance.viewConsumed(poolhash)).toNumber());
+		console.log("user consumed:", (await IexecClerkEthersInstance.viewConsumed(userhash)).toNumber());
 
 /*
 		await IexecClerkEthersInstance.connect(jsonRpcProvider.getSigner(dappProvider )).cancelDappOrder(dapporder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
@@ -101,10 +101,10 @@ contract("IexecHub", async (accounts) => {
 		console.log("txNotMined:", txNotMined);
 */
 
-		console.log("dapp consumed:", (await IexecClerkEthersInstance.m_consumed(dapphash)).toNumber());
-		console.log("data consumed:", (await IexecClerkEthersInstance.m_consumed(datahash)).toNumber());
-		console.log("pool consumed:", (await IexecClerkEthersInstance.m_consumed(poolhash)).toNumber());
-		console.log("user consumed:", (await IexecClerkEthersInstance.m_consumed(userhash)).toNumber());
+		console.log("dapp consumed:", (await IexecClerkEthersInstance.viewConsumed(dapphash)).toNumber());
+		console.log("data consumed:", (await IexecClerkEthersInstance.viewConsumed(datahash)).toNumber());
+		console.log("pool consumed:", (await IexecClerkEthersInstance.viewConsumed(poolhash)).toNumber());
+		console.log("user consumed:", (await IexecClerkEthersInstance.viewConsumed(userhash)).toNumber());
 
 
 	});
