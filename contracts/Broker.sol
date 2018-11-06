@@ -51,6 +51,25 @@ contract Broker
 		m_reward[msg.sender] = _reward;
 	}
 
+	function matchOrdersForPool(
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
+	public returns (bytes32)
+	{
+		address account = Pool(_poolorder.pool).m_owner();
+		uint256 price   = tx.gasprice * 750000 + m_reward[account];
+		m_balance[account] = m_balance[account].sub(price);
+		msg.sender.transfer(price);
+
+		return iexecclerk.matchOrders(
+			_dapporder,
+			_dataorder,
+			_poolorder,
+			_userorder);
+	}
+
 	function matchOrdersForUser(
 		IexecODBLibOrders.DappOrder _dapporder,
 		IexecODBLibOrders.DataOrder _dataorder,
@@ -70,23 +89,27 @@ contract Broker
 			_userorder);
 	}
 
-	function matchOrdersForPool(
+	function matchOrdersForPool_v2(
 		IexecODBLibOrders.DappOrder _dapporder,
 		IexecODBLibOrders.DataOrder _dataorder,
 		IexecODBLibOrders.PoolOrder _poolorder,
 		IexecODBLibOrders.UserOrder _userorder)
 	public returns (bytes32)
 	{
-		address account = Pool(_poolorder.pool).m_owner();
-		uint256 price   = tx.gasprice * 750000 + m_reward[account];
-		m_balance[account] = m_balance[account].sub(price);
-		msg.sender.transfer(price);
+		uint256 gasBefore = gasleft();
 
-		return iexecclerk.matchOrders(
+		bytes32 dealid = iexecclerk.matchOrders(
 			_dapporder,
 			_dataorder,
 			_poolorder,
 			_userorder);
+
+		address payer = Pool(_poolorder.pool).m_owner();
+		uint256 price = tx.gasprice * (87000 + gasBefore - gasleft()) + m_reward[payer];
+		m_balance[payer] = m_balance[payer].sub(price);
+		msg.sender.transfer(price);
+
+		return dealid;
 	}
 
 	function matchOrdersForUser_v2(
@@ -111,5 +134,6 @@ contract Broker
 
 		return dealid;
 	}
+
 
 }
