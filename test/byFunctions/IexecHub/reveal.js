@@ -523,7 +523,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = (await IexecHubInstanceEthers.viewTask(tasks[5])).revealDeadline.toNumber();
+		target = (await IexecHubInstanceEthers.viewTask(tasks[5])).revealDeadline.toNumber() + 1;
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});

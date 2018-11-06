@@ -2,10 +2,8 @@
 
 trap catch INT
 
-#TESTRPC="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/testrpc"
-#TRUFFLE="/home/amxx/Work/iExec/PoCo-dev/node_modules/.bin/truffle"
-TESTRPC="ganache-cli"
-TRUFFLE="truffle"
+TESTRPC="/usr/bin/ganache-cli -m 'actual surround disorder swim upgrade devote digital misery truly verb slide final' -i 26"
+TRUFFLE="/home/amxx/Work/iExec/code/PoCo-dev/node_modules/.bin/truffle"
 
 function print_style
 {
@@ -25,7 +23,7 @@ function initialize
 	mkdir -p logs
 	# starting testrpc
 	print_style 'info' "Starting testrpc daemon in a tmux session\n"
-	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c $TESTRPC || exit 1
+	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c "$TESTRPC" || exit 1
 }
 function finalize
 {
@@ -79,14 +77,14 @@ function runDeploy
 function runTests
 {
 	# running tests
-	for filepath in `find test/ -maxdepth 1 -type f -name "*.js" -print | sort`
+	for filepath in `find test/ -type f -name "*.js" -print | sort`
 	do
 		filename=$(basename $filepath)
 		logfile="logs/${filename%.*}.$date.log"
 
 		if [ "$checkpoint" \> "$filename" ]; then continue; fi
 
-		printf "Starting test ${filename%.*} ... "
+		printf "Starting test ${filepath%.*} ... "
 		$TRUFFLE test $filepath > $logfile 2>&1
 		if [[ $? -ne 0 ]];
 		then
