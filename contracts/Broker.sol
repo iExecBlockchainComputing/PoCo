@@ -20,6 +20,12 @@ contract Broker
 		iexecclerk = IexecClerk(_iexecclerk);
 	}
 
+	function ()
+	public payable
+	{
+		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
+	}
+
 	function deposit()
 	public payable
 	{

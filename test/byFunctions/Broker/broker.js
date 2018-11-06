@@ -350,7 +350,13 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("broker setup", async () => {
-		txMined = await BrokerInstanceBeta.methods.deposit().send({ value: web3.utils.toWei("1.00", "ether"), from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+
+		// txMined = await BrokerInstanceBeta.methods.deposit().send({ value: web3.utils.toWei("1.00", "ether"), from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await web3.eth.sendTransaction({
+			from:  user,
+			to:    BrokerInstance.address,
+			value: web3.utils.toWei("1.00", "ether"),
+		});
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txMined = await BrokerInstanceBeta.methods.setReward(web3.utils.toWei("0.01", "ether")).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
@@ -405,5 +411,13 @@ contract('IexecHub', async (accounts) => {
 		console.log(account / web3.utils.toWei("1.00", "ether"));
 	});
 
+	it("broker exit", async () => {
+		balance = await BrokerInstanceBeta.methods.m_balance(user).call(),
+
+		txMined = await BrokerInstanceBeta.methods.withdraw(balance).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		assert.equal(await BrokerInstanceBeta.methods.m_balance(user).call(), 0);
+	});
 
 });
