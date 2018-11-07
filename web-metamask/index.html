@@ -549,49 +549,55 @@
 
 	$(async () => {
 
-		setup();
-
-		// INITIALIZATION
-		if (window.ethereum)
+		try
 		{
-			web3 = new Web3(ethereum);
-			try
+			setup();
+
+			// INITIALIZATION
+			if (window.ethereum)
 			{
-				await ethereum.enable();
+				web3 = new Web3(ethereum);
+				try
+				{
+					await ethereum.enable();
+				}
+				catch (error)
+				{
+					console.error("Access denied by user");
+					return;
+				}
 			}
-			catch (error)
+			else if (window.web3)
 			{
-				console.error("Access denied by user");
-				return;
+				web3 = new Web3(window.web3.currentProvider);
 			}
+			else
+			{
+				web3 = new Web3(new PortisProvider(portisConfig));
+			}
+
+			urlParams = new URLSearchParams(window.location.search);
+			iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
+			iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
+
+			DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
+			DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
+			PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
+			RLCABI        = (await $.getJSON("contracts/RLC.json"       )).abi;
+			IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
+			IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
+
+			IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
+			IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
+			RLC        = new web3.eth.Contract(RLCABI,        await IexecClerk.methods.rlc().call());
+
+			// activate();
+			console.log("let's dance!");
 		}
-		else if (window.web3)
+		catch (e)
 		{
-			web3 = new Web3(window.web3.currentProvider);
+			console.error("Exceptions raised during initialization, are contract deployed on the targeted blockchain?");
 		}
-		else
-		{
-			web3 = new Web3(new PortisProvider(portisConfig));
-		}
-
-		urlParams = new URLSearchParams(window.location.search);
-		iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
-		iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
-
-		DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
-		DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
-		PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
-		RLCABI        = (await $.getJSON("contracts/RLC.json"       )).abi;
-		IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
-		IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
-
-		IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
-		IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
-		RLC        = new web3.eth.Contract(RLCABI,        await IexecClerk.methods.rlc().call());
-
-		// activate();
-		console.log("let's dance!");
-
 	});
 
 
