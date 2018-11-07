@@ -36,7 +36,11 @@ async function run() {
 
     console.log(contractJson.abi);
     console.log(contractJson.bytescodes);
-      console.log("try deploy:");
+    console.log("IEXECHUB_ADDRESS");
+    console.log(IEXECHUB_ADDRESS);
+    console.log("CALLBACKPROOF_ADDRESS");
+    console.log(CALLBACKPROOF_ADDRESS);
+    console.log("try deploy:");
     iexecAPIContract.deploy({
         data: contractJson.bytescodes,
         arguments: [IEXECHUB_ADDRESS, CALLBACKPROOF_ADDRESS]
