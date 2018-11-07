@@ -35,14 +35,14 @@ async function run() {
     var iexecAPIContract = new web3.eth.Contract(contractJson.abi);
 
     console.log(contractJson.abi);
-    console.log(contractJson.bytescodes);
+    console.log(contractJson.bytecode);
     console.log("IEXECHUB_ADDRESS");
     console.log(IEXECHUB_ADDRESS);
     console.log("CALLBACKPROOF_ADDRESS");
     console.log(CALLBACKPROOF_ADDRESS);
     console.log("try deploy:");
     iexecAPIContract.deploy({
-        data: contractJson.bytescodes,
+        data: contractJson.bytecode,
         arguments: [IEXECHUB_ADDRESS, CALLBACKPROOF_ADDRESS]
     })
     .send({
