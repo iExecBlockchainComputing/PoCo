@@ -11,13 +11,19 @@ contract Broker
 	using SafeMathOZ for uint256;
 
 	IexecClerk                  public iexecclerk;
-	uint256                     public m_price = 0.01 ether;
 	mapping(address => uint256) public m_balance;
+	mapping(address => uint256) public m_reward;
 
 	constructor(address _iexecclerk)
 	public
 	{
 		iexecclerk = IexecClerk(_iexecclerk);
+	}
+
+	function ()
+	public payable
+	{
+		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
 	}
 
 	function deposit()
@@ -39,22 +45,10 @@ contract Broker
 		msg.sender.transfer(_amount);
 	}
 
-	function matchOrdersForUser(
-		IexecODBLibOrders.DappOrder _dapporder,
-		IexecODBLibOrders.DataOrder _dataorder,
-		IexecODBLibOrders.PoolOrder _poolorder,
-		IexecODBLibOrders.UserOrder _userorder)
-	public /* onlyOwner */ returns (bytes32)
+	function setReward(uint256 _reward)
+	public
 	{
-		address account = _userorder.requester;
-		m_balance[account] = m_balance[account].sub(m_price);
-		msg.sender.transfer(m_price);
-
-		return iexecclerk.matchOrders(
-			_dapporder,
-			_dataorder,
-			_poolorder,
-			_userorder);
+		m_reward[msg.sender] = _reward;
 	}
 
 	function matchOrdersForPool(
@@ -62,11 +56,12 @@ contract Broker
 		IexecODBLibOrders.DataOrder _dataorder,
 		IexecODBLibOrders.PoolOrder _poolorder,
 		IexecODBLibOrders.UserOrder _userorder)
-	public /* onlyOwner */ returns (bytes32)
+	public returns (bytes32)
 	{
 		address account = Pool(_poolorder.pool).m_owner();
-		m_balance[account] = m_balance[account].sub(m_price);
-		msg.sender.transfer(m_price);
+		uint256 price   = tx.gasprice * 750000 + m_reward[account];
+		m_balance[account] = m_balance[account].sub(price);
+		msg.sender.transfer(price);
 
 		return iexecclerk.matchOrders(
 			_dapporder,
@@ -74,5 +69,71 @@ contract Broker
 			_poolorder,
 			_userorder);
 	}
+
+	function matchOrdersForUser(
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
+	public returns (bytes32)
+	{
+		address account = _userorder.requester;
+		uint256 price   = tx.gasprice * 750000 + m_reward[account];
+		m_balance[account] = m_balance[account].sub(price);
+		msg.sender.transfer(price);
+
+		return iexecclerk.matchOrders(
+			_dapporder,
+			_dataorder,
+			_poolorder,
+			_userorder);
+	}
+
+	function matchOrdersForPool_v2(
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
+	public returns (bytes32)
+	{
+		uint256 gasBefore = gasleft();
+
+		bytes32 dealid = iexecclerk.matchOrders(
+			_dapporder,
+			_dataorder,
+			_poolorder,
+			_userorder);
+
+		address payer = Pool(_poolorder.pool).m_owner();
+		uint256 price = tx.gasprice * (87000 + gasBefore - gasleft()) + m_reward[payer];
+		m_balance[payer] = m_balance[payer].sub(price);
+		msg.sender.transfer(price);
+
+		return dealid;
+	}
+
+	function matchOrdersForUser_v2(
+		IexecODBLibOrders.DappOrder _dapporder,
+		IexecODBLibOrders.DataOrder _dataorder,
+		IexecODBLibOrders.PoolOrder _poolorder,
+		IexecODBLibOrders.UserOrder _userorder)
+	public returns (bytes32)
+	{
+		uint256 gasBefore = gasleft();
+
+		bytes32 dealid = iexecclerk.matchOrders(
+			_dapporder,
+			_dataorder,
+			_poolorder,
+			_userorder);
+
+		address payer = _userorder.requester;
+		uint256 price = tx.gasprice * (87000 + gasBefore - gasleft()) + m_reward[payer];
+		m_balance[payer] = m_balance[payer].sub(price);
+		msg.sender.transfer(price);
+
+		return dealid;
+	}
+
 
 }
