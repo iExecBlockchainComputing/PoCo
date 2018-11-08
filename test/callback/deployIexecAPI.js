@@ -48,8 +48,8 @@ async function run() {
     })
     .send({
         from: MSG_SENDER,
-        gas: 1500000,
-        gasPrice: '30000000000000'
+        gas: '4710000',
+        gasPrice: '22000000000'
     }, function(error, transactionHash){ console.log("error transactionHash") ; console.log(error) ; console.log(transactionHash) })
     .on('error', function(error){ console.log("error") ; console.log(error) })
     .on('transactionHash', function(transactionHash){   console.log("transactionHash");  console.log(transactionHash) })
