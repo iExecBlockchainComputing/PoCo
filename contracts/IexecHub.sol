@@ -120,10 +120,10 @@ contract IexecHub is CategoryManager, Oracle
 		return Pool(m_workerAffectations[_worker]);
 	}
 
-	function checkResources(address daap, address data, address pool)
+	function checkResources(address dapp, address data, address pool)
 	public view returns (bool)
 	{
-		require(                      dappregistry.isRegistered(daap));
+		require(                      dappregistry.isRegistered(dapp));
 		require(data == address(0) || dataregistry.isRegistered(data));
 		require(                      poolregistry.isRegistered(pool));
 		return true;
