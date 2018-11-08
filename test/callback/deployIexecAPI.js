@@ -6,12 +6,13 @@ const writeAsync = Promise.promisify(fs.write);
 const readFileAsync = Promise.promisify(fs.readFile);
 const writeFileAsync = Promise.promisify(fs.writeFile);
 
-var MSG_SENDER = process.argv[2] || "0x0513425AE000f5bAEaD0ed485ED8c36E737e3586";
+var MSG_SENDER = process.argv[2] || "0x8bd535d49b095ef648cd85ea827867d358872809";
+var IEXECHUB_ADDRESS= process.argv[3] || "0xc4e4a08bf4c6fd11028b714038846006e27d7be8";
+var CALLBACKPROOF_ADDRESS= process.argv[4] || "0x9d32b7cbfa9d68f04048589e5c9cefda241c6312";
 //poa test :
-var NODE_TARGET = process.argv[3] || "http://localhost:8545";
+var NODE_TARGET = process.argv[5] || "http://localhost:8545";
 
-var IEXECHUB_ADDRESS= process.argv[4] || "0x0513425AE000f5bAEaD0ed485ED8c36E737e3586";
-var CALLBACKPROOF_ADDRESS= process.argv[5] || "0x0513425AE000f5bAEaD0ed485ED8c36E737e3586";
+
 
 
 web3 = new Web3(new Web3.providers.HttpProvider(NODE_TARGET));
