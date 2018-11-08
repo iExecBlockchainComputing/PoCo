@@ -60,6 +60,8 @@ contract('IexecHub', async (accounts) => {
 	var consensus      = null;
 	var workers        = [];
 
+	var totalgas = 0;
+
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
@@ -500,6 +502,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecClerkInstanceBeta.methods.matchOrders(dapporder, dataorder, poolorder, userorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
+		totalgas += txMined.gasUsed;
+
 		dealid = web3.utils.soliditySha3(
 			{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
 			{ t: 'uint256', v: 0                                       },
@@ -581,6 +585,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstanceBeta.methods.initialize(dealid, 0).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
+		totalgas += txMined.gasUsed;
+
 		taskid = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
 		assert.equal(txMined.events.TaskInitialize.returnValues.taskid, taskid,               "error");
@@ -657,6 +663,8 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(txMined.events.TaskContribute.returnValues.taskid, authorizations[w.address].taskid, "error");
 			assert.equal(txMined.events.TaskContribute.returnValues.worker, w.address,                        "error");
 			assert.equal(txMined.events.TaskContribute.returnValues.hash,   results[w.address].hash,          "error");
+
+			totalgas += txMined.gasUsed;
 		}
 	});
 
@@ -714,6 +722,8 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.equal(txMined.events.TaskConsensus.returnValues.taskid,    taskid,         "error");
 		assert.equal(txMined.events.TaskConsensus.returnValues.consensus, consensus.hash, "error");
+
+		totalgas += txMined.gasUsed;
 	});
 
 	/***************************************************************************
@@ -744,6 +754,8 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(txMined.events.TaskReveal.returnValues.taskid, taskid,                    "check taskid");
 			assert.equal(txMined.events.TaskReveal.returnValues.worker, w.address,                 "check worker");
 			assert.equal(txMined.events.TaskReveal.returnValues.digest, results[w.address].digest, "check digest");
+
+			totalgas += txMined.gasUsed;
 		}
 	});
 
@@ -771,6 +783,8 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.equal(txMined.events.TaskFinalize.returnValues.taskid,  taskid,                          "check consensus (taskid)");
 		assert.equal(txMined.events.TaskFinalize.returnValues.results, web3.utils.utf8ToHex("aResult"), "check consensus (results)");
+
+		totalgas += txMined.gasUsed;
 
 		// TODO: check 2 events by w.address for w in workers
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)
@@ -817,6 +831,8 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(Number(await IexecHubInstanceBeta.methods.viewScore(poolWorker4).call()), 0, "score issue");
 	});
 
-	it("FINISHED", async () => {});
+	it("FINISHED", async () => {
+		console.log("Total gas:", totalgas);
+	});
 
 });
