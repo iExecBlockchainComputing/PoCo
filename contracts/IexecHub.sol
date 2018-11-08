@@ -448,6 +448,30 @@ contract IexecHub is CategoryManager, Oracle
 		iexecclerk.rewardForScheduling(task.dealid, totalReward);
 	}
 
+	function initializeArray(
+		bytes32[] _dealid,
+		uint256[] _idx)
+	public returns (bool)
+	{
+		require(_dealid.length == _idx.length);
+		for (uint i = 0; i < _dealid.length; ++i)
+		{
+			initialize(_dealid[i], _idx[i]);
+		}
+		return true;
+	}
+
+	function claimArray(
+		bytes32[] _taskid)
+	public returns (bool)
+	{
+		for (uint i = 0; i < _taskid.length; ++i)
+		{
+			claim(_taskid[i]);
+		}
+		return true;
+	}
+
 	/***************************************************************************
 	 *                       Worker affectation methods                        *
 	 ***************************************************************************/
