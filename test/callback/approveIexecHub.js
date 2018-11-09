@@ -19,7 +19,7 @@ Promise.promisifyAll(web3.eth, {
 async function getAbiContent() {
   try {
     var abiFileContent = await readFileAsync("../../deployed/contracts/IexecAPI.json");
-    return JSON.parse(abiFileContent).abi;
+    return JSON.parse(JSON.stringify(abiFileContent)).abi;
   } catch (err) {
     console.error(err)
   }
