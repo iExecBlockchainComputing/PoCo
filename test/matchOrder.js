@@ -330,7 +330,7 @@ contract('IexecHub', async (accounts) => {
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
-				params:       "ace",
+				params:       "{\"1\":\"ace\"}",
 				salt:         web3.utils.randomHex(32),
 				sign:         constants.NULL.SIGNATURE,
 			},
