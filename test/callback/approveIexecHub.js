@@ -28,7 +28,7 @@ async function getAbiContent() {
 async function run() {
   try {
     var abi = await getAbiContent();
-    console.log("abi");
+    //console.log("abi");
     var abiString =JSON.stringify(abi);
     console.log(abiString);
     console.log("abiString.abi");
