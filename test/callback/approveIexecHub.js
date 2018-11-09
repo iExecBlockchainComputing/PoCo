@@ -19,7 +19,7 @@ Promise.promisifyAll(web3.eth, {
 async function getAbiContent() {
   try {
     var abiFileContent = await readFileAsync("../../deployed/contracts/IexecAPI.json");
-    return JSON.parse(abiFileContent);
+    return JSON.parse(abiFileContent).abi;
   } catch (err) {
     console.error(err)
   }
@@ -28,12 +28,10 @@ async function getAbiContent() {
 async function run() {
   try {
     var abi = await getAbiContent();
-    //console.log("abi");
     var abiString =JSON.stringify(abi);
+    console.log("abiString");
     console.log(abiString);
-    console.log("abiString.abi");
-    console.log(abiString.abi);
-    var contract = new web3.eth.Contract(abiString.abi, SMART_CONTRACT_ADDRESS);
+    var contract = new web3.eth.Contract(abiString, SMART_CONTRACT_ADDRESS);
     //var balanceOfBefore = await contract.methods.balanceOf(MSG_SENDER).call();
     //console.log("MSG_SENDER [" + MSG_SENDER + "] balanceOf before is [" + balanceOfBefore + "]");
 
