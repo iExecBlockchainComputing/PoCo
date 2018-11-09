@@ -28,9 +28,13 @@ async function getAbiContent() {
 async function run() {
   try {
     var abi = await getAbiContent();
+    console.log("abi");
     console.log(abi);
+    console.log("abi.abi");
     console.log(abi.abi);
-    var contract = new web3.eth.Contract(abi.abi, SMART_CONTRACT_ADDRESS);
+    console.log("JSON.parse(abi.abi)");
+    console.log(JSON.parse(abi.abi));
+    var contract = new web3.eth.Contract(JSON.parse(abi.abi), SMART_CONTRACT_ADDRESS);
     //var balanceOfBefore = await contract.methods.balanceOf(MSG_SENDER).call();
     //console.log("MSG_SENDER [" + MSG_SENDER + "] balanceOf before is [" + balanceOfBefore + "]");
 
