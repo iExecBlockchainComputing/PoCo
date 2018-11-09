@@ -125,10 +125,10 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		return Pool(m_workerAffectations[_worker]);
 	}
 
-	function checkResources(address daap, address data, address pool)
+	function checkResources(address dapp, address data, address pool)
 	public view returns (bool)
 	{
-		require(                      dappregistry.isRegistered(daap));
+		require(                      dappregistry.isRegistered(dapp));
 		require(data == address(0) || dataregistry.isRegistered(data));
 		require(                      poolregistry.isRegistered(pool));
 		return true;
@@ -451,6 +451,30 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		}
 		// totalReward now contains the scheduler share
 		iexecclerk.rewardForScheduling(task.dealid, totalReward);
+	}
+
+	function initializeArray(
+		bytes32[] _dealid,
+		uint256[] _idx)
+	public returns (bool)
+	{
+		require(_dealid.length == _idx.length);
+		for (uint i = 0; i < _dealid.length; ++i)
+		{
+			initialize(_dealid[i], _idx[i]);
+		}
+		return true;
+	}
+
+	function claimArray(
+		bytes32[] _taskid)
+	public returns (bool)
+	{
+		for (uint i = 0; i < _taskid.length; ++i)
+		{
+			claim(_taskid[i]);
+		}
+		return true;
 	}
 
 	/***************************************************************************
