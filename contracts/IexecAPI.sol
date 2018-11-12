@@ -33,8 +33,9 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		address _beneficiary)
 	public
 	{
-		address woid = iexecHubInterface.buyForWorkOrder(_marketorderIdx, _workerpool, _app, _dataset, _params, _callback, _beneficiary);
-		emit WorkOrderActivated(woid);
+		//address woid = iexecHubInterface.buyForWorkOrder(_marketorderIdx, _workerpool, _app, _dataset, _params, _callback, _beneficiary);
+		//emit WorkOrderActivated(woid);
+		emit WorkOrderActivated(_workerpool);
 	}
 
 	function workOrderCallback(
