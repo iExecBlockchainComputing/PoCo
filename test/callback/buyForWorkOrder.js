@@ -41,7 +41,7 @@ async function run() {
         var dataset='0x0000000000000000000000000000000000000000';
         var params="ace";
       //  var callback='0xeae99b010f8b8852ab47ba883f4c5157633c5ac6';//IexecAPI contract
-        var callback=0;
+        var callback='0x0000000000000000000000000000000000000000';
         var beneficiary=MSG_SENDER;
         /*
         buyForWorkOrder(
