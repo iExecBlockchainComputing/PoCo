@@ -35,13 +35,13 @@ async function run() {
       console.log("MSG_SENDER [" + MSG_SENDER + "] nonce is [" + currentNonce + "]");
       try {
 
-        var marketorderIdx =2;
-        var workerpool='0xecb64b809257138dbedc41d45bde27fa323016a2';
-        var app='0x88f29bef874957012ed55fd4968c296c9e4ec69e';
-        var dataset='0x0000000000000000000000000000000000000000';
+        var marketorderIdx='2';
+        var workerpool="0xecb64b809257138dbedc41d45bde27fa323016a2";
+        var app="0x88f29bef874957012ed55fd4968c296c9e4ec69e";
+        var dataset="0x0000000000000000000000000000000000000000";
         var params="ace";
-      //  var callback='0xeae99b010f8b8852ab47ba883f4c5157633c5ac6';//IexecAPI contract
-        var callback='0x0000000000000000000000000000000000000000';
+        //var callback='0xeae99b010f8b8852ab47ba883f4c5157633c5ac6';//IexecAPI contract
+        var callback="0x0000000000000000000000000000000000000000";
         var beneficiary=MSG_SENDER;
         /*
         buyForWorkOrder(
