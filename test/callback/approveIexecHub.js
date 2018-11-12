@@ -36,11 +36,11 @@ async function run() {
     console.log(version2);
 
     var abi = await getAbiContent();
-    //var abiString =JSON.stringify(abi);
-    //console.log("abiString");
-    //console.log(abiString);
+    var abiString =JSON.stringify(abi);
+    console.log("abiString");
+    console.log(abiString);
 
-    var contract = new web3.eth.Contract(JSON.parse(abi), '0xeae99b010f8b8852ab47ba883f4c5157633c5ac6');
+    var contract = new web3.eth.Contract(JSON.parse(abiString), '0xeae99b010f8b8852ab47ba883f4c5157633c5ac6');
     //var balanceOfBefore = await contract.methods.balanceOf(MSG_SENDER).call();
     //console.log("MSG_SENDER [" + MSG_SENDER + "] balanceOf before is [" + balanceOfBefore + "]");
 
