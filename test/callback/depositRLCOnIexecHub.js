@@ -34,7 +34,7 @@ async function run() {
     web3.eth.getTransactionCountPromise(MSG_SENDER).timeout(2000).then(function(currentNonce) {
       console.log("MSG_SENDER [" + MSG_SENDER + "] nonce is [" + currentNonce + "]");
       try {
-        contract.methods.approveIexecHub(200).send({
+        contract.methods.depositRLCOnIexecHub(200).send({
             from: MSG_SENDER,
             gas: "4000000",
             gasPrice: "20000000000",
