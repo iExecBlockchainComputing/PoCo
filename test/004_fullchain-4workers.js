@@ -78,7 +78,7 @@ contract('IexecHub', async (accounts) => {
 			{ address: poolWorker3, enclave: sgxEnclave, raw: "iExec the wanderer" },
 			{ address: poolWorker4, enclave: sgxEnclave, raw: "iExec the wanderer" },
 		];
-		consensus = odbtools.hashResult("iExec the wanderer");
+		consensus = "iExec the wanderer";
 
 		/**
 		 * Retreive deployed contracts
@@ -417,7 +417,7 @@ contract('IexecHub', async (accounts) => {
 	it(">> Run job", async () => {
 		for (w of workers)
 		{
-			results[w.address] = odbtools.sealResult(w.raw, w.address);
+			results[w.address] = odbtools.sealResult(taskid, w.raw, w.address);
 			if (w.enclave != constants.NULL.ADDRESS) // With SGX
 			{
 				await odbtools.signContribution(results[w.address], w.enclave);
@@ -457,6 +457,8 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: scheduler reveal consensus                     *
 	 ***************************************************************************/
 	it(">> revealConsensus", async () => {
+		consensus = odbtools.hashResult(taskid, consensus);
+		
 		txMined = await IexecHubInstance.consensus(taskid, consensus.hash, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
