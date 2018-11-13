@@ -327,21 +327,21 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[1],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[1], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[4],
 			poolWorker1,
-			odbtools.sealResult("false", poolWorker1),
+			odbtools.sealResult(tasks[4], "false", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[5], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
@@ -349,7 +349,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[3.1] Consensus - Correct", async () => {
 		__taskid = tasks[1];
-		__result = odbtools.hashResult("true");
+		__result = odbtools.hashResult(__taskid, "true");
 
 		txMined = await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -363,7 +363,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				tasks[1],
 				poolWorker2,
-				odbtools.sealResult("true", poolWorker2),
+				odbtools.sealResult(__taskid, "true", poolWorker2),
 				await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 				constants.NULL.ADDRESS
 			);
@@ -376,7 +376,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[3.2] Consensus - Error (status)", async () => {
 		__taskid = tasks[2];
-		__result = odbtools.hashResult("true");
+		__result = odbtools.hashResult(__taskid, "true");
 
 		try {
 			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
@@ -389,7 +389,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[3.3] Consensus - Error (no winner #1)", async () => {
 		__taskid = tasks[3];
-		__result = odbtools.hashResult("true");
+		__result = odbtools.hashResult(__taskid, "true");
 
 		try {
 			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
@@ -402,7 +402,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[3.4] Consensus - Error (no winner #2)", async () => {
 		__taskid = tasks[4];
-		__result = odbtools.hashResult("true");
+		__result = odbtools.hashResult(__taskid, "true");
 
 		try {
 			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
@@ -421,7 +421,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("[3.5] Consensus - Error (late)", async () => {
 		__taskid = tasks[5];
-		__result = odbtools.hashResult("true");
+		__result = odbtools.hashResult(__taskid, "true");
 
 		try {
 			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });

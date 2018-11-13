@@ -338,14 +338,14 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[0],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[0], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[0],
 			poolWorker2,
-			odbtools.sealResult("false", poolWorker2),
+			odbtools.sealResult(tasks[0], "false", poolWorker2),
 			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
@@ -363,7 +363,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Consensus #1", async () => {
-		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult(tasks[0], "true").hash, { from: poolScheduler });
 	});
 
 	it("clock fast forward", async () => {
@@ -381,7 +381,7 @@ contract('IexecHub', async (accounts) => {
 			await sendContribution(
 				tasks[0],
 				poolWorker1,
-				odbtools.sealResult("true", poolWorker1),
+				odbtools.sealResult(tasks[0], "true", poolWorker1),
 				await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
 				constants.NULL.ADDRESS
 			);
@@ -394,14 +394,14 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[0],
 			poolWorker3,
-			odbtools.sealResult("true", poolWorker3),
+			odbtools.sealResult(tasks[0], "true", poolWorker3),
 			await odbtools.signAuthorization({ worker: poolWorker3, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[0],
 			poolWorker4,
-			odbtools.sealResult("true", poolWorker4),
+			odbtools.sealResult(tasks[0], "true", poolWorker4),
 			await odbtools.signAuthorization({ worker: poolWorker4, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
@@ -419,12 +419,12 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult(tasks[0], "true").hash, { from: poolScheduler });
 	});
 
 	it("Reveal", async () => {
-		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult("true").digest, { from: poolWorker3 });
-		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult("true").digest, { from: poolWorker4 });
+		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: poolWorker3 });
+		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: poolWorker4 });
 	});
 
 	it("Finalize", async () => {
