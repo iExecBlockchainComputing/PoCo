@@ -55,8 +55,8 @@ async function run() {
         */
         contract.methods.buyForWorkOrder(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary).send({
             from: MSG_SENDER,
-            gas: "4685012",
-            gasPrice: "20000000000",
+            gas: '4300000',
+            gasPrice: '20000000000',
             nonce: currentNonce
           })
           .on('transactionHash', function(hash) {
