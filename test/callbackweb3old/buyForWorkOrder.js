@@ -20,7 +20,7 @@ Promise.promisifyAll(web3.eth, {
 async function getAbiContent() {
   try {
     var abiFileContent = await readFileAsync("../../deployed/contracts/IexecAPI.json");
-    return JSON.parse(abiFileContent).abi;
+    return JSON.parse(abiFileContent);
   } catch (err) {
     console.error(err)
   }
@@ -30,9 +30,8 @@ async function getAbiContent() {
 async function run() {
   try {
 
-    var abi = await getAbiContent();
-    var abiString =JSON.stringify(abi);
-    var tokenContract = web3.eth.contract(abiString).at(SMART_CONTRACT_ADDRESS);
+    var abiJson = await getAbiContent();
+    var tokenContract = web3.eth.contract(abiJson.abi).at(SMART_CONTRACT_ADDRESS);
 
 
     var marketorderIdx=2;
