@@ -287,13 +287,13 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING              );
-		require(task.consensusDeadline  >  now                                                   );
-		require(task.revealDeadline     >  now                                                   );
-		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED    );
-		require(contribution.resultHash == task.consensusValue                                   );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _resultDigest)));
-		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _resultDigest)));
+		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING                       );
+		require(task.consensusDeadline  >  now                                                            );
+		require(task.revealDeadline     >  now                                                            );
+		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED             );
+		require(contribution.resultHash == task.consensusValue                                            );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
+		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
 
 		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
@@ -330,7 +330,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 
 	function finalize(
 		bytes32 _taskid,
-		bytes  _results)
+		bytes   _results)
 	public onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
@@ -348,7 +348,9 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		iexecclerk.successWork(task.dealid);
 		__distributeRewards(_taskid);
 
-		// emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
+		/**
+		 * Event
+		 */
 		emit TaskFinalize(_taskid, _results);
 
 		/**

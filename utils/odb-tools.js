@@ -198,25 +198,23 @@ module.exports = {
 	signAuthorization: function(authorization, address) { return this.signMessage(authorization, this.authorizationHash  (authorization), address); },
 	signContribution:  function(contribution,  address) { return this.signMessage(contribution,  this.contributionHash   (contribution ), address); },
 
-
-
-
-	hashByteResult: function(byteresult)
+	hashByteResult: function(taskid, byteresult)
 	{
 		return {
 			digest: byteresult,
-			hash:   web3.utils.soliditySha3({ t: 'bytes32', v: byteresult })
+			hash:   web3.utils.soliditySha3({ t: 'bytes32', v: taskid  }, { t: 'bytes32', v: byteresult }),
 		};
 	},
-	sealByteResult: function(byteresult, address)
+
+	sealByteResult: function(taskid, byteresult, address)
 	{
 		return {
 			digest: byteresult,
-			hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: byteresult }),
-			seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: byteresult })
+			hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
+			seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
 		};
 	},
-	hashResult: function(result)          { return this.hashByteResult(web3.utils.soliditySha3({t: 'string', v: result })         ); },
-	sealResult: function(result, address) { return this.sealByteResult(web3.utils.soliditySha3({t: 'string', v: result }), address); },
+	hashResult: function(taskid, result)          { return this.hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result })         ); },
+	sealResult: function(taskid, result, address) { return this.sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address); },
 
 };

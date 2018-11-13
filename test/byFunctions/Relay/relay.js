@@ -70,7 +70,7 @@ contract('IexecHub', async (accounts) => {
 			{ address: poolWorker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
 			{ address: poolWorker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
 		];
-		consensus = odbtools.hashResult("iExec the wanderer");
+		consensus = "iExec the wanderer";
 
 		/**
 		 * Retreive deployed contracts
