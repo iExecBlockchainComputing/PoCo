@@ -33,9 +33,9 @@ contract IexecAPI is OwnableOZ, IexecHubAccessor, IexecCallbackInterface
 		address _beneficiary)
 	public
 	{
-		//address woid = iexecHubInterface.buyForWorkOrder(2, '0xecb64b809257138dbedc41d45bde27fa323016a2', '0x88f29bef874957012ed55fd4968c296c9e4ec69e', '0x0000000000000000000000000000000000000000', "ace", '0x0000000000000000000000000000000000000000', '0x8bd535d49b095ef648cd85ea827867d358872809');
-    address ret = address(iexecHubInterface.rlc());
-		emit WorkOrderActivated(ret);
+		address woid = iexecHubInterface.buyForWorkOrder(uint256(2), '0xecb64b809257138dbedc41d45bde27fa323016a2', '0x88f29bef874957012ed55fd4968c296c9e4ec69e', '0x0000000000000000000000000000000000000000', "ace", '0x0000000000000000000000000000000000000000', '0x8bd535d49b095ef648cd85ea827867d358872809');
+    //address ret = address(iexecHubInterface.rlc());
+		emit WorkOrderActivated(woid);
 	}
 
 	function workOrderCallback(
