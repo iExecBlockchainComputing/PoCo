@@ -120,10 +120,10 @@ contract IexecHub is CategoryManager, Oracle
 		return Pool(m_workerAffectations[_worker]);
 	}
 
-	function checkResources(address daap, address data, address pool)
+	function checkResources(address dapp, address data, address pool)
 	public view returns (bool)
 	{
-		require(                      dappregistry.isRegistered(daap));
+		require(                      dappregistry.isRegistered(dapp));
 		require(data == address(0) || dataregistry.isRegistered(data));
 		require(                      poolregistry.isRegistered(pool));
 		return true;
@@ -282,13 +282,13 @@ contract IexecHub is CategoryManager, Oracle
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING              );
-		require(task.consensusDeadline  >  now                                                   );
-		require(task.revealDeadline     >  now                                                   );
-		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED    );
-		require(contribution.resultHash == task.consensusValue                                   );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _resultDigest)));
-		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _resultDigest)));
+		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING                       );
+		require(task.consensusDeadline  >  now                                                            );
+		require(task.revealDeadline     >  now                                                            );
+		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED             );
+		require(contribution.resultHash == task.consensusValue                                            );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
+		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
 
 		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
@@ -325,7 +325,7 @@ contract IexecHub is CategoryManager, Oracle
 
 	function finalize(
 		bytes32 _taskid,
-		bytes  _results)
+		bytes   _results)
 	public onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
@@ -343,7 +343,9 @@ contract IexecHub is CategoryManager, Oracle
 		iexecclerk.successWork(task.dealid);
 		__distributeRewards(_taskid);
 
-		// emit ConsensusFinalized(_taskid, _stdout, _stderr, _uri);
+		/**
+		 * Event
+		 */
 		emit TaskFinalize(_taskid, _results);
 
 		/**
@@ -446,6 +448,30 @@ contract IexecHub is CategoryManager, Oracle
 		}
 		// totalReward now contains the scheduler share
 		iexecclerk.rewardForScheduling(task.dealid, totalReward);
+	}
+
+	function initializeArray(
+		bytes32[] _dealid,
+		uint256[] _idx)
+	public returns (bool)
+	{
+		require(_dealid.length == _idx.length);
+		for (uint i = 0; i < _dealid.length; ++i)
+		{
+			initialize(_dealid[i], _idx[i]);
+		}
+		return true;
+	}
+
+	function claimArray(
+		bytes32[] _taskid)
+	public returns (bool)
+	{
+		for (uint i = 0; i < _taskid.length; ++i)
+		{
+			claim(_taskid[i]);
+		}
+		return true;
 	}
 
 	/***************************************************************************

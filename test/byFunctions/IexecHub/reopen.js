@@ -328,49 +328,49 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[1],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[1], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[2],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[2], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[4],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[4], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[5], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[6],
 			poolWorker1,
-			odbtools.sealResult("true", poolWorker1),
+			odbtools.sealResult(tasks[6], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 	});
 
 	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult("true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult("true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult("true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult("true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult(tasks[1], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult(tasks[2], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult(tasks[5], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult(tasks[6], "true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {
-		await IexecHubInstance.reveal(tasks[5], odbtools.hashResult("true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: poolWorker1 });
 	});
 
 

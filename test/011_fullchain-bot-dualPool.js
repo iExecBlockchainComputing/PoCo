@@ -61,7 +61,7 @@ contract('IexecHub', async (accounts) => {
 			taskid: null,
 			authorizations: {},
 			results: {},
-			consensus: odbtools.hashResult("iExec BOT 0"),
+			consensus: "iExec BOT 0",
 			workers :
 			[
 				{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec BOT 0" },
@@ -73,7 +73,7 @@ contract('IexecHub', async (accounts) => {
 			taskid: null,
 			authorizations: {},
 			results: {},
-			consensus: odbtools.hashResult("iExec BOT 1"),
+			consensus: "iExec BOT 1",
 			workers :
 			[
 				{ address: poolWorker2, enclave: sgxEnclave, raw: "iExec BOT 1" },
@@ -86,7 +86,7 @@ contract('IexecHub', async (accounts) => {
 			taskid: null,
 			authorizations: {},
 			results: {},
-			consensus: odbtools.hashResult("iExec BOT 2"),
+			consensus: "iExec BOT 2",
 			workers :
 			[
 				{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec BOT 2" },
@@ -475,13 +475,13 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: scheduler authorizes the worker to contribute           *
 	 ***************************************************************************/
 	it(">> Sign contribution authorization", async () => {
-		for (taskid in tasks)
-		for (worker of tasks[taskid].workers)
+		for (i in tasks)
+		for (worker of tasks[i].workers)
 		{
-			tasks[taskid].authorizations[worker.address] = await odbtools.signAuthorization(
+			tasks[i].authorizations[worker.address] = await odbtools.signAuthorization(
 				{
 					worker:  worker.address,
-					taskid:  tasks[taskid].taskid,
+					taskid:  tasks[i].taskid,
 					enclave: worker.enclave,
 					sign:    constants.NULL.SIGNATURE,
 				},
@@ -494,17 +494,18 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: worker runs its application                    *
 	 ***************************************************************************/
 	it(">> Run job", async () => {
-		for (taskid in tasks)
-		for (worker of tasks[taskid].workers)
+		for (i in tasks)
+		for (worker of tasks[i].workers)
 		{
-			tasks[taskid].results[worker.address] = odbtools.sealResult(worker.raw, worker.address);
+			tasks[i].results[worker.address] = odbtools.sealResult(tasks[i].taskid, worker.raw, worker.address);
+
 			if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 			{
-				await odbtools.signContribution(tasks[taskid].results[worker.address], worker.enclave);
+				await odbtools.signContribution(tasks[i].results[worker.address], worker.enclave);
 			}
 			else // Without SGX
 			{
-				tasks[taskid].results[worker.address].sign = constants.NULL.SIGNATURE;
+				tasks[i].results[worker.address].sign = constants.NULL.SIGNATURE;
 			}
 		}
 	});
@@ -513,18 +514,18 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: worker contributes                         *
 	 ***************************************************************************/
 	it(">> signed contribute", async () => {
-		for (taskid in tasks)
-		for (worker of tasks[taskid].workers)
+		for (i in tasks)
+		for (worker of tasks[i].workers)
 		{
 			txNotMined = await IexecHubInstanceEthers
 			.connect(jsonRpcProvider.getSigner(worker.address))
 			.contribute(
-				tasks[taskid].authorizations[worker.address].taskid,       // task (authorization)
-				tasks[taskid].results[worker.address].hash, // common    (result)
-				tasks[taskid].results[worker.address].seal, // unique    (result)
+				tasks[i].authorizations[worker.address].taskid,       // task (authorization)
+				tasks[i].results[worker.address].hash, // common    (result)
+				tasks[i].results[worker.address].seal, // unique    (result)
 				worker.enclave,                                          // address   (enclave)
-				tasks[taskid].results[worker.address].sign,              // signature (enclave)
-				tasks[taskid].authorizations[worker.address].sign,       // signature (authorization)
+				tasks[i].results[worker.address].sign,              // signature (enclave)
+				tasks[i].authorizations[worker.address].sign,       // signature (authorization)
 				{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
 			);
 			// console.log("txNotMined:", txNotMined);
@@ -538,14 +539,16 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: scheduler reveal consensus                     *
 	 ***************************************************************************/
 	it(">> revealConsensus", async () => {
-		for (taskid in tasks)
+		for (i in tasks)
 		{
-			txMined = await IexecHubInstance.consensus(tasks[taskid].taskid, tasks[taskid].consensus.hash, { from: poolScheduler });
+			tasks[i].consensus = odbtools.hashResult(tasks[i].taskid, tasks[i].consensus);
+
+			txMined = await IexecHubInstance.consensus(tasks[i].taskid, tasks[i].consensus.hash, { from: poolScheduler });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
-			assert.equal(events[0].args.taskid,    tasks[taskid].taskid,                      "check taskid"   );
-			assert.equal(events[0].args.consensus, tasks[taskid].consensus.hash, "check consensus");
+			assert.equal(events[0].args.taskid,    tasks[i].taskid,         "check taskid"   );
+			assert.equal(events[0].args.consensus, tasks[i].consensus.hash, "check consensus");
 		}
 	});
 
@@ -553,21 +556,21 @@ contract('IexecHub', async (accounts) => {
 	 *                          TEST: worker reveals                           *
 	 ***************************************************************************/
 	it(">> reveal", async () => {
-		for (taskid in tasks)
-		for (worker of tasks[taskid].workers)
-		if (tasks[taskid].results[worker.address].hash == tasks[taskid].consensus.hash)
+		for (i in tasks)
+		for (worker of tasks[i].workers)
+		if (tasks[i].results[worker.address].hash == tasks[i].consensus.hash)
 		{
 			txMined = await IexecHubInstance.reveal(
-				tasks[taskid].authorizations[worker.address].taskid,
-				tasks[taskid].results[worker.address].digest,
+				tasks[i].authorizations[worker.address].taskid,
+				tasks[i].results[worker.address].digest,
 				{ from: worker.address }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
-			assert.equal(events[0].args.taskid, tasks[taskid].authorizations[worker.address].taskid, "check taskid");
+			assert.equal(events[0].args.taskid, tasks[i].authorizations[worker.address].taskid, "check taskid");
 			assert.equal(events[0].args.worker, worker.address,                               "check worker");
-			assert.equal(events[0].args.digest, tasks[taskid].results[worker.address].digest, "check result");
+			assert.equal(events[0].args.digest, tasks[i].results[worker.address].digest, "check result");
 		}
 	});
 

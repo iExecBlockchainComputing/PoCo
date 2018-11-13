@@ -8,7 +8,7 @@ module.exports =
 			network_id: "*", // Match any network id,
 			host:       "iexec-geth-local",
 			port:       8545,
-			gas:        5000000,
+			gas:        8000000,
 			gasPrice:   22000000000,
 		},
 		development:
@@ -16,7 +16,7 @@ module.exports =
 			network_id: "*", // Match any network id,
 			host:       "localhost",
 			port:       8545,
-			gas:        5000000,
+			gas:        8000000,
 			gasPrice:   1000000000, //1Gwei
 		},
 		coverage:
@@ -32,7 +32,7 @@ module.exports =
 			network_id: 3,
 			host:       "localhost",
 			port:       8545,
-			gas:        5000000,
+			gas:        8000000,
 			gasPrice:   4000000000, //4Gwei
 		},
 		kovan:
@@ -40,7 +40,7 @@ module.exports =
 			network_id: 42,
 			host:       "localhost",
 			port:       8545,
-			gas:        5000000,
+			gas:        8000000,
 			gasPrice:   1000000000, //1Gwei
 		},
 	},

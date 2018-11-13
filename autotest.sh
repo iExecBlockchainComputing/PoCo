@@ -2,7 +2,7 @@
 
 trap catch INT
 
-TESTRPC="/usr/bin/ganache-cli -m 'actual surround disorder swim upgrade devote digital misery truly verb slide final' -i 26"
+TESTRPC="/usr/bin/ganache-cli -m 'actual surround disorder swim upgrade devote digital misery truly verb slide final' -l 8000000"
 TRUFFLE="/home/amxx/Work/iExec/code/PoCo-dev/node_modules/.bin/truffle"
 
 function print_style
