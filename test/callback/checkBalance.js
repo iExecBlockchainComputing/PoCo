@@ -35,11 +35,17 @@ async function run() {
       console.log("MSG_SENDER [" + MSG_SENDER + "] nonce is [" + currentNonce + "]");
       try {
         contract.methods.checkBalance('0xeae99b010f8b8852ab47ba883f4c5157633c5ac6'/*IEXECAPI*/).call({from: '0x8bd535d49b095ef648cd85ea827867d358872809'}, function(error, result){
-                  console.debug("checkBalance : IEXECAPI " + result);
+          console.debug("checkBalance : IEXECAPI " );
+          console.debug(result);
+          console.debug("checkBalance : IEXECAPI 1 " );
+          console.debug(JSON.stringify(result));
         });
 
         contract.methods.checkBalance('0x8bd535d49b095ef648cd85ea827867d358872809'/*IEXECAPI*/).call({from: '0x8bd535d49b095ef648cd85ea827867d358872809'}, function(error, result){
-                  console.debug("checkBalance : MSG_SENDER " + result);
+          console.debug("checkBalance : MSG_SENDER " );
+          console.debug(result);
+          console.debug("checkBalance : MSG_SENDER 1 " );
+          console.debug(JSON.stringify(result));
         });
       } catch (err) {
         console.error(err);
