@@ -35,7 +35,7 @@ async function run() {
       console.log("MSG_SENDER [" + MSG_SENDER + "] nonce is [" + currentNonce + "]");
       try {
 
-        var marketorderIdx='2';
+        var marketorderIdx=2;
         var workerpool="0xecb64b809257138dbedc41d45bde27fa323016a2";
         var app="0x88f29bef874957012ed55fd4968c296c9e4ec69e";
         var dataset="0x0000000000000000000000000000000000000000";
@@ -54,10 +54,10 @@ async function run() {
           address _beneficiary
         */
         contract.methods.buyForWorkOrder(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary).send({
-            from: MSG_SENDER,
+            from: MSG_SENDER/*,
             gas: "4000000",
             gasPrice: "20000000000",
-            nonce: currentNonce
+            nonce: currentNonce*/
           })
           .on('transactionHash', function(hash) {
             console.debug("buyForWorkOrder : " + hash);
