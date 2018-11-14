@@ -31,7 +31,7 @@ async function run() {
   try {
 
     var abiJson = await getAbiContent();
-    var tokenContract = web3.eth.contract(abiJson.abi).at(SMART_CONTRACT_ADDRESS);
+    var iexecapiContract = web3.eth.contract(abiJson.abi).at(SMART_CONTRACT_ADDRESS);
 
 
     var marketorderIdx=2;
@@ -43,18 +43,18 @@ async function run() {
     //var callback="0x0000000000000000000000000000000000000000";
     var beneficiary=MSG_SENDER;
 
-    tokenContract.buyForWorkOrder(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary,
+    iexecapiContract.buyForWorkOrder.sendTransaction(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary,
       {
           from: MSG_SENDER,
           gas: '4400000',
           gasPrice: '120000000000'
         },
-       function(err, result){
-        console.debug("buyForWorkOrder :result " );
-              console.debug(result);
-
-              console.debug("buyForWorkOrder :err " );
-                    console.debug(err);
+        function(error, result){
+        if(!error) {
+            console.log("#" + result + "#")
+        } else {
+            console.error(error);
+        }
     });
 
 
