@@ -6,6 +6,8 @@ const writeAsync = Promise.promisify(fs.write);
 const readFileAsync = Promise.promisify(fs.readFile);
 const writeFileAsync = Promise.promisify(fs.writeFile);
 
+const Extensions = require("../../../utils/extensions.js");
+
 var MSG_SENDER = process.argv[2] || "0x8bd535d49b095ef648cd85ea827867d358872809";
 var SMART_CONTRACT_ADDRESS = process.argv[3] || "0xeae99b010f8b8852ab47ba883f4c5157633c5ac6";
 var NODE_TARGET = process.argv[3] || "http://localhost:8545";
@@ -13,9 +15,12 @@ var NODE_TARGET = process.argv[3] || "http://localhost:8545";
 web3 = new Web3(new Web3.providers.HttpProvider(NODE_TARGET));
 //wait for infura to do this to replace our test node .
 //https://github.com/INFURA/infura/issues/13
-Promise.promisifyAll(web3.eth, {
-  suffix: "Promise"
-});
+Promise.promisifyAll(web3.eth,     { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+Promise.promisifyAll(web3.evm,     { suffix: "Promise" });
+
+Extensions.init(web3, assert);
+var constants = require("../../constants");
 
 async function getAbiContent() {
   try {
@@ -31,7 +36,7 @@ async function run() {
   try {
 
     var abiJson = await getAbiContent();
-    var iexecapiContract = web3.eth.contract(abiJson.abi).at(SMART_CONTRACT_ADDRESS);
+    var aIexecAPIInstance = web3.eth.contract(abiJson.abi).at(SMART_CONTRACT_ADDRESS);
 
 
     var marketorderIdx=2;
@@ -43,7 +48,7 @@ async function run() {
     //var callback="0x0000000000000000000000000000000000000000";
     var beneficiary=MSG_SENDER;
 
-    iexecapiContract.buyForWorkOrder.sendTransaction(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary,
+    aIexecAPIInstance.buyForWorkOrder.sendTransaction(marketorderIdx,workerpool,app,dataset,params,callback,beneficiary,
       {
           from: MSG_SENDER,
           gas: '4400000',
@@ -58,6 +63,11 @@ async function run() {
         }
     });
 
+    events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
+    console.log("events");
+    console.log(events;
+    console.log("woid");
+    console.log(events[0].args.woid);
 
   } catch (err) {
     console.error(err);
