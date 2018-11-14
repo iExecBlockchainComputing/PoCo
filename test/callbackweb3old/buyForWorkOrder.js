@@ -51,8 +51,9 @@ async function run() {
         },
         function(error, result){
         if(!error) {
-            console.log("#" + result + "#")
+            console.log(result)
         } else {
+            console.error("error");
             console.error(error);
         }
     });
