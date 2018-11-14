@@ -39,25 +39,21 @@
 				<div class="tab-pane fade show active" id="tab-multiaddr" role="tabpanel">
 
 					<div class="row">
-						<div class="col-sm-6">
+						<div class="col-sm-5">
 							<div class="input-group mb-3">
-								<div class="input-group-prepend"><span class="input-group-text">Address</span></div>
-								<input type="text" id="multiaddr-address" class="form-control" placeholder="/ipfs/QmUbh7ugQ9WVprTVYjzrCS4d9cCy73zUz4MMchsrqzzu1w/">
-								<!-- <div class="input-group-append"> -->
-									<!-- <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-address">Select</button> -->
-								<!-- </div> -->
+								<div class="input-group-prepend"><span class="input-group-text">MultiAddr</span></div>
+								<textarea id="multiaddr-addr" class="form-control" rows="3"></textarea>
 							</div>
-							<a id="submit-tobytes" href="#" class="btn btn-danger btn-block">Convert</a>
 						</div>
-						<div class="col-sm-6 d-flex flex-column">
+						<div class="col-sm-2 d-flex flex-column">
+							<a id="submit-encode" href="#" class="btn btn-danger btn-block">→</a>
+							<a id="submit-decode" href="#" class="btn btn-danger btn-block">←</a>
+						</div>
+						<div class="col-sm-5 d-flex flex-column">
 							<div class="input-group mb-3">
 								<div class="input-group-prepend"><span class="input-group-text">Bytes</span></div>
-								<input type="text" id="multiaddr-bytes" class="form-control" placeholder="0xa5032212205d008f22f8f878fd58473a634cc73d41049fc0d19b81002eaae221ac5a446a3e">
-								<!-- <div class="input-group-append"> -->
-									<!-- <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#addressModal" data-location="#dapporder-address">Select</button> -->
-								<!-- </div> -->
+								<textarea id="multiaddr-hex" class="form-control" rows="3"></textarea>
 							</div>
-							<a id="submit-toaddr" href="#" class="btn btn-danger btn-block">Convert</a>
 						</div>
 					</div>
 				</div>
@@ -65,94 +61,10 @@
 		</div><!-- container -->
 	</div>
 
-
-
-
-
-
 	<script src="assets/js/bundle.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> -->
 	<!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
 	<!-- <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script> -->
-
-	<script>
-
-	$(async () => {
-
-		$("#submit-tobytes").click(() => {
-			var address = $("#multiaddr-address").val();
-			var hex     = "0x"+bytesToHex(Multiaddr(address).buffer);
-			console.log(address);
-			console.log("→");
-			console.log(hex);
-		});
-		$("#submit-toaddr").click(() => {
-			var bytes = $("#multiaddr-bytes").val();
-
-			// var hex     = "0x"+bytesToHex(Multiaddr(address).buffer);
-			// console.log(address);
-			// console.log("→");
-			console.log(bytes);
-		});
-
-	});
-
-	//
-	// 	try
-	// 	{
-	// 		setup();
-	//
-	// 		// INITIALIZATION
-	// 		if (window.ethereum)
-	// 		{
-	// 			web3 = new Web3(ethereum);
-	// 			try
-	// 			{
-	// 				await ethereum.enable();
-	// 			}
-	// 			catch (error)
-	// 			{
-	// 				console.error("Access denied by user");
-	// 				return;
-	// 			}
-	// 		}
-	// 		else if (window.web3)
-	// 		{
-	// 			web3 = new Web3(window.web3.currentProvider);
-	// 		}
-	// 		else
-	// 		{
-	// 			web3 = new Web3(new PortisProvider(portisConfig));
-	// 		}
-	//
-	// 		urlParams = new URLSearchParams(window.location.search);
-	// 		iExecODBLibOrders.DOMAIN.chainId           = await web3.eth.net.getId();
-	// 		iExecODBLibOrders.DOMAIN.verifyingContract = web3.utils.isAddress(urlParams.get("clerk")) ? urlParams.get("clerk") : "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5";
-	//
-	// 		DappABI       = (await $.getJSON("contracts/Dapp.json"      )).abi;
-	// 		DataABI       = (await $.getJSON("contracts/Data.json"      )).abi;
-	// 		PoolABI       = (await $.getJSON("contracts/Pool.json"      )).abi;
-	// 		RLCABI        = (await $.getJSON("contracts/RLC.json"       )).abi;
-	// 		IexecClerkABI = (await $.getJSON("contracts/IexecClerk.json")).abi;
-	// 		IexecHubABI   = (await $.getJSON("contracts/IexecHub.json"  )).abi;
-	//
-	// 		IexecClerk = new web3.eth.Contract(IexecClerkABI, iExecODBLibOrders.DOMAIN.verifyingContract);
-	// 		IexecHub   = new web3.eth.Contract(IexecHubABI,   await IexecClerk.methods.iexechub().call());
-	// 		RLC        = new web3.eth.Contract(RLCABI,        await IexecClerk.methods.rlc().call());
-	//
-	// 		// activate();
-	// 		console.log("let's dance!");
-	// 	}
-	// 	catch (e)
-	// 	{
-	// 		console.error("Exceptions raised during initialization, are contract deployed on the targeted blockchain?");
-	// 	}
-	// });
-	//
-	//
-
-	</script>
 
 </body>
 </html>
