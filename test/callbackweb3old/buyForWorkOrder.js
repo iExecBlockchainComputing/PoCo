@@ -63,9 +63,9 @@ async function run() {
         }
     });
 
-    events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
+    var events = await Extensions.getEventsPromise(aIexecAPIInstance.WorkOrderActivated({}),1,constants.EVENT_WAIT_TIMEOUT);
     console.log("events");
-    console.log(events;
+    console.log(events);
     console.log("woid");
     console.log(events[0].args.woid);
 
