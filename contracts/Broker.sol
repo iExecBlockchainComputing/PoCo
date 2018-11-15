@@ -54,9 +54,8 @@ contract Broker
 	function setPreferences(uint256 _reward, uint256 _maxgasprice)
 	public
 	{
-		Preferences storage preferences = m_preferences[msg.sender];
-		preferences.reward      = _reward;
-		preferences.maxgasprice = _maxgasprice;
+		m_preferences[msg.sender].reward      = _reward;
+		m_preferences[msg.sender].maxgasprice = _maxgasprice;
 	}
 
 	function matchOrdersForPool(
@@ -101,6 +100,7 @@ contract Broker
 		uint256 price = m_preferences[payer].reward + tx.gasprice.min(m_preferences[payer].maxgasprice) * (87000 + gasBefore - gasleft());
 		m_balance[payer] = m_balance[payer].sub(price);
 		msg.sender.transfer(price);
+
 		return dealid;
 	}
 
