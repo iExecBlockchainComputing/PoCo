@@ -1,4 +1,4 @@
-var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var RLC          = artifacts.require("./rlc-token/RLC.sol");
 var IexecHub     = artifacts.require("./IexecHub.sol");
 var IexecClerk   = artifacts.require("./IexecClerk.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");

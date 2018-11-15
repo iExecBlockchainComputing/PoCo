@@ -1,4 +1,4 @@
-var RLC          = artifacts.require("../node_modules/rlc-token//contracts/RLC.sol");
+var RLC          = artifacts.require("./rlc-token/RLC.sol");
 var IexecHub     = artifacts.require("./IexecHub.sol");
 var IexecClerk   = artifacts.require("./IexecClerk.sol");
 var DappRegistry = artifacts.require("./DappRegistry.sol");
@@ -458,7 +458,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> revealConsensus", async () => {
 		consensus = odbtools.hashResult(taskid, consensus);
-		
+
 		txMined = await IexecHubInstance.consensus(taskid, consensus.hash, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
