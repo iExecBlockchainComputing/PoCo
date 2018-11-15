@@ -10,9 +10,15 @@ contract Broker
 {
 	using SafeMathOZ for uint256;
 
-	IexecClerk                  public iexecclerk;
-	mapping(address => uint256) public m_balance;
-	mapping(address => uint256) public m_reward;
+	struct Preferences
+	{
+		uint reward;
+		uint maxgasprice;
+	}
+
+	IexecClerk                      public iexecclerk;
+	mapping(address => uint256    ) public m_balance;
+	mapping(address => Preferences) public m_preferences;
 
 	constructor(address _iexecclerk)
 	public
@@ -45,51 +51,15 @@ contract Broker
 		msg.sender.transfer(_amount);
 	}
 
-	function setReward(uint256 _reward)
+	function setPreferences(uint256 _reward, uint256 _maxgasprice)
 	public
 	{
-		m_reward[msg.sender] = _reward;
+		Preferences storage preferences = m_preferences[msg.sender];
+		preferences.reward      = _reward;
+		preferences.maxgasprice = _maxgasprice;
 	}
 
 	function matchOrdersForPool(
-		IexecODBLibOrders.DappOrder _dapporder,
-		IexecODBLibOrders.DataOrder _dataorder,
-		IexecODBLibOrders.PoolOrder _poolorder,
-		IexecODBLibOrders.UserOrder _userorder)
-	public returns (bytes32)
-	{
-		address account = Pool(_poolorder.pool).m_owner();
-		uint256 price   = tx.gasprice * 750000 + m_reward[account];
-		m_balance[account] = m_balance[account].sub(price);
-		msg.sender.transfer(price);
-
-		return iexecclerk.matchOrders(
-			_dapporder,
-			_dataorder,
-			_poolorder,
-			_userorder);
-	}
-
-	function matchOrdersForUser(
-		IexecODBLibOrders.DappOrder _dapporder,
-		IexecODBLibOrders.DataOrder _dataorder,
-		IexecODBLibOrders.PoolOrder _poolorder,
-		IexecODBLibOrders.UserOrder _userorder)
-	public returns (bytes32)
-	{
-		address account = _userorder.requester;
-		uint256 price   = tx.gasprice * 750000 + m_reward[account];
-		m_balance[account] = m_balance[account].sub(price);
-		msg.sender.transfer(price);
-
-		return iexecclerk.matchOrders(
-			_dapporder,
-			_dataorder,
-			_poolorder,
-			_userorder);
-	}
-
-	function matchOrdersForPool_v2(
 		IexecODBLibOrders.DappOrder _dapporder,
 		IexecODBLibOrders.DataOrder _dataorder,
 		IexecODBLibOrders.PoolOrder _poolorder,
@@ -105,14 +75,14 @@ contract Broker
 			_userorder);
 
 		address payer = Pool(_poolorder.pool).m_owner();
-		uint256 price = tx.gasprice * (87000 + gasBefore - gasleft()) + m_reward[payer];
+		uint256 price = m_preferences[payer].reward + tx.gasprice.min(m_preferences[payer].maxgasprice) * (87000 + gasBefore - gasleft());
 		m_balance[payer] = m_balance[payer].sub(price);
 		msg.sender.transfer(price);
 
 		return dealid;
 	}
 
-	function matchOrdersForUser_v2(
+	function matchOrdersForUser(
 		IexecODBLibOrders.DappOrder _dapporder,
 		IexecODBLibOrders.DataOrder _dataorder,
 		IexecODBLibOrders.PoolOrder _poolorder,
@@ -128,10 +98,9 @@ contract Broker
 			_userorder);
 
 		address payer = _userorder.requester;
-		uint256 price = tx.gasprice * (87000 + gasBefore - gasleft()) + m_reward[payer];
+		uint256 price = m_preferences[payer].reward + tx.gasprice.min(m_preferences[payer].maxgasprice) * (87000 + gasBefore - gasleft());
 		m_balance[payer] = m_balance[payer].sub(price);
 		msg.sender.transfer(price);
-
 		return dealid;
 	}
 
