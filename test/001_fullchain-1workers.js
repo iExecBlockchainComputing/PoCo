@@ -543,7 +543,7 @@ contract('IexecHub', async (accounts) => {
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
 	it("[Finalized] Check score", async () => {
-		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 1, "score issue");
+		assert.equal((await IexecHubInstance.viewScore(poolWorker1)).toNumber(), 0, "score issue"); // no replication → no reputation gain
 		assert.equal((await IexecHubInstance.viewScore(poolWorker2)).toNumber(), 0, "score issue");
 		assert.equal((await IexecHubInstance.viewScore(poolWorker3)).toNumber(), 0, "score issue");
 		assert.equal((await IexecHubInstance.viewScore(poolWorker4)).toNumber(), 0, "score issue");
