@@ -10,11 +10,13 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
-const constants = require("../../../constants");
-const odbtools  = require('../../../../utils/odb-tools');
+var TestClient   = artifacts.require("./TestClient.sol");
 
-const wallets   = require('../../../wallets');
+const ethers    = require('ethers'); // for ABIEncoderV2
+const constants = require("../constants");
+const odbtools  = require('../../utils/odb-tools');
+
+const wallets   = require('../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -60,8 +62,10 @@ contract('IexecHub', async (accounts) => {
 	var RelayInstanceEthers      = null;
 	var BrokerInstanceEthers     = null;
 
-	var deals = {}
+	var deals = {};
 	var tasks = {};
+
+	var TestClientInstance = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -87,6 +91,11 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
+
+		TestClientInstance = await TestClient.new();
+		TestClientInstance
+			.GotResult()
+			.on('data', event => console.log("GotResult:", event));
 
 		/**
 		 * For ABIEncoderV2
@@ -184,11 +193,6 @@ contract('IexecHub', async (accounts) => {
 		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
 		DappInstance = await Dapp.at(events[0].args.dapp);
 
-		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-		DataInstance = await Data.at(events[0].args.data);
-
 		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
@@ -224,33 +228,17 @@ contract('IexecHub', async (accounts) => {
 		);
 		dataorder = odbtools.signDataOrder(
 			{
-				data:         DataInstance.address,
-				dataprice:    1,
-				volume:       1000,
+				data:         constants.NULL.ADDRESS,
+				dataprice:    0,
+				volume:       0,
 				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				poolrestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
-				salt:         web3.utils.randomHex(32),
+				salt:         constants.NULL.ADDRESS,
 				sign:         constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(dataProvider)
-		);
-		poolorder_offset = odbtools.signPoolOrder(
-			{
-				pool:         PoolInstance.address,
-				poolprice:    15,
-				volume:       1,
-				tag:          0x0,
-				category:     4,
-				trust:        1000,
-				dapprestrict: constants.NULL.ADDRESS,
-				datarestrict: constants.NULL.ADDRESS,
-				userrestrict: constants.NULL.ADDRESS,
-				salt:         web3.utils.randomHex(32),
-				sign:         constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(poolScheduler)
 		);
 		poolorder = odbtools.signPoolOrder(
 			{
@@ -268,15 +256,16 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(poolScheduler)
 		);
-		userorder = odbtools.signUserOrder(
+
+		userorder1 = odbtools.signUserOrder(
 			{
 				dapp:         DappInstance.address,
 				dappmaxprice: 3,
-				data:         DataInstance.address,
-				datamaxprice: 1,
+				data:         constants.NULL.ADDRESS,
+				datamaxprice: 0,
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
-				volume:       10,
+				volume:       1,
 				tag:          0x0,
 				category:     4,
 				trust:        1000,
@@ -289,24 +278,64 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(user)
 		);
+		userorder2 = odbtools.signUserOrder(
+			{
+				dapp:         DappInstance.address,
+				dappmaxprice: 3,
+				data:         constants.NULL.ADDRESS,
+				datamaxprice: 0,
+				pool:         constants.NULL.ADDRESS,
+				poolmaxprice: 25,
+				volume:       1,
+				tag:          0x0,
+				category:     4,
+				trust:        1000,
+				requester:    user,
+				beneficiary:  user,
+				callback:     DappInstance.address,
+				params:       "<parameters>",
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(user)
+		);
+		userorder3 = odbtools.signUserOrder(
+			{
+				dapp:         DappInstance.address,
+				dappmaxprice: 3,
+				data:         constants.NULL.ADDRESS,
+				datamaxprice: 0,
+				pool:         constants.NULL.ADDRESS,
+				poolmaxprice: 25,
+				volume:       1,
+				tag:          0x0,
+				category:     4,
+				trust:        1000,
+				requester:    user,
+				beneficiary:  user,
+				callback:     TestClientInstance.address,
+				params:       "<parameters>",
+				salt:         web3.utils.randomHex(32),
+				sign:         constants.NULL.SIGNATURE,
+			},
+			wallets.addressToPrivate(user)
+		);
 
 		// Market
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder_offset, userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder,        userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder1, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder2, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder3, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
 
 		// Deals
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 0 }), "check dealid");
-		assert.equal(deals[1], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 1 }), "check dealid");
+		deals[1] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder1) }, { t: 'uint256', v: 0 });
+		deals[2] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder2) }, { t: 'uint256', v: 0 });
+		deals[3] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder3) }, { t: 'uint256', v: 0 });
 	});
 
 	it("[setup] Initialization", async () => {
-		tasks[1] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 1 });                                                                    // uninitialized
-		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // initialized
-		tasks[3] = extractEvents(await IexecHubInstance.initialize(deals[1], 3, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // contributions
-		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // consensus
-		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // reveal
-		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // finalized
+		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 0, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[2], 0, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[3] = extractEvents(await IexecHubInstance.initialize(deals[3], 0, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -326,98 +355,67 @@ contract('IexecHub', async (accounts) => {
 
 	it("[setup] Contribute", async () => {
 		await sendContribution(
+			tasks[1],
+			poolWorker1,
+			odbtools.sealResult(tasks[1], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+		await sendContribution(
+			tasks[2],
+			poolWorker1,
+			odbtools.sealResult(tasks[2], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+		await sendContribution(
 			tasks[3],
 			poolWorker1,
 			odbtools.sealResult(tasks[3], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
-		await sendContribution(
-			tasks[4],
-			poolWorker1,
-			odbtools.sealResult(tasks[4], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		await sendContribution(
-			tasks[5],
-			poolWorker1,
-			odbtools.sealResult(tasks[5], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		await sendContribution(
-			tasks[6],
-			poolWorker1,
-			odbtools.sealResult(tasks[6], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
 	});
 
 	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[4], odbtools.hashResult(tasks[4], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult(tasks[5], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult(tasks[6], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult(tasks[1], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult(tasks[2], "true").hash, { from: poolScheduler });
+		await IexecHubInstance.consensus(tasks[3], odbtools.hashResult(tasks[3], "true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {
-		await IexecHubInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: poolWorker1 });
-		await IexecHubInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: poolWorker1 });
-	});
-	it("[setup] Finalize", async () => {
-		await IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
+		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult(tasks[1], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[2], odbtools.hashResult(tasks[2], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[3], odbtools.hashResult(tasks[3], "true").digest, { from: poolWorker1 });
 	});
 
 
-	it("resultFor - uninitialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[1]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+	it("Finalize - No callback", async () => {
+		txMined = await IexecHubInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: poolScheduler });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 	});
-	it("resultFor - initialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[2]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+
+	it("Finalize - Invalid callback", async () => {
+		txMined = await IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: poolScheduler });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		assert.equal(events[0].args.taskid,  tasks[2],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 2"), "check consensus (results)");
 	});
-	it("resultFor - contributed", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[3]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("resultFor - consensus", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[4]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("resultFor - reveal", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[5]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("resultFor - finalized", async () => {
-		result = await IexecHubInstance.resultFor(tasks[6]);
-		assert.equal(result, web3.utils.utf8ToHex("aResult 6"), "resultFor returned incorrect value");
+
+	it("Finalize - Valid callback", async () => {
+		assert.equal(await TestClientInstance.store(tasks[3]), null, "Error in test client: store empty");
+
+		txMined = await IexecHubInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: poolScheduler });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
+
+		assert.equal(await TestClientInstance.store(tasks[3]), web3.utils.utf8ToHex("aResult 3"), "Error in test client: data not stored");
 	});
 
 });

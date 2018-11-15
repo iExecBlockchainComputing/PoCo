@@ -359,31 +359,32 @@ contract('IexecHub', async (accounts) => {
 		});
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await BrokerInstanceBeta.methods.setReward(web3.utils.toWei("0.01", "ether")).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await BrokerInstanceBeta.methods.setPreferences(
+			web3.utils.toWei("0.01", "ether"),
+			web3.utils.toWei("40.0", "gwei"),
+		).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		balance = await BrokerInstanceBeta.methods.m_balance(user).call();
-		reward = await BrokerInstanceBeta.methods.m_reward(user).call();
-		assert.equal(balance, web3.utils.toWei("1.00", "ether"), "error");
-		assert.equal(reward,  web3.utils.toWei("0.01", "ether"), "error");
+		balance     = await BrokerInstanceBeta.methods.m_balance(user).call();
+		preferences = await BrokerInstanceBeta.methods.m_preferences(user).call();
+		assert.equal(balance, web3.utils.toWei("1.00", "ether"));
+		assert.equal(preferences.reward,      web3.utils.toWei("0.01", "ether"));
+		assert.equal(preferences.maxgasprice, web3.utils.toWei("40.0", "gwei"));
 	});
 
 	it("check before", async () => {
 		assert.equal(
 			await BrokerInstanceBeta.methods.m_balance(user).call(),
-			await web3.eth.getBalance(BrokerInstance.address),
-			"balance error"
+			await web3.eth.getBalance(BrokerInstance.address)
 		);
 
 		account = await web3.eth.getBalance(sgxEnclave);
-		console.log(account / web3.utils.toWei("1.00", "ether"));
+		console.log("before:", account / web3.utils.toWei("1.00", "ether"));
 	});
 
 	it(">> broker match", async () => {
 		// txMined = await IexecClerkInstanceBeta.methods.matchOrders(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		// txMined = await BrokerInstanceBeta.methods.matchOrdersForPool(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		// txMined = await BrokerInstanceBeta.methods.matchOrdersForUser(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		txMined = await BrokerInstanceBeta.methods.matchOrdersForUser_v2(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await BrokerInstanceBeta.methods.matchOrdersForUser(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// dealid = web3.utils.soliditySha3(
@@ -403,12 +404,11 @@ contract('IexecHub', async (accounts) => {
 	it("check after", async () => {
 		assert.equal(
 			await BrokerInstanceBeta.methods.m_balance(user).call(),
-			await web3.eth.getBalance(BrokerInstance.address),
-			"balance error"
+			await web3.eth.getBalance(BrokerInstance.address)
 		);
 
 		account = await web3.eth.getBalance(sgxEnclave);
-		console.log(account / web3.utils.toWei("1.00", "ether"));
+		console.log("after: ",account / web3.utils.toWei("1.00", "ether"));
 	});
 
 	it("broker exit", async () => {
