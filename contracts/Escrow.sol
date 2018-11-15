@@ -1,7 +1,7 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "rlc-token/contracts/RLC.sol";
+import "rlc-faucet-contract/contracts/RLC.sol";
 
 import "./tools/IexecODBLibCore.sol";
 import "./tools/SafeMathOZ.sol";
