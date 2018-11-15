@@ -440,8 +440,8 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 				totalReward          = totalReward.sub(workerReward);
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
-				// Only reward if replication happened
-				if (task.contributors.length > 1)
+				// Only reward if replication happened (revealCounter vs winnerCounter vs contributions.length)
+				if (task.revealCounter > 1)
 				{
 					m_workerScores[worker] = m_workerScores[worker].add(1);
 					emit AccurateContribution(worker, _taskid);
