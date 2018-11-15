@@ -435,15 +435,22 @@ contract IexecHub is CategoryManager, Oracle
 				totalReward          = totalReward.sub(workerReward);
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
-				m_workerScores[worker] = m_workerScores[worker].add(1);
-				emit AccurateContribution(worker, _taskid);
+				// Only reward if replication happened
+				if (task.contributors.length > 1)
+				{
+					m_workerScores[worker] = m_workerScores[worker].add(1);
+					emit AccurateContribution(worker, _taskid);
+				}
 			}
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
 				iexecclerk.seizeContribution(task.dealid, worker);
-				m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
-				emit FaultyContribution(worker, _taskid);
+				// Always punish bad contributors
+				{
+					m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
+					emit FaultyContribution(worker, _taskid);
+				}
 			}
 		}
 		// totalReward now contains the scheduler share

@@ -368,8 +368,8 @@ contract('IexecHub', async (accounts) => {
 		balance     = await BrokerInstanceBeta.methods.m_balance(user).call();
 		preferences = await BrokerInstanceBeta.methods.m_preferences(user).call();
 		assert.equal(balance, web3.utils.toWei("1.00", "ether"));
-		assert.equal(preferences.reward,       web3.utils.toWei("0.01", "ether"));
-		assert.equal(preferences.maxgasprice,  web3.utils.toWei("40.0", "gwei"));
+		assert.equal(preferences.reward,      web3.utils.toWei("0.01", "ether"));
+		assert.equal(preferences.maxgasprice, web3.utils.toWei("40.0", "gwei"));
 	});
 
 	it("check before", async () => {
