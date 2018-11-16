@@ -1,18 +1,14 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/EIP1154.sol";
-import "./tools/SafeMathOZ.sol";
+import "./interfaces/EIP1154.sol";
+import "./libs/IexecODBLibCore.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
+import "./registries/RegistryBase.sol";
 
 import "./CategoryManager.sol";
-
 import "./IexecClerk.sol";
-import "./registries/RegistryBase.sol";
-/* import "./registries/DappRegistry.sol"; */
-/* import "./registries/DataRegistry.sol"; */
-/* import "./registries/PoolRegistry.sol"; */
 
 contract IexecHub is CategoryManager, Oracle
 {

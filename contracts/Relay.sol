@@ -1,7 +1,7 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibOrders.sol";
+import "./libs/IexecODBLibOrders.sol";
 
 contract Relay
 {

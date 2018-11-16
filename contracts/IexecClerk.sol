@@ -1,18 +1,16 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/SafeMathOZ.sol";
-
-import "./Escrow.sol";
-import "./IexecHubAccessor.sol";
-
+import "./libs/IexecODBLibCore.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
 import "./registries/Dapp.sol";
 import "./registries/Data.sol";
 import "./registries/Pool.sol";
-
 import "./permissions/GroupInterface.sol";
+
+import "./Escrow.sol";
+import "./IexecHubAccessor.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor
 {

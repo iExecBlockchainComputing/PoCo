@@ -1,13 +1,12 @@
-var RLC          = artifacts.require("./rlc-token/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
-
+var RLC               = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
 var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
+var IexecHub          = artifacts.require("./IexecHub.sol");
+var IexecClerk        = artifacts.require("./IexecClerk.sol");
+var DappRegistry      = artifacts.require("./DappRegistry.sol");
+var DataRegistry      = artifacts.require("./DataRegistry.sol");
+var PoolRegistry      = artifacts.require("./PoolRegistry.sol");
+var Relay             = artifacts.require("./Relay.sol");
+var Broker            = artifacts.require("./Broker.sol");
 
 const fs = require("fs-extra");
 
@@ -45,8 +44,6 @@ module.exports = async function(deployer, network, accounts)
 			await deployer.deploy(RLC);
 			RLCInstance = await RLC.deployed();
 			console.log("RLC deployed at address: " + RLCInstance.address);
-			await RLCInstance.unlock();
-			console.log("RLC unlocked");
 			owner = await RLCInstance.owner.call()
 			console.log("RLC faucet wallet is " + owner);
 			console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));

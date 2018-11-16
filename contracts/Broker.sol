@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/SafeMathOZ.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
 
 import "./IexecClerk.sol";
 

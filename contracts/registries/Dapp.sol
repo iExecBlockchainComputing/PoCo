@@ -5,7 +5,6 @@ import '../tools/Ownable.sol';
 
 contract Dapp is OwnableImmutable
 {
-
 	/**
 	 * Members
 	 */
