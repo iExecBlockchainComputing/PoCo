@@ -67,12 +67,6 @@ contract('IexecHub', async (accounts) => {
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
-		workers = [
-			{ address: poolWorker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
-			{ address: poolWorker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
-		];
-		consensus = odbtools.hashResult("iExec the wanderer");
-
 		/**
 		 * Retreive deployed contracts
 		 */
