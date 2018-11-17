@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -179,7 +178,7 @@ contract('IexecHub', async (accounts) => {
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
 		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
@@ -209,7 +208,7 @@ contract('IexecHub', async (accounts) => {
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
 		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );

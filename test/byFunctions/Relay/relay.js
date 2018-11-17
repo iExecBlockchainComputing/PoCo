@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const Web3      = require('web3')
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -90,14 +89,6 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		web3 = new Web3(web3.currentProvider);
-		IexecHubInstanceBeta   = new web3.eth.Contract(IexecHub.abi,   IexecHubInstance.address  );
-		IexecClerkInstanceBeta = new web3.eth.Contract(IexecClerk.abi, IexecClerkInstance.address);
-		RelayInstanceBeta      = new web3.eth.Contract(Relay.abi,      RelayInstance.address     );
 
 		/**
 		 * Token distribution
@@ -231,11 +222,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(dappProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				dappProvider,
 				odbtools.DappOrderStructHash(dapporder),
-				dapporder.sign
-			).call(),
+				dapporder.sign,
+				{}
+			),
 			"Error with the validation of the dapporder signature"
 		);
 	});
@@ -259,11 +251,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(dataProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				dataProvider,
 				odbtools.DataOrderStructHash(dataorder),
-				dataorder.sign
-			).call(),
+				dataorder.sign,
+				{}
+			),
 			"Error with the validation of the dataorder signature"
 		);
 	});
@@ -289,11 +282,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(poolScheduler)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				poolScheduler,
 				odbtools.PoolOrderStructHash(poolorder),
-				poolorder.sign
-			).call(),
+				poolorder.sign,
+				{}
+			),
 			"Error with the validation of the poolorder signature"
 		);
 	});
@@ -324,11 +318,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(user)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				user,
 				odbtools.UserOrderStructHash(userorder),
-				userorder.sign
-			).call(),
+				userorder.sign,
+				{}
+			),
 			"Error with the validation of the userorder signature"
 		);
 	});
@@ -345,78 +340,82 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broadcastDappOrder", async () => {
-		txMined = await RelayInstanceBeta.methods.broadcastDappOrder(dapporder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await RelayInstance.broadcastDappOrder(dapporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.dapp,         dapporder.dapp,         "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.dappprice,    dapporder.dappprice,    "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.volume,       dapporder.volume,       "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.datarestrict, dapporder.datarestrict, "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.poolrestrict, dapporder.poolrestrict, "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.userrestrict, dapporder.userrestrict, "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.salt,         dapporder.salt,         "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.sign.v,       dapporder.sign.v,       "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.sign.r,       dapporder.sign.r,       "error");
-		assert.equal(txMined.events.BroadcastDappOrder.returnValues.dapporder.sign.s,       dapporder.sign.s,       "error");
+		events = extractEvents(txMined, RelayInstance.address, "BroadcastDappOrder");
+		assert.equal(events[0].args.dapporder.dapp,         dapporder.dapp        );
+		assert.equal(events[0].args.dapporder.dappprice,    dapporder.dappprice   );
+		assert.equal(events[0].args.dapporder.volume,       dapporder.volume      );
+		assert.equal(events[0].args.dapporder.datarestrict, dapporder.datarestrict);
+		assert.equal(events[0].args.dapporder.poolrestrict, dapporder.poolrestrict);
+		assert.equal(events[0].args.dapporder.userrestrict, dapporder.userrestrict);
+		assert.equal(events[0].args.dapporder.salt,         dapporder.salt        );
+		assert.equal(events[0].args.dapporder.sign.v,       dapporder.sign.v      );
+		assert.equal(events[0].args.dapporder.sign.r,       dapporder.sign.r      );
+		assert.equal(events[0].args.dapporder.sign.s,       dapporder.sign.s      );
 	});
 
 	it(">> broadcastDataOrder", async () => {
-		txMined = await RelayInstanceBeta.methods.broadcastDataOrder(dataorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await RelayInstance.broadcastDataOrder(dataorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.data,         dataorder.data,         "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.dataprice,    dataorder.dataprice,    "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.volume,       dataorder.volume,       "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.dapprestrict, dataorder.dapprestrict, "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.poolrestrict, dataorder.poolrestrict, "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.userrestrict, dataorder.userrestrict, "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.salt,         dataorder.salt,         "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.sign.v,       dataorder.sign.v,       "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.sign.r,       dataorder.sign.r,       "error");
-		assert.equal(txMined.events.BroadcastDataOrder.returnValues.dataorder.sign.s,       dataorder.sign.s,       "error");
+		events = extractEvents(txMined, RelayInstance.address, "BroadcastDataOrder");
+		assert.equal(events[0].args.dataorder.data,         dataorder.data        );
+		assert.equal(events[0].args.dataorder.dataprice,    dataorder.dataprice   );
+		assert.equal(events[0].args.dataorder.volume,       dataorder.volume      );
+		assert.equal(events[0].args.dataorder.dapprestrict, dataorder.dapprestrict);
+		assert.equal(events[0].args.dataorder.poolrestrict, dataorder.poolrestrict);
+		assert.equal(events[0].args.dataorder.userrestrict, dataorder.userrestrict);
+		assert.equal(events[0].args.dataorder.salt,         dataorder.salt        );
+		assert.equal(events[0].args.dataorder.sign.v,       dataorder.sign.v      );
+		assert.equal(events[0].args.dataorder.sign.r,       dataorder.sign.r      );
+		assert.equal(events[0].args.dataorder.sign.s,       dataorder.sign.s      );
 	});
 
 	it(">> broadcastPoolOrder", async () => {
-		txMined = await RelayInstanceBeta.methods.broadcastPoolOrder(poolorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await RelayInstance.broadcastPoolOrder(poolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.pool,         poolorder.pool,         "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.poolprice,    poolorder.poolprice,    "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.volume,       poolorder.volume,       "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.category,     poolorder.category,     "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.trust,        poolorder.trust,        "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.tag,          poolorder.tag,          "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.dapprestrict, poolorder.dapprestrict, "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.datarestrict, poolorder.datarestrict, "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.userrestrict, poolorder.userrestrict, "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.salt,         poolorder.salt,         "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.sign.v,       poolorder.sign.v,       "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.sign.r,       poolorder.sign.r,       "error");
-		assert.equal(txMined.events.BroadcastPoolOrder.returnValues.poolorder.sign.s,       poolorder.sign.s,       "error");
+		events = extractEvents(txMined, RelayInstance.address, "BroadcastPoolOrder");
+		assert.equal(events[0].args.poolorder.pool,         poolorder.pool        );
+		assert.equal(events[0].args.poolorder.poolprice,    poolorder.poolprice   );
+		assert.equal(events[0].args.poolorder.volume,       poolorder.volume      );
+		assert.equal(events[0].args.poolorder.category,     poolorder.category    );
+		assert.equal(events[0].args.poolorder.trust,        poolorder.trust       );
+		assert.equal(events[0].args.poolorder.tag,          poolorder.tag         );
+		assert.equal(events[0].args.poolorder.dapprestrict, poolorder.dapprestrict);
+		assert.equal(events[0].args.poolorder.datarestrict, poolorder.datarestrict);
+		assert.equal(events[0].args.poolorder.userrestrict, poolorder.userrestrict);
+		assert.equal(events[0].args.poolorder.salt,         poolorder.salt        );
+		assert.equal(events[0].args.poolorder.sign.v,       poolorder.sign.v      );
+		assert.equal(events[0].args.poolorder.sign.r,       poolorder.sign.r      );
+		assert.equal(events[0].args.poolorder.sign.s,       poolorder.sign.s      );
 	});
 
 	it(">> broadcastUserOrder", async () => {
-		txMined = await RelayInstanceBeta.methods.broadcastUserOrder(userorder).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await RelayInstance.broadcastUserOrder(userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.dapp,         userorder.dapp,         "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.dappmaxprice, userorder.dappmaxprice, "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.data,         userorder.data,         "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.datamaxprice, userorder.datamaxprice, "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.pool,         userorder.pool,         "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.poolmaxprice, userorder.poolmaxprice, "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.volume,       userorder.volume,       "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.category,     userorder.category,     "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.trust,        userorder.trust,        "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.tag,          userorder.tag,          "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.requester,    userorder.requester,    "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.beneficiary,  userorder.beneficiary,  "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.callback,     userorder.callback,     "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.params,       userorder.params,       "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.salt,         userorder.salt,         "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.sign.v,       userorder.sign.v,       "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.sign.r,       userorder.sign.r,       "error");
-		assert.equal(txMined.events.BroadcastUserOrder.returnValues.userorder.sign.s,       userorder.sign.s,       "error");
+		events = extractEvents(txMined, RelayInstance.address, "BroadcastUserOrder");
+		assert.equal(events[0].args.userorder.dapp,         userorder.dapp        );
+		assert.equal(events[0].args.userorder.dappmaxprice, userorder.dappmaxprice);
+		assert.equal(events[0].args.userorder.data,         userorder.data        );
+		assert.equal(events[0].args.userorder.datamaxprice, userorder.datamaxprice);
+		assert.equal(events[0].args.userorder.pool,         userorder.pool        );
+		assert.equal(events[0].args.userorder.poolmaxprice, userorder.poolmaxprice);
+		assert.equal(events[0].args.userorder.volume,       userorder.volume      );
+		assert.equal(events[0].args.userorder.category,     userorder.category    );
+		assert.equal(events[0].args.userorder.trust,        userorder.trust       );
+		assert.equal(events[0].args.userorder.tag,          userorder.tag         );
+		assert.equal(events[0].args.userorder.requester,    userorder.requester   );
+		assert.equal(events[0].args.userorder.beneficiary,  userorder.beneficiary );
+		assert.equal(events[0].args.userorder.callback,     userorder.callback    );
+		assert.equal(events[0].args.userorder.params,       userorder.params      );
+		assert.equal(events[0].args.userorder.salt,         userorder.salt        );
+		assert.equal(events[0].args.userorder.sign.v,       userorder.sign.v      );
+		assert.equal(events[0].args.userorder.sign.r,       userorder.sign.r      );
+		assert.equal(events[0].args.userorder.sign.s,       userorder.sign.s      );
 	});
 
 });

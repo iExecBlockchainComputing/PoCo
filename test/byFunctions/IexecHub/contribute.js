@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -54,12 +53,6 @@ contract('IexecHub', async (accounts) => {
 	var poolorder2 = null;
 	var userorder  = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	var deals = {}
 	var tasks = {};
 
@@ -87,15 +80,6 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 
 		/**
 		 * Token distribution
@@ -291,13 +275,14 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		// Market
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder_offset, userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder,        userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txsMined = await Promise.all([
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder_offset, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder,        userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// Deals
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 0 }), "check dealid");
-		assert.equal(deals[1], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) }, { t: 'uint256', v: 1 }), "check dealid");
 	});
 
 	it("[setup] Initialization", async () => {
@@ -313,16 +298,14 @@ contract('IexecHub', async (accounts) => {
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
 	{
-		return IexecHubInstanceEthers
-			.connect(jsonRpcProvider.getSigner(worker))
-			.contribute(
+		return IexecHubInstance.contribute(
 				taskid,                                                 // task (authorization)
-				results.hash,                              // common    (result)
-				results.seal,                              // unique    (result)
+				results.hash,                                           // common    (result)
+				results.seal,                                           // unique    (result)
 				enclave,                                                // address   (enclave)
 				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
 				authorization.sign,                                     // signature (authorization)
-				{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
+				{ from: worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
 			);
 	}
 
@@ -339,12 +322,11 @@ contract('IexecHub', async (accounts) => {
 			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 			__enclave
 		);
-		// No return from etherjs
-		// assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		// events = extractEvents(txMined, IexecHubInstance.address, "ConsensusContribute");
-		// assert.equal(events[0].args.taskid,     __taskid,                                               "check taskid"    );
-		// assert.equal(events[0].args.worker,     __worker,                                               "check worker"    );
-		// assert.equal(events[0].args.resultHash, odbtools.hashResult(__taskid, __raw).constibution.hash, "check resultHash");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
+		assert.equal(events[0].args.taskid, __taskid,                                  "check taskid"    );
+		assert.equal(events[0].args.worker, __worker,                                  "check worker"    );
+		assert.equal(events[0].args.hash,   odbtools.hashResult(__taskid, __raw).hash, "check resultHash");
 	});
 
 	it("[2.2] Contribute - Correct (sgx)", async () => {
@@ -353,19 +335,18 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await sendContribution(
+		txMined = await sendContribution(
 			__taskid,
 			__worker,
 			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave    )),
 			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
 			__enclave
 		);
-		// No return from etherjs
-		// assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		// events = extractEvents(txMined, IexecHubInstance.address, "ConsensusContribute");
-		// assert.equal(events[0].args.taskid,     __taskid,                                     "check taskid"    );
-		// assert.equal(events[0].args.worker,     __worker,                                     "check worker"    );
-		// assert.equal(events[0].args.resultHash, odbtools.hashResult(__raw).constibution.hash, "check resultHash");
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
+		assert.equal(events[0].args.taskid, __taskid,                                  "check taskid"    );
+		assert.equal(events[0].args.worker, __worker,                                  "check worker"    );
+		assert.equal(events[0].args.hash,   odbtools.hashResult(__taskid, __raw).hash, "check resultHash");
 	});
 
 	it("[2.3] Contribute - Error (unset)", async () => {
@@ -385,7 +366,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -417,7 +398,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -438,7 +419,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -459,7 +440,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -480,12 +461,12 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
 	it("clock fast forward", async () => {
-		target = (await IexecHubInstanceEthers.viewTask(tasks[8])).consensusDeadline.toNumber();
+		target = Number((await IexecHubInstance.viewTask(tasks[8])).consensusDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
@@ -507,7 +488,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 

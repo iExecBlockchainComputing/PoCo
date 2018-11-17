@@ -12,7 +12,6 @@ var Broker       = artifacts.require("./Broker.sol");
 
 var TestClient   = artifacts.require("./TestClient.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../constants");
 const odbtools  = require('../../utils/odb-tools');
 
@@ -56,12 +55,6 @@ contract('IexecHub', async (accounts) => {
 	var poolorder2 = null;
 	var userorder  = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	var deals = {};
 	var tasks = {};
 
@@ -93,18 +86,9 @@ contract('IexecHub', async (accounts) => {
 		});
 
 		TestClientInstance = await TestClient.new();
-		TestClientInstance
-			.GotResult()
-			.on('data', event => console.log("GotResult:", event));
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
+		// TestClientInstance
+		// 	.GotResult()
+		// 	.on('data', event => console.log("GotResult:", event));
 
 		/**
 		 * Token distribution
@@ -322,14 +306,18 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		// Market
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder1, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder2, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(dapporder, dataorder, poolorder, userorder3, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txsMined = await Promise.all([
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder, userorder1, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder, userorder2, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder, userorder3, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		// Deals
-		deals[1] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder1) }, { t: 'uint256', v: 0 });
-		deals[2] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder2) }, { t: 'uint256', v: 0 });
-		deals[3] = web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder3) }, { t: 'uint256', v: 0 });
+		deals[1] = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
+		deals[2] = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
+		deals[3] = extractEvents(txsMined[2], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
 	});
 
 	it("[setup] Initialization", async () => {
@@ -338,42 +326,31 @@ contract('IexecHub', async (accounts) => {
 		tasks[3] = extractEvents(await IexecHubInstance.initialize(deals[3], 0, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
-	function sendContribution(taskid, worker, results, authorization, enclave)
+	function sendContribution(authorization, results)
 	{
-		return IexecHubInstanceEthers
-			.connect(jsonRpcProvider.getSigner(worker))
-			.contribute(
-				taskid,                                                 // task (authorization)
-				results.hash,                              // common    (result)
-				results.seal,                              // unique    (result)
-				enclave,                                                // address   (enclave)
+		return IexecHubInstance.contribute(
+				authorization.taskid,                                   // task (authorization)
+				results.hash,                                           // common    (result)
+				results.seal,                                           // unique    (result)
+				authorization.enclave,                                  // address   (enclave)
 				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
 				authorization.sign,                                     // signature (authorization)
-				{ gasLimit: constants.AMOUNT_GAS_PROVIDED }
+				{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
 			);
 	}
 
 	it("[setup] Contribute", async () => {
 		await sendContribution(
-			tasks[1],
-			poolWorker1,
-			odbtools.sealResult(tasks[1], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			odbtools.sealResult(tasks[1], "true", poolWorker1),
 		);
 		await sendContribution(
-			tasks[2],
-			poolWorker1,
-			odbtools.sealResult(tasks[2], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			odbtools.sealResult(tasks[2], "true", poolWorker1),
 		);
 		await sendContribution(
-			tasks[3],
-			poolWorker1,
-			odbtools.sealResult(tasks[3], "true", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			odbtools.sealResult(tasks[3], "true", poolWorker1),
 		);
 	});
 

@@ -391,28 +391,27 @@ contract('IexecHub', async (accounts) => {
 	 *                           TEST: Market making                           *
 	 ***************************************************************************/
 	it(">> matchOrders", async () => {
-		txMined = await IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder1, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txsMined = await Promise.all([
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder1, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder2, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
+		events = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.dappHash, odbtools.DappOrderStructHash(dapporder ));
 		assert.equal(events[0].args.dataHash, odbtools.DataOrderStructHash(dataorder ));
 		assert.equal(events[0].args.poolHash, odbtools.PoolOrderStructHash(poolorder1));
 		assert.equal(events[0].args.userHash, odbtools.UserOrderStructHash(userorder ));
 		assert.equal(events[0].args.volume,   2                                       );
-
 		var deal0 = events[0].args.dealid;
 
-		txMined = await IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder2, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
+		events = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.dappHash, odbtools.DappOrderStructHash(dapporder ));
 		assert.equal(events[0].args.dataHash, odbtools.DataOrderStructHash(dataorder ));
 		assert.equal(events[0].args.poolHash, odbtools.PoolOrderStructHash(poolorder2));
 		assert.equal(events[0].args.userHash, odbtools.UserOrderStructHash(userorder ));
 		assert.equal(events[0].args.volume,   1                                       );
-
 		var deal1 = events[0].args.dealid;
 
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));

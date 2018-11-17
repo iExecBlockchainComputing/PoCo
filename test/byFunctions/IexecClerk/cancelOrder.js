@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -42,12 +41,6 @@ contract('IexecHub', async (accounts) => {
 	var RelayInstance        = null;
 	var BrokerInstance       = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
@@ -65,15 +58,6 @@ contract('IexecHub', async (accounts) => {
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 	});
 
 	/***************************************************************************
@@ -158,10 +142,17 @@ contract('IexecHub', async (accounts) => {
 		dataorder_hash = odbtools.DataOrderStructHash(dataorder);
 		poolorder_hash = odbtools.PoolOrderStructHash(poolorder);
 		userorder_hash = odbtools.UserOrderStructHash(userorder);
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(dappProvider )).signDappOrder(dapporder);
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(dataProvider )).signDataOrder(dataorder);
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(poolScheduler)).signPoolOrder(poolorder);
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user         )).signUserOrder(userorder);
+
+		txsMined = await Promise.all([
+			IexecClerkInstance.signDappOrder(dapporder, {from: dappProvider  }),
+			IexecClerkInstance.signDataOrder(dataorder, {from: dataProvider  }),
+			IexecClerkInstance.signPoolOrder(poolorder, {from: poolScheduler }),
+			IexecClerkInstance.signUserOrder(userorder, {from: user          }),
+		]);
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
@@ -171,20 +162,20 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecClerkInstance.viewConsumed(dapporder_hash), 0, "Error in dapp order presign");
 		try
 		{
-			await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(iexecAdmin)).cancelDappOrder(dapporder);
+			await IexecClerkInstance.cancelDappOrder(dapporder, { from: iexecAdmin });
 			assert.fail("user should not be able to sign dapporder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 		assert.equal(await IexecClerkInstance.viewConsumed(dapporder_hash), 0, "Error in dapp order presign");
 	});
 
 	it("presign dapp order #2", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(dapporder_hash), 0, "Error in dapp order presign");
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(dappProvider)).cancelDappOrder(dapporder);
+		await IexecClerkInstance.cancelDappOrder(dapporder, { from: dappProvider });
 		assert.equal(await IexecClerkInstance.viewConsumed(dapporder_hash), dapporder.volume, "Error in dapp order presign");
 	});
 
@@ -195,20 +186,20 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecClerkInstance.viewConsumed(dataorder_hash), 0, "Error in data order presign");
 		try
 		{
-			await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(iexecAdmin)).cancelDataOrder(dataorder);
+			await IexecClerkInstance.cancelDataOrder(dataorder, { from: iexecAdmin });
 			assert.fail("user should not be able to sign dataorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 		assert.equal(await IexecClerkInstance.viewConsumed(dataorder_hash), 0, "Error in data order presign");
 	});
 
 	it("presign data order #2", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(dataorder_hash), 0, "Error in data order presign");
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(dataProvider)).cancelDataOrder(dataorder);
+		await IexecClerkInstance.cancelDataOrder(dataorder, { from: dataProvider });
 		assert.equal(await IexecClerkInstance.viewConsumed(dataorder_hash), dataorder.volume, "Error in data order presign");
 	});
 
@@ -219,20 +210,20 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecClerkInstance.viewConsumed(poolorder_hash), 0, "Error in pool order presign");
 		try
 		{
-			await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(iexecAdmin)).cancelPoolOrder(poolorder);
+			await IexecClerkInstance.cancelPoolOrder(poolorder, { from: iexecAdmin });
 			assert.fail("user should not be able to sign poolorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 		assert.equal(await IexecClerkInstance.viewConsumed(poolorder_hash), 0, "Error in pool order presign");
 	});
 
 	it("presign pool order #2", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(poolorder_hash), 0, "Error in pool order presign");
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(poolScheduler)).cancelPoolOrder(poolorder);
+		await IexecClerkInstance.cancelPoolOrder(poolorder, { from: poolScheduler });
 		assert.equal(await IexecClerkInstance.viewConsumed(poolorder_hash), poolorder.volume, "Error in pool order presign");
 	});
 
@@ -243,20 +234,20 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecClerkInstance.viewConsumed(userorder_hash), 0, "Error in user order presign");
 		try
 		{
-			await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(iexecAdmin)).cancelUserOrder(userorder);
+			await IexecClerkInstance.cancelUserOrder(userorder, { from: iexecAdmin });
 			assert.fail("user should not be able to sign userorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 		assert.equal(await IexecClerkInstance.viewConsumed(userorder_hash), 0, "Error in user order presign");
 	});
 
 	it("presign user order #2", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(userorder_hash), 0, "Error in user order presign");
-		await IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).cancelUserOrder(userorder);
+		await IexecClerkInstance.cancelUserOrder(userorder, { from: user });
 		assert.equal(await IexecClerkInstance.viewConsumed(userorder_hash), userorder.volume, "Error in user order presign");
 	});
 

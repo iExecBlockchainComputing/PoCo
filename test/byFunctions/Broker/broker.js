@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const Web3      = require('web3')
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -92,15 +91,6 @@ contract('IexecHub', async (accounts) => {
 		});
 
 		/**
-		 * For ABIEncoderV2
-		 */
-		web3 = new Web3(web3.currentProvider);
-		IexecHubInstanceBeta   = new web3.eth.Contract(IexecHub.abi,   IexecHubInstance.address  );
-		IexecClerkInstanceBeta = new web3.eth.Contract(IexecClerk.abi, IexecClerkInstance.address);
-		RelayInstanceBeta      = new web3.eth.Contract(Relay.abi,      RelayInstance.address     );
-		BrokerInstanceBeta     = new web3.eth.Contract(Broker.abi,     BrokerInstance.address    );
-
-		/**
 		 * Token distribution
 		 */
 		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
@@ -162,19 +152,19 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker1,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker2,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker3,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: poolWorker4,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstanceBeta.methods.deposit(1000).send({ from: user,          gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker1,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker2,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker3,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: poolWorker4,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: user,          gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
-		assert.isBelow(txsMined[0].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
@@ -247,11 +237,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(dappProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				dappProvider,
 				odbtools.DappOrderStructHash(dapporder),
-				dapporder.sign
-			).call(),
+				dapporder.sign,
+				{}
+			),
 			"Error with the validation of the dapporder signature"
 		);
 	});
@@ -275,11 +266,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(dataProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				dataProvider,
 				odbtools.DataOrderStructHash(dataorder),
-				dataorder.sign
-			).call(),
+				dataorder.sign,
+				{}
+			),
 			"Error with the validation of the dataorder signature"
 		);
 	});
@@ -305,11 +297,12 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(poolScheduler)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				poolScheduler,
 				odbtools.PoolOrderStructHash(poolorder),
-				poolorder.sign
-			).call(),
+				poolorder.sign,
+				{}
+			),
 			"Error with the validation of the poolorder signature"
 		);
 	});
@@ -340,18 +333,19 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(user)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceBeta.methods.verify(
+			await IexecClerkInstance.verify(
 				user,
 				odbtools.UserOrderStructHash(userorder),
-				userorder.sign
-			).call(),
+				userorder.sign,
+				{}
+			),
 			"Error with the validation of the userorder signature"
 		);
 	});
 
 	it("broker setup", async () => {
 
-		// txMined = await BrokerInstanceBeta.methods.deposit().send({ value: web3.utils.toWei("1.00", "ether"), from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		// txMined = await BrokerInstance.deposit({ value: web3.utils.toWei("1.00", "ether"), from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		txMined = await web3.eth.sendTransaction({
 			from:  user,
 			to:    BrokerInstance.address,
@@ -359,14 +353,15 @@ contract('IexecHub', async (accounts) => {
 		});
 		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await BrokerInstanceBeta.methods.setPreferences(
+		txMined = await BrokerInstance.setPreferences(
 			web3.utils.toWei("0.01", "ether"),
 			web3.utils.toWei("40.0", "gwei"),
-		).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			{ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		balance     = await BrokerInstanceBeta.methods.m_balance(user).call();
-		preferences = await BrokerInstanceBeta.methods.m_preferences(user).call();
+		balance     = await BrokerInstance.m_balance(user);
+		preferences = await BrokerInstance.m_preferences(user);
 		assert.equal(balance, web3.utils.toWei("1.00", "ether"));
 		assert.equal(preferences.reward,      web3.utils.toWei("0.01", "ether"));
 		assert.equal(preferences.maxgasprice, web3.utils.toWei("40.0", "gwei"));
@@ -374,7 +369,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("check before", async () => {
 		assert.equal(
-			await BrokerInstanceBeta.methods.m_balance(user).call(),
+			await BrokerInstance.m_balance(user),
 			await web3.eth.getBalance(BrokerInstance.address)
 		);
 
@@ -383,9 +378,9 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broker match", async () => {
-		// txMined = await IexecClerkInstanceBeta.methods.matchOrders(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		txMined = await BrokerInstanceBeta.methods.matchOrdersForUser(dapporder, dataorder, poolorder, userorder).send({ from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		// txMined = await IexecClerkInstance.matchOrders(dapporder, dataorder, poolorder, userorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await BrokerInstance.matchOrdersForUser(dapporder, dataorder, poolorder, userorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// dealid = web3.utils.soliditySha3(
 		// 	{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
@@ -403,7 +398,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("check after", async () => {
 		assert.equal(
-			await BrokerInstanceBeta.methods.m_balance(user).call(),
+			await BrokerInstance.m_balance(user),
 			await web3.eth.getBalance(BrokerInstance.address)
 		);
 
@@ -412,12 +407,12 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("broker exit", async () => {
-		balance = await BrokerInstanceBeta.methods.m_balance(user).call(),
+		balance = await BrokerInstance.m_balance(user),
 
-		txMined = await BrokerInstanceBeta.methods.withdraw(balance).send({ from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		txMined = await BrokerInstance.withdraw(balance, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(await BrokerInstanceBeta.methods.m_balance(user).call(), 0);
+		assert.equal(await BrokerInstance.m_balance(user), 0);
 	});
 
 });

@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -42,12 +41,6 @@ contract('IexecHub', async (accounts) => {
 	var RelayInstance        = null;
 	var BrokerInstance       = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	var categories = [];
 
 	/***************************************************************************
@@ -67,15 +60,6 @@ contract('IexecHub', async (accounts) => {
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 	});
 
 	/***************************************************************************
@@ -103,7 +87,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
 		try
 		{
-			category = await IexecHubInstanceEthers.viewCategory(6);
+			category = await IexecHubInstance.viewCategory(6);
 			assert.fail("user should not be able to view category");
 		}
 		catch (error)
@@ -147,7 +131,7 @@ contract('IexecHub', async (accounts) => {
 	it("CategoryManager - create and view #4: view created", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
 
-		category = await IexecHubInstanceEthers.viewCategory(6);
+		category = await IexecHubInstance.viewCategory(6);
 		assert.equal(category.name,             "Tiny",                  "check name"            );
 		assert.equal(category.description,      "Small but impractical", "check description"     );
 		assert.equal(category.workClockTimeRef, 3,                       "check workClockTimeRef");

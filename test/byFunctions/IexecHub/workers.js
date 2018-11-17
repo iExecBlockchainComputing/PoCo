@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -46,12 +45,6 @@ contract('IexecHub', async (accounts) => {
 	var PoolInstance2 = null;
 	var PoolInstance3 = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	var categories = [];
 
 	/***************************************************************************
@@ -71,15 +64,6 @@ contract('IexecHub', async (accounts) => {
 		PoolRegistryInstance = await PoolRegistry.deployed();
 		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 	});
 
 	it("[configuration] distribute tokens", async () => {
@@ -184,7 +168,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker1,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker1), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker1); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990,  10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker1); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990,  10 ], "check balance");
 	});
 
 	it("Subscription 2", async () => {
@@ -197,7 +181,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker2,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker2), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker2); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker2); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
 	});
 
 	it("Subscription 3 - failure worker conditions", async () => {
@@ -208,11 +192,11 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 	});
 
 	it("Subscription 4 - failure registration", async () => {
@@ -223,11 +207,11 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("Returned error: VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS, "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 	});
 
 	it("Subscription - Unsubscription", async () => {
@@ -240,7 +224,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance");
 
 		txMined = await IexecHubInstance.unsubscribe({ from: poolWorker3 }),
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -249,7 +233,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), constants.NULL.ADDRESS,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 
 		txMined = await IexecHubInstance.subscribe(PoolInstance2.address, { from: poolWorker3 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -258,7 +242,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker3,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker3), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker3); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
 	});
 
 	it("Subscription - Eviction", async () => {
@@ -271,7 +255,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 900, 100 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
 
 		txMined = await IexecHubInstance.evict(poolWorker4, { from: poolScheduler }),
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -280,7 +264,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), constants.NULL.ADDRESS,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 1000, 0 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 
 		txMined = await IexecHubInstance.subscribe(PoolInstance1.address, { from: poolWorker4 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -289,7 +273,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.worker, poolWorker4,           "check worker");
 
 		assert.equal(await IexecHubInstance.viewAffectation(poolWorker4), PoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstanceEthers.viewAccount(poolWorker4); assert.deepEqual([ balance.stake.toNumber(), balance.locked.toNumber() ], [ 990, 10 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance");
 	});
 
 });

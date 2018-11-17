@@ -10,7 +10,6 @@ var Pool         = artifacts.require("./Pool.sol");
 var Relay        = artifacts.require("./Relay.sol");
 var Broker       = artifacts.require("./Broker.sol");
 
-const ethers    = require('ethers'); // for ABIEncoderV2
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
@@ -48,12 +47,6 @@ contract('IexecHub', async (accounts) => {
 	var DataInstance = null;
 	var PoolInstance = null;
 
-	var jsonRpcProvider          = null;
-	var IexecHubInstanceEthers   = null;
-	var IexecClerkInstanceEthers = null;
-	var RelayInstanceEthers      = null;
-	var BrokerInstanceEthers     = null;
-
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
@@ -78,15 +71,6 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
-
-		/**
-		 * For ABIEncoderV2
-		 */
-		jsonRpcProvider          = new ethers.providers.JsonRpcProvider();
-		IexecHubInstanceEthers   = new ethers.Contract(IexecHubInstance.address,   IexecHub.abi,           jsonRpcProvider);
-		IexecClerkInstanceEthers = new ethers.Contract(IexecClerkInstance.address, IexecClerkInstance.abi, jsonRpcProvider);
-		RelayInstanceEthers      = new ethers.Contract(RelayInstance.address,      RelayInstance.abi,      jsonRpcProvider);
-		BrokerInstanceEthers     = new ethers.Contract(BrokerInstance.address,     BrokerInstance.abi,     jsonRpcProvider);
 
 		/**
 		 * Token distribution
@@ -252,7 +236,7 @@ contract('IexecHub', async (accounts) => {
 		odbtools.signDataOrder(_dataorder, wallets.addressToPrivate(dataProvider));
 		odbtools.signPoolOrder(_poolorder, wallets.addressToPrivate(poolScheduler));
 		odbtools.signUserOrder(_userorder, wallets.addressToPrivate(user));
-		return IexecClerkInstanceEthers.connect(jsonRpcProvider.getSigner(user)).matchOrders(_dapporder, _dataorder, _poolorder, _userorder, { gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		return IexecClerkInstance.matchOrders(_dapporder, _dataorder, _poolorder, _userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 	};
 
 
@@ -268,30 +252,30 @@ contract('IexecHub', async (accounts) => {
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
-		deal = await IexecClerkInstanceEthers.viewDeal(deals[0]);
-		assert.equal(deal.dapp.pointer,          DappInstance.address  );
-		assert.equal(deal.dapp.owner,            dappProvider          );
-		assert.equal(deal.dapp.price.toNumber(), 3                     );
-		assert.equal(deal.data.pointer,          DataInstance.address  );
-		assert.equal(deal.data.owner,            dataProvider          );
-		assert.equal(deal.data.price.toNumber(), 1                     );
-		assert.equal(deal.pool.pointer,          PoolInstance.address  );
-		assert.equal(deal.pool.owner,            poolScheduler         );
-		assert.equal(deal.pool.price.toNumber(), 25                    );
-		assert.equal(deal.trust.toNumber(),      1000                  );
-		assert.equal(deal.tag.toNumber(),        0x0                   );
-		assert.equal(deal.requester,             user                  );
-		assert.equal(deal.beneficiary,           user                  );
-		assert.equal(deal.callback,              constants.NULL.ADDRESS);
-		assert.equal(deal.params,                "<parameters>"        );
+		deal = await IexecClerkInstance.viewDeal(deals[0]);
+		assert.equal(       deal.dapp.pointer, DappInstance.address  );
+		assert.equal(       deal.dapp.owner,   dappProvider          );
+		assert.equal(Number(deal.dapp.price),  3                     );
+		assert.equal(       deal.data.pointer, DataInstance.address  );
+		assert.equal(       deal.data.owner,   dataProvider          );
+		assert.equal(Number(deal.data.price),  1                     );
+		assert.equal(       deal.pool.pointer, PoolInstance.address  );
+		assert.equal(       deal.pool.owner,   poolScheduler         );
+		assert.equal(Number(deal.pool.price),  25                    );
+		assert.equal(Number(deal.trust),       1000                  );
+		assert.equal(Number(deal.tag),         0x0                   );
+		assert.equal(       deal.requester,    user                  );
+		assert.equal(       deal.beneficiary,  user                  );
+		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
+		assert.equal(       deal.params,       "<parameters>"        );
 
-		config = await IexecClerkInstanceEthers.viewConfig(deals[0]);
-		assert.equal  (config.category.toNumber(),             4);
-		assert.isAbove(config.startTime.toNumber(),            0);
-		assert.equal  (config.botFirst.toNumber(),             0);
-		assert.equal  (config.botSize.toNumber(),              1);
-		assert.equal  (config.workerStake.toNumber(),          8); // 8 = floor(25*.3)
-		assert.equal  (config.schedulerRewardRatio.toNumber(), 5);
+		config = await IexecClerkInstance.viewConfig(deals[0]);
+		assert.equal  (Number(config.category),             4);
+		assert.isAbove(Number(config.startTime),            0);
+		assert.equal  (Number(config.botFirst),             0);
+		assert.equal  (Number(config.botSize),              1);
+		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
+		assert.equal  (Number(config.schedulerRewardRatio), 5);
 	});
 
 	it("[Match - dapp-pool-user]", async () => {
@@ -305,30 +289,30 @@ contract('IexecHub', async (accounts) => {
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
-		deal = await IexecClerkInstanceEthers.viewDeal(deals[0]);
-		assert.equal(deal.dapp.pointer,          DappInstance.address  );
-		assert.equal(deal.dapp.owner,            dappProvider          );
-		assert.equal(deal.dapp.price.toNumber(), 3                     );
-		assert.equal(deal.data.pointer,          constants.NULL.ADDRESS);
-		assert.equal(deal.data.owner,            constants.NULL.ADDRESS);
-		assert.equal(deal.data.price.toNumber(), 0                     );
-		assert.equal(deal.pool.pointer,          PoolInstance.address  );
-		assert.equal(deal.pool.owner,            poolScheduler         );
-		assert.equal(deal.pool.price.toNumber(), 25                    );
-		assert.equal(deal.trust.toNumber(),      1000                  );
-		assert.equal(deal.tag.toNumber(),        0x0                   );
-		assert.equal(deal.requester,             user                  );
-		assert.equal(deal.beneficiary,           user                  );
-		assert.equal(deal.callback,              constants.NULL.ADDRESS);
-		assert.equal(deal.params,                "<parameters>"        );
+		deal = await IexecClerkInstance.viewDeal(deals[0]);
+		assert.equal(       deal.dapp.pointer, DappInstance.address  );
+		assert.equal(       deal.dapp.owner,   dappProvider          );
+		assert.equal(Number(deal.dapp.price),  3                     );
+		assert.equal(       deal.data.pointer, constants.NULL.ADDRESS);
+		assert.equal(       deal.data.owner,   constants.NULL.ADDRESS);
+		assert.equal(Number(deal.data.price),  0                     );
+		assert.equal(       deal.pool.pointer, PoolInstance.address  );
+		assert.equal(       deal.pool.owner,   poolScheduler         );
+		assert.equal(Number(deal.pool.price),  25                    );
+		assert.equal(Number(deal.trust),       1000                  );
+		assert.equal(Number(deal.tag),         0x0                   );
+		assert.equal(       deal.requester,    user                  );
+		assert.equal(       deal.beneficiary,  user                  );
+		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
+		assert.equal(       deal.params,       "<parameters>"        );
 
-		config = await IexecClerkInstanceEthers.viewConfig(deals[0]);
-		assert.equal  (config.category.toNumber(),             4);
-		assert.isAbove(config.startTime.toNumber(),            0);
-		assert.equal  (config.botFirst.toNumber(),             0);
-		assert.equal  (config.botSize.toNumber(),              1);
-		assert.equal  (config.workerStake.toNumber(),          8); // 8 = floor(25*.3)
-		assert.equal  (config.schedulerRewardRatio.toNumber(), 5);
+		config = await IexecClerkInstance.viewConfig(deals[0]);
+		assert.equal  (Number(config.category),             4);
+		assert.isAbove(Number(config.startTime),            0);
+		assert.equal  (Number(config.botFirst),             0);
+		assert.equal  (Number(config.botSize),              1);
+		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
+		assert.equal  (Number(config.schedulerRewardRatio), 5);
 	});
 
 	it("[Match - dapp-data-pool-user BOT]", async () => {
@@ -342,30 +326,30 @@ contract('IexecHub', async (accounts) => {
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
-		deal = await IexecClerkInstanceEthers.viewDeal(deals[0]);
-		assert.equal(deal.dapp.pointer,          DappInstance.address  );
-		assert.equal(deal.dapp.owner,            dappProvider          );
-		assert.equal(deal.dapp.price.toNumber(), 3                     );
-		assert.equal(deal.data.pointer,          DataInstance.address  );
-		assert.equal(deal.data.owner,            dataProvider          );
-		assert.equal(deal.data.price.toNumber(), 1                     );
-		assert.equal(deal.pool.pointer,          PoolInstance.address  );
-		assert.equal(deal.pool.owner,            poolScheduler         );
-		assert.equal(deal.pool.price.toNumber(), 25                    );
-		assert.equal(deal.trust.toNumber(),      1000                  );
-		assert.equal(deal.tag.toNumber(),        0x0                   );
-		assert.equal(deal.requester,             user                  );
-		assert.equal(deal.beneficiary,           user                  );
-		assert.equal(deal.callback,              constants.NULL.ADDRESS);
-		assert.equal(deal.params,                "<parameters>"        );
+		deal = await IexecClerkInstance.viewDeal(deals[0]);
+		assert.equal(       deal.dapp.pointer, DappInstance.address  );
+		assert.equal(       deal.dapp.owner,   dappProvider          );
+		assert.equal(Number(deal.dapp.price),  3                     );
+		assert.equal(       deal.data.pointer, DataInstance.address  );
+		assert.equal(       deal.data.owner,   dataProvider          );
+		assert.equal(Number(deal.data.price),  1                     );
+		assert.equal(       deal.pool.pointer, PoolInstance.address  );
+		assert.equal(       deal.pool.owner,   poolScheduler         );
+		assert.equal(Number(deal.pool.price),  25                    );
+		assert.equal(Number(deal.trust),       1000                  );
+		assert.equal(Number(deal.tag),         0x0                   );
+		assert.equal(       deal.requester,    user                  );
+		assert.equal(       deal.beneficiary,  user                  );
+		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
+		assert.equal(       deal.params,       "<parameters>"        );
 
-		config = await IexecClerkInstanceEthers.viewConfig(deals[0]);
-		assert.equal  (config.category.toNumber(),             4);
-		assert.isAbove(config.startTime.toNumber(),            0);
-		assert.equal  (config.botFirst.toNumber(),             0);
-		assert.equal  (config.botSize.toNumber(),             10);
-		assert.equal  (config.workerStake.toNumber(),          8); // 8 = floor(25*.3)
-		assert.equal  (config.schedulerRewardRatio.toNumber(), 5);
+		config = await IexecClerkInstance.viewConfig(deals[0]);
+		assert.equal  (Number(config.category),             4);
+		assert.isAbove(Number(config.startTime),            0);
+		assert.equal  (Number(config.botFirst),             0);
+		assert.equal  (Number(config.botSize),             10);
+		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
+		assert.equal  (Number(config.schedulerRewardRatio), 5);
 	});
 
 	it("[Match - Error - category]", async () => {
@@ -379,7 +363,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -394,7 +378,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -409,7 +393,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -424,7 +408,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -439,7 +423,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -454,7 +438,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -469,7 +453,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -484,7 +468,7 @@ contract('IexecHub', async (accounts) => {
 			// assert.fail("transaction should have reverted");
 		// } catch (error) {
 			// assert(error, "Expected an error but did not get one");
-			// assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			// assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		// }
 	});
 
@@ -499,7 +483,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -514,7 +498,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -529,7 +513,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -544,7 +528,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
@@ -559,7 +543,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - dapp-datarestrict]", async () => {
@@ -582,7 +566,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - dapp-poolrestrict]", async () => {
@@ -605,7 +589,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - dapp-userrestrict]", async () => {
@@ -628,7 +612,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - data-dapprestrict]", async () => {
@@ -651,7 +635,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - dapp-poolrestrict]", async () => {
@@ -674,7 +658,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - dapp-userrestrict]", async () => {
@@ -697,7 +681,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - pool-dapprestrict]", async () => {
@@ -720,7 +704,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - pool-datarestrict]", async () => {
@@ -743,7 +727,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 	it("[Match - Ok - pool-userrestrict]", async () => {
@@ -766,7 +750,7 @@ contract('IexecHub', async (accounts) => {
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
-			assert(error.message.startsWith("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
