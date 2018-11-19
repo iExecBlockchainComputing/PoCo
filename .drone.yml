@@ -2,5 +2,27 @@ pipeline:
   build:
     image: node:latest
     commands:
+      - sed -i '/ethereumjs-util/d' package.json
       - npm install
-      - npm test
+      - ./node_modules/.bin/truffle compile
+    when:
+      ref: [refs/tags/v*]
+
+  npm:
+    image: plugins/npm
+    secrets: [npm_password]
+    username: sulliwane
+    email: sulliwane@gmail.com
+    tag: next
+    when:
+      ref: [refs/tags/v3*]
+
+  dockerhub:
+    image: plugins/docker
+    repo: iexechub/poco-chain
+    secrets: [docker_username, docker_password]
+    tags:
+      - latest
+      - ${DRONE_TAG##v}
+    when:
+      ref: [refs/tags/v3*]
