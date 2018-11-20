@@ -30,9 +30,9 @@ library IexecODBLibCore
 	struct Deal
 	{
 		// Ressources
-		Resource dapp;
-		Resource data;
-		Resource pool;
+		Resource app;
+		Resource dataset;
+		Resource workerpool;
 		uint256  trust;
 		uint256  tag;
 		// execution details

@@ -59,21 +59,21 @@ contract Broker
 	}
 
 	function matchOrdersForPool(
-		IexecODBLibOrders.DappOrder _dapporder,
-		IexecODBLibOrders.DataOrder _dataorder,
-		IexecODBLibOrders.PoolOrder _poolorder,
-		IexecODBLibOrders.UserOrder _userorder)
+		IexecODBLibOrders.AppOrder        _apporder,
+		IexecODBLibOrders.DatasetOrder    _datasetorder,
+		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
+		IexecODBLibOrders.UserOrder       _userorder)
 	public returns (bytes32)
 	{
 		uint256 gasBefore = gasleft();
 
 		bytes32 dealid = iexecclerk.matchOrders(
-			_dapporder,
-			_dataorder,
-			_poolorder,
+			_apporder,
+			_datasetorder,
+			_workerpoolorder,
 			_userorder);
 
-		address payer = Pool(_poolorder.pool).m_owner();
+		address payer = Workerpool(_workerpoolorder.workerpool).m_owner();
 		uint256 price = m_preferences[payer].reward + tx.gasprice.min(m_preferences[payer].maxgasprice) * (87000 + gasBefore - gasleft());
 		m_balance[payer] = m_balance[payer].sub(price);
 		msg.sender.transfer(price);
@@ -82,18 +82,18 @@ contract Broker
 	}
 
 	function matchOrdersForUser(
-		IexecODBLibOrders.DappOrder _dapporder,
-		IexecODBLibOrders.DataOrder _dataorder,
-		IexecODBLibOrders.PoolOrder _poolorder,
-		IexecODBLibOrders.UserOrder _userorder)
+		IexecODBLibOrders.AppOrder        _apporder,
+		IexecODBLibOrders.DatasetOrder    _datasetorder,
+		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
+		IexecODBLibOrders.UserOrder       _userorder)
 	public returns (bytes32)
 	{
 		uint256 gasBefore = gasleft();
 
 		bytes32 dealid = iexecclerk.matchOrders(
-			_dapporder,
-			_dataorder,
-			_poolorder,
+			_apporder,
+			_datasetorder,
+			_workerpoolorder,
 			_userorder);
 
 		address payer = _userorder.requester;

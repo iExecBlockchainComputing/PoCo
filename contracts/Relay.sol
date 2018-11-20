@@ -5,15 +5,15 @@ import "./libs/IexecODBLibOrders.sol";
 
 contract Relay
 {
-	event BroadcastDappOrder(IexecODBLibOrders.DappOrder dapporder);
-	event BroadcastDataOrder(IexecODBLibOrders.DataOrder dataorder);
-	event BroadcastPoolOrder(IexecODBLibOrders.PoolOrder poolorder);
-	event BroadcastUserOrder(IexecODBLibOrders.UserOrder userorder);
+	event BroadcastAppOrder       (IexecODBLibOrders.AppOrder        apporder       );
+	event BroadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    datasetorder   );
+	event BroadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder workerpoolorder);
+	event BroadcastUserOrder      (IexecODBLibOrders.UserOrder       userorder      );
 
 	constructor() public {}
 
-	function broadcastDappOrder(IexecODBLibOrders.DappOrder _dapporder) public { emit BroadcastDappOrder(_dapporder); }
-	function broadcastDataOrder(IexecODBLibOrders.DataOrder _dataorder) public { emit BroadcastDataOrder(_dataorder); }
-	function broadcastPoolOrder(IexecODBLibOrders.PoolOrder _poolorder) public { emit BroadcastPoolOrder(_poolorder); }
-	function broadcastUserOrder(IexecODBLibOrders.UserOrder _userorder) public { emit BroadcastUserOrder(_userorder); }
+	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        _apporder       ) public { emit BroadcastAppOrder       (_apporder       ); }
+	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    _datasetorder   ) public { emit BroadcastDatasetOrder   (_datasetorder   ); }
+	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder) public { emit BroadcastWorkerpoolOrder(_workerpoolorder); }
+	function broadcastUserOrder      (IexecODBLibOrders.UserOrder       _userorder      ) public { emit BroadcastUserOrder      (_userorder      ); }
 }

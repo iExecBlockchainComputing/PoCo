@@ -25,12 +25,12 @@ contract IexecHub is CategoryManager, Oracle
 	 *                             Other contracts                             *
 	 ***************************************************************************/
 	IexecClerk   public iexecclerk;
-	RegistryBase public dappregistry;
-	RegistryBase public dataregistry;
-	RegistryBase public poolregistry;
-	/* DappRegistry dappregistry; */
-	/* DataRegistry dataregistry; */
-	/* PoolRegistry poolregistry; */
+	RegistryBase public appregistry;
+	RegistryBase public datasetregistry;
+	RegistryBase public workerpoolregistry;
+	/* Appregistry        appregistry;        */
+	/* Datasetregistry    datasetregistry;    */
+	/* Workerpoolregistry workerpoolregistry; */
 
 	/***************************************************************************
 	 *                          Consensuses & Workers                          *
@@ -67,7 +67,7 @@ contract IexecHub is CategoryManager, Oracle
 	 ***************************************************************************/
 	modifier onlyScheduler(bytes32 _taskid)
 	{
-		require(msg.sender == iexecclerk.viewDeal(m_tasks[_taskid].dealid).pool.owner);
+		require(msg.sender == iexecclerk.viewDeal(m_tasks[_taskid].dealid).workerpool.owner);
 		_;
 	}
 
@@ -81,16 +81,16 @@ contract IexecHub is CategoryManager, Oracle
 
 	function attachContracts(
 		address _iexecclerkAddress,
-		address _dappRegistryAddress,
-		address _dataRegistryAddress,
-		address _poolRegistryAddress)
+		address _appregistryAddress,
+		address _datasetregistryAddress,
+		address _workerpoolregistryAddress)
 	public onlyOwner
 	{
 		require(address(iexecclerk) == address(0));
-		iexecclerk   = IexecClerk  (_iexecclerkAddress  );
-		dappregistry = RegistryBase(_dappRegistryAddress);
-		dataregistry = RegistryBase(_dataRegistryAddress);
-		poolregistry = RegistryBase(_poolRegistryAddress);
+		iexecclerk         = IexecClerk  (_iexecclerkAddress  );
+		appregistry        = RegistryBase(_appregistryAddress);
+		datasetregistry    = RegistryBase(_datasetregistryAddress);
+		workerpoolregistry = RegistryBase(_workerpoolregistryAddress);
 	}
 
 	/***************************************************************************
@@ -115,17 +115,17 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function viewAffectation(address _worker)
-	public view returns (Pool)
+	public view returns (Workerpool)
 	{
-		return Pool(m_workerAffectations[_worker]);
+		return Workerpool(m_workerAffectations[_worker]);
 	}
 
 	function checkResources(address dapp, address data, address pool)
 	public view returns (bool)
 	{
-		require(                      dappregistry.isRegistered(dapp));
-		require(data == address(0) || dataregistry.isRegistered(data));
-		require(                      poolregistry.isRegistered(pool));
+		require(                      appregistry.isRegistered(dapp));
+		require(data == address(0) || datasetregistry.isRegistered(data));
+		require(                      workerpoolregistry.isRegistered(pool));
 		return true;
 	}
 
@@ -164,7 +164,7 @@ contract IexecHub is CategoryManager, Oracle
 		// setup denominator
 		m_totalweight[taskid] = 1;
 
-		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
+		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).workerpool.pointer);
 
 		return taskid;
 	}
@@ -188,7 +188,7 @@ contract IexecHub is CategoryManager, Oracle
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		// Skip check if authorized?
-		require(deal.pool.owner == ecrecover(
+		require(deal.workerpool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
 				keccak256(abi.encodePacked(
@@ -203,7 +203,7 @@ contract IexecHub is CategoryManager, Oracle
 		);
 
 		// worker must be subscribed to the pool, keep?
-		require(m_workerAffectations[msg.sender] == deal.pool.pointer);
+		require(m_workerAffectations[msg.sender] == deal.workerpool.pointer);
 
 		// Not needed
 		/* require(_resultHash != 0x0); */
@@ -429,7 +429,7 @@ contract IexecHub is CategoryManager, Oracle
 		address worker;
 
 		uint256 totalWeight = 0;
-		uint256 totalReward = iexecclerk.viewDeal(task.dealid).pool.price;
+		uint256 totalReward = iexecclerk.viewDeal(task.dealid).workerpool.price;
 
 		for (i = 0; i < task.contributors.length; ++i)
 		{
@@ -506,24 +506,24 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                       Worker affectation methods                        *
 	 ***************************************************************************/
-	function subscribe(Pool _pool)
+	function subscribe(Workerpool _workerpool)
 	public returns (bool)
 	{
 		// check pools validity
-		require(poolregistry.isRegistered(_pool));
+		require(workerpoolregistry.isRegistered(_workerpool));
 
 		// check worker is not previously affected: AUTO unsubscribe ???
 		require(m_workerAffectations[msg.sender] == address(0));
 
 		// Lock stake & check funds/reputation
-		iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy());
-		require(iexecclerk.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
-		require(m_workerScores[msg.sender]               >= _pool.m_subscriptionMinimumScorePolicy());
+		iexecclerk.lockSubscription(msg.sender, _workerpool.m_subscriptionLockStakePolicy());
+		require(iexecclerk.viewAccount(msg.sender).stake >= _workerpool.m_subscriptionMinimumStakePolicy());
+		require(m_workerScores[msg.sender]               >= _workerpool.m_subscriptionMinimumScorePolicy());
 
 		// update affectation
-		m_workerAffectations[msg.sender] = address(_pool);
+		m_workerAffectations[msg.sender] = address(_workerpool);
 
-		emit WorkerSubscription(address(_pool), msg.sender);
+		emit WorkerSubscription(address(_workerpool), msg.sender);
 		return true;
 	}
 
@@ -531,16 +531,16 @@ contract IexecHub is CategoryManager, Oracle
 	public returns (bool)
 	{
 		// check affectation
-		Pool pool = Pool(m_workerAffectations[msg.sender]);
-		require(address(pool) != address(0));
+		Workerpool workerpool = Workerpool(m_workerAffectations[msg.sender]);
+		require(address(workerpool) != address(0));
 
 		// Unlock stake
-		iexecclerk.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy());
+		iexecclerk.unlockSubscription(msg.sender, workerpool.m_subscriptionLockStakePolicy());
 
 		// update affectation
 		m_workerAffectations[msg.sender] = address(0);
 
-		emit WorkerUnsubscription(address(pool), msg.sender);
+		emit WorkerUnsubscription(address(workerpool), msg.sender);
 		return true;
 	}
 
@@ -548,17 +548,17 @@ contract IexecHub is CategoryManager, Oracle
 	public returns (bool)
 	{
 		// check affectation & authorization
-		Pool pool = Pool(m_workerAffectations[_worker]);
-		require(address(pool)  != address(0));
-		require(pool.m_owner() == msg.sender);
+		Workerpool workerpool = Workerpool(m_workerAffectations[msg.sender]);
+		require(address(workerpool)  != address(0));
+		require(workerpool.m_owner() == msg.sender);
 
 		// Unlock stake
-		iexecclerk.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy());
+		iexecclerk.unlockSubscription(_worker, workerpool.m_subscriptionLockStakePolicy());
 
 		// update affectation
 		m_workerAffectations[_worker] = address(0);
 
-		emit WorkerEviction(address(pool), _worker);
+		emit WorkerEviction(address(workerpool), _worker);
 		return true;
 	}
 }

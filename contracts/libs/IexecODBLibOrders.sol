@@ -10,16 +10,16 @@ library IexecODBLibOrders
 		bytes32 s;
 	}
 
-	// bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	// bytes32 public constant DAPPORDER_TYPEHASH    = keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,uint256 tag,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-	// bytes32 public constant DATAORDER_TYPEHASH    = keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,uint256 tag,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)");
-	// bytes32 public constant POOLORDER_TYPEHASH    = keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)");
-	// bytes32 public constant USERORDER_TYPEHASH    = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
-	bytes32 public constant EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-	bytes32 public constant DAPPORDER_TYPEHASH    = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
-	bytes32 public constant DATAORDER_TYPEHASH    = 0x25152fa69720eec3b3360dd907576b7ec55e2633342bf993e09e8f5148640930;
-	bytes32 public constant POOLORDER_TYPEHASH    = 0x03b4801c105a2678088a8300a3e19699cc783e5a43439f28f3bc75b8391552ea;
-	bytes32 public constant USERORDER_TYPEHASH    = 0x8160ee616648fd072bd2f7da47db26c4adbeb9f3f44e6d6cad0fc6f011f2fbbf;
+	bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+	bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)");
+	bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)");
+	bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address userrestrict,bytes32 salt)");
+	bytes32 public constant       USERORDER_TYPEHASH = keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
+	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+	// bytes32 public constant        APPORDER_TYPEHASH = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
+	// bytes32 public constant    DATASETORDER_TYPEHASH = 0x25152fa69720eec3b3360dd907576b7ec55e2633342bf993e09e8f5148640930;
+	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0x03b4801c105a2678088a8300a3e19699cc783e5a43439f28f3bc75b8391552ea;
+	// bytes32 public constant       USERORDER_TYPEHASH = 0x8160ee616648fd072bd2f7da47db26c4adbeb9f3f44e6d6cad0fc6f011f2fbbf;
 
 	struct EIP712Domain
 	{
@@ -28,52 +28,52 @@ library IexecODBLibOrders
 		uint256 chainId;
 		address verifyingContract;
 	}
-	struct DappOrder
+	struct AppOrder
 	{
-		address dapp;
-		uint256 dappprice;
+		address app;
+		uint256 appprice;
 		uint256 volume;
 		uint256 tag;
-		address datarestrict;
-		address poolrestrict;
+		address datasetrestrict;
+		address workerpoolrestrict;
 		address userrestrict;
 		bytes32 salt;
 		signature sign;
 	}
-	struct DataOrder
+	struct DatasetOrder
 	{
-		address data;
-		uint256 dataprice;
+		address dataset;
+		uint256 datasetprice;
 		uint256 volume;
 		uint256 tag;
-		address dapprestrict;
-		address poolrestrict;
+		address apprestrict;
+		address workerpoolrestrict;
 		address userrestrict;
 		bytes32 salt;
 		signature sign;
 	}
-	struct PoolOrder
+	struct WorkerpoolOrder
 	{
-		address pool;
-		uint256 poolprice;
+		address workerpool;
+		uint256 workerpoolprice;
 		uint256 volume;
 		uint256 tag;
 		uint256 category;
 		uint256 trust;
-		address dapprestrict;
-		address datarestrict;
+		address apprestrict;
+		address datasetrestrict;
 		address userrestrict;
 		bytes32 salt;
 		signature sign;
 	}
 	struct UserOrder
 	{
-		address dapp;
-		uint256 dappmaxprice;
-		address data;
-		uint256 datamaxprice;
-		address pool;
-		uint256 poolmaxprice;
+		address app;
+		uint256 appmaxprice;
+		address dataset;
+		uint256 datasetmaxprice;
+		address workerpool;
+		uint256 workerpoolmaxprice;
 		address requester;
 		uint256 volume;
 		uint256 tag;
@@ -121,99 +121,99 @@ library IexecODBLibOrders
 			mstore(add(_domain, 32), temp3)
 		}
 	}
-	function hash(DappOrder _dapporder)
+	function hash(AppOrder _apporder)
 	public pure returns (bytes32 hash)
 	{
 		/**
 		 * Readeable but expensive
 		 */
 		// return keccak256(abi.encode(
-		// 	DAPPORDER_TYPEHASH
-		// , _dapporder.dapp
-		// , _dapporder.dappprice
-		// , _dapporder.volume
-		// , _dapporder.tag
-		// , _dapporder.datarestrict
-		// , _dapporder.poolrestrict
-		// , _dapporder.userrestrict
-		// , _dapporder.salt
+		// 	APPORDER_TYPEHASH
+		// , _apporder.app
+		// , _apporder.appprice
+		// , _apporder.volume
+		// , _apporder.tag
+		// , _apporder.datasetrestrict
+		// , _apporder.workerpoolrestrict
+		// , _apporder.userrestrict
+		// , _apporder.salt
 		// ));
 
 		// Compute sub-hashes
-		bytes32 typeHash = DAPPORDER_TYPEHASH;
+		bytes32 typeHash = APPORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_dapporder, 32))
+			let temp1 := mload(sub(_apporder, 32))
 			// Write typeHash and sub-hashes
-			mstore(sub(_dapporder, 32), typeHash)
+			mstore(sub(_apporder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_dapporder, 32), 288) // 288 = 32 + 256
+			hash := keccak256(sub(_apporder, 32), 288) // 288 = 32 + 256
 			// Restore memory
-			mstore(sub(_dapporder, 32), temp1)
+			mstore(sub(_apporder, 32), temp1)
 		}
 	}
-	function hash(DataOrder _dataorder)
+	function hash(DatasetOrder _datasetorder)
 	public pure returns (bytes32 hash)
 	{
 		/**
 		 * Readeable but expensive
 		 */
 		// return keccak256(abi.encode(
-		// 	DATAORDER_TYPEHASH
-		// , _dataorder.data
-		// , _dataorder.dataprice
-		// , _dataorder.volume
-		// , _dataorder.tag
-		// , _dataorder.dapprestrict
-		// , _dataorder.poolrestrict
-		// , _dataorder.userrestrict
-		// , _dataorder.salt
+		// 	DATASETORDER_TYPEHASH
+		// , _datasetorder.dataset
+		// , _datasetorder.datasetprice
+		// , _datasetorder.volume
+		// , _datasetorder.tag
+		// , _datasetorder.apprestrict
+		// , _datasetorder.workerpoolrestrict
+		// , _datasetorder.userrestrict
+		// , _datasetorder.salt
 		// ));
 
 		// Compute sub-hashes
-		bytes32 typeHash = DATAORDER_TYPEHASH;
+		bytes32 typeHash = DATASETORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_dataorder, 32))
+			let temp1 := mload(sub(_datasetorder, 32))
 			// Write typeHash and sub-hashes
-			mstore(sub(_dataorder, 32), typeHash)
+			mstore(sub(_datasetorder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_dataorder, 32), 288) // 288 = 32 + 256
+			hash := keccak256(sub(_datasetorder, 32), 288) // 288 = 32 + 256
 			// Restore memory
-			mstore(sub(_dataorder, 32), temp1)
+			mstore(sub(_datasetorder, 32), temp1)
 		}
 	}
-	function hash(PoolOrder _poolorder)
+	function hash(WorkerpoolOrder _workerpoolorder)
 	public pure returns (bytes32 hash)
 	{
 		/**
 		 * Readeable but expensive
 		 */
 		// return keccak256(abi.encode(
-		// 	POOLORDER_TYPEHASH
-		// , _poolorder.pool
-		// , _poolorder.poolprice
-		// , _poolorder.volume
-		// , _poolorder.tag
-		// , _poolorder.category
-		// , _poolorder.trust
-		// , _poolorder.dapprestrict
-		// , _poolorder.datarestrict
-		// , _poolorder.userrestrict
-		// , _poolorder.salt
+		// 	WORKERPOOLORDER_TYPEHASH
+		// , _workerpoolorder.workerpool
+		// , _workerpoolorder.workerpoolprice
+		// , _workerpoolorder.volume
+		// , _workerpoolorder.tag
+		// , _workerpoolorder.category
+		// , _workerpoolorder.trust
+		// , _workerpoolorder.apprestrict
+		// , _workerpoolorder.datasetrestrict
+		// , _workerpoolorder.userrestrict
+		// , _workerpoolorder.salt
 		// ));
 
 		// Compute sub-hashes
-		bytes32 typeHash = POOLORDER_TYPEHASH;
+		bytes32 typeHash = WORKERPOOLORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_poolorder, 32))
+			let temp1 := mload(sub(_workerpoolorder, 32))
 			// Write typeHash and sub-hashes
-			mstore(sub(_poolorder, 32), typeHash)
+			mstore(sub(_workerpoolorder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_poolorder, 32), 352) // 352 = 32 + 320
+			hash := keccak256(sub(_workerpoolorder, 32), 352) // 352 = 32 + 320
 			// Restore memory
-			mstore(sub(_poolorder, 32), temp1)
+			mstore(sub(_workerpoolorder, 32), temp1)
 		}
 	}
 	function hash(UserOrder _userorder)
@@ -225,15 +225,14 @@ library IexecODBLibOrders
 		//return keccak256(abi.encodePacked(
 		//	abi.encode(
 		//		USERORDER_TYPEHASH
-		//	, _userorder.dapp
-		//	, _userorder.dappmaxprice
-		//	, _userorder.data
-		//	, _userorder.datamaxprice
-		//	, _userorder.pool
-		//	, _userorder.poolmaxprice
+		//	, _userorder.app
+		//	, _userorder.appmaxprice
+		//	, _userorder.dataset
+		//	, _userorder.datasetmaxprice
+		//	, _userorder.workerpool
+		//	, _userorder.workerpoolmaxprice
 		//	, _userorder.requester
-		//	), abi.encode(
-		//		_userorder.volume
+		//	, _userorder.volume
 		//	, _userorder.tag
 		//	, _userorder.category
 		//	, _userorder.trust
