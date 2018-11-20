@@ -67,6 +67,7 @@ contract('IexecHub', async (accounts) => {
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
+		trusttarget = 50;
 		workers = [
 			{ address: poolWorker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
 			{ address: poolWorker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
@@ -273,7 +274,7 @@ contract('IexecHub', async (accounts) => {
 				poolprice:    25,
 				volume:       3,
 				category:     4,
-				trust:        1000,
+				trust:        trusttarget,
 				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
@@ -308,7 +309,7 @@ contract('IexecHub', async (accounts) => {
 				poolmaxprice: 25,
 				volume:       1, // CHANGE FOR BOT
 				category:     4,
-				trust:        1000,
+				trust:        trusttarget,
 				tag:          0x0,
 				requester:    user,
 				beneficiary:  user,
@@ -638,6 +639,8 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: worker runs its application                    *
 	 ***************************************************************************/
 	it(">> Run job", async () => {
+		consensus = odbtools.hashResult(taskid, consensus);
+
 		for (w of workers)
 		{
 			results[w.address] = odbtools.sealResult(taskid, w.raw, w.address);
@@ -655,8 +658,9 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                        TEST: worker contributes                         *
 	 ***************************************************************************/
-	it(">> signed contribute", async () => {
-		for (w of workers)
+	it(">> signed contribute 1/2", async () => {
+		w = workers[0]
+		// for (w of workers)
 		{
 			txMined = await IexecHubInstance.contribute(
 				authorizations[w.address].taskid,     // task (authorization)
@@ -681,23 +685,98 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                   TEST: contribution has been filled                    *
 	 ***************************************************************************/
-	it("[Contributed] Check contribution", async () => {
-		for (w of workers)
+	it("[Contributed 1/2] Check contribution", async () => {
+		w = workers[0]
+		// for (w of workers)
 		{
 			contribution = await IexecHubInstance.viewContribution(taskid, w.address);
 			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
 			assert.equal(contribution.resultHash,       results[w.address].hash,                      "check contribution (contribution.resultHash)"      );
 			assert.equal(contribution.resultSeal,       results[w.address].seal,                      "check contribution (contribution.resultSeal)"      );
 			assert.equal(contribution.enclaveChallenge, w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
-			assert.equal(contribution.score,            0,                                            "check contribution (contribution.score)"           );
-			assert.equal(contribution.weight,           1,                                            "check contribution (contribution.weight)"          );
 		}
 	});
 
 	/***************************************************************************
 	 *                     TEST: check balances - locked 2                     *
 	 ***************************************************************************/
-	it("[Contributed] Check balances", async () => {
+	it("[Contributed 1/2] Check balances", async () => {
+		IexecClerkInstance.viewAccount(dataProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    0,  0 ], "check balance"));
+		IexecClerkInstance.viewAccount(dappProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    0,  0 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolScheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  993,  7 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolWorker1  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  982, 18 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolWorker2  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990, 10 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolWorker3  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolWorker4  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
+		IexecClerkInstance.viewAccount(user         ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  971, 29 ], "check balance"));
+	});
+
+	/***************************************************************************
+	 *                         TEST: check task status                         *
+	 ***************************************************************************/
+	it("[Contributed 1/2] Check task", async () => {
+		task = await IexecHubInstance.viewTask(taskid);
+		assert.equal    (       task.status,                   constants.TaskStatusEnum.ACTIVE, "check task (task.status)"           );
+		assert.equal    (       task.dealid,                   dealid,                          "check task (task.dealid)"           );
+		assert.equal    (Number(task.idx),                     0,                               "check task (task.idx)"              );
+		assert.equal    (       task.consensusValue,           constants.NULL.BYTES32,          "check task (task.consensusValue)"   );
+		assert.isAbove  (Number(task.consensusDeadline),       0,                               "check task (task.consensusDeadline)");
+		assert.equal    (Number(task.revealDeadline),          0,                               "check task (task.revealDeadline)"   );
+		assert.equal    (Number(task.revealCounter),           0,                               "check task (task.revealCounter)"    );
+		assert.equal    (Number(task.winnerCounter),           0,                               "check task (task.winnerCounter)"    );
+		assert.deepEqual(       task.contributors.map(a => a), [ workers[0].address ],          "check task (task.contributors)"     );
+	});
+
+	/***************************************************************************
+	 *                        TEST: worker contributes                         *
+	 ***************************************************************************/
+	it(">> signed contribute 2/2", async () => {
+		w = workers[1]
+		// for (w of workers)
+		{
+			txMined = await IexecHubInstance.contribute(
+				authorizations[w.address].taskid,     // task (authorization)
+				results[w.address].hash, // common    (result)
+				results[w.address].seal, // unique    (result)
+				w.enclave,                            // address   (enclave)
+				results[w.address].sign,              // signature (enclave)
+				authorizations[w.address].sign,       // signature (authorization)
+				{ from: w.address, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+			);
+			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+			events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
+			assert.equal(events[0].args.taskid, authorizations[w.address].taskid);
+			assert.equal(events[0].args.worker, w.address                       );
+			assert.equal(events[0].args.hash,   results[w.address].hash         );
+
+			events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
+			assert.equal(events[0].args.taskid,    taskid        );
+			assert.equal(events[0].args.consensus, consensus.hash);
+
+			totalgas += txMined.receipt.gasUsed;
+		}
+	});
+
+	/***************************************************************************
+	 *                   TEST: contribution has been filled                    *
+	 ***************************************************************************/
+	it("[Contributed 2/2] Check contribution", async () => {
+		w = workers[1]
+		// for (w of workers)
+		{
+			contribution = await IexecHubInstance.viewContribution(taskid, w.address);
+			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
+			assert.equal(contribution.resultHash,       results[w.address].hash,                      "check contribution (contribution.resultHash)"      );
+			assert.equal(contribution.resultSeal,       results[w.address].seal,                      "check contribution (contribution.resultSeal)"      );
+			assert.equal(contribution.enclaveChallenge, w.enclave,                                    "check contribution (contribution.enclaveChallenge)");
+		}
+	});
+
+	/***************************************************************************
+	 *                     TEST: check balances - locked 2                     *
+	 ***************************************************************************/
+	it("[Contributed 2/2] Check balances", async () => {
 		IexecClerkInstance.viewAccount(dataProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    0,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(dappProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    0,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(poolScheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  993,  7 ], "check balance"));
@@ -711,39 +790,7 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                         TEST: check task status                         *
 	 ***************************************************************************/
-	it("[Contributed] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
-		assert.equal    (       task.status,                   constants.TaskStatusEnum.ACTIVE, "check task (task.status)"           );
-		assert.equal    (       task.dealid,                   dealid,                          "check task (task.dealid)"           );
-		assert.equal    (Number(task.idx),                     0,                               "check task (task.idx)"              );
-		assert.equal    (       task.consensusValue,           constants.NULL.BYTES32,          "check task (task.consensusValue)"   );
-		assert.isAbove  (Number(task.consensusDeadline),       0,                               "check task (task.consensusDeadline)");
-		assert.equal    (Number(task.revealDeadline),          0,                               "check task (task.revealDeadline)"   );
-		assert.equal    (Number(task.revealCounter),           0,                               "check task (task.revealCounter)"    );
-		assert.equal    (Number(task.winnerCounter),           0,                               "check task (task.winnerCounter)"    );
-		assert.deepEqual(       task.contributors.map(a => a), workers.map(x => x.address),     "check task (task.contributors)"     );
-	});
-
-	/***************************************************************************
-	 *                    TEST: scheduler reveal consensus                     *
-	 ***************************************************************************/
-	it(">> consensus", async () => {
-		consensus = odbtools.hashResult(taskid, consensus);
-
-		txMined = await IexecHubInstance.consensus(taskid, consensus.hash, { from: poolScheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
-		assert.equal(events[0].args.taskid,    taskid        );
-		assert.equal(events[0].args.consensus, consensus.hash);
-
-		totalgas += txMined.receipt.gasUsed;
-	});
-
-	/***************************************************************************
-	 *                         TEST: check task status                         *
-	 ***************************************************************************/
-	it("[Consensus] Check task", async () => {
+	it("[Contributed 2/2] Check task", async () => {
 		task = await IexecHubInstance.viewTask(taskid);
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.REVEALING, "check task (task.status)"           );
 		assert.equal    (       task.dealid,                   dealid,                             "check task (task.dealid)"           );
@@ -832,8 +879,8 @@ contract('IexecHub', async (accounts) => {
 		IexecClerkInstance.viewAccount(dataProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    1,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(dappProvider ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    3,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(poolScheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1003,  0 ], "check balance"));
-		IexecClerkInstance.viewAccount(poolWorker1  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1001, 10 ], "check balance"));
-		IexecClerkInstance.viewAccount(poolWorker2  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1001, 10 ], "check balance"));
+		IexecClerkInstance.viewAccount(poolWorker1  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1005, 10 ], "check balance")); // +15
+		IexecClerkInstance.viewAccount(poolWorker2  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  997, 10 ], "check balance")); //  +7
 		IexecClerkInstance.viewAccount(poolWorker3  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(poolWorker4  ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000,  0 ], "check balance"));
 		IexecClerkInstance.viewAccount(user         ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  971,  0 ], "check balance"));

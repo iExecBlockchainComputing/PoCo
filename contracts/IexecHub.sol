@@ -40,6 +40,10 @@ contract IexecHub is CategoryManager, Oracle
 	mapping(address =>                    uint256                      ) m_workerScores;
 	mapping(address =>                    address                      ) m_workerAffectations;
 
+	mapping(bytes32 => mapping(address => uint256                     )) m_weight;
+	mapping(bytes32 => mapping(bytes32 => uint256                     )) m_groupweight;
+	mapping(bytes32 =>                    uint256                      ) m_totalweight;
+
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
@@ -157,6 +161,9 @@ contract IexecHub is CategoryManager, Oracle
 		                         .mul(CONSENSUS_DURATION_RATIO)
 		                         .add(config.startTime);
 
+		// setup denominator
+		m_totalweight[taskid] = 1;
+
 		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
 
 		return taskid;
@@ -222,53 +229,69 @@ contract IexecHub is CategoryManager, Oracle
 			);
 		}
 
-		// update contribution entry
+		// Update contribution entry
 		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;
-		contribution.enclaveChallenge = _enclaveChallenge;
 		contribution.resultHash       = _resultHash;
 		contribution.resultSeal       = _resultSeal;
-		contribution.score            = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
-		contribution.weight           = 1 + contribution.score.log();
+		contribution.enclaveChallenge = _enclaveChallenge;
 		task.contributors.push(msg.sender);
 
 		iexecclerk.lockContribution(task.dealid, msg.sender);
 
 		emit TaskContribute(_taskid, msg.sender, _resultHash);
-	}
 
-	function consensus(
+		// Update consensus
+		uint256 power = m_workerScores[msg.sender]
+			.max(1)
+			.mul(contribution.enclaveChallenge != address(0) ? 15 : 5)
+			.sub(1);
+		uint256 group = m_groupweight[_taskid][_resultHash];
+		uint256 delta = group.max(1).mul(power).sub(group);
+
+		m_weight     [_taskid][msg.sender ] = power.log();
+		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
+		m_totalweight[_taskid]              = m_totalweight[_taskid].add(delta);
+
+		// Check consensus
+		checkConsensus(_taskid, _resultHash);
+	}
+	function checkConsensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
-	public onlyScheduler(_taskid)
+	internal
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status            == IexecODBLibCore.TaskStatusEnum.ACTIVE);
-		require(task.consensusDeadline >  now                                  );
-
-		uint256 winnerCounter = 0;
-		for (uint256 i = 0; i < task.contributors.length; ++i)
+		uint256 trust = iexecclerk.viewDeal(m_tasks[_taskid].dealid).trust;
+		if (m_groupweight[_taskid][_consensus].mul(trust) >= m_totalweight[_taskid].mul(trust.sub(1)))
 		{
-			address w = task.contributors[i];
-			if (
-				m_contributions[_taskid][w].resultHash == _consensus
-				&&
-				m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
-			)
+			// Preliminary checks done in "contribute()"
+
+			IexecODBLibCore.Task storage task = m_tasks[_taskid];
+			uint256 winnerCounter = 0;
+			for (uint256 i = 0; i < task.contributors.length; ++i)
 			{
-				winnerCounter = winnerCounter.add(1);
+				address w = task.contributors[i];
+				if (
+					m_contributions[_taskid][w].resultHash == _consensus
+					&&
+					m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+				)
+				{
+					winnerCounter = winnerCounter.add(1);
+				}
 			}
+			// msg.sender is a contributor: no need to check
+			// require(winnerCounter > 0);
+
+			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
+			task.consensusValue = _consensus;
+			task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
+				.mul(REVEAL_DURATION_RATIO)
+				.add(now);
+			task.revealCounter  = 0;
+			task.winnerCounter  = winnerCounter;
+
+			emit TaskConsensus(_taskid, _consensus);
 		}
-		require(winnerCounter > 0); // you cannot revealConsensus if no worker has contributed to this hash
-
-		task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
-		task.consensusValue = _consensus;
-		task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
-		                           .mul(REVEAL_DURATION_RATIO)
-		                           .add(now);
-		task.revealCounter  = 0;
-		task.winnerCounter  = winnerCounter;
-
-		emit TaskConsensus(_taskid, _consensus);
 	}
 
 	function reveal(
@@ -310,6 +333,9 @@ contract IexecHub is CategoryManager, Oracle
 				m_contributions[_taskid][worker].status = IexecODBLibCore.ContributionStatusEnum.REJECTED;
 			}
 		}
+
+		m_totalweight[_taskid]                      = m_totalweight[_taskid].sub(m_groupweight[_taskid][task.consensusValue]);
+		m_groupweight[_taskid][task.consensusValue] = 0;
 
 		task.status         = IexecODBLibCore.TaskStatusEnum.ACTIVE;
 		task.consensusValue = 0x0;
@@ -410,7 +436,7 @@ contract IexecHub is CategoryManager, Oracle
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				totalWeight = totalWeight.add(m_contributions[_taskid][worker].weight);
+				totalWeight = totalWeight.add(m_weight[_taskid][worker]);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -427,7 +453,7 @@ contract IexecHub is CategoryManager, Oracle
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				uint256 workerReward = workersReward.mulByFraction(m_contributions[_taskid][worker].weight, totalWeight);
+				uint256 workerReward = workersReward.mulByFraction(m_weight[_taskid][worker], totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);

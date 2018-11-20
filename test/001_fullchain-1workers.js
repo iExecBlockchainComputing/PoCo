@@ -65,6 +65,7 @@ contract('IexecHub', async (accounts) => {
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
+		trusttarget = 0;
 		workers = [
 			{ address: poolWorker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
 		];
@@ -240,7 +241,7 @@ contract('IexecHub', async (accounts) => {
 				poolprice:    25,
 				volume:       3,
 				category:     4,
-				trust:        1000,
+				trust:        trusttarget,
 				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
@@ -260,7 +261,7 @@ contract('IexecHub', async (accounts) => {
 				poolmaxprice: 25,
 				volume:       1,
 				category:     4,
-				trust:        1000,
+				trust:        trusttarget,
 				tag:          0x0,
 				requester:    user,
 				beneficiary:  user,
@@ -385,6 +386,8 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: worker runs its application                    *
 	 ***************************************************************************/
 	it(">> Run job", async () => {
+		consensus = odbtools.hashResult(taskid, consensus);
+
 		for (w of workers)
 		{
 			results[w.address] = odbtools.sealResult(taskid, w.raw, w.address);
@@ -416,20 +419,6 @@ contract('IexecHub', async (accounts) => {
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		}
-	});
-
-	/***************************************************************************
-	 *                    TEST: scheduler reveal consensus                     *
-	 ***************************************************************************/
-	it(">> revealConsensus", async () => {
-		consensus = odbtools.hashResult(taskid, consensus);
-
-		txMined = await IexecHubInstance.consensus(taskid, consensus.hash, { from: poolScheduler });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
-		assert.equal(events[0].args.taskid,    taskid,         "check taskid"   );
-		assert.equal(events[0].args.consensus, consensus.hash, "check consensus");
 	});
 
 	/***************************************************************************

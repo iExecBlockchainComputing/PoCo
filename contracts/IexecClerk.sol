@@ -208,11 +208,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 */
 
 		// computation environment & allowed enough funds
-		require(_userorder.category     == _poolorder.category );
-		require(_userorder.trust        <= _poolorder.trust    );
-		require(_userorder.dappmaxprice >= _dapporder.dappprice);
-		require(_userorder.datamaxprice >= _dataorder.dataprice);
-		require(_userorder.poolmaxprice >= _poolorder.poolprice);
+		require(_userorder.category     == _poolorder.category    );
+		require(_userorder.trust        <= _poolorder.trust.max(1));
+		require(_userorder.dappmaxprice >= _dapporder.dappprice   );
+		require(_userorder.datamaxprice >= _dataorder.dataprice   );
+		require(_userorder.poolmaxprice >= _poolorder.poolprice   );
 		require((_dapporder.tag | _dataorder.tag | _userorder.tag) & ~_poolorder.tag == 0x0);
 
 		// Check matching and restrictions
@@ -291,7 +291,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.pool.pointer = _poolorder.pool;
 		deal.pool.owner   = ids.poolOwner;
 		deal.pool.price   = _poolorder.poolprice;
-		deal.trust        = _poolorder.trust;
+		deal.trust        = _poolorder.trust.max(1);
 		deal.tag          = _poolorder.tag;
 		deal.requester    = _userorder.requester;
 		deal.beneficiary  = _userorder.beneficiary;

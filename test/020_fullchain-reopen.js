@@ -228,7 +228,7 @@ contract('IexecHub', async (accounts) => {
 				poolprice:    25,
 				volume:       1,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				tag:          0x0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
@@ -248,7 +248,7 @@ contract('IexecHub', async (accounts) => {
 				poolmaxprice: 25,
 				volume:       1,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				tag:          0x0,
 				requester:    user,
 				beneficiary:  user,
@@ -326,12 +326,8 @@ contract('IexecHub', async (accounts) => {
 
 	it("Contribute #1", async () => {
 		await sendContribution(
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			odbtools.sealResult(tasks[0], "true", poolWorker1),
-		);
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			odbtools.sealResult(tasks[0], "false", poolWorker2),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[0], enclave: sgxEnclave }, poolScheduler),
+			await odbtools.signContribution(odbtools.sealResult(tasks[0], "true", poolWorker1), sgxEnclave),
 		);
 	});
 
@@ -340,16 +336,11 @@ contract('IexecHub', async (accounts) => {
 		balance = await IexecClerkInstance.viewAccount(dappProvider ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [    0,       0      ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(poolScheduler); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000 -  7,  0 +  7 ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(poolWorker1  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990 -  8, 10 +  8 ], "check balance");
-		balance = await IexecClerkInstance.viewAccount(poolWorker2  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990 -  8, 10 +  8 ], "check balance");
+		balance = await IexecClerkInstance.viewAccount(poolWorker2  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990,      10      ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(poolWorker3  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990,      10      ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(poolWorker4  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990,      10      ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(user         ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000 - 29,  0 + 29 ], "check balance");
 	});
-
-	it("Consensus #1", async () => {
-		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult(tasks[0], "true").hash, { from: poolScheduler });
-	});
-
 	it("clock fast forward", async () => {
 		target = Number((await IexecHubInstance.viewTask(tasks[0])).revealDeadline);
 
@@ -373,12 +364,16 @@ contract('IexecHub', async (accounts) => {
 		}
 
 		await sendContribution(
-			await odbtools.signAuthorization({ worker: poolWorker3, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			odbtools.sealResult(tasks[0], "true", poolWorker3),
+			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			odbtools.sealResult(tasks[0], "false", poolWorker2),
 		);
 		await sendContribution(
-			await odbtools.signAuthorization({ worker: poolWorker4, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			odbtools.sealResult(tasks[0], "true", poolWorker4),
+			await odbtools.signAuthorization({ worker: poolWorker3, taskid: tasks[0], enclave: sgxEnclave }, poolScheduler),
+			await odbtools.signContribution(odbtools.sealResult(tasks[0], "true", poolWorker3), sgxEnclave),
+		);
+		await sendContribution(
+			await odbtools.signAuthorization({ worker: poolWorker4, taskid: tasks[0], enclave: sgxEnclave }, poolScheduler),
+			await odbtools.signContribution(odbtools.sealResult(tasks[0], "true", poolWorker4), sgxEnclave),
 		);
 	});
 
@@ -391,10 +386,6 @@ contract('IexecHub', async (accounts) => {
 		balance = await IexecClerkInstance.viewAccount(poolWorker3  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990 -  8, 10 +  8 ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(poolWorker4  ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [  990 -  8, 10 +  8 ], "check balance");
 		balance = await IexecClerkInstance.viewAccount(user         ); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000 - 29,  0 + 29 ], "check balance");
-	});
-
-	it("Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[0], odbtools.hashResult(tasks[0], "true").hash, { from: poolScheduler });
 	});
 
 	it("Reveal", async () => {
@@ -425,6 +416,5 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(Number(await IexecHubInstance.viewScore(poolWorker3)), 1, "score issue");
 		assert.equal(Number(await IexecHubInstance.viewScore(poolWorker4)), 1, "score issue");
 	});
-
 
 });
