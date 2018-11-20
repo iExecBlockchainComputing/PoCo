@@ -1,18 +1,14 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/EIP1154.sol";
-import "./tools/SafeMathOZ.sol";
+import "./interfaces/EIP1154.sol";
+import "./libs/IexecODBLibCore.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
+import "./registries/RegistryBase.sol";
 
 import "./CategoryManager.sol";
-
 import "./IexecClerk.sol";
-import "./registries/RegistryBase.sol";
-/* import "./registries/DappRegistry.sol"; */
-/* import "./registries/DataRegistry.sol"; */
-/* import "./registries/PoolRegistry.sol"; */
 
 /**
  * /!\ TEMPORARY LEGACY /!\
@@ -34,12 +30,12 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	 *                             Other contracts                             *
 	 ***************************************************************************/
 	IexecClerk   public iexecclerk;
-	RegistryBase public dappregistry;
-	RegistryBase public dataregistry;
-	RegistryBase public poolregistry;
-	/* DappRegistry dappregistry; */
-	/* DataRegistry dataregistry; */
-	/* PoolRegistry poolregistry; */
+	RegistryBase public appregistry;
+	RegistryBase public datasetregistry;
+	RegistryBase public workerpoolregistry;
+	/* Appregistry        appregistry;        */
+	/* Datasetregistry    datasetregistry;    */
+	/* Workerpoolregistry workerpoolregistry; */
 
 	/***************************************************************************
 	 *                          Consensuses & Workers                          *
@@ -49,10 +45,14 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	mapping(address =>                    uint256                      ) m_workerScores;
 	mapping(address =>                    address                      ) m_workerAffectations;
 
+	mapping(bytes32 => mapping(address => uint256                     )) m_weight;
+	mapping(bytes32 => mapping(bytes32 => uint256                     )) m_groupweight;
+	mapping(bytes32 =>                    uint256                      ) m_totalweight;
+
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event TaskInitialize(bytes32 indexed taskid, address indexed pool                     );
+	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool               );
 	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash     );
 	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
 	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
@@ -63,16 +63,16 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
-	event WorkerSubscription  (address indexed pool, address indexed worker);
-	event WorkerUnsubscription(address indexed pool, address indexed worker);
-	event WorkerEviction      (address indexed pool, address indexed worker);
+	event WorkerSubscription  (address indexed workerpool, address indexed worker);
+	event WorkerUnsubscription(address indexed workerpool, address indexed worker);
+	event WorkerEviction      (address indexed workerpool, address indexed worker);
 
 	/***************************************************************************
 	 *                                Modifiers                                *
 	 ***************************************************************************/
 	modifier onlyScheduler(bytes32 _taskid)
 	{
-		require(msg.sender == iexecclerk.viewDeal(m_tasks[_taskid].dealid).pool.owner);
+		require(msg.sender == iexecclerk.viewDeal(m_tasks[_taskid].dealid).workerpool.owner);
 		_;
 	}
 
@@ -86,16 +86,16 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 
 	function attachContracts(
 		address _iexecclerkAddress,
-		address _dappRegistryAddress,
-		address _dataRegistryAddress,
-		address _poolRegistryAddress)
+		address _appregistryAddress,
+		address _datasetregistryAddress,
+		address _workerpoolregistryAddress)
 	public onlyOwner
 	{
 		require(address(iexecclerk) == address(0));
-		iexecclerk   = IexecClerk  (_iexecclerkAddress  );
-		dappregistry = RegistryBase(_dappRegistryAddress);
-		dataregistry = RegistryBase(_dataRegistryAddress);
-		poolregistry = RegistryBase(_poolRegistryAddress);
+		iexecclerk         = IexecClerk  (_iexecclerkAddress  );
+		appregistry        = RegistryBase(_appregistryAddress);
+		datasetregistry    = RegistryBase(_datasetregistryAddress);
+		workerpoolregistry = RegistryBase(_workerpoolregistryAddress);
 	}
 
 	/***************************************************************************
@@ -120,17 +120,17 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	}
 
 	function viewAffectation(address _worker)
-	public view returns (Pool)
+	public view returns (Workerpool)
 	{
-		return Pool(m_workerAffectations[_worker]);
+		return Workerpool(m_workerAffectations[_worker]);
 	}
 
-	function checkResources(address dapp, address data, address pool)
+	function checkResources(address app, address dataset, address workerpool)
 	public view returns (bool)
 	{
-		require(                      dappregistry.isRegistered(dapp));
-		require(data == address(0) || dataregistry.isRegistered(data));
-		require(                      poolregistry.isRegistered(pool));
+		require(                         appregistry.isRegistered(app));
+		require(dataset == address(0) || datasetregistry.isRegistered(dataset));
+		require(                         workerpoolregistry.isRegistered(workerpool));
 		return true;
 	}
 
@@ -166,7 +166,10 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		                         .mul(CONSENSUS_DURATION_RATIO)
 		                         .add(config.startTime);
 
-		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).pool.pointer);
+		// setup denominator
+		m_totalweight[taskid] = 1;
+
+		emit TaskInitialize(taskid, iexecclerk.viewDeal(_dealid).workerpool.pointer);
 
 		return taskid;
 	}
@@ -177,7 +180,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		bytes32                     _resultSeal,
 		address                     _enclaveChallenge,
 		IexecODBLibOrders.signature _enclaveSign,
-		IexecODBLibOrders.signature _poolSign)
+		IexecODBLibOrders.signature _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -190,7 +193,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		// Skip check if authorized?
-		require(deal.pool.owner == ecrecover(
+		require(deal.workerpool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
 				keccak256(abi.encodePacked(
@@ -199,13 +202,13 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 					_enclaveChallenge
 				))
 			)),
-			_poolSign.v,
-			_poolSign.r,
-			_poolSign.s)
+			_workerpoolSign.v,
+			_workerpoolSign.r,
+			_workerpoolSign.s)
 		);
 
 		// worker must be subscribed to the pool, keep?
-		require(m_workerAffectations[msg.sender] == deal.pool.pointer);
+		require(m_workerAffectations[msg.sender] == deal.workerpool.pointer);
 
 		// Not needed
 		/* require(_resultHash != 0x0); */
@@ -231,53 +234,69 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 			);
 		}
 
-		// update contribution entry
+		// Update contribution entry
 		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;
-		contribution.enclaveChallenge = _enclaveChallenge;
 		contribution.resultHash       = _resultHash;
 		contribution.resultSeal       = _resultSeal;
-		contribution.score            = m_workerScores[msg.sender].mul(contribution.enclaveChallenge != address(0) ? 3 : 1);
-		contribution.weight           = 1 + contribution.score.log();
+		contribution.enclaveChallenge = _enclaveChallenge;
 		task.contributors.push(msg.sender);
 
 		iexecclerk.lockContribution(task.dealid, msg.sender);
 
 		emit TaskContribute(_taskid, msg.sender, _resultHash);
-	}
 
-	function consensus(
+		// Update consensus
+		uint256 power = m_workerScores[msg.sender]
+			.max(1)
+			.mul(contribution.enclaveChallenge != address(0) ? 15 : 5)
+			.sub(1);
+		uint256 group = m_groupweight[_taskid][_resultHash];
+		uint256 delta = group.max(1).mul(power).sub(group);
+
+		m_weight     [_taskid][msg.sender ] = power.log();
+		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
+		m_totalweight[_taskid]              = m_totalweight[_taskid].add(delta);
+
+		// Check consensus
+		checkConsensus(_taskid, _resultHash);
+	}
+	function checkConsensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
-	public onlyScheduler(_taskid)
+	internal
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status            == IexecODBLibCore.TaskStatusEnum.ACTIVE);
-		require(task.consensusDeadline >  now                                  );
-
-		uint256 winnerCounter = 0;
-		for (uint256 i = 0; i < task.contributors.length; ++i)
+		uint256 trust = iexecclerk.viewDeal(m_tasks[_taskid].dealid).trust;
+		if (m_groupweight[_taskid][_consensus].mul(trust) >= m_totalweight[_taskid].mul(trust.sub(1)))
 		{
-			address w = task.contributors[i];
-			if (
-				m_contributions[_taskid][w].resultHash == _consensus
-				&&
-				m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
-			)
+			// Preliminary checks done in "contribute()"
+
+			IexecODBLibCore.Task storage task = m_tasks[_taskid];
+			uint256 winnerCounter = 0;
+			for (uint256 i = 0; i < task.contributors.length; ++i)
 			{
-				winnerCounter = winnerCounter.add(1);
+				address w = task.contributors[i];
+				if (
+					m_contributions[_taskid][w].resultHash == _consensus
+					&&
+					m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+				)
+				{
+					winnerCounter = winnerCounter.add(1);
+				}
 			}
+			// msg.sender is a contributor: no need to check
+			// require(winnerCounter > 0);
+
+			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
+			task.consensusValue = _consensus;
+			task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
+				.mul(REVEAL_DURATION_RATIO)
+				.add(now);
+			task.revealCounter  = 0;
+			task.winnerCounter  = winnerCounter;
+
+			emit TaskConsensus(_taskid, _consensus);
 		}
-		require(winnerCounter > 0); // you cannot revealConsensus if no worker has contributed to this hash
-
-		task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
-		task.consensusValue = _consensus;
-		task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
-		                           .mul(REVEAL_DURATION_RATIO)
-		                           .add(now);
-		task.revealCounter  = 0;
-		task.winnerCounter  = winnerCounter;
-
-		emit TaskConsensus(_taskid, _consensus);
 	}
 
 	function reveal(
@@ -319,6 +338,9 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 				m_contributions[_taskid][worker].status = IexecODBLibCore.ContributionStatusEnum.REJECTED;
 			}
 		}
+
+		m_totalweight[_taskid]                      = m_totalweight[_taskid].sub(m_groupweight[_taskid][task.consensusValue]);
+		m_groupweight[_taskid][task.consensusValue] = 0;
 
 		task.status         = IexecODBLibCore.TaskStatusEnum.ACTIVE;
 		task.consensusValue = 0x0;
@@ -412,14 +434,14 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 		address worker;
 
 		uint256 totalWeight = 0;
-		uint256 totalReward = iexecclerk.viewDeal(task.dealid).pool.price;
+		uint256 totalReward = iexecclerk.viewDeal(task.dealid).workerpool.price;
 
 		for (i = 0; i < task.contributors.length; ++i)
 		{
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				totalWeight = totalWeight.add(m_contributions[_taskid][worker].weight);
+				totalWeight = totalWeight.add(m_weight[_taskid][worker]);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -436,7 +458,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				uint256 workerReward = workersReward.mulByFraction(m_contributions[_taskid][worker].weight, totalWeight);
+				uint256 workerReward = workersReward.mulByFraction(m_weight[_taskid][worker], totalWeight);
 				totalReward          = totalReward.sub(workerReward);
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
@@ -489,24 +511,24 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	/***************************************************************************
 	 *                       Worker affectation methods                        *
 	 ***************************************************************************/
-	function subscribe(Pool _pool)
+	function subscribe(Workerpool _workerpool)
 	public returns (bool)
 	{
 		// check pools validity
-		require(poolregistry.isRegistered(_pool));
+		require(workerpoolregistry.isRegistered(_workerpool));
 
 		// check worker is not previously affected: AUTO unsubscribe ???
 		require(m_workerAffectations[msg.sender] == address(0));
 
 		// Lock stake & check funds/reputation
-		iexecclerk.lockSubscription(msg.sender, _pool.m_subscriptionLockStakePolicy());
-		require(iexecclerk.viewAccount(msg.sender).stake >= _pool.m_subscriptionMinimumStakePolicy());
-		require(m_workerScores[msg.sender]               >= _pool.m_subscriptionMinimumScorePolicy());
+		iexecclerk.lockSubscription(msg.sender, _workerpool.m_subscriptionLockStakePolicy());
+		require(iexecclerk.viewAccount(msg.sender).stake >= _workerpool.m_subscriptionMinimumStakePolicy());
+		require(m_workerScores[msg.sender]               >= _workerpool.m_subscriptionMinimumScorePolicy());
 
 		// update affectation
-		m_workerAffectations[msg.sender] = address(_pool);
+		m_workerAffectations[msg.sender] = address(_workerpool);
 
-		emit WorkerSubscription(address(_pool), msg.sender);
+		emit WorkerSubscription(address(_workerpool), msg.sender);
 		return true;
 	}
 
@@ -514,16 +536,16 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	public returns (bool)
 	{
 		// check affectation
-		Pool pool = Pool(m_workerAffectations[msg.sender]);
-		require(address(pool) != address(0));
+		Workerpool workerpool = Workerpool(m_workerAffectations[msg.sender]);
+		require(address(workerpool) != address(0));
 
 		// Unlock stake
-		iexecclerk.unlockSubscription(msg.sender, pool.m_subscriptionLockStakePolicy());
+		iexecclerk.unlockSubscription(msg.sender, workerpool.m_subscriptionLockStakePolicy());
 
 		// update affectation
 		m_workerAffectations[msg.sender] = address(0);
 
-		emit WorkerUnsubscription(address(pool), msg.sender);
+		emit WorkerUnsubscription(address(workerpool), msg.sender);
 		return true;
 	}
 
@@ -531,17 +553,17 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	public returns (bool)
 	{
 		// check affectation & authorization
-		Pool pool = Pool(m_workerAffectations[_worker]);
-		require(address(pool)  != address(0));
-		require(pool.m_owner() == msg.sender);
+		Workerpool workerpool = Workerpool(m_workerAffectations[_worker]);
+		require(address(workerpool)  != address(0));
+		require(workerpool.m_owner() == msg.sender);
 
 		// Unlock stake
-		iexecclerk.unlockSubscription(_worker, pool.m_subscriptionLockStakePolicy());
+		iexecclerk.unlockSubscription(_worker, workerpool.m_subscriptionLockStakePolicy());
 
 		// update affectation
 		m_workerAffectations[_worker] = address(0);
 
-		emit WorkerEviction(address(pool), _worker);
+		emit WorkerEviction(address(workerpool), _worker);
 		return true;
 	}
 
@@ -601,8 +623,6 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	, bytes32
 	, bytes32
 	, address
-	, uint256
-	, uint256
 	)
 	{
 		IexecODBLibCore.Contribution memory contribution = viewContribution(_taskid, _worker);
@@ -610,9 +630,7 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 			contribution.status,
 			contribution.resultHash,
 			contribution.resultSeal,
-			contribution.enclaveChallenge,
-			contribution.score,
-			contribution.weight
+			contribution.enclaveChallenge
 		);
 	}
 

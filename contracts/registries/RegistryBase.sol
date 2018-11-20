@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
+import '../libs/SafeMathOZ.sol';
 import '../tools/Ownable.sol';
-import '../tools/SafeMathOZ.sol';
 
 contract RegistryBase
 {

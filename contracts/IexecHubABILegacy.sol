@@ -1,15 +1,14 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/EIP1154.sol";
-import "./tools/SafeMathOZ.sol";
+import "./interfaces/EIP1154.sol";
+import "./libs/IexecODBLibCore.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
+import "./registries/RegistryBase.sol";
 
 import "./CategoryManager.sol";
-
 import "./IexecClerk.sol";
-import "./registries/RegistryBase.sol";
 
 contract IexecHubABILegacy
 {
@@ -18,14 +17,14 @@ contract IexecHubABILegacy
 	uint256 public constant REVEAL_DURATION_RATIO    = 2;
 
 	IexecClerk   public iexecclerk;
-	RegistryBase public dappregistry;
-	RegistryBase public dataregistry;
-	RegistryBase public poolregistry;
+	RegistryBase public appregistry;
+	RegistryBase public datasetregistry;
+	RegistryBase public workerpoolregistry;
 
 	mapping(address => uint256) public m_workerScores;
 	mapping(address => address) public m_workerAffectations;
 
-	event TaskInitialize(bytes32 indexed taskid, address indexed pool                     );
+	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool               );
 	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash     );
 	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
 	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
@@ -36,24 +35,24 @@ contract IexecHubABILegacy
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
-	event WorkerSubscription  (address indexed pool, address indexed worker);
-	event WorkerUnsubscription(address indexed pool, address indexed worker);
-	event WorkerEviction      (address indexed pool, address indexed worker);
+	event WorkerSubscription  (address indexed workerpool, address indexed worker);
+	event WorkerUnsubscription(address indexed workerpool, address indexed worker);
+	event WorkerEviction      (address indexed workerpool, address indexed worker);
 
 	function attachContracts(
 		address _iexecclerkAddress,
-		address _dappRegistryAddress,
-		address _dataRegistryAddress,
-		address _poolRegistryAddress)
+		address _appregistryAddress,
+		address _datasetregistryAddress,
+		address _workerpoolregistryAddress)
 	public;
 
 	function viewScore(address _worker)
 	public view returns (uint256);
 
 	function viewAffectation(address _worker)
-	public view returns (Pool);
+	public view returns (Workerpool);
 
-	function checkResources(address daap, address data, address pool)
+	function checkResources(address aap, address dataset, address workerpool)
 	public view returns (bool);
 
 	function resultFor(bytes32 id)
@@ -61,11 +60,6 @@ contract IexecHubABILegacy
 
 	function initialize(bytes32 _dealid, uint256 idx)
 	public returns (bytes32);
-
-	function consensus(
-		bytes32 _taskid,
-		bytes32 _consensus)
-	public;
 
 	function reveal(
 		bytes32 _taskid,
@@ -85,7 +79,16 @@ contract IexecHubABILegacy
 		bytes32 _taskid)
 	public;
 
-	function subscribe(Pool _pool)
+	function initializeArray(
+		bytes32[] _dealid,
+		uint256[] _idx)
+	public returns (bool);
+
+	function claimArray(
+		bytes32[] _taskid)
+	public returns (bool);
+
+	function subscribe(Workerpool _workerpool)
 	public returns (bool);
 
 	function unsubscribe()
@@ -117,8 +120,6 @@ contract IexecHubABILegacy
 	, bytes32
 	, bytes32
 	, address
-	, uint256
-	, uint256
 	);
 
 	function contributeABILegacy(

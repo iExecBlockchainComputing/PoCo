@@ -1,10 +1,10 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./rlc-token/RLC.sol";
-
-import "./tools/IexecODBLibCore.sol";
-import "./tools/SafeMathOZ.sol";
+import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
+// import "./interfaces/ERC20.sol";
+import "./libs/IexecODBLibCore.sol";
+import "./libs/SafeMathOZ.sol";
 
 contract Escrow
 {

@@ -1,13 +1,12 @@
-var RLC          = artifacts.require("./rlc-token/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
-
-var IexecODBLibOrders = artifacts.require("./IexecODBLibOrders.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecODBLibOrders  = artifacts.require("./IexecODBLibOrders.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 const fs = require("fs-extra");
 
@@ -45,8 +44,6 @@ module.exports = async function(deployer, network, accounts)
 			await deployer.deploy(RLC);
 			RLCInstance = await RLC.deployed();
 			console.log("RLC deployed at address: " + RLCInstance.address);
-			await RLCInstance.unlock();
-			console.log("RLC unlocked");
 			owner = await RLCInstance.owner.call()
 			console.log("RLC faucet wallet is " + owner);
 			console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));
@@ -69,22 +66,22 @@ module.exports = async function(deployer, network, accounts)
 	IexecClerkInstance = await IexecClerk.deployed();
 	console.log("IexecClerk deployed at address: " + IexecClerkInstance.address);
 
-	await deployer.deploy(DappRegistry);
-	await deployer.deploy(DataRegistry);
-	await deployer.deploy(PoolRegistry);
-	DappRegistryInstance = await DappRegistry.deployed();
-	DataRegistryInstance = await DataRegistry.deployed();
-	PoolRegistryInstance = await PoolRegistry.deployed();
-	console.log("DappRegistry deployed at address: " + DappRegistryInstance.address);
-	console.log("DataRegistry deployed at address: " + DataRegistryInstance.address);
-	console.log("PoolRegistry deployed at address: " + PoolRegistryInstance.address);
+	await deployer.deploy(AppRegistry);
+	await deployer.deploy(DatasetRegistry);
+	await deployer.deploy(WorkerpoolRegistry);
+	AppRegistryInstance        = await AppRegistry.deployed();
+	DatasetRegistryInstance    = await DatasetRegistry.deployed();
+	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+	console.log("AppRegistry        deployed at address: " + AppRegistryInstance.address);
+	console.log("DatasetRegistry    deployed at address: " + DatasetRegistryInstance.address);
+	console.log("WorkerpoolRegistry deployed at address: " + WorkerpoolRegistryInstance.address);
 	// transferOwnership if ownable
 
 	await IexecHubInstance.attachContracts(
 		IexecClerkInstance.address
-	, DappRegistryInstance.address
-	, DataRegistryInstance.address
-	, PoolRegistryInstance.address
+	, AppRegistryInstance.address
+	, DatasetRegistryInstance.address
+	, WorkerpoolRegistryInstance.address
 	);
 	console.log("attach Contracts to IexecHub done");
 

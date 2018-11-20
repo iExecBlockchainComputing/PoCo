@@ -1,6 +1,6 @@
 {
-  "name": "iexec-poco-dev",
-  "version": "3.0.0",
+  "name": "iexec-poco",
+  "version": "3.0.5",
   "description": "",
   "main": "truffle.js",
   "scripts": {
@@ -16,28 +16,17 @@
   "bugs": {
     "url": "https://github.com/iExecBlockchainComputing/PoCo-dev.git/issues"
   },
+  "files": [
+    "/build"
+  ],
   "author": "iExec",
   "license": "ISC",
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo-dev.git#readme",
-  "dependencies": {
-    "bluebird": "^3.5.3",
-    "bn": "^1.0.1",
-    "chai": "^4.2.0",
-    "coveralls": "^3.0.1",
-    "ethereumjs-abi": "^0.6.5",
-    "ethereumjs-testrpc": "^6.0.3",
-    "ethereumjs-util": "^5.2.0",
-    "ethers": "^3.0.29",
-    "lodash": "^4.17.11",
-    "replace": "^0.3.0",
-    "solidity-sha3": "^0.4.1",
-    "truffle": "^5.0.0-beta.1",
-    "truffle-contract": "^3.0.4",
-    "truffle-hdwallet-provider": "^0.0.3",
-    "typedarray-to-buffer": "^3.1.5",
-    "web3": "^1.0.0-beta.36"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "solidity-coverage": "^0.5.11"
+    "ethereumjs-util": "^5.2.0",
+    "rlc-faucet-contract": "1.0.8",
+    "ganache-cli": "6.1.8",
+    "truffle": "5.0.0-next.16"
   }
 }

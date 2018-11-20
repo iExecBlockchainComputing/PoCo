@@ -1,7 +1,7 @@
 pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
+import "./libs/IexecODBLibCore.sol";
 import "./tools/Ownable.sol";
 
 contract CategoryManager is OwnableMutable

@@ -1,18 +1,16 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./tools/IexecODBLibCore.sol";
-import "./tools/IexecODBLibOrders.sol";
-import "./tools/SafeMathOZ.sol";
+import "./libs/IexecODBLibCore.sol";
+import "./libs/IexecODBLibOrders.sol";
+import "./libs/SafeMathOZ.sol";
+import "./registries/App.sol";
+import "./registries/Dataset.sol";
+import "./registries/Workerpool.sol";
+import "./permissions/GroupInterface.sol";
 
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
-
-import "./registries/Dapp.sol";
-import "./registries/Data.sol";
-import "./registries/Pool.sol";
-
-import "./permissions/GroupInterface.sol";
 
 contract IexecClerkABILegacy
 {
@@ -22,22 +20,16 @@ contract IexecClerkABILegacy
 
 	bytes32 public /* immutable */ EIP712DOMAIN_SEPARATOR;
 
-	mapping(bytes32 => bytes32[]             ) public m_userdeals;
-	mapping(bytes32 => uint256               ) public m_consumed;
-	mapping(bytes32 => bool                  ) public m_presigned;
+	mapping(bytes32 => bytes32[]) public m_userdeals;
+	mapping(bytes32 => uint256  ) public m_consumed;
+	mapping(bytes32 => bool     ) public m_presigned;
 
-	event OrdersMatched  (bytes32 dealid,
-	                      bytes32 dappHash,
-	                      bytes32 dataHash,
-	                      bytes32 poolHash,
-	                      bytes32 userHash,
-												uint256 volume);
-	event ClosedDappOrder(bytes32 dappHash);
-	event ClosedDataOrder(bytes32 dataHash);
-	event ClosedPoolOrder(bytes32 poolHash);
-	event ClosedUserOrder(bytes32 userHash);
-
-	event SchedulerNotice(address indexed pool, bytes32 dealid);
+	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 userHash, uint256 volume);
+	event ClosedAppOrder       (bytes32 appHash);
+	event ClosedDatasetOrder   (bytes32 datasetHash);
+	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
+	event ClosedUserOrder      (bytes32 userHash);
+	event SchedulerNotice      (address indexed workerpool, bytes32 dealid);
 
 	function viewUserDeals(bytes32 _id)
 	public view returns (bytes32[]);

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.25;
 
-import "./tools/EIP1154.sol";
+import "./interfaces/EIP1154.sol";
 
 contract TestClient //is OracleConsumer
 {

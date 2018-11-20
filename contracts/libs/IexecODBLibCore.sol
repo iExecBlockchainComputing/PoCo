@@ -1,0 +1,100 @@
+pragma solidity ^0.4.25;
+pragma experimental ABIEncoderV2;
+
+library IexecODBLibCore
+{
+	/**
+	* Tools
+	*/
+	struct Account
+	{
+		uint256 stake;
+		uint256 locked;
+	}
+	struct Category
+	{
+		string  name;
+		string  description;
+		uint256 workClockTimeRef;
+	}
+
+	/**
+	 * Clerk - Deals
+	 */
+	struct Resource
+	{
+		address pointer;
+		address owner;
+		uint256 price;
+	}
+	struct Deal
+	{
+		// Ressources
+		Resource app;
+		Resource dataset;
+		Resource workerpool;
+		uint256  trust;
+		uint256  tag;
+		// execution details
+		address requester;
+		address beneficiary;
+		address callback;
+		string  params;
+	}
+	struct Config
+	{
+		// execution settings
+		uint256 category;
+		uint256 startTime;
+		uint256 botFirst;
+		uint256 botSize;
+		// consistency
+		uint256 workerStake;
+		uint256 schedulerRewardRatio;
+	}
+
+	/**
+	 * Tasks
+	 // TODO: rename Workorder → Task
+	 */
+	enum TaskStatusEnum
+	{
+		UNSET,     // Work order not yet initialized (invalid address)
+		ACTIVE,    // Marketed → constributions are open
+		REVEALING, // Starting consensus reveal
+		COMPLETED, // Concensus achieved
+		FAILLED    // Failled consensus
+	}
+	struct Task
+	{
+		TaskStatusEnum status;
+		bytes32   dealid;
+		uint256   idx;
+		uint256   consensusDeadline;
+		bytes32   consensusValue;
+		uint256   revealDeadline;
+		uint256   revealCounter;
+		uint256   winnerCounter;
+		address[] contributors;
+		bytes     results;
+	}
+
+	/**
+	 * Consensus
+	 */
+	enum ContributionStatusEnum
+	{
+		UNSET,
+		CONTRIBUTED,
+		PROVED,
+		REJECTED
+	}
+	struct Contribution
+	{
+		ContributionStatusEnum status;
+		bytes32 resultHash;
+		bytes32 resultSeal;
+		address enclaveChallenge;
+	}
+
+}
