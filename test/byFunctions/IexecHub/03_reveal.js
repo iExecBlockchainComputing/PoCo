@@ -186,10 +186,12 @@ contract('IexecHub', async (accounts) => {
 			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker1 }),
 			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker2 }),
 			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker3 }),
+			IexecHubInstance.subscribe(PoolInstance.address, { from: poolWorker4 }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// Orders
 		dapporder = odbtools.signDappOrder(
@@ -227,7 +229,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,7 +245,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -263,7 +265,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       10,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -314,10 +316,11 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[1],
 			poolWorker1,
-			odbtools.sealResult(tasks[1], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[1], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
+
 		await sendContribution(
 			tasks[3],
 			poolWorker1,
@@ -325,27 +328,44 @@ contract('IexecHub', async (accounts) => {
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
+
 		await sendContribution(
 			tasks[4],
 			poolWorker1,
-			odbtools.sealResult(tasks[4], "true", poolWorker1),
+			odbtools.sealResult(tasks[4], "false", poolWorker1),
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
-			tasks[5],
-			poolWorker1,
-			odbtools.sealResult(tasks[5], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			tasks[4],
+			poolWorker2,
+			odbtools.sealResult(tasks[4], "true", poolWorker2),
+			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
-			tasks[5],
-			poolWorker2,
-			odbtools.sealResult(tasks[5], "false", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			tasks[4],
+			poolWorker3,
+			odbtools.sealResult(tasks[4], "true", poolWorker3),
+			await odbtools.signAuthorization({ worker: poolWorker3, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
+		await sendContribution(
+			tasks[4],
+			poolWorker4,
+			odbtools.sealResult(tasks[4], "true", poolWorker4),
+			await odbtools.signAuthorization({ worker: poolWorker4, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+
+		await sendContribution(
+			tasks[5],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[5], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+
 		await sendContribution(
 			tasks[6],
 			poolWorker1,
@@ -354,43 +374,20 @@ contract('IexecHub', async (accounts) => {
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
-			tasks[7],
-			poolWorker1,
-			odbtools.sealResult(tasks[7], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[7], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		await sendContribution(
-			tasks[7],
+			tasks[6],
 			poolWorker2,
-			odbtools.sealResult(tasks[7], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[7], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			odbtools.sealResult(tasks[6], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			constants.NULL.ADDRESS
 		);
-		await sendContribution(
-			tasks[8],
-			poolWorker1,
-			odbtools.sealResult(tasks[8], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[8], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		// await sendContribution(
-		// 	tasks[9],
-		// 	poolWorker1,
-		// 	odbtools.sealResult(tasks[9], "true", poolWorker1),
-		// 	await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[9], enclave: constants.NULL.ADDRESS }, poolScheduler),
-		// 	constants.NULL.ADDRESS
-		// );
-	});
 
-	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult(tasks[1], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[4], odbtools.hashResult(tasks[4], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult(tasks[5], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult(tasks[6], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[7], odbtools.hashResult(tasks[7], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[8], odbtools.hashResult(tasks[8], "true").hash, { from: poolScheduler });
-	//await IexecHubInstance.consensus(tasks[9], odbtools.hashResult(tasks[9], "true").hash, { from: poolScheduler });
+		await sendContribution(
+			tasks[7],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[7], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[7], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
 	});
 
 	it("[4.1] Reveal - Correct", async () => {
@@ -434,36 +431,27 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[4.4] Reveal - Error (no consensus)", async () => {
+	it("[4.4] Reveal - Error (contribution value)", async () => {
 		await IexecHubInstance.reveal(
 			tasks[4],
 			odbtools.hashResult(tasks[4], "true").digest,
-			{ from: poolWorker1 }
+			{ from: poolWorker2 }
+		);
+		await IexecHubInstance.reveal(
+			tasks[4],
+			odbtools.hashResult(tasks[4], "true").digest,
+			{ from: poolWorker3 }
+		);
+		await IexecHubInstance.reveal(
+			tasks[4],
+			odbtools.hashResult(tasks[4], "true").digest,
+			{ from: poolWorker4 }
 		);
 		try {
 			await IexecHubInstance.reveal(
 				tasks[4],
 				odbtools.hashResult(tasks[4], "true").digest,
-				{ from: poolWorker2 }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("[4.5] Reveal - Error (contribution value)", async () => {
-		await IexecHubInstance.reveal(
-			tasks[5],
-			odbtools.hashResult(tasks[5], "true").digest,
-			{ from: poolWorker1 }
-		);
-		try {
-			await IexecHubInstance.reveal(
-				tasks[5],
-				odbtools.hashResult(tasks[5], "false").digest,
-				{ from: poolWorker2 }
+				{ from: poolWorker1 }
 			);
 			assert.fail("transaction should have reverted");
 		} catch (error) {
@@ -475,8 +463,8 @@ contract('IexecHub', async (accounts) => {
 	it("[4.6] Reveal - Error .hash)", async () => {
 		try {
 			await IexecHubInstance.reveal(
-				tasks[6],
-				odbtools.hashResult(tasks[6], "false").digest,
+				tasks[5],
+				odbtools.hashResult(tasks[5], "nottrue").digest,
 				{ from: poolWorker1 }
 			);
 			assert.fail("transaction should have reverted");
@@ -486,16 +474,16 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[4.7] Reveal - Error .seal)", async () => {
+	it("[4.6] Reveal - Error .seal)", async () => {
 		await IexecHubInstance.reveal(
-			tasks[7],
-			odbtools.hashResult(tasks[7], "true").digest,
+			tasks[6],
+			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: poolWorker1 }
 		);
 		try {
 			await IexecHubInstance.reveal(
-				tasks[7],
-				odbtools.hashResult(tasks[7], "true").digest,
+				tasks[6],
+				odbtools.hashResult(tasks[6], "true").digest,
 				{ from: poolWorker2 }
 			);
 			assert.fail("transaction should have reverted");
@@ -506,16 +494,16 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[5])).revealDeadline);
+		target = Number((await IexecHubInstance.viewTask(tasks[7])).revealDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
 
-	it("[4.8] Reveal - Error (late for reveal)", async () => {
+	it("[4.7] Reveal - Error (late for reveal)", async () => {
 		try {
 			await IexecHubInstance.reveal(
-				tasks[8],
-				odbtools.hashResult(tasks[8], "true").digest,
+				tasks[7],
+				odbtools.hashResult(tasks[7], "true").digest,
 				{ from: poolWorker1 }
 			);
 			assert.fail("transaction should have reverted");
@@ -524,5 +512,4 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-
 });

@@ -225,9 +225,9 @@ contract('IexecHub', async (accounts) => {
 				pool:         PoolInstance.address,
 				poolprice:    15,
 				volume:       1,
-				tag:          0x1,
+				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -241,9 +241,9 @@ contract('IexecHub', async (accounts) => {
 				pool:         PoolInstance.address,
 				poolprice:    25,
 				volume:       1000,
-				tag:          0x1,
+				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -261,9 +261,9 @@ contract('IexecHub', async (accounts) => {
 				pool:         constants.NULL.ADDRESS,
 				poolmaxprice: 25,
 				volume:       10,
-				tag:          0x1,
+				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -286,14 +286,18 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[setup] Initialization", async () => {
-		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[3] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 3 });
-		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[7] = extractEvents(await IexecHubInstance.initialize(deals[1], 7, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[8] = extractEvents(await IexecHubInstance.initialize(deals[1], 8, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		txMined = await IexecHubInstance.initializeArray(
+			[ /*deals[1],*/ deals[1], deals[1], deals[1], deals[1], deals[1], ],
+			[ /*1,       */ 2,        3,        4,        5,        6,        ],
+			{ from: poolScheduler }
+		);
+
+		tasks[1] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 1 }); // uninitialized
+		tasks[2] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // initialized
+		tasks[3] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[1].args.taskid; // contributions
+		tasks[4] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[2].args.taskid; // consensus
+		tasks[5] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[3].args.taskid; // reveal
+		tasks[6] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[4].args.taskid; // finalized
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -309,156 +313,94 @@ contract('IexecHub', async (accounts) => {
 			);
 	}
 
-	it("[2.1][TAG] Contribute - Error (missing sgx)", async () => {
-		__taskid  = tasks[1];
-		__worker  = poolWorker1;
-		__enclave = constants.NULL.ADDRESS;
-		__raw     = "true";
-
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("[2.2][TAG] Contribute - Correct (sgx)", async () => {
-		__taskid  = tasks[2];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
-		txMined = await sendContribution(
-			__taskid,
-			__worker,
-			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave    )),
-			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
-			__enclave
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
-		assert.equal(events[0].args.taskid, __taskid,                                  "check taskid"    );
-		assert.equal(events[0].args.worker, __worker,                                  "check worker"    );
-		assert.equal(events[0].args.hash,   odbtools.hashResult(__taskid, __raw).hash, "check resultHash");
-	});
-
-	it("[2.3][TAG] Contribute - Error (unset)", async () => {
-		__taskid  = tasks[3];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave    )),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("[2.4][TAG] Contribute - Error (duplicate)", async () => {
-		__taskid  = tasks[4];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
-		results       = (await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),           __enclave    )),
-		authorization = await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler);
-		// First ok
+	it("[setup] Contribute", async () => {
 		await sendContribution(
-			__taskid,
-			__worker,
-			results,
-			authorization,
-			__enclave
+			tasks[3],
+			poolWorker1,
+			odbtools.sealResult(tasks[3], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
 		);
-		// Second error
+		await sendContribution(
+			tasks[4],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[4], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+		await sendContribution(
+			tasks[5],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[5], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+		await sendContribution(
+			tasks[6],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[6], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+	});
+
+	it("[setup] Reveal", async () => {
+		await IexecHubInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: poolWorker1 });
+	});
+	it("[setup] Finalize", async () => {
+		await IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
+	});
+
+
+	it("[7.1a] Claim - Error (soon #1)", async () => {
 		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				results,
-				authorization,
-				__enclave
-			);
+			await IexecHubInstance.claim(tasks[1], { from: user });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-
-	it("[2.5][TAG] Contribute - Error (authorization)", async () => {
-		__taskid  = tasks[5];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
+	it("[7.2a] Claim - Error (soon #2)", async () => {
 		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker )), // signature: scheduler → worker
-				__enclave
-			);
+			await IexecHubInstance.claim(tasks[2], { from: user });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-
-	it("[2.6][TAG] Contribute - Error (subsctription)", async () => {
-		__taskid  = tasks[6];
-		__worker  = poolWorker4; // worker not assigned to the workerpool
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
+	it("[7.3a] Claim - Error (soon #3)", async () => {
 		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave    )),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)),
-				__enclave
-			);
+			await IexecHubInstance.claim(tasks[3], { from: user });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-
-	it("[2.7][TAG] Contribute - Error (enclave signature)", async () => {
-		__taskid  = tasks[7];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
-
+	it("[7.4a] Claim - Error (soon #4)", async () => {
 		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker), // should be signed
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)), // signature: scheduler → worker
-				__enclave
-			);
+			await IexecHubInstance.claim(tasks[4], { from: user });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
+	it("[7.5a] Claim - Error (soon #5)", async () => {
+		try {
+			await IexecHubInstance.claim(tasks[5], { from: user });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
+	it("[7.6a] Claim - Error (soon & finalized)", async () => {
+		try {
+			await IexecHubInstance.claim(tasks[6], { from: user });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -467,30 +409,41 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[8])).consensusDeadline);
+		target = Number((await IexecHubInstance.viewTask(tasks[2])).consensusDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
 
-	it("[2.8][TAG] Contribute - Late", async () => {
-		__taskid  = tasks[8];
-		__worker  = poolWorker1;
-		__enclave = sgxEnclave;
-		__raw     = "true"
+	it("[7.1b] Claim - Correct", async () => {
+		// needs late Initialization by the user
+		await IexecHubInstance.initialize(deals[1], 1, { from: user });
 
+		// claim
+		txMined = await IexecHubInstance.claimArray(
+			[ tasks[1], tasks[2], tasks[3], tasks[4], tasks[5] ],
+			{ from: user }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskClaimed");
+		assert.equal(events[0].args.taskid, tasks[1], "check taskid");
+		assert.equal(events[1].args.taskid, tasks[2], "check taskid");
+		assert.equal(events[2].args.taskid, tasks[3], "check taskid");
+		assert.equal(events[3].args.taskid, tasks[4], "check taskid");
+		assert.equal(events[4].args.taskid, tasks[5], "check taskid");
+	});
+	it("[7.6b] Claim - Error (finalized #7)", async () => {
 		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave    )),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, poolScheduler)), // signature: scheduler → worker
-				__enclave
-			);
+			await IexecHubInstance.claim(tasks[6], { from: user });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
+
+	// it("#Tracking infos]", async () => {
+	// 	console.log(IexecClerk.address);
+	// 	console.log(JSON.stringify(userorder));
+	// });
 
 });

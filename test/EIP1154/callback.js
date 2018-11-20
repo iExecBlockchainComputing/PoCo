@@ -231,7 +231,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -252,7 +252,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -273,7 +273,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     DappInstance.address,
@@ -294,7 +294,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     TestClientInstance.address,
@@ -352,12 +352,6 @@ contract('IexecHub', async (accounts) => {
 			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
 			odbtools.sealResult(tasks[3], "true", poolWorker1),
 		);
-	});
-
-	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[1], odbtools.hashResult(tasks[1], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[2], odbtools.hashResult(tasks[2], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[3], odbtools.hashResult(tasks[3], "true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {

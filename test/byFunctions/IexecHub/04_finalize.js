@@ -227,7 +227,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,7 +243,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -263,7 +263,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       10,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -285,16 +285,112 @@ contract('IexecHub', async (accounts) => {
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
 	});
 
-	it("[1.1] Initialization - Correct", async () => {
-		txMined = await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
+	it("[setup] Initialization", async () => {
+		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[3] = extractEvents(await IexecHubInstance.initialize(deals[1], 3, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[4] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 4 });
+		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[7] = extractEvents(await IexecHubInstance.initialize(deals[1], 7, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+	});
+
+	function sendContribution(taskid, worker, results, authorization, enclave)
+	{
+		return IexecHubInstance.contribute(
+				taskid,                                                 // task (authorization)
+				results.hash,                                           // common    (result)
+				results.seal,                                           // unique    (result)
+				enclave,                                                // address   (enclave)
+				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
+				authorization.sign,                                     // signature (authorization)
+				{ from: worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+			);
+	}
+
+	it("[setup] Contribute", async () => {
+		await sendContribution(
+			tasks[1],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[1], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+
+		await sendContribution(
+			tasks[2],
+			poolWorker1,
+			odbtools.sealResult(tasks[2], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+		await sendContribution(
+			tasks[2],
+			poolWorker2,
+			odbtools.sealResult(tasks[2], "true", poolWorker2),
+			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+
+		await sendContribution(
+			tasks[3],
+			poolWorker1,
+			odbtools.sealResult(tasks[3], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+		await sendContribution(
+			tasks[3],
+			poolWorker2,
+			odbtools.sealResult(tasks[3], "true", poolWorker2),
+			await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+
+		await sendContribution(
+			tasks[5],
+			poolWorker1,
+			odbtools.sealResult(tasks[5], "true", poolWorker1),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
+			constants.NULL.ADDRESS
+		);
+
+		await sendContribution(
+			tasks[6],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[6], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+
+		await sendContribution(
+			tasks[7],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[7], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[7], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+
+	});
+
+	it("[setup] Reveal", async () => {
+		await IexecHubInstance.reveal(tasks[1], odbtools.hashResult(tasks[1], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[2], odbtools.hashResult(tasks[2], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[3], odbtools.hashResult(tasks[3], "true").digest, { from: poolWorker1 });
+		await IexecHubInstance.reveal(tasks[7], odbtools.hashResult(tasks[7], "true").digest, { from: poolWorker1 });
+	});
+
+	it("[6.1] Finalize - Correct (full)", async () => {
+		txMined = await IexecHubInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
-		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 	});
 
-	it("[1.2] Initialization - Error (low id)", async () => {
+	it("[6.2] Finalize - Error (partial - soon)", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 0, { from: poolScheduler });
+			await IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -302,9 +398,23 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[1.3] Initialization - Error (high id)", async () => {
+	it("clock fast forward", async () => {
+		target = Number((await IexecHubInstance.viewTask(tasks[3])).revealDeadline);
+
+		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+	});
+
+	it("[6.3] Finalize - Correct (partial - wait)", async () => {
+		txMined = await IexecHubInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: poolScheduler });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
+		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
+	});
+
+	it("[6.4] Finalize - Error (no contribution)", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 1000, { from: poolScheduler });
+			await IexecHubInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -312,9 +422,9 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[1.4] Initialization - Error (already initialized)", async () => {
+	it("[6.5] Finalize - Error (no consensus)", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
+			await IexecHubInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -322,4 +432,29 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
+	it("[6.6] Finalize - Error (no reveal)", async () => {
+		try {
+			await IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
+
+	it("clock fast forward", async () => {
+		target = Number((await IexecHubInstance.viewTask(tasks[7])).consensusDeadline);
+
+		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+	});
+
+	it("[6.7] Finalize - Error (late)", async () => {
+		try {
+			await IexecHubInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
 });

@@ -227,7 +227,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,7 +243,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -263,7 +263,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       10,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -286,18 +286,12 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[setup] Initialization", async () => {
-		txMined = await IexecHubInstance.initializeArray(
-			[ /*deals[1],*/ deals[1], deals[1], deals[1], deals[1], deals[1], ],
-			[ /*1,       */ 2,        3,        4,        5,        6,        ],
-			{ from: poolScheduler }
-		);
-
-		tasks[1] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 1 }); // uninitialized
-		tasks[2] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // initialized
-		tasks[3] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[1].args.taskid; // contributions
-		tasks[4] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[2].args.taskid; // consensus
-		tasks[5] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[3].args.taskid; // reveal
-		tasks[6] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[4].args.taskid; // finalized
+		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[2] = extractEvents(await IexecHubInstance.initialize(deals[1], 2, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[3] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 3 });
+		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
+		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -315,11 +309,18 @@ contract('IexecHub', async (accounts) => {
 
 	it("[setup] Contribute", async () => {
 		await sendContribution(
-			tasks[3],
+			tasks[1],
 			poolWorker1,
-			odbtools.sealResult(tasks[3], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[1], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
+		);
+		await sendContribution(
+			tasks[2],
+			poolWorker1,
+			await odbtools.signContribution(odbtools.sealResult(tasks[2], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[2], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
 		await sendContribution(
 			tasks[4],
@@ -331,82 +332,28 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.sealResult(tasks[5], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[5], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
 		await sendContribution(
 			tasks[6],
 			poolWorker1,
-			odbtools.sealResult(tasks[6], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[6], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
-	});
-
-	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[4], odbtools.hashResult(tasks[4], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult(tasks[5], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult(tasks[6], "true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {
 		await IexecHubInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: poolWorker1 });
 		await IexecHubInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: poolWorker1 });
 	});
-	it("[setup] Finalize", async () => {
-		await IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: poolScheduler });
-	});
 
 
-	it("[7.1a] Claim - Error (soon #1)", async () => {
+	it("[5.1] Reopen - Error (early)", async () => {
 		try {
-			await IexecHubInstance.claim(tasks[1], { from: user });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("[7.2a] Claim - Error (soon #2)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[2], { from: user });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("[7.3a] Claim - Error (soon #3)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[3], { from: user });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("[7.4a] Claim - Error (soon #4)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[4], { from: user });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("[7.5a] Claim - Error (soon #5)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[5], { from: user });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-	it("[7.6a] Claim - Error (soon & finalized)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[6], { from: user });
+			await IexecHubInstance.reopen(tasks[1], { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -415,31 +362,21 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[2])).consensusDeadline);
+		target = Number((await IexecHubInstance.viewTask(tasks[2])).revealDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
 
-	it("[7.1b] Claim - Correct", async () => {
-		// needs late Initialization by the user
-		await IexecHubInstance.initialize(deals[1], 1, { from: user });
-
-		// claim
-		txMined = await IexecHubInstance.claimArray(
-			[ tasks[1], tasks[2], tasks[3], tasks[4], tasks[5] ],
-			{ from: user }
-		);
+	it("[5.2] Reopen - Correct", async () => {
+		txMined = await IexecHubInstance.reopen(tasks[2], { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskClaimed");
-		assert.equal(events[0].args.taskid, tasks[1], "check taskid");
-		assert.equal(events[1].args.taskid, tasks[2], "check taskid");
-		assert.equal(events[2].args.taskid, tasks[3], "check taskid");
-		assert.equal(events[3].args.taskid, tasks[4], "check taskid");
-		assert.equal(events[4].args.taskid, tasks[5], "check taskid");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskReopen");
+		assert.equal(events[0].args.taskid, tasks[2], "check taskid");
 	});
-	it("[7.6b] Claim - Error (finalized #7)", async () => {
+
+	it("[5.3] Reopen - Error (status #1 - currently unset)", async () => {
 		try {
-			await IexecHubInstance.claim(tasks[6], { from: user });
+			await IexecHubInstance.reopen(tasks[3], { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -447,9 +384,40 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	// it("#Tracking infos]", async () => {
-	// 	console.log(IexecClerk.address);
-	// 	console.log(JSON.stringify(userorder));
-	// });
+	it("[5.4] Reopen - Error (status #2 - currently active)", async () => {
+		try {
+			await IexecHubInstance.reopen(tasks[4], { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
+
+	it("[5.5] Reopen - Error (counter)", async () => {
+		try {
+			await IexecHubInstance.reopen(tasks[5], { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
+
+	it("clock fast forward", async () => {
+		target = Number((await IexecHubInstance.viewTask(tasks[6])).consensusDeadline);
+
+		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+	});
+
+	it("[5.6] Reopen - Error (late)", async () => {
+		try {
+			await IexecHubInstance.reopen(tasks[6], { from: poolScheduler });
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
 
 });

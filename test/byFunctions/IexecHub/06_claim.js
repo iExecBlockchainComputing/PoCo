@@ -227,7 +227,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,7 +243,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -263,7 +263,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       10,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        10,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -292,7 +292,7 @@ contract('IexecHub', async (accounts) => {
 		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // consensus
 		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // reveal
 		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // finalized
-	});
+	});66
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
 	{
@@ -318,30 +318,24 @@ contract('IexecHub', async (accounts) => {
 		await sendContribution(
 			tasks[4],
 			poolWorker1,
-			odbtools.sealResult(tasks[4], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[4], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
 		await sendContribution(
 			tasks[5],
 			poolWorker1,
-			odbtools.sealResult(tasks[5], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[5], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
 		await sendContribution(
 			tasks[6],
 			poolWorker1,
-			odbtools.sealResult(tasks[6], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
+			await odbtools.signContribution(odbtools.sealResult(tasks[6], "true", poolWorker1), sgxEnclave),
+			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[6], enclave: sgxEnclave }, poolScheduler),
+			sgxEnclave
 		);
-	});
-
-	it("[setup] Consensus", async () => {
-		await IexecHubInstance.consensus(tasks[4], odbtools.hashResult(tasks[4], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[5], odbtools.hashResult(tasks[5], "true").hash, { from: poolScheduler });
-		await IexecHubInstance.consensus(tasks[6], odbtools.hashResult(tasks[6], "true").hash, { from: poolScheduler });
 	});
 
 	it("[setup] Reveal", async () => {

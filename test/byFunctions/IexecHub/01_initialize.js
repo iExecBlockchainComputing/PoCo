@@ -227,7 +227,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -243,7 +243,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       1000,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				dapprestrict: constants.NULL.ADDRESS,
 				datarestrict: constants.NULL.ADDRESS,
 				userrestrict: constants.NULL.ADDRESS,
@@ -263,7 +263,7 @@ contract('IexecHub', async (accounts) => {
 				volume:       10,
 				tag:          0x0,
 				category:     4,
-				trust:        1000,
+				trust:        0,
 				requester:    user,
 				beneficiary:  user,
 				callback:     constants.NULL.ADDRESS,
@@ -283,73 +283,18 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
-});
-
-	it("[setup] Initialization", async () => {
-		tasks[1] = extractEvents(await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[2] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 2 });
-		tasks[3] = extractEvents(await IexecHubInstance.initialize(deals[1], 3, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[4] = extractEvents(await IexecHubInstance.initialize(deals[1], 4, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: poolScheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
-	function sendContribution(taskid, worker, results, authorization, enclave)
-	{
-		return IexecHubInstance.contribute(
-				taskid,                                                 // task (authorization)
-				results.hash,                                           // common    (result)
-				results.seal,                                           // unique    (result)
-				enclave,                                                // address   (enclave)
-				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
-				authorization.sign,                                     // signature (authorization)
-				{ from: worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
-			);
-	}
-
-	it("[setup] Contribute", async () => {
-		await sendContribution(
-			tasks[1],
-			poolWorker1,
-			odbtools.sealResult(tasks[1], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		await sendContribution(
-			tasks[4],
-			poolWorker1,
-			odbtools.sealResult(tasks[4], "false", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-		await sendContribution(
-			tasks[5],
-			poolWorker1,
-			odbtools.sealResult(tasks[5], "true", poolWorker1),
-			await odbtools.signAuthorization({ worker: poolWorker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, poolScheduler),
-			constants.NULL.ADDRESS
-		);
-	});
-
-	it("[3.1] Consensus - Correct", async () => {
-		__taskid = tasks[1];
-		__result = odbtools.hashResult(__taskid, "true");
-
-		txMined = await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
+	it("[1.1] Initialization - Correct", async () => {
+		txMined = await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
-		assert.equal(events[0].args.taskid,    __taskid,                   "check taskid"   );
-		assert.equal(events[0].args.consensus, __result.hash, "check consensus");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
+		assert.equal(events[0].args.pool, PoolInstance.address, "check pool");
 	});
 
-	it("[Extra] cannot contribute after consensus", async () => {
+	it("[1.2] Initialization - Error (low id)", async () => {
 		try {
-			await sendContribution(
-				tasks[1],
-				poolWorker2,
-				odbtools.sealResult(__taskid, "true", poolWorker2),
-				await odbtools.signAuthorization({ worker: poolWorker2, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, poolScheduler),
-				constants.NULL.ADDRESS
-			);
+			await IexecHubInstance.initialize(deals[1], 0, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -357,12 +302,9 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[3.2] Consensus - Error (status)", async () => {
-		__taskid = tasks[2];
-		__result = odbtools.hashResult(__taskid, "true");
-
+	it("[1.3] Initialization - Error (high id)", async () => {
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
+			await IexecHubInstance.initialize(deals[1], 1000, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
@@ -370,44 +312,9 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[3.3] Consensus - Error (no winner #1)", async () => {
-		__taskid = tasks[3];
-		__result = odbtools.hashResult(__taskid, "true");
-
+	it("[1.4] Initialization - Error (already initialized)", async () => {
 		try {
-			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("[3.4] Consensus - Error (no winner #2)", async () => {
-		__taskid = tasks[4];
-		__result = odbtools.hashResult(__taskid, "true");
-
-		try {
-			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[5])).consensusDeadline);
-
-		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
-	});
-
-	it("[3.5] Consensus - Error (late)", async () => {
-		__taskid = tasks[5];
-		__result = odbtools.hashResult(__taskid, "true");
-
-		try {
-			await IexecHubInstance.consensus(__taskid, __result.hash, { from: poolScheduler });
+			await IexecHubInstance.initialize(deals[1], 1, { from: poolScheduler });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
