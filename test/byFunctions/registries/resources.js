@@ -1,14 +1,14 @@
-var RLC          = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var App                = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
+var Workerpool         = artifacts.require("./Workerpool.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
@@ -21,29 +21,29 @@ function extractEvents(txMined, address, name)
 contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
+	let iexecAdmin      = accounts[0];
+	let appProvider     = accounts[1];
+	let datasetProvider = accounts[2];
+	let scheduler       = accounts[3];
+	let worker1         = accounts[4];
+	let worker2         = accounts[5];
+	let worker3         = accounts[6];
+	let worker4         = accounts[7];
+	let user            = accounts[8];
+	let sgxEnclave      = accounts[9];
 
-	var RLCInstance          = null;
-	var IexecHubInstance     = null;
-	var IexecClerkInstance   = null;
-	var DappRegistryInstance = null;
-	var DataRegistryInstance = null;
-	var PoolRegistryInstance = null;
-	var RelayInstance        = null;
-	var BrokerInstance       = null;
+	var RLCInstance                = null;
+	var IexecHubInstance           = null;
+	var IexecClerkInstance         = null;
+	var AppRegistryInstance        = null;
+	var DatasetRegistryInstance    = null;
+	var WorkerpoolRegistryInstance = null;
+	var RelayInstance              = null;
+	var BrokerInstance             = null;
 
-	var DappInstances = {};
-	var DataInstances = {};
-	var PoolInstances = {};
+	var AppInstances = {};
+	var DatasetInstances = {};
+	var WorkerpoolInstances = {};
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -54,94 +54,94 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance          = await RLC.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecClerkInstance   = await IexecClerk.deployed();
-		DappRegistryInstance = await DappRegistry.deployed();
-		DataRegistryInstance = await DataRegistry.deployed();
-		PoolRegistryInstance = await PoolRegistry.deployed();
-		RelayInstance        = await Relay.deployed();
-		BrokerInstance       = await Broker.deployed();
+		RLCInstance                = await RLC.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecClerkInstance         = await IexecClerk.deployed();
+		AppRegistryInstance        = await AppRegistry.deployed();
+		DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		RelayInstance              = await Relay.deployed();
+		BrokerInstance             = await Broker.deployed();
 	});
 
 	/***************************************************************************
-	 *                  TEST: Dapp creation (by dappProvider)                  *
+	 *                  TEST: App creation (by appProvider)                  *
 	 ***************************************************************************/
-	it("Dapp Creation", async () => {
+	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			DappInstances[i] = await Dapp.new(
-				dappProvider,
-				"Dapp #"+i,
+			AppInstances[i] = await App.new(
+				appProvider,
+				"App #"+i,
 				constants.DAPP_PARAMS_EXAMPLE,
 				constants.NULL.BYTES32,
-				{ from: dappProvider }
+				{ from: appProvider }
 			);
-			assert.equal ( await DappInstances[i].m_owner(),      dappProvider,                  "Erroneous Dapp owner" );
-			assert.equal ( await DappInstances[i].m_dappName(),   "Dapp #"+i,                    "Erroneous Dapp name"  );
-			assert.equal ( await DappInstances[i].m_dappParams(), constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
-			assert.equal ( await DappInstances[i].m_dappHash(),   constants.NULL.BYTES32,        "Erroneous Dapp hash"  );
+			assert.equal ( await AppInstances[i].m_owner(),     appProvider,                   "Erroneous App owner" );
+			assert.equal ( await AppInstances[i].m_appName(),   "App #"+i,                     "Erroneous App name"  );
+			assert.equal ( await AppInstances[i].m_appParams(), constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params");
+			assert.equal ( await AppInstances[i].m_appHash(),   constants.NULL.BYTES32,        "Erroneous App hash"  );
 		}
 	});
 
 	/***************************************************************************
-	 *                  TEST: Data creation (by dataProvider)                  *
+	 *                  TEST: Dataset creation (by datasetProvider)                  *
 	 ***************************************************************************/
-	it("Data Creation", async () => {
+	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			DataInstances[i] = await Data.new(
-				dataProvider,
-				"Data #"+i,
+			DatasetInstances[i] = await Dataset.new(
+				datasetProvider,
+				"Dataset #"+i,
 				"3.1415926535",
 				constants.NULL.BYTES32,
-				{ from: dataProvider }
+				{ from: datasetProvider }
 			);
-			assert.equal ( await DataInstances[i].m_owner(),      dataProvider,           "Erroneous Data owner" );
-			assert.equal ( await DataInstances[i].m_dataName(),   "Data #"+i,             "Erroneous Data name"  );
-			assert.equal ( await DataInstances[i].m_dataParams(), "3.1415926535",         "Erroneous Data params");
-			assert.equal ( await DataInstances[i].m_dataHash(),   constants.NULL.BYTES32, "Erroneous Data hash"  );
+			assert.equal ( await DatasetInstances[i].m_owner(),         datasetProvider,        "Erroneous Dataset owner" );
+			assert.equal ( await DatasetInstances[i].m_datasetName(),   "Dataset #"+i,          "Erroneous Dataset name"  );
+			assert.equal ( await DatasetInstances[i].m_datasetParams(), "3.1415926535",         "Erroneous Dataset params");
+			assert.equal ( await DatasetInstances[i].m_datasetHash(),   constants.NULL.BYTES32, "Erroneous Dataset hash"  );
 		}
 	});
 
 	/***************************************************************************
-	 *                 TEST: Pool creation (by poolScheduler)                  *
+	 *                 TEST: Workerpool creation (by scheduler)                  *
 	 ***************************************************************************/
-	it("Pool Creation", async () => {
+	it("Workerpool Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			PoolInstances[i] = await Pool.new(
-				poolScheduler,
-				"Pool #"+i,
+			WorkerpoolInstances[i] = await Workerpool.new(
+				scheduler,
+				"Workerpool #"+i,
 				10, // lock
 				10, // minimum stake
 				10, // minimum score
-				{ from: poolScheduler }
+				{ from: scheduler }
 			);
-			assert.equal ( await PoolInstances[i].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-			assert.equal ( await PoolInstances[i].m_poolDescription(),                 "Pool #"+i,    "Erroneous Pool description");
-			assert.equal ((await PoolInstances[i].m_workerStakeRatioPolicy()),         30,            "Erroneous Pool params"     );
-			assert.equal ((await PoolInstances[i].m_schedulerRewardRatioPolicy()),     1,             "Erroneous Pool params"     );
-			assert.equal ((await PoolInstances[i].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-			assert.equal ((await PoolInstances[i].m_subscriptionMinimumStakePolicy()), 10,            "Erroneous Pool params"     );
-			assert.equal ((await PoolInstances[i].m_subscriptionMinimumScorePolicy()), 10,            "Erroneous Pool params"     );
+			assert.equal ( await WorkerpoolInstances[i].m_owner(),                           scheduler,        "Erroneous Workerpool owner"      );
+			assert.equal ( await WorkerpoolInstances[i].m_workerpoolDescription(),           "Workerpool #"+i, "Erroneous Workerpool description");
+			assert.equal ((await WorkerpoolInstances[i].m_workerStakeRatioPolicy()),         30,               "Erroneous Workerpool params"     );
+			assert.equal ((await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy()),     1,                "Erroneous Workerpool params"     );
+			assert.equal ((await WorkerpoolInstances[i].m_subscriptionLockStakePolicy()),    10,               "Erroneous Workerpool params"     );
+			assert.equal ((await WorkerpoolInstances[i].m_subscriptionMinimumStakePolicy()), 10,               "Erroneous Workerpool params"     );
+			assert.equal ((await WorkerpoolInstances[i].m_subscriptionMinimumScorePolicy()), 10,               "Erroneous Workerpool params"     );
 		}
 	});
 
 	/***************************************************************************
-	 *               TEST: Pool configuration (by poolScheduler)               *
+	 *               TEST: Workerpool configuration (by scheduler)               *
 	 ***************************************************************************/
-	it("Pool Configuration - owner can configure", async () => {
-		txMined = await PoolInstances[1].changePoolPolicy(
+	it("Workerpool Configuration - owner can configure", async () => {
+		txMined = await WorkerpoolInstances[1].changePolicy(
 			35,  // worker stake ratio
 			5,   // scheduler reward ratio
 			100, // minimum stake
 			0,   // minimum score
-			{ from: poolScheduler }
+			{ from: scheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, PoolInstances[1].address, "PoolPolicyUpdate");
+		events = extractEvents(txMined, WorkerpoolInstances[1].address, "PolicyUpdate");
 		assert.equal(events[0].args.oldWorkerStakeRatioPolicy,         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
 		assert.equal(events[0].args.newWorkerStakeRatioPolicy,         35,  "Erroneous newWorkerStakeRatioPolicy"        );
 		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy,     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
@@ -151,22 +151,22 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.oldSubscriptionMinimumScorePolicy, 10,  "Erroneous oldSubscriptionMinimumScorePolicy");
 		assert.equal(events[0].args.newSubscriptionMinimumScorePolicy, 0,   "Erroneous newSubscriptionMinimumScorePolicy");
 
-		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
-		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
+		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,               "Erroneous Workerpool params"     );
 	});
 
 	/***************************************************************************
-	 *                   TEST: Pool configuration (by user)                    *
+	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
-	it("Pool Configuration #2 - owner restriction apply", async () => {
+	it("Workerpool Configuration #2 - owner restriction apply", async () => {
 		try
 		{
-			await PoolInstances[1].changePoolPolicy(
+			await WorkerpoolInstances[1].changePolicy(
 				0,
 				0,
 				0,
@@ -181,27 +181,27 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
-		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
-		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
+		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,               "Erroneous Workerpool params"     );
 	});
 
 	/***************************************************************************
-	 *           TEST: Invalid pool configuration (by poolScheduler)           *
+	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
-	it("Pool Configuration #3 - invalid configuration refused", async () => {
+	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
 		try
 		{
-			await PoolInstances[1].changePoolPolicy(
+			await WorkerpoolInstances[1].changePolicy(
 				100, // worker stake ratio
 				150, // scheduler reward ratio (should not be above 100%)
 				0,   // minimum stake
 				0,   // minimum score
-				{ from: poolScheduler }
+				{ from: scheduler }
 			);
 			assert.fail("user should not be able to set invalid policy");
 		}
@@ -211,13 +211,13 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
-		assert.equal( await PoolInstances[1].m_owner(),                           poolScheduler, "Erroneous Pool owner"      );
-		assert.equal( await PoolInstances[1].m_poolDescription(),                 "Pool #1",     "Erroneous Pool description");
-		assert.equal((await PoolInstances[1].m_workerStakeRatioPolicy()),         35,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_schedulerRewardRatioPolicy()),     5,             "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionLockStakePolicy()),    10,            "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,           "Erroneous Pool params"     );
-		assert.equal((await PoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,             "Erroneous Pool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
+		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
+		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumScorePolicy()), 0,               "Erroneous Workerpool params"     );
 	});
 
 });

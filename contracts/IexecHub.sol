@@ -47,7 +47,7 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event TaskInitialize(bytes32 indexed taskid, address indexed pool                     );
+	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool               );
 	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash     );
 	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
 	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
@@ -58,9 +58,9 @@ contract IexecHub is CategoryManager, Oracle
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
-	event WorkerSubscription  (address indexed pool, address indexed worker);
-	event WorkerUnsubscription(address indexed pool, address indexed worker);
-	event WorkerEviction      (address indexed pool, address indexed worker);
+	event WorkerSubscription  (address indexed workerpool, address indexed worker);
+	event WorkerUnsubscription(address indexed workerpool, address indexed worker);
+	event WorkerEviction      (address indexed workerpool, address indexed worker);
 
 	/***************************************************************************
 	 *                                Modifiers                                *
@@ -120,12 +120,12 @@ contract IexecHub is CategoryManager, Oracle
 		return Workerpool(m_workerAffectations[_worker]);
 	}
 
-	function checkResources(address dapp, address data, address pool)
+	function checkResources(address app, address dataset, address workerpool)
 	public view returns (bool)
 	{
-		require(                      appregistry.isRegistered(dapp));
-		require(data == address(0) || datasetregistry.isRegistered(data));
-		require(                      workerpoolregistry.isRegistered(pool));
+		require(                         appregistry.isRegistered(app));
+		require(dataset == address(0) || datasetregistry.isRegistered(dataset));
+		require(                         workerpoolregistry.isRegistered(workerpool));
 		return true;
 	}
 
@@ -175,7 +175,7 @@ contract IexecHub is CategoryManager, Oracle
 		bytes32                     _resultSeal,
 		address                     _enclaveChallenge,
 		IexecODBLibOrders.signature _enclaveSign,
-		IexecODBLibOrders.signature _poolSign)
+		IexecODBLibOrders.signature _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -197,9 +197,9 @@ contract IexecHub is CategoryManager, Oracle
 					_enclaveChallenge
 				))
 			)),
-			_poolSign.v,
-			_poolSign.r,
-			_poolSign.s)
+			_workerpoolSign.v,
+			_workerpoolSign.r,
+			_workerpoolSign.s)
 		);
 
 		// worker must be subscribed to the pool, keep?
@@ -548,7 +548,7 @@ contract IexecHub is CategoryManager, Oracle
 	public returns (bool)
 	{
 		// check affectation & authorization
-		Workerpool workerpool = Workerpool(m_workerAffectations[msg.sender]);
+		Workerpool workerpool = Workerpool(m_workerAffectations[_worker]);
 		require(address(workerpool)  != address(0));
 		require(workerpool.m_owner() == msg.sender);
 

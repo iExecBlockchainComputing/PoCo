@@ -1,14 +1,14 @@
-var RLC          = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var App                = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
+var Workerpool         = artifacts.require("./Workerpool.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
@@ -23,29 +23,29 @@ function extractEvents(txMined, address, name)
 contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
+	let iexecAdmin      = accounts[0];
+	let appProvider     = accounts[1];
+	let datasetProvider = accounts[2];
+	let scheduler       = accounts[3];
+	let worker1         = accounts[4];
+	let worker2         = accounts[5];
+	let worker3         = accounts[6];
+	let worker4         = accounts[7];
+	let user            = accounts[8];
+	let sgxEnclave      = accounts[9];
 
-	var RLCInstance          = null;
-	var IexecHubInstance     = null;
-	var IexecClerkInstance   = null;
-	var DappRegistryInstance = null;
-	var DataRegistryInstance = null;
-	var PoolRegistryInstance = null;
-	var RelayInstance        = null;
-	var BrokerInstance       = null;
+	var RLCInstance                = null;
+	var IexecHubInstance           = null;
+	var IexecClerkInstance         = null;
+	var AppRegistryInstance        = null;
+	var DatasetRegistryInstance    = null;
+	var WorkerpoolRegistryInstance = null;
+	var RelayInstance              = null;
+	var BrokerInstance             = null;
 
-	var DappInstance = null;
-	var DataInstance = null;
-	var PoolInstance = null;
+	var AppInstance        = null;
+	var DatasetInstance    = null;
+	var WorkerpoolInstance = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -56,14 +56,14 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance          = await RLC.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecClerkInstance   = await IexecClerk.deployed();
-		DappRegistryInstance = await DappRegistry.deployed();
-		DataRegistryInstance = await DataRegistry.deployed();
-		PoolRegistryInstance = await PoolRegistry.deployed();
-		RelayInstance        = await Relay.deployed();
-		BrokerInstance       = await Broker.deployed();
+		RLCInstance                = await RLC.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecClerkInstance         = await IexecClerk.deployed();
+		AppRegistryInstance        = await AppRegistry.deployed();
+		DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		RelayInstance              = await Relay.deployed();
+		BrokerInstance             = await Broker.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",
@@ -77,14 +77,14 @@ contract('IexecHub', async (accounts) => {
 		 */
 		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
 		txsMined = await Promise.all([
-			RLCInstance.transfer(dappProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(dataProvider,  1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolScheduler, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker1,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker2,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker3,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(poolWorker4,   1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,          1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.transfer(appProvider,     1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(datasetProvider, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(scheduler,       1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(worker1,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(worker2,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(worker3,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(worker4,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.transfer(user,            1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -96,13 +96,13 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		let balances = await Promise.all([
-			RLCInstance.balanceOf(dappProvider),
-			RLCInstance.balanceOf(dataProvider),
-			RLCInstance.balanceOf(poolScheduler),
-			RLCInstance.balanceOf(poolWorker1),
-			RLCInstance.balanceOf(poolWorker2),
-			RLCInstance.balanceOf(poolWorker3),
-			RLCInstance.balanceOf(poolWorker4),
+			RLCInstance.balanceOf(appProvider),
+			RLCInstance.balanceOf(datasetProvider),
+			RLCInstance.balanceOf(scheduler),
+			RLCInstance.balanceOf(worker1),
+			RLCInstance.balanceOf(worker2),
+			RLCInstance.balanceOf(worker3),
+			RLCInstance.balanceOf(worker4),
 			RLCInstance.balanceOf(user)
 		]);
 		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
@@ -115,14 +115,14 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dappProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: dataProvider,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolScheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: poolWorker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,          gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -134,12 +134,12 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: poolScheduler }),
-			IexecClerkInstance.deposit(100000, { from: poolWorker1   }),
-			IexecClerkInstance.deposit(100000, { from: poolWorker2   }),
-			IexecClerkInstance.deposit(100000, { from: poolWorker3   }),
-			IexecClerkInstance.deposit(100000, { from: poolWorker4   }),
-			IexecClerkInstance.deposit(100000, { from: user          }),
+			IexecClerkInstance.deposit(100000, { from: scheduler }),
+			IexecClerkInstance.deposit(100000, { from: worker1   }),
+			IexecClerkInstance.deposit(100000, { from: worker2   }),
+			IexecClerkInstance.deposit(100000, { from: worker3   }),
+			IexecClerkInstance.deposit(100000, { from: worker4   }),
+			IexecClerkInstance.deposit(100000, { from: user      }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -150,98 +150,98 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: Dapp creation (by dappProvider)                  *
+	 *                  TEST: App creation (by appProvider)                  *
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
-		DappInstance = await Dapp.at(events[0].args.dapp);
+		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+		AppInstance = await App.at(events[0].args.app);
 
-		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-		DataInstance = await Data.at(events[0].args.data);
+		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: poolScheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance = await Pool.at(events[0].args.pool);
+		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await PoolInstance.changePoolPolicy(35, 5, 100, 0, { from: poolScheduler });
+		txMined = await WorkerpoolInstance.changePolicy(35, 5, 100, 0, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 
-	matchOrders = (dappextra, dataextra, poolextra, userextra) => {
-		_dapporder = {
-				dapp:         DappInstance.address,
-				dappprice:    3,
-				volume:       1000,
-				tag:          0x0,
-				datarestrict: constants.NULL.ADDRESS,
-				poolrestrict: constants.NULL.ADDRESS,
-				userrestrict: constants.NULL.ADDRESS,
-				salt:         web3.utils.randomHex(32),
-				sign:         constants.NULL.SIGNATURE,
+	matchOrders = (appextra, datasetextra, workerpoolextra, userextra) => {
+		_apporder = {
+				app:                AppInstance.address,
+				appprice:           3,
+				volume:             1000,
+				tag:                0x0,
+				datasetrestrict:    constants.NULL.ADDRESS,
+				workerpoolrestrict: constants.NULL.ADDRESS,
+				userrestrict:       constants.NULL.ADDRESS,
+				salt:               web3.utils.randomHex(32),
+				sign:               constants.NULL.SIGNATURE,
 		};
-		_dataorder = {
-			data:         DataInstance.address,
-			dataprice:    1,
-			volume:       1000,
-			tag:          0x0,
-			dapprestrict: constants.NULL.ADDRESS,
-			poolrestrict: constants.NULL.ADDRESS,
-			userrestrict: constants.NULL.ADDRESS,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+		_datasetorder = {
+			dataset:            DatasetInstance.address,
+			datasetprice:       1,
+			volume:             1000,
+			tag:                0x0,
+			apprestrict:        constants.NULL.ADDRESS,
+			workerpoolrestrict: constants.NULL.ADDRESS,
+			userrestrict:       constants.NULL.ADDRESS,
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE,
 		};
-		_poolorder = {
-			pool:         PoolInstance.address,
-			poolprice:    25,
-			volume:       1000,
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			dapprestrict: constants.NULL.ADDRESS,
-			datarestrict: constants.NULL.ADDRESS,
-			userrestrict: constants.NULL.ADDRESS,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+		_workerpoolorder = {
+			workerpool:      WorkerpoolInstance.address,
+			workerpoolprice: 25,
+			volume:          1000,
+			tag:             0x0,
+			category:        4,
+			trust:           1000,
+			apprestrict:     constants.NULL.ADDRESS,
+			datasetrestrict: constants.NULL.ADDRESS,
+			userrestrict:    constants.NULL.ADDRESS,
+			salt:            web3.utils.randomHex(32),
+			sign:            constants.NULL.SIGNATURE,
 		};
 		_userorder = {
-			dapp:         DappInstance.address,
-			dappmaxprice: 3,
-			data:         DataInstance.address,
-			datamaxprice: 1,
-			pool:         constants.NULL.ADDRESS,
-			poolmaxprice: 25,
-			volume:       1,
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			requester:    user,
-			beneficiary:  user,
-			callback:     constants.NULL.ADDRESS,
-			params:       "<parameters>",
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+			app:                AppInstance.address,
+			appmaxprice:        3,
+			dataset:            DatasetInstance.address,
+			datasetmaxprice:    1,
+			workerpool:         constants.NULL.ADDRESS,
+			workerpoolmaxprice: 25,
+			volume:             1,
+			tag:                0x0,
+			category:           4,
+			trust:              1000,
+			requester:          user,
+			beneficiary:        user,
+			callback:           constants.NULL.ADDRESS,
+			params:             "<parameters>",
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE,
 		};
-		for (key in dappextra) _dapporder[key] = dappextra[key];
-		for (key in dataextra) _dataorder[key] = dataextra[key];
-		for (key in poolextra) _poolorder[key] = poolextra[key];
-		for (key in userextra) _userorder[key] = userextra[key];
-		odbtools.signDappOrder(_dapporder, wallets.addressToPrivate(dappProvider));
-		odbtools.signDataOrder(_dataorder, wallets.addressToPrivate(dataProvider));
-		odbtools.signPoolOrder(_poolorder, wallets.addressToPrivate(poolScheduler));
-		odbtools.signUserOrder(_userorder, wallets.addressToPrivate(user));
-		return IexecClerkInstance.matchOrders(_dapporder, _dataorder, _poolorder, _userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		for (key in appextra       ) _apporder[key]        = appextra[key];
+		for (key in datasetextra   ) _datasetorder[key]    = datasetextra[key];
+		for (key in workerpoolextra) _workerpoolorder[key] = workerpoolextra[key];
+		for (key in userextra      ) _userorder[key]       = userextra[key];
+		odbtools.signAppOrder       (_apporder,        wallets.addressToPrivate(appProvider    ));
+		odbtools.signDatasetOrder   (_datasetorder,    wallets.addressToPrivate(datasetProvider));
+		odbtools.signWorkerpoolOrder(_workerpoolorder, wallets.addressToPrivate(scheduler      ));
+		odbtools.signUserOrder      (_userorder,       wallets.addressToPrivate(user           ));
+		return IexecClerkInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 	};
 
 
 
-	it("[Match - dapp-data-pool-user]", async () => {
+	it("[Match - app-dataset-workerpool-user]", async () => {
 		await matchOrders(
 			{},
 			{},
@@ -253,21 +253,21 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.dapp.pointer, DappInstance.address  );
-		assert.equal(       deal.dapp.owner,   dappProvider          );
-		assert.equal(Number(deal.dapp.price),  3                     );
-		assert.equal(       deal.data.pointer, DataInstance.address  );
-		assert.equal(       deal.data.owner,   dataProvider          );
-		assert.equal(Number(deal.data.price),  1                     );
-		assert.equal(       deal.pool.pointer, PoolInstance.address  );
-		assert.equal(       deal.pool.owner,   poolScheduler         );
-		assert.equal(Number(deal.pool.price),  25                    );
-		assert.equal(Number(deal.trust),       1000                  );
-		assert.equal(Number(deal.tag),         0x0                   );
-		assert.equal(       deal.requester,    user                  );
-		assert.equal(       deal.beneficiary,  user                  );
-		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
-		assert.equal(       deal.params,       "<parameters>"        );
+		assert.equal(       deal.app.pointer,        AppInstance.address       );
+		assert.equal(       deal.app.owner,          appProvider               );
+		assert.equal(Number(deal.app.price),         3                         );
+		assert.equal(       deal.dataset.pointer,    DatasetInstance.address   );
+		assert.equal(       deal.dataset.owner,      datasetProvider           );
+		assert.equal(Number(deal.dataset.price),     1                         );
+		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
+		assert.equal(       deal.workerpool.owner,   scheduler                 );
+		assert.equal(Number(deal.workerpool.price),  25                        );
+		assert.equal(Number(deal.trust),             1000                      );
+		assert.equal(Number(deal.tag),               0x0                       );
+		assert.equal(       deal.requester,          user                      );
+		assert.equal(       deal.beneficiary,        user                      );
+		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
+		assert.equal(       deal.params,             "<parameters>"            );
 
 		config = await IexecClerkInstance.viewConfig(deals[0]);
 		assert.equal  (Number(config.category),             4);
@@ -278,33 +278,33 @@ contract('IexecHub', async (accounts) => {
 		assert.equal  (Number(config.schedulerRewardRatio), 5);
 	});
 
-	it("[Match - dapp-pool-user]", async () => {
+	it("[Match - app-workerpool-user]", async () => {
 		await matchOrders(
 			{},
 			constants.NULL.DATAORDER,
 			{},
-			{ data: constants.NULL.ADDRESS },
+			{ dataset: constants.NULL.ADDRESS },
 		);
 
 		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.dapp.pointer, DappInstance.address  );
-		assert.equal(       deal.dapp.owner,   dappProvider          );
-		assert.equal(Number(deal.dapp.price),  3                     );
-		assert.equal(       deal.data.pointer, constants.NULL.ADDRESS);
-		assert.equal(       deal.data.owner,   constants.NULL.ADDRESS);
-		assert.equal(Number(deal.data.price),  0                     );
-		assert.equal(       deal.pool.pointer, PoolInstance.address  );
-		assert.equal(       deal.pool.owner,   poolScheduler         );
-		assert.equal(Number(deal.pool.price),  25                    );
-		assert.equal(Number(deal.trust),       1000                  );
-		assert.equal(Number(deal.tag),         0x0                   );
-		assert.equal(       deal.requester,    user                  );
-		assert.equal(       deal.beneficiary,  user                  );
-		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
-		assert.equal(       deal.params,       "<parameters>"        );
+		assert.equal(       deal.app.pointer,        AppInstance.address       );
+		assert.equal(       deal.app.owner,          appProvider               );
+		assert.equal(Number(deal.app.price),         3                         );
+		assert.equal(       deal.dataset.pointer,    constants.NULL.ADDRESS    );
+		assert.equal(       deal.dataset.owner,      constants.NULL.ADDRESS    );
+		assert.equal(Number(deal.dataset.price),     0                         );
+		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
+		assert.equal(       deal.workerpool.owner,   scheduler                 );
+		assert.equal(Number(deal.workerpool.price),  25                        );
+		assert.equal(Number(deal.trust),             1000                      );
+		assert.equal(Number(deal.tag),               0x0                       );
+		assert.equal(       deal.requester,          user                      );
+		assert.equal(       deal.beneficiary,        user                      );
+		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
+		assert.equal(       deal.params,             "<parameters>"            );
 
 		config = await IexecClerkInstance.viewConfig(deals[0]);
 		assert.equal  (Number(config.category),             4);
@@ -315,7 +315,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal  (Number(config.schedulerRewardRatio), 5);
 	});
 
-	it("[Match - dapp-data-pool-user BOT]", async () => {
+	it("[Match - app-dataset-workerpool-user BOT]", async () => {
 		await matchOrders(
 			{},
 			{},
@@ -327,21 +327,21 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.dapp.pointer, DappInstance.address  );
-		assert.equal(       deal.dapp.owner,   dappProvider          );
-		assert.equal(Number(deal.dapp.price),  3                     );
-		assert.equal(       deal.data.pointer, DataInstance.address  );
-		assert.equal(       deal.data.owner,   dataProvider          );
-		assert.equal(Number(deal.data.price),  1                     );
-		assert.equal(       deal.pool.pointer, PoolInstance.address  );
-		assert.equal(       deal.pool.owner,   poolScheduler         );
-		assert.equal(Number(deal.pool.price),  25                    );
-		assert.equal(Number(deal.trust),       1000                  );
-		assert.equal(Number(deal.tag),         0x0                   );
-		assert.equal(       deal.requester,    user                  );
-		assert.equal(       deal.beneficiary,  user                  );
-		assert.equal(       deal.callback,     constants.NULL.ADDRESS);
-		assert.equal(       deal.params,       "<parameters>"        );
+		assert.equal(       deal.app.pointer,        AppInstance.address       );
+		assert.equal(       deal.app.owner,          appProvider               );
+		assert.equal(Number(deal.app.price),         3                         );
+		assert.equal(       deal.dataset.pointer,    DatasetInstance.address   );
+		assert.equal(       deal.dataset.owner,      datasetProvider           );
+		assert.equal(Number(deal.dataset.price),     1                         );
+		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
+		assert.equal(       deal.workerpool.owner,   scheduler                 );
+		assert.equal(Number(deal.workerpool.price),  25                        );
+		assert.equal(Number(deal.trust),             1000                      );
+		assert.equal(Number(deal.tag),               0x0                       );
+		assert.equal(       deal.requester,          user                      );
+		assert.equal(       deal.beneficiary,        user                      );
+		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
+		assert.equal(       deal.params,             "<parameters>"            );
 
 		config = await IexecClerkInstance.viewConfig(deals[0]);
 		assert.equal  (Number(config.category),             4);
@@ -382,10 +382,10 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - dappprice]", async () => {
+	it("[Match - Error - appprice]", async () => {
 		try {
 			await matchOrders(
-				{ dappprice: 1000 },
+				{ appprice: 1000 },
 				{},
 				{},
 				{},
@@ -397,11 +397,11 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - dataprice]", async () => {
+	it("[Match - Error - datasetprice]", async () => {
 		try {
 			await matchOrders(
 				{},
-				{ dataprice: 1000 },
+				{ datasetprice: 1000 },
 				{},
 				{},
 			);
@@ -412,12 +412,12 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - poolprice]", async () => {
+	it("[Match - Error - workerpoolprice]", async () => {
 		try {
 			await matchOrders(
 				{},
 				{},
-				{ poolprice: 1000 },
+				{ workerpoolprice: 1000 },
 				{},
 			);
 			assert.fail("transaction should have reverted");
@@ -427,7 +427,7 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - dapptag]", async () => {
+	it("[Match - Error - apptag]", async () => {
 		try {
 			txMined = await matchOrders(
 				{ tag: 0x1 },
@@ -442,7 +442,7 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - datatag]", async () => {
+	it("[Match - Error - datasettag]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
@@ -457,7 +457,7 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Ok - pooltag]", async () => {
+	it("[Match - Ok - workerpooltag]", async () => {
 		// try {
 			txMined = await matchOrders(
 				{},
@@ -487,13 +487,13 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - requested dapp]", async () => {
+	it("[Match - Error - requested app]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
 				{},
-				{ dapp: user },
+				{ app: user },
 			);
 			assert.fail("transaction should have reverted");
 		} catch (error) {
@@ -502,13 +502,13 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - requested data]", async () => {
+	it("[Match - Error - requested dataset]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
 				{},
-				{ data: user},
+				{ dataset: user},
 			);
 			assert.fail("transaction should have reverted");
 		} catch (error) {
@@ -517,13 +517,13 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - poolrequest]", async () => {
+	it("[Match - Error - workerpoolrequest]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
 				{},
-				{ pool: user },
+				{ workerpool: user },
 			);
 			assert.fail("transaction should have reverted");
 		} catch (error) {
@@ -532,10 +532,10 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[Match - Error - dapp-datarestrict]", async () => {
+	it("[Match - Error - app-datasetrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
-				{ datarestrict: user },
+				{ datasetrestrict: user },
 				{},
 				{},
 				{},
@@ -546,19 +546,19 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - dapp-datarestrict]", async () => {
+	it("[Match - Ok - app-datasetrestrict]", async () => {
 		txMined = await matchOrders(
-			{ datarestrict: DataInstance.address },
+			{ datasetrestrict: DatasetInstance.address },
 			{},
 			{},
 			{},
 		);
 	});
 
-	it("[Match - Error - dapp-poolrestrict]", async () => {
+	it("[Match - Error - app-workerpoolrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
-				{ poolrestrict: user },
+				{ workerpoolrestrict: user },
 				{},
 				{},
 				{},
@@ -569,16 +569,16 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - dapp-poolrestrict]", async () => {
+	it("[Match - Ok - app-workerpoolrestrict]", async () => {
 		txMined = await matchOrders(
-			{ poolrestrict: PoolInstance.address },
+			{ workerpoolrestrict: WorkerpoolInstance.address },
 			{},
 			{},
 			{},
 		);
 	});
 
-	it("[Match - Error - dapp-userrestrict]", async () => {
+	it("[Match - Error - app-userrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{ userrestrict: iexecAdmin },
@@ -592,7 +592,7 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - dapp-userrestrict]", async () => {
+	it("[Match - Ok - app-userrestrict]", async () => {
 		txMined = await matchOrders(
 			{ userrestrict: user },
 			{},
@@ -601,11 +601,11 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
-	it("[Match - Error - data-dapprestrict]", async () => {
+	it("[Match - Error - dataset-apprestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
-				{ dapprestrict: user },
+				{ apprestrict: user },
 				{},
 				{},
 			);
@@ -615,20 +615,20 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - data-dapprestrict]", async () => {
+	it("[Match - Ok - dataset-apprestrict]", async () => {
 		txMined = await matchOrders(
 			{},
-			{ dapprestrict: DappInstance.address },
+			{ apprestrict: AppInstance.address },
 			{},
 			{},
 		);
 	});
 
-	it("[Match - Error - dapp-poolrestrict]", async () => {
+	it("[Match - Error - app-workerpoolrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
-				{ poolrestrict: user },
+				{ workerpoolrestrict: user },
 				{},
 				{},
 			);
@@ -638,16 +638,16 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - dapp-poolrestrict]", async () => {
+	it("[Match - Ok - app-workerpoolrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
-			{ poolrestrict: PoolInstance.address },
+			{ workerpoolrestrict: WorkerpoolInstance.address },
 			{},
 			{},
 		);
 	});
 
-	it("[Match - Error - dapp-userrestrict]", async () => {
+	it("[Match - Error - app-userrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
@@ -661,7 +661,7 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - dapp-userrestrict]", async () => {
+	it("[Match - Ok - app-userrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
 			{ userrestrict: user },
@@ -670,12 +670,12 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
-	it("[Match - Error - pool-dapprestrict]", async () => {
+	it("[Match - Error - workerpool-apprestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
-				{ dapprestrict: user },
+				{ apprestrict: user },
 				{},
 			);
 			assert.fail("transaction should have reverted");
@@ -684,21 +684,21 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - pool-dapprestrict]", async () => {
+	it("[Match - Ok - workerpool-apprestrict]", async () => {
 		txMined = await matchOrders(
 			{},
 			{},
-			{ dapprestrict: DappInstance.address },
+			{ apprestrict: AppInstance.address },
 			{},
 		);
 	});
 
-	it("[Match - Error - pool-datarestrict]", async () => {
+	it("[Match - Error - workerpool-datasetrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
-				{ datarestrict: user },
+				{ datasetrestrict: user },
 				{},
 			);
 			assert.fail("transaction should have reverted");
@@ -707,16 +707,16 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - pool-datarestrict]", async () => {
+	it("[Match - Ok - workerpool-datasetrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
 			{},
-			{ datarestrict: DataInstance.address },
+			{ datasetrestrict: DatasetInstance.address },
 			{},
 		);
 	});
 
-	it("[Match - Error - pool-userrestrict]", async () => {
+	it("[Match - Error - workerpool-userrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
@@ -730,7 +730,7 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - pool-userrestrict]", async () => {
+	it("[Match - Ok - workerpool-userrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
 			{},

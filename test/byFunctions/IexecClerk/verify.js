@@ -1,14 +1,14 @@
-var RLC          = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var App                = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
+var Workerpool         = artifacts.require("./Workerpool.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 var IexecODBLibOrders = artifacts.require("./tools/IexecODBLibOrders.sol");
 
@@ -25,25 +25,25 @@ function extractEvents(txMined, address, name)
 contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
+	let iexecAdmin      = accounts[0];
+	let appProvider     = accounts[1];
+	let datasetProvider = accounts[2];
+	let scheduler       = accounts[3];
+	let worker1         = accounts[4];
+	let worker2         = accounts[5];
+	let worker3         = accounts[6];
+	let worker4         = accounts[7];
+	let user            = accounts[8];
+	let sgxEnclave      = accounts[9];
 
-	var RLCInstance          = null;
-	var IexecHubInstance     = null;
-	var IexecClerkInstance   = null;
-	var DappRegistryInstance = null;
-	var DataRegistryInstance = null;
-	var PoolRegistryInstance = null;
-	var RelayInstance        = null;
-	var BrokerInstance       = null;
+	var RLCInstance                = null;
+	var IexecHubInstance           = null;
+	var IexecClerkInstance         = null;
+	var AppRegistryInstance        = null;
+	var DatasetRegistryInstance    = null;
+	var WorkerpoolRegistryInstance = null;
+	var RelayInstance              = null;
+	var BrokerInstance             = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -54,16 +54,16 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance          = await RLC.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecClerkInstance   = await IexecClerk.deployed();
-		DappRegistryInstance = await DappRegistry.deployed();
-		DataRegistryInstance = await DataRegistry.deployed();
-		PoolRegistryInstance = await PoolRegistry.deployed();
-		RelayInstance        = await Relay.deployed();
-		BrokerInstance       = await Broker.deployed();
+		RLCInstance                = await RLC.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecClerkInstance         = await IexecClerk.deployed();
+		AppRegistryInstance        = await AppRegistry.deployed();
+		DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		RelayInstance              = await Relay.deployed();
+		BrokerInstance             = await Broker.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",
@@ -97,119 +97,119 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
-	it("[Genesis] Dapp Creation", async () => {
-		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
+	it("[Genesis] App Creation", async () => {
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
-		DappInstance = await Dapp.at(events[0].args.dapp);
+		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+		AppInstance        = await App.at(events[0].args.app);
 	});
-	it("[Genesis] Data Creation", async () => {
-		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
+	it("[Genesis] Dataset Creation", async () => {
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-		DataInstance = await Data.at(events[0].args.data);
+		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+		DatasetInstance    = await Dataset.at(events[0].args.dataset);
 	});
-	it("[Genesis] Pool Creation", async () => {
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A test workerpool", 10, 10, 10, { from: poolScheduler });
+	it("[Genesis] Workerpool Creation", async () => {
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", 10, 10, 10, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance = await Pool.at(events[0].args.pool);
+		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 	});
 
 	/***************************************************************************
-	 *                             TEST: Dapp hash                             *
+	 *                             TEST: App hash                             *
 	 ***************************************************************************/
-	it("check dapp hash", async () => {
-		dapporder = {
-			dapp:         DappInstance.address,
-			dappprice:    3,
+	it("check app hash", async () => {
+		apporder = {
+			app:         AppInstance.address,
+			appprice:    3,
 			volume:       1000,
 			tag:          0x0,
-			datarestrict: DataInstance.address,
-			poolrestrict: PoolInstance.address,
+			datasetrestrict: DatasetInstance.address,
+			workerpoolrestrict: WorkerpoolInstance.address,
 			userrestrict: user,
 			salt:         web3.utils.randomHex(32),
 			sign:         constants.NULL.SIGNATURE,
 		};
-		dapporder_hash = odbtools.DappOrderStructHash(dapporder);
-		odbtools.signDappOrder(dapporder, wallets.addressToPrivate(dappProvider));
+		apporder_hash = odbtools.AppOrderStructHash(apporder);
+		odbtools.signAppOrder(apporder, wallets.addressToPrivate(appProvider));
 
-		assert.isTrue (await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash(dapporder), dapporder.sign, {}), "Error with the validation of the dapporder signature");
-		assert.isTrue (await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: constants.NULL.ADDRESS, dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: 0,                   volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: 0xFFFFFF,         tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: 0x1,           datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: constants.NULL.ADDRESS, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: constants.NULL.ADDRESS, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: constants.NULL.ADDRESS, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: web3.utils.randomHex(32) }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: dapporder.tag, datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), constants.NULL.SIGNATURE, {}), "Check dapporder hash");
+		assert.isTrue (await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash(apporder), apporder.sign, {}), "Error with the validation of the apporder signature");
+		assert.isTrue (await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: constants.NULL.ADDRESS, appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: 0,                 volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: 0xFFFFFF,        tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: 0x1,          datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: constants.NULL.ADDRESS,   workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: constants.NULL.ADDRESS,      userrestrict: apporder.userrestrict,  salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: constants.NULL.ADDRESS, salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: web3.utils.randomHex(32) }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, userrestrict: apporder.userrestrict,  salt: apporder.salt            }), constants.NULL.SIGNATURE, {}));
 	});
 
 	/***************************************************************************
-	 *                             TEST: Data hash                             *
+	 *                             TEST: Dataset hash                             *
 	 ***************************************************************************/
-	it("check data hash", async () => {
-		dataorder = {
-			data:         DataInstance.address,
-			dataprice:    3,
-			volume:       1000,
-			tag:          0x0,
-			dapprestrict: DappInstance.address,
-			poolrestrict: PoolInstance.address,
-			userrestrict: user,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+	it("check dataset hash", async () => {
+		datasetorder = {
+			dataset:            DatasetInstance.address,
+			datasetprice:       3,
+			volume:             1000,
+			tag:                0x0,
+			apprestrict:        AppInstance.address,
+			workerpoolrestrict: WorkerpoolInstance.address,
+			userrestrict:       user,
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE,
 		};
-		dataorder_hash = odbtools.DataOrderStructHash(dataorder);
-		odbtools.signDataOrder(dataorder, wallets.addressToPrivate(dataProvider));
+		datasetorder_hash = odbtools.DatasetOrderStructHash(datasetorder);
+		odbtools.signDatasetOrder(datasetorder, wallets.addressToPrivate(datasetProvider));
 
-		assert.isTrue (await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash(dataorder), dataorder.sign, {}), "Error with the validation of the dataorder signature");
-		assert.isTrue (await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: constants.NULL.ADDRESS, dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: 0,                   volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: 0xFFFFFF,         tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dappProvider, odbtools.DappOrderStructHash({ dapp: dapporder.dapp,         dappprice: dapporder.dappprice, volume: dapporder.volume, tag: 0x1,           datarestrict: dapporder.datarestrict, poolrestrict: dapporder.poolrestrict, userrestrict: dapporder.userrestrict, salt: dapporder.salt           }), dapporder.sign,           {}), "Check dapporder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: constants.NULL.ADDRESS, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: constants.NULL.ADDRESS, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: constants.NULL.ADDRESS, salt: dataorder.salt           }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: web3.utils.randomHex(32) }), dataorder.sign,           {}), "Check dataorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(dataProvider, odbtools.DataOrderStructHash({ data: dataorder.data,         dataprice: dataorder.dataprice, volume: dataorder.volume, tag: dataorder.tag, dapprestrict: dataorder.dapprestrict, poolrestrict: dataorder.poolrestrict, userrestrict: dataorder.userrestrict, salt: dataorder.salt           }), constants.NULL.SIGNATURE, {}), "Check dataorder hash");
+		assert.isTrue (await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash(datasetorder), datasetorder.sign, {}), "Error with the validation of the datasetorder signature");
+		assert.isTrue (await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: constants.NULL.ADDRESS, datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: 0,                         volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: 0xFFFFFF,            tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: 0x1,              apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: constants.NULL.ADDRESS,   workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: constants.NULL.ADDRESS,          userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: constants.NULL.ADDRESS,    salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: web3.utils.randomHex(32) }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, userrestrict: datasetorder.userrestrict, salt: datasetorder.salt        }), constants.NULL.SIGNATURE, {}));
 	});
 
 	/***************************************************************************
-	 *                             TEST: Pool hash                             *
+	 *                             TEST: Workerpool hash                             *
 	 ***************************************************************************/
-	it("check pool hash", async () => {
-		poolorder = {
-			pool:         PoolInstance.address,
-			poolprice:    25,
-			volume:       3,
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			dapprestrict: DappInstance.address,
-			datarestrict: DataInstance.address,
-			userrestrict: user,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+	it("check workerpool hash", async () => {
+		workerpoolorder = {
+			workerpool:      WorkerpoolInstance.address,
+			workerpoolprice: 25,
+			volume:          3,
+			tag:             0x0,
+			category:        4,
+			trust:           1000,
+			apprestrict:     AppInstance.address,
+			datasetrestrict: DatasetInstance.address,
+			userrestrict:    user,
+			salt:            web3.utils.randomHex(32),
+			sign:            constants.NULL.SIGNATURE,
 		};
-		poolorder_hash = odbtools.PoolOrderStructHash(poolorder);
-		odbtools.signPoolOrder(poolorder, wallets.addressToPrivate(poolScheduler));
+		workerpoolorder_hash = odbtools.WorkerpoolOrderStructHash(workerpoolorder);
+		odbtools.signWorkerpoolOrder(workerpoolorder, wallets.addressToPrivate(scheduler));
 
-		assert.isTrue (await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash(poolorder), poolorder.sign, {}), "Error with the validation of the poolorder signature");
-		assert.isTrue (await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: constants.NULL.ADDRESS, poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: 0,                   volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: 0xFFFFFF,         category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: 5,                  trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: 1,             dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: constants.NULL.ADDRESS, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: constants.NULL.ADDRESS, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: constants.NULL.ADDRESS, salt: poolorder.salt           }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: web3.utils.randomHex(32) }), poolorder.sign,           {}), "Check poolorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(poolScheduler, odbtools.PoolOrderStructHash({ pool: poolorder.pool,         poolprice: poolorder.poolprice, volume: poolorder.volume, category: poolorder.category, trust: poolorder.trust, tag: poolorder.tag, dapprestrict: poolorder.dapprestrict, datarestrict: poolorder.datarestrict, userrestrict: poolorder.userrestrict, salt: poolorder.salt           }), constants.NULL.SIGNATURE, {}), "Check poolorder hash");
+		assert.isTrue (await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash(workerpoolorder), workerpoolorder.sign, {}), "Error with the validation of the workerpoolorder signature");
+		assert.isTrue (await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: constants.NULL.ADDRESS,     workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: 0,                               volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: 0xFFFFFF,               category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: 5,                        trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: 1,                   apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: constants.NULL.ADDRESS,      datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: constants.NULL.ADDRESS,          userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: constants.NULL.ADDRESS,      salt: workerpoolorder.salt      }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: web3.utils.randomHex(32) }), workerpoolorder.sign,     {}));
+		assert.isFalse(await IexecClerkInstance.verify(scheduler, odbtools.WorkerpoolOrderStructHash({ workerpool: workerpoolorder.workerpool, workerpoolprice: workerpoolorder.workerpoolprice, volume: workerpoolorder.volume, category: workerpoolorder.category, trust: workerpoolorder.trust, tag: workerpoolorder.tag, apprestrict: workerpoolorder.apprestrict, datasetrestrict: workerpoolorder.datasetrestrict, userrestrict: workerpoolorder.userrestrict, salt: workerpoolorder.salt     }), constants.NULL.SIGNATURE, {}));
 	});
 
 	/***************************************************************************
@@ -217,44 +217,44 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("check user hash", async () => {
 		userorder = {
-			dapp:         DappInstance.address,
-			dappmaxprice: 3,
-			data:         DataInstance.address,
-			datamaxprice: 1,
-			pool:         PoolInstance.address,
-			poolmaxprice: 25,
-			volume:       1, // CHANGE FOR BOT
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			requester:    user,
-			beneficiary:  user,
-			callback:     constants.NULL.ADDRESS,
-			params:       "app params",
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE,
+			app:                AppInstance.address,
+			appmaxprice:        3,
+			dataset:            DatasetInstance.address,
+			datasetmaxprice:    1,
+			workerpool:         WorkerpoolInstance.address,
+			workerpoolmaxprice: 25,
+			volume:             1,
+			tag:                0x0,
+			category:           4,
+			trust:              1000,
+			requester:          user,
+			beneficiary:        user,
+			callback:           constants.NULL.ADDRESS,
+			params:             "app params",
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE,
 		};
 		userorder_hash = odbtools.UserOrderStructHash(userorder);
 		odbtools.signUserOrder(userorder, wallets.addressToPrivate(user));
 
 		assert.isTrue (await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash(userorder), userorder.sign, {}), "Error with the validation of the userorder signature");
-		assert.isTrue (await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: constants.NULL.ADDRESS, dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: 1000,                   data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: constants.NULL.ADDRESS, datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: 1000,                   pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: constants.NULL.ADDRESS, poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: 1000,                   volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: 0xFFFFFF,         category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: 3,                  trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: 0,               tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: 1,             requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: constants.NULL.ADDRESS, beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: constants.NULL.ADDRESS, callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: user,               params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: "wrong params",   salt: userorder.salt           }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: web3.utils.randomHex(32) }), userorder.sign,           {}), "Check userorder hash");
-		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ dapp: userorder.dapp,         dappmaxprice: userorder.dappmaxprice, data: userorder.data,         datamaxprice: userorder.datamaxprice, pool: userorder.pool,         poolmaxprice: userorder.poolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), constants.NULL.SIGNATURE, {}), "Check userorder hash");
+		assert.isTrue (await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: constants.NULL.ADDRESS, appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: 1000,                  dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: constants.NULL.ADDRESS, datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: 1000,                      workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: constants.NULL.ADDRESS, workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: 1000,                         volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: 0xFFFFFF,         category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: 3,                  trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: 0,               tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: 1,             requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: constants.NULL.ADDRESS, beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: constants.NULL.ADDRESS, callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: user,               params: userorder.params, salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: "wrong params",   salt: userorder.salt           }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: web3.utils.randomHex(32) }), userorder.sign,           {}));
+		assert.isFalse(await IexecClerkInstance.verify(user, odbtools.UserOrderStructHash({ app: userorder.app,          appmaxprice: userorder.appmaxprice, dataset: userorder.dataset,      datasetmaxprice: userorder.datasetmaxprice, workerpool: userorder.workerpool,   workerpoolmaxprice: userorder.workerpoolmaxprice, volume: userorder.volume, category: userorder.category, trust: userorder.trust, tag: userorder.tag, requester: userorder.requester,    beneficiary: userorder.beneficiary,  callback: userorder.callback, params: userorder.params, salt: userorder.salt           }), constants.NULL.SIGNATURE, {}));
 	});
 
 });

@@ -6,7 +6,7 @@ import './RegistryBase.sol';
 
 contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
-	event CreateWorkerpool(address indexed poolOwner, address indexed pool, string poolDescription);
+	event CreateWorkerpool(address indexed workerpoolOwner, address indexed workerpool, string workerpoolDescription);
 
 	/**
 	 * Constructor
@@ -19,7 +19,7 @@ contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by Ie
 	/**
 	 * Pool creation
 	 */
-	function createPWorkerpool(
+	function createWorkerpool(
 		address _workerpoolOwner,
 		string  _workerpoolDescription,
 		uint256 _subscriptionLockStakePolicy,

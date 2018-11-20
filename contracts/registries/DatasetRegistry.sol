@@ -22,9 +22,9 @@ contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by Iexec
 	}
 
 	/**
-	 * Data creation
+	 * Dataset creation
 	 */
-	function createData(
+	function createDataset(
 		address _datasetOwner,
 		string  _datasetName,
 		string  _datasetParams,

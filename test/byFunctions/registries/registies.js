@@ -1,14 +1,14 @@
-var RLC          = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var App                = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
+var Workerpool         = artifacts.require("./Workerpool.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
@@ -21,29 +21,29 @@ function extractEvents(txMined, address, name)
 contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
+	let iexecAdmin      = accounts[0];
+	let appProvider     = accounts[1];
+	let datasetProvider = accounts[2];
+	let scheduler       = accounts[3];
+	let worker1         = accounts[4];
+	let worker2         = accounts[5];
+	let worker3         = accounts[6];
+	let worker4         = accounts[7];
+	let user            = accounts[8];
+	let sgxEnclave      = accounts[9];
 
-	var RLCInstance          = null;
-	var IexecHubInstance     = null;
-	var IexecClerkInstance   = null;
-	var DappRegistryInstance = null;
-	var DataRegistryInstance = null;
-	var PoolRegistryInstance = null;
-	var RelayInstance        = null;
-	var BrokerInstance       = null;
+	var RLCInstance                = null;
+	var IexecHubInstance           = null;
+	var IexecClerkInstance         = null;
+	var AppRegistryInstance        = null;
+	var DatasetRegistryInstance    = null;
+	var WorkerpoolRegistryInstance = null;
+	var RelayInstance              = null;
+	var BrokerInstance             = null;
 
-	var DappInstances = {};
-	var DataInstances = {};
-	var PoolInstances = {};
+	var AppInstances        = {};
+	var DatasetInstances    = {};
+	var WorkerpoolInstances = {};
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -54,97 +54,97 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance          = await RLC.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecClerkInstance   = await IexecClerk.deployed();
-		DappRegistryInstance = await DappRegistry.deployed();
-		DataRegistryInstance = await DataRegistry.deployed();
-		PoolRegistryInstance = await PoolRegistry.deployed();
-		RelayInstance        = await Relay.deployed();
-		BrokerInstance       = await Broker.deployed();
+		RLCInstance                = await RLC.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecClerkInstance         = await IexecClerk.deployed();
+		AppRegistryInstance        = await AppRegistry.deployed();
+		DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		RelayInstance              = await Relay.deployed();
+		BrokerInstance             = await Broker.deployed();
 	});
 
 	/***************************************************************************
-	 *                  TEST: Dapp creation (by dappProvider)                  *
+	 *                  TEST: App creation (by appProvider)                  *
 	 ***************************************************************************/
-	it("Dapp Creation", async () => {
+	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DappRegistryInstance.createDapp(dappProvider, "Dapp #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
+			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
-			assert.equal(events[0].args.dappOwner,  dappProvider,                  "Erroneous Dapp owner" );
-			assert.equal(events[0].args.dappName,   "Dapp #"+i,                    "Erroneous Dapp name"  );
-			assert.equal(events[0].args.dappParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params");
-			assert.equal(events[0].args.dappHash,   constants.NULL.BYTES32,        "Erroneous Dapp hash"  );
+			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+			assert.equal(events[0].args.appOwner,  appProvider,                   "Erroneous App owner" );
+			assert.equal(events[0].args.appName,   "App #"+i,                     "Erroneous App name"  );
+			assert.equal(events[0].args.appParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params");
+			assert.equal(events[0].args.appHash,   constants.NULL.BYTES32,        "Erroneous App hash"  );
 
-			DappInstances[i] = await Dapp.at(events[0].args.dapp);
-			assert.equal (await DappInstances[i].m_owner(),                                  dappProvider,                  "Erroneous Dapp owner"                  );
-			assert.equal (await DappInstances[i].m_dappName(),                               "Dapp #"+i,                    "Erroneous Dapp name"                   );
-			assert.equal (await DappInstances[i].m_dappParams(),                             constants.DAPP_PARAMS_EXAMPLE, "Erroneous Dapp params"                 );
-			assert.equal (await DappRegistryInstance.viewCount(dappProvider),                i,                             "dappProvider must have 1 more dapp now");
-			assert.equal (await DappRegistryInstance.viewEntry(dappProvider, i),             DappInstances[i].address,      "check dappAddress"                     );
-			assert.isTrue(await DappRegistryInstance.isRegistered(DappInstances[i].address),                                "check dapp registration"               );
+			AppInstances[i] = await App.at(events[0].args.app);
+			assert.equal (await AppInstances[i].m_owner(),                                 appProvider,                   "Erroneous App owner"                 );
+			assert.equal (await AppInstances[i].m_appName(),                               "App #"+i,                     "Erroneous App name"                  );
+			assert.equal (await AppInstances[i].m_appParams(),                             constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params"                );
+			assert.equal (await AppRegistryInstance.viewCount(appProvider),                i,                             "appProvider must have 1 more app now");
+			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i),             AppInstances[i].address,       "check appAddress"                    );
+			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address),                                "check app registration"              );
 		}
 	});
 
 	/***************************************************************************
-	 *                  TEST: Data creation (by dataProvider)                  *
+	 *                  TEST: Dataset creation (by datasetProvider)                  *
 	 ***************************************************************************/
-	it("Data Creation", async () => {
+	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DataRegistryInstance.createData(dataProvider, "Data #"+i, "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
+			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-			assert.equal(events[0].args.dataOwner,  dataProvider,           "Erroneous Data owner" );
-			assert.equal(events[0].args.dataName,   "Data #"+i,             "Erroneous Data name"  );
-			assert.equal(events[0].args.dataParams, "3.1415926535",         "Erroneous Data params");
-			assert.equal(events[0].args.dataHash,   constants.NULL.BYTES32, "Erroneous Data hash"  );
+			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+			assert.equal(events[0].args.datasetOwner,  datasetProvider,        "Erroneous Dataset owner" );
+			assert.equal(events[0].args.datasetName,   "Dataset #"+i,          "Erroneous Dataset name"  );
+			assert.equal(events[0].args.datasetParams, "3.1415926535",         "Erroneous Dataset params");
+			assert.equal(events[0].args.datasetHash,   constants.NULL.BYTES32, "Erroneous Dataset hash"  );
 
-			DataInstances[i] = await Data.at(events[0].args.data);
-			assert.equal (await DataInstances[i].m_owner(),                                  dataProvider,             "Erroneous Data owner"                  );
-			assert.equal (await DataInstances[i].m_dataName(),                               "Data #"+i,               "Erroneous Data name"                   );
-			assert.equal (await DataInstances[i].m_dataParams(),                             "3.1415926535",           "Erroneous Data params"                 );
-			assert.equal (await DataRegistryInstance.viewCount(dataProvider),                i,                        "dataProvider must have 1 more data now");
-			assert.equal (await DataRegistryInstance.viewEntry(dataProvider, i),             DataInstances[i].address, "check dataAddress"                     );
-			assert.isTrue(await DataRegistryInstance.isRegistered(DataInstances[i].address),                           "check data registration"               );
+			DatasetInstances[i] = await Dataset.at(events[0].args.dataset);
+			assert.equal (await DatasetInstances[i].m_owner(),                                     datasetProvider,             "Erroneous Dataset owner"                     );
+			assert.equal (await DatasetInstances[i].m_datasetName(),                               "Dataset #"+i,               "Erroneous Dataset name"                      );
+			assert.equal (await DatasetInstances[i].m_datasetParams(),                             "3.1415926535",              "Erroneous Dataset params"                    );
+			assert.equal (await DatasetRegistryInstance.viewCount(datasetProvider),                i,                           "datasetProvider must have 1 more dataset now");
+			assert.equal (await DatasetRegistryInstance.viewEntry(datasetProvider, i),             DatasetInstances[i].address, "check datasetAddress"                        );
+			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address),                              "check dataset registration"                  );
 		}
 	});
 
 	/***************************************************************************
-	 *                 TEST: Pool creation (by poolScheduler)                  *
+	 *                 TEST: Workerpool creation (by scheduler)                  *
 	 ***************************************************************************/
-	it("Pool Creation", async () => {
+	it("Workerpool Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await PoolRegistryInstance.createPool(
-				poolScheduler,
-				"Pool #"+i,
+			txMined = await WorkerpoolRegistryInstance.createWorkerpool(
+				scheduler,
+				"Workerpool #"+i,
 				10, // lock
 				10, // minimum stake
 				10, // minimum score
-				{ from: poolScheduler }
+				{ from: scheduler }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-			assert.equal(events[0].args.poolOwner,       poolScheduler,   "Erroneous Pool owner"      );
-			assert.equal(events[0].args.poolDescription, "Pool #"+i,      "Erroneous Pool description");
+			events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+			assert.equal(events[0].args.workerpoolOwner,       scheduler,        "Erroneous Workerpool owner"      );
+			assert.equal(events[0].args.workerpoolDescription, "Workerpool #"+i, "Erroneous Workerpool description");
 
-			PoolInstances[i] = await Pool.at(events[0].args.pool);
-			assert.equal (await PoolInstances[i].m_owner(),                                  poolScheduler,            "Erroneous Pool owner"                   );
-			assert.equal (await PoolInstances[i].m_poolDescription(),                        "Pool #"+i,               "Erroneous Pool description"             );
-			assert.equal (await PoolInstances[i].m_workerStakeRatioPolicy(),                 30,                       "Erroneous Pool params"                  );
-			assert.equal (await PoolInstances[i].m_schedulerRewardRatioPolicy(),             1,                        "Erroneous Pool params"                  );
-			assert.equal (await PoolInstances[i].m_subscriptionLockStakePolicy(),            10,                       "Erroneous Pool params"                  );
-			assert.equal (await PoolInstances[i].m_subscriptionMinimumStakePolicy(),         10,                       "Erroneous Pool params"                  );
-			assert.equal (await PoolInstances[i].m_subscriptionMinimumScorePolicy(),         10,                       "Erroneous Pool params"                  );
-			assert.equal (await PoolRegistryInstance.viewCount(poolScheduler),               i,                        "poolScheduler must have 1 more pool now");
-			assert.equal (await PoolRegistryInstance.viewEntry(poolScheduler, i),            PoolInstances[i].address, "check poolAddress"                      );
-			assert.isTrue(await PoolRegistryInstance.isRegistered(PoolInstances[i].address),                           "check pool registration"                );
+			WorkerpoolInstances[i] = await Workerpool.at(events[0].args.workerpool);
+			assert.equal (await WorkerpoolInstances[i].m_owner(),                                        scheduler,                      "Erroneous Workerpool owner"                   );
+			assert.equal (await WorkerpoolInstances[i].m_workerpoolDescription(),                        "Workerpool #"+i,               "Erroneous Workerpool description"             );
+			assert.equal (await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),                       30,                             "Erroneous Workerpool params"                  );
+			assert.equal (await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(),                   1,                              "Erroneous Workerpool params"                  );
+			assert.equal (await WorkerpoolInstances[i].m_subscriptionLockStakePolicy(),                  10,                             "Erroneous Workerpool params"                  );
+			assert.equal (await WorkerpoolInstances[i].m_subscriptionMinimumStakePolicy(),               10,                             "Erroneous Workerpool params"                  );
+			assert.equal (await WorkerpoolInstances[i].m_subscriptionMinimumScorePolicy(),               10,                             "Erroneous Workerpool params"                  );
+			assert.equal (await WorkerpoolRegistryInstance.viewCount(scheduler),                         i,                              "scheduler must have 1 more workerpool now");
+			assert.equal (await WorkerpoolRegistryInstance.viewEntry(scheduler, i),                      WorkerpoolInstances[i].address, "check workerpoolAddress"                      );
+			assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address),                                 "check workerpool registration"                );
 		}
 	});
 
@@ -152,9 +152,9 @@ contract('IexecHub', async (accounts) => {
 	 *                         TEST: internal methods                          *
 	 ***************************************************************************/
 	it("Check internals", async () => {
-		assert.equal(DataRegistryInstance.contract.insert, undefined, "expected insert internal");
-		assert.equal(DappRegistryInstance.contract.insert, undefined, "expected insert internal");
-		assert.equal(PoolRegistryInstance.contract.insert, undefined, "expected insert internal");
+		assert.equal(DatasetRegistryInstance.contract.insert,    undefined, "expected insert internal");
+		assert.equal(AppRegistryInstance.contract.insert,        undefined, "expected insert internal");
+		assert.equal(WorkerpoolRegistryInstance.contract.insert, undefined, "expected insert internal");
 	});
 
 });

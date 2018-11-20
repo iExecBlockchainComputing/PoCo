@@ -41,18 +41,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event OrdersMatched         (bytes32 dealid,
-	                             bytes32 appHash,
-	                             bytes32 datasetHash,
-	                             bytes32 workerpoolHash,
-	                             bytes32 userHash,
-	                             uint256 volume);
+	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 userHash, uint256 volume);
 	event ClosedAppOrder       (bytes32 appHash);
 	event ClosedDatasetOrder   (bytes32 datasetHash);
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
 	event ClosedUserOrder      (bytes32 userHash);
-
-	event SchedulerNotice(address indexed pool, bytes32 dealid);
+	event SchedulerNotice      (address indexed workerpool, bytes32 dealid);
 
 	/***************************************************************************
 	 *                               Constructor                               *
@@ -375,7 +369,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelWorkeroolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder)
+	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder)
 	public returns (bool)
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash();

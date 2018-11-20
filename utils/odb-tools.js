@@ -3,11 +3,11 @@ const ethUtil = require("ethereumjs-util");
 module.exports = {
 
 	EIP712DOMAIN_SEPARATOR: null,
-	EIP712DOMAIN_TYPEHASH:  web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-	DAPPORDER_TYPEHASH:     web3.utils.keccak256("DappOrder(address dapp,uint256 dappprice,uint256 volume,uint256 tag,address datarestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
-	DATAORDER_TYPEHASH:     web3.utils.keccak256("DataOrder(address data,uint256 dataprice,uint256 volume,uint256 tag,address dapprestrict,address poolrestrict,address userrestrict,bytes32 salt)"),
-	POOLORDER_TYPEHASH:     web3.utils.keccak256("PoolOrder(address pool,uint256 poolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address dapprestrict,address datarestrict,address userrestrict,bytes32 salt)"),
-	USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address dapp,uint256 dappmaxprice,address data,uint256 datamaxprice,address pool,uint256 poolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
+	   EIP712DOMAIN_TYPEHASH:  web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+	       APPORDER_TYPEHASH:     web3.utils.keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)"),
+	   DATASETORDER_TYPEHASH:     web3.utils.keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)"),
+	WORKERPOOLORDER_TYPEHASH:     web3.utils.keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address userrestrict,bytes32 salt)"),
+	      USERORDER_TYPEHASH:     web3.utils.keccak256("UserOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
 
 	setup: function(domain)
 	{
@@ -32,7 +32,7 @@ module.exports = {
 			domain.verifyingContract,
 		]));
 	},
-	DappOrderStructHash: function(dapporder)
+	AppOrderStructHash: function(apporder)
 	{
 		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 			"bytes32",
@@ -45,18 +45,18 @@ module.exports = {
 			"address",
 			"bytes32",
 		],[
-			this.DAPPORDER_TYPEHASH,
-			dapporder.dapp,
-			dapporder.dappprice,
-			dapporder.volume,
-			dapporder.tag,
-			dapporder.datarestrict,
-			dapporder.poolrestrict,
-			dapporder.userrestrict,
-			dapporder.salt,
+			this.APPORDER_TYPEHASH,
+			apporder.app,
+			apporder.appprice,
+			apporder.volume,
+			apporder.tag,
+			apporder.datasetrestrict,
+			apporder.workerpoolrestrict,
+			apporder.userrestrict,
+			apporder.salt,
 		]));
 	},
-	DataOrderStructHash: function(dataorder)
+	DatasetOrderStructHash: function(datasetorder)
 	{
 		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 			"bytes32",
@@ -69,18 +69,18 @@ module.exports = {
 			"address",
 			"bytes32",
 		],[
-			this.DATAORDER_TYPEHASH,
-			dataorder.data,
-			dataorder.dataprice,
-			dataorder.volume,
-			dataorder.tag,
-			dataorder.dapprestrict,
-			dataorder.poolrestrict,
-			dataorder.userrestrict,
-			dataorder.salt,
+			this.DATASETORDER_TYPEHASH,
+			datasetorder.dataset,
+			datasetorder.datasetprice,
+			datasetorder.volume,
+			datasetorder.tag,
+			datasetorder.apprestrict,
+			datasetorder.workerpoolrestrict,
+			datasetorder.userrestrict,
+			datasetorder.salt,
 		]));
 	},
-	PoolOrderStructHash: function(poolorder)
+	WorkerpoolOrderStructHash: function(workerpoolorder)
 	{
 		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
 			"bytes32",
@@ -95,17 +95,17 @@ module.exports = {
 			"address",
 			"bytes32",
 		],[
-			this.POOLORDER_TYPEHASH,
-			poolorder.pool,
-			poolorder.poolprice,
-			poolorder.volume,
-			poolorder.tag,
-			poolorder.category,
-			poolorder.trust,
-			poolorder.dapprestrict,
-			poolorder.datarestrict,
-			poolorder.userrestrict,
-			poolorder.salt,
+			this.WORKERPOOLORDER_TYPEHASH,
+			workerpoolorder.workerpool,
+			workerpoolorder.workerpoolprice,
+			workerpoolorder.volume,
+			workerpoolorder.tag,
+			workerpoolorder.category,
+			workerpoolorder.trust,
+			workerpoolorder.apprestrict,
+			workerpoolorder.datasetrestrict,
+			workerpoolorder.userrestrict,
+			workerpoolorder.salt,
 		]));
 	},
 	UserOrderStructHash: function(userorder)
@@ -129,12 +129,12 @@ module.exports = {
 			"bytes32",
 		],[
 			this.USERORDER_TYPEHASH,
-			userorder.dapp,
-			userorder.dappmaxprice,
-			userorder.data,
-			userorder.datamaxprice,
-			userorder.pool,
-			userorder.poolmaxprice,
+			userorder.app,
+			userorder.appmaxprice,
+			userorder.dataset,
+			userorder.datasetmaxprice,
+			userorder.workerpool,
+			userorder.workerpoolmaxprice,
 			userorder.requester,
 			userorder.volume,
 			userorder.tag,
@@ -191,12 +191,12 @@ module.exports = {
 	},
 
 	/* wrappers */
-	signDappOrder:     function(dapporder,     key    ) { return this.signStruct (dapporder,     this.DappOrderStructHash(dapporder),     key    ); },
-	signDataOrder:     function(dataorder,     key    ) { return this.signStruct (dataorder,     this.DataOrderStructHash(dataorder),     key    ); },
-	signPoolOrder:     function(poolorder,     key    ) { return this.signStruct (poolorder,     this.PoolOrderStructHash(poolorder),     key    ); },
-	signUserOrder:     function(userorder,     key    ) { return this.signStruct (userorder,     this.UserOrderStructHash(userorder),     key    ); },
-	signAuthorization: function(authorization, address) { return this.signMessage(authorization, this.authorizationHash  (authorization), address); },
-	signContribution:  function(contribution,  address) { return this.signMessage(contribution,  this.contributionHash   (contribution ), address); },
+	signAppOrder:        function(apporder,        key    ) { return this.signStruct (apporder,        this.AppOrderStructHash       (apporder),        key    ); },
+	signDatasetOrder:    function(datasetorder,    key    ) { return this.signStruct (datasetorder,    this.DatasetOrderStructHash   (datasetorder),    key    ); },
+	signWorkerpoolOrder: function(workerpoolorder, key    ) { return this.signStruct (workerpoolorder, this.WorkerpoolOrderStructHash(workerpoolorder), key    ); },
+	signUserOrder:       function(userorder,       key    ) { return this.signStruct (userorder,       this.UserOrderStructHash      (userorder),       key    ); },
+	signAuthorization:   function(authorization,   address) { return this.signMessage(authorization,   this.authorizationHash        (authorization),   address); },
+	signContribution:    function(contribution,    address) { return this.signMessage(contribution,    this.contributionHash         (contribution ),   address); },
 
 	hashByteResult: function(taskid, byteresult)
 	{

@@ -1,14 +1,14 @@
-var RLC          = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub     = artifacts.require("./IexecHub.sol");
-var IexecClerk   = artifacts.require("./IexecClerk.sol");
-var DappRegistry = artifacts.require("./DappRegistry.sol");
-var DataRegistry = artifacts.require("./DataRegistry.sol");
-var PoolRegistry = artifacts.require("./PoolRegistry.sol");
-var Dapp         = artifacts.require("./Dapp.sol");
-var Data         = artifacts.require("./Data.sol");
-var Pool         = artifacts.require("./Pool.sol");
-var Relay        = artifacts.require("./Relay.sol");
-var Broker       = artifacts.require("./Broker.sol");
+var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
+var IexecHub           = artifacts.require("./IexecHub.sol");
+var IexecClerk         = artifacts.require("./IexecClerk.sol");
+var AppRegistry        = artifacts.require("./AppRegistry.sol");
+var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
+var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
+var App                = artifacts.require("./App.sol");
+var Dataset            = artifacts.require("./Dataset.sol");
+var Workerpool         = artifacts.require("./Workerpool.sol");
+var Relay              = artifacts.require("./Relay.sol");
+var Broker             = artifacts.require("./Broker.sol");
 
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
@@ -21,25 +21,25 @@ function extractEvents(txMined, address, name)
 contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin    = accounts[0];
-	let dappProvider  = accounts[1];
-	let dataProvider  = accounts[2];
-	let poolScheduler = accounts[3];
-	let poolWorker1   = accounts[4];
-	let poolWorker2   = accounts[5];
-	let poolWorker3   = accounts[6];
-	let poolWorker4   = accounts[7];
-	let user          = accounts[8];
-	let sgxEnclave    = accounts[9];
+	let iexecAdmin      = accounts[0];
+	let appProvider     = accounts[1];
+	let datasetProvider = accounts[2];
+	let scheduler       = accounts[3];
+	let worker1         = accounts[4];
+	let worker2         = accounts[5];
+	let worker3         = accounts[6];
+	let worker4         = accounts[7];
+	let user            = accounts[8];
+	let sgxEnclave      = accounts[9];
 
-	var RLCInstance          = null;
-	var IexecHubInstance     = null;
-	var IexecClerkInstance   = null;
-	var DappRegistryInstance = null;
-	var DataRegistryInstance = null;
-	var PoolRegistryInstance = null;
-	var RelayInstance        = null;
-	var BrokerInstance       = null;
+	var RLCInstance                = null;
+	var IexecHubInstance           = null;
+	var IexecClerkInstance         = null;
+	var AppRegistryInstance        = null;
+	var DatasetRegistryInstance    = null;
+	var WorkerpoolRegistryInstance = null;
+	var RelayInstance              = null;
+	var BrokerInstance             = null;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -50,170 +50,170 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance          = await RLC.deployed();
-		IexecHubInstance     = await IexecHub.deployed();
-		IexecClerkInstance   = await IexecClerk.deployed();
-		DappRegistryInstance = await DappRegistry.deployed();
-		DataRegistryInstance = await DataRegistry.deployed();
-		PoolRegistryInstance = await PoolRegistry.deployed();
-		RelayInstance        = await Relay.deployed();
-		BrokerInstance       = await Broker.deployed();
+		RLCInstance                = await RLC.deployed();
+		IexecHubInstance           = await IexecHub.deployed();
+		IexecClerkInstance         = await IexecClerk.deployed();
+		AppRegistryInstance        = await AppRegistry.deployed();
+		DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		RelayInstance              = await Relay.deployed();
+		BrokerInstance             = await Broker.deployed();
 	});
 
 	/***************************************************************************
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
-	it("[Genesis] Dapp Creation", async () => {
-		txMined = await DappRegistryInstance.createDapp(dappProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: dappProvider });
+	it("[Genesis] App Creation", async () => {
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DappRegistryInstance.address, "CreateDapp");
-		DappInstance = await Dapp.at(events[0].args.dapp);
+		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+		AppInstance        = await App.at(events[0].args.app);
 	});
 
-	it("[Genesis] Data Creation", async () => {
-		txMined = await DataRegistryInstance.createData(dataProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: dataProvider });
+	it("[Genesis] Dataset Creation", async () => {
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DataRegistryInstance.address, "CreateData");
-		DataInstance = await Data.at(events[0].args.data);
+		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+		DatasetInstance    = await Dataset.at(events[0].args.dataset);
 	});
 
-	it("[Genesis] Pool Creation", async () => {
-		txMined = await PoolRegistryInstance.createPool(poolScheduler, "A test workerpool", 10, 10, 10, { from: poolScheduler });
+	it("[Genesis] Workerpool Creation", async () => {
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", 10, 10, 10, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, PoolRegistryInstance.address, "CreatePool");
-		PoolInstance = await Pool.at(events[0].args.pool);
+		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 	});
 
 	it("[Genesis] create orders", async () => {
-		dapporder = {
-			dapp:         DappInstance.address,
-			dappprice:    3,
-			volume:       1000,
-			tag:          0x0,
-			datarestrict: DataInstance.address,
-			poolrestrict: PoolInstance.address,
-			userrestrict: user,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE
+		apporder = {
+			app:                AppInstance.address,
+			appprice:           3,
+			volume:             1000,
+			tag:                0x0,
+			datasetrestrict:    DatasetInstance.address,
+			workerpoolrestrict: WorkerpoolInstance.address,
+			userrestrict:       user,
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE
 		};
-		dataorder = {
-			data:         DataInstance.address,
-			dataprice:    3,
-			volume:       1000,
-			tag:          0x0,
-			dapprestrict: DappInstance.address,
-			poolrestrict: PoolInstance.address,
-			userrestrict: user,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE
+		datasetorder = {
+			dataset:            DatasetInstance.address,
+			datasetprice:       3,
+			volume:             1000,
+			tag:                0x0,
+			apprestrict:        AppInstance.address,
+			workerpoolrestrict: WorkerpoolInstance.address,
+			userrestrict:       user,
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE
 		};
-		poolorder = {
-			pool:         PoolInstance.address,
-			poolprice:    25,
-			volume:       3,
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			dapprestrict: DappInstance.address,
-			datarestrict: DataInstance.address,
-			userrestrict: user,
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE
+		workerpoolorder = {
+			workerpool:      WorkerpoolInstance.address,
+			workerpoolprice: 25,
+			volume:          3,
+			tag:             0x0,
+			category:        4,
+			trust:           1000,
+			apprestrict:     AppInstance.address,
+			datasetrestrict: DatasetInstance.address,
+			userrestrict:    user,
+			salt:            web3.utils.randomHex(32),
+			sign:            constants.NULL.SIGNATURE
 		};
 		userorder = {
-			dapp:         DappInstance.address,
-			dappmaxprice: 3,
-			data:         DataInstance.address,
-			datamaxprice: 1,
-			pool:         PoolInstance.address,
-			poolmaxprice: 25,
-			volume:       1, // CHANGE FOR BOT
-			tag:          0x0,
-			category:     4,
-			trust:        1000,
-			requester:    user,
-			beneficiary:  user,
-			callback:     constants.NULL.ADDRESS,
-			params:       "app params",
-			salt:         web3.utils.randomHex(32),
-			sign:         constants.NULL.SIGNATURE
+			app:                AppInstance.address,
+			appmaxprice:        3,
+			dataset:            DatasetInstance.address,
+			datasetmaxprice:    1,
+			workerpool:         WorkerpoolInstance.address,
+			workerpoolmaxprice: 25,
+			volume:             1,
+			tag:                0x0,
+			category:           4,
+			trust:              1000,
+			requester:          user,
+			beneficiary:        user,
+			callback:           constants.NULL.ADDRESS,
+			params:             "app params",
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE
 		};
-		dapporder_hash = odbtools.DappOrderStructHash(dapporder);
-		dataorder_hash = odbtools.DataOrderStructHash(dataorder);
-		poolorder_hash = odbtools.PoolOrderStructHash(poolorder);
-		userorder_hash = odbtools.UserOrderStructHash(userorder);
+		apporder_hash        = odbtools.AppOrderStructHash       (apporder       );
+		datasetorder_hash    = odbtools.DatasetOrderStructHash   (datasetorder   );
+		workerpoolorder_hash = odbtools.WorkerpoolOrderStructHash(workerpoolorder);
+		userorder_hash       = odbtools.UserOrderStructHash      (userorder      );
 	});
 
 	/***************************************************************************
-	 *                             TEST: Dapp sign                             *
+	 *                             TEST: App sign                             *
 	 ***************************************************************************/
-	it("presign dapp order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dapporder_hash), "Error in dapp order presign");
+	it("presign app order #1", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 		try
 		{
-			await IexecClerkInstance.signDappOrder(dapporder, { from: iexecAdmin });
-			assert.fail("user should not be able to sign dapporder");
+			await IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin });
+			assert.fail("user should not be able to sign apporder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dapporder_hash), "Error in dapp order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
-	it("presign dapp order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dapporder_hash), "Error in dapp order presign");
-		await IexecClerkInstance.signDappOrder(dapporder, { from: dappProvider });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(dapporder_hash), "Error in dapp order presign");
+	it("presign app order #2", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		await IexecClerkInstance.signAppOrder(apporder, { from: appProvider });
+		assert.isTrue (await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
 	/***************************************************************************
-	 *                             TEST: Data sign                             *
+	 *                             TEST: Dataset sign                             *
 	 ***************************************************************************/
-	it("presign data order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dataorder_hash), "Error in data order presign");
+	it("presign dataset order #1", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 		try
 		{
-			await IexecClerkInstance.signDataOrder(dataorder, { from: iexecAdmin });
-			assert.fail("user should not be able to sign dataorder");
+			await IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin });
+			assert.fail("user should not be able to sign datasetorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dataorder_hash), "Error in data order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
-	it("presign data order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(dataorder_hash), "Error in data order presign");
-		await IexecClerkInstance.signDataOrder(dataorder, { from: dataProvider });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(dataorder_hash), "Error in data order presign");
+	it("presign dataset order #2", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		await IexecClerkInstance.signDatasetOrder(datasetorder, { from: datasetProvider });
+		assert.isTrue (await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
 	/***************************************************************************
-	 *                             TEST: Pool sign                             *
+	 *                             TEST: Workerpool sign                             *
 	 ***************************************************************************/
-	it("presign pool order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(poolorder_hash), "Error in pool order presign");
+	it("presign workerpool order #1", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 		try
 		{
-			await IexecClerkInstance.signPoolOrder(poolorder, { from: iexecAdmin });
-			assert.fail("user should not be able to sign poolorder");
+			await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin });
+			assert.fail("user should not be able to sign workerpoolorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-		assert.isFalse(await IexecClerkInstance.viewPresigned(poolorder_hash), "Error in pool order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
-	it("presign pool order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(poolorder_hash), "Error in dapp order presign");
-		await IexecClerkInstance.signPoolOrder(poolorder, { from: poolScheduler });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(poolorder_hash), "Error in dapp order presign");
+	it("presign workerpool order #2", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in app order presign");
+		await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler });
+		assert.isTrue (await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in app order presign");
 	});
 
 	/***************************************************************************
@@ -235,9 +235,9 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("presign user order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(userorder_hash), "Error in dapp order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(userorder_hash), "Error in app order presign");
 		await IexecClerkInstance.signUserOrder(userorder, { from: user });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(userorder_hash), "Error in dapp order presign");
+		assert.isTrue (await IexecClerkInstance.viewPresigned(userorder_hash), "Error in app order presign");
 	});
 
 
