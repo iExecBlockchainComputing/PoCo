@@ -76,7 +76,7 @@ contract('IexecHub', async (accounts) => {
 		RelayInstance        = "0x81Ce57EF7f6d129A38D6Cd13cBCf006732550059";
 		BrokerInstance       = "0x24EeD66326c190950F9d9581682d08F35b6C7ed3";
 		*/
-		IexecClerkInstance         = await IexecClerk.at("0x08Ea1699CEB1aC2a1b30A238eF58B3FFc871b95d");
+		IexecClerkInstance         = await IexecClerk.at("0x537C423A919110BcC8C05ecBDa39Ba8d30192061");
 		RLCInstance                = await RLC.at(await IexecClerkInstance.rlc());
 		IexecHubInstance           = await IexecHub.at(await IexecClerkInstance.iexechub());
 		AppRegistryInstance        = await AppRegistry.at(await IexecHubInstance.appregistry());
