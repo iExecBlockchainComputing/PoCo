@@ -93,6 +93,12 @@ contract('IexecHub', async (accounts) => {
 			verifyingContract: IexecClerkInstance.address,
 		});
 
+		console.log("EIP712DOMAIN_TYPEHASH:   ", odbtools.EIP712DOMAIN_TYPEHASH   );
+		console.log("APPORDER_TYPEHASH:       ", odbtools.APPORDER_TYPEHASH       );
+		console.log("DATASETORDER_TYPEHASH:   ", odbtools.DATASETORDER_TYPEHASH   );
+		console.log("WORKERPOOLORDER_TYPEHASH:", odbtools.WORKERPOOLORDER_TYPEHASH);
+		console.log("USERORDER_TYPEHASH:      ", odbtools.USERORDER_TYPEHASH      );
+
 		/**
 		 * Token distribution
 		 */

@@ -10,16 +10,16 @@ library IexecODBLibOrders
 		bytes32 s;
 	}
 
-	bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant       USERORDER_TYPEHASH = keccak256("UserOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
-	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-	// bytes32 public constant        APPORDER_TYPEHASH = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
-	// bytes32 public constant    DATASETORDER_TYPEHASH = 0x25152fa69720eec3b3360dd907576b7ec55e2633342bf993e09e8f5148640930;
-	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0x03b4801c105a2678088a8300a3e19699cc783e5a43439f28f3bc75b8391552ea;
-	// bytes32 public constant       USERORDER_TYPEHASH = 0x8160ee616648fd072bd2f7da47db26c4adbeb9f3f44e6d6cad0fc6f011f2fbbf;
+	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+	// bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant       USERORDER_TYPEHASH = keccak256("UserOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
+	bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+	bytes32 public constant        APPORDER_TYPEHASH = 0x7ec080e12d68143b6f3cbfcc951a0af368f44b0317bf88e47a6deb61360f467a;
+	bytes32 public constant    DATASETORDER_TYPEHASH = 0x5a29cc8df638f0050902f3d568d4f66123c5aa434ed1b7f7448e3f8698ae9887;
+	bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0xc35d0ed8a07a66003ec762099c137d24991e5d74651822289074551ed1d9f9ae;
+	bytes32 public constant       USERORDER_TYPEHASH = 0x40d1a95ed67004afea6079255a67f4c6bbcf39978c20f4949ff1351153c66b80;
 
 	struct EIP712Domain
 	{
