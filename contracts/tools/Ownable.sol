@@ -25,7 +25,7 @@ contract OwnableImmutable
 
 contract OwnableMutable is OwnableImmutable
 {
-	event OwnershipTransferred(address previousOwner, address indexed newOwner);
+	event OwnershipTransferred(address previousOwner, address newOwner);
 
 	/**
 	 * @dev The Ownable constructor sets the original `owner` of the contract to the sender
