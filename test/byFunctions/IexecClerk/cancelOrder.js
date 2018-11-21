@@ -92,7 +92,7 @@ contract('IexecHub', async (accounts) => {
 			tag:                0x0,
 			datasetrestrict:    DatasetInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
-			requestorrestrict:  user,
+			requesterrestrict:  user,
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
@@ -103,7 +103,7 @@ contract('IexecHub', async (accounts) => {
 			tag:                0x0,
 			apprestrict:        AppInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
-			requestorrestrict:  user,
+			requesterrestrict:  user,
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
@@ -116,7 +116,7 @@ contract('IexecHub', async (accounts) => {
 			trust:             1000,
 			apprestrict:       AppInstance.address,
 			datasetrestrict:   DatasetInstance.address,
-			requestorrestrict: user,
+			requesterrestrict: user,
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};

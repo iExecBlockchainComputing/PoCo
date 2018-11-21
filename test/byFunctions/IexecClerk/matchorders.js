@@ -182,7 +182,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0x0,
 				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				requestorrestrict:  constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 		};
@@ -193,7 +193,7 @@ contract('IexecHub', async (accounts) => {
 			tag:                0x0,
 			apprestrict:        constants.NULL.ADDRESS,
 			workerpoolrestrict: constants.NULL.ADDRESS,
-			requestorrestrict:  constants.NULL.ADDRESS,
+			requesterrestrict:  constants.NULL.ADDRESS,
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE,
 		};
@@ -206,7 +206,7 @@ contract('IexecHub', async (accounts) => {
 			trust:             1000,
 			apprestrict:       constants.NULL.ADDRESS,
 			datasetrestrict:   constants.NULL.ADDRESS,
-			requestorrestrict: constants.NULL.ADDRESS,
+			requesterrestrict: constants.NULL.ADDRESS,
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE,
 		};
@@ -578,10 +578,10 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
-	it("[Match - Error - app-requestorrestrict]", async () => {
+	it("[Match - Error - app-requesterrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
-				{ requestorrestrict: iexecAdmin },
+				{ requesterrestrict: iexecAdmin },
 				{},
 				{},
 				{},
@@ -592,9 +592,9 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - app-requestorrestrict]", async () => {
+	it("[Match - Ok - app-requesterrestrict]", async () => {
 		txMined = await matchOrders(
-			{ requestorrestrict: user },
+			{ requesterrestrict: user },
 			{},
 			{},
 			{},
@@ -647,11 +647,11 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
-	it("[Match - Error - app-requestorrestrict]", async () => {
+	it("[Match - Error - app-requesterrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
-				{ requestorrestrict: iexecAdmin },
+				{ requesterrestrict: iexecAdmin },
 				{},
 				{},
 			);
@@ -661,10 +661,10 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - app-requestorrestrict]", async () => {
+	it("[Match - Ok - app-requesterrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
-			{ requestorrestrict: user },
+			{ requesterrestrict: user },
 			{},
 			{},
 		);
@@ -716,12 +716,12 @@ contract('IexecHub', async (accounts) => {
 		);
 	});
 
-	it("[Match - Error - workerpool-requestorrestrict]", async () => {
+	it("[Match - Error - workerpool-requesterrestrict]", async () => {
 		try {
 			txMined = await matchOrders(
 				{},
 				{},
-				{ requestorrestrict: iexecAdmin },
+				{ requesterrestrict: iexecAdmin },
 				{},
 			);
 			assert.fail("transaction should have reverted");
@@ -730,11 +730,11 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-	it("[Match - Ok - workerpool-requestorrestrict]", async () => {
+	it("[Match - Ok - workerpool-requesterrestrict]", async () => {
 		txMined = await matchOrders(
 			{},
 			{},
-			{ requestorrestrict: user },
+			{ requesterrestrict: user },
 			{},
 		);
 	});

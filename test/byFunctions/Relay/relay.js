@@ -215,7 +215,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0,
 				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				requestorrestrict:  constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -244,7 +244,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0,
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				requestorrestrict:  constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -275,7 +275,7 @@ contract('IexecHub', async (accounts) => {
 				trust:             1000,
 				apprestrict:       constants.NULL.ADDRESS,
 				datasetrestrict:   constants.NULL.ADDRESS,
-				requestorrestrict: constants.NULL.ADDRESS,
+				requesterrestrict: constants.NULL.ADDRESS,
 				salt:              web3.utils.randomHex(32),
 				sign:              constants.NULL.SIGNATURE,
 			},
@@ -338,7 +338,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.apporder.volume,             apporder.volume            );
 		assert.equal(events[0].args.apporder.datasetrestrict,    apporder.datasetrestrict   );
 		assert.equal(events[0].args.apporder.workerpoolrestrict, apporder.workerpoolrestrict);
-		assert.equal(events[0].args.apporder.requestorrestrict,  apporder.requestorrestrict );
+		assert.equal(events[0].args.apporder.requesterrestrict,  apporder.requesterrestrict );
 		assert.equal(events[0].args.apporder.salt,               apporder.salt              );
 		assert.equal(events[0].args.apporder.sign.v,             apporder.sign.v            );
 		assert.equal(events[0].args.apporder.sign.r,             apporder.sign.r            );
@@ -355,7 +355,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.datasetorder.volume,             datasetorder.volume            );
 		assert.equal(events[0].args.datasetorder.apprestrict,        datasetorder.apprestrict       );
 		assert.equal(events[0].args.datasetorder.workerpoolrestrict, datasetorder.workerpoolrestrict);
-		assert.equal(events[0].args.datasetorder.requestorrestrict,  datasetorder.requestorrestrict );
+		assert.equal(events[0].args.datasetorder.requesterrestrict,  datasetorder.requesterrestrict );
 		assert.equal(events[0].args.datasetorder.salt,               datasetorder.salt              );
 		assert.equal(events[0].args.datasetorder.sign.v,             datasetorder.sign.v            );
 		assert.equal(events[0].args.datasetorder.sign.r,             datasetorder.sign.r            );
@@ -375,7 +375,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.workerpoolorder.tag,               workerpoolorder.tag              );
 		assert.equal(events[0].args.workerpoolorder.apprestrict,       workerpoolorder.apprestrict      );
 		assert.equal(events[0].args.workerpoolorder.datasetrestrict,   workerpoolorder.datasetrestrict  );
-		assert.equal(events[0].args.workerpoolorder.requestorrestrict, workerpoolorder.requestorrestrict);
+		assert.equal(events[0].args.workerpoolorder.requesterrestrict, workerpoolorder.requesterrestrict);
 		assert.equal(events[0].args.workerpoolorder.salt,              workerpoolorder.salt             );
 		assert.equal(events[0].args.workerpoolorder.sign.v,            workerpoolorder.sign.v           );
 		assert.equal(events[0].args.workerpoolorder.sign.r,            workerpoolorder.sign.r           );
