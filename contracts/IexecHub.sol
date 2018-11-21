@@ -28,9 +28,6 @@ contract IexecHub is CategoryManager, Oracle
 	RegistryBase public appregistry;
 	RegistryBase public datasetregistry;
 	RegistryBase public workerpoolregistry;
-	/* Appregistry        appregistry;        */
-	/* Datasetregistry    datasetregistry;    */
-	/* Workerpoolregistry workerpoolregistry; */
 
 	/***************************************************************************
 	 *                          Consensuses & Workers                          *
@@ -47,13 +44,13 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool               );
-	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash     );
-	event TaskConsensus (bytes32 indexed taskid,                         bytes32 consensus);
-	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest   );
-	event TaskReopen    (bytes32 indexed taskid                                           );
-	event TaskFinalize  (bytes32 indexed taskid,                         bytes   results  );
-	event TaskClaimed   (bytes32 indexed taskid                                           );
+	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool);
+	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash);
+	event TaskConsensus (bytes32 indexed taskid, bytes32 consensus);
+	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest);
+	event TaskReopen    (bytes32 indexed taskid);
+	event TaskFinalize  (bytes32 indexed taskid, bytes results);
+	event TaskClaimed   (bytes32 indexed taskid);
 
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
@@ -132,7 +129,8 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                         EIP 1154 PULL INTERFACE                         *
 	 ***************************************************************************/
-	function resultFor(bytes32 id) external view returns (bytes result)
+	function resultFor(bytes32 id)
+	external view returns (bytes result)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[id];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);

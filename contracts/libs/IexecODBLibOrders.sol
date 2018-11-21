@@ -11,9 +11,9 @@ library IexecODBLibOrders
 	}
 
 	bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)");
-	bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address userrestrict,bytes32 salt)");
-	bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address userrestrict,bytes32 salt)");
+	bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requestorrestrict,bytes32 salt)");
+	bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requestorrestrict,bytes32 salt)");
+	bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requestorrestrict,bytes32 salt)");
 	bytes32 public constant       USERORDER_TYPEHASH = keccak256("UserOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
 	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 	// bytes32 public constant        APPORDER_TYPEHASH = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
@@ -36,7 +36,7 @@ library IexecODBLibOrders
 		uint256 tag;
 		address datasetrestrict;
 		address workerpoolrestrict;
-		address userrestrict;
+		address requestorrestrict;
 		bytes32 salt;
 		signature sign;
 	}
@@ -48,7 +48,7 @@ library IexecODBLibOrders
 		uint256 tag;
 		address apprestrict;
 		address workerpoolrestrict;
-		address userrestrict;
+		address requestorrestrict;
 		bytes32 salt;
 		signature sign;
 	}
@@ -62,7 +62,7 @@ library IexecODBLibOrders
 		uint256 trust;
 		address apprestrict;
 		address datasetrestrict;
-		address userrestrict;
+		address requestorrestrict;
 		bytes32 salt;
 		signature sign;
 	}
@@ -135,7 +135,7 @@ library IexecODBLibOrders
 		// , _apporder.tag
 		// , _apporder.datasetrestrict
 		// , _apporder.workerpoolrestrict
-		// , _apporder.userrestrict
+		// , _apporder.requestorrestrict
 		// , _apporder.salt
 		// ));
 
@@ -166,7 +166,7 @@ library IexecODBLibOrders
 		// , _datasetorder.tag
 		// , _datasetorder.apprestrict
 		// , _datasetorder.workerpoolrestrict
-		// , _datasetorder.userrestrict
+		// , _datasetorder.requestorrestrict
 		// , _datasetorder.salt
 		// ));
 
@@ -199,7 +199,7 @@ library IexecODBLibOrders
 		// , _workerpoolorder.trust
 		// , _workerpoolorder.apprestrict
 		// , _workerpoolorder.datasetrestrict
-		// , _workerpoolorder.userrestrict
+		// , _workerpoolorder.requestorrestrict
 		// , _workerpoolorder.salt
 		// ));
 

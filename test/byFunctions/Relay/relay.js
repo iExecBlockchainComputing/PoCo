@@ -209,15 +209,15 @@ contract('IexecHub', async (accounts) => {
 	it("[Genesis] Generate app order", async () => {
 		apporder = odbtools.signAppOrder(
 			{
-				app:         AppInstance.address,
-				appprice:    3,
-				volume:       1000,
-				tag:          0,
-				datasetrestrict: constants.NULL.ADDRESS,
+				app:                AppInstance.address,
+				appprice:           3,
+				volume:             1000,
+				tag:                0,
+				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict: constants.NULL.ADDRESS,
-				salt:         web3.utils.randomHex(32),
-				sign:         constants.NULL.SIGNATURE,
+				requestorrestrict:  constants.NULL.ADDRESS,
+				salt:               web3.utils.randomHex(32),
+				sign:               constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(appProvider)
 		);
@@ -244,7 +244,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0,
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict:       constants.NULL.ADDRESS,
+				requestorrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -267,17 +267,17 @@ contract('IexecHub', async (accounts) => {
 	it("[Genesis] Generate workerpool order", async () => {
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
-				workerpool:      WorkerpoolInstance.address,
-				workerpoolprice: 25,
-				volume:          3,
-				tag:             0,
-				category:        4,
-				trust:           1000,
-				apprestrict:     constants.NULL.ADDRESS,
-				datasetrestrict: constants.NULL.ADDRESS,
-				userrestrict:    constants.NULL.ADDRESS,
-				salt:            web3.utils.randomHex(32),
-				sign:            constants.NULL.SIGNATURE,
+				workerpool:        WorkerpoolInstance.address,
+				workerpoolprice:   25,
+				volume:            3,
+				tag:               0,
+				category:          4,
+				trust:             1000,
+				apprestrict:       constants.NULL.ADDRESS,
+				datasetrestrict:   constants.NULL.ADDRESS,
+				requestorrestrict: constants.NULL.ADDRESS,
+				salt:              web3.utils.randomHex(32),
+				sign:              constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(scheduler)
 		);
@@ -338,7 +338,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.apporder.volume,             apporder.volume            );
 		assert.equal(events[0].args.apporder.datasetrestrict,    apporder.datasetrestrict   );
 		assert.equal(events[0].args.apporder.workerpoolrestrict, apporder.workerpoolrestrict);
-		assert.equal(events[0].args.apporder.userrestrict,       apporder.userrestrict      );
+		assert.equal(events[0].args.apporder.requestorrestrict,  apporder.requestorrestrict );
 		assert.equal(events[0].args.apporder.salt,               apporder.salt              );
 		assert.equal(events[0].args.apporder.sign.v,             apporder.sign.v            );
 		assert.equal(events[0].args.apporder.sign.r,             apporder.sign.r            );
@@ -355,7 +355,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.datasetorder.volume,             datasetorder.volume            );
 		assert.equal(events[0].args.datasetorder.apprestrict,        datasetorder.apprestrict       );
 		assert.equal(events[0].args.datasetorder.workerpoolrestrict, datasetorder.workerpoolrestrict);
-		assert.equal(events[0].args.datasetorder.userrestrict,       datasetorder.userrestrict      );
+		assert.equal(events[0].args.datasetorder.requestorrestrict,  datasetorder.requestorrestrict );
 		assert.equal(events[0].args.datasetorder.salt,               datasetorder.salt              );
 		assert.equal(events[0].args.datasetorder.sign.v,             datasetorder.sign.v            );
 		assert.equal(events[0].args.datasetorder.sign.r,             datasetorder.sign.r            );
@@ -367,19 +367,19 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, RelayInstance.address, "BroadcastWorkerpoolOrder");
-		assert.equal(events[0].args.workerpoolorder.workerpool,      workerpoolorder.workerpool     );
-		assert.equal(events[0].args.workerpoolorder.workerpoolprice, workerpoolorder.workerpoolprice);
-		assert.equal(events[0].args.workerpoolorder.volume,          workerpoolorder.volume         );
-		assert.equal(events[0].args.workerpoolorder.category,        workerpoolorder.category       );
-		assert.equal(events[0].args.workerpoolorder.trust,           workerpoolorder.trust          );
-		assert.equal(events[0].args.workerpoolorder.tag,             workerpoolorder.tag            );
-		assert.equal(events[0].args.workerpoolorder.apprestrict,     workerpoolorder.apprestrict    );
-		assert.equal(events[0].args.workerpoolorder.datasetrestrict, workerpoolorder.datasetrestrict);
-		assert.equal(events[0].args.workerpoolorder.userrestrict,    workerpoolorder.userrestrict   );
-		assert.equal(events[0].args.workerpoolorder.salt,            workerpoolorder.salt           );
-		assert.equal(events[0].args.workerpoolorder.sign.v,          workerpoolorder.sign.v         );
-		assert.equal(events[0].args.workerpoolorder.sign.r,          workerpoolorder.sign.r         );
-		assert.equal(events[0].args.workerpoolorder.sign.s,          workerpoolorder.sign.s         );
+		assert.equal(events[0].args.workerpoolorder.workerpool,        workerpoolorder.workerpool       );
+		assert.equal(events[0].args.workerpoolorder.workerpoolprice,   workerpoolorder.workerpoolprice  );
+		assert.equal(events[0].args.workerpoolorder.volume,            workerpoolorder.volume           );
+		assert.equal(events[0].args.workerpoolorder.category,          workerpoolorder.category         );
+		assert.equal(events[0].args.workerpoolorder.trust,             workerpoolorder.trust            );
+		assert.equal(events[0].args.workerpoolorder.tag,               workerpoolorder.tag              );
+		assert.equal(events[0].args.workerpoolorder.apprestrict,       workerpoolorder.apprestrict      );
+		assert.equal(events[0].args.workerpoolorder.datasetrestrict,   workerpoolorder.datasetrestrict  );
+		assert.equal(events[0].args.workerpoolorder.requestorrestrict, workerpoolorder.requestorrestrict);
+		assert.equal(events[0].args.workerpoolorder.salt,              workerpoolorder.salt             );
+		assert.equal(events[0].args.workerpoolorder.sign.v,            workerpoolorder.sign.v           );
+		assert.equal(events[0].args.workerpoolorder.sign.r,            workerpoolorder.sign.r           );
+		assert.equal(events[0].args.workerpoolorder.sign.s,            workerpoolorder.sign.s           );
 	});
 
 	it(">> broadcastUserOrder", async () => {

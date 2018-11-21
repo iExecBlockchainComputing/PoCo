@@ -212,16 +212,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// Check matching and restrictions
 		require(_userorder.app     == _apporder.app        );
 		require(_userorder.dataset == _datasetorder.dataset);
-		require(checkRestriction(_userorder.workerpool,            _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // userorder.workerpool is a restriction
-		require(checkRestriction(_apporder.datasetrestrict,        _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.workerpoolrestrict,     _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.userrestrict,           _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.apprestrict,        _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.userrestrict,       _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.apprestrict,     _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.datasetrestrict, _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.userrestrict,    _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_userorder.workerpool,              _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // userorder.workerpool is a restriction
+		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_apporder.requestorrestrict,        _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_datasetorder.requestorrestrict,    _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_workerpoolorder.requestorrestrict, _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
