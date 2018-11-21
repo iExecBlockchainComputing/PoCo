@@ -48,7 +48,7 @@ contract('IexecHub', async (accounts) => {
 	var WorkerpoolInstance = null;
 
 	var apporder         = null;
-	var datasetorder        = null;
+	var datasetorder     = null;
 	var workerpoolorder1 = null;
 	var workerpoolorder2 = null;
 	var userorder        = null;
@@ -202,7 +202,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0x0,
 				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict:       constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -216,7 +216,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0x0,
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict:       constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -224,17 +224,17 @@ contract('IexecHub', async (accounts) => {
 		);
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
-				workerpool:      WorkerpoolInstance.address,
-				workerpoolprice: 25,
-				volume:          1,
-				category:        4,
-				trust:           10,
-				tag:             0x0,
-				apprestrict:     constants.NULL.ADDRESS,
-				datasetrestrict: constants.NULL.ADDRESS,
-				userrestrict:    constants.NULL.ADDRESS,
-				salt:            web3.utils.randomHex(32),
-				sign:            constants.NULL.SIGNATURE,
+				workerpool:        WorkerpoolInstance.address,
+				workerpoolprice:   25,
+				volume:            1,
+				category:          4,
+				trust:             10,
+				tag:               0x0,
+				apprestrict:       constants.NULL.ADDRESS,
+				datasetrestrict:   constants.NULL.ADDRESS,
+				requesterrestrict: constants.NULL.ADDRESS,
+				salt:              web3.utils.randomHex(32),
+				sign:              constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(scheduler)
 		);

@@ -51,7 +51,7 @@ contract('IexecHub', async (accounts) => {
 	var datasetorder    = null;
 	var workerpoolorder = null;
 	var userorder       = null;
-	var taskid          = null;
+	var dealid          = null;
 	var taskid          = null;
 
 	var authorizations = {};
@@ -215,7 +215,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0x0,
 				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict:       constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -229,7 +229,7 @@ contract('IexecHub', async (accounts) => {
 				tag:                0x0,
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
-				userrestrict:       constants.NULL.ADDRESS,
+				requesterrestrict:  constants.NULL.ADDRESS,
 				salt:               web3.utils.randomHex(32),
 				sign:               constants.NULL.SIGNATURE,
 			},
@@ -237,17 +237,17 @@ contract('IexecHub', async (accounts) => {
 		);
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
-				workerpool:      WorkerpoolInstance.address,
-				workerpoolprice: 25,
-				volume:          3,
-				category:        4,
-				trust:           trusttarget,
-				tag:             0x0,
-				apprestrict:     constants.NULL.ADDRESS,
-				datasetrestrict: constants.NULL.ADDRESS,
-				userrestrict:    constants.NULL.ADDRESS,
-				salt:            web3.utils.randomHex(32),
-				sign:            constants.NULL.SIGNATURE,
+				workerpool:        WorkerpoolInstance.address,
+				workerpoolprice:   25,
+				volume:            3,
+				category:          4,
+				trust:             trusttarget,
+				tag:               0x0,
+				apprestrict:       constants.NULL.ADDRESS,
+				datasetrestrict:   constants.NULL.ADDRESS,
+				requesterrestrict: constants.NULL.ADDRESS,
+				salt:              web3.utils.randomHex(32),
+				sign:              constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(scheduler)
 		);
