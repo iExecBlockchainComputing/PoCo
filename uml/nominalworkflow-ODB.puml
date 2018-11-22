@@ -87,17 +87,12 @@ loop for all task in bag
 			Worker  <--> Dataset : getDataset
 			Worker -> Worker : execute the asked work → Results //(raw data or uri)//
 			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
-			Worker -> Worker : resultHash = hash(ResultDigest) //(vote)//
-			Worker -> Worker : resultSeal = hash(address | ResultDigest) //(proof of knowledge)//
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
 			Worker --> IexecHub : <b>contribute()
 			IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
-		end
-
-		IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
-		Scheduler --> IexecHub : <b>consensus()
-		IexecHub <--> IexecHub : <font color=green><b>emit TeaskConsensus()
-
-		group Worker reveal
+			IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskConsensus()
 			IexecHub o-> Worker : <font color=blue><b> watch TaskConsensus()
 			Worker -> Worker : value to reveal is resultDigest
 			Worker --> IexecHub : <b>reveal()
