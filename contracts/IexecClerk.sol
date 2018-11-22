@@ -443,7 +443,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function successWork(bytes32 _dealid)
 	public onlyIexecHub
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_dealid];
+		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
 		uint256 userstake = deal.app.price
 		                    .add(deal.dataset.price)
@@ -483,7 +483,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function failedWork(bytes32 _dealid)
 	public onlyIexecHub
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_dealid];
+		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
 		uint256 userstake = deal.app.price
 		                    .add(deal.dataset.price)
