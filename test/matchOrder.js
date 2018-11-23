@@ -53,7 +53,7 @@ contract('IexecHub', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var userorder       = null;
+	var requestorder    = null;
 	var dealid          = null;
 	var taskid          = null;
 
@@ -269,10 +269,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                   TEST: Userorder signature (by user)                   *
+	 *                 TEST: Requestorder signature (by user)                  *
 	 ***************************************************************************/
-	it("[Genesis] Generate user order", async () => {
-		userorder = odbtools.signUserOrder(
+	it("[Genesis] Generate request order", async () => {
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -302,8 +302,8 @@ contract('IexecHub', async (accounts) => {
 		// console.log(dataorder);
 		// console.log("=== poolorder ===");
 		// console.log(poolorder);
-		// console.log("=== userorder ===");
-		// console.log(userorder);
+		// console.log("=== requestorder ===");
+		// console.log(requestorder);
 	});
 
 	/***************************************************************************
@@ -358,12 +358,12 @@ contract('IexecHub', async (accounts) => {
 	 *                           TEST: Market making                           *
 	 ***************************************************************************/
 	it(">> matchOrders", async () => {
-		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		dealid = web3.utils.soliditySha3(
-			{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
-			{ t: 'uint256', v: 0                                       },
+			{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
+			{ t: 'uint256', v: 0                                             },
 		);
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
@@ -375,7 +375,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
 		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.userHash,       odbtools.UserOrderStructHash      (userorder      ));
+		assert.equal(events[0].args.userHash,       odbtools.RequestOrderStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 	});
 
