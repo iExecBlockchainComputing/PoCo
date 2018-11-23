@@ -190,7 +190,6 @@ contract('IexecHub', async (accounts) => {
 			"A test workerpool",
 			10, // lock
 			10, // minimum stake
-			10, // minimum score
 			{ from: scheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -206,7 +205,6 @@ contract('IexecHub', async (accounts) => {
 			35,  // worker stake ratio
 			5,   // scheduler reward ratio
 			100, // minimum stake
-			0,   // minimum score
 			{ from: scheduler }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");

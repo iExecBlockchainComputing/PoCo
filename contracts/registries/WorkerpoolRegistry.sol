@@ -23,16 +23,14 @@ contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by Ie
 		address _workerpoolOwner,
 		string  _workerpoolDescription,
 		uint256 _subscriptionLockStakePolicy,
-		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
+		uint256 _subscriptionMinimumStakePolicy)
 	public /* onlyOwner /*owner == IexecHub*/ returns (Workerpool)
 	{
 		Workerpool newWorkerpool = new Workerpool(
 			_workerpoolOwner,
 			_workerpoolDescription,
 			_subscriptionLockStakePolicy,
-			_subscriptionMinimumStakePolicy,
-			_subscriptionMinimumScorePolicy
+			_subscriptionMinimumStakePolicy
 		);
 		require(insert(newWorkerpool, _workerpoolOwner));
 		emit CreateWorkerpool(_workerpoolOwner, newWorkerpool, _workerpoolDescription);

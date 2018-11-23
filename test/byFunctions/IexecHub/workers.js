@@ -142,17 +142,17 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[configuration] Workerpool", async () => {
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A first workerpool", 10, 10, 0, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A first workerpool", 10, 10, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance1 = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A second workerpool", 100, 100, 0, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A second workerpool", 100, 100, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance2 = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A third workerpool", 0, 0, 10, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A third workerpool", 0, 0, { from: scheduler });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance3 = await Workerpool.at(events[0].args.workerpool);
@@ -164,8 +164,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance1.address, { from: worker1 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance1.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker1,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance1.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker1,                     "check worker"    );
 
 		assert.equal(await IexecHubInstance.viewAffectation(worker1), WorkerpoolInstance1.address,  "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker1); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990,  10 ], "check balance");
@@ -177,8 +177,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance2.address, { from: worker2 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address,  "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance2.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker2,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance2.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker2,                     "check worker"    );
 
 		assert.equal(await IexecHubInstance.viewAffectation(worker2), WorkerpoolInstance2.address,  "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker2); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
@@ -187,72 +187,59 @@ contract('IexecHub', async (accounts) => {
 	it("Subscription 3 - failure worker conditions", async () => {
 		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS, "affectation issue");
 
-		try {
-			await IexecHubInstance.subscribe(WorkerpoolInstance3.address, { from: worker3 });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		txMined = await  IexecHubInstance.subscribe(WorkerpoolInstance3.address, { from: worker3 });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address,  "WorkerSubscription");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance3.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker3,                     "check worker"    );
 
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(worker3), WorkerpoolInstance3.address, "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 	});
 
 	it("Subscription 4 - failure registration", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS, "affectation issue");
 
 		try {
-			await IexecHubInstance.subscribe(constants.NULL.ADDRESS, { from: worker3 });
+			await IexecHubInstance.subscribe(constants.NULL.ADDRESS, { from: worker4 });
 			assert.fail("transaction should have reverted");
 		} catch (error) {
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS, "affectation issue");
-		balance = await IexecClerkInstance.viewAccount(worker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
+		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS, "affectation issue");
+		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 	});
 
 	it("Subscription - Unsubscription", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS, "affectation issue");
+		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS, "affectation issue");
 
-		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance1.address, { from: worker3 });
+		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance1.address, { from: worker4 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance1.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker3,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance1.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker4,                     "check worker"    );
 
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), WorkerpoolInstance1.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccount(worker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance");
+		assert.equal(await IexecHubInstance.viewAffectation(worker4), WorkerpoolInstance1.address,  "affectation issue");
+		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance");
 
-		txMined = await IexecHubInstance.unsubscribe({ from: worker3 }),
+		txMined = await IexecHubInstance.unsubscribe({ from: worker4 }),
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerUnsubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance1.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker3,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance1.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker4,                     "check worker"    );
 
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), constants.NULL.ADDRESS,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccount(worker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
-
-		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance2.address, { from: worker3 });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance2.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker3,           "check worker");
-
-		assert.equal(await IexecHubInstance.viewAffectation(worker3), WorkerpoolInstance2.address,  "affectation issue");
-		balance = await IexecClerkInstance.viewAccount(worker3); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
+		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS,  "affectation issue");
+		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
 	});
 
 	it("Subscription - Eviction", async () => {
-		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS, "affectation issue");
-
 		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance2.address, { from: worker4 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance2.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker4,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance2.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker4,                     "check worker"    );
 
 		assert.equal(await IexecHubInstance.viewAffectation(worker4), WorkerpoolInstance2.address,  "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 900, 100 ], "check balance");
@@ -260,8 +247,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.evict(worker4, { from: scheduler }),
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerEviction");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance2.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker4,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance2.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker4,                     "check worker"    );
 
 		assert.equal(await IexecHubInstance.viewAffectation(worker4), constants.NULL.ADDRESS,  "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 1000, 0 ], "check balance");
@@ -269,8 +256,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.subscribe(WorkerpoolInstance1.address, { from: worker4 });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "WorkerSubscription");
-		assert.equal(events[0].args.workerpool,   WorkerpoolInstance1.address, "check workerpool"  );
-		assert.equal(events[0].args.worker, worker4,           "check worker");
+		assert.equal(events[0].args.workerpool, WorkerpoolInstance1.address, "check workerpool");
+		assert.equal(events[0].args.worker,     worker4,                     "check worker"    );
 
 		assert.equal(await IexecHubInstance.viewAffectation(worker4), WorkerpoolInstance1.address,  "affectation issue");
 		balance = await IexecClerkInstance.viewAccount(worker4); assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 990, 10 ], "check balance");
