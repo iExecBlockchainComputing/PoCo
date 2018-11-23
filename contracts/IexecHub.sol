@@ -17,7 +17,6 @@ contract IexecHub is CategoryManager, Oracle
 	/***************************************************************************
 	 *                                Constants                                *
 	 ***************************************************************************/
-	uint256 public constant SCORE_UNITARY_SLASH      = 50;
 	uint256 public constant CONSENSUS_DURATION_RATIO = 10;
 	uint256 public constant REVEAL_DURATION_RATIO    = 2;
 
@@ -468,7 +467,7 @@ contract IexecHub is CategoryManager, Oracle
 				iexecclerk.seizeContribution(task.dealid, worker);
 				// Always punish bad contributors
 				{
-					m_workerScores[worker] = m_workerScores[worker].sub(m_workerScores[worker].min(SCORE_UNITARY_SLASH));
+					m_workerScores[worker] = m_workerScores[worker].add(1).div(6); // see documentation !
 					emit FaultyContribution(worker, _taskid);
 				}
 			}
