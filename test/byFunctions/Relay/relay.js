@@ -50,7 +50,7 @@ contract('IexecHub', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var userorder       = null;
+	var requestorder       = null;
 	var dealid          = null;
 	var taskid          = null;
 
@@ -293,10 +293,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: User order signature (by user)                   *
+	 *                 TEST: Request order signature (by user)                 *
 	 ***************************************************************************/
-	it("[Genesis] Generate user order", async () => {
-		userorder = odbtools.signUserOrder(
+	it("[Genesis] Generate request order", async () => {
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -320,11 +320,11 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verify(
 				user,
-				odbtools.UserOrderStructHash(userorder),
-				userorder.sign,
+				odbtools.RequestOrderStructHash(requestorder),
+				requestorder.sign,
 				{}
 			),
-			"Error with the validation of the userorder signature"
+			"Error with the validation of the requestorder signature"
 		);
 	});
 
@@ -382,29 +382,29 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.workerpoolorder.sign.s,            workerpoolorder.sign.s           );
 	});
 
-	it(">> broadcastUserOrder", async () => {
-		txMined = await RelayInstance.broadcastUserOrder(userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+	it(">> broadcastRequestOrder", async () => {
+		txMined = await RelayInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, RelayInstance.address, "BroadcastUserOrder");
-		assert.equal(events[0].args.userorder.app,                userorder.app               );
-		assert.equal(events[0].args.userorder.appmaxprice,        userorder.appmaxprice       );
-		assert.equal(events[0].args.userorder.dataset,            userorder.dataset           );
-		assert.equal(events[0].args.userorder.datasetmaxprice,    userorder.datasetmaxprice   );
-		assert.equal(events[0].args.userorder.workerpool,         userorder.workerpool        );
-		assert.equal(events[0].args.userorder.workerpoolmaxprice, userorder.workerpoolmaxprice);
-		assert.equal(events[0].args.userorder.volume,             userorder.volume            );
-		assert.equal(events[0].args.userorder.category,           userorder.category          );
-		assert.equal(events[0].args.userorder.trust,              userorder.trust             );
-		assert.equal(events[0].args.userorder.tag,                userorder.tag               );
-		assert.equal(events[0].args.userorder.requester,          userorder.requester         );
-		assert.equal(events[0].args.userorder.beneficiary,        userorder.beneficiary       );
-		assert.equal(events[0].args.userorder.callback,           userorder.callback          );
-		assert.equal(events[0].args.userorder.params,             userorder.params            );
-		assert.equal(events[0].args.userorder.salt,               userorder.salt              );
-		assert.equal(events[0].args.userorder.sign.v,             userorder.sign.v            );
-		assert.equal(events[0].args.userorder.sign.r,             userorder.sign.r            );
-		assert.equal(events[0].args.userorder.sign.s,             userorder.sign.s            );
+		events = extractEvents(txMined, RelayInstance.address, "BroadcastRequestOrder");
+		assert.equal(events[0].args.requestorder.app,                requestorder.app               );
+		assert.equal(events[0].args.requestorder.appmaxprice,        requestorder.appmaxprice       );
+		assert.equal(events[0].args.requestorder.dataset,            requestorder.dataset           );
+		assert.equal(events[0].args.requestorder.datasetmaxprice,    requestorder.datasetmaxprice   );
+		assert.equal(events[0].args.requestorder.workerpool,         requestorder.workerpool        );
+		assert.equal(events[0].args.requestorder.workerpoolmaxprice, requestorder.workerpoolmaxprice);
+		assert.equal(events[0].args.requestorder.volume,             requestorder.volume            );
+		assert.equal(events[0].args.requestorder.category,           requestorder.category          );
+		assert.equal(events[0].args.requestorder.trust,              requestorder.trust             );
+		assert.equal(events[0].args.requestorder.tag,                requestorder.tag               );
+		assert.equal(events[0].args.requestorder.requester,          requestorder.requester         );
+		assert.equal(events[0].args.requestorder.beneficiary,        requestorder.beneficiary       );
+		assert.equal(events[0].args.requestorder.callback,           requestorder.callback          );
+		assert.equal(events[0].args.requestorder.params,             requestorder.params            );
+		assert.equal(events[0].args.requestorder.salt,               requestorder.salt              );
+		assert.equal(events[0].args.requestorder.sign.v,             requestorder.sign.v            );
+		assert.equal(events[0].args.requestorder.sign.r,             requestorder.sign.r            );
+		assert.equal(events[0].args.requestorder.sign.s,             requestorder.sign.s            );
 	});
 
 });

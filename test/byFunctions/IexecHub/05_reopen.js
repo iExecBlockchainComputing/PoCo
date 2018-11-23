@@ -51,7 +51,7 @@ contract('IexecHub', async (accounts) => {
 	var datasetorder     = null;
 	var workerpoolorder1 = null;
 	var workerpoolorder2 = null;
-	var userorder        = null;
+	var requestorder     = null;
 
 	var deals = {}
 	var tasks = {};
@@ -252,7 +252,7 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(scheduler)
 		);
-		userorder = odbtools.signUserOrder(
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -276,13 +276,13 @@ contract('IexecHub', async (accounts) => {
 
 		// Market
 		txsMined = await Promise.all([
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder,        userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
 	});
 
 	it("[setup] Initialization", async () => {

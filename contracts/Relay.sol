@@ -8,12 +8,12 @@ contract Relay
 	event BroadcastAppOrder       (IexecODBLibOrders.AppOrder        apporder       );
 	event BroadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    datasetorder   );
 	event BroadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder workerpoolorder);
-	event BroadcastUserOrder      (IexecODBLibOrders.UserOrder       userorder      );
+	event BroadcastRequestOrder   (IexecODBLibOrders.RequestOrder    requestorder   );
 
 	constructor() public {}
 
 	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        _apporder       ) public { emit BroadcastAppOrder       (_apporder       ); }
 	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    _datasetorder   ) public { emit BroadcastDatasetOrder   (_datasetorder   ); }
 	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder) public { emit BroadcastWorkerpoolOrder(_workerpoolorder); }
-	function broadcastUserOrder      (IexecODBLibOrders.UserOrder       _userorder      ) public { emit BroadcastUserOrder      (_userorder      ); }
+	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    _requestorder   ) public { emit BroadcastRequestOrder   (_requestorder   ); }
 }

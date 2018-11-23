@@ -50,7 +50,7 @@ contract('IexecHub', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var userorder       = null;
+	var requestorder    = null;
 	var dealid          = null;
 	var taskid          = null;
 
@@ -308,10 +308,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: User order signature (by user)                   *
+	 *                 TEST: Request order signature (by user)                 *
 	 ***************************************************************************/
-	it("[Genesis] Generate user order", async () => {
-		userorder = odbtools.signUserOrder(
+	it("[Genesis] Generate request order", async () => {
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -335,11 +335,11 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verify(
 				user,
-				odbtools.UserOrderStructHash(userorder),
-				userorder.sign,
+				odbtools.RequestOrderStructHash(requestorder),
+				requestorder.sign,
 				{}
 			),
-			"Error with the validation of the userorder signature"
+			"Error with the validation of the requestorder signature"
 		);
 	});
 
@@ -378,22 +378,22 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it(">> broker match", async () => {
-		// txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, userorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-		txMined = await BrokerInstance.matchOrdersForUser(apporder, datasetorder, workerpoolorder, userorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		// txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await BrokerInstance.matchOrdersForRequester(apporder, datasetorder, workerpoolorder, requestorder, { from: sgxEnclave, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// dealid = web3.utils.soliditySha3(
-		// 	{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
-		// 	{ t: 'uint256', v: 0                                       },
+		// 	{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
+		// 	{ t: 'uint256', v: 0                                             },
 		// );
-		// assert.equal(txMined.events.SchedulerNotice.returnValues.workerpool,   WorkerpoolInstance.address,                    "error");
-		// assert.equal(txMined.events.SchedulerNotice.returnValues.dealid, dealid,                                  "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.dealid,   dealid,                                  "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.appHash, odbtools.AppOrderStructHash(apporder), "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.datasetHash, odbtools.DatasetOrderStructHash(datasetorder), "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder), "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.userHash, odbtools.UserOrderStructHash(userorder), "error");
-		// assert.equal(txMined.events.OrdersMatched.returnValues.volume,   1,                                       "error");
+		// assert.equal(txMined.events.SchedulerNotice.returnValues.workerpool,   WorkerpoolInstance.address                         );
+		// assert.equal(txMined.events.SchedulerNotice.returnValues.dealid,       dealid                                             );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.dealid,         dealid                                             );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.appHash,        odbtools.AppOrderStructHash(apporder)              );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.datasetHash,    odbtools.DatasetOrderStructHash(datasetorder)      );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
+		// assert.equal(txMined.events.OrdersMatched.returnValues.requestHash,    odbtools.RequestOrderStructHash(requestorder)      );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.volume,         1                                                  );
 	});
 
 	it("check after", async () => {

@@ -32,7 +32,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
-	mapping(bytes32 => bytes32[]             ) m_userdeals;
+	mapping(bytes32 => bytes32[]             ) m_requestdeals;
 	mapping(bytes32 => IexecODBLibCore.Deal  ) m_deals;
 	mapping(bytes32 => IexecODBLibCore.Config) m_configs;
 	mapping(bytes32 => uint256               ) m_consumed;
@@ -41,11 +41,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                 Events                                  *
 	 ***************************************************************************/
-	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 userHash, uint256 volume);
+	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 requestHash, uint256 volume);
 	event ClosedAppOrder       (bytes32 appHash);
 	event ClosedDatasetOrder   (bytes32 datasetHash);
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
-	event ClosedUserOrder      (bytes32 userHash);
+	event ClosedRequestOrder   (bytes32 requestHash);
 	event SchedulerNotice      (address indexed workerpool, bytes32 dealid);
 
 	/***************************************************************************
@@ -70,10 +70,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                                Accessor                                 *
 	 ***************************************************************************/
-	function viewUserDeals(bytes32 _id)
+	function viewRequestDeals(bytes32 _id)
 	public view returns (bytes32[])
 	{
-		return m_userdeals[_id];
+		return m_requestdeals[_id];
 	}
 
 	function viewDeal(bytes32 _id)
@@ -167,11 +167,11 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signUserOrder(IexecODBLibOrders.UserOrder _userorder)
+	function signRequestOrder(IexecODBLibOrders.RequestOrder _requestorder)
 	public returns (bool)
 	{
-		require(msg.sender == _userorder.requester);
-		m_presigned[_userorder.hash()] = true;
+		require(msg.sender == _requestorder.requester);
+		m_presigned[_requestorder.hash()] = true;
 		return true;
 	}
 
@@ -186,7 +186,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		address datasetOwner;
 		bytes32 workerpoolHash;
 		address workerpoolOwner;
-		bytes32 userHash;
+		bytes32 requestHash;
 		bool    hasDataset;
 	}
 
@@ -194,7 +194,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		IexecODBLibOrders.AppOrder        _apporder,
 		IexecODBLibOrders.DatasetOrder    _datasetorder,
 		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
-		IexecODBLibOrders.UserOrder       _userorder)
+		IexecODBLibOrders.RequestOrder    _requestorder)
 	public returns (bytes32)
 	{
 		/**
@@ -202,26 +202,26 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 */
 
 		// computation environment & allowed enough funds
-		require(_userorder.category           == _workerpoolorder.category       );
-		require(_userorder.trust              <= _workerpoolorder.trust          );
-		require(_userorder.appmaxprice        >= _apporder.appprice              );
-		require(_userorder.datasetmaxprice    >= _datasetorder.datasetprice      );
-		require(_userorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice);
-		require((_apporder.tag | _datasetorder.tag | _userorder.tag) & ~_workerpoolorder.tag == 0x0);
+		require(_requestorder.category           == _workerpoolorder.category       );
+		require(_requestorder.trust              <= _workerpoolorder.trust          );
+		require(_requestorder.appmaxprice        >= _apporder.appprice              );
+		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice      );
+		require(_requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice);
+		require((_apporder.tag | _datasetorder.tag | _requestorder.tag) & ~_workerpoolorder.tag == 0x0);
 
 		// Check matching and restrictions
-		require(_userorder.app     == _apporder.app        );
-		require(_userorder.dataset == _datasetorder.dataset);
-		require(checkRestriction(_userorder.workerpool,              _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // userorder.workerpool is a restriction
+		require(_requestorder.app     == _apporder.app        );
+		require(_requestorder.dataset == _datasetorder.dataset);
+		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // requestorder.workerpool is a restriction
 		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
 		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.requesterrestrict,        _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
 		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
 		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.requesterrestrict,    _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
 		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
 		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.requesterrestrict, _userorder.requester,        0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
@@ -231,12 +231,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		Identities memory ids;
 		ids.hasDataset = _datasetorder.dataset != address(0);
 
-		// dapp
+		// app
 		ids.appHash  = _apporder.hash();
 		ids.appOwner = App(_apporder.app).m_owner();
 		require(verify(ids.appOwner, ids.appHash, _apporder.sign));
 
-		// data
+		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
@@ -244,35 +244,31 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			require(verify(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
-		// pool
+		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
 		require(verify(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
-		// user
-		ids.userHash = _userorder.hash();
-		require(verify(_userorder.requester, ids.userHash, _userorder.sign));
+		// request
+		ids.requestHash = _requestorder.hash();
+		require(verify(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability
 		 */
-		// require(m_consumed[hashes[0]] < _apporder.volume       ); // checked by volume
-		// require(m_consumed[hashes[1]] < _datasetorder.volume   ); // checked by volume
-		// require(m_consumed[hashes[2]] < _workerpoolorder.volume); // checked by volume
-		// require(m_consumed[hashes[3]] < _userorder.volume      ); // checked by volume
 		uint256 volume;
-		volume =                             _apporder.volume.sub(m_consumed[ids.appHash]);
-		volume = ids.hasDataset ? volume.min(_datasetorder.volume.sub(m_consumed[ids.datasetHash])) : volume;
+		volume =                             _apporder.volume.sub       (m_consumed[ids.appHash       ]);
+		volume = ids.hasDataset ? volume.min(_datasetorder.volume.sub   (m_consumed[ids.datasetHash   ])) : volume;
 		volume =                  volume.min(_workerpoolorder.volume.sub(m_consumed[ids.workerpoolHash]));
-		volume =                  volume.min(_userorder.volume.sub(m_consumed[ids.userHash]));
+		volume =                  volume.min(_requestorder.volume.sub   (m_consumed[ids.requestHash   ]));
 		require(volume > 0);
 
 		/**
 		 * Record
 		 */
 		bytes32 dealid = keccak256(abi.encodePacked(
-			ids.userHash,            // userHash
-			m_consumed[ids.userHash] // idx of first subtask
+			ids.requestHash,            // requestHash
+			m_consumed[ids.requestHash] // idx of first subtask
 		));
 
 		IexecODBLibCore.Deal storage deal = m_deals[dealid];
@@ -287,20 +283,20 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.workerpool.price   = _workerpoolorder.workerpoolprice;
 		deal.trust              = _workerpoolorder.trust.max(1);
 		deal.tag                = _workerpoolorder.tag;
-		deal.requester          = _userorder.requester;
-		deal.beneficiary        = _userorder.beneficiary;
-		deal.callback           = _userorder.callback;
-		deal.params             = _userorder.params;
+		deal.requester          = _requestorder.requester;
+		deal.beneficiary        = _requestorder.beneficiary;
+		deal.callback           = _requestorder.callback;
+		deal.params             = _requestorder.params;
 
 		IexecODBLibCore.Config storage config = m_configs[dealid];
 		config.category             = _workerpoolorder.category;
 		config.startTime            = now;
-		config.botFirst             = m_consumed[ids.userHash];
+		config.botFirst             = m_consumed[ids.requestHash];
 		config.botSize              = volume;
 		config.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
 		config.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
 
-		m_userdeals[ids.userHash].push(dealid);
+		m_requestdeals[ids.requestHash].push(dealid);
 
 		/**
 		 * Update consumed
@@ -308,7 +304,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		m_consumed[ids.appHash       ] = m_consumed[ids.appHash       ].add(                 volume    );
 		m_consumed[ids.datasetHash   ] = m_consumed[ids.datasetHash   ].add(ids.hasDataset ? volume : 0);
 		m_consumed[ids.workerpoolHash] = m_consumed[ids.workerpoolHash].add(                 volume    );
-		m_consumed[ids.userHash      ] = m_consumed[ids.userHash      ].add(                 volume    );
+		m_consumed[ids.requestHash   ] = m_consumed[ids.requestHash   ].add(                 volume    );
 
 		/**
 		 * Lock
@@ -340,7 +336,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			ids.appHash,
 			ids.datasetHash,
 			ids.workerpoolHash,
-			ids.userHash,
+			ids.requestHash,
 			volume
 		);
 
@@ -380,14 +376,14 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelUserOrder(IexecODBLibOrders.UserOrder _userorder)
+	function cancelRequestOrder(IexecODBLibOrders.RequestOrder _requestorder)
 	public returns (bool)
 	{
-		bytes32 userorderHash = _userorder.hash();
-		require(msg.sender == _userorder.requester);
-		// require(verify(msg.sender, userorderHash, _userorder.sign));
-		m_consumed[userorderHash] = _userorder.volume;
-		emit ClosedUserOrder(userorderHash);
+		bytes32 requestorderHash = _requestorder.hash();
+		require(msg.sender == _requestorder.requester);
+		// require(verify(msg.sender, requestorderHash, _requestorder.sign));
+		m_consumed[requestorderHash] = _requestorder.volume;
+		emit ClosedRequestOrder(requestorderHash);
 		return true;
 	}
 
@@ -445,14 +441,14 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
-		uint256 userstake = deal.app.price
-		                    .add(deal.dataset.price)
-		                    .add(deal.workerpool.price);
+		uint256 requesterstake = deal.app.price
+		                         .add(deal.dataset.price)
+		                         .add(deal.workerpool.price);
 		uint256 poolstake = deal.workerpool.price
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
 		// seize requester funds
-		seize (deal.requester, userstake);
+		seize (deal.requester, requesterstake);
 		// unlock pool stake
 		unlock(deal.workerpool.owner, poolstake);
 		// dapp reward
@@ -485,16 +481,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
-		uint256 userstake = deal.app.price
-		                    .add(deal.dataset.price)
-		                    .add(deal.workerpool.price);
+		uint256 requesterstake = deal.app.price
+		                         .add(deal.dataset.price)
+		                         .add(deal.workerpool.price);
 		uint256 poolstake = deal.workerpool.price
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
-		unlock(deal.requester,        userstake);
-		seize (deal.workerpool.owner, poolstake);
-		reward(address(0),            poolstake); // → Kitty / Burn
-		lock  (address(0),            poolstake); // → Kitty / Burn
+		unlock(deal.requester,        requesterstake);
+		seize (deal.workerpool.owner, poolstake     );
+		reward(address(0),            poolstake     ); // → Kitty / Burn
+		lock  (address(0),            poolstake     ); // → Kitty / Burn
 	}
 
 }

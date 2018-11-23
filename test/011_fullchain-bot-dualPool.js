@@ -50,7 +50,7 @@ contract('IexecHub', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var userorder       = null;
+	var requestorder    = null;
 
 	var deals = null;
 	var tasks  = {
@@ -298,7 +298,7 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(scheduler)
 		);
-		userorder = odbtools.signUserOrder(
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -321,7 +321,7 @@ contract('IexecHub', async (accounts) => {
 		);
 
 		console.log("clerk:     ", IexecClerkInstance.address);
-		console.log("userorder: ", JSON.stringify(userorder));
+		console.log("requestorder: ", JSON.stringify(requestorder));
 
 	});
 
@@ -392,29 +392,29 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it(">> matchOrders", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder1, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder2, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder1, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder2, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder        ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder       ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder    ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder1));
-		assert.equal(events[0].args.userHash,       odbtools.UserOrderStructHash      (userorder       ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder    ));
 		assert.equal(events[0].args.volume,         2                                                   );
 		var deal0 = events[0].args.dealid;
 
 		events = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder        ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder       ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder    ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder2));
-		assert.equal(events[0].args.userHash,       odbtools.UserOrderStructHash      (userorder       ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder    ));
 		assert.equal(events[0].args.volume,         1                                                   );
 		var deal1 = events[0].args.dealid;
 
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
 		assert.equal(deals[0], deal0);
 		assert.equal(deals[1], deal1);
 	});

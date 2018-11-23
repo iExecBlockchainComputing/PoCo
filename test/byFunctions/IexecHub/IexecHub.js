@@ -51,7 +51,7 @@ contract('IexecHub', async (accounts) => {
 	var datasetorder    = null;
 	var workerpoolorder1 = null;
 	var workerpoolorder2 = null;
-	var userorder       = null;
+	var requestorder       = null;
 
 	var deals = {}
 	var tasks = {};
