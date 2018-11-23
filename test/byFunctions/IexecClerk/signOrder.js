@@ -120,7 +120,7 @@ contract('IexecHub', async (accounts) => {
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};
-		userorder = {
+		requestorder = {
 			app:                AppInstance.address,
 			appmaxprice:        3,
 			dataset:            DatasetInstance.address,
@@ -141,7 +141,7 @@ contract('IexecHub', async (accounts) => {
 		apporder_hash        = odbtools.AppOrderStructHash       (apporder       );
 		datasetorder_hash    = odbtools.DatasetOrderStructHash   (datasetorder   );
 		workerpoolorder_hash = odbtools.WorkerpoolOrderStructHash(workerpoolorder);
-		userorder_hash       = odbtools.UserOrderStructHash      (userorder      );
+		requestorder_hash    = odbtools.RequestOrderStructHash   (requestorder   );
 	});
 
 	/***************************************************************************
@@ -211,33 +211,33 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("presign workerpool order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in app order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 		await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in app order presign");
+		assert.isTrue (await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
 	/***************************************************************************
-	 *                             TEST: User sign                             *
+	 *                           TEST: Request sign                            *
 	 ***************************************************************************/
-	it("presign user order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(userorder_hash), "Error in user order presign");
+	it("presign request order #1", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 		try
 		{
-			await IexecClerkInstance.signUserOrder(userorder, { from: iexecAdmin });
-			assert.fail("user should not be able to sign userorder");
+			await IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin });
+			assert.fail("user should not be able to sign requestorder");
 		}
 		catch (error)
 		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
-		assert.isFalse(await IexecClerkInstance.viewPresigned(userorder_hash), "Error in user order presign");
+		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 
-	it("presign user order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(userorder_hash), "Error in app order presign");
-		await IexecClerkInstance.signUserOrder(userorder, { from: user });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(userorder_hash), "Error in app order presign");
+	it("presign request order #2", async () => {
+		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		await IexecClerkInstance.signRequestOrder(requestorder, { from: user });
+		assert.isTrue (await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 
 

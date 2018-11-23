@@ -210,7 +210,7 @@ contract('IexecHub', async (accounts) => {
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE,
 		};
-		_userorder = {
+		_requestorder = {
 			app:                AppInstance.address,
 			appmaxprice:        3,
 			dataset:            DatasetInstance.address,
@@ -231,12 +231,12 @@ contract('IexecHub', async (accounts) => {
 		for (key in appextra       ) _apporder[key]        = appextra[key];
 		for (key in datasetextra   ) _datasetorder[key]    = datasetextra[key];
 		for (key in workerpoolextra) _workerpoolorder[key] = workerpoolextra[key];
-		for (key in userextra      ) _userorder[key]       = userextra[key];
+		for (key in userextra      ) _requestorder[key]       = userextra[key];
 		odbtools.signAppOrder       (_apporder,        wallets.addressToPrivate(appProvider    ));
 		odbtools.signDatasetOrder   (_datasetorder,    wallets.addressToPrivate(datasetProvider));
 		odbtools.signWorkerpoolOrder(_workerpoolorder, wallets.addressToPrivate(scheduler      ));
-		odbtools.signUserOrder      (_userorder,       wallets.addressToPrivate(user           ));
-		return IexecClerkInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		odbtools.signRequestOrder   (_requestorder,    wallets.addressToPrivate(user           ));
+		return IexecClerkInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 	};
 
 
@@ -249,8 +249,8 @@ contract('IexecHub', async (accounts) => {
 			{},
 		);
 
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal(       deal.app.pointer,        AppInstance.address       );
@@ -286,8 +286,8 @@ contract('IexecHub', async (accounts) => {
 			{ dataset: constants.NULL.ADDRESS },
 		);
 
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal(       deal.app.pointer,        AppInstance.address       );
@@ -323,8 +323,8 @@ contract('IexecHub', async (accounts) => {
 			{ volume: 10 },
 		);
 
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(_userorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.UserOrderStructHash(_userorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal(       deal.app.pointer,        AppInstance.address       );

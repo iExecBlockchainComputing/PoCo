@@ -51,7 +51,7 @@ contract('IexecHub', async (accounts) => {
 	var datasetorder     = null;
 	var workerpoolorder1 = null;
 	var workerpoolorder2 = null;
-	var userorder        = null;
+	var requestorder     = null;
 
 	var deals = {}
 	var tasks = {};
@@ -238,7 +238,7 @@ contract('IexecHub', async (accounts) => {
 			},
 			wallets.addressToPrivate(scheduler)
 		);
-		userorder = odbtools.signUserOrder(
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -281,18 +281,18 @@ contract('IexecHub', async (accounts) => {
 
 	it("[setup] Match", async () => {
 		// Market
-		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder      ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.userHash,       odbtools.UserOrderStructHash      (userorder      ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 
 		// Deals
-		deals = await IexecClerkInstance.viewUserDeals(odbtools.UserOrderStructHash(userorder));
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
 		assert.equal(deals[0], events[0].args.dealid);
 	});
 

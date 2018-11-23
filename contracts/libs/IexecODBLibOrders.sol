@@ -10,16 +10,16 @@ library IexecODBLibOrders
 		bytes32 s;
 	}
 
-	bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
-	bytes32 public constant       USERORDER_TYPEHASH = keccak256("UserOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
-	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-	// bytes32 public constant        APPORDER_TYPEHASH = 0x659fc082754b0da79509e75c6726055cbe84eb7527b278418c8a5998b1ce40c3;
-	// bytes32 public constant    DATASETORDER_TYPEHASH = 0x25152fa69720eec3b3360dd907576b7ec55e2633342bf993e09e8f5148640930;
-	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0x03b4801c105a2678088a8300a3e19699cc783e5a43439f28f3bc75b8391552ea;
-	// bytes32 public constant       USERORDER_TYPEHASH = 0x8160ee616648fd072bd2f7da47db26c4adbeb9f3f44e6d6cad0fc6f011f2fbbf;
+	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+	// bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant    REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
+	bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+	bytes32 public constant        APPORDER_TYPEHASH = 0x7ec080e12d68143b6f3cbfcc951a0af368f44b0317bf88e47a6deb61360f467a;
+	bytes32 public constant    DATASETORDER_TYPEHASH = 0x5a29cc8df638f0050902f3d568d4f66123c5aa434ed1b7f7448e3f8698ae9887;
+	bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0xc35d0ed8a07a66003ec762099c137d24991e5d74651822289074551ed1d9f9ae;
+	bytes32 public constant    REQUESTORDER_TYPEHASH = 0xf56ae5843d5bed3b1e1c005f4793303f8b9525f9f40189b8d29c21c2984a1ce4;
 
 	struct EIP712Domain
 	{
@@ -66,7 +66,7 @@ library IexecODBLibOrders
 		bytes32 salt;
 		signature sign;
 	}
-	struct UserOrder
+	struct RequestOrder
 	{
 		address app;
 		uint256 appmaxprice;
@@ -216,7 +216,7 @@ library IexecODBLibOrders
 			mstore(sub(_workerpoolorder, 32), temp1)
 		}
 	}
-	function hash(UserOrder _userorder)
+	function hash(RequestOrder _requestorder)
 	public pure returns (bytes32 hash)
 	{
 		/**
@@ -224,40 +224,40 @@ library IexecODBLibOrders
 		 */
 		//return keccak256(abi.encodePacked(
 		//	abi.encode(
-		//		USERORDER_TYPEHASH
-		//	, _userorder.app
-		//	, _userorder.appmaxprice
-		//	, _userorder.dataset
-		//	, _userorder.datasetmaxprice
-		//	, _userorder.workerpool
-		//	, _userorder.workerpoolmaxprice
-		//	, _userorder.requester
-		//	, _userorder.volume
-		//	, _userorder.tag
-		//	, _userorder.category
-		//	, _userorder.trust
-		//	, _userorder.beneficiary
-		//	, _userorder.callback
-		//	, keccak256(bytes(_userorder.params))
-		//	, _userorder.salt
+		//		REQUESTORDER_TYPEHASH
+		//	, _requestorder.app
+		//	, _requestorder.appmaxprice
+		//	, _requestorder.dataset
+		//	, _requestorder.datasetmaxprice
+		//	, _requestorder.workerpool
+		//	, _requestorder.workerpoolmaxprice
+		//	, _requestorder.requester
+		//	, _requestorder.volume
+		//	, _requestorder.tag
+		//	, _requestorder.category
+		//	, _requestorder.trust
+		//	, _requestorder.beneficiary
+		//	, _requestorder.callback
+		//	, keccak256(bytes(_requestorder.params))
+		//	, _requestorder.salt
 		//	)
 		//));
 
 		// Compute sub-hashes
-		bytes32 typeHash = USERORDER_TYPEHASH;
-		bytes32 paramsHash = keccak256(bytes(_userorder.params));
+		bytes32 typeHash = REQUESTORDER_TYPEHASH;
+		bytes32 paramsHash = keccak256(bytes(_requestorder.params));
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_userorder,  32))
-			let temp2 := mload(add(_userorder, 416))
+			let temp1 := mload(sub(_requestorder,  32))
+			let temp2 := mload(add(_requestorder, 416))
 			// Write typeHash and sub-hashes
-			mstore(sub(_userorder,  32), typeHash)
-			mstore(add(_userorder, 416), paramsHash)
+			mstore(sub(_requestorder,  32), typeHash)
+			mstore(add(_requestorder, 416), paramsHash)
 			// Compute hash
-			hash := keccak256(sub(_userorder, 32), 512) // 512 = 32 + 480
+			hash := keccak256(sub(_requestorder, 32), 512) // 512 = 32 + 480
 			// Restore memory
-			mstore(sub(_userorder,  32), temp1)
-			mstore(add(_userorder, 416), temp2)
+			mstore(sub(_requestorder,  32), temp1)
+			mstore(add(_requestorder, 416), temp2)
 		}
 	}
 }

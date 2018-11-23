@@ -425,8 +425,8 @@ contract IexecHub is CategoryManager, Oracle, IexecHubABILegacy
 	function __distributeRewards(bytes32 _taskid)
 	private
 	{
-		IexecODBLibCore.Task   memory task   = m_tasks[_taskid];
-		IexecODBLibCore.Config memory config = iexecclerk.viewConfig(task.dealid);
+		IexecODBLibCore.Task   storage task   = m_tasks[_taskid];
+		IexecODBLibCore.Config memory  config = iexecclerk.viewConfig(task.dealid);
 
 		uint256 i;
 		address worker;

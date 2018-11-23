@@ -50,7 +50,7 @@ contract('IexecHub', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var userorder       = null;
+	var requestorder    = null;
 	var dealid          = null;
 	var taskid          = null;
 
@@ -92,6 +92,12 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
+
+		console.log("EIP712DOMAIN_TYPEHASH:   ", odbtools.EIP712DOMAIN_TYPEHASH   );
+		console.log("APPORDER_TYPEHASH:       ", odbtools.APPORDER_TYPEHASH       );
+		console.log("DATASETORDER_TYPEHASH:   ", odbtools.DATASETORDER_TYPEHASH   );
+		console.log("WORKERPOOLORDER_TYPEHASH:", odbtools.WORKERPOOLORDER_TYPEHASH);
+		console.log("REQUESTORDER_TYPEHASH:   ", odbtools.REQUESTORDER_TYPEHASH   );
 
 		/**
 		 * Token distribution
@@ -296,10 +302,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                   TEST: Userorder signature (by user)                   *
+	 *                 TEST: Request order signature (by user)                 *
 	 ***************************************************************************/
-	it("[Genesis] Generate user order", async () => {
-		userorder = odbtools.signUserOrder(
+	it("[Genesis] Generate request order", async () => {
+		requestorder = odbtools.signRequestOrder(
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -323,11 +329,11 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verify(
 				user,
-				odbtools.UserOrderStructHash(userorder),
-				userorder.sign,
+				odbtools.RequestOrderStructHash(requestorder),
+				requestorder.sign,
 				{}
 			),
-			"Error with the validation of the userorder signature"
+			"Error with the validation of the requestorder signature"
 		);
 	});
 
@@ -491,14 +497,14 @@ contract('IexecHub', async (accounts) => {
 	 *                           TEST: Market making                           *
 	 ***************************************************************************/
 	it(">> matchOrders", async () => {
-		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, userorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		totalgas += txMined.receipt.gasUsed;
 
 		dealid = web3.utils.soliditySha3(
-			{ t: 'bytes32', v: odbtools.UserOrderStructHash(userorder) },
-			{ t: 'uint256', v: 0                                       },
+			{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
+			{ t: 'uint256', v: 0                                             },
 		);
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
@@ -510,7 +516,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
 		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.userHash,       odbtools.UserOrderStructHash      (userorder      ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 	});
 
@@ -522,27 +528,27 @@ contract('IexecHub', async (accounts) => {
 		assert.equal    (       deal.app.pointer,        AppInstance.address,             "check deal (deal.app.pointer)"       );
 		assert.equal    (       deal.app.owner,          appProvider,                     "check deal (deal.app.owner)"         );
 		assert.equal    (Number(deal.app.price),         apporder.appprice,               "check deal (deal.app.price)"         );
-		assert.equal    (       deal.app.pointer,        userorder.app,                   "check deal (deal.app.pointer)"       );
-		assert.isAtMost (Number(deal.app.price),         userorder.appmaxprice,           "check deal (deal.app.price)"         );
+		assert.equal    (       deal.app.pointer,        requestorder.app,                "check deal (deal.app.pointer)"       );
+		assert.isAtMost (Number(deal.app.price),         requestorder.appmaxprice,        "check deal (deal.app.price)"         );
 		assert.equal    (       deal.dataset.pointer,    DatasetInstance.address,         "check deal (deal.dataset.pointer)"   );
 		assert.equal    (       deal.dataset.owner,      datasetProvider,                 "check deal (deal.dataset.owner)"     );
 		assert.equal    (Number(deal.dataset.price),     datasetorder.datasetprice,       "check deal (deal.dataset.price)"     );
-		assert.equal    (       deal.dataset.pointer,    userorder.dataset,               "check deal (deal.dataset.pointer)"   );
-		assert.isAtMost (Number(deal.dataset.price),     userorder.datasetmaxprice,       "check deal (deal.dataset.price)"     );
+		assert.equal    (       deal.dataset.pointer,    requestorder.dataset,            "check deal (deal.dataset.pointer)"   );
+		assert.isAtMost (Number(deal.dataset.price),     requestorder.datasetmaxprice,    "check deal (deal.dataset.price)"     );
 		assert.equal    (       deal.workerpool.pointer, WorkerpoolInstance.address,      "check deal (deal.workerpool.pointer)");
 		assert.equal    (       deal.workerpool.owner,   scheduler,                       "check deal (deal.workerpool.owner)"  );
 		assert.equal    (Number(deal.workerpool.price),  workerpoolorder.workerpoolprice, "check deal (deal.workerpool.price)"  );
-		if( userorder.workerpool != constants.NULL.ADDRESS)
-		assert.equal    (       deal.workerpool.pointer, userorder.workerpool,            "check deal (deal.workerpool.pointer)");
-		assert.isAtMost (Number(deal.workerpool.price),  userorder.workerpoolmaxprice,    "check deal (deal.workerpool.price)"  );
+		if( requestorder.workerpool != constants.NULL.ADDRESS)
+		assert.equal    (       deal.workerpool.pointer, requestorder.workerpool,         "check deal (deal.workerpool.pointer)");
+		assert.isAtMost (Number(deal.workerpool.price),  requestorder.workerpoolmaxprice, "check deal (deal.workerpool.price)"  );
 		assert.equal    (Number(deal.trust),             workerpoolorder.trust,           "check deal (deal.trust)"             );
-		assert.isAtLeast(Number(deal.trust),             userorder.trust,                 "check deal (deal.trust)"             );
+		assert.isAtLeast(Number(deal.trust),             requestorder.trust,              "check deal (deal.trust)"             );
 		assert.equal    (Number(deal.tag),               workerpoolorder.tag,             "check deal (deal.tag)"               );
-		assert.equal    (Number(deal.tag),               userorder.tag,                   "check deal (deal.tag)"               );
+		assert.equal    (Number(deal.tag),               requestorder.tag,                "check deal (deal.tag)"               );
 		assert.equal    (       deal.requester,          user,                            "check deal (deal.requester)"         );
 		assert.equal    (       deal.beneficiary,        user,                            "check deal (deal.beneficiary)"       );
-		assert.equal    (       deal.callback,           userorder.callback,              "check deal (deal.callback)"          );
-		assert.equal    (       deal.params,             userorder.params,                "check deal (deal.params)"            );
+		assert.equal    (       deal.callback,           requestorder.callback,           "check deal (deal.callback)"          );
+		assert.equal    (       deal.params,             requestorder.params,             "check deal (deal.params)"            );
 	});
 
 	/***************************************************************************
@@ -551,7 +557,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Market] Check config", async () => {
 		config = await IexecClerkInstance.viewConfig(dealid);
 		assert.equal  (Number(config.category            ), workerpoolorder.category, "check config (config.category)"            );
-		assert.equal  (Number(config.category            ), userorder.category,       "check config (config.category)"            );
+		assert.equal  (Number(config.category            ), requestorder.category,    "check config (config.category)"            );
 		assert.isAbove(Number(config.startTime           ), 0,                        "check config (config.start)"               );
 		assert.equal  (Number(config.botFirst            ), 0,                        "check config (config.botFirst)"            );
 		assert.equal  (Number(config.botSize             ), 1,                        "check config (config.botSize)"             );
