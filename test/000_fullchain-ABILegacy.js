@@ -493,8 +493,8 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		dealid = web3.utils.soliditySha3(
-			{ t: 'bytes32', v: odbtools.requestorderStructHash(requestorder) },
-			{ t: 'uint256', v: 0                                       },
+			{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
+			{ t: 'uint256', v: 0                                             },
 		);
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
@@ -506,7 +506,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
 		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.userHash,       odbtools.requestorderStructHash   (requestorder   ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 	});
 

@@ -20,18 +20,18 @@ contract IexecClerkABILegacy
 
 	bytes32 public /* immutable */ EIP712DOMAIN_SEPARATOR;
 
-	mapping(bytes32 => bytes32[]) public m_userdeals;
+	mapping(bytes32 => bytes32[]) public m_requestdeals;
 	mapping(bytes32 => uint256  ) public m_consumed;
 	mapping(bytes32 => bool     ) public m_presigned;
 
-	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 userHash, uint256 volume);
+	event OrdersMatched        (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 requestHash, uint256 volume);
 	event ClosedAppOrder       (bytes32 appHash);
 	event ClosedDatasetOrder   (bytes32 datasetHash);
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
-	event ClosedUserOrder      (bytes32 userHash);
+	event ClosedRequestOrder   (bytes32 requestHash);
 	event SchedulerNotice      (address indexed workerpool, bytes32 dealid);
 
-	function viewUserDeals(bytes32 _id)
+	function viewRequestDeals(bytes32 _id)
 	public view returns (bytes32[]);
 
 	function viewConsumed(bytes32 _id)
@@ -39,43 +39,6 @@ contract IexecClerkABILegacy
 
 	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
 	public view returns (bool);
-
-	// function verify(
-	// 	address                     _signer,
-	// 	bytes32                     _hash,
-	// 	IexecODBLibOrders.signature _signature)
-	// public view returns (bool);
-
-	// function signDappOrder(IexecODBLibOrders.DappOrder _dapporder)
-	// public returns (bool);
-
-	// function signDataOrder(IexecODBLibOrders.DataOrder _dataorder)
-	// public returns (bool);
-
-	// function signPoolOrder(IexecODBLibOrders.PoolOrder _poolorder)
-	// public returns (bool);
-
-	// function signUserOrder(IexecODBLibOrders.UserOrder _userorder)
-	// public returns (bool);
-
-	// function matchOrders(
-	// 	IexecODBLibOrders.DappOrder _dapporder,
-	// 	IexecODBLibOrders.DataOrder _dataorder,
-	// 	IexecODBLibOrders.PoolOrder _poolorder,
-	// 	IexecODBLibOrders.UserOrder _userorder)
-	// public returns (bytes32);
-
-	// function cancelDappOrder(IexecODBLibOrders.DappOrder _dapporder)
-	// public returns (bool);
-
-	// function cancelDataOrder(IexecODBLibOrders.DataOrder _dataorder)
-	// public returns (bool);
-
-	// function cancelPoolOrder(IexecODBLibOrders.PoolOrder _poolorder)
-	// public returns (bool);
-
-	// function cancelUserOrder(IexecODBLibOrders.UserOrder _userorder)
-	// public returns (bool);
 
 	function lockSubscription  (address _worker, uint256 _amount)
 	public;
