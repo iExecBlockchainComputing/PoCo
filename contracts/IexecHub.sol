@@ -36,7 +36,7 @@ contract IexecHub is CategoryManager, Oracle
 	mapping(address =>                    uint256                      ) m_workerScores;
 	mapping(address =>                    address                      ) m_workerAffectations;
 
-	mapping(bytes32 => mapping(address => uint256                     )) m_weight;
+	mapping(bytes32 => mapping(address => uint256                     )) m_logweight;
 	mapping(bytes32 => mapping(bytes32 => uint256                     )) m_groupweight;
 	mapping(bytes32 =>                    uint256                      ) m_totalweight;
 
@@ -237,15 +237,25 @@ contract IexecHub is CategoryManager, Oracle
 
 		emit TaskContribute(_taskid, msg.sender, _resultHash);
 
-		// Update consensus
-		uint256 power = m_workerScores[msg.sender]
+		/*************************************************************************
+		 *                           SCORE POLICY 1/3                            *
+		 *                                                                       *
+		 *                          see documentation !                          *
+		 *************************************************************************/
+		uint256 weight = m_workerScores[msg.sender]
 			.max(1)
 			.mul(contribution.enclaveChallenge != address(0) ? 15 : 5)
 			.sub(1);
+		// TODO: Determine score policy
+		// k = 3
+		// uint256 weight = m_workerScores[msg.sender]
+		// 	.max(9)
+		// 	.div(contribution.enclaveChallenge != address(0) ? 1 : 3)
+		// 	.sub(1)
 		uint256 group = m_groupweight[_taskid][_resultHash];
-		uint256 delta = group.max(1).mul(power).sub(group);
+		uint256 delta = group.max(1).mul(weight).sub(group);
 
-		m_weight     [_taskid][msg.sender ] = power.log();
+		m_logweight  [_taskid][msg.sender ] = weight.log();
 		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
 		m_totalweight[_taskid]              = m_totalweight[_taskid].add(delta);
 
@@ -425,7 +435,7 @@ contract IexecHub is CategoryManager, Oracle
 		uint256 i;
 		address worker;
 
-		uint256 totalWeight = 0;
+		uint256 totalLogWeight = 0;
 		uint256 totalReward = iexecclerk.viewDeal(task.dealid).workerpool.price;
 
 		for (i = 0; i < task.contributors.length; ++i)
@@ -433,14 +443,14 @@ contract IexecHub is CategoryManager, Oracle
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				totalWeight = totalWeight.add(m_weight[_taskid][worker]);
+				totalLogWeight = totalLogWeight.add(m_logweight[_taskid][worker]);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				totalReward = totalReward.add(config.workerStake);
 			}
 		}
-		require(totalWeight > 0);
+		require(totalLogWeight > 0);
 
 		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(config.schedulerRewardRatio));
@@ -450,13 +460,19 @@ contract IexecHub is CategoryManager, Oracle
 			worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
 			{
-				uint256 workerReward = workersReward.mulByFraction(m_weight[_taskid][worker], totalWeight);
+				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
-				// Only reward if replication happened (revealCounter vs winnerCounter vs contributions.length)
-				if (contributions.length > 1)
+
+				// Only reward if replication happened (revealCounter vs winnerCounter vs contributors.length)
+				if (task.contributors.length > 1)
 				{
+					/*******************************************************************
+					 *                        SCORE POLICY 2/3                         *
+					 *                                                                 *
+					 *                       see documentation !                       *
+					 *******************************************************************/
 					m_workerScores[worker] = m_workerScores[worker].add(1);
 					emit AccurateContribution(worker, _taskid);
 				}
@@ -465,9 +481,17 @@ contract IexecHub is CategoryManager, Oracle
 			{
 				// No Reward
 				iexecclerk.seizeContribution(task.dealid, worker);
+
 				// Always punish bad contributors
 				{
-					m_workerScores[worker] = m_workerScores[worker].add(1).div(6); // see documentation !
+					/*******************************************************************
+					 *                        SCORE POLICY 3/3                         *
+					 *                                                                 *
+					 *                       see documentation !                       *
+					 *******************************************************************/
+					m_workerScores[worker] = m_workerScores[worker].add(1).div(6);
+					// mulByFraction(2,3) equiv mulByFraction(k-1,k) with k = 3
+					// m_workerScores[worker] = m_workerScores[worker].mulByFraction(2,3).add(1);
 					emit FaultyContribution(worker, _taskid);
 				}
 			}
