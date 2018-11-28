@@ -152,12 +152,12 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: scheduler,       gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker1,         gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker2,         gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker3,         gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker4,         gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: user,            gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: scheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker1,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker2,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker3,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker4,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: user,      gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -174,7 +174,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance        = await App.at(events[0].args.app);
+		AppInstance = await App.at(events[0].args.app);
 	});
 
 	/***************************************************************************
@@ -184,7 +184,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance    = await Dataset.at(events[0].args.dataset);
+		DatasetInstance = await Dataset.at(events[0].args.dataset);
 	});
 
 	/***************************************************************************
