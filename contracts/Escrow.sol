@@ -1,8 +1,8 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
-// import "./interfaces/ERC20.sol";
+// import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
+import "./interfaces/ERC20.sol";
 import "./libs/IexecODBLibCore.sol";
 import "./libs/SafeMathOZ.sol";
 
@@ -11,9 +11,9 @@ contract Escrow
 	using SafeMathOZ for uint256;
 
 	/**
-	* RLC contract for token transfers.
+	* token contract for transfers.
 	*/
-	RLC public rlc;
+	IERC20 public token;
 
 	/**
 	 * Escrow content
@@ -31,18 +31,17 @@ contract Escrow
 	/**
 	 * Constructor
 	 */
-	constructor(address _rlctoken)
+	constructor(address _token)
 	public
 	{
-		require(_rlctoken != address(0));
-		rlc = RLC(_rlctoken);
+		token = IERC20(_token);
 	}
 
 	/**
 	 * Accessor
 	 */
 	function viewAccount(address _user)
-	public view returns (IexecODBLibCore.Account)
+	public view returns (IexecODBLibCore.Account memory account)
 	{
 		return m_accounts[_user];
 	}
@@ -52,7 +51,7 @@ contract Escrow
 	 */
 	function deposit(uint256 _amount) external returns (bool)
 	{
-		require(rlc.transferFrom(msg.sender, address(this), _amount));
+		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		emit Deposit(msg.sender, _amount);
 		return true;
@@ -60,7 +59,7 @@ contract Escrow
 	function withdraw(uint256 _amount) external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		require(rlc.transfer(msg.sender, _amount));
+		require(token.transfer(msg.sender, _amount));
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}

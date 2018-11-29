@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibCore.sol";
@@ -63,7 +63,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
 		, chainId:           _chainid
-		, verifyingContract: this
+		, verifyingContract: address(this)
 		}).hash();
 	}
 
@@ -71,31 +71,31 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                                Accessor                                 *
 	 ***************************************************************************/
 	function viewRequestDeals(bytes32 _id)
-	public view returns (bytes32[])
+	public view returns (bytes32[] memory requestdeals)
 	{
 		return m_requestdeals[_id];
 	}
 
 	function viewDeal(bytes32 _id)
-	public view returns (IexecODBLibCore.Deal)
+	public view returns (IexecODBLibCore.Deal memory deal)
 	{
 		return m_deals[_id];
 	}
 
 	function viewConfig(bytes32 _id)
-	public view returns (IexecODBLibCore.Config)
+	public view returns (IexecODBLibCore.Config memory config)
 	{
 		return m_configs[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
-	public view returns (uint256)
+	public view returns (uint256 consumed)
 	{
 		return m_consumed[_id];
 	}
 
 	function viewPresigned(bytes32 _id)
-	public view returns (bool)
+	public view returns (bool presigned)
 	{
 		return m_presigned[_id];
 	}
@@ -127,9 +127,9 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
 	function verify(
-		address                     _signer,
-		bytes32                     _hash,
-		IexecODBLibOrders.signature _signature)
+		address                            _signer,
+		bytes32                            _hash,
+		IexecODBLibOrders.signature memory _signature)
 	public view returns (bool)
 	{
 		return _signer == ecrecover(
@@ -143,7 +143,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                            pre-signing tools                            *
 	 ***************************************************************************/
-	function signAppOrder(IexecODBLibOrders.AppOrder _apporder)
+	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
 		require(msg.sender == App(_apporder.app).m_owner());
@@ -151,7 +151,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signDatasetOrder(IexecODBLibOrders.DatasetOrder _datasetorder)
+	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
 		require(msg.sender == Dataset(_datasetorder.dataset).m_owner());
@@ -159,7 +159,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder)
+	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).m_owner());
@@ -167,7 +167,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function signRequestOrder(IexecODBLibOrders.RequestOrder _requestorder)
+	function signRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
 		require(msg.sender == _requestorder.requester);
@@ -191,10 +191,10 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 
 	function matchOrders(
-		IexecODBLibOrders.AppOrder        _apporder,
-		IexecODBLibOrders.DatasetOrder    _datasetorder,
-		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
-		IexecODBLibOrders.RequestOrder    _requestorder)
+		IexecODBLibOrders.AppOrder        memory _apporder,
+		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
+		IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder,
+		IexecODBLibOrders.RequestOrder    memory _requestorder)
 	public returns (bytes32)
 	{
 		/**
@@ -343,7 +343,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return dealid;
 	}
 
-	function cancelAppOrder(IexecODBLibOrders.AppOrder _apporder)
+	function cancelAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
 		bytes32 dapporderHash = _apporder.hash();
@@ -354,7 +354,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder _datasetorder)
+	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
 		bytes32 dataorderHash = _datasetorder.hash();
@@ -365,7 +365,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder)
+	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash();
@@ -376,7 +376,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
-	function cancelRequestOrder(IexecODBLibOrders.RequestOrder _requestorder)
+	function cancelRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
 		bytes32 requestorderHash = _requestorder.hash();

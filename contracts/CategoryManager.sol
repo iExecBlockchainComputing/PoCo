@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibCore.sol";
@@ -32,13 +32,13 @@ contract CategoryManager is OwnableMutable
 	 * Accessors
 	 */
 	function viewCategory(uint256 _catid)
-	public view returns (IexecODBLibCore.Category)
+	public view returns (IexecODBLibCore.Category memory category)
 	{
 		return m_categories[_catid];
 	}
 
 	function countCategory()
-	public view returns (uint256)
+	public view returns (uint256 count)
 	{
 		return m_categories.length;
 	}
@@ -47,10 +47,10 @@ contract CategoryManager is OwnableMutable
 	 * Methods
 	 */
 	function createCategory(
-		string  name,
-		string  description,
-		uint256 workClockTimeRef)
-	public onlyOwner returns (uint256)
+		string  calldata name,
+		string  calldata description,
+		uint256          workClockTimeRef)
+	external onlyOwner returns (uint256)
 	{
 		uint256 catid = m_categories.push(IexecODBLibCore.Category(
 			name,

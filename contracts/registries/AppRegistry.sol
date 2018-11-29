@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import './App.sol';
@@ -25,15 +25,15 @@ contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 	 * App creation
 	 */
 	function createApp(
-		address _appOwner,
-		string  _appName,
-		string  _appParams,
-		bytes32 _appHash)
-	public /* onlyOwner /*owner == IexecHub*/ returns (App)
+		address          _appOwner,
+		string  calldata _appName,
+		string  calldata _appParams,
+		bytes32          _appHash)
+	external /* onlyOwner /*owner == IexecHub*/ returns (App)
 	{
 		App newApp = new App(_appOwner, _appName, _appParams, _appHash);
-		require(insert(newApp, _appOwner));
-		emit CreateApp(_appOwner, newApp, _appName, _appParams, _appHash);
+		require(insert(address(newApp), _appOwner));
+		emit CreateApp(_appOwner, address(newApp), _appName, _appParams, _appHash);
 		return newApp;
 	}
 

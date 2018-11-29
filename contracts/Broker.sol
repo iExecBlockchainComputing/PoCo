@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibOrders.sol";
@@ -27,42 +27,42 @@ contract Broker
 	}
 
 	function ()
-	public payable
+	external payable
 	{
 		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
 	}
 
 	function deposit()
-	public payable
+	external payable
 	{
 		m_balance[msg.sender] = m_balance[msg.sender].add(msg.value);
 	}
 
 	function depositFor(address _account)
-	public payable
+	external payable
 	{
 		m_balance[_account] = m_balance[_account].add(msg.value);
 	}
 
 	function withdraw(uint256 _amount)
-	public
+	external
 	{
 		m_balance[msg.sender] = m_balance[msg.sender].sub(_amount);
 		msg.sender.transfer(_amount);
 	}
 
 	function setPreferences(uint256 _reward, uint256 _maxgasprice)
-	public
+	external
 	{
 		m_preferences[msg.sender].reward      = _reward;
 		m_preferences[msg.sender].maxgasprice = _maxgasprice;
 	}
 
 	function matchOrdersForPool(
-		IexecODBLibOrders.AppOrder        _apporder,
-		IexecODBLibOrders.DatasetOrder    _datasetorder,
-		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
-		IexecODBLibOrders.RequestOrder    _requestorder)
+		IexecODBLibOrders.AppOrder        memory _apporder,
+		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
+		IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder,
+		IexecODBLibOrders.RequestOrder    memory _requestorder)
 	public returns (bytes32)
 	{
 		uint256 gasBefore = gasleft();
@@ -82,10 +82,10 @@ contract Broker
 	}
 
 	function matchOrdersForRequester(
-		IexecODBLibOrders.AppOrder        _apporder,
-		IexecODBLibOrders.DatasetOrder    _datasetorder,
-		IexecODBLibOrders.WorkerpoolOrder _workerpoolorder,
-		IexecODBLibOrders.RequestOrder    _requestorder)
+		IexecODBLibOrders.AppOrder        memory _apporder,
+		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
+		IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder,
+		IexecODBLibOrders.RequestOrder    memory _requestorder)
 	public returns (bytes32)
 	{
 		uint256 gasBefore = gasleft();

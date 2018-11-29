@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibOrders.sol";
@@ -12,8 +12,8 @@ contract Relay
 
 	constructor() public {}
 
-	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        _apporder       ) public { emit BroadcastAppOrder       (_apporder       ); }
-	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    _datasetorder   ) public { emit BroadcastDatasetOrder   (_datasetorder   ); }
-	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder _workerpoolorder) public { emit BroadcastWorkerpoolOrder(_workerpoolorder); }
-	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    _requestorder   ) public { emit BroadcastRequestOrder   (_requestorder   ); }
+	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        memory _apporder       ) public { emit BroadcastAppOrder       (_apporder       ); }
+	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    memory _datasetorder   ) public { emit BroadcastDatasetOrder   (_datasetorder   ); }
+	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder) public { emit BroadcastWorkerpoolOrder(_workerpoolorder); }
+	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    memory _requestorder   ) public { emit BroadcastRequestOrder   (_requestorder   ); }
 }

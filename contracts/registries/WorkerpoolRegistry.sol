@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import './Workerpool.sol';
@@ -20,12 +20,12 @@ contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by Ie
 	 * Pool creation
 	 */
 	function createWorkerpool(
-		address _workerpoolOwner,
-		string  _workerpoolDescription,
-		uint256 _subscriptionLockStakePolicy,
-		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
-	public /* onlyOwner /*owner == IexecHub*/ returns (Workerpool)
+		address          _workerpoolOwner,
+		string  calldata _workerpoolDescription,
+		uint256          _subscriptionLockStakePolicy,
+		uint256          _subscriptionMinimumStakePolicy,
+		uint256          _subscriptionMinimumScorePolicy)
+	external /* onlyOwner /*owner == IexecHub*/ returns (Workerpool)
 	{
 		Workerpool newWorkerpool = new Workerpool(
 			_workerpoolOwner,
@@ -34,8 +34,8 @@ contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by Ie
 			_subscriptionMinimumStakePolicy,
 			_subscriptionMinimumScorePolicy
 		);
-		require(insert(newWorkerpool, _workerpoolOwner));
-		emit CreateWorkerpool(_workerpoolOwner, newWorkerpool, _workerpoolDescription);
+		require(insert(address(newWorkerpool), _workerpoolOwner));
+		emit CreateWorkerpool(_workerpoolOwner, address(newWorkerpool), _workerpoolDescription);
 		return newWorkerpool;
 	}
 }

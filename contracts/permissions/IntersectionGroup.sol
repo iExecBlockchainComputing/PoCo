@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import './GroupInterface.sol';
@@ -13,8 +13,8 @@ contract IntersectionGroup is GroupInterface, OwnableMutable
 	 */
 	constructor() public {}
 
-	function setSubGroup(GroupInterface[] _subgroups)
-	public onlyOwner
+	function setSubGroup(GroupInterface[] calldata _subgroups)
+	external onlyOwner
 	{
 		m_subgroups = _subgroups;
 	}
@@ -23,7 +23,7 @@ contract IntersectionGroup is GroupInterface, OwnableMutable
 	{
 		if (m_subgroups.length == 0) return bytes1(0);
 
-		bytes1 permissions = bytes1(-1);
+		bytes1 permissions = 0xFF; //bytes1(-1);
 		for (uint256 i = 0; i < m_subgroups.length; ++i)
 		{
 			permissions = permissions & m_subgroups[i].viewPermissions(_user);

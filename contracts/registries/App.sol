@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
@@ -16,10 +16,10 @@ contract App is OwnableImmutable
 	 * Constructor
 	 */
 	constructor(
-		address _appOwner,
-		string  _appName,
-		string  _appParams,
-		bytes32 _appHash)
+		address        _appOwner,
+		string  memory _appName,
+		string  memory _appParams,
+		bytes32        _appHash)
 	public
 	OwnableImmutable(_appOwner)
 	{

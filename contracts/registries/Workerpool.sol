@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
@@ -28,11 +28,11 @@ contract Workerpool is OwnableImmutable
 	 * Constructor
 	 */
 	constructor(
-		address _workerpoolOwner,
-		string  _workerpoolDescription,
-		uint256 _subscriptionLockStakePolicy,
-		uint256 _subscriptionMinimumStakePolicy,
-		uint256 _subscriptionMinimumScorePolicy)
+		address        _workerpoolOwner,
+		string  memory _workerpoolDescription,
+		uint256        _subscriptionLockStakePolicy,
+		uint256        _subscriptionMinimumStakePolicy,
+		uint256        _subscriptionMinimumScorePolicy)
 	public
 	OwnableImmutable(_workerpoolOwner)
 	{

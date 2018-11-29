@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import './GroupInterface.sol';
@@ -13,8 +13,8 @@ contract UnionGroup is GroupInterface, OwnableMutable
 	 */
 	constructor() public {}
 
-	function setSubGroup(GroupInterface[] _subgroups)
-	public onlyOwner
+	function setSubGroup(GroupInterface[] calldata _subgroups)
+	external onlyOwner
 	{
 		m_subgroups = _subgroups;
 	}

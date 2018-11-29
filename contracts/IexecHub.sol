@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./interfaces/EIP1154.sol";
@@ -93,13 +93,13 @@ contract IexecHub is CategoryManager, Oracle
 	 *                                Accessors                                *
 	 ***************************************************************************/
 	function viewTask(bytes32 _taskid)
-	public view returns (IexecODBLibCore.Task)
+	public view returns (IexecODBLibCore.Task memory)
 	{
 		return m_tasks[_taskid];
 	}
 
 	function viewContribution(bytes32 _taskid, address _worker)
-	public view returns (IexecODBLibCore.Contribution)
+	public view returns (IexecODBLibCore.Contribution memory)
 	{
 		return m_contributions[_taskid][_worker];
 	}
@@ -117,7 +117,7 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function checkResources(address app, address dataset, address workerpool)
-	public view returns (bool)
+	external view returns (bool)
 	{
 		require(                         appregistry.isRegistered(app));
 		require(dataset == address(0) || datasetregistry.isRegistered(dataset));
@@ -129,7 +129,7 @@ contract IexecHub is CategoryManager, Oracle
 	 *                         EIP 1154 PULL INTERFACE                         *
 	 ***************************************************************************/
 	function resultFor(bytes32 id)
-	external view returns (bytes result)
+	external view returns (bytes memory)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[id];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);
@@ -167,12 +167,12 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function contribute(
-		bytes32                     _taskid,
-		bytes32                     _resultHash,
-		bytes32                     _resultSeal,
-		address                     _enclaveChallenge,
-		IexecODBLibOrders.signature _enclaveSign,
-		IexecODBLibOrders.signature _workerpoolSign)
+		bytes32                            _taskid,
+		bytes32                            _resultHash,
+		bytes32                            _resultSeal,
+		address                            _enclaveChallenge,
+		IexecODBLibOrders.signature memory _enclaveSign,
+		IexecODBLibOrders.signature memory _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -351,9 +351,9 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function finalize(
-		bytes32 _taskid,
-		bytes   _results)
-	public onlyScheduler(_taskid)
+		bytes32          _taskid,
+		bytes   calldata _results)
+	external onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status            == IexecODBLibCore.TaskStatusEnum.REVEALING);
@@ -499,9 +499,9 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function initializeArray(
-		bytes32[] _dealid,
-		uint256[] _idx)
-	public returns (bool)
+		bytes32[] calldata _dealid,
+		uint256[] calldata _idx)
+	external returns (bool)
 	{
 		require(_dealid.length == _idx.length);
 		for (uint i = 0; i < _dealid.length; ++i)
@@ -512,8 +512,8 @@ contract IexecHub is CategoryManager, Oracle
 	}
 
 	function claimArray(
-		bytes32[] _taskid)
-	public returns (bool)
+		bytes32[] calldata _taskid)
+	external returns (bool)
 	{
 		for (uint i = 0; i < _taskid.length; ++i)
 		{
@@ -529,7 +529,7 @@ contract IexecHub is CategoryManager, Oracle
 	public returns (bool)
 	{
 		// check pools validity
-		require(workerpoolregistry.isRegistered(_workerpool));
+		require(workerpoolregistry.isRegistered(address(_workerpool)));
 
 		// check worker is not previously affected: AUTO unsubscribe ???
 		require(m_workerAffectations[msg.sender] == address(0));
