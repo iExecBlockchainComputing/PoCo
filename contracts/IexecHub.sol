@@ -183,8 +183,10 @@ contract IexecHub is CategoryManager, Oracle
 		require(task.consensusDeadline >  now                                         );
 		require(contribution.status    == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
+		// worker must be subscribed to the pool, keep?
+		require(m_workerAffectations[msg.sender] == deal.workerpool.pointer);
+
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		// Skip check if authorized?
 		require(deal.workerpool.owner == ecrecover(
 			keccak256(abi.encodePacked(
 				"\x19Ethereum Signed Message:\n32",
@@ -198,13 +200,6 @@ contract IexecHub is CategoryManager, Oracle
 			_workerpoolSign.r,
 			_workerpoolSign.s)
 		);
-
-		// worker must be subscribed to the pool, keep?
-		require(m_workerAffectations[msg.sender] == deal.workerpool.pointer);
-
-		// Not needed
-		/* require(_resultHash != 0x0); */
-		/* require(_resultSeal != 0x0); */
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || deal.tag & 0x1 == 0);
@@ -237,6 +232,8 @@ contract IexecHub is CategoryManager, Oracle
 
 		emit TaskContribute(_taskid, msg.sender, _resultHash);
 
+		// Contribution done → updating and checking concensus
+
 		/*************************************************************************
 		 *                           SCORE POLICY 1/3                            *
 		 *                                                                       *
@@ -249,7 +246,7 @@ contract IexecHub is CategoryManager, Oracle
 		// TODO: Determine score policy
 		// k = 3
 		// uint256 weight = m_workerScores[msg.sender]
-		// 	.max(9)
+		//	.max(9) // Ensure weight always at least 2 (value: 3*k)
 		// 	.div(contribution.enclaveChallenge != address(0) ? 1 : 3)
 		// 	.sub(1)
 		uint256 group = m_groupweight[_taskid][_resultHash];
@@ -277,7 +274,8 @@ contract IexecHub is CategoryManager, Oracle
 			for (uint256 i = 0; i < task.contributors.length; ++i)
 			{
 				address w = task.contributors[i];
-				if (
+				if
+				(
 					m_contributions[_taskid][w].resultHash == _consensus
 					&&
 					m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
