@@ -9,7 +9,7 @@ password = ["/iexec-poco/parity/password"]
 interface = "0.0.0.0"
 cors = ["all"]
 hosts = ["all"]
-apis = ["web3", "eth", "net", "parity", "traces", "rpc", "personal", "parity_accounts", "signer", "parity_set"]
+apis = ["web3", "eth", "net", "pubsub", "parity_pubsub", "parity", "traces", "rpc", "personal", "parity_accounts", "signer", "parity_set"]
 
 [mining]
 reseal_on_txs = "none"
@@ -20,5 +20,5 @@ disable = false
 port = 8546
 interface = "all"
 origins = ["all"]
-apis = ["web3", "eth", "net", "parity", "traces", "rpc", "secretstore"]
+apis = ["web3", "eth", "net", "pubsub", "parity_pubsub", "parity", "traces", "rpc", "personal", "parity_accounts", "signer", "parity_set"]
 hosts = ["all"]
