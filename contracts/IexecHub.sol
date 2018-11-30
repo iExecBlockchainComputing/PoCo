@@ -237,20 +237,12 @@ contract IexecHub is CategoryManager, Oracle
 		/*************************************************************************
 		 *                           SCORE POLICY 1/3                            *
 		 *                                                                       *
-		 *                          see documentation !                          *
+		 *                          see documentation!                           *
 		 *************************************************************************/
-		uint256 weight = m_workerScores[msg.sender]
-			.max(1)
-			.mul(contribution.enclaveChallenge != address(0) ? 15 : 5)
-			.sub(1);
-		// TODO: Determine score policy
 		// k = 3
-		// uint256 weight = m_workerScores[msg.sender]
-		//	.max(9) // Ensure weight always at least 2 (value: 3*k)
-		// 	.div(contribution.enclaveChallenge != address(0) ? 1 : 3)
-		// 	.sub(1)
-		uint256 group = m_groupweight[_taskid][_resultHash];
-		uint256 delta = group.max(1).mul(weight).sub(group);
+		uint256 weight = m_workerScores[msg.sender].div(3).max(3).sub(1);
+		uint256 group  = m_groupweight[_taskid][_resultHash];
+		uint256 delta  = group.max(1).mul(weight).sub(group);
 
 		m_logweight  [_taskid][msg.sender ] = weight.log();
 		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
@@ -463,13 +455,13 @@ contract IexecHub is CategoryManager, Oracle
 
 				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
 
-				// Only reward if replication happened (revealCounter vs winnerCounter vs contributors.length)
+				// Only reward if replication happened
 				if (task.contributors.length > 1)
 				{
 					/*******************************************************************
 					 *                        SCORE POLICY 2/3                         *
 					 *                                                                 *
-					 *                       see documentation !                       *
+					 *                       see documentation!                        *
 					 *******************************************************************/
 					m_workerScores[worker] = m_workerScores[worker].add(1);
 					emit AccurateContribution(worker, _taskid);
@@ -485,11 +477,10 @@ contract IexecHub is CategoryManager, Oracle
 					/*******************************************************************
 					 *                        SCORE POLICY 3/3                         *
 					 *                                                                 *
-					 *                       see documentation !                       *
+					 *                       see documentation!                        *
 					 *******************************************************************/
-					m_workerScores[worker] = m_workerScores[worker].add(1).div(6);
-					// mulByFraction(2,3) equiv mulByFraction(k-1,k) with k = 3
-					// m_workerScores[worker] = m_workerScores[worker].mulByFraction(2,3).add(1);
+					// k = 3
+					m_workerScores[worker] = m_workerScores[worker].mulByFraction(2,3).add(1).min(m_workerScores[worker]);
 					emit FaultyContribution(worker, _taskid);
 				}
 			}
