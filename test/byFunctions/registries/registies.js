@@ -71,7 +71,7 @@ contract('IexecHub', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
@@ -96,7 +96,7 @@ contract('IexecHub', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
@@ -127,7 +127,7 @@ contract('IexecHub', async (accounts) => {
 				10, // lock
 				10, // minimum stake
 				10, // minimum score
-				{ from: scheduler }
+				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 

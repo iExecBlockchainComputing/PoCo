@@ -141,13 +141,13 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: scheduler }),
-			IexecClerkInstance.deposit(100000, { from: worker1   }),
-			IexecClerkInstance.deposit(100000, { from: worker2   }),
-			IexecClerkInstance.deposit(100000, { from: worker3   }),
-			IexecClerkInstance.deposit(100000, { from: worker4   }),
-			IexecClerkInstance.deposit(100000, { from: worker5   }),
-			IexecClerkInstance.deposit(100000, { from: user      }),
+			IexecClerkInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -163,22 +163,22 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await WorkerpoolInstance.changePolicy(35, 5, 100, 0, { from: scheduler });
+		txMined = await WorkerpoolInstance.changePolicy(35, 5, 100, 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 

@@ -194,7 +194,7 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
@@ -204,7 +204,7 @@ contract('IexecHub', async (accounts) => {
 	 *               TEST: Dataset creation (by datasetProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
@@ -220,7 +220,7 @@ contract('IexecHub', async (accounts) => {
 			10, // lock
 			10, // minimum stake
 			10, // minimum score
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
@@ -236,7 +236,7 @@ contract('IexecHub', async (accounts) => {
 			5,   // scheduler reward ratio
 			100, // minimum stake
 			0,   // minimum score
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
@@ -333,13 +333,13 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: scheduler }),
-			IexecClerkInstance.deposit(1000, { from: worker1   }),
-			IexecClerkInstance.deposit(1000, { from: worker2   }),
-			IexecClerkInstance.deposit(1000, { from: worker3   }),
-			IexecClerkInstance.deposit(1000, { from: worker4   }),
-			IexecClerkInstance.deposit(1000, { from: worker5   }),
-			IexecClerkInstance.deposit(1000, { from: user      }),
+			IexecClerkInstance.deposit(1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -355,11 +355,11 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Worker join", async () => {
 		txsMined = await Promise.all([
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker1 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker2 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker3 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker4 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker5 }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker3, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker4, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker5, gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -430,19 +430,19 @@ contract('IexecHub', async (accounts) => {
 	 *                    TEST: scheduler initializes task                     *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
-		txMined = await IexecHubInstance.initialize(dealids[0], 0, { from: scheduler });
+		txMined = await IexecHubInstance.initialize(dealids[0], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
 		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 		tasks[0].taskid = events[0].args.taskid;
 
-		txMined = await IexecHubInstance.initialize(dealids[0], 1, { from: scheduler });
+		txMined = await IexecHubInstance.initialize(dealids[0], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
 		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 		tasks[1].taskid = events[0].args.taskid;
 
-		txMined = await IexecHubInstance.initialize(dealids[1], 2, { from: scheduler });
+		txMined = await IexecHubInstance.initialize(dealids[1], 2, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
 		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
@@ -555,7 +555,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.finalize(
 			tasks[0].taskid,
 			web3.utils.utf8ToHex("aResult 1"),
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
@@ -612,7 +612,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.finalize(
 			tasks[1].taskid,
 			web3.utils.utf8ToHex("aResult 2"),
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
@@ -669,7 +669,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.finalize(
 			tasks[2].taskid,
 			web3.utils.utf8ToHex("aResult 3"),
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 

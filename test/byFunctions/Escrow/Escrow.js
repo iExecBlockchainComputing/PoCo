@@ -113,7 +113,7 @@ contract('IexecHub', async (accounts) => {
 
 		try
 		{
-			txMined = await IexecClerkInstance.deposit(100, { from: user });
+			txMined = await IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to deposit");
 		}
 		catch (error)
@@ -132,7 +132,7 @@ contract('IexecHub', async (accounts) => {
 
 		try
 		{
-			txMined = await IexecClerkInstance.depositFor(100, scheduler, { from: user });
+			txMined = await IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to deposit");
 		}
 		catch (error)
@@ -154,13 +154,13 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		txMined = await RLCInstance.transfer(user, 1000000000, { from: iexecAdmin });
+		txMined = await RLCInstance.transfer(user, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		txMined = await RLCInstance.approve(IexecClerkInstance.address, 100000000, { from: user });
+		txMined = await RLCInstance.approve(IexecClerkInstance.address, 100000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
@@ -176,7 +176,7 @@ contract('IexecHub', async (accounts) => {
 
 		try
 		{
-			txMined = await IexecClerkInstance.deposit(1000000000, { from: user });
+			txMined = await IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to deposit");
 		}
 		catch (error)
@@ -195,7 +195,7 @@ contract('IexecHub', async (accounts) => {
 
 		try
 		{
-			txMined = await IexecClerkInstance.depositFor(1000000000, scheduler, { from: user });
+			txMined = await IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to deposit");
 		}
 		catch (error)
@@ -217,7 +217,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		txMined = await IexecClerkInstance.deposit(50000000, { from: user });
+		txMined = await IexecClerkInstance.deposit(50000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "Deposit");
@@ -232,7 +232,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
 
-		txMined = await IexecClerkInstance.depositFor(50000000, scheduler, { from: user });
+		txMined = await IexecClerkInstance.depositFor(50000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "DepositFor");
@@ -275,7 +275,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
 
-		txMined = await IexecClerkInstance.withdraw(10000000, {from: user});
+		txMined = await IexecClerkInstance.withdraw(10000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "Withdraw");

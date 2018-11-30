@@ -150,13 +150,13 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: scheduler }),
-			IexecClerkInstance.deposit(1000, { from: worker1   }),
-			IexecClerkInstance.deposit(1000, { from: worker2   }),
-			IexecClerkInstance.deposit(1000, { from: worker3   }),
-			IexecClerkInstance.deposit(1000, { from: worker4   }),
-			IexecClerkInstance.deposit(1000, { from: worker5   }),
-			IexecClerkInstance.deposit(1000, { from: user      }),
+			IexecClerkInstance.deposit(1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -172,31 +172,31 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, /* minimum stake */ 100, /* minimum score */ 0, { from: scheduler });
+		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, /* minimum stake */ 100, /* minimum score */ 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// Workers
 		txsMined = await Promise.all([
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker1 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker2 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker3 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker4 }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker5 }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker3, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker4, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker5, gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -335,7 +335,7 @@ contract('IexecHub', async (accounts) => {
 	}
 
 	it("Initialization", async () => {
-		tasks[0] = extractEvents(await IexecHubInstance.initialize(deals[0], 0, { from: scheduler }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // contributions
+		tasks[0] = extractEvents(await IexecHubInstance.initialize(deals[0], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid; // contributions
 	});
 
 	it("Contribute #1", async () => {
@@ -367,7 +367,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Reopen", async () => {
-		await IexecHubInstance.reopen(tasks[0], { from: scheduler });
+		await IexecHubInstance.reopen(tasks[0], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 	});
 
 	it("Contribute #2", async () => {
@@ -405,12 +405,12 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Reveal", async () => {
-		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: worker3 });
-		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: worker4 });
+		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: worker3, gas: constants.AMOUNT_GAS_PROVIDED });
+		await IexecHubInstance.reveal(tasks[0], odbtools.hashResult(tasks[0], "true").digest, { from: worker4, gas: constants.AMOUNT_GAS_PROVIDED });
 	});
 
 	it("Finalize", async () => {
-		await IexecHubInstance.finalize(tasks[0], web3.utils.utf8ToHex("aResult"), { from: scheduler });
+		await IexecHubInstance.finalize(tasks[0], web3.utils.utf8ToHex("aResult"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 	});
 
 	it("[setup] Sanity check", async () => {
