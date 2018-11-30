@@ -25,10 +25,11 @@ contract Escrow
 	/**
 	 * Events
 	 */
-	event Deposit (address owner, uint256 amount);
-	event Withdraw(address owner, uint256 amount);
-	event Reward  (address user,  uint256 amount);
-	event Seize   (address user,  uint256 amount);
+	event Deposit   (address owner, uint256 amount);
+	event DepositFor(address owner, uint256 amount, address target);
+	event Withdraw  (address owner, uint256 amount);
+	event Reward    (address user,  uint256 amount);
+	event Seize     (address user,  uint256 amount);
 
 	/**
 	 * Constructor
@@ -56,6 +57,15 @@ contract Escrow
 		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		emit Deposit(msg.sender, _amount);
+		return true;
+	}
+	function depositFor(uint256 _amount, address _target) external returns (bool)
+	{
+		require(_target != address(0));
+		
+		require(token.transferFrom(msg.sender, address(this), _amount));
+		m_accounts[_target].stake = m_accounts[_target].stake.add(_amount);
+		emit DepositFor(msg.sender, _amount, _target);
 		return true;
 	}
 	function withdraw(uint256 _amount) external returns (bool)
