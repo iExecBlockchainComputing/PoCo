@@ -62,7 +62,7 @@ contract Escrow
 	function depositFor(uint256 _amount, address _target) external returns (bool)
 	{
 		require(_target != address(0));
-		
+
 		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[_target].stake = m_accounts[_target].stake.add(_amount);
 		emit DepositFor(msg.sender, _amount, _target);
