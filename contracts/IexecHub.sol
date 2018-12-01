@@ -480,7 +480,7 @@ contract IexecHub is CategoryManager, Oracle
 					 *                       see documentation!                        *
 					 *******************************************************************/
 					// k = 3
-					m_workerScores[worker] = m_workerScores[worker].mulByFraction(2,3).add(1).min(m_workerScores[worker]);
+					m_workerScores[worker] = m_workerScores[worker].mulByFraction(2,3);
 					emit FaultyContribution(worker, _taskid);
 				}
 			}

@@ -714,7 +714,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Finalized 3] Check score", async () => {
 		assert.equal(Number(await IexecHubInstance.viewScore(worker1)), 2, "score issue");
 		assert.equal(Number(await IexecHubInstance.viewScore(worker2)), 3, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker3)), 1, "score issue");
+		assert.equal(Number(await IexecHubInstance.viewScore(worker3)), 0, "score issue");
 		assert.equal(Number(await IexecHubInstance.viewScore(worker4)), 1, "score issue");
 		assert.equal(Number(await IexecHubInstance.viewScore(worker5)), 1, "score issue");
 	});
