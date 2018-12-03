@@ -182,23 +182,13 @@ contract('IexecHub', async (accounts) => {
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", /* lock*/ 10, /* minimum stake*/ 10, /* minimum score*/ 10, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 
-		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, /* minimum stake */ 100, /* minimum score */ 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		// Workers
-		txsMined = await Promise.all([
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecHubInstance.subscribe(WorkerpoolInstance.address, { from: worker3, gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// Orders
 		apporder = odbtools.signAppOrder(
@@ -302,7 +292,6 @@ contract('IexecHub', async (accounts) => {
 		tasks[5] = extractEvents(await IexecHubInstance.initialize(deals[1], 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 		tasks[6] = extractEvents(await IexecHubInstance.initialize(deals[1], 6, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 		tasks[7] = extractEvents(await IexecHubInstance.initialize(deals[1], 7, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
-		tasks[8] = extractEvents(await IexecHubInstance.initialize(deals[1], 8, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecHubInstance.address, "TaskInitialize")[0].args.taskid;
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -432,29 +421,8 @@ contract('IexecHub', async (accounts) => {
 		}
 	});
 
-	it("[2.6] Contribute - Error (subsctription)", async () => {
+	it("[2.6] Contribute - Error (enclave signature)", async () => {
 		__taskid  = tasks[6];
-		__worker  = worker4; // worker not assigned to the workerpool
-		__enclave = constants.NULL.ADDRESS;
-		__raw     = "true"
-
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
-	});
-
-	it("[2.7] Contribute - Error (enclave signature)", async () => {
-		__taskid  = tasks[7];
 		__worker  = worker1;
 		__enclave = sgxEnclave;
 		__raw     = "true"
@@ -475,13 +443,13 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[8])).consensusDeadline);
+		target = Number((await IexecHubInstance.viewTask(tasks[7])).consensusDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
 
-	it("[2.8] Contribute - Late", async () => {
-		__taskid  = tasks[8];
+	it("[2.7] Contribute - Late", async () => {
+		__taskid  = tasks[7];
 		__worker  = worker1;
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"

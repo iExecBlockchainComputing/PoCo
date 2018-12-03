@@ -186,28 +186,11 @@ contract('IexecHub', async (accounts) => {
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 			scheduler,
 			"A test workerpool",
-			10, // lock
-			10, // minimum stake
-			10, // minimum score
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
-	});
-
-	/***************************************************************************
-	 *               TEST: Workerpool configuration (by scheduler)               *
-	 ***************************************************************************/
-	it("[Genesis] Workerpool Configuration", async () => {
-		txMined = await WorkerpoolInstance.changePolicy(
-			35,  // worker stake ratio
-			5,   // scheduler reward ratio
-			100, // minimum stake
-			0,   // minimum score
-			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************

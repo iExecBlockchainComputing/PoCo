@@ -388,21 +388,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 
 	/***************************************************************************
-	 *                     Escrow overhead for affectation                     *
-	 ***************************************************************************/
-	function lockSubscription(address _worker, uint256 _amount)
-	public onlyIexecHub
-	{
-		lock(_worker, _amount);
-	}
-
-	function unlockSubscription(address _worker, uint256 _amount)
-	public onlyIexecHub
-	{
-		unlock(_worker, _amount);
-	}
-
-	/***************************************************************************
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
 	function lockContribution(bytes32 _dealid, address _worker)

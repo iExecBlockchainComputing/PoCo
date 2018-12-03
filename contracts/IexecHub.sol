@@ -34,7 +34,6 @@ contract IexecHub is CategoryManager, Oracle
 	mapping(bytes32 =>                    IexecODBLibCore.Task         ) m_tasks;
 	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) m_contributions;
 	mapping(address =>                    uint256                      ) m_workerScores;
-	mapping(address =>                    address                      ) m_workerAffectations;
 
 	mapping(bytes32 => mapping(address => uint256                     )) m_logweight;
 	mapping(bytes32 => mapping(bytes32 => uint256                     )) m_groupweight;
@@ -53,10 +52,6 @@ contract IexecHub is CategoryManager, Oracle
 
 	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
-
-	event WorkerSubscription  (address indexed workerpool, address indexed worker);
-	event WorkerUnsubscription(address indexed workerpool, address indexed worker);
-	event WorkerEviction      (address indexed workerpool, address indexed worker);
 
 	/***************************************************************************
 	 *                                Modifiers                                *
@@ -108,12 +103,6 @@ contract IexecHub is CategoryManager, Oracle
 	public view returns (uint256)
 	{
 		return m_workerScores[_worker];
-	}
-
-	function viewAffectation(address _worker)
-	public view returns (Workerpool)
-	{
-		return Workerpool(m_workerAffectations[_worker]);
 	}
 
 	function checkResources(address app, address dataset, address workerpool)
@@ -182,9 +171,6 @@ contract IexecHub is CategoryManager, Oracle
 		require(task.status            == IexecODBLibCore.TaskStatusEnum.ACTIVE       );
 		require(task.consensusDeadline >  now                                         );
 		require(contribution.status    == IexecODBLibCore.ContributionStatusEnum.UNSET);
-
-		// worker must be subscribed to the pool, keep?
-		require(m_workerAffectations[msg.sender] == deal.workerpool.pointer);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(deal.workerpool.owner == ecrecover(
@@ -510,65 +496,6 @@ contract IexecHub is CategoryManager, Oracle
 		{
 			claim(_taskid[i]);
 		}
-		return true;
-	}
-
-	/***************************************************************************
-	 *                       Worker affectation methods                        *
-	 ***************************************************************************/
-	function subscribe(Workerpool _workerpool)
-	public returns (bool)
-	{
-		// check pools validity
-		require(workerpoolregistry.isRegistered(address(_workerpool)));
-
-		// check worker is not previously affected: AUTO unsubscribe ???
-		require(m_workerAffectations[msg.sender] == address(0));
-
-		// Lock stake & check funds/reputation
-		iexecclerk.lockSubscription(msg.sender, _workerpool.m_subscriptionLockStakePolicy());
-		require(iexecclerk.viewAccount(msg.sender).stake >= _workerpool.m_subscriptionMinimumStakePolicy());
-		require(m_workerScores[msg.sender]               >= _workerpool.m_subscriptionMinimumScorePolicy());
-
-		// update affectation
-		m_workerAffectations[msg.sender] = address(_workerpool);
-
-		emit WorkerSubscription(address(_workerpool), msg.sender);
-		return true;
-	}
-
-	function unsubscribe()
-	public returns (bool)
-	{
-		// check affectation
-		Workerpool workerpool = Workerpool(m_workerAffectations[msg.sender]);
-		require(address(workerpool) != address(0));
-
-		// Unlock stake
-		iexecclerk.unlockSubscription(msg.sender, workerpool.m_subscriptionLockStakePolicy());
-
-		// update affectation
-		m_workerAffectations[msg.sender] = address(0);
-
-		emit WorkerUnsubscription(address(workerpool), msg.sender);
-		return true;
-	}
-
-	function evict(address _worker)
-	public returns (bool)
-	{
-		// check affectation & authorization
-		Workerpool workerpool = Workerpool(m_workerAffectations[_worker]);
-		require(address(workerpool)  != address(0));
-		require(workerpool.m_owner() == msg.sender);
-
-		// Unlock stake
-		iexecclerk.unlockSubscription(_worker, workerpool.m_subscriptionLockStakePolicy());
-
-		// update affectation
-		m_workerAffectations[_worker] = address(0);
-
-		emit WorkerEviction(address(workerpool), _worker);
 		return true;
 	}
 }

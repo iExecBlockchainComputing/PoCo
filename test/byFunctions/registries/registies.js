@@ -124,9 +124,6 @@ contract('IexecHub', async (accounts) => {
 			txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 				scheduler,
 				"Workerpool #"+i,
-				10, // lock
-				10, // minimum stake
-				10, // minimum score
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -140,9 +137,6 @@ contract('IexecHub', async (accounts) => {
 			assert.equal (await WorkerpoolInstances[i].m_workerpoolDescription(),                        "Workerpool #"+i,               "Erroneous Workerpool description"             );
 			assert.equal (await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),                       30,                             "Erroneous Workerpool params"                  );
 			assert.equal (await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(),                   1,                              "Erroneous Workerpool params"                  );
-			assert.equal (await WorkerpoolInstances[i].m_subscriptionLockStakePolicy(),                  10,                             "Erroneous Workerpool params"                  );
-			assert.equal (await WorkerpoolInstances[i].m_subscriptionMinimumStakePolicy(),               10,                             "Erroneous Workerpool params"                  );
-			assert.equal (await WorkerpoolInstances[i].m_subscriptionMinimumScorePolicy(),               10,                             "Erroneous Workerpool params"                  );
 			assert.equal (await WorkerpoolRegistryInstance.viewCount(scheduler),                         i,                              "scheduler must have 1 more workerpool now");
 			assert.equal (await WorkerpoolRegistryInstance.viewEntry(scheduler, i),                      WorkerpoolInstances[i].address, "check workerpoolAddress"                      );
 			assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address),                                 "check workerpool registration"                );
