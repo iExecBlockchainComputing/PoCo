@@ -15,10 +15,8 @@ const readFileAsync = Promise.promisify(fs.readFile);
 **/
 module.exports = function(deployer) {
   let aIexecAPIInstance;;
-  return deployer.deploy(IexecAPI, '0xc4e4a08bf4c6fd11028b714038846006e27d7be8', '0x9d32b7cbfa9d68f04048589e5c9cefda241c6312', {
-      from: '0x8bd535d49b095ef648cd85ea827867d358872809',
-      gas: '4685012'
-    })
+  //deploy(IexecAPI,IexecHub,Marketplace)
+  return deployer.deploy(IexecAPI, '0x12b92a17b1ca4bb10b861386446b8b2716e58c9b', '0x9315a6ae9a9842bcb5ad8f5d43a4271d297088e2')
     .then(() => IexecAPI.deployed())
     .then(instance => {
       aIexecAPIInstance = instance;
