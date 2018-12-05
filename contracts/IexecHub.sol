@@ -243,7 +243,7 @@ contract IexecHub is CategoryManager, Oracle
 	internal
 	{
 		uint256 trust = iexecclerk.viewDeal(m_tasks[_taskid].dealid).trust;
-		if (m_groupweight[_taskid][_consensus].mul(trust) >= m_totalweight[_taskid].mul(trust.sub(1)))
+		if (m_groupweight[_taskid][_consensus].mul(trust) > m_totalweight[_taskid].mul(trust.sub(1)))
 		{
 			// Preliminary checks done in "contribute()"
 
