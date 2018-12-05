@@ -3,16 +3,17 @@ const ethUtil = require("ethereumjs-util");
 module.exports = {
 
 	EIP712DOMAIN_SEPARATOR: null,
-	   EIP712DOMAIN_TYPEHASH: web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-	       APPORDER_TYPEHASH: web3.utils.keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
-	   DATASETORDER_TYPEHASH: web3.utils.keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
+	EIP712DOMAIN_TYPEHASH:    web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+	APPORDER_TYPEHASH:        web3.utils.keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
+	DATASETORDER_TYPEHASH:    web3.utils.keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
 	WORKERPOOLORDER_TYPEHASH: web3.utils.keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)"),
-	   REQUESTORDER_TYPEHASH: web3.utils.keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
+	REQUESTORDER_TYPEHASH:    web3.utils.keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
 
 	setup: function(domain)
 	{
 		console.log("# iExec domain:", JSON.stringify(domain));
 		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
+		console.log("EIP712DOMAIN_SEPARATOR:", this.EIP712DOMAIN_SEPARATOR);
 	},
 
 	/* EIP712 compliant structure hashes */

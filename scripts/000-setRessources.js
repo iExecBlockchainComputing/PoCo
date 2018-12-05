@@ -34,6 +34,9 @@ var user            = null;
 module.exports = async function(callback) {
 
 	console.log("# web3 version:", web3.version);
+	console.log("ChainId:  ", await web3.eth.net.getId());
+	console.log("ChainType:", await web3.eth.net.getNetworkType());
+
 	var IexecClerkInstance         = await IexecClerk.at("0x8BE59dA9Bf70e75Aa56bF29A3e55d22e882F91bA");
 	var RLCInstance                = await RLC.at(await IexecClerkInstance.token());
 	var IexecHubInstance           = await IexecHub.at(await IexecClerkInstance.iexechub());
