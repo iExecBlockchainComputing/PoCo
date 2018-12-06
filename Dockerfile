@@ -2,7 +2,7 @@ FROM parity/parity:stable
 
 USER root
 
-RUN apt update && apt install -y curl git
+RUN apt update && apt install -y curl git ca-certificates
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 RUN bash -i -c "nvm install node"
 
