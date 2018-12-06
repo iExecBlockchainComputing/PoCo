@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibCore.sol";
@@ -32,19 +32,13 @@ contract IexecClerkABILegacy
 	event SchedulerNotice      (address indexed workerpool, bytes32 dealid);
 
 	function viewRequestDeals(bytes32 _id)
-	public view returns (bytes32[]);
+	public view returns (bytes32[] memory);
 
 	function viewConsumed(bytes32 _id)
 	public view returns (uint256);
 
 	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
 	public view returns (bool);
-
-	function lockSubscription  (address _worker, uint256 _amount)
-	public;
-
-	function unlockSubscription(address _worker, uint256 _amount)
-	public;
 
 	function lockContribution(bytes32 _dealid, address _worker)
 	public;
@@ -89,7 +83,7 @@ contract IexecClerkABILegacy
 	, address
 	, address
 	, address
-	, string
+	, string memory
 	);
 
 	function viewConfigABILegacy(bytes32 _id)

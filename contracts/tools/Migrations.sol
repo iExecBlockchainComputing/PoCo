@@ -1,28 +1,33 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.5.0;
+
+import "./Ownable.sol";
 
 contract Migrations
 {
 	address public owner;
-	uint    public last_completed_migration;
+	uint256 public lastCompletedMigration;
 
-	modifier restricted()
-	{
-		if (msg.sender == owner) _; // TODO: if → require
+	modifier onlyOwner() {
+		require (msg.sender == owner);
+		_;
 	}
 
-	function Migrations() public
-	{
+	constructor() public {
 		owner = msg.sender;
 	}
-
-	function setCompleted(uint completed) public restricted
+	
+	function setCompleted(uint completed) public onlyOwner
 	{
-		last_completed_migration = completed;
+		lastCompletedMigration = completed;
 	}
 
-	function upgrade(address new_address) public restricted
+	function upgrade(address newAddress) public onlyOwner
 	{
-		Migrations upgraded = Migrations(new_address);
-		upgraded.setCompleted(last_completed_migration);
+		Migrations upgraded = Migrations(newAddress);
+		upgraded.setCompleted(lastCompletedMigration);
+	}
+
+	function transferOwnership(address newOwner) public onlyOwner {
+		if (newOwner != address(0)) owner = newOwner;
 	}
 }

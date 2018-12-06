@@ -22,6 +22,7 @@ contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
+	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -29,8 +30,8 @@ contract('IexecHub', async (accounts) => {
 	let worker2         = accounts[5];
 	let worker3         = accounts[6];
 	let worker4         = accounts[7];
-	let user            = accounts[8];
-	let sgxEnclave      = accounts[9];
+	let worker5         = accounts[8];
+	let user            = accounts[9];
 
 	var RLCInstance                = null;
 	var IexecHubInstance           = null;
@@ -69,7 +70,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
 		try
 		{
-			await IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin });
+			await IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to transfer ownership");
 		}
 		catch (error)
@@ -102,7 +103,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
 		try
 		{
-			txMined = await IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user });
+			txMined = await IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to create category");
 		}
 		catch (error)
@@ -115,7 +116,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("CategoryManager - create and view #3: authorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
-		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin });
+		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 

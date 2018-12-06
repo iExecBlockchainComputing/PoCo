@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 
 import "./interfaces/EIP1154.sol";
 
@@ -13,7 +13,7 @@ contract TestClient //is OracleConsumer
 	{
 	}
 
-	function receiveResult(bytes32 id, bytes result) external
+	function receiveResult(bytes32 id, bytes calldata result) external
 	{
 		store[id] = result;
 		emit GotResult(id, result);

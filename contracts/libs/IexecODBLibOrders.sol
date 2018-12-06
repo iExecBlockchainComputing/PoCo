@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 library IexecODBLibOrders
@@ -86,8 +86,8 @@ library IexecODBLibOrders
 		signature sign;
 	}
 
-	function hash(EIP712Domain _domain)
-	public pure returns (bytes32 hash)
+	function hash(EIP712Domain memory _domain)
+	public pure returns (bytes32 domainhash)
 	{
 		/**
 		 * Readeable but expensive
@@ -114,15 +114,15 @@ library IexecODBLibOrders
 			mstore(add(_domain,  0),    nameHash)
 			mstore(add(_domain, 32), versionHash)
 			// Compute hash
-			hash := keccak256(sub(_domain, 32), 160) // 160 = 32 + 128
+			domainhash := keccak256(sub(_domain, 32), 160) // 160 = 32 + 128
 			// Restore memory
 			mstore(sub(_domain, 32), temp1)
 			mstore(add(_domain,  0), temp2)
 			mstore(add(_domain, 32), temp3)
 		}
 	}
-	function hash(AppOrder _apporder)
-	public pure returns (bytes32 hash)
+	function hash(AppOrder memory _apporder)
+	public pure returns (bytes32 apphash)
 	{
 		/**
 		 * Readeable but expensive
@@ -147,13 +147,13 @@ library IexecODBLibOrders
 			// Write typeHash and sub-hashes
 			mstore(sub(_apporder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_apporder, 32), 288) // 288 = 32 + 256
+			apphash := keccak256(sub(_apporder, 32), 288) // 288 = 32 + 256
 			// Restore memory
 			mstore(sub(_apporder, 32), temp1)
 		}
 	}
-	function hash(DatasetOrder _datasetorder)
-	public pure returns (bytes32 hash)
+	function hash(DatasetOrder memory _datasetorder)
+	public pure returns (bytes32 datasethash)
 	{
 		/**
 		 * Readeable but expensive
@@ -178,13 +178,13 @@ library IexecODBLibOrders
 			// Write typeHash and sub-hashes
 			mstore(sub(_datasetorder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_datasetorder, 32), 288) // 288 = 32 + 256
+			datasethash := keccak256(sub(_datasetorder, 32), 288) // 288 = 32 + 256
 			// Restore memory
 			mstore(sub(_datasetorder, 32), temp1)
 		}
 	}
-	function hash(WorkerpoolOrder _workerpoolorder)
-	public pure returns (bytes32 hash)
+	function hash(WorkerpoolOrder memory _workerpoolorder)
+	public pure returns (bytes32 workerpoolhash)
 	{
 		/**
 		 * Readeable but expensive
@@ -211,13 +211,13 @@ library IexecODBLibOrders
 			// Write typeHash and sub-hashes
 			mstore(sub(_workerpoolorder, 32), typeHash)
 			// Compute hash
-			hash := keccak256(sub(_workerpoolorder, 32), 352) // 352 = 32 + 320
+			workerpoolhash := keccak256(sub(_workerpoolorder, 32), 352) // 352 = 32 + 320
 			// Restore memory
 			mstore(sub(_workerpoolorder, 32), temp1)
 		}
 	}
-	function hash(RequestOrder _requestorder)
-	public pure returns (bytes32 hash)
+	function hash(RequestOrder memory _requestorder)
+	public pure returns (bytes32 requesthash)
 	{
 		/**
 		 * Readeable but expensive
@@ -254,7 +254,7 @@ library IexecODBLibOrders
 			mstore(sub(_requestorder,  32), typeHash)
 			mstore(add(_requestorder, 416), paramsHash)
 			// Compute hash
-			hash := keccak256(sub(_requestorder, 32), 512) // 512 = 32 + 480
+			requesthash := keccak256(sub(_requestorder, 32), 512) // 512 = 32 + 480
 			// Restore memory
 			mstore(sub(_requestorder,  32), temp1)
 			mstore(add(_requestorder, 416), temp2)

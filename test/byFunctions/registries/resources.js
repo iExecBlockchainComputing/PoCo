@@ -22,6 +22,7 @@ contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
+	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -29,8 +30,8 @@ contract('IexecHub', async (accounts) => {
 	let worker2         = accounts[5];
 	let worker3         = accounts[6];
 	let worker4         = accounts[7];
-	let user            = accounts[8];
-	let sgxEnclave      = accounts[9];
+	let worker5         = accounts[8];
+	let user            = accounts[9];
 
 	var RLCInstance                = null;
 	var IexecHubInstance           = null;
@@ -75,7 +76,7 @@ contract('IexecHub', async (accounts) => {
 				"App #"+i,
 				constants.DAPP_PARAMS_EXAMPLE,
 				constants.NULL.BYTES32,
-				{ from: appProvider }
+				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.equal ( await AppInstances[i].m_owner(),     appProvider,                   "Erroneous App owner" );
 			assert.equal ( await AppInstances[i].m_appName(),   "App #"+i,                     "Erroneous App name"  );
@@ -95,7 +96,7 @@ contract('IexecHub', async (accounts) => {
 				"Dataset #"+i,
 				"3.1415926535",
 				constants.NULL.BYTES32,
-				{ from: datasetProvider }
+				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.equal ( await DatasetInstances[i].m_owner(),         datasetProvider,        "Erroneous Dataset owner" );
 			assert.equal ( await DatasetInstances[i].m_datasetName(),   "Dataset #"+i,          "Erroneous Dataset name"  );
@@ -113,16 +114,12 @@ contract('IexecHub', async (accounts) => {
 			WorkerpoolInstances[i] = await Workerpool.new(
 				scheduler,
 				"Workerpool #"+i,
-				10, // lock
-				10, // minimum stake
-				{ from: scheduler }
+				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.equal ( await WorkerpoolInstances[i].m_owner(),                           scheduler,        "Erroneous Workerpool owner"      );
 			assert.equal ( await WorkerpoolInstances[i].m_workerpoolDescription(),           "Workerpool #"+i, "Erroneous Workerpool description");
 			assert.equal ((await WorkerpoolInstances[i].m_workerStakeRatioPolicy()),         30,               "Erroneous Workerpool params"     );
 			assert.equal ((await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy()),     1,                "Erroneous Workerpool params"     );
-			assert.equal ((await WorkerpoolInstances[i].m_subscriptionLockStakePolicy()),    10,               "Erroneous Workerpool params"     );
-			assert.equal ((await WorkerpoolInstances[i].m_subscriptionMinimumStakePolicy()), 10,               "Erroneous Workerpool params"     );
 		}
 	});
 
@@ -133,8 +130,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await WorkerpoolInstances[1].changePolicy(
 			35,  // worker stake ratio
 			5,   // scheduler reward ratio
-			100, // minimum stake
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
@@ -143,15 +139,11 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.newWorkerStakeRatioPolicy,         35,  "Erroneous newWorkerStakeRatioPolicy"        );
 		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy,     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
 		assert.equal(events[0].args.newSchedulerRewardRatioPolicy,     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.oldSubscriptionMinimumStakePolicy, 10,  "Erroneous oldSubscriptionMinimumStakePolicy");
-		assert.equal(events[0].args.newSubscriptionMinimumStakePolicy, 100, "Erroneous newSubscriptionMinimumStakePolicy");
 
 		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
 		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
 		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
 	});
 
 	/***************************************************************************
@@ -161,10 +153,9 @@ contract('IexecHub', async (accounts) => {
 		try
 		{
 			await WorkerpoolInstances[1].changePolicy(
-				0, // worker stake ratio
-				0, // scheduler reward ratio (should not be above 100%)
-				0, // minimum stake
-				{ from: user }
+				0,
+				0,
+				{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.fail("user should not be able to change policy");
 		}
@@ -178,8 +169,6 @@ contract('IexecHub', async (accounts) => {
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
 		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
 		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
 	});
 
 	/***************************************************************************
@@ -191,8 +180,7 @@ contract('IexecHub', async (accounts) => {
 			await WorkerpoolInstances[1].changePolicy(
 				100, // worker stake ratio
 				150, // scheduler reward ratio (should not be above 100%)
-				0,   // minimum stake
-				{ from: scheduler }
+				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.fail("user should not be able to set invalid policy");
 		}
@@ -206,8 +194,6 @@ contract('IexecHub', async (accounts) => {
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
 		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
 		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionLockStakePolicy()),    10,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_subscriptionMinimumStakePolicy()), 100,             "Erroneous Workerpool params"     );
 	});
 
 });

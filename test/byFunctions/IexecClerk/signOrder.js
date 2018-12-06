@@ -22,6 +22,7 @@ contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
+	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -29,8 +30,8 @@ contract('IexecHub', async (accounts) => {
 	let worker2         = accounts[5];
 	let worker3         = accounts[6];
 	let worker4         = accounts[7];
-	let user            = accounts[8];
-	let sgxEnclave      = accounts[9];
+	let worker5         = accounts[8];
+	let user            = accounts[9];
 
 	var RLCInstance                = null;
 	var IexecHubInstance           = null;
@@ -64,21 +65,21 @@ contract('IexecHub', async (accounts) => {
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance        = await App.at(events[0].args.app);
+		AppInstance = await App.at(events[0].args.app);
 	});
 
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance    = await Dataset.at(events[0].args.dataset);
+		DatasetInstance = await Dataset.at(events[0].args.dataset);
 	});
 
 	it("[Genesis] Workerpool Creation", async () => {
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", 10, 10, { from: scheduler });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
@@ -151,7 +152,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 		try
 		{
-			await IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin });
+			await IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to sign apporder");
 		}
 		catch (error)
@@ -164,7 +165,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("presign app order #2", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
-		await IexecClerkInstance.signAppOrder(apporder, { from: appProvider });
+		await IexecClerkInstance.signAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isTrue (await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
@@ -175,7 +176,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 		try
 		{
-			await IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin });
+			await IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to sign datasetorder");
 		}
 		catch (error)
@@ -188,7 +189,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("presign dataset order #2", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
-		await IexecClerkInstance.signDatasetOrder(datasetorder, { from: datasetProvider });
+		await IexecClerkInstance.signDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isTrue (await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
@@ -199,7 +200,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 		try
 		{
-			await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin });
+			await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to sign workerpoolorder");
 		}
 		catch (error)
@@ -212,7 +213,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("presign workerpool order #2", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
-		await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler });
+		await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isTrue (await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
@@ -223,7 +224,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 		try
 		{
-			await IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin });
+			await IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.fail("user should not be able to sign requestorder");
 		}
 		catch (error)
@@ -236,7 +237,7 @@ contract('IexecHub', async (accounts) => {
 
 	it("presign request order #2", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
-		await IexecClerkInstance.signRequestOrder(requestorder, { from: user });
+		await IexecClerkInstance.signRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isTrue (await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 

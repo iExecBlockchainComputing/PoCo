@@ -22,6 +22,7 @@ contract('IexecHub', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
+	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -29,8 +30,8 @@ contract('IexecHub', async (accounts) => {
 	let worker2         = accounts[5];
 	let worker3         = accounts[6];
 	let worker4         = accounts[7];
-	let user            = accounts[8];
-	let sgxEnclave      = accounts[9];
+	let worker5         = accounts[8];
+	let user            = accounts[9];
 
 	var RLCInstance                = null;
 	var IexecHubInstance           = null;
@@ -70,7 +71,7 @@ contract('IexecHub', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
@@ -95,7 +96,7 @@ contract('IexecHub', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
@@ -123,9 +124,7 @@ contract('IexecHub', async (accounts) => {
 			txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 				scheduler,
 				"Workerpool #"+i,
-				10, // lock
-				10, // minimum stake
-				{ from: scheduler }
+				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
@@ -138,8 +137,6 @@ contract('IexecHub', async (accounts) => {
 			assert.equal (await WorkerpoolInstances[i].m_workerpoolDescription(),                        "Workerpool #"+i,               "Erroneous Workerpool description"             );
 			assert.equal (await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),                       30,                             "Erroneous Workerpool params"                  );
 			assert.equal (await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(),                   1,                              "Erroneous Workerpool params"                  );
-			assert.equal (await WorkerpoolInstances[i].m_subscriptionLockStakePolicy(),                  10,                             "Erroneous Workerpool params"                  );
-			assert.equal (await WorkerpoolInstances[i].m_subscriptionMinimumStakePolicy(),               10,                             "Erroneous Workerpool params"                  );
 			assert.equal (await WorkerpoolRegistryInstance.viewCount(scheduler),                         i,                              "scheduler must have 1 more workerpool now");
 			assert.equal (await WorkerpoolRegistryInstance.viewEntry(scheduler, i),                      WorkerpoolInstances[i].address, "check workerpoolAddress"                      );
 			assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address),                                 "check workerpool registration"                );

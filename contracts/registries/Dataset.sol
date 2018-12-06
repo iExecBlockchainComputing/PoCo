@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import '../tools/Ownable.sol';
@@ -16,10 +16,10 @@ contract Dataset is OwnableImmutable
 	 * Constructor
 	 */
 	constructor(
-		address _datasetOwner,
-		string  _datasetName,
-		string  _datasetParams,
-		bytes32 _datasetHash)
+		address        _datasetOwner,
+		string  memory _datasetName,
+		string  memory _datasetParams,
+		bytes32        _datasetHash)
 	public
 	OwnableImmutable(_datasetOwner)
 	{

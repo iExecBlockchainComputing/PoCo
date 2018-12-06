@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import './Dataset.sol';
@@ -25,15 +25,15 @@ contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by Iexec
 	 * Dataset creation
 	 */
 	function createDataset(
-		address _datasetOwner,
-		string  _datasetName,
-		string  _datasetParams,
-		bytes32 _datasetHash)
-	public /* onlyOwner /*owner == IexecHub*/ returns (Dataset)
+		address          _datasetOwner,
+		string  calldata _datasetName,
+		string  calldata _datasetParams,
+		bytes32          _datasetHash)
+	external /* onlyOwner /*owner == IexecHub*/ returns (Dataset)
 	{
 		Dataset newDataset = new Dataset(_datasetOwner, _datasetName, _datasetParams, _datasetHash);
-		require(insert(newDataset, _datasetOwner));
-		emit CreateDataset(_datasetOwner, newDataset, _datasetName, _datasetParams, _datasetHash);
+		require(insert(address(newDataset), _datasetOwner));
+		emit CreateDataset(_datasetOwner, address(newDataset), _datasetName, _datasetParams, _datasetHash);
 		return newDataset;
 	}
 }

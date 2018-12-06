@@ -76,8 +76,9 @@ contract('IexecHub', async (accounts) => {
 		RelayInstance        = "0x81Ce57EF7f6d129A38D6Cd13cBCf006732550059";
 		BrokerInstance       = "0x24EeD66326c190950F9d9581682d08F35b6C7ed3";
 		*/
+		// IexecClerkInstance         = await IexecClerk.at("0x8BE59dA9Bf70e75Aa56bF29A3e55d22e882F91bA");
 		IexecClerkInstance         = await IexecClerk.at("0x537C423A919110BcC8C05ecBDa39Ba8d30192061");
-		RLCInstance                = await RLC.at(await IexecClerkInstance.rlc());
+		RLCInstance                = await RLC.at(await IexecClerkInstance.token());
 		IexecHubInstance           = await IexecHub.at(await IexecClerkInstance.iexechub());
 		AppRegistryInstance        = await AppRegistry.at(await IexecHubInstance.appregistry());
 		DatasetRegistryInstance    = await DatasetRegistry.at(await IexecHubInstance.datasetregistry());
@@ -159,20 +160,20 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance        = await App.at(events[0].args.app);
+		AppInstance = await App.at(events[0].args.app);
 	});
 
 	/***************************************************************************
 	 *               TEST: Dataset creation (by datasetProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance    = await Dataset.at(events[0].args.dataset);
+		DatasetInstance = await Dataset.at(events[0].args.dataset);
 	});
 
 	/***************************************************************************
@@ -182,9 +183,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 			scheduler,
 			"A test workerpool",
-			10, // lock
-			10, // minimum stake
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
@@ -198,8 +197,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await WorkerpoolInstance.changePolicy(
 			35,  // worker stake ratio
 			5,   // scheduler reward ratio
-			100, // minimum stake
-			{ from: scheduler }
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
@@ -373,7 +371,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
 		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
 		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.userHash,       odbtools.RequestOrderStructHash   (requestorder   ));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 	});
 

@@ -1,8 +1,10 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+// required for deployment
 import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
-// import "./interfaces/ERC20.sol";
+
+import "./interfaces/ERC20.sol";
 import "./libs/IexecODBLibCore.sol";
 import "./libs/SafeMathOZ.sol";
 
@@ -11,9 +13,9 @@ contract Escrow
 	using SafeMathOZ for uint256;
 
 	/**
-	* RLC contract for token transfers.
+	* token contract for transfers.
 	*/
-	RLC public rlc;
+	IERC20 public token;
 
 	/**
 	 * Escrow content
@@ -23,26 +25,26 @@ contract Escrow
 	/**
 	 * Events
 	 */
-	event Deposit (address owner, uint256 amount);
-	event Withdraw(address owner, uint256 amount);
-	event Reward  (address user,  uint256 amount);
-	event Seize   (address user,  uint256 amount);
+	event Deposit   (address owner, uint256 amount);
+	event DepositFor(address owner, uint256 amount, address target);
+	event Withdraw  (address owner, uint256 amount);
+	event Reward    (address user,  uint256 amount);
+	event Seize     (address user,  uint256 amount);
 
 	/**
 	 * Constructor
 	 */
-	constructor(address _rlctoken)
+	constructor(address _token)
 	public
 	{
-		require(_rlctoken != address(0));
-		rlc = RLC(_rlctoken);
+		token = IERC20(_token);
 	}
 
 	/**
 	 * Accessor
 	 */
 	function viewAccount(address _user)
-	public view returns (IexecODBLibCore.Account)
+	public view returns (IexecODBLibCore.Account memory account)
 	{
 		return m_accounts[_user];
 	}
@@ -52,15 +54,24 @@ contract Escrow
 	 */
 	function deposit(uint256 _amount) external returns (bool)
 	{
-		require(rlc.transferFrom(msg.sender, address(this), _amount));
+		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		emit Deposit(msg.sender, _amount);
+		return true;
+	}
+	function depositFor(uint256 _amount, address _target) external returns (bool)
+	{
+		require(_target != address(0));
+
+		require(token.transferFrom(msg.sender, address(this), _amount));
+		m_accounts[_target].stake = m_accounts[_target].stake.add(_amount);
+		emit DepositFor(msg.sender, _amount, _target);
 		return true;
 	}
 	function withdraw(uint256 _amount) external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		require(rlc.transfer(msg.sender, _amount));
+		require(token.transfer(msg.sender, _amount));
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
