@@ -1,11 +1,17 @@
 pragma solidity ^0.5.0;
 
-interface OracleConsumer
+/**
+ * @title EIP1154 interface
+ * @dev see https://eips.ethereum.org/EIPS/eip-1154
+ */
+interface IOracleConsumer
 {
-	function receiveResult(bytes32 id, bytes calldata result) external;
+	function receiveResult(bytes32, bytes calldata)
+		external;
 }
 
-interface Oracle
+interface IOracle
 {
-	function resultFor(bytes32 id) external view returns (bytes memory result);
+	function resultFor(bytes32)
+		external view returns (bytes memory);
 }

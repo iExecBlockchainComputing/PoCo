@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "./interfaces/EIP1154.sol";
 
-contract TestClient //is OracleConsumer
+contract TestClient is IOracleConsumer
 {
 	event GotResult(bytes32 indexed id, bytes result);
 

@@ -10,7 +10,7 @@ import "./registries/RegistryBase.sol";
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
 
-contract IexecHub is CategoryManager, Oracle
+contract IexecHub is CategoryManager, IOracle
 {
 	using SafeMathOZ for uint256;
 

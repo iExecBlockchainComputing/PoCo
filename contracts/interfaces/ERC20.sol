@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 /**
  * @title ERC20 interface
- * @dev see https://github.com/ethereum/EIPs/issues/20
+ * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
  */
 interface IERC20
 {
