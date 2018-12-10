@@ -18,7 +18,7 @@ contract IexecHub is CategoryManager, IOracle
 	 *                                Constants                                *
 	 ***************************************************************************/
 	uint256 public constant CONSENSUS_DURATION_RATIO = 10;
-	uint256 public constant REVEAL_DURATION_RATIO    = 2;
+	uint256 public constant REVEAL_DURATION          = 2 hours;
 
 	/***************************************************************************
 	 *                             Other contracts                             *
@@ -267,9 +267,7 @@ contract IexecHub is CategoryManager, IOracle
 
 			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;
-			task.revealDeadline = viewCategory(iexecclerk.viewConfig(task.dealid).category).workClockTimeRef
-				.mul(REVEAL_DURATION_RATIO)
-				.add(now);
+			task.revealDeadline = REVEAL_DURATION.add(now);
 			task.revealCounter  = 0;
 			task.winnerCounter  = winnerCounter;
 
