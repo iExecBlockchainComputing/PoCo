@@ -267,7 +267,7 @@ contract IexecHub is CategoryManager, IOracle
 
 			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;
-			task.revealDeadline = REVEAL_DURATION.add(now);
+			task.revealDeadline = REVEAL_DURATION.add(now).min(task.consensusDeadline); // cannot be after consensusDeadline
 			task.revealCounter  = 0;
 			task.winnerCounter  = winnerCounter;
 
@@ -283,8 +283,8 @@ contract IexecHub is CategoryManager, IOracle
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
 		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING                       );
-		require(task.consensusDeadline  >  now                                                            );
 		require(task.revealDeadline     >  now                                                            );
+		// require(task.consensusDeadline  >  now                                                            ); // redundant
 		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED             );
 		require(contribution.resultHash == task.consensusValue                                            );
 		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
