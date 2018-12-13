@@ -1,5 +1,15 @@
 @startuml
+scale 2000 width
+
+skinparam sequence {
+	ArrowColor black
+	ParticipantBorderColor black
+	LifeLineBorderColor grey
+	BoxBorderColor white
+}
+
 box "Smart contracts" #LightBlue
+	participant SMSRegistry
 	participant IexecClerk
 	participant IexecHub
 end box
@@ -8,17 +18,21 @@ box "Off chain" #TECHNOLOGY
 	participant Marketplace
 end box
 
-box "iExec Core" #Bisque
+box "iExec Infra" #Bisque
+	participant SMS
 	participant Scheduler
 	participant Worker
 end box
 
-box "Ressources" #LightSalmon
+box "Repository" #LightSalmon
 	participant App
 	participant Dataset
+	participant Results
 end box
 
 box "Users"
+	participant AppOwner
+	participant DatasetOwner
 	participant Requester
 	participant anyone
 end box
@@ -27,72 +41,120 @@ skinparam sequenceGroupBodyBackgroundColor transparent
 
 autonumber
 
-activate Marketplace
+== Ressources deployment ==
 
-activate App
-App -> App : sign apporder
-App --> Marketplace : publish apporder
-deactivate App
+AppOwner -> App : Push application
+activate AppOwner
+AppOwner --> IexecHub : Register application
+deactivate AppOwner
 
-activate Dataset
-Dataset -> Dataset : sign datasetorder
-Dataset --> Marketplace : publish datasetorder
-deactivate Dataset
+DatasetOwner -> DatasetOwner : Generate encryption key (Kd)
+activate DatasetOwner
+DatasetOwner -> DatasetOwner : Encrypt Dataset with Kd
+DatasetOwner -> Dataset : Push dataset
+DatasetOwner --> IexecHub : Register dataset
+DatasetOwner -> SMSRegistry : Setup SMS
+group for each application
+	DatasetOwner -> App : Get application signature
+	DatasetOwner -[#red]> SMS : Authorize application to use Kd
+	DatasetOwner -> DatasetOwner : Add application to whitelist
+end
+deactivate DatasetOwner
 
-activate Scheduler
+Requester -> Requester : Generate encryption key (Kr)
+activate Requester
+Requester -> SMSRegistry : Setup SMS
+group for each application
+	Requester -[#red]> SMS: Authorize application to use Kr
+end
+deactivate Requester
+
+== Brokering ==
+
+AppOwner -> AppOwner : sign apporder
+activate AppOwner
+AppOwner --> Marketplace : publish apporder
+deactivate AppOwner
+
+DatasetOwner -> DatasetOwner : sign datasetorder
+activate DatasetOwner
+DatasetOwner --> Marketplace : publish datasetorder
+deactivate DatasetOwner
+
 Scheduler -> Scheduler : checks availability
+activate Scheduler
 Scheduler -> Scheduler : sign workerpoolorder
 Scheduler --> Marketplace : publish workerpoolorder
 deactivate Scheduler
 
-activate Requester
 Requester -> Requester : sign requestorder
+activate Requester
 Requester --> Marketplace : publish requestorder
 deactivate Requester
 
-activate anyone
-Marketplace --> anyone  : read orders
-anyone -> anyone : match orders
-activate IexecClerk
-
-group Brokering
+== Matching & Execution ==
+group Order matching
+	Marketplace --> anyone  : read orders
+	activate anyone
+	anyone -> anyone : match orders
+	activate IexecClerk
 	anyone --> IexecClerk : <b>matchOrders()
-	activate IexecClerk #lightgrey
 	deactivate anyone
+	activate IexecClerk #lightgrey
 	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
 	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
 end
 
 IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
-deactivate Marketplace
-activate Scheduler
 IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+activate Scheduler
 deactivate IexecClerk
 
 loop for all task in bag
 
+	Scheduler -> Scheduler : Instanciate task
 	activate IexecHub
 	Scheduler --> IexecHub : <b>initialize()
-	activate IexecHub #lightgrey
 	deactivate Scheduler
+	activate IexecHub #lightgrey
 	IexecHub <--> IexecHub : <font color=green><b>emit TaskInitialize()
-	activate Scheduler
 	IexecHub o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	activate Scheduler
 	deactivate IexecHub
 
 	group workorder processing
+		Scheduler -> SMS : Require key generation (Ke) + get address of provisionned key
 		Scheduler -> Scheduler : randomly choose worker
 		Scheduler -> Scheduler : build signed authorization
-		activate Worker
-		Scheduler --> Worker : send signed authorization
-
 		group Worker execution
-			Worker  <--> App : getApp
-			Worker  <--> Dataset : getDataset
+
+			Scheduler --> Worker : send signed authorization + SMS location
+			activate Worker
+
+			Worker  -> App : Get app
+
+			Worker -> Worker : Spinup Enclave
+			activate Worker #lightgrey
+
+			group Secrets
+				Worker -[#red]> SMS : Authenticate enclave & get Ke
+
+				Worker -> SMSRegistry : Get Dataset SMS
+				Worker -[#red]> SMS : Authenticate enclave & get Kd
+
+				Worker -> SMSRegistry : Get Requester SMS
+				Worker -[#red]> SMS : Authenticate enclave & get Kr
+			end group
+
+			Worker -> Dataset : Get dataset
+			Worker -> Worker : Decrypt dataset with Kd
+
 			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
-			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
+			Worker -> Worker : encrypt Results with Kr
+			Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
 			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
 			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+			Worker -> Worker : sign Hash and Seal with Ke
 			Worker --> IexecHub : <b>contribute()
 			activate IexecHub #lightgrey
 			IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
@@ -102,17 +164,17 @@ loop for all task in bag
 			deactivate IexecHub
 			Worker -> Worker : value to reveal is resultDigest
 			Worker --> IexecHub : <b>reveal()
+			Worker -> Results : push encrypted results
+			deactivate  Worker
 			activate IexecHub #lightgrey
 			IexecHub <--> IexecHub : <font color=green><b>emit TaskReveal()
 			end
 
-		deactivate  Worker
-
 		IexecHub o-> Scheduler : <font color=blue><b> watch TaskReveal()
 		deactivate IexecHub
 		Scheduler --> IexecHub : <b>finalize()
-		activate IexecHub #lightgrey
 		deactivate Scheduler
+		activate IexecHub #lightgrey
 		IexecHub --> IexecClerk : notify
 		note over IexecClerk : RLC reward/seize for actors
 		deactivate IexecClerk
