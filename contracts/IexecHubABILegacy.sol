@@ -83,8 +83,10 @@ contract IexecHubABILegacy
 	, bytes32
 	, uint256
 	, uint256
-	, bytes32
 	, uint256
+	, uint256
+	, uint256
+	, bytes32
 	, uint256
 	, uint256
 	, address[] memory

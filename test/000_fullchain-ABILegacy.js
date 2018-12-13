@@ -502,16 +502,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Initialized] Check task", async () => {
 		task = await IexecHubInstance.viewTaskABILegacy(taskid);
-		assert.equal    (task[0].toNumber(), constants.TaskStatusEnum.ACTIVE, "check task (task.status)"           );
-		assert.equal    (task[1],            dealid,                          "check task (task.dealid)"           );
-		assert.equal    (task[2].toNumber(), 0,                               "check task (task.idx)"              );
-		assert.isAbove  (task[3].toNumber(), 0,                               "check task (task.consensusDeadline)");
-		assert.equal    (task[4],            constants.NULL.BYTES32,          "check task (task.consensusValue)"   );
-		assert.equal    (task[5].toNumber(), 0,                               "check task (task.revealDeadline)"   );
-		assert.equal    (task[6].toNumber(), 0,                               "check task (task.revealCounter)"    );
-		assert.equal    (task[7].toNumber(), 0,                               "check task (task.winnerCounter)"    );
-		assert.deepEqual(task[8],            [],                              "check task (task.contributors)"     );
-		assert.equal    (task[9],            null,                            "check task (task.results)"          );
+		assert.equal    (task[ 0].toNumber(), constants.TaskStatusEnum.ACTIVE                                         );
+		assert.equal    (task[ 1],            dealid                                                                  );
+		assert.equal    (task[ 2].toNumber(), 0                                                                       );
+		assert.equal    (task[ 3].toNumber(), (await IexecHubInstance.viewCategoryABILegacy(requestorder.category))[2]);
+		assert.isAbove  (task[ 4].toNumber(), 0                                                                       );
+		assert.equal    (task[ 5].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 6].toNumber(), 0                                                                       );
+		assert.equal    (task[ 7],            constants.NULL.BYTES32                                                  );
+		assert.equal    (task[ 8].toNumber(), 0                                                                       );
+		assert.equal    (task[ 9].toNumber(), 0                                                                       );
+		assert.deepEqual(task[10],            []                                                                      );
+		assert.equal    (task[11],            null                                                                    );
 	});
 
 	/***************************************************************************
@@ -613,16 +615,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Contributed] Check task", async () => {
 		task = await IexecHubInstance.viewTaskABILegacy(taskid);
-		assert.equal    (task[0].toNumber(), constants.TaskStatusEnum.REVEALING, "check task (task.status)"           );
-		assert.equal    (task[1],            dealid,                             "check task (task.dealid)"           );
-		assert.equal    (task[2].toNumber(), 0,                                  "check task (task.idx)"              );
-		assert.isAbove  (task[3].toNumber(), 0,                                  "check task (task.consensusDeadline)");
-		assert.equal    (task[4],            consensus.hash,                     "check task (task.consensusValue)"   );
-		assert.isAbove  (task[5].toNumber(), 0,                                  "check task (task.revealDeadline)"   );
-		assert.equal    (task[6].toNumber(), 0,                                  "check task (task.revealCounter)"    );
-		assert.equal    (task[7].toNumber(), workers.length,                     "check task (task.winnerCounter)"    );
-		assert.deepEqual(task[8],            workers.map(x => x.address),        "check task (task.contributors)"     );
-		assert.equal    (task[9],            null,                               "check task (task.results)"          );
+		assert.equal    (task[ 0].toNumber(), constants.TaskStatusEnum.REVEALING                                      );
+		assert.equal    (task[ 1],            dealid                                                                  );
+		assert.equal    (task[ 2].toNumber(), 0                                                                       );
+		assert.equal    (task[ 3].toNumber(), (await IexecHubInstance.viewCategoryABILegacy(requestorder.category))[2]);
+		assert.isAbove  (task[ 4].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 5].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 6].toNumber(), 0                                                                       );
+		assert.equal    (task[ 7],            consensus.hash                                                          );
+		assert.equal    (task[ 8].toNumber(), 0                                                                       );
+		assert.equal    (task[ 9].toNumber(), workers.length                                                          );
+		assert.deepEqual(task[10],            workers.map(x => x.address)                                             );
+		assert.equal    (task[11],            null                                                                    );
 	});
 
 	/***************************************************************************
@@ -651,16 +655,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Reveal] Check task", async () => {
 		task = await IexecHubInstance.viewTaskABILegacy(taskid);
-		assert.equal    (task[0].toNumber(), constants.TaskStatusEnum.REVEALING, "check task (task.status)"           );
-		assert.equal    (task[1],            dealid,                             "check task (task.dealid)"           );
-		assert.equal    (task[2].toNumber(), 0,                                  "check task (task.idx)"              );
-		assert.isAbove  (task[3].toNumber(), 0,                                  "check task (task.consensusDeadline)");
-		assert.equal    (task[4],            consensus.hash,                     "check task (task.consensusValue)"   );
-		assert.isAbove  (task[5].toNumber(), 0,                                  "check task (task.revealDeadline)"   );
-		assert.equal    (task[6].toNumber(), workers.length,                     "check task (task.revealCounter)"    );
-		assert.equal    (task[7].toNumber(), workers.length,                     "check task (task.winnerCounter)"    );
-		assert.deepEqual(task[8],            workers.map(x => x.address),        "check task (task.contributors)"     );
-		assert.equal    (task[9],            null,                               "check task (task.results)"          );
+		assert.equal    (task[ 0].toNumber(), constants.TaskStatusEnum.REVEALING                                      );
+		assert.equal    (task[ 1],            dealid                                                                  );
+		assert.equal    (task[ 2].toNumber(), 0                                                                       );
+		assert.equal    (task[ 3].toNumber(), (await IexecHubInstance.viewCategoryABILegacy(requestorder.category))[2]);
+		assert.isAbove  (task[ 4].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 5].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 6].toNumber(), 0                                                                       );
+		assert.equal    (task[ 7],            consensus.hash                                                          );
+		assert.equal    (task[ 8].toNumber(), workers.length                                                          );
+		assert.equal    (task[ 9].toNumber(), workers.length                                                          );
+		assert.deepEqual(task[10],            workers.map(x => x.address)                                             );
+		assert.equal    (task[11],            null                                                                    );
 	});
 
 	/***************************************************************************
@@ -687,16 +693,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized] Check task", async () => {
 		task = await IexecHubInstance.viewTaskABILegacy(taskid);
-		assert.equal    (task[0].toNumber(), constants.TaskStatusEnum.COMPLETED, "check task (task.status)"           );
-		assert.equal    (task[1],            dealid,                             "check task (task.dealid)"           );
-		assert.equal    (task[2].toNumber(), 0,                                  "check task (task.idx)"              );
-		assert.isAbove  (task[3].toNumber(), 0,                                  "check task (task.consensusDeadline)");
-		assert.equal    (task[4],            consensus.hash,                     "check task (task.consensusValue)"   );
-		assert.isAbove  (task[5].toNumber(), 0,                                  "check task (task.revealDeadline)"   );
-		assert.equal    (task[6].toNumber(), workers.length,                     "check task (task.revealCounter)"    );
-		assert.equal    (task[7].toNumber(), workers.length,                     "check task (task.winnerCounter)"    );
-		assert.deepEqual(task[8],            workers.map(x => x.address),        "check task (task.contributors)"     );
-		assert.equal    (task[9],            web3.utils.utf8ToHex("aResult"),    "check task (task.results)"          );
+		assert.equal    (task[ 0].toNumber(), constants.TaskStatusEnum.COMPLETED                                      );
+		assert.equal    (task[ 1],            dealid                                                                  );
+		assert.equal    (task[ 2].toNumber(), 0                                                                       );
+		assert.equal    (task[ 3].toNumber(), (await IexecHubInstance.viewCategoryABILegacy(requestorder.category))[2]);
+		assert.isAbove  (task[ 4].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 5].toNumber(), 0                                                                       );
+		assert.isAbove  (task[ 6].toNumber(), 0                                                                       );
+		assert.equal    (task[ 7],            consensus.hash                                                          );
+		assert.equal    (task[ 8].toNumber(), workers.length                                                          );
+		assert.equal    (task[ 9].toNumber(), workers.length                                                          );
+		assert.deepEqual(task[10],            workers.map(x => x.address)                                             );
+		assert.equal    (task[11],            web3.utils.utf8ToHex("aResult")                                         );
 	});
 
 	/***************************************************************************

@@ -70,9 +70,11 @@ library IexecODBLibCore
 		TaskStatusEnum status;
 		bytes32   dealid;
 		uint256   idx;
-		uint256   consensusDeadline;
-		bytes32   consensusValue;
+		uint256   timeref;
+		uint256   contributionDeadline;
 		uint256   revealDeadline;
+		uint256   finalDeadline;
+		bytes32   consensusValue;
 		uint256   revealCounter;
 		uint256   winnerCounter;
 		address[] contributors;

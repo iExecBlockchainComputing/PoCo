@@ -435,7 +435,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("clock fast forward", async () => {
-		target = Number((await IexecHubInstance.viewTask(tasks[6])).consensusDeadline);
+		target = Number((await IexecHubInstance.viewTask(tasks[6])).finalDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 	});
