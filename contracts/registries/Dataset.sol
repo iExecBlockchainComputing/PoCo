@@ -12,6 +12,9 @@ contract Dataset is OwnableImmutable
 	string  public m_datasetParams;
 	bytes32 public m_datasetHash;
 
+	bytes   public m_datasetMultiaddr
+	bytes   public m_datasetSMS;
+
 	/**
 	 * Constructor
 	 */
