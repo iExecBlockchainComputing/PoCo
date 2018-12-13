@@ -122,7 +122,7 @@ loop for all task in bag
 	activate Scheduler
 	deactivate IexecHub
 
-	Scheduler -> SMS : Require key generation (Ke) + get address of provisionned key
+	Scheduler -> SMS : Get address of signing key (Ke) for application (Generate key pair if needed)
 	Scheduler -> Scheduler : randomly choose worker
 	Scheduler -> Scheduler : build signed authorization
 	group Worker execution
