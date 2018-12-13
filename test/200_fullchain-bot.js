@@ -508,14 +508,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 1] Check task", async () => {
 		task = await IexecHubInstance.viewTask(tasks[0].taskid);
-		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (       task.consensusValue,           tasks[0].consensus.hash,              "check task (task.consensusValue)"   );
-		assert.isAbove  (Number(task.consensusDeadline),       0,                                    "check task (task.consensusDeadline)");
-		assert.isAbove  (Number(task.revealDeadline),          0,                                    "check task (task.revealDeadline)"   );
-		assert.equal    (Number(task.revealCounter),           2,                                    "check task (task.revealCounter)"    );
-		assert.equal    (Number(task.winnerCounter),           2,                                    "check task (task.winnerCounter)"    );
-		assert.deepEqual(       task.contributors.map(a => a), tasks[0].workers.map(x => x.address), "check task (task.contributors)"     );
-		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 1"),    "check task (task.results)"          );
+		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED                                           );
+		assert.equal    (       task.dealid,                   dealid                                                                       );
+		assert.equal    (Number(task.idx),                     0                                                                            );
+		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
+		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
+		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
+		assert.equal    (       task.consensusValue,           tasks[0].consensus.hash                                                      );
+		assert.equal    (Number(task.revealCounter),           2                                                                            );
+		assert.equal    (Number(task.winnerCounter),           2                                                                            );
+		assert.deepEqual(       task.contributors.map(a => a), tasks[0].workers.map(x => x.address)                                         );
+		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 1")                                            );
 	});
 
 	/***************************************************************************
@@ -565,14 +569,19 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 2] Check task", async () => {
 		task = await IexecHubInstance.viewTask(tasks[1].taskid);
-		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (       task.consensusValue,           tasks[1].consensus.hash, "check task (task.consensusValue)"   );
-		assert.isAbove  (Number(task.consensusDeadline),       0,                                    "check task (task.consensusDeadline)");
-		assert.isAbove  (Number(task.revealDeadline),          0,                                    "check task (task.revealDeadline)"   );
-		assert.equal    (Number(task.revealCounter),           2,                                    "check task (task.revealCounter)"    );
-		assert.equal    (Number(task.winnerCounter),           2,                                    "check task (task.winnerCounter)"    );
-		assert.deepEqual(       task.contributors.map(a => a), tasks[1].workers.map(x => x.address), "check task (task.contributors)"     );
-		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 2"),    "check task (task.results)"          );
+		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED                                           );
+		assert.equal    (       task.dealid,                   dealid                                                                       );
+		assert.equal    (Number(task.idx),                     1                                                                            );
+		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
+		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
+		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
+		assert.equal    (       task.consensusValue,           tasks[1].consensus.hash                                                      );
+		assert.equal    (Number(task.revealCounter),           2                                                                            );
+		assert.equal    (Number(task.winnerCounter),           2                                                                            );
+		assert.deepEqual(       task.contributors.map(a => a), tasks[1].workers.map(x => x.address)                                         );
+		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 2")                                            );
+
 	});
 
 	/***************************************************************************
@@ -622,14 +631,18 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Finalized 3] Check task", async () => {
 		task = await IexecHubInstance.viewTask(tasks[2].taskid);
-		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED,   "check task (task.status)"           );
-		assert.equal    (       task.consensusValue,           tasks[2].consensus.hash,              "check task (task.consensusValue)"   );
-		assert.isAbove  (Number(task.consensusDeadline),       0,                                    "check task (task.consensusDeadline)");
-		assert.isAbove  (Number(task.revealDeadline),          0,                                    "check task (task.revealDeadline)"   );
-		assert.equal    (Number(task.revealCounter),           4,                                    "check task (task.revealCounter)"    );
-		assert.equal    (Number(task.winnerCounter),           4,                                    "check task (task.winnerCounter)"    );
-		assert.deepEqual(       task.contributors.map(a => a), tasks[2].workers.map(x => x.address), "check task (task.contributors)"     );
-		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 3"),    "check task (task.results)"          );
+		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED                                           );
+		assert.equal    (       task.dealid,                   dealid                                                                       );
+		assert.equal    (Number(task.idx),                     2                                                                            );
+		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
+		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
+		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
+		assert.equal    (       task.consensusValue,           tasks[2].consensus.hash                                                      );
+		assert.equal    (Number(task.revealCounter),           4                                                                            );
+		assert.equal    (Number(task.winnerCounter),           4                                                                            );
+		assert.deepEqual(       task.contributors.map(a => a), tasks[2].workers.map(x => x.address)                                         );
+		assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 3")                                            );
 	});
 
 	/***************************************************************************

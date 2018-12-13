@@ -17,8 +17,9 @@ contract IexecHub is CategoryManager, IOracle
 	/***************************************************************************
 	 *                                Constants                                *
 	 ***************************************************************************/
-	uint256 public constant CONSENSUS_DURATION_RATIO = 10;
-	uint256 public constant REVEAL_DURATION          = 2 hours;
+	uint256 public constant CONTRIBUTION_DEADLINE_RATIO = 7;
+	uint256 public constant       REVEAL_DEADLINE_RATIO = 2;
+	uint256 public constant        FINAL_DEADLINE_RATIO = 10;
 
 	/***************************************************************************
 	 *                             Other contracts                             *
@@ -136,16 +137,16 @@ contract IexecHub is CategoryManager, IOracle
 		require(idx >= config.botFirst                    );
 		require(idx <  config.botFirst.add(config.botSize));
 
-		bytes32 taskid = keccak256(abi.encodePacked(_dealid, idx));
-
+		bytes32 taskid  = keccak256(abi.encodePacked(_dealid, idx));
 		IexecODBLibCore.Task storage task = m_tasks[taskid];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.UNSET);
-		task.status            = IexecODBLibCore.TaskStatusEnum.ACTIVE;
-		task.dealid            = _dealid;
-		task.idx               = idx;
-		task.consensusDeadline = viewCategory(config.category).workClockTimeRef
-		                         .mul(CONSENSUS_DURATION_RATIO)
-		                         .add(config.startTime);
+
+		task.status               = IexecODBLibCore.TaskStatusEnum.ACTIVE;
+		task.dealid               = _dealid;
+		task.idx                  = idx;
+		task.timeref              = viewCategory(config.category).workClockTimeRef;
+		task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(config.startTime);
+		task.finalDeadline        = task.timeref.mul(       FINAL_DEADLINE_RATIO).add(config.startTime);
 
 		// setup denominator
 		m_totalweight[taskid] = 1;
@@ -168,9 +169,9 @@ contract IexecHub is CategoryManager, IOracle
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
 		IexecODBLibCore.Deal         memory  deal         = iexecclerk.viewDeal(task.dealid);
 
-		require(task.status            == IexecODBLibCore.TaskStatusEnum.ACTIVE       );
-		require(task.consensusDeadline >  now                                         );
-		require(contribution.status    == IexecODBLibCore.ContributionStatusEnum.UNSET);
+		require(task.status               == IexecODBLibCore.TaskStatusEnum.ACTIVE       );
+		require(task.contributionDeadline >  now                                         );
+		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(deal.workerpool.owner == ecrecover(
@@ -264,10 +265,9 @@ contract IexecHub is CategoryManager, IOracle
 			}
 			// msg.sender is a contributor: no need to check
 			// require(winnerCounter > 0);
-
 			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;
-			task.revealDeadline = REVEAL_DURATION.add(now).min(task.consensusDeadline); // cannot be after consensusDeadline
+			task.revealDeadline = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
 			task.revealCounter  = 0;
 			task.winnerCounter  = winnerCounter;
 
@@ -284,7 +284,6 @@ contract IexecHub is CategoryManager, IOracle
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
 		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING                       );
 		require(task.revealDeadline     >  now                                                            );
-		// require(task.consensusDeadline  >  now                                                            ); // redundant
 		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED             );
 		require(contribution.resultHash == task.consensusValue                                            );
 		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
@@ -301,10 +300,10 @@ contract IexecHub is CategoryManager, IOracle
 	public onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status            == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.consensusDeadline >  now                                     );
-		require(task.revealDeadline    <= now
-		     && task.revealCounter     == 0                                       );
+		require(task.status         == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline  >  now                                     );
+		require(task.revealDeadline <= now
+		     && task.revealCounter  == 0                                       );
 
 		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
@@ -332,10 +331,10 @@ contract IexecHub is CategoryManager, IOracle
 	external onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status            == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.consensusDeadline >  now                                     );
-		require(task.revealCounter     == task.winnerCounter
-		    || (task.revealCounter     >  0  && task.revealDeadline <= now)       );
+		require(task.status        == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline >  now                                     );
+		require(task.revealCounter == task.winnerCounter
+		    || (task.revealCounter >  0  && task.revealDeadline <= now)       );
 
 		task.status  = IexecODBLibCore.TaskStatusEnum.COMPLETED;
 		task.results = _results;
@@ -383,7 +382,7 @@ contract IexecHub is CategoryManager, IOracle
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
 		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.consensusDeadline <= now                          );
+		require(task.finalDeadline <= now);
 
 		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
 
