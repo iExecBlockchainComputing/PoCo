@@ -181,7 +181,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
@@ -218,7 +218,7 @@ contract('IexecHub', async (accounts) => {
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
 				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               constants.NULL.ADDRESS,
+				salt:               constants.NULL.BYTES32,
 				sign:               constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(datasetProvider)

@@ -9,11 +9,7 @@ contract Dataset is OwnableImmutable
 	 * Members
 	 */
 	string  public m_datasetName;
-	string  public m_datasetParams;
-	bytes32 public m_datasetHash;
-
-	bytes   public m_datasetMultiaddr
-	bytes   public m_datasetSMS;
+	bytes   public m_datasetMultiaddr;
 
 	/**
 	 * Constructor
@@ -21,14 +17,12 @@ contract Dataset is OwnableImmutable
 	constructor(
 		address        _datasetOwner,
 		string  memory _datasetName,
-		string  memory _datasetParams,
-		bytes32        _datasetHash)
+		bytes   memory _datasetMultiaddr)
 	public
 	OwnableImmutable(_datasetOwner)
 	{
-		m_datasetName   = _datasetName;
-		m_datasetParams = _datasetParams;
-		m_datasetHash   = _datasetHash;
+		m_datasetName      = _datasetName;
+		m_datasetMultiaddr = _datasetMultiaddr;
 	}
 
 }

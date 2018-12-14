@@ -74,14 +74,12 @@ contract('IexecHub', async (accounts) => {
 			AppInstances[i] = await App.new(
 				appProvider,
 				"App #"+i,
-				constants.DAPP_PARAMS_EXAMPLE,
-				constants.NULL.BYTES32,
+				constants.MULTIADDR_BYTES,
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal ( await AppInstances[i].m_owner(),     appProvider,                   "Erroneous App owner" );
-			assert.equal ( await AppInstances[i].m_appName(),   "App #"+i,                     "Erroneous App name"  );
-			assert.equal ( await AppInstances[i].m_appParams(), constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params");
-			assert.equal ( await AppInstances[i].m_appHash(),   constants.NULL.BYTES32,        "Erroneous App hash"  );
+			assert.equal( await AppInstances[i].m_owner(),        appProvider               );
+			assert.equal( await AppInstances[i].m_appName(),      "App #"+i                 );
+			assert.equal( await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES );
 		}
 	});
 
@@ -94,14 +92,12 @@ contract('IexecHub', async (accounts) => {
 			DatasetInstances[i] = await Dataset.new(
 				datasetProvider,
 				"Dataset #"+i,
-				"3.1415926535",
-				constants.NULL.BYTES32,
+				constants.MULTIADDR_BYTES,
 				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal ( await DatasetInstances[i].m_owner(),         datasetProvider,        "Erroneous Dataset owner" );
-			assert.equal ( await DatasetInstances[i].m_datasetName(),   "Dataset #"+i,          "Erroneous Dataset name"  );
-			assert.equal ( await DatasetInstances[i].m_datasetParams(), "3.1415926535",         "Erroneous Dataset params");
-			assert.equal ( await DatasetInstances[i].m_datasetHash(),   constants.NULL.BYTES32, "Erroneous Dataset hash"  );
+			assert.equal( await DatasetInstances[i].m_owner(),            datasetProvider           );
+			assert.equal( await DatasetInstances[i].m_datasetName(),      "Dataset #"+i             );
+			assert.equal( await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES );
 		}
 	});
 
@@ -116,10 +112,10 @@ contract('IexecHub', async (accounts) => {
 				"Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal ( await WorkerpoolInstances[i].m_owner(),                           scheduler,        "Erroneous Workerpool owner"      );
-			assert.equal ( await WorkerpoolInstances[i].m_workerpoolDescription(),           "Workerpool #"+i, "Erroneous Workerpool description");
-			assert.equal ((await WorkerpoolInstances[i].m_workerStakeRatioPolicy()),         30,               "Erroneous Workerpool params"     );
-			assert.equal ((await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy()),     1,                "Erroneous Workerpool params"     );
+			assert.equal( await WorkerpoolInstances[i].m_owner(),                      scheduler        );
+			assert.equal( await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i );
+			assert.equal( await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30               );
+			assert.equal( await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1                );
 		}
 	});
 
@@ -135,15 +131,15 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, WorkerpoolInstances[1].address, "PolicyUpdate");
-		assert.equal(events[0].args.oldWorkerStakeRatioPolicy,         30,  "Erroneous oldWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.newWorkerStakeRatioPolicy,         35,  "Erroneous newWorkerStakeRatioPolicy"        );
-		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy,     1,   "Erroneous oldSchedulerRewardRatioPolicy"    );
-		assert.equal(events[0].args.newSchedulerRewardRatioPolicy,     5,   "Erroneous newSchedulerRewardRatioPolicy"    );
+		assert.equal( events[0].args.oldWorkerStakeRatioPolicy,     30 );
+		assert.equal( events[0].args.newWorkerStakeRatioPolicy,     35 );
+		assert.equal( events[0].args.oldSchedulerRewardRatioPolicy, 1  );
+		assert.equal( events[0].args.newSchedulerRewardRatioPolicy, 5  );
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
-		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
+		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
+		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
 	});
 
 	/***************************************************************************
@@ -165,10 +161,10 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
-		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
+		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
+		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
 	});
 
 	/***************************************************************************
@@ -190,10 +186,10 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                           scheduler,       "Erroneous Workerpool owner"      );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),           "Workerpool #1", "Erroneous Workerpool description");
-		assert.equal((await WorkerpoolInstances[1].m_workerStakeRatioPolicy()),         35,              "Erroneous Workerpool params"     );
-		assert.equal((await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy()),     5,               "Erroneous Workerpool params"     );
+		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
+		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
+		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
 	});
 
 });

@@ -160,27 +160,27 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: App creation (by appProvider)                  *
+	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 	});
 
 	/***************************************************************************
-	 *                  TEST: Dataset creation (by datasetProvider)                  *
+	 *               TEST: Dataset creation (by datasetProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", constants.MULTIADDR_BYTES, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 	});
 
 	/***************************************************************************
-	 *                 TEST: Workerpool creation (by scheduler)                  *
+	 *                TEST: Workerpool creation (by scheduler)                 *
 	 ***************************************************************************/
 	it("[Genesis] Workerpool Creation", async () => {
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
@@ -194,7 +194,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *              TEST: App order signature (by appProvider)               *
+	 *               TEST: App order signature (by appProvider)                *
 	 ***************************************************************************/
 	it("[Genesis] Generate app order", async () => {
 		apporder = odbtools.signAppOrder(
@@ -223,7 +223,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *              TEST: Dataset order signature (by datasetProvider)               *
+	 *           TEST: Dataset order signature (by datasetProvider)            *
 	 ***************************************************************************/
 	it("[Genesis] Generate dataset order", async () => {
 		datasetorder = odbtools.signDatasetOrder(
@@ -252,7 +252,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *              TEST: Workerpool order signature (by workerpoolProvider)               *
+	 *        TEST: Workerpool order signature (by workerpoolProvider)         *
 	 ***************************************************************************/
 	it("[Genesis] Generate workerpool order", async () => {
 		workerpoolorder = odbtools.signWorkerpoolOrder(

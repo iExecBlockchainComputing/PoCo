@@ -6,12 +6,7 @@ import './RegistryBase.sol';
 
 contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
-	event CreateDataset(
-		address indexed datasetOwner,
-		address         dataset,
-		string          datasetName,
-		string          datasetParams,
-		bytes32         datasetHash);
+	event CreateDataset(address indexed datasetOwner, address dataset);
 
 	/**
 	 * Constructor
@@ -27,13 +22,12 @@ contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by Iexec
 	function createDataset(
 		address          _datasetOwner,
 		string  calldata _datasetName,
-		string  calldata _datasetParams,
-		bytes32          _datasetHash)
+		bytes   calldata _datasetMultiaddr)
 	external /* onlyOwner /*owner == IexecHub*/ returns (Dataset)
 	{
-		Dataset newDataset = new Dataset(_datasetOwner, _datasetName, _datasetParams, _datasetHash);
+		Dataset newDataset = new Dataset(_datasetOwner, _datasetName, _datasetMultiaddr);
 		require(insert(address(newDataset), _datasetOwner));
-		emit CreateDataset(_datasetOwner, address(newDataset), _datasetName, _datasetParams, _datasetHash);
+		emit CreateDataset(_datasetOwner, address(newDataset));
 		return newDataset;
 	}
 }

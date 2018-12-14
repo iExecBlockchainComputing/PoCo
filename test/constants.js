@@ -17,13 +17,13 @@ define("NULL", {
 		v: 0
 	},
 	DATAORDER: {
-		dataset:               "0x0000000000000000000000000000000000000000",
-		datasetprice:          0,
+		dataset:            "0x0000000000000000000000000000000000000000",
+		datasetprice:       0,
 		volume:             0,
 		tag:                0,
 		apprestrict:        "0x0000000000000000000000000000000000000000",
 		workerpoolrestrict: "0x0000000000000000000000000000000000000000",
-		requesterrestrict:       "0x0000000000000000000000000000000000000000",
+		requesterrestrict:  "0x0000000000000000000000000000000000000000",
 		salt:               "0x0000000000000000000000000000000000000000000000000000000000000000",
 		sign: {
 			r: "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -50,3 +50,5 @@ define("ContributionStatusEnum", {
 
 
 define("DAPP_PARAMS_EXAMPLE", "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}");
+define("MULTIADDR",           "/ipfs/QmRwwTz9Chq4Y7F7ReKKcx1GV6s3H7egmNGrku9XrwiDa8");
+define("MULTIADDR_BYTES",     "0xa503221220359d55f58a43126d4ba446a35940265eb2dab57ecbc439e7f105c558f8774819");

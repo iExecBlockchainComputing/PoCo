@@ -71,22 +71,19 @@ contract('IexecHub', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-			assert.equal(events[0].args.appOwner,  appProvider,                   "Erroneous App owner" );
-			assert.equal(events[0].args.appName,   "App #"+i,                     "Erroneous App name"  );
-			assert.equal(events[0].args.appParams, constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params");
-			assert.equal(events[0].args.appHash,   constants.NULL.BYTES32,        "Erroneous App hash"  );
+			assert.equal(events[0].args.appOwner, appProvider);
 
 			AppInstances[i] = await App.at(events[0].args.app);
-			assert.equal (await AppInstances[i].m_owner(),                                 appProvider,                   "Erroneous App owner"                 );
-			assert.equal (await AppInstances[i].m_appName(),                               "App #"+i,                     "Erroneous App name"                  );
-			assert.equal (await AppInstances[i].m_appParams(),                             constants.DAPP_PARAMS_EXAMPLE, "Erroneous App params"                );
-			assert.equal (await AppRegistryInstance.viewCount(appProvider),                i,                             "appProvider must have 1 more app now");
-			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i),             AppInstances[i].address,       "check appAddress"                    );
-			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address),                                "check app registration"              );
+			assert.equal (await AppInstances[i].m_owner(),                     appProvider               );
+			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                 );
+			assert.equal (await AppInstances[i].m_appMultiaddr(),              constants.MULTIADDR_BYTES );
+			assert.equal (await AppRegistryInstance.viewCount(appProvider),    i                         );
+			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i), AppInstances[i].address   );
+			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                );
 		}
 	});
 
@@ -96,22 +93,19 @@ contract('IexecHub', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, constants.MULTIADDR_BYTES, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-			assert.equal(events[0].args.datasetOwner,  datasetProvider,        "Erroneous Dataset owner" );
-			assert.equal(events[0].args.datasetName,   "Dataset #"+i,          "Erroneous Dataset name"  );
-			assert.equal(events[0].args.datasetParams, "3.1415926535",         "Erroneous Dataset params");
-			assert.equal(events[0].args.datasetHash,   constants.NULL.BYTES32, "Erroneous Dataset hash"  );
+			assert.equal(events[0].args.datasetOwner, datasetProvider);
 
 			DatasetInstances[i] = await Dataset.at(events[0].args.dataset);
-			assert.equal (await DatasetInstances[i].m_owner(),                                     datasetProvider,             "Erroneous Dataset owner"                     );
-			assert.equal (await DatasetInstances[i].m_datasetName(),                               "Dataset #"+i,               "Erroneous Dataset name"                      );
-			assert.equal (await DatasetInstances[i].m_datasetParams(),                             "3.1415926535",              "Erroneous Dataset params"                    );
-			assert.equal (await DatasetRegistryInstance.viewCount(datasetProvider),                i,                           "datasetProvider must have 1 more dataset now");
-			assert.equal (await DatasetRegistryInstance.viewEntry(datasetProvider, i),             DatasetInstances[i].address, "check datasetAddress"                        );
-			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address),                              "check dataset registration"                  );
+			assert.equal (await DatasetInstances[i].m_owner(),                         datasetProvider             );
+			assert.equal (await DatasetInstances[i].m_datasetName(),                   "Dataset #"+i               );
+			assert.equal (await DatasetInstances[i].m_datasetMultiaddr(),              constants.MULTIADDR_BYTES   );
+			assert.equal (await DatasetRegistryInstance.viewCount(datasetProvider),    i                           );
+			assert.equal (await DatasetRegistryInstance.viewEntry(datasetProvider, i), DatasetInstances[i].address );
+			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                  );
 		}
 	});
 
