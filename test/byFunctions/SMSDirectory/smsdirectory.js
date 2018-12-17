@@ -18,6 +18,15 @@ const odbtools  = require('../../../utils/odb-tools');
 
 const wallets   = require('../../wallets');
 
+function encodeMultiaddr(addr)
+{
+	return multiaddr(addr).buffer
+}
+function decodeMultiaddr(hex)
+{
+	return multiaddr(Buffer.from(hex.substr(2), 'hex')).toString();
+}
+
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -201,41 +210,6 @@ contract('IexecHub', async (accounts) => {
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 	});
-
-
-
-
-
-
-
-
-	function hexToBytes(hex)
-	{
-		for (var bytes = [], c = 0; c < hex.length; c += 2)
-		bytes.push(parseInt(hex.substr(c, 2), 16));
-		return bytes;
-	}
-
-	function bytesToHex(bytes)
-	{
-		for (var hex = [], i = 0; i < bytes.length; i++) {
-			hex.push((bytes[i] >>> 4).toString(16));
-			hex.push((bytes[i] & 0xF).toString(16));
-		}
-		return hex.join("");
-	}
-
-	function encodeMultiaddr(addr)
-	{
-		return "0x" + bytesToHex(multiaddr(addr).buffer);
-	}
-
-	function decodeMultiaddr(hex)
-	{
-		return multiaddr(Buffer.from(hexToBytes(hex.substr(2)))).toString();
-	}
-
-
 
 	it("[Genesis] SMS registration: dataset success", async () => {
 		txMined = await SMSDirectoryInstance.setSMS(
