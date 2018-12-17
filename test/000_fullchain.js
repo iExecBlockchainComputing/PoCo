@@ -9,6 +9,9 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
+
+const multiaddr = require('multiaddr');
 
 const constants = require("./constants");
 const odbtools  = require('../utils/odb-tools');
@@ -43,6 +46,7 @@ contract('IexecHub', async (accounts) => {
 	var WorkerpoolRegistryInstance = null;
 	var RelayInstance              = null;
 	var BrokerInstance             = null;
+	var SMSDirectoryInstance       = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
@@ -86,6 +90,7 @@ contract('IexecHub', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		RelayInstance              = await Relay.deployed();
 		BrokerInstance             = await Broker.deployed();
+		SMSDirectoryInstance       = await SMSDirectory.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",

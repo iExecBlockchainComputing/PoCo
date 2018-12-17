@@ -7,6 +7,7 @@ var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
 var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
 const fs = require("fs-extra");
 
@@ -105,10 +106,13 @@ module.exports = async function(deployer, network, accounts)
 	{
 		await deployer.deploy(Relay);
 		await deployer.deploy(Broker, IexecClerkInstance.address);
-		RelayInstance  = await Relay.deployed();
-		BrokerInstance = await Broker.deployed();
+		await deployer.deploy(SMSDirectory);
+		RelayInstance        = await Relay.deployed();
+		BrokerInstance       = await Broker.deployed();
+		SMSDirectoryInstance = await SMSDirectory.deployed();
 		console.log("Relay deployed at address: " + RelayInstance.address);
 		console.log("Broker deployed at address: " + BrokerInstance.address);
+		console.log("SMSDirectory deployed at address: " + SMSDirectoryInstance.address);
 	}
 
 };
