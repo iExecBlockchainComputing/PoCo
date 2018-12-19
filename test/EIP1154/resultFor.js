@@ -172,15 +172,10 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
-
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -207,14 +202,14 @@ contract('IexecHub', async (accounts) => {
 		);
 		datasetorder = odbtools.signDatasetOrder(
 			{
-				dataset:            DatasetInstance.address,
-				datasetprice:       1,
-				volume:             1000,
+				dataset:            constants.NULL.ADDRESS,
+				datasetprice:       0,
+				volume:             0,
 				tag:                0x0,
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
 				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               web3.utils.randomHex(32),
+				salt:               constants.NULL.BYTES32,
 				sign:               constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(datasetProvider)
@@ -255,8 +250,8 @@ contract('IexecHub', async (accounts) => {
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
-				dataset:            DatasetInstance.address,
-				datasetmaxprice:    1,
+				dataset:            constants.NULL.ADDRESS,
+				datasetmaxprice:    0,
 				workerpool:         constants.NULL.ADDRESS,
 				workerpoolmaxprice: 25,
 				volume:             10,

@@ -6,12 +6,7 @@ import './RegistryBase.sol';
 
 contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 {
-	event CreateApp(
-		address indexed appOwner,
-		address         app,
-		string          appName,
-		string          appParams,
-		bytes32         appHash);
+	event CreateApp(address indexed appOwner, address app);
 
 	/**
 	 * Constructor
@@ -27,13 +22,12 @@ contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 	function createApp(
 		address          _appOwner,
 		string  calldata _appName,
-		string  calldata _appParams,
-		bytes32          _appHash)
+		bytes   calldata _appMultiaddr)
 	external /* onlyOwner /*owner == IexecHub*/ returns (App)
 	{
-		App newApp = new App(_appOwner, _appName, _appParams, _appHash);
+		App newApp = new App(_appOwner, _appName, _appMultiaddr);
 		require(insert(address(newApp), _appOwner));
-		emit CreateApp(_appOwner, address(newApp), _appName, _appParams, _appHash);
+		emit CreateApp(_appOwner, address(newApp));
 		return newApp;
 	}
 

@@ -1,0 +1,185 @@
+@startuml
+scale 2000 width
+
+skinparam sequence {
+	ArrowColor black
+	ParticipantBorderColor black
+	LifeLineBorderColor grey
+	BoxBorderColor white
+}
+
+box "Smart contracts" #LightBlue
+	participant SMSRegistry
+	participant IexecClerk
+	participant IexecHub
+end box
+
+box "Off chain" #TECHNOLOGY
+	participant Marketplace
+end box
+
+box "iExec Infra" #Bisque
+	participant SMS
+	participant Scheduler
+	participant Worker
+end box
+
+box "Repository" #LightSalmon
+	participant App
+	participant Dataset
+	participant Results
+end box
+
+box "Users"
+	participant AppOwner
+	participant DatasetOwner
+	participant Requester
+	participant anyone
+end box
+
+skinparam sequenceGroupBodyBackgroundColor transparent
+
+autonumber
+
+== Ressources deployment ==
+
+AppOwner -> App : Push application
+activate AppOwner
+AppOwner --> IexecHub : Register application
+deactivate AppOwner
+
+DatasetOwner -> DatasetOwner : Generate encryption key (Kd)
+activate DatasetOwner
+DatasetOwner -> DatasetOwner : Encrypt Dataset with Kd
+DatasetOwner -> Dataset : Push dataset
+DatasetOwner --> IexecHub : Register dataset
+DatasetOwner -> SMSRegistry : Setup SMS
+group for each application
+	DatasetOwner -> App : Get application signature
+	DatasetOwner -[#red]> SMS : Authorize application to use Kd
+	DatasetOwner -> DatasetOwner : Add application to whitelist
+end
+deactivate DatasetOwner
+
+Requester -> Requester : Generate encryption key (Kr)
+activate Requester
+Requester -> SMSRegistry : Setup SMS
+group for each application
+	Requester -[#red]> SMS: Authorize application to use Kr
+end
+deactivate Requester
+
+== Brokering ==
+
+AppOwner -> AppOwner : sign apporder
+activate AppOwner
+AppOwner --> Marketplace : publish apporder
+deactivate AppOwner
+
+DatasetOwner -> DatasetOwner : sign datasetorder
+activate DatasetOwner
+DatasetOwner --> Marketplace : publish datasetorder
+deactivate DatasetOwner
+
+Scheduler -> Scheduler : checks availability
+activate Scheduler
+Scheduler -> Scheduler : sign workerpoolorder
+Scheduler --> Marketplace : publish workerpoolorder
+deactivate Scheduler
+
+Requester -> Requester : sign requestorder
+activate Requester
+Requester --> Marketplace : publish requestorder
+deactivate Requester
+
+== Matching & Execution ==
+group Order matching
+	Marketplace --> anyone  : read orders
+	activate anyone
+	anyone -> anyone : match orders
+	activate IexecClerk
+	anyone --> IexecClerk : <b>matchOrders()
+	deactivate anyone
+	activate IexecClerk #lightgrey
+	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
+	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+activate Scheduler
+deactivate IexecClerk
+
+loop for all task in bag
+
+	Scheduler -> Scheduler : Instanciate task
+	activate IexecHub
+	Scheduler --> IexecHub : <b>initialize()
+	deactivate Scheduler
+	activate IexecHub #lightgrey
+	IexecHub <--> IexecHub : <font color=green><b>emit TaskInitialize()
+	IexecHub o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	activate Scheduler
+	deactivate IexecHub
+
+	Scheduler -[#red]> SMS : Get address of signing key (Ke) for application (Generate key pair if needed)
+	Scheduler -> Scheduler : randomly choose worker
+	Scheduler -> Scheduler : build signed authorization
+	group Worker execution
+
+		Scheduler --> Worker : send signed authorization + SMS location
+		activate Worker
+
+		Worker  -> App : Get app
+
+		Worker -> Worker : Spinup Enclave
+		activate Worker #lightgrey
+
+		group Secrets
+			Worker -[#red]> SMS : Authenticate enclave & get Ke
+
+			Worker -> SMSRegistry : Get Dataset SMS
+			Worker -[#red]> SMS : Authenticate enclave & get Kd
+
+			Worker -> SMSRegistry : Get Requester SMS
+			Worker -[#red]> SMS : Authenticate enclave & get Kr
+		end group
+
+		Worker -> Dataset : Get dataset
+		Worker -> Worker : Decrypt dataset with Kd
+
+		Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+		Worker -> Worker : encrypt Results with Kr
+		Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
+		Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+		Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+		Worker -> Worker : sign Hash and Seal with Ke
+		Worker --> IexecHub : <b>contribute()
+		activate IexecHub #lightgrey
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
+		IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskConsensus()
+		IexecHub o-> Worker : <font color=blue><b> watch TaskConsensus()
+		deactivate IexecHub
+		Worker -> Worker : value to reveal is resultDigest
+		Worker --> IexecHub : <b>reveal()
+		Worker -> Results : push encrypted results
+		deactivate  Worker
+		activate IexecHub #lightgrey
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskReveal()
+		end
+
+	IexecHub o-> Scheduler : <font color=blue><b> watch TaskReveal()
+	deactivate IexecHub
+	Scheduler --> IexecHub : <b>finalize()
+	deactivate Scheduler
+	activate IexecHub #lightgrey
+	IexecHub --> IexecClerk : notify
+	note over IexecClerk : RLC reward/seize for actors
+	deactivate IexecClerk
+	IexecHub <--> IexecHub : <font color=green><b>emit TaskFinalize()
+	deactivate IexecHub
+	deactivate IexecHub
+
+end
+@enduml

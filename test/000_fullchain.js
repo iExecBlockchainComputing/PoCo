@@ -9,6 +9,9 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
+
+const multiaddr = require('multiaddr');
 
 const constants = require("./constants");
 const odbtools  = require('../utils/odb-tools');
@@ -43,6 +46,7 @@ contract('IexecHub', async (accounts) => {
 	var WorkerpoolRegistryInstance = null;
 	var RelayInstance              = null;
 	var BrokerInstance             = null;
+	var SMSDirectoryInstance       = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
@@ -86,6 +90,7 @@ contract('IexecHub', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		RelayInstance              = await Relay.deployed();
 		BrokerInstance             = await Broker.deployed();
+		SMSDirectoryInstance       = await SMSDirectory.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",
@@ -172,7 +177,7 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.DAPP_PARAMS_EXAMPLE, constants.NULL.BYTES32, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
@@ -182,7 +187,7 @@ contract('IexecHub', async (accounts) => {
 	 *               TEST: Dataset creation (by datasetProvider)               *
 	 ***************************************************************************/
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", "3.1415926535", constants.NULL.BYTES32, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", constants.MULTIADDR_BYTES, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);

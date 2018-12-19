@@ -9,11 +9,23 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
+
+const multiaddr = require('multiaddr');
 
 const constants = require("../../constants");
 const odbtools  = require('../../../utils/odb-tools');
 
 const wallets   = require('../../wallets');
+
+function encodeMultiaddr(addr)
+{
+	return multiaddr(addr).buffer
+}
+function decodeMultiaddr(hex)
+{
+	return multiaddr(Buffer.from(hex.substr(2), 'hex')).toString();
+}
 
 function extractEvents(txMined, address, name)
 {
@@ -43,25 +55,35 @@ contract('IexecHub', async (accounts) => {
 	var WorkerpoolRegistryInstance = null;
 	var RelayInstance              = null;
 	var BrokerInstance             = null;
+	var SMSDirectoryInstance       = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
 	var WorkerpoolInstance = null;
 
-	var apporder         = null;
-	var datasetorder     = null;
-	var workerpoolorder1 = null;
-	var workerpoolorder2 = null;
-	var requestorder     = null;
+	var apporder        = null;
+	var datasetorder    = null;
+	var workerpoolorder = null;
+	var requestorder    = null;
+	var dealid          = null;
+	var taskid          = null;
 
-	var deals = {}
-	var tasks = {};
+	var authorizations = {};
+	var results        = {};
+	var consensus      = null;
+	var workers        = [];
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
+
+		workers = [
+			{ address: worker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
+			{ address: worker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
+		];
+		consensus = "iExec the wanderer";
 
 		/**
 		 * Retreive deployed contracts
@@ -74,6 +96,7 @@ contract('IexecHub', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		RelayInstance              = await Relay.deployed();
 		BrokerInstance             = await Broker.deployed();
+		SMSDirectoryInstance       = await SMSDirectory.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",
@@ -150,13 +173,13 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: scheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker1,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker2,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker3,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker4,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: worker5,   gasLimit: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit(1000, { from: user,      gasLimit: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -167,11 +190,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
-	/***************************************************************************
-	 *                  TEST: App creation (by appProvider)                  *
-	 ***************************************************************************/
-	it("[Setup]", async () => {
-		// Ressources
+	it("[Genesis] Ressources Creation", async () => {
 		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
@@ -182,143 +201,85 @@ contract('IexecHub', async (accounts) => {
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
+			scheduler,
+			"A test workerpool",
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+	});
 
-		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+	it("[Genesis] SMS registration: dataset success", async () => {
+		txMined = await SMSDirectoryInstance.setSMS(
+			DatasetInstance.address,
+			encodeMultiaddr("/dnsaddr/sms1.iex.ec/tcp/4001"),
+			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		// Orders
-		apporder = odbtools.signAppOrder(
-			{
-				app:                AppInstance.address,
-				appprice:           3,
-				volume:             1000,
-				tag:                0x0,
-				datasetrestrict:    constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(appProvider)
-		);
-		datasetorder = odbtools.signDatasetOrder(
-			{
-				dataset:            DatasetInstance.address,
-				datasetprice:       1,
-				volume:             1000,
-				tag:                0x0,
-				apprestrict:        constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(datasetProvider)
-		);
-		workerpoolorder_offset = odbtools.signWorkerpoolOrder(
-			{
-				workerpool:        WorkerpoolInstance.address,
-				workerpoolprice:   15,
-				volume:            1,
-				tag:               0x0,
-				category:          4,
-				trust:             10,
-				apprestrict:       constants.NULL.ADDRESS,
-				datasetrestrict:   constants.NULL.ADDRESS,
-				requesterrestrict: constants.NULL.ADDRESS,
-				salt:              web3.utils.randomHex(32),
-				sign:              constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(scheduler)
-		);
-		workerpoolorder = odbtools.signWorkerpoolOrder(
-			{
-				workerpool:        WorkerpoolInstance.address,
-				workerpoolprice:   25,
-				volume:            1000,
-				tag:               0x0,
-				category:          4,
-				trust:             10,
-				apprestrict:       constants.NULL.ADDRESS,
-				datasetrestrict:   constants.NULL.ADDRESS,
-				requesterrestrict: constants.NULL.ADDRESS,
-				salt:              web3.utils.randomHex(32),
-				sign:              constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(scheduler)
-		);
-		requestorder = odbtools.signRequestOrder(
-			{
-				app:                AppInstance.address,
-				appmaxprice:        3,
-				dataset:            DatasetInstance.address,
-				datasetmaxprice:    1,
-				workerpool:         constants.NULL.ADDRESS,
-				workerpoolmaxprice: 25,
-				volume:             10,
-				tag:                0x0,
-				category:           4,
-				trust:              0,
-				requester:          user,
-				beneficiary:        user,
-				callback:           constants.NULL.ADDRESS,
-				params:             "<parameters>",
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(user)
-		);
-
-		// Market
-		txsMined = await Promise.all([
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
 	});
 
-	it("[1.1] Initialization - Correct", async () => {
-		txMined = await IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+	it("[Genesis] SMS registration: user success", async () => {
+		txMined = await SMSDirectoryInstance.setSMS(
+			user,
+			encodeMultiaddr("/dnsaddr/sms2.iex.ec/tcp/4001"),
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
-		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address, "check workerpool");
 	});
 
-	it("[1.2] Initialization - Error (low id)", async () => {
+	it("[Genesis] SMS registration: takeover", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
+			txMined = await SMSDirectoryInstance.setSMS(
+				user,
+				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
+			assert.fail("user should not be able to change policy");
+		}
+		catch (error)
+		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
-	it("[1.3] Initialization - Error (high id)", async () => {
+	it("[Genesis] SMS registration: takeover", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
+			txMined = await SMSDirectoryInstance.setSMS(
+				DatasetInstance.address,
+				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
+			assert.fail("user should not be able to change policy");
+		}
+		catch (error)
+		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
 
-	it("[1.4] Initialization - Error (already initialized)", async () => {
+	it("[Genesis] SMS registration: wrong smart-contract", async () => {
 		try {
-			await IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
+			txMined = await SMSDirectoryInstance.setSMS(
+				IexecClerkInstance.address,
+				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
+			assert.fail("user should not be able to change policy");
+		}
+		catch (error)
+		{
 			assert(error, "Expected an error but did not get one");
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
+	});
+
+	it("[Genesis] Check values", async () => {
+		assert.equal(decodeMultiaddr(await SMSDirectoryInstance.getSMS(DatasetInstance.address)), "/dnsaddr/sms1.iex.ec/tcp/4001")
+		assert.equal(decodeMultiaddr(await SMSDirectoryInstance.getSMS(user)),                    "/dnsaddr/sms2.iex.ec/tcp/4001")
 	});
 
 });

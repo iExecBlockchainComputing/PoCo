@@ -14,12 +14,12 @@ box "iExec Core" #Bisque
 end box
 
 box "Ressources" #LightSalmon
-	participant Dapp
+	participant App
 	participant Dataset
 end box
 
 box "Users"
-	participant iExecCloudUser
+	participant Requester
 	participant anyone
 end box
 
@@ -29,26 +29,26 @@ autonumber
 
 activate Marketplace
 
-activate Dapp
-Dapp -> Dapp : sign dapporder
-Dapp --> Marketplace : publish dapporder
-deactivate Dapp
+activate App
+App -> App : sign apporder
+App --> Marketplace : publish apporder
+deactivate App
 
 activate Dataset
-Dataset -> Dataset : sign dataorder
-Dataset --> Marketplace : publish dataorder
+Dataset -> Dataset : sign datasetorder
+Dataset --> Marketplace : publish datasetorder
 deactivate Dataset
 
 activate Scheduler
 Scheduler -> Scheduler : checks availability
-Scheduler -> Scheduler : sign poolorder
-Scheduler --> Marketplace : publish poolorder
+Scheduler -> Scheduler : sign workerpoolorder
+Scheduler --> Marketplace : publish workerpoolorder
 deactivate Scheduler
 
-activate iExecCloudUser
-iExecCloudUser -> iExecCloudUser : sign userorder
-iExecCloudUser --> Marketplace : publish user order
-deactivate iExecCloudUser
+activate Requester
+Requester -> Requester : sign requestorder
+Requester --> Marketplace : publish requestorder
+deactivate Requester
 
 activate anyone
 Marketplace --> anyone  : read orders
@@ -87,9 +87,9 @@ loop for all task in bag
 		Scheduler --> Worker : send signed authorization
 
 		group Worker execution
-			Worker  <--> Dapp : getApp
+			Worker  <--> App : getApp
 			Worker  <--> Dataset : getDataset
-			Worker -> Worker : execute the asked work → Results //(raw data or uri)//
+			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
 			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
 			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
 			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
