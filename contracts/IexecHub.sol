@@ -495,4 +495,17 @@ contract IexecHub is CategoryManager, IOracle
 		}
 		return true;
 	}
+
+	function initializeAndClaimArray(
+		bytes32[] calldata _dealid,
+		uint256[] calldata _idx)
+	external returns (bool)
+	{
+		require(_dealid.length == _idx.length);
+		for (uint i = 0; i < _dealid.length; ++i)
+		{
+			claim(initialize(_dealid[i], _idx[i]));
+		}
+		return true;
+	}
 }
