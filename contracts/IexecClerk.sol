@@ -107,7 +107,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	function isContract(address addr)
 	public view returns (bool)
 	{
-		assert(false);
 		uint size;
 		assembly { size := extcodesize(addr) }
 		return size > 0;
@@ -282,7 +281,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.workerpool.owner   = ids.workerpoolOwner;
 		deal.workerpool.price   = _workerpoolorder.workerpoolprice;
 		deal.trust              = _workerpoolorder.trust.max(1);
-		deal.tag                = _workerpoolorder.tag;
+		deal.tag                = _apporder.tag | _datasetorder.tag | _requestorder.tag;
 		deal.requester          = _requestorder.requester;
 		deal.beneficiary        = _requestorder.beneficiary;
 		deal.callback           = _requestorder.callback;
