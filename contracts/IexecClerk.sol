@@ -280,7 +280,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.workerpool.pointer = _workerpoolorder.workerpool;
 		deal.workerpool.owner   = ids.workerpoolOwner;
 		deal.workerpool.price   = _workerpoolorder.workerpoolprice;
-		deal.trust              = _workerpoolorder.trust.max(1);
+		deal.trust              = _requestorder.trust.max(1);
 		deal.tag                = _apporder.tag | _datasetorder.tag | _requestorder.tag;
 		deal.requester          = _requestorder.requester;
 		deal.beneficiary        = _requestorder.beneficiary;
@@ -288,7 +288,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		deal.params             = _requestorder.params;
 
 		IexecODBLibCore.Config storage config = m_configs[dealid];
-		config.category             = _workerpoolorder.category;
+		config.category             = _requestorder.category;
 		config.startTime            = now;
 		config.botFirst             = m_consumed[ids.requestHash];
 		config.botSize              = volume;

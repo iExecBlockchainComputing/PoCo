@@ -262,7 +262,7 @@ contract('IexecHub', async (accounts) => {
 				volume:             10,
 				tag:                0x0,
 				category:           4,
-				trust:              0,
+				trust:              4,
 				requester:          user,
 				beneficiary:        user,
 				callback:           constants.NULL.ADDRESS,
