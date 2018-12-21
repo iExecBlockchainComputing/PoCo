@@ -512,6 +512,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 			claim(initialize(_dealid[i], _idx[i]));
 		}
 		return true;
+	}
 
 	/**
 	 * /!\ TEMPORARY LEGACY /!\
