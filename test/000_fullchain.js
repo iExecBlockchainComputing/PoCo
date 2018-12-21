@@ -560,6 +560,10 @@ contract('IexecHub', async (accounts) => {
 				},
 				scheduler
 			);
+
+			console.log("authorization:", authorizations[w.address])
+			console.log("authorizationHash:", odbtools.authorizationHash(authorizations[w.address]))
+			console.log("---")
 		}
 	});
 
