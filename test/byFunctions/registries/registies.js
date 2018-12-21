@@ -71,7 +71,7 @@ contract('IexecHub', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.MULTIADDR_BYTES, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.MULTIADDR_BYTES, "0x1234", { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
@@ -81,6 +81,7 @@ contract('IexecHub', async (accounts) => {
 			assert.equal (await AppInstances[i].m_owner(),                     appProvider               );
 			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                 );
 			assert.equal (await AppInstances[i].m_appMultiaddr(),              constants.MULTIADDR_BYTES );
+			assert.equal (await AppInstances[i].m_appMREnclave(),              "0x1234"                  );
 			assert.equal (await AppRegistryInstance.viewCount(appProvider),    i                         );
 			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i), AppInstances[i].address   );
 			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                );
