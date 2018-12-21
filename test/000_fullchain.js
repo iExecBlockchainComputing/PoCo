@@ -430,6 +430,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		totalgas += txMined.receipt.gasUsed;
+		console.log("Match orders: ", txMined.receipt.gasUsed);
 
 		dealid = web3.utils.soliditySha3(
 			{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
@@ -517,6 +518,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		totalgas += txMined.receipt.gasUsed;
+		console.log("initialize: ", txMined.receipt.gasUsed);
 
 		taskid = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
@@ -558,6 +560,10 @@ contract('IexecHub', async (accounts) => {
 				},
 				scheduler
 			);
+
+			console.log("authorization:", authorizations[w.address])
+			console.log("authorizationHash:", odbtools.authorizationHash(authorizations[w.address]))
+			console.log("---")
 		}
 	});
 
@@ -605,6 +611,7 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.hash,   results[w.address].hash         );
 
 			totalgas += txMined.receipt.gasUsed;
+			console.log("Contribute: ", txMined.receipt.gasUsed);
 		}
 	});
 
@@ -684,6 +691,7 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.consensus, consensus.hash);
 
 			totalgas += txMined.receipt.gasUsed;
+			console.log("Contribute: ", txMined.receipt.gasUsed);
 		}
 	});
 
@@ -755,6 +763,7 @@ contract('IexecHub', async (accounts) => {
 			assert.equal(events[0].args.digest, results[w.address].digest);
 
 			totalgas += txMined.receipt.gasUsed;
+			console.log("Reveal: ", txMined.receipt.gasUsed);
 		}
 	});
 
@@ -788,6 +797,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"));
 
 		totalgas += txMined.receipt.gasUsed;
+		console.log("Finalize: ", txMined.receipt.gasUsed);
 
 		// TODO: check 2 events by w.address for w in workers
 		// How to retreive events from the IexecClerk (5 rewards and 1 seize)

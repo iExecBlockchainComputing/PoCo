@@ -77,6 +77,11 @@ contract IexecHubABILegacy
 		bytes32[] calldata _taskid)
 	external returns (bool);
 
+	function initializeAndClaimArray(
+		bytes32[] calldata _dealid,
+		uint256[] calldata _idx)
+	external returns (bool);
+	
 	function viewTaskABILegacy(bytes32 _taskid)
 	public view returns
 	( IexecODBLibCore.TaskStatusEnum

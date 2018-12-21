@@ -262,7 +262,7 @@ contract('IexecHub', async (accounts) => {
 				volume:             10,
 				tag:                0x0,
 				category:           4,
-				trust:              0,
+				trust:              4,
 				requester:          user,
 				beneficiary:        user,
 				callback:           constants.NULL.ADDRESS,
@@ -297,6 +297,9 @@ contract('IexecHub', async (accounts) => {
 		tasks[4] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[2].args.taskid; // consensus
 		tasks[5] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[3].args.taskid; // reveal
 		tasks[6] = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize")[4].args.taskid; // finalized
+		tasks[7] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 7 });    // uninitialized
+		tasks[8] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 8 });    // uninitialized
+		tasks[9] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 9 });    // uninitialized
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -431,6 +434,19 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
+	it("[7.7a] Claim - Error (soon #6)", async () => {
+		try {
+			await IexecHubInstance.initializeAndClaimArray(
+				[ deals[1], deals[1], deals[1] ],
+				[        7,        8,        9 ],
+				{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
+			assert.fail("transaction should have reverted");
+		} catch (error) {
+			assert(error, "Expected an error but did not get one");
+			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
+		}
+	});
 
 	it("clock fast forward", async () => {
 		target = Number((await IexecHubInstance.viewTask(tasks[2])).finalDeadline);
@@ -440,8 +456,11 @@ contract('IexecHub', async (accounts) => {
 
 	it("[7.1b] Claim - Correct", async () => {
 		// needs late Initialization by the user
-		await IexecHubInstance.initialize(deals[1], 1, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-
+		await IexecHubInstance.initializeArray(
+			[ deals[1] ],
+			[        1 ],
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		// claim
 		txMined = await IexecHubInstance.claimArray(
 			[ tasks[1], tasks[2], tasks[3], tasks[4], tasks[5] ],
@@ -464,5 +483,16 @@ contract('IexecHub', async (accounts) => {
 			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
 		}
 	});
-
+	it("[7.7a] Claim - Correct", async () => {
+		txMined = await IexecHubInstance.initializeAndClaimArray(
+			[ deals[1], deals[1], deals[1] ],
+			[        7,        8,        9 ],
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		events = extractEvents(txMined, IexecHubInstance.address, "TaskClaimed");
+		assert.equal(events[0].args.taskid, tasks[7], "check taskid");
+		assert.equal(events[1].args.taskid, tasks[8], "check taskid");
+		assert.equal(events[2].args.taskid, tasks[9], "check taskid");
+	});
 });
