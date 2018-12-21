@@ -75,11 +75,13 @@ contract('IexecHub', async (accounts) => {
 				appProvider,
 				"App #"+i,
 				constants.MULTIADDR_BYTES,
+				"0x1234",
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
 			assert.equal( await AppInstances[i].m_owner(),        appProvider               );
 			assert.equal( await AppInstances[i].m_appName(),      "App #"+i                 );
 			assert.equal( await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES );
+			assert.equal( await AppInstances[i].m_appMREnclave(), "0x1234"                  );
 		}
 	});
 
