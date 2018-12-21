@@ -113,6 +113,7 @@ module.exports = async function(callback) {
 				appProvider,
 				"myApp",
 				"0x0", // change with app multiaddr
+				"0x0", // change with app multiaddr
 				{ from: appProvider }
 			);
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
