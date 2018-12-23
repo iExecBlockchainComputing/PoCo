@@ -67,7 +67,7 @@ module.exports = async function(callback) {
 			user            = accounts[9];
 		});
 
-		enclave = "0x2Cec14B9c908c814a0DD0255314E70c98c70Ceee";
+		enclave = "0x6CDC0e0C0c7b8f409c3ad6734C23677973CA56A3";
 		dealid  = "0x8b2fcc39dd5348cc5073840693aa5cdac5bea7434549469a4748eda4664a7ba8",
 		taskid  = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
@@ -76,14 +76,38 @@ module.exports = async function(callback) {
 			await IexecHubInstance.initialize(dealid, 0, { from: scheduler });
 		}
 
-
 		authorization = {
 			worker:  worker1,
 			taskid:  taskid,
 			enclave: enclave,
 		};
 
+		signature = await web3.eth.sign(web3.utils.soliditySha3(
+			{ t: 'address', v: authorization.worker  },
+			{ t: 'bytes32', v: authorization.taskid  },
+			{ t: 'address', v: authorization.enclave },
+		), scheduler)
+
+		authorization.sign = {
+			r:             "0x" + signature.substr( 2, 64),
+			s:             "0x" + signature.substr(66, 64),
+			v: 27 + Number("0x" + signature.substr(    -2)),
+		}
+
+		console.log("=== authorization ===")
 		console.log(authorization)
+
+		Kb = "abcde"
+		console.log("=== beneficiary ===")
+		console.log(user)
+		signature = await web3.eth.sign(Kb, user)
+		console.log({ 'sign': signature, 'secret': Kb })
+
+		Kd = "abcdef"
+		console.log("=== dataset ===")
+		signature = await web3.eth.sign(Kd, datasetProvider)
+		console.log(datasetProvider)
+		console.log({ 'sign': signature, 'secret': Kd })
 	}
 	catch (e)
 	{
