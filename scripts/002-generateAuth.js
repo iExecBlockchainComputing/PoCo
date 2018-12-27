@@ -67,7 +67,7 @@ module.exports = async function(callback) {
 			user            = accounts[9];
 		});
 
-		enclave = "0xC773B9cd33B20aCd3752BbCFC5b6175f62247593";
+		enclave = "0x7943E75A48FEf0376CCDcdda87fea71a4A9730C4";
 		dealid  = "0x8b2fcc39dd5348cc5073840693aa5cdac5bea7434549469a4748eda4664a7ba8",
 		taskid  = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
@@ -97,13 +97,13 @@ module.exports = async function(callback) {
 		console.log("=== authorization ===")
 		console.log(authorization)
 
-		Kb = "cGVyc29uYWxTZWNyZXQ="
+		Kb = Buffer.from('personalSecret').toString('base64')
 		console.log("=== beneficiary ===")
 		console.log(user)
 		signature = await web3.eth.sign(Kb, user)
 		console.log({ 'sign': signature, 'secret': Kb })
 
-		Kd = "ZGF0YXNldFNlY3JldA=="
+		Kd = Buffer.from('datasetSecret').toString('base64')
 		console.log("=== dataset ===")
 		signature = await web3.eth.sign(Kd, datasetProvider)
 		console.log(datasetProvider)
