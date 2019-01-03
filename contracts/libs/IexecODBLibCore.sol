@@ -33,8 +33,8 @@ library IexecODBLibCore
 		Resource app;
 		Resource dataset;
 		Resource workerpool;
-		uint256  trust;
-		uint256  tag;
+		uint256 trust;
+		bytes32 tag;
 		// execution details
 		address requester;
 		address beneficiary;

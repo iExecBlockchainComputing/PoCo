@@ -11,15 +11,15 @@ library IexecODBLibOrders
 	}
 
 	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	// bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,uint256 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,uint256 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,uint256 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant    REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,uint256 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
+	// bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
+	// bytes32 public constant    REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
 	bytes32 public constant    EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-	bytes32 public constant        APPORDER_TYPEHASH = 0x7ec080e12d68143b6f3cbfcc951a0af368f44b0317bf88e47a6deb61360f467a;
-	bytes32 public constant    DATASETORDER_TYPEHASH = 0x5a29cc8df638f0050902f3d568d4f66123c5aa434ed1b7f7448e3f8698ae9887;
-	bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0xc35d0ed8a07a66003ec762099c137d24991e5d74651822289074551ed1d9f9ae;
-	bytes32 public constant    REQUESTORDER_TYPEHASH = 0xf56ae5843d5bed3b1e1c005f4793303f8b9525f9f40189b8d29c21c2984a1ce4;
+	bytes32 public constant        APPORDER_TYPEHASH = 0x60815a0eeec47dddf1615fe53b31d016c31444e01b9d796db365443a6445d008;
+	bytes32 public constant    DATASETORDER_TYPEHASH = 0x6cfc932a5a3d22c4359295b9f433edff52b60703fa47690a04a83e40933dd47c;
+	bytes32 public constant WORKERPOOLORDER_TYPEHASH = 0xaa3429fb281b34691803133d3d978a75bb77c617ed6bc9aa162b9b30920022bb;
+	bytes32 public constant    REQUESTORDER_TYPEHASH = 0xf24e853034a3a450aba845a82914fbb564ad85accca6cf62be112a154520fae0;
 
 	struct EIP712Domain
 	{
@@ -33,7 +33,7 @@ library IexecODBLibOrders
 		address app;
 		uint256 appprice;
 		uint256 volume;
-		uint256 tag;
+		bytes32 tag;
 		address datasetrestrict;
 		address workerpoolrestrict;
 		address requesterrestrict;
@@ -45,7 +45,7 @@ library IexecODBLibOrders
 		address dataset;
 		uint256 datasetprice;
 		uint256 volume;
-		uint256 tag;
+		bytes32 tag;
 		address apprestrict;
 		address workerpoolrestrict;
 		address requesterrestrict;
@@ -57,7 +57,7 @@ library IexecODBLibOrders
 		address workerpool;
 		uint256 workerpoolprice;
 		uint256 volume;
-		uint256 tag;
+		bytes32 tag;
 		uint256 category;
 		uint256 trust;
 		address apprestrict;
@@ -76,7 +76,7 @@ library IexecODBLibOrders
 		uint256 workerpoolmaxprice;
 		address requester;
 		uint256 volume;
-		uint256 tag;
+		bytes32 tag;
 		uint256 category;
 		uint256 trust;
 		address beneficiary;

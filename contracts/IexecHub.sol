@@ -189,7 +189,7 @@ contract IexecHub is CategoryManager, IOracle
 		);
 
 		// need enclave challenge if tag is set
-		require(_enclaveChallenge != address(0) || deal.tag & 0x1 == 0);
+		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
 		if (_enclaveChallenge != address(0))

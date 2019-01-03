@@ -187,24 +187,23 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
-
 	matchOrders = (appextra, datasetextra, workerpoolextra, userextra) => {
 		_apporder = {
-				app:                AppInstance.address,
-				appprice:           3,
-				volume:             1000,
-				tag:                0x0,
-				datasetrestrict:    constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
+			app:                AppInstance.address,
+			appprice:           3,
+			volume:             1000,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+			datasetrestrict:    constants.NULL.ADDRESS,
+			workerpoolrestrict: constants.NULL.ADDRESS,
+			requesterrestrict:  constants.NULL.ADDRESS,
+			salt:               web3.utils.randomHex(32),
+			sign:               constants.NULL.SIGNATURE,
 		};
 		_datasetorder = {
 			dataset:            DatasetInstance.address,
 			datasetprice:       1,
 			volume:             1000,
-			tag:                0x0,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			apprestrict:        constants.NULL.ADDRESS,
 			workerpoolrestrict: constants.NULL.ADDRESS,
 			requesterrestrict:  constants.NULL.ADDRESS,
@@ -215,7 +214,7 @@ contract('IexecHub', async (accounts) => {
 			workerpool:        WorkerpoolInstance.address,
 			workerpoolprice:   25,
 			volume:            1000,
-			tag:               0x0,
+			tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:          4,
 			trust:             1000,
 			apprestrict:       constants.NULL.ADDRESS,
@@ -232,7 +231,7 @@ contract('IexecHub', async (accounts) => {
 			workerpool:         constants.NULL.ADDRESS,
 			workerpoolmaxprice: 25,
 			volume:             1,
-			tag:                0x0,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:           4,
 			trust:              1000,
 			requester:          user,
@@ -444,7 +443,7 @@ contract('IexecHub', async (accounts) => {
 	it("[Match - Error - apptag]", async () => {
 		try {
 			txMined = await matchOrders(
-				{ tag: 0x1 },
+				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 				{},
 				{},
 				{},
@@ -460,7 +459,7 @@ contract('IexecHub', async (accounts) => {
 		try {
 			txMined = await matchOrders(
 				{},
-				{ tag: 0x1 },
+				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 				{},
 				{},
 			);
@@ -476,7 +475,7 @@ contract('IexecHub', async (accounts) => {
 			txMined = await matchOrders(
 				{},
 				{},
-				{ tag: 0x1 },
+				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 				{},
 			);
 			// assert.fail("transaction should have reverted");
@@ -492,7 +491,7 @@ contract('IexecHub', async (accounts) => {
 				{},
 				{},
 				{},
-				{ tag: 0x1 },
+				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			);
 			assert.fail("transaction should have reverted");
 		} catch (error) {
