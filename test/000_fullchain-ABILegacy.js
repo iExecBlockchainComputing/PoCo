@@ -221,7 +221,7 @@ contract('IexecHub', async (accounts) => {
 				app:                AppInstance.address,
 				appprice:           3,
 				volume:             1000,
-				tag:                0x0,
+				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 				datasetrestrict:    constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
 				requesterrestrict:  constants.NULL.ADDRESS,
@@ -250,7 +250,7 @@ contract('IexecHub', async (accounts) => {
 				dataset:            DatasetInstance.address,
 				datasetprice:       1,
 				volume:             1000,
-				tag:                0x0,
+				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 				apprestrict:        constants.NULL.ADDRESS,
 				workerpoolrestrict: constants.NULL.ADDRESS,
 				requesterrestrict:  constants.NULL.ADDRESS,
@@ -281,7 +281,7 @@ contract('IexecHub', async (accounts) => {
 				volume:            3,
 				category:          4,
 				trust:             trusttarget,
-				tag:               0x0,
+				tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
 				apprestrict:       constants.NULL.ADDRESS,
 				datasetrestrict:   constants.NULL.ADDRESS,
 				requesterrestrict: constants.NULL.ADDRESS,
@@ -316,7 +316,7 @@ contract('IexecHub', async (accounts) => {
 				volume:             1, // CHANGE FOR BOT
 				category:           4,
 				trust:              trusttarget,
-				tag:                0x0,
+				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 				requester:          user,
 				beneficiary:        user,
 				callback:           constants.NULL.ADDRESS,
@@ -447,8 +447,8 @@ contract('IexecHub', async (accounts) => {
 		deal_pt2 = await IexecClerkInstance.viewDealABILegacy_pt2(dealid);
 		assert.equal    (deal_pt2[0].toNumber(), workerpoolorder.trust,  "check deal (deal.trust)"      );
 		assert.isAtLeast(deal_pt2[0].toNumber(), requestorder.trust,     "check deal (deal.trust)"      );
-		assert.equal    (deal_pt2[1].toNumber(), workerpoolorder.tag,    "check deal (deal.tag)"        );
-		assert.equal    (deal_pt2[1].toNumber(), requestorder.tag,       "check deal (deal.tag)"        );
+		assert.equal    (deal_pt2[1],            workerpoolorder.tag,    "check deal (deal.tag)"        );
+		assert.equal    (deal_pt2[1],            requestorder.tag,       "check deal (deal.tag)"        );
 		assert.equal    (deal_pt2[2],            user,                   "check deal (deal.requester)"  );
 		assert.equal    (deal_pt2[3],            user,                   "check deal (deal.beneficiary)");
 		assert.equal    (deal_pt2[4],            requestorder.callback,  "check deal (deal.callback)"   );

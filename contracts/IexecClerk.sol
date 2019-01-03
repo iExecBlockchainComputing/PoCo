@@ -524,7 +524,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	function viewDealABILegacy_pt2(bytes32 _id)
 	public view returns
 	( uint256
-	, uint256
+	, bytes32
 	, address
 	, address
 	, address
@@ -552,14 +552,14 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	, uint256
 	)
 	{
-		IexecODBLibCore.Config memory config = viewConfig(_id);
+		IexecODBLibCore.Deal memory deal = viewDeal(_id);
 		return (
-			config.category,
-			config.startTime,
-			config.botFirst,
-			config.botSize,
-			config.workerStake,
-			config.schedulerRewardRatio
+			deal.category,
+			deal.startTime,
+			deal.botFirst,
+			deal.botSize,
+			deal.workerStake,
+			deal.schedulerRewardRatio
 		);
 	}
 
