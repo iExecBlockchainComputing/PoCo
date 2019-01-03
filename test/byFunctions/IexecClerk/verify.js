@@ -125,7 +125,7 @@ contract('IexecHub', async (accounts) => {
 			app:                AppInstance.address,
 			appprice:           3,
 			volume:             1000,
-			tag:                0x0,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			datasetrestrict:    DatasetInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
 			requesterrestrict:  user,
@@ -140,7 +140,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: constants.NULL.ADDRESS, appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: 0,                 volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: 0xFFFFFF,        tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
-		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: 0x1,          datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
+		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: "0x0000000000000000000000000000000000000000000000000000000000000001",        datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: constants.NULL.ADDRESS,   workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: constants.NULL.ADDRESS,      requesterrestrict: apporder.requesterrestrict, salt: apporder.salt            }), apporder.sign,            {}));
 		assert.isFalse(await IexecClerkInstance.verify(appProvider, odbtools.AppOrderStructHash({ app: apporder.app,           appprice: apporder.appprice, volume: apporder.volume, tag: apporder.tag, datasetrestrict: apporder.datasetrestrict, workerpoolrestrict: apporder.workerpoolrestrict, requesterrestrict: constants.NULL.ADDRESS,     salt: apporder.salt            }), apporder.sign,            {}));
@@ -156,7 +156,7 @@ contract('IexecHub', async (accounts) => {
 			dataset:            DatasetInstance.address,
 			datasetprice:       3,
 			volume:             1000,
-			tag:                0x0,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			apprestrict:        AppInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
 			requesterrestrict:  user,
@@ -171,7 +171,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: constants.NULL.ADDRESS, datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: 0,                         volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: 0xFFFFFF,            tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
-		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: 0x1,              apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
+		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: "0x0000000000000000000000000000000000000000000000000000000000000001",            apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: constants.NULL.ADDRESS,   workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: constants.NULL.ADDRESS,          requesterrestrict: datasetorder.requesterrestrict, salt: datasetorder.salt        }), datasetorder.sign,        {}));
 		assert.isFalse(await IexecClerkInstance.verify(datasetProvider, odbtools.DatasetOrderStructHash({ dataset: datasetorder.dataset,   datasetprice: datasetorder.datasetprice, volume: datasetorder.volume, tag: datasetorder.tag, apprestrict: datasetorder.apprestrict, workerpoolrestrict: datasetorder.workerpoolrestrict, requesterrestrict: constants.NULL.ADDRESS,         salt: datasetorder.salt        }), datasetorder.sign,        {}));
@@ -187,7 +187,7 @@ contract('IexecHub', async (accounts) => {
 			workerpool:        WorkerpoolInstance.address,
 			workerpoolprice:   25,
 			volume:            3,
-			tag:               0x0,
+			tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:          4,
 			trust:             1000,
 			apprestrict:       AppInstance.address,
@@ -225,7 +225,7 @@ contract('IexecHub', async (accounts) => {
 			workerpool:         WorkerpoolInstance.address,
 			workerpoolmaxprice: 25,
 			volume:             1,
-			tag:                0x0,
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:           4,
 			trust:              1000,
 			requester:          user,

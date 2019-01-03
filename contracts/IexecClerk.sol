@@ -39,7 +39,6 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	 ***************************************************************************/
 	mapping(bytes32 => bytes32[]             ) m_requestdeals;
 	mapping(bytes32 => IexecODBLibCore.Deal  ) m_deals;
-	mapping(bytes32 => IexecODBLibCore.Config) m_configs;
 	mapping(bytes32 => uint256               ) m_consumed;
 	mapping(bytes32 => bool                  ) m_presigned;
 
@@ -85,12 +84,6 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	public view returns (IexecODBLibCore.Deal memory deal)
 	{
 		return m_deals[_id];
-	}
-
-	function viewConfig(bytes32 _id)
-	public view returns (IexecODBLibCore.Config memory config)
-	{
-		return m_configs[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
@@ -276,29 +269,27 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		));
 
 		IexecODBLibCore.Deal storage deal = m_deals[dealid];
-		deal.app.pointer        = _apporder.app;
-		deal.app.owner          = ids.appOwner;
-		deal.app.price          = _apporder.appprice;
-		deal.dataset.owner      = ids.datasetOwner;
-		deal.dataset.pointer    = _datasetorder.dataset;
-		deal.dataset.price      = ids.hasDataset ? _datasetorder.datasetprice : 0;
-		deal.workerpool.pointer = _workerpoolorder.workerpool;
-		deal.workerpool.owner   = ids.workerpoolOwner;
-		deal.workerpool.price   = _workerpoolorder.workerpoolprice;
-		deal.trust              = _requestorder.trust.max(1);
-		deal.tag                = _apporder.tag | _datasetorder.tag | _requestorder.tag;
-		deal.requester          = _requestorder.requester;
-		deal.beneficiary        = _requestorder.beneficiary;
-		deal.callback           = _requestorder.callback;
-		deal.params             = _requestorder.params;
-
-		IexecODBLibCore.Config storage config = m_configs[dealid];
-		config.category             = _requestorder.category;
-		config.startTime            = now;
-		config.botFirst             = m_consumed[ids.requestHash];
-		config.botSize              = volume;
-		config.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
-		config.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
+		deal.app.pointer          = _apporder.app;
+		deal.app.owner            = ids.appOwner;
+		deal.app.price            = _apporder.appprice;
+		deal.dataset.owner        = ids.datasetOwner;
+		deal.dataset.pointer      = _datasetorder.dataset;
+		deal.dataset.price        = ids.hasDataset ? _datasetorder.datasetprice : 0;
+		deal.workerpool.pointer   = _workerpoolorder.workerpool;
+		deal.workerpool.owner     = ids.workerpoolOwner;
+		deal.workerpool.price     = _workerpoolorder.workerpoolprice;
+		deal.trust                = _requestorder.trust.max(1);
+		deal.category             = _requestorder.category;
+		deal.tag                  = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+		deal.requester            = _requestorder.requester;
+		deal.beneficiary          = _requestorder.beneficiary;
+		deal.callback             = _requestorder.callback;
+		deal.params               = _requestorder.params;
+		deal.startTime            = now;
+		deal.botFirst             = m_consumed[ids.requestHash];
+		deal.botSize              = volume;
+		deal.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
+		deal.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
 
 		m_requestdeals[ids.requestHash].push(dealid);
 
@@ -397,26 +388,26 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	function lockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub
 	{
-		lock(_worker, m_configs[_dealid].workerStake);
+		lock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub
 	{
-		unlock(_worker, m_configs[_dealid].workerStake);
+		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
 	public onlyIexecHub
 	{
-		unlock(_worker, m_configs[_dealid].workerStake);
+		unlock(_worker, m_deals[_dealid].workerStake);
 		reward(_worker, _amount);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker)
 	public onlyIexecHub
 	{
-		seize(_worker, m_configs[_dealid].workerStake);
+		seize(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount)

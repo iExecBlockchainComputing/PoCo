@@ -99,15 +99,16 @@ module.exports = async function(callback) {
 		console.log("consumed workerpool:", Number(await IexecClerkInstance.viewConsumed(workerpoolorderHash)));
 		console.log("consumed request:   ", Number(await IexecClerkInstance.viewConsumed(requestorderHash   )));
 
-		await IexecClerkInstance.matchOrders(
+		txMined = await IexecClerkInstance.matchOrders(
 			apporder,
 			datasetorder,
 			workerpoolorder,
 			requestorder,
 			{ from: user }
 		);
+		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
 		console.log("MATCHED!")
-
+		console.log("dealid:             ", events[0].args.dealid,                                            );
 		console.log("consumed app:       ", Number(await IexecClerkInstance.viewConsumed(apporderHash       )));
 		console.log("consumed dataset:   ", Number(await IexecClerkInstance.viewConsumed(datasetorderHash   )));
 		console.log("consumed workerpool:", Number(await IexecClerkInstance.viewConsumed(workerpoolorderHash)));

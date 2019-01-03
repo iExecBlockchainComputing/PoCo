@@ -137,10 +137,10 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	function initialize(bytes32 _dealid, uint256 idx)
 	public returns (bytes32)
 	{
-		IexecODBLibCore.Config memory config = iexecclerk.viewConfig(_dealid);
+		IexecODBLibCore.Deal memory deal = iexecclerk.viewDeal(_dealid);
 
-		require(idx >= config.botFirst                    );
-		require(idx <  config.botFirst.add(config.botSize));
+		require(idx >= deal.botFirst                  );
+		require(idx <  deal.botFirst.add(deal.botSize));
 
 		bytes32 taskid  = keccak256(abi.encodePacked(_dealid, idx));
 		IexecODBLibCore.Task storage task = m_tasks[taskid];
@@ -149,9 +149,9 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		task.status               = IexecODBLibCore.TaskStatusEnum.ACTIVE;
 		task.dealid               = _dealid;
 		task.idx                  = idx;
-		task.timeref              = viewCategory(config.category).workClockTimeRef;
-		task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(config.startTime);
-		task.finalDeadline        = task.timeref.mul(       FINAL_DEADLINE_RATIO).add(config.startTime);
+		task.timeref              = viewCategory(deal.category).workClockTimeRef;
+		task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(deal.startTime);
+		task.finalDeadline        = task.timeref.mul(       FINAL_DEADLINE_RATIO).add(deal.startTime);
 
 		// setup denominator
 		m_totalweight[taskid] = 1;
@@ -194,7 +194,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		);
 
 		// need enclave challenge if tag is set
-		require(_enclaveChallenge != address(0) || deal.tag & 0x1 == 0);
+		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
 		if (_enclaveChallenge != address(0))
@@ -407,8 +407,8 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	function __distributeRewards(bytes32 _taskid)
 	private
 	{
-		IexecODBLibCore.Task   storage task   = m_tasks[_taskid];
-		IexecODBLibCore.Config memory  config = iexecclerk.viewConfig(task.dealid);
+		IexecODBLibCore.Task storage task = m_tasks[_taskid];
+		IexecODBLibCore.Deal memory  deal = iexecclerk.viewDeal(task.dealid);
 
 		uint256 i;
 		address worker;
@@ -425,13 +425,13 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
-				totalReward = totalReward.add(config.workerStake);
+				totalReward = totalReward.add(deal.workerStake);
 			}
 		}
 		require(totalLogWeight > 0);
 
 		// compute how much is going to the workers
-		uint256 workersReward = totalReward.percentage(uint256(100).sub(config.schedulerRewardRatio));
+		uint256 workersReward = totalReward.percentage(uint256(100).sub(deal.schedulerRewardRatio));
 
 		for (i = 0; i < task.contributors.length; ++i)
 		{

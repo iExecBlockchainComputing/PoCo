@@ -33,18 +33,15 @@ library IexecODBLibCore
 		Resource app;
 		Resource dataset;
 		Resource workerpool;
-		uint256  trust;
-		uint256  tag;
+		uint256 trust;
+		uint256 category;
+		bytes32 tag;
 		// execution details
 		address requester;
 		address beneficiary;
 		address callback;
 		string  params;
-	}
-	struct Config
-	{
 		// execution settings
-		uint256 category;
 		uint256 startTime;
 		uint256 botFirst;
 		uint256 botSize;
