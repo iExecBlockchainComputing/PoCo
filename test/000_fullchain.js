@@ -455,44 +455,37 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Market] Check deal", async () => {
 		deal = await IexecClerkInstance.viewDeal(dealid);
-		assert.equal    (       deal.app.pointer,        AppInstance.address,             "check deal (deal.app.pointer)"       );
-		assert.equal    (       deal.app.owner,          appProvider,                     "check deal (deal.app.owner)"         );
-		assert.equal    (Number(deal.app.price),         apporder.appprice,               "check deal (deal.app.price)"         );
-		assert.equal    (       deal.app.pointer,        requestorder.app,                "check deal (deal.app.pointer)"       );
-		assert.isAtMost (Number(deal.app.price),         requestorder.appmaxprice,        "check deal (deal.app.price)"         );
-		assert.equal    (       deal.dataset.pointer,    DatasetInstance.address,         "check deal (deal.dataset.pointer)"   );
-		assert.equal    (       deal.dataset.owner,      datasetProvider,                 "check deal (deal.dataset.owner)"     );
-		assert.equal    (Number(deal.dataset.price),     datasetorder.datasetprice,       "check deal (deal.dataset.price)"     );
-		assert.equal    (       deal.dataset.pointer,    requestorder.dataset,            "check deal (deal.dataset.pointer)"   );
-		assert.isAtMost (Number(deal.dataset.price),     requestorder.datasetmaxprice,    "check deal (deal.dataset.price)"     );
-		assert.equal    (       deal.workerpool.pointer, WorkerpoolInstance.address,      "check deal (deal.workerpool.pointer)");
-		assert.equal    (       deal.workerpool.owner,   scheduler,                       "check deal (deal.workerpool.owner)"  );
-		assert.equal    (Number(deal.workerpool.price),  workerpoolorder.workerpoolprice, "check deal (deal.workerpool.price)"  );
+		assert.equal    (       deal.app.pointer,           AppInstance.address,             "check deal (deal.app.pointer)"         );
+		assert.equal    (       deal.app.owner,             appProvider,                     "check deal (deal.app.owner)"           );
+		assert.equal    (Number(deal.app.price           ), apporder.appprice,               "check deal (deal.app.price)"           );
+		assert.equal    (       deal.app.pointer,           requestorder.app,                "check deal (deal.app.pointer)"         );
+		assert.isAtMost (Number(deal.app.price           ), requestorder.appmaxprice,        "check deal (deal.app.price)"           );
+		assert.equal    (       deal.dataset.pointer,       DatasetInstance.address,         "check deal (deal.dataset.pointer)"     );
+		assert.equal    (       deal.dataset.owner,         datasetProvider,                 "check deal (deal.dataset.owner)"       );
+		assert.equal    (Number(deal.dataset.price       ), datasetorder.datasetprice,       "check deal (deal.dataset.price)"       );
+		assert.equal    (       deal.dataset.pointer,       requestorder.dataset,            "check deal (deal.dataset.pointer)"     );
+		assert.isAtMost (Number(deal.dataset.price       ), requestorder.datasetmaxprice,    "check deal (deal.dataset.price)"       );
+		assert.equal    (       deal.workerpool.pointer,    WorkerpoolInstance.address,      "check deal (deal.workerpool.pointer)"  );
+		assert.equal    (       deal.workerpool.owner,      scheduler,                       "check deal (deal.workerpool.owner)"    );
+		assert.equal    (Number(deal.workerpool.price    ), workerpoolorder.workerpoolprice, "check deal (deal.workerpool.price)"    );
 		if( requestorder.workerpool != constants.NULL.ADDRESS)
-		assert.equal    (       deal.workerpool.pointer, requestorder.workerpool,         "check deal (deal.workerpool.pointer)");
-		assert.isAtMost (Number(deal.workerpool.price),  requestorder.workerpoolmaxprice, "check deal (deal.workerpool.price)"  );
-		assert.equal    (Number(deal.trust),             workerpoolorder.trust,           "check deal (deal.trust)"             );
-		assert.isAtLeast(Number(deal.trust),             requestorder.trust,              "check deal (deal.trust)"             );
-		assert.equal    (Number(deal.tag),               workerpoolorder.tag,             "check deal (deal.tag)"               );
-		assert.equal    (Number(deal.tag),               requestorder.tag,                "check deal (deal.tag)"               );
-		assert.equal    (       deal.requester,          user,                            "check deal (deal.requester)"         );
-		assert.equal    (       deal.beneficiary,        user,                            "check deal (deal.beneficiary)"       );
-		assert.equal    (       deal.callback,           requestorder.callback,           "check deal (deal.callback)"          );
-		assert.equal    (       deal.params,             requestorder.params,             "check deal (deal.params)"            );
-	});
-
-	/***************************************************************************
-	 *                     TEST: specs are written onchain                     *
-	 ***************************************************************************/
-	it("[Market] Check config", async () => {
-		config = await IexecClerkInstance.viewConfig(dealid);
-		assert.equal  (Number(config.category            ), workerpoolorder.category, "check config (config.category)"            );
-		assert.equal  (Number(config.category            ), requestorder.category,    "check config (config.category)"            );
-		assert.isAbove(Number(config.startTime           ), 0,                        "check config (config.start)"               );
-		assert.equal  (Number(config.botFirst            ), 0,                        "check config (config.botFirst)"            );
-		assert.equal  (Number(config.botSize             ), 1,                        "check config (config.botSize)"             );
-		assert.equal  (Number(config.workerStake         ), 8,                        "check config (config.workerStake)"         ); // 8 = floor(25*.3)
-		assert.equal  (Number(config.schedulerRewardRatio), 5,                        "check config (config.schedulerRewardRatio)");
+		assert.equal    (       deal.workerpool.pointer,    requestorder.workerpool,         "check deal (deal.workerpool.pointer)"  );
+		assert.isAtMost (Number(deal.workerpool.price    ), requestorder.workerpoolmaxprice, "check deal (deal.workerpool.price)"    );
+		assert.equal    (Number(deal.trust               ), workerpoolorder.trust,           "check deal (deal.trust)"               );
+		assert.isAtLeast(Number(deal.trust               ), requestorder.trust,              "check deal (deal.trust)"               );
+		assert.equal    (Number(deal.category            ), workerpoolorder.category,        "check deal (deal.category)"            );
+		assert.equal    (Number(deal.category            ), requestorder.category,           "check deal (deal.category)"            );
+		assert.equal    (Number(deal.tag                 ), workerpoolorder.tag,             "check deal (deal.tag)"                 );
+		assert.equal    (Number(deal.tag                 ), requestorder.tag,                "check deal (deal.tag)"                 );
+		assert.equal    (       deal.requester,             user,                            "check deal (deal.requester)"           );
+		assert.equal    (       deal.beneficiary,           user,                            "check deal (deal.beneficiary)"         );
+		assert.equal    (       deal.callback,              requestorder.callback,           "check deal (deal.callback)"            );
+		assert.equal    (       deal.params,                requestorder.params,             "check deal (deal.params)"              );
+		assert.isAbove  (Number(deal.startTime           ), 0,                               "check deal (deal.start)"               );
+		assert.equal    (Number(deal.botFirst            ), 0,                               "check deal (deal.botFirst)"            );
+		assert.equal    (Number(deal.botSize             ), 1,                               "check deal (deal.botSize)"             );
+		assert.equal    (Number(deal.workerStake         ), 8,                               "check deal (deal.workerStake)"         ); // 8 = floor(25*.3)
+		assert.equal    (Number(deal.schedulerRewardRatio), 5,                               "check deal (deal.schedulerRewardRatio)");
 	});
 
 	/***************************************************************************

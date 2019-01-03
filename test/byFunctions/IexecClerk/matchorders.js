@@ -266,29 +266,27 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.app.pointer,        AppInstance.address       );
-		assert.equal(       deal.app.owner,          appProvider               );
-		assert.equal(Number(deal.app.price),         3                         );
-		assert.equal(       deal.dataset.pointer,    DatasetInstance.address   );
-		assert.equal(       deal.dataset.owner,      datasetProvider           );
-		assert.equal(Number(deal.dataset.price),     1                         );
-		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
-		assert.equal(       deal.workerpool.owner,   scheduler                 );
-		assert.equal(Number(deal.workerpool.price),  25                        );
-		assert.equal(Number(deal.trust),             1000                      );
-		assert.equal(Number(deal.tag),               0x0                       );
-		assert.equal(       deal.requester,          user                      );
-		assert.equal(       deal.beneficiary,        user                      );
-		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
-		assert.equal(       deal.params,             "<parameters>"            );
-
-		config = await IexecClerkInstance.viewConfig(deals[0]);
-		assert.equal  (Number(config.category),             4);
-		assert.isAbove(Number(config.startTime),            0);
-		assert.equal  (Number(config.botFirst),             0);
-		assert.equal  (Number(config.botSize),              1);
-		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
-		assert.equal  (Number(config.schedulerRewardRatio), 5);
+		assert.equal  (       deal.app.pointer,           AppInstance.address       );
+		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (Number(deal.app.price),            3                         );
+		assert.equal  (       deal.dataset.pointer,       DatasetInstance.address   );
+		assert.equal  (       deal.dataset.owner,         datasetProvider           );
+		assert.equal  (Number(deal.dataset.price),        1                         );
+		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
+		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (Number(deal.workerpool.price),     25                        );
+		assert.equal  (Number(deal.trust),                1000                      );
+		assert.equal  (Number(deal.category),             4                         );
+		assert.equal  (Number(deal.tag),                  0x0                       );
+		assert.equal  (       deal.requester,             user                      );
+		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
+		assert.equal  (       deal.params,                "<parameters>"            );
+		assert.isAbove(Number(deal.startTime),            0                         );
+		assert.equal  (Number(deal.botFirst),             0                         );
+		assert.equal  (Number(deal.botSize),              1                         );
+		assert.equal  (Number(deal.workerStake),          8                         ); // 8 = floor(25*.3)
+		assert.equal  (Number(deal.schedulerRewardRatio), 5                         );
 	});
 
 	it("[Match - app-workerpool-user]", async () => {
@@ -303,29 +301,27 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.app.pointer,        AppInstance.address       );
-		assert.equal(       deal.app.owner,          appProvider               );
-		assert.equal(Number(deal.app.price),         3                         );
-		assert.equal(       deal.dataset.pointer,    constants.NULL.ADDRESS    );
-		assert.equal(       deal.dataset.owner,      constants.NULL.ADDRESS    );
-		assert.equal(Number(deal.dataset.price),     0                         );
-		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
-		assert.equal(       deal.workerpool.owner,   scheduler                 );
-		assert.equal(Number(deal.workerpool.price),  25                        );
-		assert.equal(Number(deal.trust),             1000                      );
-		assert.equal(Number(deal.tag),               0x0                       );
-		assert.equal(       deal.requester,          user                      );
-		assert.equal(       deal.beneficiary,        user                      );
-		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
-		assert.equal(       deal.params,             "<parameters>"            );
-
-		config = await IexecClerkInstance.viewConfig(deals[0]);
-		assert.equal  (Number(config.category),             4);
-		assert.isAbove(Number(config.startTime),            0);
-		assert.equal  (Number(config.botFirst),             0);
-		assert.equal  (Number(config.botSize),              1);
-		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
-		assert.equal  (Number(config.schedulerRewardRatio), 5);
+		assert.equal  (       deal.app.pointer,           AppInstance.address       );
+		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (Number(deal.app.price),            3                         );
+		assert.equal  (       deal.dataset.pointer,       constants.NULL.ADDRESS    );
+		assert.equal  (       deal.dataset.owner,         constants.NULL.ADDRESS    );
+		assert.equal  (Number(deal.dataset.price),        0                         );
+		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
+		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (Number(deal.workerpool.price),     25                        );
+		assert.equal  (Number(deal.trust),                1000                      );
+		assert.equal  (Number(deal.category),             4                         );
+		assert.equal  (Number(deal.tag),                  0x0                       );
+		assert.equal  (       deal.requester,             user                      );
+		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
+		assert.equal  (       deal.params,                "<parameters>"            );
+		assert.isAbove(Number(deal.startTime),            0                         );
+		assert.equal  (Number(deal.botFirst),             0                         );
+		assert.equal  (Number(deal.botSize),              1                         );
+		assert.equal  (Number(deal.workerStake),          8                         ); // 8 = floor(25*.3)
+		assert.equal  (Number(deal.schedulerRewardRatio), 5                         );
 	});
 
 	it("[Match - app-dataset-workerpool-user BOT]", async () => {
@@ -340,29 +336,27 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
-		assert.equal(       deal.app.pointer,        AppInstance.address       );
-		assert.equal(       deal.app.owner,          appProvider               );
-		assert.equal(Number(deal.app.price),         3                         );
-		assert.equal(       deal.dataset.pointer,    DatasetInstance.address   );
-		assert.equal(       deal.dataset.owner,      datasetProvider           );
-		assert.equal(Number(deal.dataset.price),     1                         );
-		assert.equal(       deal.workerpool.pointer, WorkerpoolInstance.address);
-		assert.equal(       deal.workerpool.owner,   scheduler                 );
-		assert.equal(Number(deal.workerpool.price),  25                        );
-		assert.equal(Number(deal.trust),             1000                      );
-		assert.equal(Number(deal.tag),               0x0                       );
-		assert.equal(       deal.requester,          user                      );
-		assert.equal(       deal.beneficiary,        user                      );
-		assert.equal(       deal.callback,           constants.NULL.ADDRESS    );
-		assert.equal(       deal.params,             "<parameters>"            );
-
-		config = await IexecClerkInstance.viewConfig(deals[0]);
-		assert.equal  (Number(config.category),             4);
-		assert.isAbove(Number(config.startTime),            0);
-		assert.equal  (Number(config.botFirst),             0);
-		assert.equal  (Number(config.botSize),             10);
-		assert.equal  (Number(config.workerStake),          8); // 8 = floor(25*.3)
-		assert.equal  (Number(config.schedulerRewardRatio), 5);
+		assert.equal  (       deal.app.pointer,           AppInstance.address       );
+		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (Number(deal.app.price),            3                         );
+		assert.equal  (       deal.dataset.pointer,       DatasetInstance.address   );
+		assert.equal  (       deal.dataset.owner,         datasetProvider           );
+		assert.equal  (Number(deal.dataset.price),        1                         );
+		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
+		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (Number(deal.workerpool.price),     25                        );
+		assert.equal  (Number(deal.trust),                1000                      );
+		assert.equal  (Number(deal.category),             4                         );
+		assert.equal  (Number(deal.tag),                  0x0                       );
+		assert.equal  (       deal.requester,             user                      );
+		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
+		assert.equal  (       deal.params,                "<parameters>"            );
+		assert.isAbove(Number(deal.startTime),            0                         );
+		assert.equal  (Number(deal.botFirst),             0                         );
+		assert.equal  (Number(deal.botSize),              10                        );
+		assert.equal  (Number(deal.workerStake),          8                         ); // 8 = floor(25*.3)
+		assert.equal  (Number(deal.schedulerRewardRatio), 5                         );
 	});
 
 	it("[Match - Error - category]", async () => {
