@@ -156,6 +156,7 @@ contract IexecHub is CategoryManager, IOracle
 		return taskid;
 	}
 
+	// TODO: make external w/ calldata
 	function contribute(
 		bytes32                            _taskid,
 		bytes32                            _resultHash,
@@ -241,7 +242,7 @@ contract IexecHub is CategoryManager, IOracle
 	function checkConsensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
-	internal
+	private
 	{
 		uint256 trust = iexecclerk.viewDeal(m_tasks[_taskid].dealid).trust;
 		if (m_groupweight[_taskid][_consensus].mul(trust) > m_totalweight[_taskid].mul(trust.sub(1)))
@@ -278,7 +279,7 @@ contract IexecHub is CategoryManager, IOracle
 	function reveal(
 		bytes32 _taskid,
 		bytes32 _resultDigest)
-	public // worker
+	external // worker
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
@@ -297,7 +298,7 @@ contract IexecHub is CategoryManager, IOracle
 
 	function reopen(
 		bytes32 _taskid)
-	public onlyScheduler(_taskid)
+	external onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status         == IexecODBLibCore.TaskStatusEnum.REVEALING);
@@ -343,7 +344,7 @@ contract IexecHub is CategoryManager, IOracle
 		 * Stake and reward management
 		 */
 		iexecclerk.successWork(task.dealid);
-		__distributeRewards(_taskid);
+		distributeRewards(_taskid);
 
 		/**
 		 * Event
@@ -375,31 +376,7 @@ contract IexecHub is CategoryManager, IOracle
 		}
 	}
 
-	function claim(
-		bytes32 _taskid)
-	public
-	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
-		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline <= now);
-
-		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
-
-		/**
-		 * Stake management
-		 */
-		iexecclerk.failedWork(task.dealid);
-		for (uint256 i = 0; i < task.contributors.length; ++i)
-		{
-			address worker = task.contributors[i];
-			iexecclerk.unlockContribution(task.dealid, worker);
-		}
-
-		emit TaskClaimed(_taskid);
-	}
-
-	function __distributeRewards(bytes32 _taskid)
+	function distributeRewards(bytes32 _taskid)
 	private
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
@@ -472,6 +449,33 @@ contract IexecHub is CategoryManager, IOracle
 		iexecclerk.rewardForScheduling(task.dealid, totalReward);
 	}
 
+	function claim(
+		bytes32 _taskid)
+	public
+	{
+		IexecODBLibCore.Task storage task = m_tasks[_taskid];
+		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
+		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline <= now);
+
+		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
+
+		/**
+		 * Stake management
+		 */
+		iexecclerk.failedWork(task.dealid);
+		for (uint256 i = 0; i < task.contributors.length; ++i)
+		{
+			address worker = task.contributors[i];
+			iexecclerk.unlockContribution(task.dealid, worker);
+		}
+
+		emit TaskClaimed(_taskid);
+	}
+
+	/***************************************************************************
+	 *                            Array operations                             *
+	 ***************************************************************************/
 	function initializeArray(
 		bytes32[] calldata _dealid,
 		uint256[] calldata _idx)
