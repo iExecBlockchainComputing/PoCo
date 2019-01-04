@@ -68,7 +68,7 @@ module.exports = async function(callback) {
 		});
 
 		enclave = "0x7943E75A48FEf0376CCDcdda87fea71a4A9730C4";
-		dealid  = "0x8b2fcc39dd5348cc5073840693aa5cdac5bea7434549469a4748eda4664a7ba8",
+		dealid  = "0x86531e845b454343529f687fdb5be644aeb77224c8707050dd7b094685fddec7",
 		taskid  = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
 		if ((await IexecHubInstance.viewTask(taskid)).status == 0)
