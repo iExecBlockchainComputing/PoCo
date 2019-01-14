@@ -76,7 +76,7 @@ contract IexecHub is CategoryManager, IOracle
 		address _appregistryAddress,
 		address _datasetregistryAddress,
 		address _workerpoolregistryAddress)
-	public onlyOwner
+	external onlyOwner
 	{
 		require(address(iexecclerk) == address(0));
 		iexecclerk         = IexecClerk  (_iexecclerkAddress  );
@@ -89,19 +89,19 @@ contract IexecHub is CategoryManager, IOracle
 	 *                                Accessors                                *
 	 ***************************************************************************/
 	function viewTask(bytes32 _taskid)
-	public view returns (IexecODBLibCore.Task memory)
+	external view returns (IexecODBLibCore.Task memory)
 	{
 		return m_tasks[_taskid];
 	}
 
 	function viewContribution(bytes32 _taskid, address _worker)
-	public view returns (IexecODBLibCore.Contribution memory)
+	external view returns (IexecODBLibCore.Contribution memory)
 	{
 		return m_contributions[_taskid][_worker];
 	}
 
 	function viewScore(address _worker)
-	public view returns (uint256)
+	external view returns (uint256)
 	{
 		return m_workerScores[_worker];
 	}
@@ -144,7 +144,7 @@ contract IexecHub is CategoryManager, IOracle
 		task.status               = IexecODBLibCore.TaskStatusEnum.ACTIVE;
 		task.dealid               = _dealid;
 		task.idx                  = idx;
-		task.timeref              = viewCategory(deal.category).workClockTimeRef;
+		task.timeref              = m_categories[deal.category].workClockTimeRef;
 		task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(deal.startTime);
 		task.finalDeadline        = task.timeref.mul(       FINAL_DEADLINE_RATIO).add(deal.startTime);
 

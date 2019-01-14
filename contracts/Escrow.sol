@@ -44,7 +44,7 @@ contract Escrow
 	 * Accessor
 	 */
 	function viewAccount(address _user)
-	public view returns (IexecODBLibCore.Account memory account)
+	external view returns (IexecODBLibCore.Account memory account)
 	{
 		return m_accounts[_user];
 	}
@@ -52,14 +52,17 @@ contract Escrow
 	/**
 	 * Wallet methods: public
 	 */
-	function deposit(uint256 _amount) external returns (bool)
+	function deposit(uint256 _amount)
+	external returns (bool)
 	{
 		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		emit Deposit(msg.sender, _amount);
 		return true;
 	}
-	function depositFor(uint256 _amount, address _target) external returns (bool)
+
+	function depositFor(uint256 _amount, address _target)
+	external returns (bool)
 	{
 		require(_target != address(0));
 
@@ -68,13 +71,16 @@ contract Escrow
 		emit DepositFor(msg.sender, _amount, _target);
 		return true;
 	}
-	function withdraw(uint256 _amount) external returns (bool)
+
+	function withdraw(uint256 _amount)
+	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		require(token.transfer(msg.sender, _amount));
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
+
 	/**
 	 * Wallet methods: Internal
 	 */

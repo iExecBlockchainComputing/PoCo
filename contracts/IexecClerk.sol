@@ -70,25 +70,25 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                                Accessor                                 *
 	 ***************************************************************************/
 	function viewRequestDeals(bytes32 _id)
-	public view returns (bytes32[] memory requestdeals)
+	external view returns (bytes32[] memory requestdeals)
 	{
 		return m_requestdeals[_id];
 	}
 
 	function viewDeal(bytes32 _id)
-	public view returns (IexecODBLibCore.Deal memory deal)
+	external view returns (IexecODBLibCore.Deal memory deal)
 	{
 		return m_deals[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
-	public view returns (uint256 consumed)
+	external view returns (uint256 consumed)
 	{
 		return m_consumed[_id];
 	}
 
 	function viewPresigned(bytes32 _id)
-	public view returns (bool presigned)
+	external view returns (bool presigned)
 	{
 		return m_presigned[_id];
 	}
@@ -96,19 +96,9 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                         Enterprise restriction                          *
 	 ***************************************************************************/
-	/*
-	function isContract(address addr)
-	public view returns (bool)
-	{
-		uint size;
-		assembly { size := extcodesize(addr) }
-		return size > 0;
-	}
-	*/
-
 	// Fails fail for wrong simple addresses
 	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
-	public view returns (bool)
+	internal view returns (bool)
 	{
 		return _restriction == address(0) // No restriction
 		    || _restriction == _candidate // Simple address
@@ -118,6 +108,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
+	// internal ?
 	function verify(
 		address                            _signer,
 		bytes32                            _hash,
@@ -135,6 +126,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	/***************************************************************************
 	 *                            pre-signing tools                            *
 	 ***************************************************************************/
+	// should be external
 	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
@@ -143,6 +135,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
@@ -151,6 +144,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
@@ -159,6 +153,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function signRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
@@ -182,6 +177,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		bool    hasDataset;
 	}
 
+	// should be external
 	function matchOrders(
 		IexecODBLibOrders.AppOrder        memory _apporder,
 		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
@@ -333,6 +329,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return dealid;
 	}
 
+	// should be external
 	function cancelAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
@@ -344,6 +341,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
@@ -355,6 +353,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
@@ -366,6 +365,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		return true;
 	}
 
+	// should be external
 	function cancelRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
@@ -381,38 +381,38 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
 	function lockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		lock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
 		reward(_worker, _amount);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		seize(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		reward(m_deals[_dealid].workerpool.owner, _amount);
 	}
 
 	function successWork(bytes32 _dealid)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
@@ -439,7 +439,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		 * Retrieve part of the kitty
 		 * TODO: remove / keep ?
 		 */
-		uint256 kitty = viewAccount(address(0)).locked;
+		uint256 kitty = m_accounts[address(0)].locked;
 		if (kitty > 0)
 		{
 			kitty = kitty
@@ -452,7 +452,7 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 
 	function failedWork(bytes32 _dealid)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 

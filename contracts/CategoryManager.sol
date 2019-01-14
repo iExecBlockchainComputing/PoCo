@@ -32,13 +32,13 @@ contract CategoryManager is OwnableMutable
 	 * Accessors
 	 */
 	function viewCategory(uint256 _catid)
-	public view returns (IexecODBLibCore.Category memory category)
+	external view returns (IexecODBLibCore.Category memory category)
 	{
 		return m_categories[_catid];
 	}
 
 	function countCategory()
-	public view returns (uint256 count)
+	external view returns (uint256 count)
 	{
 		return m_categories.length;
 	}
