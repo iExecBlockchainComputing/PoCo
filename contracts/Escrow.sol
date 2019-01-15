@@ -30,6 +30,8 @@ contract Escrow
 	event Withdraw  (address owner, uint256 amount);
 	event Reward    (address user,  uint256 amount);
 	event Seize     (address user,  uint256 amount);
+	event Lock      (address user,  uint256 amount);
+	event Unlock    (address user,  uint256 amount);
 
 	/**
 	 * Constructor
@@ -100,12 +102,14 @@ contract Escrow
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
+		emit Lock(_user, _amount);
 		/* return true; */
 	}
 	function unlock(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		emit Unlock(_user, _amount);
 		/* return true; */
 	}
 }

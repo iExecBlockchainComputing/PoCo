@@ -1,13 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+import "./interfaces/ERC725.sol";
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
 import "./libs/SafeMathOZ.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./permissions/GroupInterface.sol";
+// import "./permissions/GroupInterface.sol";
 
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
@@ -97,12 +98,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                         Enterprise restriction                          *
 	 ***************************************************************************/
 	// Fails fail for wrong simple addresses
-	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
+	function checkRestriction(address _restriction, address _candidate)
 	internal view returns (bool)
 	{
-		return _restriction == address(0) // No restriction
-		    || _restriction == _candidate // Simple address
-		    || GroupInterface(_restriction).viewPermissions(_candidate) & _mask == _mask;  // Permission group
+		return _restriction == address(0)                                           // No restriction
+		    || _restriction == _candidate                                           // Simple address
+		    || ERC725(_restriction).keyHasPurpose(bytes32(uint256(_candidate)), 4); // Permission group
 	}
 
 	/***************************************************************************
@@ -200,16 +201,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
 		require(_requestorder.dataset == _datasetorder.dataset);
-		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // requestorder.workerpool is a restriction
-		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
+		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool)); // requestorder.workerpool is a restriction
+		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset      ));
+		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool));
+		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester    ));
+		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app              ));
+		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool));
+		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester    ));
+		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app              ));
+		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset      ));
+		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester    ));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
