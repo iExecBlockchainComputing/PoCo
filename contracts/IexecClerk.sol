@@ -98,12 +98,12 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
 	// internal ?
-	function checkRestriction(address _identity, address _candidate)
+	function checkRestriction(address _identity, address _candidate, uint256 _purpose)
 	public view returns (bool)
 	{
-		return _identity == address(0)                                           // No restriction
-		    || _identity == _candidate                                           // Simple address
-		    || ERC725(_identity).keyHasPurpose(bytes32(uint256(_candidate)), 4); // Identity contract
+		return _identity == address(0)                                                  // No restriction
+		    || _identity == _candidate                                                  // Simple address
+		    || ERC725(_identity).keyHasPurpose(bytes32(uint256(_candidate)), _purpose); // Identity contract
 	}
 
 	// internal ?
@@ -113,12 +113,17 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		IexecODBLibOrders.signature memory _signature)
 	public view returns (bool)
 	{
-		return checkRestriction(_identity, ecrecover(
-			keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
-			_signature.v,
-			_signature.r,
-			_signature.s
-		));
+		// Consider presign before. checkRestriction throws on error
+		return m_presigned[_hash] || checkRestriction(
+			_identity,
+			ecrecover(
+				keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
+				_signature.v,
+				_signature.r,
+				_signature.s
+			),
+			2 // order must be signed by ACTION_KEY
+		);
 	}
 
 	/***************************************************************************
@@ -198,16 +203,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
 		require(_requestorder.dataset == _datasetorder.dataset);
-		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool)); // requestorder.workerpool is a restriction
-		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset      ));
-		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool));
-		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester    ));
-		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app              ));
-		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool));
-		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester    ));
-		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app              ));
-		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset      ));
-		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester    ));
+		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool, 4)); // requestorder.workerpool is a restriction
+		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset,       4));
+		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 4));
+		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester,     4));
+		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app,               4));
+		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 4));
+		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester,     4));
+		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app,               4));
+		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       4));
+		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester,     4));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
@@ -220,24 +225,24 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// app
 		ids.appHash  = _apporder.hash();
 		ids.appOwner = App(_apporder.app).m_owner();
-		require(verifySignature(ids.appOwner, ids.appHash, _apporder.sign) || m_presigned[ids.appHash]);
+		require(verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
 			ids.datasetOwner = Dataset(_datasetorder.dataset).m_owner();
-			require(verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign) || m_presigned[ids.datasetHash]);
+			require(verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
-		require(verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign) || m_presigned[ids.workerpoolHash]);
+		require(verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash();
-		require(verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign) || m_presigned[ids.requestHash]);
+		require(verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability

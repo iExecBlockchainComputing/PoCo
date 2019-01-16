@@ -68,16 +68,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
 		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
-		try
-		{
-			await IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to transfer ownership");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error containing 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
@@ -86,40 +77,21 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - create and view #1: view fail", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
-		try
-		{
-			category = await IexecHubInstance.viewCategory(7);
-			assert.fail("user should not be able to view category");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: invalid opcode"), "Expected an error containing 'VM Exception while processing transaction: invalid opcode' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.viewCategory(7));
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
-		try
-		{
-			txMined = await IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to create category");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error containing 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #3: authorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
+
 		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
 		events = extractEvents(txMined, IexecHubInstance.address, "CreateCategory");
 		assert.equal(events[0].args.catid,            8,                       "check catid"           );
 		assert.equal(events[0].args.name,             "Tiny",                  "check name"            );

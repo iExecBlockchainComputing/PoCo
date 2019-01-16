@@ -230,51 +230,27 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		try {
-			txMined = await SMSDirectoryInstance.setSMS(
-				user,
-				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
-				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to change policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+			user,
+			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		try {
-			txMined = await SMSDirectoryInstance.setSMS(
-				DatasetInstance.address,
-				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
-				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to change policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+			DatasetInstance.address,
+			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[Genesis] SMS registration: wrong smart-contract", async () => {
-		try {
-			txMined = await SMSDirectoryInstance.setSMS(
-				IexecClerkInstance.address,
-				encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
-				{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to change policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+			IexecClerkInstance.address,
+			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
+			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[Genesis] Check values", async () => {

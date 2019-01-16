@@ -148,20 +148,11 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		try
-		{
-			await WorkerpoolInstances[1].changePolicy(
-				0,
-				0,
-				{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to change policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+			0,
+			0,
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 
 		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
@@ -173,20 +164,11 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		try
-		{
-			await WorkerpoolInstances[1].changePolicy(
-				100, // worker stake ratio
-				150, // scheduler reward ratio (should not be above 100%)
-				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to set invalid policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+			100, // worker stake ratio
+			150, // scheduler reward ratio (should not be above 100%)
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 
 		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
