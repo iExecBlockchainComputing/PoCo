@@ -197,21 +197,21 @@ contract IexecHub is CategoryManager, IOracle
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
-		if (_enclaveChallenge != address(0))
-		{
-			require(_enclaveChallenge == ecrecover(
+		require(_enclaveChallenge == address(0) || _enclaveChallenge.checkIdentity(
+			ecrecover(
 				keccak256(abi.encodePacked(
 					"\x19Ethereum Signed Message:\n32",
 					keccak256(abi.encodePacked(
-					_resultHash,
-					_resultSeal
+						_resultHash,
+						_resultSeal
 					))
 				)),
 				_enclaveSign.v,
 				_enclaveSign.r,
-				_enclaveSign.s)
-			);
-		}
+				_enclaveSign.s
+			),
+			2 // 4?
+		));
 
 		// Update contribution entry
 		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;

@@ -102,7 +102,6 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		IexecODBLibOrders.signature memory _signature)
 	public view returns (bool)
 	{
-		// Consider presign before. checkIdentity throws on error
 		return _identity.checkIdentity(
 			ecrecover(
 				keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
