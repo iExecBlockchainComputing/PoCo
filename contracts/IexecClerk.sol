@@ -95,33 +95,30 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	}
 
 	/***************************************************************************
-	 *                         Enterprise restriction                          *
-	 ***************************************************************************/
-	// Fails fail for wrong simple addresses
-	function checkRestriction(address _restriction, address _candidate)
-	internal view returns (bool)
-	{
-		return _restriction == address(0)                                           // No restriction
-		    || _restriction == _candidate                                           // Simple address
-		    || ERC725(_restriction).keyHasPurpose(bytes32(uint256(_candidate)), 4); // Permission group
-	}
-
-	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
 	// internal ?
-	function verify(
-		address                            _signer,
+	function checkRestriction(address _identity, address _candidate)
+	public view returns (bool)
+	{
+		return _identity == address(0)                                           // No restriction
+		    || _identity == _candidate                                           // Simple address
+		    || ERC725(_identity).keyHasPurpose(bytes32(uint256(_candidate)), 4); // Identity contract
+	}
+
+	// internal ?
+	function verifySignature(
+		address                            _identity,
 		bytes32                            _hash,
 		IexecODBLibOrders.signature memory _signature)
 	public view returns (bool)
 	{
-		return _signer == ecrecover(
+		return checkRestriction(_identity, ecrecover(
 			keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
 			_signature.v,
 			_signature.r,
 			_signature.s
-		) || m_presigned[_hash];
+		));
 	}
 
 	/***************************************************************************
@@ -223,24 +220,24 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// app
 		ids.appHash  = _apporder.hash();
 		ids.appOwner = App(_apporder.app).m_owner();
-		require(verify(ids.appOwner, ids.appHash, _apporder.sign));
+		require(verifySignature(ids.appOwner, ids.appHash, _apporder.sign) || m_presigned[ids.appHash]);
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
 			ids.datasetOwner = Dataset(_datasetorder.dataset).m_owner();
-			require(verify(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign) || m_presigned[ids.datasetHash]);
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
-		require(verify(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign) || m_presigned[ids.workerpoolHash]);
 
 		// request
 		ids.requestHash = _requestorder.hash();
-		require(verify(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign) || m_presigned[ids.requestHash]);
 
 		/**
 		 * Check availability

@@ -357,16 +357,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Contribute #2", async () => {
-		try {
-			await sendContribution(
-				await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
-				odbtools.sealResult(tasks[0], "true", worker1),
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(async () => sendContribution(
+			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.sealResult(tasks[0], "true", worker1)
+		));
 
 		await sendContribution(
 			await odbtools.signAuthorization({ worker: worker3, taskid: tasks[0], enclave: sgxEnclave }, scheduler),

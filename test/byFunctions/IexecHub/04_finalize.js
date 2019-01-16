@@ -409,13 +409,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.2] Finalize - Error (partial - soon)", async () => {
-		try {
-			await IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -433,33 +427,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.4] Finalize - Error (no contribution)", async () => {
-		try {
-			await IexecHubInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[6.5] Finalize - Error (no consensus)", async () => {
-		try {
-			await IexecHubInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[6.6] Finalize - Error (no reveal)", async () => {
-		try {
-			await IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -469,12 +445,6 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.7] Finalize - Error (late)", async () => {
-		try {
-			await IexecHubInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 });

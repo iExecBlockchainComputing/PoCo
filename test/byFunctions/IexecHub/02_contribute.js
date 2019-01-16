@@ -317,7 +317,7 @@ contract('IexecHub', async (accounts) => {
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
-			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
 			__enclave
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -336,8 +336,8 @@ contract('IexecHub', async (accounts) => {
 		txMined = await sendContribution(
 			__taskid,
 			__worker,
-			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
 			__enclave
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -353,19 +353,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(async () => sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
+			__enclave
+		));
 	});
 
 	it("[2.4] Contribute - Error (duplicate)", async () => {
@@ -385,19 +379,13 @@ contract('IexecHub', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				results,
-				authorization,
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => sendContribution(
+			__taskid,
+			__worker,
+			results,
+			authorization,
+			__enclave
+		));
 	});
 
 	it("[2.5] Contribute - Error (authorization)", async () => {
@@ -406,19 +394,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker)), // signature: scheduler → worker
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(async () => sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker), // signature: scheduler → worker
+			__enclave
+		));
 	});
 
 	it("[2.6] Contribute - Error (enclave signature)", async () => {
@@ -427,19 +409,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker), // should be signed
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(async () => sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
+			__enclave
+		));
 	});
 
 	it("clock fast forward", async () => {
@@ -454,19 +430,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker)), // signature: scheduler → worker
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(async () => sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker), // signature: scheduler → worker
+			__enclave
+		));
 	});
 
 });

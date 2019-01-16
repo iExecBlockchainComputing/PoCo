@@ -333,49 +333,19 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("resultFor - uninitialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[1]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[1]));
 	});
 	it("resultFor - initialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[2]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[2]));
 	});
 	it("resultFor - contributed", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[3]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[3]));
 	});
 	it("resultFor - consensus", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[4]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[4]));
 	});
 	it("resultFor - reveal", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[5]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[5]));
 	});
 	it("resultFor - finalized", async () => {
 		result = await IexecHubInstance.resultFor(tasks[6]);

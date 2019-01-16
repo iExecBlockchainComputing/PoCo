@@ -382,13 +382,7 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[5.1] Reopen - Error (early)", async () => {
-		try {
-			await IexecHubInstance.reopen(tasks[1], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.reopen(tasks[1], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -405,33 +399,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[5.3] Reopen - Error (status #1 - currently unset)", async () => {
-		try {
-			await IexecHubInstance.reopen(tasks[3], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.reopen(tasks[3], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[5.4] Reopen - Error (status #2 - currently active)", async () => {
-		try {
-			await IexecHubInstance.reopen(tasks[4], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.reopen(tasks[4], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[5.5] Reopen - Error (counter)", async () => {
-		try {
-			await IexecHubInstance.reopen(tasks[5], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.reopen(tasks[5], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -441,13 +417,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[5.6] Reopen - Error (late)", async () => {
-		try {
-			await IexecHubInstance.reopen(tasks[6], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => IexecHubInstance.reopen(tasks[6], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

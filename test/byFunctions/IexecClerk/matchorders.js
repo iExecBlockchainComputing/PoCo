@@ -360,201 +360,123 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - category]", async () => {
-		try {
-			await matchOrders(
-				{},
-				{},
-				{},
-				{ category: 5 },
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ category: 5 },
+		));
 	});
 
 	it("[Match - Error - trust]", async () => {
-		try {
-			await matchOrders(
-				{},
-				{},
-				{ trust: 100 },
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{ trust: 100 },
+			{},
+		));
 	});
 
 	it("[Match - Error - appprice]", async () => {
-		try {
-			await matchOrders(
-				{ appprice: 1000 },
-				{},
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{ appprice: 1000 },
+			{},
+			{},
+			{},
+		));
 	});
 
 	it("[Match - Error - datasetprice]", async () => {
-		try {
-			await matchOrders(
-				{},
-				{ datasetprice: 1000 },
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{ datasetprice: 1000 },
+			{},
+			{},
+		));
 	});
 
 	it("[Match - Error - workerpoolprice]", async () => {
-		try {
-			await matchOrders(
-				{},
-				{},
-				{ workerpoolprice: 1000 },
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{ workerpoolprice: 1000 },
+			{},
+		));
 	});
 
 	it("[Match - Error - apptag]", async () => {
-		try {
-			txMined = await matchOrders(
-				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-				{},
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
+			{},
+			{},
+			{},
+		));
 	});
 
 	it("[Match - Error - datasettag]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
+			{},
+			{},
+		));
 	});
 
 	it("[Match - Ok - workerpooltag]", async () => {
-		// try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-				{},
-			);
-			// assert.fail("transaction should have reverted");
-		// } catch (error) {
-			// assert(error, "Expected an error but did not get one");
-			// assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		// }
+		await matchOrders(
+			{},
+			{},
+			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
+			{},
+		);
 	});
 
 	it("[Match - Error - usertag]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{},
-				{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
+		));
 	});
 
 	it("[Match - Error - requested app]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{},
-				{ app: user },
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ app: user },
+		));
 	});
 
 	it("[Match - Error - requested dataset]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{},
-				{ dataset: user},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ dataset: user},
+		));
 	});
 
 	it("[Match - Error - workerpoolrequest]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{},
-				{ workerpool: user },
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ workerpool: user },
+		));
 	});
 
 	it("[Match - Error - app-datasetrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{ datasetrestrict: user },
-				{},
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{ datasetrestrict: user },
+			{},
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - app-datasetrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{ datasetrestrict: DatasetInstance.address },
 			{},
 			{},
@@ -563,21 +485,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{ workerpoolrestrict: user },
-				{},
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{ workerpoolrestrict: user },
+			{},
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - app-workerpoolrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{ workerpoolrestrict: WorkerpoolInstance.address },
 			{},
 			{},
@@ -586,21 +502,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{ requesterrestrict: iexecAdmin },
-				{},
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{ requesterrestrict: iexecAdmin },
+			{},
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - app-requesterrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{ requesterrestrict: user },
 			{},
 			{},
@@ -609,21 +519,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - dataset-apprestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{ apprestrict: user },
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{ apprestrict: user },
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - dataset-apprestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{ apprestrict: AppInstance.address },
 			{},
@@ -632,21 +536,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{ workerpoolrestrict: user },
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{ workerpoolrestrict: user },
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - app-workerpoolrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{ workerpoolrestrict: WorkerpoolInstance.address },
 			{},
@@ -655,21 +553,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{ requesterrestrict: iexecAdmin },
-				{},
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{ requesterrestrict: iexecAdmin },
+			{},
+			{},
+		));
 	});
 	it("[Match - Ok - app-requesterrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{ requesterrestrict: user },
 			{},
@@ -678,21 +570,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-apprestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{ apprestrict: user },
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{ apprestrict: user },
+			{},
+		));
 	});
 	it("[Match - Ok - workerpool-apprestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{},
 			{ apprestrict: AppInstance.address },
@@ -701,21 +587,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-datasetrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{ datasetrestrict: user },
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{ datasetrestrict: user },
+			{},
+		));
 	});
 	it("[Match - Ok - workerpool-datasetrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{},
 			{ datasetrestrict: DatasetInstance.address },
@@ -724,21 +604,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-requesterrestrict]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{ requesterrestrict: iexecAdmin },
-				{},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{ requesterrestrict: iexecAdmin },
+			{},
+		));
 	});
 	it("[Match - Ok - workerpool-requesterrestrict]", async () => {
-		txMined = await matchOrders(
+		await matchOrders(
 			{},
 			{},
 			{ requesterrestrict: user },
@@ -747,18 +621,12 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - volume null]", async () => {
-		try {
-			txMined = await matchOrders(
-				{},
-				{},
-				{},
-				{ volume: 0},
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		odbtools.reverts(() => matchOrders(
+			{},
+			{},
+			{},
+			{ volume: 0},
+		));
 	});
 
 });
