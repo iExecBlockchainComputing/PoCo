@@ -1,6 +1,8 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+import "../interfaces/ERC725.sol";
+
 library IexecODBLibOrders
 {
 	struct signature
@@ -259,5 +261,12 @@ library IexecODBLibOrders
 			mstore(sub(_requestorder,  32), temp1)
 			mstore(add(_requestorder, 416), temp2)
 		}
+	}
+
+
+	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	public view returns (bool valid)
+	{
+		return _identity == _candidate || ERC725(_identity).keyHasPurpose(bytes32(uint256(_candidate)), _purpose); // Simple address || Identity contract
 	}
 }

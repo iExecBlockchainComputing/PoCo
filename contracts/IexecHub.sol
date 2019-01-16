@@ -13,6 +13,7 @@ import "./IexecClerk.sol";
 contract IexecHub is CategoryManager, IOracle
 {
 	using SafeMathOZ for uint256;
+	using IexecODBLibOrders for *;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -175,19 +176,22 @@ contract IexecHub is CategoryManager, IOracle
 		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		require(deal.workerpool.owner == ecrecover(
-			keccak256(abi.encodePacked(
-				"\x19Ethereum Signed Message:\n32",
+		require(deal.workerpool.owner.checkIdentity(
+			ecrecover(
 				keccak256(abi.encodePacked(
-					msg.sender,
-					_taskid,
-					_enclaveChallenge
-				))
-			)),
-			_workerpoolSign.v,
-			_workerpoolSign.r,
-			_workerpoolSign.s)
-		);
+					"\x19Ethereum Signed Message:\n32",
+					keccak256(abi.encodePacked(
+						msg.sender,
+						_taskid,
+						_enclaveChallenge
+					))
+				)),
+				_workerpoolSign.v,
+				_workerpoolSign.r,
+				_workerpoolSign.s
+			),
+			2 // 4?
+		));
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
