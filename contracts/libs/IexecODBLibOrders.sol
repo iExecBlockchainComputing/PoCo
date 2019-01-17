@@ -267,6 +267,6 @@ library IexecODBLibOrders
 	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
 	public view returns (bool valid)
 	{
-		return _identity == _candidate || ERC725(_identity).keyHasPurpose(bytes32(uint256(_candidate)), _purpose); // Simple address || Identity contract
+		return _identity == _candidate || ERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
 	}
 }
