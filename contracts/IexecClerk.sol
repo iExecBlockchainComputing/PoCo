@@ -12,10 +12,10 @@ import "./registries/Workerpool.sol";
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
 
-contract IexecClerk is Escrow, IexecHubAccessor
+contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 {
 	using SafeMath   for uint256;
-	using ECDSA      for bytes32;
+	// using ECDSA      for bytes32;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************
@@ -104,8 +104,9 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		ECDSA.signature memory _signature)
 	public view returns (bool)
 	{
-		return _identity.checkIdentity(
-			_hash.toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_signature),
+		return checkIdentity(
+			_identity,
+			recover(toEthTypedStructHash(_hash, EIP712DOMAIN_SEPARATOR), _signature),
 			2 // order must be signed by ACTION_KEY
 		);
 	}
@@ -187,16 +188,16 @@ contract IexecClerk is Escrow, IexecHubAccessor
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
 		require(_requestorder.dataset == _datasetorder.dataset);
-		require(_requestorder.workerpool           == address(0) || _requestorder.workerpool.checkIdentity           (_workerpoolorder.workerpool, 4)); // requestorder.workerpool is a restriction
-		require(_apporder.datasetrestrict          == address(0) || _apporder.datasetrestrict.checkIdentity          (_datasetorder.dataset,       4));
-		require(_apporder.workerpoolrestrict       == address(0) || _apporder.workerpoolrestrict.checkIdentity       (_workerpoolorder.workerpool, 4));
-		require(_apporder.requesterrestrict        == address(0) || _apporder.requesterrestrict.checkIdentity        (_requestorder.requester,     4));
-		require(_datasetorder.apprestrict          == address(0) || _datasetorder.apprestrict.checkIdentity          (_apporder.app,               4));
-		require(_datasetorder.workerpoolrestrict   == address(0) || _datasetorder.workerpoolrestrict.checkIdentity   (_workerpoolorder.workerpool, 4));
-		require(_datasetorder.requesterrestrict    == address(0) || _datasetorder.requesterrestrict.checkIdentity    (_requestorder.requester,     4));
-		require(_workerpoolorder.apprestrict       == address(0) || _workerpoolorder.apprestrict.checkIdentity       (_apporder.app,               4));
-		require(_workerpoolorder.datasetrestrict   == address(0) || _workerpoolorder.datasetrestrict.checkIdentity   (_datasetorder.dataset,       4));
-		require(_workerpoolorder.requesterrestrict == address(0) || _workerpoolorder.requesterrestrict.checkIdentity (_requestorder.requester,     4));
+		require(_requestorder.workerpool           == address(0) || checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, 4)); // requestorder.workerpool is a restriction
+		require(_apporder.datasetrestrict          == address(0) || checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       4));
+		require(_apporder.workerpoolrestrict       == address(0) || checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 4));
+		require(_apporder.requesterrestrict        == address(0) || checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     4));
+		require(_datasetorder.apprestrict          == address(0) || checkIdentity(_datasetorder.apprestrict,          _apporder.app,               4));
+		require(_datasetorder.workerpoolrestrict   == address(0) || checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 4));
+		require(_datasetorder.requesterrestrict    == address(0) || checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     4));
+		require(_workerpoolorder.apprestrict       == address(0) || checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               4));
+		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       4));
+		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     4));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 

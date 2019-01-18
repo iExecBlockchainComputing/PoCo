@@ -11,10 +11,10 @@ import "./registries/RegistryBase.sol";
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
 
-contract IexecHub is CategoryManager, IOracle
+contract IexecHub is CategoryManager, IOracle, ECDSA
 {
 	using SafeMath for uint256;
-	using ECDSA    for bytes32;
+	// using ECDSA    for bytes32;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************
@@ -178,12 +178,18 @@ contract IexecHub is CategoryManager, IOracle
 		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		require(deal.workerpool.owner.checkIdentity(
-			keccak256(abi.encodePacked(
-				msg.sender,
-				_taskid,
-				_enclaveChallenge
-			)).toEthSignedMessageHash().recover(_workerpoolSign),
+		require(checkIdentity(
+			deal.workerpool.owner,
+			recover(
+				toEthSignedMessageHash(
+					keccak256(abi.encodePacked(
+						msg.sender,
+						_taskid,
+						_enclaveChallenge
+					))
+				),
+				_workerpoolSign
+			),
 			2 // 4?
 		));
 
@@ -191,11 +197,17 @@ contract IexecHub is CategoryManager, IOracle
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
-		require(_enclaveChallenge == address(0) || _enclaveChallenge.checkIdentity(
-			keccak256(abi.encodePacked(
-				_resultHash,
-				_resultSeal
-			)).toEthSignedMessageHash().recover(_enclaveSign),
+		require(_enclaveChallenge == address(0) || checkIdentity(
+			_enclaveChallenge,
+			recover(
+				toEthSignedMessageHash(
+					keccak256(abi.encodePacked(
+						_resultHash,
+						_resultSeal
+					))
+				),
+				_enclaveSign
+			),
 			2 // 4?
 		));
 

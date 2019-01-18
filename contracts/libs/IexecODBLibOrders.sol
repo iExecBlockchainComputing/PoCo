@@ -1,7 +1,6 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IERC725.sol";
 import "./ECDSA.sol";
 
 library IexecODBLibOrders
@@ -257,10 +256,4 @@ library IexecODBLibOrders
 		}
 	}
 
-
-	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
-	public view returns (bool valid)
-	{
-		return _identity == _candidate || ERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
-	}
 }
