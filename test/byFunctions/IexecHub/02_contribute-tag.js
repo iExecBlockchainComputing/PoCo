@@ -313,7 +313,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true";
 
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -348,7 +348,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
@@ -374,7 +374,7 @@ contract('IexecHub', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		odbtools.reverts(() => sendContribution(
+		await odbtools.reverts(() => sendContribution(
 			__taskid,
 			__worker,
 			results,
@@ -389,7 +389,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
@@ -404,7 +404,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
@@ -425,7 +425,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),

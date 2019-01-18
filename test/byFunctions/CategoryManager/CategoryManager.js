@@ -68,7 +68,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
 		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
-		odbtools.reverts(() => IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
@@ -77,13 +77,13 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - create and view #1: view fail", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
-		odbtools.reverts(() => IexecHubInstance.viewCategory(7));
+		await odbtools.reverts(() => IexecHubInstance.viewCategory(7));
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
-		odbtools.reverts(() => IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
 	});
 

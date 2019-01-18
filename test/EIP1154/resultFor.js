@@ -333,19 +333,19 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("resultFor - uninitialized", async () => {
-		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[1]));
+		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[1]));
 	});
 	it("resultFor - initialized", async () => {
-		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[2]));
+		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[2]));
 	});
 	it("resultFor - contributed", async () => {
-		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[3]));
+		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[3]));
 	});
 	it("resultFor - consensus", async () => {
-		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[4]));
+		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[4]));
 	});
 	it("resultFor - reveal", async () => {
-		odbtools.reverts(() => IexecHubInstance.resultFor(tasks[5]));
+		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[5]));
 	});
 	it("resultFor - finalized", async () => {
 		result = await IexecHubInstance.resultFor(tasks[6]);

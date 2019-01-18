@@ -357,7 +357,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Contribute #2", async () => {
-		odbtools.reverts(async () => sendContribution(
+		await odbtools.reverts(async () => sendContribution(
 			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
 			odbtools.sealResult(tasks[0], "true", worker1)
 		));

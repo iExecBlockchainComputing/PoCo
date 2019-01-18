@@ -148,7 +148,7 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+		await odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
 			0,
 			0,
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -164,7 +164,7 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+		await odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
 			100, // worker stake ratio
 			150, // scheduler reward ratio (should not be above 100%)
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
