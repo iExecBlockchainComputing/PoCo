@@ -1,10 +1,11 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/EIP1154.sol";
+import "./interfaces/IEIP1154.sol";
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
+import "./libs/SafeMath.sol";
+import "./libs/ECDSA.sol";
 import "./registries/RegistryBase.sol";
 
 import "./CategoryManager.sol";
@@ -12,7 +13,8 @@ import "./IexecClerk.sol";
 
 contract IexecHub is CategoryManager, IOracle
 {
-	using SafeMathOZ for uint256;
+	using SafeMath for uint256;
+	using ECDSA    for bytes32;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************
@@ -159,12 +161,12 @@ contract IexecHub is CategoryManager, IOracle
 
 	// TODO: make external w/ calldata
 	function contribute(
-		bytes32                            _taskid,
-		bytes32                            _resultHash,
-		bytes32                            _resultSeal,
-		address                            _enclaveChallenge,
-		IexecODBLibOrders.signature memory _enclaveSign,
-		IexecODBLibOrders.signature memory _workerpoolSign)
+		bytes32                _taskid,
+		bytes32                _resultHash,
+		bytes32                _resultSeal,
+		address                _enclaveChallenge,
+		ECDSA.signature memory _enclaveSign,
+		ECDSA.signature memory _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -177,19 +179,11 @@ contract IexecHub is CategoryManager, IOracle
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(deal.workerpool.owner.checkIdentity(
-			ecrecover(
-				keccak256(abi.encodePacked(
-					"\x19Ethereum Signed Message:\n32",
-					keccak256(abi.encodePacked(
-						msg.sender,
-						_taskid,
-						_enclaveChallenge
-					))
-				)),
-				_workerpoolSign.v,
-				_workerpoolSign.r,
-				_workerpoolSign.s
-			),
+			keccak256(abi.encodePacked(
+				msg.sender,
+				_taskid,
+				_enclaveChallenge
+			)).toEthSignedMessageHash().recover(_workerpoolSign),
 			2 // 4?
 		));
 
@@ -198,18 +192,10 @@ contract IexecHub is CategoryManager, IOracle
 
 		// Check enclave signature
 		require(_enclaveChallenge == address(0) || _enclaveChallenge.checkIdentity(
-			ecrecover(
-				keccak256(abi.encodePacked(
-					"\x19Ethereum Signed Message:\n32",
-					keccak256(abi.encodePacked(
-						_resultHash,
-						_resultSeal
-					))
-				)),
-				_enclaveSign.v,
-				_enclaveSign.r,
-				_enclaveSign.s
-			),
+			keccak256(abi.encodePacked(
+				_resultHash,
+				_resultSeal
+			)).toEthSignedMessageHash().recover(_enclaveSign),
 			2 // 4?
 		));
 

@@ -2,64 +2,105 @@ pragma solidity ^0.5.0;
 
 /**
  * @title SafeMath
- * @dev Math operations with safety checks that throw on error
- * last open zepplin version used for : add sub mul div function : https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/math/SafeMath.sol
-* commit : https://github.com/OpenZeppelin/zeppelin-solidity/commit/815d9e1f457f57cfbb1b4e889f2255c9a517f661
+ * @dev Unsigned math operations with safety checks that revert on error
  */
-library SafeMathOZ
+library SafeMath
 {
+	/**
+	* @dev Adds two unsigned integers, reverts on overflow.
+	*/
 	function add(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		uint256 c = a + b;
-		assert(c >= a);
+		require(c >= a);
 		return c;
 	}
 
+	/**
+	* @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+	*/
 	function sub(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		assert(b <= a);
-		return a - b;
+		require(b <= a);
+		uint256 c = a - b;
+		return c;
 	}
 
+	/**
+	* @dev Multiplies two unsigned integers, reverts on overflow.
+	*/
 	function mul(uint256 a, uint256 b) internal pure returns (uint256)
 	{
+		// Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+		// benefit is lost if 'b' is also tested.
+		// See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
 		if (a == 0)
 		{
 			return 0;
 		}
 		uint256 c = a * b;
-		assert(c / a == b);
+		require(c / a == b);
 		return c;
 	}
 
+	/**
+	* @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.
+	*/
 	function div(uint256 a, uint256 b) internal pure returns (uint256)
 	{
-		// assert(b > 0); // Solidity automatically throws when dividing by 0
-		uint256 c = a / b;
-		// assert(a == b * c + a % b); // There is no case in which this doesn't hold
-		return c;
+			// Solidity only automatically asserts when dividing by 0
+			require(b > 0);
+			uint256 c = a / b;
+			// assert(a == b * c + a % b); // There is no case in which this doesn't hold
+			return c;
 	}
 
+	/**
+	* @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),
+	* reverts when dividing by zero.
+	*/
+	function mod(uint256 a, uint256 b) internal pure returns (uint256)
+	{
+		require(b != 0);
+		return a % b;
+	}
+
+	/**
+	* @dev Returns the largest of two numbers.
+	*/
 	function max(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		return a >= b ? a : b;
 	}
 
+	/**
+	* @dev Returns the smallest of two numbers.
+	*/
 	function min(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		return a < b ? a : b;
 	}
 
+	/**
+	* @dev Multiplies the a by the fraction b/c
+	*/
 	function mulByFraction(uint256 a, uint256 b, uint256 c) internal pure returns (uint256)
 	{
 		return div(mul(a, b), c);
 	}
 
+	/**
+	* @dev Return b percents of a (equivalent to a percents of b)
+	*/
 	function percentage(uint256 a, uint256 b) internal pure returns (uint256)
 	{
 		return mulByFraction(a, b, 100);
 	}
-	// Source : https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity
+
+	/**
+	* @dev Returns the base 2 log of x	
+	* @notice Source : https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity
+	*/
 	function log(uint x) internal pure returns (uint y)
 	{
 		assembly

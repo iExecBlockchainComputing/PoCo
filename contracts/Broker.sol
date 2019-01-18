@@ -2,13 +2,13 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
+import "./libs/SafeMath.sol";
 
 import "./IexecClerk.sol";
 
 contract Broker
 {
-	using SafeMathOZ for uint256;
+	using SafeMath for uint256;
 
 	struct Preferences
 	{

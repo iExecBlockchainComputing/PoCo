@@ -3,7 +3,8 @@ pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
+import "./libs/SafeMath.sol";
+import "./libs/ECDSA.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
@@ -13,7 +14,8 @@ import "./IexecHubAccessor.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor
 {
-	using SafeMathOZ for uint256;
+	using SafeMath   for uint256;
+	using ECDSA      for bytes32;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************
@@ -97,18 +99,13 @@ contract IexecClerk is Escrow, IexecHubAccessor
 	 ***************************************************************************/
 	// internal ?
 	function verifySignature(
-		address                            _identity,
-		bytes32                            _hash,
-		IexecODBLibOrders.signature memory _signature)
+		address                _identity,
+		bytes32                _hash,
+		ECDSA.signature memory _signature)
 	public view returns (bool)
 	{
 		return _identity.checkIdentity(
-			ecrecover(
-				keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
-				_signature.v,
-				_signature.r,
-				_signature.s
-			),
+			_hash.toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_signature),
 			2 // order must be signed by ACTION_KEY
 		);
 	}

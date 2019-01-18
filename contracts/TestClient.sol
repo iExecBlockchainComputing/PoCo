@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./interfaces/EIP1154.sol";
+import "./interfaces/IEIP1154.sol";
 
 contract TestClient is IOracleConsumer
 {

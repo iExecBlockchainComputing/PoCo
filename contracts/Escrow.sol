@@ -1,16 +1,13 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-// required for deployment
-import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
-
-import "./interfaces/ERC20.sol";
+import "./interfaces/IERC20.sol";
 import "./libs/IexecODBLibCore.sol";
-import "./libs/SafeMathOZ.sol";
+import "./libs/SafeMath.sol";
 
 contract Escrow
 {
-	using SafeMathOZ for uint256;
+	using SafeMath for uint256;
 
 	/**
 	* token contract for transfers.
