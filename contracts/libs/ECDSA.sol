@@ -25,6 +25,7 @@ contract ECDSA
 			s :=         mload(add(sign, 0x40))
 			v := byte(0, mload(add(sign, 0x60)))
 		}
+		if (v < 27) v += 27;
 		require(v == 27 || v == 28);
 		return ecrecover(hash, v, r, s);
 	}
