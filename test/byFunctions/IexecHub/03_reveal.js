@@ -427,7 +427,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.2] Reveal - Error (unset)", async () => {
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[2],
 			odbtools.hashResult(tasks[2], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -435,7 +435,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.3] Reveal - Error (no consensus)", async () => {
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[3],
 			odbtools.hashResult(tasks[3], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -458,7 +458,7 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[4], "true").digest,
 			{ from: worker4, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[4],
 			odbtools.hashResult(tasks[4], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -466,7 +466,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.6] Reveal - Error .hash)", async () => {
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[5],
 			odbtools.hashResult(tasks[5], "nottrue").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -479,7 +479,7 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[6],
 			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -493,7 +493,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.7] Reveal - Error (late for reveal)", async () => {
-		odbtools.reverts(() => IexecHubInstance.reveal(
+		await odbtools.reverts(() => IexecHubInstance.reveal(
 			tasks[7],
 			odbtools.hashResult(tasks[7], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }

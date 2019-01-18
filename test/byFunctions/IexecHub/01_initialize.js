@@ -292,15 +292,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[1.2] Initialization - Error (low id)", async () => {
-		odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.3] Initialization - Error (high id)", async () => {
-		odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.4] Initialization - Error (already initialized)", async () => {
-		odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

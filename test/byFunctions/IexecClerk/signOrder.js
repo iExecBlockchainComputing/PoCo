@@ -235,7 +235,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
-		odbtools.reverts(() => IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
@@ -250,7 +250,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
-		odbtools.reverts(() => IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
@@ -265,7 +265,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
-		odbtools.reverts(() => IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
@@ -280,7 +280,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
-		odbtools.reverts(() => IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await odbtools.reverts(() => IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 

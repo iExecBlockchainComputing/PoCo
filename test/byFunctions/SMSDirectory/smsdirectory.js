@@ -230,7 +230,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
 			user,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -238,7 +238,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
 			DatasetInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -246,7 +246,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: wrong smart-contract", async () => {
-		odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
 			IexecClerkInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
