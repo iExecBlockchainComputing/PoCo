@@ -56,7 +56,8 @@ contract CategoryManager is OwnableMutable
 			name,
 			description,
 			workClockTimeRef
-		));
+		)) - 1;
+
 		emit CreateCategory(
 			catid,
 			name,

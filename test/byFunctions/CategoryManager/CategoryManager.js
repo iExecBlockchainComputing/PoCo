@@ -93,7 +93,7 @@ contract('IexecHub', async (accounts) => {
 		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "CreateCategory");
-		assert.equal(events[0].args.catid,            8,                       "check catid"           );
+		assert.equal(events[0].args.catid,            7,                       "check catid"           );
 		assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
 		assert.equal(events[0].args.description,      "Small but impractical", "check description"     );
 		assert.equal(events[0].args.workClockTimeRef, 3,                       "check workClockTimeRef");
