@@ -22,7 +22,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
