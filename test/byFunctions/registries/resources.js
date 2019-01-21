@@ -9,16 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('Ressources', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -148,7 +152,7 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		await odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
 			0,
 			0,
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -164,7 +168,7 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		await odbtools.reverts(() => WorkerpoolInstances[1].changePolicy(
+		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
 			100, // worker stake ratio
 			150, // scheduler reward ratio (should not be above 100%)
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }

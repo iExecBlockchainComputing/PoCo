@@ -9,11 +9,13 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -313,7 +315,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true";
 
-		await odbtools.reverts(async () => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -348,7 +350,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await odbtools.reverts(async () => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
@@ -374,7 +376,7 @@ contract('IexecHub', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		await odbtools.reverts(() => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			results,
@@ -389,7 +391,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await odbtools.reverts(async () => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
@@ -404,7 +406,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await odbtools.reverts(async () => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
@@ -425,7 +427,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await odbtools.reverts(async () => sendContribution(
+		await shouldFail.reverting(sendContribution(
 			__taskid,
 			__worker,
 			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),

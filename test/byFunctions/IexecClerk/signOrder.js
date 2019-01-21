@@ -9,16 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('IexecClerk', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -235,7 +239,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
-		await odbtools.reverts(() => IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
@@ -250,7 +254,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
-		await odbtools.reverts(() => IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
@@ -265,7 +269,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
-		await odbtools.reverts(() => IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
@@ -280,7 +284,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
-		await odbtools.reverts(() => IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 

@@ -2,21 +2,6 @@ const ethUtil = require("ethereumjs-util");
 
 module.exports = {
 
-	reverts : async function(fn)
-	{
-		try
-		{
-			await fn();
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(
-				error.message.includes("VM Exception while processing transaction: revert") || error.message.includes("VM Exception while processing transaction: invalid opcode"),
-				`Got unexpected error message ${error.message}`
-			);
-		}
-	},
-
 	EIP712DOMAIN_SEPARATOR: null,
 	EIP712DOMAIN_TYPEHASH:    web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
 	APPORDER_TYPEHASH:        web3.utils.keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),

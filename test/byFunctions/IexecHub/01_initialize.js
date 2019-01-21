@@ -9,11 +9,13 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -292,15 +294,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[1.2] Initialization - Error (low id)", async () => {
-		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecHubInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.3] Initialization - Error (high id)", async () => {
-		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecHubInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.4] Initialization - Error (already initialized)", async () => {
-		await odbtools.reverts(() => IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecHubInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

@@ -9,18 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('IexecClerk', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -360,7 +362,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - category]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},
@@ -369,7 +371,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - trust]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{ trust: 100 },
@@ -378,7 +380,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - appprice]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{ appprice: 1000 },
 			{},
 			{},
@@ -387,7 +389,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - datasetprice]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{ datasetprice: 1000 },
 			{},
@@ -396,7 +398,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolprice]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{ workerpoolprice: 1000 },
@@ -405,7 +407,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - apptag]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
 			{},
@@ -414,7 +416,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - datasettag]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
@@ -432,7 +434,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - usertag]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},
@@ -441,7 +443,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - requested app]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},
@@ -450,7 +452,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - requested dataset]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},
@@ -459,7 +461,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolrequest]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},
@@ -468,7 +470,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-datasetrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{ datasetrestrict: user },
 			{},
 			{},
@@ -485,7 +487,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{ workerpoolrestrict: user },
 			{},
 			{},
@@ -502,7 +504,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{ requesterrestrict: iexecAdmin },
 			{},
 			{},
@@ -519,7 +521,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - dataset-apprestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{ apprestrict: user },
 			{},
@@ -536,7 +538,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{ workerpoolrestrict: user },
 			{},
@@ -553,7 +555,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{ requesterrestrict: iexecAdmin },
 			{},
@@ -570,7 +572,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-apprestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{ apprestrict: user },
@@ -587,7 +589,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-datasetrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{ datasetrestrict: user },
@@ -604,7 +606,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-requesterrestrict]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{ requesterrestrict: iexecAdmin },
@@ -621,7 +623,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Match - Error - volume null]", async () => {
-		await odbtools.reverts(() => matchOrders(
+		await shouldFail.reverting(matchOrders(
 			{},
 			{},
 			{},

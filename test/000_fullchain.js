@@ -11,12 +11,11 @@ var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const multiaddr = require('multiaddr');
-
-const constants = require("./constants");
-const odbtools  = require('../utils/odb-tools');
-
-const wallets   = require('./wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr   = require('multiaddr');
+const   constants   = require("./constants");
+const   odbtools    = require('../utils/odb-tools');
+const   wallets     = require('./wallets');
 
 function extractEvents(txMined, address, name)
 {

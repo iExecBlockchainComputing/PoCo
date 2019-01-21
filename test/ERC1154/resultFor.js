@@ -9,18 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../constants");
-const odbtools  = require('../../utils/odb-tools');
-
-const wallets   = require('../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../constants");
+const   odbtools     = require('../../utils/odb-tools');
+const   wallets      = require('../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('ERC1154: resultFor', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -333,19 +335,19 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("resultFor - uninitialized", async () => {
-		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[1]));
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[1]));
 	});
 	it("resultFor - initialized", async () => {
-		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[2]));
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[2]));
 	});
 	it("resultFor - contributed", async () => {
-		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[3]));
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[3]));
 	});
 	it("resultFor - consensus", async () => {
-		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[4]));
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[4]));
 	});
 	it("resultFor - reveal", async () => {
-		await odbtools.reverts(() => IexecHubInstance.resultFor(tasks[5]));
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[5]));
 	});
 	it("resultFor - finalized", async () => {
 		result = await IexecHubInstance.resultFor(tasks[6]);

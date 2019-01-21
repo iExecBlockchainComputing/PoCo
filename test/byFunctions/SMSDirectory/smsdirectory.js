@@ -11,12 +11,11 @@ var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const multiaddr = require('multiaddr');
-
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function encodeMultiaddr(addr)
 {
@@ -32,7 +31,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('SMSDirectory', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -230,7 +229,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+		await shouldFail.reverting(SMSDirectoryInstance.setSMS(
 			user,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -238,7 +237,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
+		await shouldFail.reverting(SMSDirectoryInstance.setSMS(
 			DatasetInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -246,8 +245,8 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: wrong smart-contract", async () => {
-		await odbtools.reverts(() => SMSDirectoryInstance.setSMS(
-			IexecClerkInstance.address,
+		await shouldFail.reverting(SMSDirectoryInstance.setSMS(
+			SMSDirectoryInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
 		));
