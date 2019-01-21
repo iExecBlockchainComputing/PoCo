@@ -1,6 +1,6 @@
 var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
 var IexecODBLibOrders  = artifacts.require("./IexecODBLibOrders.sol");
-var ECDSA              = artifacts.require("./ECDSA.sol");
+// var ECDSA              = artifacts.require("./ECDSA.sol");
 var IexecHub           = artifacts.require("./IexecHub.sol");
 var IexecClerk         = artifacts.require("./IexecClerk.sol");
 var AppRegistry        = artifacts.require("./AppRegistry.sol");
@@ -60,9 +60,9 @@ module.exports = async function(deployer, network, accounts)
 	await deployer.deploy(IexecODBLibOrders);
 	await deployer.link(IexecODBLibOrders, IexecClerk);
 	await deployer.link(IexecODBLibOrders, IexecHub);
-	await deployer.deploy(ECDSA);
-	await deployer.link(ECDSA, IexecClerk);
-	await deployer.link(ECDSA, IexecHub);
+	// await deployer.deploy(ECDSA);
+	// await deployer.link(ECDSA, IexecClerk);
+	// await deployer.link(ECDSA, IexecHub);
 
 	await deployer.deploy(IexecHub);
 	IexecHubInstance = await IexecHub.deployed();

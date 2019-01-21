@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/IEIP1154.sol";
+import "./interfaces/IERC1154.sol";
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
 import "./libs/SafeMath.sol";
@@ -13,8 +13,7 @@ import "./IexecClerk.sol";
 
 contract IexecHub is CategoryManager, IOracle, ECDSA
 {
-	using SafeMath for uint256;
-	// using ECDSA    for bytes32;
+	using SafeMath          for uint256;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************

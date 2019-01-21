@@ -14,8 +14,7 @@ import "./IexecHubAccessor.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 {
-	using SafeMath   for uint256;
-	// using ECDSA      for bytes32;
+	using SafeMath          for uint256;
 	using IexecODBLibOrders for *;
 
 	/***************************************************************************
