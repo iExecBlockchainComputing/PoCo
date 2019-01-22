@@ -189,7 +189,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 				),
 				_workerpoolSign
 			),
-			2 // 4?
+			4
 		));
 
 		// need enclave challenge if tag is set
@@ -207,7 +207,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 				),
 				_enclaveSign
 			),
-			2 // 4?
+			4
 		));
 
 		// Update contribution entry

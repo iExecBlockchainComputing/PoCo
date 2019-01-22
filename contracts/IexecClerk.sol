@@ -106,7 +106,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 		return checkIdentity(
 			_identity,
 			recover(toEthTypedStructHash(_hash, EIP712DOMAIN_SEPARATOR), _signature),
-			2 // order must be signed by ACTION_KEY
+			4
 		);
 	}
 
