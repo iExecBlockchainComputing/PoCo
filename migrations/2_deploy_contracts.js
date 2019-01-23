@@ -59,7 +59,6 @@ module.exports = async function(deployer, network, accounts)
 
 	await deployer.deploy(IexecODBLibOrders);
 	await deployer.link(IexecODBLibOrders, IexecClerk);
-	await deployer.link(IexecODBLibOrders, IexecHub);
 	// await deployer.deploy(ECDSA);
 	// await deployer.link(ECDSA, IexecClerk);
 	// await deployer.link(ECDSA, IexecHub);

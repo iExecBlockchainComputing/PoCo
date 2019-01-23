@@ -1,13 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/IERC1154.sol";
+import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
+import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMath.sol";
-import "./libs/ECDSA.sol";
 import "./registries/RegistryBase.sol";
-
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
 
@@ -126,6 +127,15 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 		IexecODBLibCore.Task storage task = m_tasks[id];
 		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);
 		return task.results;
+	}
+
+	/***************************************************************************
+	 *                       Hashing and signature tools                       *
+	 ***************************************************************************/
+	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	internal view returns (bool valid)
+	{
+		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
 	}
 
 	/***************************************************************************

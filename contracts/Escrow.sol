@@ -1,9 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/IERC20.sol";
+import "../node_modules/iexec-solidity/contracts/ERC20_Token/IERC20.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+
 import "./libs/IexecODBLibCore.sol";
-import "./libs/SafeMath.sol";
 
 contract Escrow
 {

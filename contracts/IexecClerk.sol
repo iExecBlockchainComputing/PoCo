@@ -1,21 +1,26 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMath.sol";
-import "./libs/ECDSA.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
 
 contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 {
 	using SafeMath          for uint256;
-	using IexecODBLibOrders for *;
+	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
+	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.WorkerpoolOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.RequestOrder;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -96,6 +101,12 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
+	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	internal view returns (bool valid)
+	{
+		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
+	}
+
 	// internal ?
 	function verifySignature(
 		address                _identity,
