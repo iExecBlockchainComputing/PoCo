@@ -51,7 +51,7 @@ library SafeMath
 			// Solidity only automatically asserts when dividing by 0
 			require(b > 0);
 			uint256 c = a / b;
-			// assert(a == b * c + a % b); // There is no case in which this doesn't hold
+			// require(a == b * c + a % b); // There is no case in which this doesn't hold
 			return c;
 	}
 
@@ -98,7 +98,7 @@ library SafeMath
 	}
 
 	/**
-	* @dev Returns the base 2 log of x	
+	* @dev Returns the base 2 log of x
 	* @notice Source : https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity
 	*/
 	function log(uint x) internal pure returns (uint y)
