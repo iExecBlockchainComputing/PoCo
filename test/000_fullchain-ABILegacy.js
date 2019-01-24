@@ -231,7 +231,7 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(appProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceFull.verify(
+			await IexecClerkInstanceFull.verifySignature(
 				appProvider,
 				odbtools.AppOrderStructHash(apporder),
 				apporder.sign,
@@ -260,7 +260,7 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(datasetProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceFull.verify(
+			await IexecClerkInstanceFull.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderStructHash(datasetorder),
 				datasetorder.sign,
@@ -291,7 +291,7 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(scheduler)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceFull.verify(
+			await IexecClerkInstanceFull.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderStructHash(workerpoolorder),
 				workerpoolorder.sign,
@@ -327,7 +327,7 @@ contract('IexecHub', async (accounts) => {
 			wallets.addressToPrivate(user)
 		);
 		assert.isTrue(
-			await IexecClerkInstanceFull.verify(
+			await IexecClerkInstanceFull.verifySignature(
 				user,
 				odbtools.RequestOrderStructHash(requestorder),
 				requestorder.sign,

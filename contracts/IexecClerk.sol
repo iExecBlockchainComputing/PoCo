@@ -493,7 +493,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	 */
 
 	function viewDealABILegacy_pt1(bytes32 _id)
-	public view returns
+	external view returns
 	( address
 	, address
 	, uint256
@@ -505,7 +505,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	, uint256
 	)
 	{
-		IexecODBLibCore.Deal memory deal = viewDeal(_id);
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
 		return (
 			deal.app.pointer,
 			deal.app.owner,
@@ -520,7 +520,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	}
 
 	function viewDealABILegacy_pt2(bytes32 _id)
-	public view returns
+	external view returns
 	( uint256
 	, bytes32
 	, address
@@ -529,7 +529,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	, string memory
 	)
 	{
-		IexecODBLibCore.Deal memory deal = viewDeal(_id);
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
 		return (
 			deal.trust,
 			deal.tag,
@@ -541,7 +541,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	}
 
 	function viewConfigABILegacy(bytes32 _id)
-	public view returns
+	external view returns
 	( uint256
 	, uint256
 	, uint256
@@ -550,7 +550,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	, uint256
 	)
 	{
-		IexecODBLibCore.Deal memory deal = viewDeal(_id);
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
 		return (
 			deal.category,
 			deal.startTime,
@@ -562,9 +562,9 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	}
 
 	function viewAccountABILegacy(address _user)
-	public view returns (uint256, uint256)
+	external view returns (uint256, uint256)
 	{
-		IexecODBLibCore.Account memory account = viewAccount(_user);
+		IexecODBLibCore.Account memory account = m_accounts[_user];
 		return ( account.stake, account.locked );
 	}
 }

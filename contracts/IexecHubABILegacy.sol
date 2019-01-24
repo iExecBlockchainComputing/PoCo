@@ -1,14 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/EIP1154.sol";
 import "./libs/IexecODBLibCore.sol";
-import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
 import "./registries/RegistryBase.sol";
-
-import "./CategoryManager.sol";
 import "./IexecClerk.sol";
+
 
 contract IexecHubABILegacy
 {
@@ -36,10 +32,10 @@ contract IexecHubABILegacy
 		address _appregistryAddress,
 		address _datasetregistryAddress,
 		address _workerpoolregistryAddress)
-	public;
+	external;
 
 	function viewScore(address _worker)
-	public view returns (uint256);
+	external view returns (uint256);
 
 	function checkResources(address aap, address dataset, address workerpool)
 	external view returns (bool);
@@ -53,11 +49,11 @@ contract IexecHubABILegacy
 	function reveal(
 		bytes32 _taskid,
 		bytes32 _resultDigest)
-	public;
+	external;
 
 	function reopen(
 		bytes32 _taskid)
-	public;
+	external;
 
 	function finalize(
 		bytes32 _taskid,
@@ -81,9 +77,9 @@ contract IexecHubABILegacy
 		bytes32[] calldata _dealid,
 		uint256[] calldata _idx)
 	external returns (bool);
-	
+
 	function viewTaskABILegacy(bytes32 _taskid)
-	public view returns
+	external view returns
 	( IexecODBLibCore.TaskStatusEnum
 	, bytes32
 	, uint256
@@ -99,7 +95,7 @@ contract IexecHubABILegacy
 	);
 
 	function viewContributionABILegacy(bytes32 _taskid, address _worker)
-	public view returns
+	external view returns
 	( IexecODBLibCore.ContributionStatusEnum
 	, bytes32
 	, bytes32
@@ -117,8 +113,8 @@ contract IexecHubABILegacy
 		uint8   _poolSign_v,
 		bytes32 _poolSign_r,
 		bytes32 _poolSign_s)
-	public;
+	external;
 
 	function viewCategoryABILegacy(uint256 _catid)
-	public view returns (string memory, string memory, uint256);
+	external view returns (string memory, string memory, uint256);
 }

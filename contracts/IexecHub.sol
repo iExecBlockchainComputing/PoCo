@@ -534,7 +534,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 	 */
 
 	function viewTaskABILegacy(bytes32 _taskid)
-	public view returns
+	external view returns
 	( IexecODBLibCore.TaskStatusEnum
 	, bytes32
 	, uint256
@@ -549,7 +549,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 	, bytes     memory
 	)
 	{
-		IexecODBLibCore.Task memory task = viewTask(_taskid);
+		IexecODBLibCore.Task memory task = m_tasks[_taskid];
 		return (
 			task.status,
 			task.dealid,
@@ -567,14 +567,14 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 	}
 
 	function viewContributionABILegacy(bytes32 _taskid, address _worker)
-	public view returns
+	external view returns
 	( IexecODBLibCore.ContributionStatusEnum
 	, bytes32
 	, bytes32
 	, address
 	)
 	{
-		IexecODBLibCore.Contribution memory contribution = viewContribution(_taskid, _worker);
+		IexecODBLibCore.Contribution memory contribution = m_contributions[_taskid][_worker];
 		return (
 			contribution.status,
 			contribution.resultHash,
@@ -594,22 +594,22 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 		uint8   _poolSign_v,
 		bytes32 _poolSign_r,
 		bytes32 _poolSign_s)
-	public
+	external
 	{
 		contribute(
 			_taskid,
 			_resultHash,
 			_resultSeal,
 			_enclaveChallenge,
-			IexecODBLibOrders.signature({ v: _enclaveSign_v, r: _enclaveSign_r, s: _enclaveSign_s }),
-			IexecODBLibOrders.signature({ v: _poolSign_v,    r: _poolSign_r,    s: _poolSign_s    })
+			ECDSA.signature({ v: _enclaveSign_v, r: _enclaveSign_r, s: _enclaveSign_s }),
+			ECDSA.signature({ v: _poolSign_v,    r: _poolSign_r,    s: _poolSign_s    })
 		);
 	}
 
 	function viewCategoryABILegacy(uint256 _catid)
-	public view returns (string memory, string memory, uint256)
+	external view returns (string memory, string memory, uint256)
 	{
-		IexecODBLibCore.Category memory category = viewCategory(_catid);
+		IexecODBLibCore.Category memory category = m_categories[_catid];
 		return ( category.name, category.description, category.workClockTimeRef );
 	}
 }
