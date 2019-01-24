@@ -9,11 +9,13 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -427,31 +429,19 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.2] Reveal - Error (unset)", async () => {
-		try {
-			await IexecHubInstance.reveal(
-				tasks[2],
-				odbtools.hashResult(tasks[2], "true").digest,
-				{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[2],
+			odbtools.hashResult(tasks[2], "true").digest,
+			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[4.3] Reveal - Error (no consensus)", async () => {
-		try {
-			await IexecHubInstance.reveal(
-				tasks[3],
-				odbtools.hashResult(tasks[3], "true").digest,
-				{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[3],
+			odbtools.hashResult(tasks[3], "true").digest,
+			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[4.4] Reveal - Error (contribution value)", async () => {
@@ -470,31 +460,19 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[4], "true").digest,
 			{ from: worker4, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		try {
-			await IexecHubInstance.reveal(
-				tasks[4],
-				odbtools.hashResult(tasks[4], "true").digest,
-				{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[4],
+			odbtools.hashResult(tasks[4], "true").digest,
+			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[4.6] Reveal - Error .hash)", async () => {
-		try {
-			await IexecHubInstance.reveal(
-				tasks[5],
-				odbtools.hashResult(tasks[5], "nottrue").digest,
-				{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[5],
+			odbtools.hashResult(tasks[5], "nottrue").digest,
+			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("[4.6] Reveal - Error .seal)", async () => {
@@ -503,17 +481,11 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		try {
-			await IexecHubInstance.reveal(
-				tasks[6],
-				odbtools.hashResult(tasks[6], "true").digest,
-				{ from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[6],
+			odbtools.hashResult(tasks[6], "true").digest,
+			{ from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("clock fast forward", async () => {
@@ -523,16 +495,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.7] Reveal - Error (late for reveal)", async () => {
-		try {
-			await IexecHubInstance.reveal(
-				tasks[7],
-				odbtools.hashResult(tasks[7], "true").digest,
-				{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.reveal(
+			tasks[7],
+			odbtools.hashResult(tasks[7], "true").digest,
+			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 });

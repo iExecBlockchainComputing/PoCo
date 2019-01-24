@@ -9,18 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../constants");
-const odbtools  = require('../../utils/odb-tools');
-
-const wallets   = require('../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../constants");
+const   odbtools     = require('../../utils/odb-tools');
+const   wallets      = require('../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('ERC1154: resultFor', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -333,49 +335,19 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("resultFor - uninitialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[1]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[1]));
 	});
 	it("resultFor - initialized", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[2]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[2]));
 	});
 	it("resultFor - contributed", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[3]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[3]));
 	});
 	it("resultFor - consensus", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[4]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[4]));
 	});
 	it("resultFor - reveal", async () => {
-		try {
-			await IexecHubInstance.resultFor(tasks[5]);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[5]));
 	});
 	it("resultFor - finalized", async () => {
 		result = await IexecHubInstance.resultFor(tasks[6]);

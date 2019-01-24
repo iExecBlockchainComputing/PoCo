@@ -9,11 +9,13 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -381,71 +383,29 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[7.1a] Claim - Error (soon #1)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.2a] Claim - Error (soon #2)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.3a] Claim - Error (soon #3)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.4a] Claim - Error (soon #4)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.5a] Claim - Error (soon #5)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.6a] Claim - Error (soon & finalized)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.7a] Claim - Error (soon #6)", async () => {
-		try {
-			await IexecHubInstance.initializeAndClaimArray(
-				[ deals[1], deals[1], deals[1] ],
-				[        7,        8,        9 ],
-				{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.initializeAndClaimArray(
+			[ deals[1], deals[1], deals[1] ],
+			[        7,        8,        9 ],
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 	});
 
 	it("clock fast forward", async () => {
@@ -474,15 +434,11 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[3].args.taskid, tasks[4], "check taskid");
 		assert.equal(events[4].args.taskid, tasks[5], "check taskid");
 	});
+
 	it("[7.6b] Claim - Error (finalized #7)", async () => {
-		try {
-			await IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
+
 	it("[7.7a] Claim - Correct", async () => {
 		txMined = await IexecHubInstance.initializeAndClaimArray(
 			[ deals[1], deals[1], deals[1] ],

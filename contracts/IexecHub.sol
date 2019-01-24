@@ -1,12 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./interfaces/EIP1154.sol";
+import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
+import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
 import "./registries/RegistryBase.sol";
-
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
 
@@ -15,9 +17,10 @@ import "./IexecClerk.sol";
  */
 import "./IexecHubABILegacy.sol";
 
-contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
+contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 {
-	using SafeMathOZ for uint256;
+	using SafeMath          for uint256;
+	using IexecODBLibOrders for *;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -81,7 +84,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		address _appregistryAddress,
 		address _datasetregistryAddress,
 		address _workerpoolregistryAddress)
-	public onlyOwner
+	external onlyOwner
 	{
 		require(address(iexecclerk) == address(0));
 		iexecclerk         = IexecClerk  (_iexecclerkAddress  );
@@ -94,19 +97,19 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	 *                                Accessors                                *
 	 ***************************************************************************/
 	function viewTask(bytes32 _taskid)
-	public view returns (IexecODBLibCore.Task memory)
+	external view returns (IexecODBLibCore.Task memory)
 	{
 		return m_tasks[_taskid];
 	}
 
 	function viewContribution(bytes32 _taskid, address _worker)
-	public view returns (IexecODBLibCore.Contribution memory)
+	external view returns (IexecODBLibCore.Contribution memory)
 	{
 		return m_contributions[_taskid][_worker];
 	}
 
 	function viewScore(address _worker)
-	public view returns (uint256)
+	external view returns (uint256)
 	{
 		return m_workerScores[_worker];
 	}
@@ -132,6 +135,15 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	}
 
 	/***************************************************************************
+	 *                       Hashing and signature tools                       *
+	 ***************************************************************************/
+	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	internal view returns (bool valid)
+	{
+		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
+	}
+
+	/***************************************************************************
 	 *                            Consensus methods                            *
 	 ***************************************************************************/
 	function initialize(bytes32 _dealid, uint256 idx)
@@ -149,7 +161,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		task.status               = IexecODBLibCore.TaskStatusEnum.ACTIVE;
 		task.dealid               = _dealid;
 		task.idx                  = idx;
-		task.timeref              = viewCategory(deal.category).workClockTimeRef;
+		task.timeref              = m_categories[deal.category].workClockTimeRef;
 		task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(deal.startTime);
 		task.finalDeadline        = task.timeref.mul(       FINAL_DEADLINE_RATIO).add(deal.startTime);
 
@@ -161,13 +173,14 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		return taskid;
 	}
 
+	// TODO: make external w/ calldata
 	function contribute(
-		bytes32                            _taskid,
-		bytes32                            _resultHash,
-		bytes32                            _resultSeal,
-		address                            _enclaveChallenge,
-		IexecODBLibOrders.signature memory _enclaveSign,
-		IexecODBLibOrders.signature memory _workerpoolSign)
+		bytes32                _taskid,
+		bytes32                _resultHash,
+		bytes32                _resultSeal,
+		address                _enclaveChallenge,
+		ECDSA.signature memory _enclaveSign,
+		ECDSA.signature memory _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
@@ -179,39 +192,38 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		require(deal.workerpool.owner == ecrecover(
-			keccak256(abi.encodePacked(
-				"\x19Ethereum Signed Message:\n32",
-				keccak256(abi.encodePacked(
-					msg.sender,
-					_taskid,
-					_enclaveChallenge
-				))
-			)),
-			_workerpoolSign.v,
-			_workerpoolSign.r,
-			_workerpoolSign.s)
-		);
+		require(checkIdentity(
+			deal.workerpool.owner,
+			recover(
+				toEthSignedMessageHash(
+					keccak256(abi.encodePacked(
+						msg.sender,
+						_taskid,
+						_enclaveChallenge
+					))
+				),
+				_workerpoolSign
+			),
+			4
+		));
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
-		if (_enclaveChallenge != address(0))
-		{
-			require(_enclaveChallenge == ecrecover(
-				keccak256(abi.encodePacked(
-					"\x19Ethereum Signed Message:\n32",
+		require(_enclaveChallenge == address(0) || checkIdentity(
+			_enclaveChallenge,
+			recover(
+				toEthSignedMessageHash(
 					keccak256(abi.encodePacked(
-					_resultHash,
-					_resultSeal
+						_resultHash,
+						_resultSeal
 					))
-				)),
-				_enclaveSign.v,
-				_enclaveSign.r,
-				_enclaveSign.s)
-			);
-		}
+				),
+				_enclaveSign
+			),
+			4
+		));
 
 		// Update contribution entry
 		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;
@@ -246,7 +258,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	function checkConsensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
-	internal
+	private
 	{
 		uint256 trust = iexecclerk.viewDeal(m_tasks[_taskid].dealid).trust;
 		if (m_groupweight[_taskid][_consensus].mul(trust) > m_totalweight[_taskid].mul(trust.sub(1)))
@@ -283,7 +295,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 	function reveal(
 		bytes32 _taskid,
 		bytes32 _resultDigest)
-	public // worker
+	external // worker
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
 		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
@@ -302,7 +314,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 
 	function reopen(
 		bytes32 _taskid)
-	public onlyScheduler(_taskid)
+	external onlyScheduler(_taskid)
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
 		require(task.status         == IexecODBLibCore.TaskStatusEnum.REVEALING);
@@ -348,7 +360,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		 * Stake and reward management
 		 */
 		iexecclerk.successWork(task.dealid);
-		__distributeRewards(_taskid);
+		distributeRewards(_taskid);
 
 		/**
 		 * Event
@@ -380,31 +392,7 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		}
 	}
 
-	function claim(
-		bytes32 _taskid)
-	public
-	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
-		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline <= now);
-
-		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
-
-		/**
-		 * Stake management
-		 */
-		iexecclerk.failedWork(task.dealid);
-		for (uint256 i = 0; i < task.contributors.length; ++i)
-		{
-			address worker = task.contributors[i];
-			iexecclerk.unlockContribution(task.dealid, worker);
-		}
-
-		emit TaskClaimed(_taskid);
-	}
-
-	function __distributeRewards(bytes32 _taskid)
+	function distributeRewards(bytes32 _taskid)
 	private
 	{
 		IexecODBLibCore.Task storage task = m_tasks[_taskid];
@@ -477,6 +465,33 @@ contract IexecHub is CategoryManager, IOracle, IexecHubABILegacy
 		iexecclerk.rewardForScheduling(task.dealid, totalReward);
 	}
 
+	function claim(
+		bytes32 _taskid)
+	public
+	{
+		IexecODBLibCore.Task storage task = m_tasks[_taskid];
+		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
+		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline <= now);
+
+		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
+
+		/**
+		 * Stake management
+		 */
+		iexecclerk.failedWork(task.dealid);
+		for (uint256 i = 0; i < task.contributors.length; ++i)
+		{
+			address worker = task.contributors[i];
+			iexecclerk.unlockContribution(task.dealid, worker);
+		}
+
+		emit TaskClaimed(_taskid);
+	}
+
+	/***************************************************************************
+	 *                            Array operations                             *
+	 ***************************************************************************/
 	function initializeArray(
 		bytes32[] calldata _dealid,
 		uint256[] calldata _idx)

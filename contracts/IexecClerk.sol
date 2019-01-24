@@ -1,14 +1,15 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
-import "./libs/SafeMathOZ.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./permissions/GroupInterface.sol";
-
 import "./Escrow.sol";
 import "./IexecHubAccessor.sol";
 
@@ -17,10 +18,14 @@ import "./IexecHubAccessor.sol";
  */
 import "./IexecClerkABILegacy.sol";
 
-contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
+contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 {
-	using SafeMathOZ for uint256;
-	using IexecODBLibOrders for *;
+	using SafeMath          for uint256;
+	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
+	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.WorkerpoolOrder;
+	using IexecODBLibOrders for IexecODBLibOrders.RequestOrder;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -37,10 +42,10 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	/***************************************************************************
 	 *                               Clerk data                                *
 	 ***************************************************************************/
-	mapping(bytes32 => bytes32[]             ) m_requestdeals;
-	mapping(bytes32 => IexecODBLibCore.Deal  ) m_deals;
-	mapping(bytes32 => uint256               ) m_consumed;
-	mapping(bytes32 => bool                  ) m_presigned;
+	mapping(bytes32 => bytes32[]           ) m_requestdeals;
+	mapping(bytes32 => IexecODBLibCore.Deal) m_deals;
+	mapping(bytes32 => uint256             ) m_consumed;
+	mapping(bytes32 => bool                ) m_presigned;
 
 	/***************************************************************************
 	 *                                 Events                                  *
@@ -75,71 +80,56 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	 *                                Accessor                                 *
 	 ***************************************************************************/
 	function viewRequestDeals(bytes32 _id)
-	public view returns (bytes32[] memory requestdeals)
+	external view returns (bytes32[] memory requestdeals)
 	{
 		return m_requestdeals[_id];
 	}
 
 	function viewDeal(bytes32 _id)
-	public view returns (IexecODBLibCore.Deal memory deal)
+	external view returns (IexecODBLibCore.Deal memory deal)
 	{
 		return m_deals[_id];
 	}
 
 	function viewConsumed(bytes32 _id)
-	public view returns (uint256 consumed)
+	external view returns (uint256 consumed)
 	{
 		return m_consumed[_id];
 	}
 
 	function viewPresigned(bytes32 _id)
-	public view returns (bool presigned)
+	external view returns (bool presigned)
 	{
 		return m_presigned[_id];
 	}
 
 	/***************************************************************************
-	 *                         Enterprise restriction                          *
-	 ***************************************************************************/
-	/*
-	function isContract(address addr)
-	public view returns (bool)
-	{
-		uint size;
-		assembly { size := extcodesize(addr) }
-		return size > 0;
-	}
-	*/
-
-	// Fails fail for wrong simple addresses
-	function checkRestriction(address _restriction, address _candidate, bytes1 _mask)
-	public view returns (bool)
-	{
-		return _restriction == address(0) // No restriction
-		    || _restriction == _candidate // Simple address
-		    || GroupInterface(_restriction).viewPermissions(_candidate) & _mask == _mask;  // Permission group
-	}
-
-	/***************************************************************************
 	 *                       Hashing and signature tools                       *
 	 ***************************************************************************/
-	function verify(
-		address                            _signer,
-		bytes32                            _hash,
-		IexecODBLibOrders.signature memory _signature)
+	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	internal view returns (bool valid)
+	{
+		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
+	}
+
+	// internal ?
+	function verifySignature(
+		address                _identity,
+		bytes32                _hash,
+		ECDSA.signature memory _signature)
 	public view returns (bool)
 	{
-		return _signer == ecrecover(
-			keccak256(abi.encodePacked("\x19\x01", EIP712DOMAIN_SEPARATOR, _hash)),
-			_signature.v,
-			_signature.r,
-			_signature.s
-		) || m_presigned[_hash];
+		return checkIdentity(
+			_identity,
+			recover(toEthTypedStructHash(_hash, EIP712DOMAIN_SEPARATOR), _signature),
+			2 // canceling an order requires ACTION (2) from the owning identity, signature with 2 or 4?
+		);
 	}
 
 	/***************************************************************************
 	 *                            pre-signing tools                            *
 	 ***************************************************************************/
+	// should be external
 	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
@@ -148,6 +138,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
@@ -156,6 +147,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
@@ -164,6 +156,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function signRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
@@ -187,6 +180,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		bool    hasDataset;
 	}
 
+	// should be external
 	function matchOrders(
 		IexecODBLibOrders.AppOrder        memory _apporder,
 		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
@@ -209,16 +203,16 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
 		require(_requestorder.dataset == _datasetorder.dataset);
-		require(checkRestriction(_requestorder.workerpool,           _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ )); // requestorder.workerpool is a restriction
-		require(checkRestriction(_apporder.datasetrestrict,          _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_apporder.requesterrestrict,        _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.apprestrict,          _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_datasetorder.requesterrestrict,    _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.apprestrict,       _apporder.app,               0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       0x01 /*IexecPermission.SUBMIT*/ ));
-		require(checkRestriction(_workerpoolorder.requesterrestrict, _requestorder.requester,     0x01 /*IexecPermission.SUBMIT*/ ));
+		require(_requestorder.workerpool           == address(0) || checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, 4)); // requestorder.workerpool is a restriction
+		require(_apporder.datasetrestrict          == address(0) || checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       4));
+		require(_apporder.workerpoolrestrict       == address(0) || checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 4));
+		require(_apporder.requesterrestrict        == address(0) || checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     4));
+		require(_datasetorder.apprestrict          == address(0) || checkIdentity(_datasetorder.apprestrict,          _apporder.app,               4));
+		require(_datasetorder.workerpoolrestrict   == address(0) || checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 4));
+		require(_datasetorder.requesterrestrict    == address(0) || checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     4));
+		require(_workerpoolorder.apprestrict       == address(0) || checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               4));
+		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       4));
+		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     4));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
@@ -231,24 +225,24 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		// app
 		ids.appHash  = _apporder.hash();
 		ids.appOwner = App(_apporder.app).m_owner();
-		require(verify(ids.appOwner, ids.appHash, _apporder.sign));
+		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
 			ids.datasetOwner = Dataset(_datasetorder.dataset).m_owner();
-			require(verify(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
-		require(verify(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash();
-		require(verify(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability
@@ -338,6 +332,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return dealid;
 	}
 
+	// should be external
 	function cancelAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
@@ -349,6 +344,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
@@ -360,6 +356,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
@@ -371,6 +368,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		return true;
 	}
 
+	// should be external
 	function cancelRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
@@ -386,38 +384,38 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
 	function lockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		lock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
 		reward(_worker, _amount);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		seize(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		reward(m_deals[_dealid].workerpool.owner, _amount);
 	}
 
 	function successWork(bytes32 _dealid)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 
@@ -444,7 +442,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 		 * Retrieve part of the kitty
 		 * TODO: remove / keep ?
 		 */
-		uint256 kitty = viewAccount(address(0)).locked;
+		uint256 kitty = m_accounts[address(0)].locked;
 		if (kitty > 0)
 		{
 			kitty = kitty
@@ -457,7 +455,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, IexecClerkABILegacy
 	}
 
 	function failedWork(bytes32 _dealid)
-	public onlyIexecHub
+	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
 

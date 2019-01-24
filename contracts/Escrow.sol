@@ -1,16 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-// required for deployment
-import "../node_modules/rlc-faucet-contract/contracts/RLC.sol";
+import "../node_modules/iexec-solidity/contracts/ERC20_Token/IERC20.sol";
+import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
 
-import "./interfaces/ERC20.sol";
 import "./libs/IexecODBLibCore.sol";
-import "./libs/SafeMathOZ.sol";
 
 contract Escrow
 {
-	using SafeMathOZ for uint256;
+	using SafeMath for uint256;
 
 	/**
 	* token contract for transfers.
@@ -30,6 +28,8 @@ contract Escrow
 	event Withdraw  (address owner, uint256 amount);
 	event Reward    (address user,  uint256 amount);
 	event Seize     (address user,  uint256 amount);
+	event Lock      (address user,  uint256 amount);
+	event Unlock    (address user,  uint256 amount);
 
 	/**
 	 * Constructor
@@ -44,7 +44,7 @@ contract Escrow
 	 * Accessor
 	 */
 	function viewAccount(address _user)
-	public view returns (IexecODBLibCore.Account memory account)
+	external view returns (IexecODBLibCore.Account memory account)
 	{
 		return m_accounts[_user];
 	}
@@ -52,14 +52,17 @@ contract Escrow
 	/**
 	 * Wallet methods: public
 	 */
-	function deposit(uint256 _amount) external returns (bool)
+	function deposit(uint256 _amount)
+	external returns (bool)
 	{
 		require(token.transferFrom(msg.sender, address(this), _amount));
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
 		emit Deposit(msg.sender, _amount);
 		return true;
 	}
-	function depositFor(uint256 _amount, address _target) external returns (bool)
+
+	function depositFor(uint256 _amount, address _target)
+	external returns (bool)
 	{
 		require(_target != address(0));
 
@@ -68,13 +71,16 @@ contract Escrow
 		emit DepositFor(msg.sender, _amount, _target);
 		return true;
 	}
-	function withdraw(uint256 _amount) external returns (bool)
+
+	function withdraw(uint256 _amount)
+	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
 		require(token.transfer(msg.sender, _amount));
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
+
 	/**
 	 * Wallet methods: Internal
 	 */
@@ -94,12 +100,14 @@ contract Escrow
 	{
 		m_accounts[_user].stake  = m_accounts[_user].stake.sub(_amount);
 		m_accounts[_user].locked = m_accounts[_user].locked.add(_amount);
+		emit Lock(_user, _amount);
 		/* return true; */
 	}
 	function unlock(address _user, uint256 _amount) internal /* returns (bool) */
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
 		m_accounts[_user].stake  = m_accounts[_user].stake.add(_amount);
+		emit Unlock(_user, _amount);
 		/* return true; */
 	}
 }

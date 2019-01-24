@@ -1,15 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
+import "../../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+
 library IexecODBLibOrders
 {
-	struct signature
-	{
-		uint8   v;
-		bytes32 r;
-		bytes32 s;
-	}
-
 	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 	// bytes32 public constant        APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
 	// bytes32 public constant    DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
@@ -38,7 +33,7 @@ library IexecODBLibOrders
 		address workerpoolrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		signature sign;
+		ECDSA.signature sign;
 	}
 	struct DatasetOrder
 	{
@@ -50,7 +45,7 @@ library IexecODBLibOrders
 		address workerpoolrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		signature sign;
+		ECDSA.signature sign;
 	}
 	struct WorkerpoolOrder
 	{
@@ -64,7 +59,7 @@ library IexecODBLibOrders
 		address datasetrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		signature sign;
+		ECDSA.signature sign;
 	}
 	struct RequestOrder
 	{
@@ -83,7 +78,7 @@ library IexecODBLibOrders
 		address callback;
 		string  params;
 		bytes32 salt;
-		signature sign;
+		ECDSA.signature sign;
 	}
 
 	function hash(EIP712Domain memory _domain)
@@ -260,4 +255,5 @@ library IexecODBLibOrders
 			mstore(add(_requestorder, 416), temp2)
 		}
 	}
+
 }

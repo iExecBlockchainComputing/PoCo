@@ -9,18 +9,22 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
+
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 var Escrow = artifacts.require("./Escrow.sol");
-
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('IexecClerk: Escrow', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -69,17 +73,8 @@ contract('IexecHub', async (accounts) => {
 	 *                                                                         *
 	 ***************************************************************************/
 	it("Escrow - Constructor", async () => {
-		// try
-		// {
-			newEscrow = await new Escrow(constants.NULL.ADDRESS);
-			assert.equal(newEscrow.address, constants.NULL.ADDRESS);
-		// 	assert.fail("user should not be able to create escrow with null erc20 address");
-		// }
-		// catch (error)
-		// {
-		// 	assert(error, "Expected an error but did not get one");
-		// 	assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		// }
+		newEscrow = await new Escrow(constants.NULL.ADDRESS);
+		assert.equal(newEscrow.address, constants.NULL.ADDRESS);
 	});
 
 	/***************************************************************************
@@ -89,16 +84,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 			IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.withdraw(100);
-			assert.fail("user should not be able to withdraw");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.withdraw(100));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -111,16 +97,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to deposit");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -130,16 +107,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to deposit");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler), 0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 0, "wrong rlc balance");
@@ -174,16 +142,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to deposit");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -193,16 +152,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to deposit");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler),          0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 1000000000, "wrong rlc balance");
@@ -253,16 +203,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
 
-		try
-		{
-			txMined = await IexecClerkInstance.withdraw(100000000);
-			assert.fail("user should not be able to withdraw");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction"), "Expected an error containing 'VM Exception while processing transaction' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.withdraw(100000000));
 
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));

@@ -9,11 +9,13 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
-
-const wallets   = require('../../wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -313,19 +315,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true";
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
+			__enclave
+		));
 	});
 
 	it("[2.2][TAG] Contribute - Correct (sgx)", async () => {
@@ -354,19 +350,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
+			__enclave
+		));
 	});
 
 	it("[2.4][TAG] Contribute - Error (duplicate)", async () => {
@@ -386,19 +376,13 @@ contract('IexecHub', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				results,
-				authorization,
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			results,
+			authorization,
+			__enclave
+		));
 	});
 
 	it("[2.5][TAG] Contribute - Error (authorization)", async () => {
@@ -407,19 +391,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker )), // signature: scheduler → worker
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker ), // signature: scheduler → worker
+			__enclave
+		));
 	});
 
 	it("[2.6][TAG] Contribute - Error (enclave signature)", async () => {
@@ -428,19 +406,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				odbtools.sealResult(__taskid, __raw, __worker), // should be signed
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)), // signature: scheduler → worker
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler), // signature: scheduler → worker
+			__enclave
+		));
 	});
 
 	it("clock fast forward", async () => {
@@ -455,19 +427,13 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		try {
-			await sendContribution(
-				__taskid,
-				__worker,
-				(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-				(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)), // signature: scheduler → worker
-				__enclave
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			__taskid,
+			__worker,
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler), // signature: scheduler → worker
+			__enclave
+		));
 	});
 
 });

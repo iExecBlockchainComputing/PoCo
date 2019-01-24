@@ -9,16 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('Ressources', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -148,20 +152,11 @@ contract('IexecHub', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		try
-		{
-			await WorkerpoolInstances[1].changePolicy(
-				0,
-				0,
-				{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to change policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+			0,
+			0,
+			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 
 		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
@@ -173,20 +168,11 @@ contract('IexecHub', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		try
-		{
-			await WorkerpoolInstances[1].changePolicy(
-				100, // worker stake ratio
-				150, // scheduler reward ratio (should not be above 100%)
-				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
-			);
-			assert.fail("user should not be able to set invalid policy");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+			100, // worker stake ratio
+			150, // scheduler reward ratio (should not be above 100%)
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+		));
 
 		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );

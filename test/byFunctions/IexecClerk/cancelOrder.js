@@ -9,16 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("../../constants");
-const odbtools  = require('../../../utils/odb-tools');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../../constants");
+const   odbtools     = require('../../../utils/odb-tools');
+const   wallets      = require('../../wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('IexecClerk', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -161,16 +165,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		try
-		{
-			await IexecClerkInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to sign apporder");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
 	});
 
@@ -185,16 +180,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		try
-		{
-			await IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to sign datasetorder");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
 	});
 
@@ -209,16 +195,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		try
-		{
-			await IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to sign workerpoolorder");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
 	});
 
@@ -233,16 +210,7 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		try
-		{
-			await IexecClerkInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.fail("user should not be able to sign requestorder");
-		}
-		catch (error)
-		{
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(IexecClerkInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
 	});
 

@@ -1,13 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import '../libs/SafeMathOZ.sol';
+import "../../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+
 import '../tools/Ownable.sol';
 
 contract RegistryBase
 {
 
-	using SafeMathOZ for uint256;
+	using SafeMath for uint256;
 
 	/**
 	 * Members

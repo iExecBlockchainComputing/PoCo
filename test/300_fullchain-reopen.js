@@ -9,18 +9,20 @@ var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
+var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
-const constants = require("./constants");
-const odbtools  = require('../utils/odb-tools');
-
-const wallets   = require('./wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr   = require('multiaddr');
+const   constants   = require("./constants");
+const   odbtools    = require('../utils/odb-tools');
+const   wallets     = require('./wallets');
 
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub', async (accounts) => {
+contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -357,16 +359,10 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("Contribute #2", async () => {
-		try {
-			await sendContribution(
-				await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
-				odbtools.sealResult(tasks[0], "true", worker1),
-			);
-			assert.fail("transaction should have reverted");
-		} catch (error) {
-			assert(error, "Expected an error but did not get one");
-			assert(error.message.includes("VM Exception while processing transaction: revert"), "Expected an error starting with 'VM Exception while processing transaction: revert' but got '" + error.message + "' instead");
-		}
+		await shouldFail.reverting(sendContribution(
+			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.sealResult(tasks[0], "true", worker1)
+		));
 
 		await sendContribution(
 			await odbtools.signAuthorization({ worker: worker3, taskid: tasks[0], enclave: sgxEnclave }, scheduler),
