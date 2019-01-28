@@ -22,10 +22,16 @@ contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by Iexec
 	function createDataset(
 		address          _datasetOwner,
 		string  calldata _datasetName,
-		bytes   calldata _datasetMultiaddr)
+		bytes   calldata _datasetMultiaddr,
+		bytes32          _datasetChecksum)
 	external /* onlyOwner /*owner == IexecHub*/ returns (Dataset)
 	{
-		Dataset newDataset = new Dataset(_datasetOwner, _datasetName, _datasetMultiaddr);
+		Dataset newDataset = new Dataset(
+			_datasetOwner,
+			_datasetName,
+			_datasetMultiaddr,
+			_datasetChecksum
+		);
 		require(insert(address(newDataset), _datasetOwner));
 		emit CreateDataset(_datasetOwner, address(newDataset));
 		return newDataset;

@@ -75,20 +75,30 @@ contract('Registries', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await AppRegistryInstance.createApp(appProvider, "App #"+i, constants.MULTIADDR_BYTES, "0x1234", { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			txMined = await AppRegistryInstance.createApp(
+				appProvider,
+				"App #"+i,
+				"DOCKER",
+				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of app #"+i),
+				"0x1234",
+				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 			assert.equal(events[0].args.appOwner, appProvider);
 
 			AppInstances[i] = await App.at(events[0].args.app);
-			assert.equal (await AppInstances[i].m_owner(),                     appProvider               );
-			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                 );
-			assert.equal (await AppInstances[i].m_appMultiaddr(),              constants.MULTIADDR_BYTES );
-			assert.equal (await AppInstances[i].m_appMREnclave(),              "0x1234"                  );
-			assert.equal (await AppRegistryInstance.viewCount(appProvider),    i                         );
-			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i), AppInstances[i].address   );
-			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                );
+			assert.equal (await AppInstances[i].m_owner(),                     appProvider                               );
+			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                                 );
+			assert.equal (await AppInstances[i].m_appType(),                   "DOCKER"                                  );
+			assert.equal (await AppInstances[i].m_appMultiaddr(),              constants.MULTIADDR_BYTES                 );
+			assert.equal (await AppInstances[i].m_appChecksum(),               web3.utils.keccak256("Content of app #"+i));
+			assert.equal (await AppInstances[i].m_appMREnclave(),              "0x1234"                                  );
+			assert.equal (await AppRegistryInstance.viewCount(appProvider),    i                                         );
+			assert.equal (await AppRegistryInstance.viewEntry(appProvider, i), AppInstances[i].address                   );
+			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                                );
 		}
 	});
 
@@ -98,19 +108,26 @@ contract('Registries', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Dataset #"+i, constants.MULTIADDR_BYTES, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			txMined = await DatasetRegistryInstance.createDataset(
+				datasetProvider,
+				"Dataset #"+i,
+				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of dataset #"+i),
+				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 			assert.equal(events[0].args.datasetOwner, datasetProvider);
 
 			DatasetInstances[i] = await Dataset.at(events[0].args.dataset);
-			assert.equal (await DatasetInstances[i].m_owner(),                         datasetProvider             );
-			assert.equal (await DatasetInstances[i].m_datasetName(),                   "Dataset #"+i               );
-			assert.equal (await DatasetInstances[i].m_datasetMultiaddr(),              constants.MULTIADDR_BYTES   );
-			assert.equal (await DatasetRegistryInstance.viewCount(datasetProvider),    i                           );
-			assert.equal (await DatasetRegistryInstance.viewEntry(datasetProvider, i), DatasetInstances[i].address );
-			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                  );
+			assert.equal (await DatasetInstances[i].m_owner(),                         datasetProvider                               );
+			assert.equal (await DatasetInstances[i].m_datasetName(),                   "Dataset #"+i                                 );
+			assert.equal (await DatasetInstances[i].m_datasetMultiaddr(),              constants.MULTIADDR_BYTES                     );
+			assert.equal (await DatasetInstances[i].m_datasetChecksum(),               web3.utils.keccak256("Content of dataset #"+i));
+			assert.equal (await DatasetRegistryInstance.viewCount(datasetProvider),    i                                             );
+			assert.equal (await DatasetRegistryInstance.viewEntry(datasetProvider, i), DatasetInstances[i].address                   );
+			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                                    );
 		}
 	});
 

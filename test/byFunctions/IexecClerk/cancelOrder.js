@@ -69,21 +69,39 @@ contract('IexecClerk', async (accounts) => {
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, "0x", { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(
+			appProvider,
+			"R Clifford Attractors",
+			"DOCKER",
+			constants.MULTIADDR_BYTES,
+			constants.NULL.BYTES32,
+			"0x",
+			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 	});
 
 	it("[Genesis] Dataset Creation", async () => {
-		txMined = await DatasetRegistryInstance.createDataset(datasetProvider, "Pi", constants.MULTIADDR_BYTES, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await DatasetRegistryInstance.createDataset(
+			datasetProvider,
+			"Pi",
+			constants.MULTIADDR_BYTES,
+			constants.NULL.BYTES32,
+			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
 		DatasetInstance = await Dataset.at(events[0].args.dataset);
 	});
 
 	it("[Genesis] Workerpool Creation", async () => {
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
+			scheduler,
+			"A test workerpool",
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);

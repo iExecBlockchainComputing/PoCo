@@ -112,8 +112,10 @@ module.exports = async function(callback) {
 			txMined = await AppRegistryInstance.createApp(
 				appProvider,
 				"myApp",
-				"0x0", // change with app multiaddr
-				"0x0", // change with app multiaddr
+				"None",
+				"0x0", // multiaddr
+				"0x0", // checksum
+				"0x",  // mrenclave
 				{ from: appProvider }
 			);
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
@@ -130,8 +132,9 @@ module.exports = async function(callback) {
 		{
 			txMined = await DatasetRegistryInstance.createDataset(
 				datasetProvider,
-				"muDataset",
-				"0x0", // change with dataset multiaddr
+				"myDataset",
+				"0x0", // multiaddr
+				"0x0", // checksum
 				{ from: datasetProvider }
 			);
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");

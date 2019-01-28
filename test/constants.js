@@ -48,7 +48,5 @@ define("ContributionStatusEnum", {
 	REJECTED    : 3
 });
 
-
-define("DAPP_PARAMS_EXAMPLE", "{\"type\":\"DOCKER\",\"provider\"=\"hub.docker.com\",\"uri\"=\"iexechub/r-clifford-attractors:latest\",\"minmemory\"=\"512mo\"}");
 define("MULTIADDR",           "/ipfs/QmRwwTz9Chq4Y7F7ReKKcx1GV6s3H7egmNGrku9XrwiDa8");
 define("MULTIADDR_BYTES",     "0xa503221220359d55f58a43126d4ba446a35940265eb2dab57ecbc439e7f105c558f8774819");
