@@ -38,7 +38,6 @@ npm install
 
 ### choice 1 :prepare ethereumjs simu
 
-```
 start ganache with
 ```
 ./ganache-custom
