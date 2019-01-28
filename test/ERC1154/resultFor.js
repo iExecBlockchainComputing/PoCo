@@ -174,12 +174,24 @@ contract('ERC1154: resultFor', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup]", async () => {
 		// Ressources
-		txMined = await AppRegistryInstance.createApp(appProvider, "R Clifford Attractors", constants.MULTIADDR_BYTES, "0x", { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await AppRegistryInstance.createApp(
+			appProvider,
+			"R Clifford Attractors",
+			"DOCKER",
+			constants.MULTIADDR_BYTES,
+			constants.NULL.BYTES32,
+			"0x",
+			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(scheduler, "A test workerpool", { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
+			scheduler,
+			"A test workerpool",
+			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);

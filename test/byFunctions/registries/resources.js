@@ -78,14 +78,18 @@ contract('Ressources', async (accounts) => {
 			AppInstances[i] = await App.new(
 				appProvider,
 				"App #"+i,
+				"DOCKER",
 				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of app #"+i),
 				"0x1234",
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal( await AppInstances[i].m_owner(),        appProvider               );
-			assert.equal( await AppInstances[i].m_appName(),      "App #"+i                 );
-			assert.equal( await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES );
-			assert.equal( await AppInstances[i].m_appMREnclave(), "0x1234"                  );
+			assert.equal(await AppInstances[i].m_owner(),        appProvider                               );
+			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
+			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
+			assert.equal(await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES                 );
+			assert.equal(await AppInstances[i].m_appChecksum(),  web3.utils.keccak256("Content of app #"+i));
+			assert.equal(await AppInstances[i].m_appMREnclave(), "0x1234"                                  );
 		}
 	});
 
@@ -99,11 +103,13 @@ contract('Ressources', async (accounts) => {
 				datasetProvider,
 				"Dataset #"+i,
 				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of dataset #"+i),
 				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal( await DatasetInstances[i].m_owner(),            datasetProvider           );
-			assert.equal( await DatasetInstances[i].m_datasetName(),      "Dataset #"+i             );
-			assert.equal( await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES );
+			assert.equal(await DatasetInstances[i].m_owner(),            datasetProvider                               );
+			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
+			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
+			assert.equal(await DatasetInstances[i].m_datasetChecksum(),  web3.utils.keccak256("Content of dataset #"+i));
 		}
 	});
 
