@@ -6,7 +6,8 @@ pipeline:
       - npm install
       - ./node_modules/.bin/truffle compile
     when:
-      ref: [refs/tags/v*]
+      event: [ tag ]
+      ref: [ refs/heads/testdocker ]
 
   npm:
     image: plugins/npm
