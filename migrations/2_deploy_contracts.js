@@ -11,7 +11,7 @@ var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
 const fs = require("fs-extra");
-const BigNumber = require('bignumber.js');
+const BN = require('bn.js');
 
 module.exports = async function(deployer, network, accounts)
 {
@@ -53,7 +53,7 @@ module.exports = async function(deployer, network, accounts)
 			console.log("RLC faucet supply is " + supply);
 
 			whale = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
-			await RLCInstance.transfer(whale, new BigNumber(supply/2), { from: owner, gas: 4500000 }),
+			await RLCInstance.transfer(whale, new BN(supply).div(new BN(2)), { from: owner, gas: 4500000 }),
 			console.log("Sent half of supply to the whale " + whale);
 			console.log("Whale balance is " + await RLCInstance.balanceOf(whale));
 			break;

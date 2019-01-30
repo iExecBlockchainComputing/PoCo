@@ -6,8 +6,7 @@ pipeline:
       - npm install
       - ./node_modules/.bin/truffle compile
     when:
-      event: [ tag ]
-      ref: [ refs/heads/testdocker ]
+      ref: [refs/tags/v*]
 
   npm:
     image: plugins/npm
@@ -27,3 +26,16 @@ pipeline:
       - ${DRONE_TAG##v}
     when:
       ref: [refs/tags/v3*]
+
+  dockerhub_legacy:
+    image: plugins/docker
+    repo: iexechub/poco-chain
+    secrets: [docker_username, docker_password]
+    tags:
+      - legacy-latest
+      - legacy-${DRONE_TAG##v}
+    when:
+      branch:
+      - testdocker
+      event:
+      - push
