@@ -33,7 +33,7 @@ pipeline:
     secrets: [docker_username, docker_password]
     tags:
       - legacy-latest
-      - legacy-${DRONE_TAG##v}
+      - legacy-$(git rev-parse --short HEAD)
     when:
       branch:
       - testdocker
