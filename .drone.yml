@@ -43,13 +43,13 @@ pipeline:
   kovan_legacy:
     image: node:latest
     commands:
+      - echo $MNEMONIC
       - sed -i '/ethereumjs-util/d' package.json
       - npm install
       - ./node_modules/.bin/truffle migrate --network kovan
-    secrets: [deployer_mnemonic]
     environment:
-      DEPLOYER_MNEMONIC:
-        from_secret: $deployer_mnemonic
+      MNEMONIC:
+        from_secret: mnemonic
     when:
       branch:
       - testdocker
