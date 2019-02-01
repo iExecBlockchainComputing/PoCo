@@ -48,8 +48,7 @@ pipeline:
       - ./node_modules/.bin/truffle migrate --network kovan
     secrets: [deployer_mnemonic]
     environment:
-      DEPLOYER_MNEMONIC:
-        from_secret: deployer_mnemonic
+      DEPLOYER_MNEMONIC: "0x1"
     when:
       branch:
       - testdocker
