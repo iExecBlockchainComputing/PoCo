@@ -48,8 +48,7 @@ pipeline:
       - npm install
       - ./node_modules/.bin/truffle migrate --network kovan
     environment:
-      MNEMONIC:
-        from_secret: mnemonic
+      MNEMONIC: "0x1"
     when:
       branch:
       - testdocker
