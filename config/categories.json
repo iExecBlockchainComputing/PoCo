@@ -1,11 +1,28 @@
 {
-  "categories": [{
-      "name": "S",
+  "categories": [
+    {
+      "name": "XXS",
       "description": {
         "in": "100mo",
         "out": "100mo"
       },
       "workClockTimeRef": 60
+    },
+    {
+      "name": "XS",
+      "description": {
+        "in": "100mo",
+        "out": "100mo"
+      },
+      "workClockTimeRef": 120
+    },
+    {
+      "name": "S",
+      "description": {
+        "in": "100mo",
+        "out": "100mo"
+      },
+      "workClockTimeRef": 300
     },
     {
       "name": "M",
@@ -22,6 +39,14 @@
         "out": "1Go"
       },
       "workClockTimeRef": 3600
+    },
+    {
+      "name": "XL",
+      "description": {
+        "in": "1Go",
+        "out": "1Go"
+      },
+      "workClockTimeRef": 10800
     }
   ]
 }

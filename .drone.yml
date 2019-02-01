@@ -27,6 +27,19 @@ pipeline:
     when:
       ref: [refs/tags/v3*]
 
+  dockerhub_legacy:
+    image: plugins/docker
+    repo: iexechub/poco-chain
+    secrets: [docker_username, docker_password]
+    tags:
+      - legacy-latest
+      - legacy-"${DRONE_TAG##v}"
+    when:
+      branch:
+      - testdocker
+      event:
+      - push
+
   kovan_legacy:
     image: node:latest
     commands:
@@ -40,16 +53,5 @@ pipeline:
       event:
       - push
 
-  dockerhub_legacy:
-    image: plugins/docker
-    repo: iexechub/poco-chain
-    secrets: [docker_username, docker_password]
-    tags:
-      - legacy-latest
-      - "legacy-${DRONE_TAG##v}"
-    when:
-      branch:
-      - testdocker
-      event:
-      - push
+
 
