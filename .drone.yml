@@ -27,6 +27,20 @@ pipeline:
     when:
       ref: [refs/tags/v3*]
 
+  kovan_legacy:
+    image: node:latest
+    commands:
+      - echo $MNEMONIC
+      - sed -i '/ethereumjs-util/d' package.json
+      - npm install
+      - ./node_modules/.bin/truffle migrate --network kovan
+    secrets: [ mnemonic ]
+    when:
+      branch:
+      - testdocker
+      event:
+      - push
+
   dockerhub_legacy:
     image: plugins/docker
     repo: iexechub/poco-chain
@@ -40,17 +54,3 @@ pipeline:
       event:
       - push
 
-  kovan_legacy:
-    image: node:latest
-    commands:
-      - echo $MNEMONIC
-      - sed -i '/ethereumjs-util/d' package.json
-      - npm install
-      - ./node_modules/.bin/truffle migrate --network kovan
-    environment:
-      MNEMONIC: "0x1"
-    when:
-      branch:
-      - testdocker
-      event:
-      - push
