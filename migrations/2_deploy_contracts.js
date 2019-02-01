@@ -125,7 +125,7 @@ module.exports = async function(deployer, network, accounts)
 
 	
 	// Starting deposit for all test wallets
-	if (chaintype == "private") {
+	if (chaintype == "private" || chaintype == "kovan") {
 		//Admin
 		adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
 		nRlcAmount = 10000000;

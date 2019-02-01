@@ -1,3 +1,4 @@
+var HDWalletProvider = require("truffle-hdwallet-provider");
 
 module.exports =
 {
@@ -35,14 +36,13 @@ module.exports =
 			gas:        8000000,
 			gasPrice:   4000000000, //4Gwei
 		},
-		kovan:
-		{
-			network_id: 42,
-			host:       "localhost",
-			port:       8545,
+	    kovan: {
+			provider: () =>
+				new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, "https://kovan.infura.io/v3/b2fd33d1c9cc440ba84752c2a4cf949d"),
+			network_id: '42',
 			gas:        8000000,
 			gasPrice:   1000000000, //1Gwei
-		},
+	    }
 	},
 	solc:
 	{
