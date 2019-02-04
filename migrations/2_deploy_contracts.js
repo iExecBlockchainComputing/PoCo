@@ -160,7 +160,7 @@ module.exports = async function(deployer, network, accounts)
 		{
 			group = workerAddresses.slice(i, i+batchSize);
 			await IexecClerkInstance.depositForArray(
-				(new Array(group.length)).fill(nRlcAmount),
+				Array(group.length).fill(nRlcAmount),
 				group,
 				{ from: owner, gas: 4500000 }
 			);
