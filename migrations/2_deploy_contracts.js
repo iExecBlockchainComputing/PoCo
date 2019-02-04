@@ -11,6 +11,7 @@ var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
 const fs = require("fs-extra");
+const BN = require('bn.js');
 
 module.exports = async function(deployer, network, accounts)
 {
@@ -24,7 +25,7 @@ module.exports = async function(deployer, network, accounts)
 	{
 		case "kovan":
 			RLCInstance = await RLC.at("0xc57538846ec405ea25deb00e0f9b29a432d53507")
-			owner = null;
+			owner = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
 			break;
 
 		case "rinkeby":
@@ -48,7 +49,9 @@ module.exports = async function(deployer, network, accounts)
 			console.log("RLC deployed at address: " + RLCInstance.address);
 			owner = await RLCInstance.owner.call()
 			console.log("RLC faucet wallet is " + owner);
-			console.log("RLC faucet supply is " + await RLCInstance.balanceOf(owner));
+			supply = await RLCInstance.balanceOf(owner);
+			console.log("RLC faucet supply is " + supply);
+
 			break;
 
 		default:
@@ -118,5 +121,43 @@ module.exports = async function(deployer, network, accounts)
 		console.log("Broker deployed at address: " + BrokerInstance.address);
 		console.log("SMSDirectory deployed at address: " + SMSDirectoryInstance.address);
 	}
+
+
+	
+	// Starting deposit for all test wallets
+	if (chaintype == "private" || chaintype == "kovan") {
+		//Admin
+		adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
+		nRlcAmount = 10000000;
+		//For admin, put some nRLC in wallet
+		await RLCInstance.transfer(adminAdress, nRlcAmount, { from: owner, gas: 4500000 });
+		console.log("Wallet.balance of " + adminAdress +" is " + await RLCInstance.balanceOf(adminAdress) + " nRLC");
+		//And put directly some other nRLCs  in account
+		await RLCInstance.approve(IexecClerkInstance.address, nRlcAmount, { from: owner     });
+		await IexecClerkInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
+		IexecClerkInstance.viewAccount(adminAdress).then(balance => console.log("Account.stake of " + adminAdress + " is " + balance.stake + " nRLC"));
+
+
+		//For scheduler, put directly some nRLCs in account
+		schedulerAddress = "0x000a9c787a972F70F0903890E266F41c795C4DcA";
+		nRlcAmount = 10000000;
+		await RLCInstance.approve(IexecClerkInstance.address, nRlcAmount, { from: owner     });
+		await IexecClerkInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
+		await IexecClerkInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.stake of " + schedulerAddress + " is " + balance.stake + " nRLC"));
+
+
+		//For workers, put directly some nRLCs in account
+		var acountsFile = fs.readFileSync(__dirname + "/accounts.txt").toString();
+		var wallets = acountsFile.split("\n");
+		console.log("Making deposit to " + wallets.length + " wallets");
+		nRlcAmount = 1000;
+		await RLCInstance.approve(IexecClerkInstance.address, wallets.length*nRlcAmount, { from: owner     });
+		for (let address of wallets) {
+		    await IexecClerkInstance.depositFor(nRlcAmount, address, { from: owner, gas: 4500000 });
+		    IexecClerkInstance.viewAccount(address).then(balance => console.log("Account.stake of " + address + " is " + balance.stake + " nRLC"));
+		}
+
+	}
+
 
 };
