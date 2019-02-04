@@ -72,7 +72,7 @@ contract Escrow
 		return true;
 	}
 
-	function depositForArray(uint256[] _amounts, address[] _targets)
+	function depositForArray(uint256[] calldata _amounts, address[] calldata _targets)
 	external returns (bool)
 	{
 		require(_amounts.length == _targets.length);
