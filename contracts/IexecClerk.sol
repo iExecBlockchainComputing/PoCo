@@ -390,26 +390,26 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
-	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
+	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
-		reward(_worker, _amount);
+		reward(_worker, _amount, _taskid);
 	}
 
-	function seizeContribution(bytes32 _dealid, address _worker)
+	function seizeContribution(bytes32 _dealid, address _worker, bytes32 _taskid)
 	external onlyIexecHub
 	{
-		seize(_worker, m_deals[_dealid].workerStake);
+		seize(_worker, m_deals[_dealid].workerStake, _taskid);
 	}
 
-	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
+	function rewardForScheduling(bytes32 _dealid, uint256 _amount, bytes32 _taskid)
 	external onlyIexecHub
 	{
-		reward(m_deals[_dealid].workerpool.owner, _amount);
+		reward(m_deals[_dealid].workerpool.owner, _amount, _taskid);
 	}
 
-	function successWork(bytes32 _dealid)
+	function successWork(bytes32 _dealid, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
@@ -421,16 +421,19 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
 		// seize requester funds
-		seize (deal.requester, requesterstake);
+		seize(deal.requester, requesterstake, _taskid);
+		// dapp reward
+		if (deal.app.price > 0)
+		{
+			reward(deal.app.owner, deal.app.price, _taskid);
+		}
+		// data reward
+		if (deal.dataset.price > 0 && deal.dataset.pointer != address(0))
+		{
+			reward(deal.dataset.owner, deal.dataset.price, _taskid);
+		}
 		// unlock pool stake
 		unlock(deal.workerpool.owner, poolstake);
-		// dapp reward
-		reward(deal.app.owner, deal.app.price);
-		// data reward
-		if (deal.dataset.pointer != address(0))
-		{
-			reward(deal.dataset.owner, deal.dataset.price);
-		}
 		// pool reward performed by consensus manager
 
 		/**
@@ -444,12 +447,12 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 			        .percentage(KITTY_RATIO) // fraction
 			        .max(KITTY_MIN)          // at least this
 			        .min(kitty);             // but not more than available
-			seize (address(0),            kitty);
-			reward(deal.workerpool.owner, kitty);
+			seize (address(0),            kitty, _taskid);
+			reward(deal.workerpool.owner, kitty, _taskid);
 		}
 	}
 
-	function failedWork(bytes32 _dealid)
+	function failedWork(bytes32 _dealid, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
@@ -460,10 +463,10 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
 		uint256 poolstake = deal.workerpool.price
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
-		unlock(deal.requester,        requesterstake);
-		seize (deal.workerpool.owner, poolstake     );
-		reward(address(0),            poolstake     ); // → Kitty / Burn
-		lock  (address(0),            poolstake     ); // → Kitty / Burn
+		unlock(deal.requester,        requesterstake    );
+		seize (deal.workerpool.owner, poolstake, _taskid);
+		reward(address(0),            poolstake, _taskid); // → Kitty / Burn
+		lock  (address(0),            poolstake         ); // → Kitty / Burn
 	}
 
 }

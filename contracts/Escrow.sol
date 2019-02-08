@@ -26,8 +26,8 @@ contract Escrow
 	event Deposit   (address owner, uint256 amount);
 	event DepositFor(address owner, uint256 amount, address target);
 	event Withdraw  (address owner, uint256 amount);
-	event Reward    (address user,  uint256 amount);
-	event Seize     (address user,  uint256 amount);
+	event Reward    (address user,  uint256 amount, bytes32 ref);
+	event Seize     (address user,  uint256 amount, bytes32 ref);
 	event Lock      (address user,  uint256 amount);
 	event Unlock    (address user,  uint256 amount);
 
@@ -95,16 +95,16 @@ contract Escrow
 	/**
 	 * Wallet methods: Internal
 	 */
-	function reward(address _user, uint256 _amount) internal /* returns (bool) */
+	function reward(address _user, uint256 _amount, bytes32 _reference) internal /* returns (bool) */
 	{
 		m_accounts[_user].stake = m_accounts[_user].stake.add(_amount);
-		emit Reward(_user, _amount);
+		emit Reward(_user, _amount, _reference);
 		/* return true; */
 	}
-	function seize(address _user, uint256 _amount) internal /* returns (bool) */
+	function seize(address _user, uint256 _amount, bytes32 _reference) internal /* returns (bool) */
 	{
 		m_accounts[_user].locked = m_accounts[_user].locked.sub(_amount);
-		emit Seize(_user, _amount);
+		emit Seize(_user, _amount, _reference);
 		/* return true; */
 	}
 	function lock(address _user, uint256 _amount) internal /* returns (bool) */

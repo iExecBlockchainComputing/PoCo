@@ -354,7 +354,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 		/**
 		 * Stake and reward management
 		 */
-		iexecclerk.successWork(task.dealid);
+		iexecclerk.successWork(task.dealid, _taskid);
 		distributeRewards(_taskid);
 
 		/**
@@ -424,7 +424,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
+				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward, _taskid);
 
 				// Only reward if replication happened
 				if (task.contributors.length > 1)
@@ -441,7 +441,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
-				iexecclerk.seizeContribution(task.dealid, worker);
+				iexecclerk.seizeContribution(task.dealid, worker, _taskid);
 
 				// Always punish bad contributors
 				{
@@ -457,7 +457,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 			}
 		}
 		// totalReward now contains the scheduler share
-		iexecclerk.rewardForScheduling(task.dealid, totalReward);
+		iexecclerk.rewardForScheduling(task.dealid, totalReward, _taskid);
 	}
 
 	function claim(
@@ -474,7 +474,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 		/**
 		 * Stake management
 		 */
-		iexecclerk.failedWork(task.dealid);
+		iexecclerk.failedWork(task.dealid, _taskid);
 		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
 			address worker = task.contributors[i];

@@ -293,7 +293,7 @@ contract('Fullchain', async (accounts) => {
 	/***************************************************************************
 	 *             TEST: Workerpool order signature (by scheduler)             *
 	 ***************************************************************************/
-	it("[Genesis] Generate.workerpool order", async () => {
+	it("[Genesis] Generate workerpool order", async () => {
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
 				workerpool:        WorkerpoolInstance.address,
