@@ -44,12 +44,15 @@ module.exports =
 			gasPrice:   1000000000, //1Gwei
 		},
 	},
-	solc:
-	{
-		optimizer:
-		{
-			enabled: true,
-			runs: 200
+	compilers: {
+		solc: {
+			version: "0.5.1",
+			settings: {
+				optimizer: {
+					enabled: true,
+					runs: 200
+				}
+			}
 		}
 	},
 	mocha:

@@ -7,15 +7,13 @@ import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 import "./libs/IexecODBLibCore.sol";
-import "./libs/IexecODBLibOrders.sol";
 import "./registries/RegistryBase.sol";
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
 
 contract IexecHub is CategoryManager, IOracle, ECDSA
 {
-	using SafeMath          for uint256;
-	using IexecODBLibOrders for *;
+	using SafeMath for uint256;
 
 	/***************************************************************************
 	 *                                Constants                                *
