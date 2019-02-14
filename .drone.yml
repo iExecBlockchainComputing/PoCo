@@ -40,6 +40,19 @@ pipeline:
       event:
       - push
 
+  dockerhub_legacy_20s:
+    image: plugins/docker
+    repo: iexechub/poco-chain
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile_20s
+    tags:
+      - legacy-20s-${DRONE_COMMIT_SHA:0:7}
+    when:
+      branch:
+      - testdocker
+      event:
+      - push
+
   kovan_legacy:
     image: node:latest
     commands:
