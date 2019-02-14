@@ -1,4 +1,4 @@
-FROM parity/parity:stable
+FROM parity/parity:v2.3.2
 
 USER root
 
@@ -11,5 +11,5 @@ COPY . /iexec-poco
 
 RUN bash /iexec-poco/parity/migrate.sh
 
-ENTRYPOINT ["/home/parity/bin/parity"]
+ENTRYPOINT ["/bin/parity"]
 CMD ["--chain", "/iexec-poco/parity/spec.json", "--config", "/iexec-poco/parity/authority.toml", "-d", "/iexec-poco/parity/data", "--geth"]
