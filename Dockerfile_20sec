@@ -9,7 +9,7 @@ RUN bash -i -c "nvm install node"
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
 
-RUN bash /iexec-poco/parity_20s/migrate_20s.sh
+RUN bash /iexec-poco/parity_20sec/migrate_20sec.sh
 
 ENTRYPOINT ["/bin/parity"]
-CMD ["--chain", "/iexec-poco/parity_20s/spec_20s.json", "--config", "/iexec-poco/parity_20s/authority.toml", "--force-sealing", "-d", "/iexec-poco/parity_20s/data", "--geth"]
+CMD ["--chain", "/iexec-poco/parity_20sec/spec_20sec.json", "--config", "/iexec-poco/parity_20sec/authority.toml", "--force-sealing", "-d", "/iexec-poco/parity_20sec/data", "--geth"]
