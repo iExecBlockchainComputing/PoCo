@@ -1,5 +1,4 @@
-// var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var RLC                = artifacts.require("RLC");
+var RLC                = artifacts.require("rlc-faucet-contract/RLC");
 var IexecODBLibOrders  = artifacts.require("IexecODBLibOrders");
 var IexecHub           = artifacts.require("IexecHub");
 var IexecClerk         = artifacts.require("IexecClerk");
