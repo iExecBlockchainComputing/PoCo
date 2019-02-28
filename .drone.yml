@@ -5,6 +5,8 @@ pipeline:
       - sed -i '/ethereumjs-util/d' package.json
       - npm install
       - ./node_modules/.bin/truffle compile
+      - mkdir ./build/contracts-min
+      - for f in $(ls ./build/contracts); do cat ./build/contracts/$f | ./node_modules/.bin/jqn 'pick(["abi","networks"])' --color=false -j >> ./build/contracts-min/$f; done
     when:
       ref: [refs/tags/v*]
 
