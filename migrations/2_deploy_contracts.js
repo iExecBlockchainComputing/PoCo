@@ -5,7 +5,6 @@ var IexecClerk         = artifacts.require("IexecClerk");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
-var Relay              = artifacts.require("Relay");
 var Broker             = artifacts.require("Broker");
 var SMSDirectory       = artifacts.require("SMSDirectory");
 
@@ -107,13 +106,10 @@ module.exports = async function(deployer, network, accounts)
 	// experimental, do not deploy
 	if (chaintype == "private")
 	{
-		await deployer.deploy(Relay);
 		await deployer.deploy(Broker, IexecClerkInstance.address);
 		await deployer.deploy(SMSDirectory);
-		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
 		SMSDirectoryInstance = await SMSDirectory.deployed();
-		console.log("Relay deployed at address: " + RelayInstance.address);
 		console.log("Broker deployed at address: " + BrokerInstance.address);
 		console.log("SMSDirectory deployed at address: " + SMSDirectoryInstance.address);
 	}

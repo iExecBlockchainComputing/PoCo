@@ -11,9 +11,10 @@ import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
 import "./Escrow.sol";
+import "./Relay.sol";
 import "./IexecHubAccessor.sol";
 
-contract IexecClerk is Escrow, IexecHubAccessor, ECDSA
+contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 {
 	using SafeMath          for uint256;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;

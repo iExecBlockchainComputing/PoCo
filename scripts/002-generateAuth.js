@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 
 const { assert } = require('chai');
