@@ -22,10 +22,12 @@ contract Dataset is Ownable
 		bytes32        _datasetChecksum)
 	public
 	{
-		transferOwnership(_datasetOwner);
+		_transferOwnership(_datasetOwner);
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;
 	}
+
+	function transferOwnership(address) public { require(false, "disabled"); }
 
 }

@@ -27,7 +27,7 @@ contract Workerpool is Ownable
 		string  memory _workerpoolDescription)
 	public
 	{
-		transferOwnership(_workerpoolOwner);
+		_transferOwnership(_workerpoolOwner);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable
@@ -48,5 +48,7 @@ contract Workerpool is Ownable
 		m_workerStakeRatioPolicy     = _newWorkerStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy = _newSchedulerRewardRatioPolicy;
 	}
+
+	function transferOwnership(address) public { require(false, "disabled"); }
 
 }
