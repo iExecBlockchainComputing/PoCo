@@ -68,9 +68,9 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 *                    CategoryManager is OwnableMutable                    *
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
-		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
+		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
 		await shouldFail.reverting(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal( await IexecHubInstance.m_owner(), iexecAdmin, "Erroneous Workerpool owner");
+		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
 	/***************************************************************************

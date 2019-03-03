@@ -81,7 +81,7 @@ contract('Ressources', async (accounts) => {
 				"0x1234",
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal(await AppInstances[i].m_owner(),        appProvider                               );
+			assert.equal(await AppInstances[i].owner(),          appProvider                               );
 			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
 			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
 			assert.equal(await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES                 );
@@ -103,7 +103,7 @@ contract('Ressources', async (accounts) => {
 				web3.utils.keccak256("Content of dataset #"+i),
 				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal(await DatasetInstances[i].m_owner(),            datasetProvider                               );
+			assert.equal(await DatasetInstances[i].owner(),              datasetProvider                               );
 			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
 			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
 			assert.equal(await DatasetInstances[i].m_datasetChecksum(),  web3.utils.keccak256("Content of dataset #"+i));
@@ -121,7 +121,7 @@ contract('Ressources', async (accounts) => {
 				"Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal( await WorkerpoolInstances[i].m_owner(),                      scheduler        );
+			assert.equal( await WorkerpoolInstances[i].owner(),                        scheduler        );
 			assert.equal( await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i );
 			assert.equal( await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30               );
 			assert.equal( await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1                );
@@ -145,7 +145,7 @@ contract('Ressources', async (accounts) => {
 		assert.equal( events[0].args.oldSchedulerRewardRatioPolicy, 1  );
 		assert.equal( events[0].args.newSchedulerRewardRatioPolicy, 5  );
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
 		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
 		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
@@ -161,7 +161,7 @@ contract('Ressources', async (accounts) => {
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
 		));
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
 		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
 		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
@@ -177,7 +177,7 @@ contract('Ressources', async (accounts) => {
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		));
 
-		assert.equal( await WorkerpoolInstances[1].m_owner(),                      scheduler       );
+		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
 		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
 		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
 		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );

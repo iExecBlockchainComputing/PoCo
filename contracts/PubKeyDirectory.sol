@@ -35,7 +35,7 @@ contract PubKeyDirectory
 	{
 		// Check _contract is in fact a contract
 		uint size;
-		assembly { size := extcodesize(addr) }
+		assembly { size := extcodesize(_contract) }
 		require(size > 0);
 		// Check operation is performed by the owner
 		require(Ownable(_contract).owner() == msg.sender);

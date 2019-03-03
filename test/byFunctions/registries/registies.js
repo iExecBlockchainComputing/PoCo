@@ -87,7 +87,7 @@ contract('Registries', async (accounts) => {
 			assert.equal(events[0].args.appOwner, appProvider);
 
 			AppInstances[i] = await App.at(events[0].args.app);
-			assert.equal (await AppInstances[i].m_owner(),                     appProvider                               );
+			assert.equal (await AppInstances[i].owner(),                       appProvider                               );
 			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                                 );
 			assert.equal (await AppInstances[i].m_appType(),                   "DOCKER"                                  );
 			assert.equal (await AppInstances[i].m_appMultiaddr(),              constants.MULTIADDR_BYTES                 );
@@ -118,7 +118,7 @@ contract('Registries', async (accounts) => {
 			assert.equal(events[0].args.datasetOwner, datasetProvider);
 
 			DatasetInstances[i] = await Dataset.at(events[0].args.dataset);
-			assert.equal (await DatasetInstances[i].m_owner(),                         datasetProvider                               );
+			assert.equal (await DatasetInstances[i].owner(),                           datasetProvider                               );
 			assert.equal (await DatasetInstances[i].m_datasetName(),                   "Dataset #"+i                                 );
 			assert.equal (await DatasetInstances[i].m_datasetMultiaddr(),              constants.MULTIADDR_BYTES                     );
 			assert.equal (await DatasetInstances[i].m_datasetChecksum(),               web3.utils.keccak256("Content of dataset #"+i));
@@ -146,7 +146,7 @@ contract('Registries', async (accounts) => {
 			assert.equal(events[0].args.workerpoolDescription, "Workerpool #"+i, "Erroneous Workerpool description");
 
 			WorkerpoolInstances[i] = await Workerpool.at(events[0].args.workerpool);
-			assert.equal (await WorkerpoolInstances[i].m_owner(),                                        scheduler,                      "Erroneous Workerpool owner"                   );
+			assert.equal (await WorkerpoolInstances[i].owner(),                                          scheduler,                      "Erroneous Workerpool owner"                   );
 			assert.equal (await WorkerpoolInstances[i].m_workerpoolDescription(),                        "Workerpool #"+i,               "Erroneous Workerpool description"             );
 			assert.equal (await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),                       30,                             "Erroneous Workerpool params"                  );
 			assert.equal (await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(),                   1,                              "Erroneous Workerpool params"                  );

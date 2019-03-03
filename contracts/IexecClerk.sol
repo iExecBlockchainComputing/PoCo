@@ -129,7 +129,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
-		require(msg.sender == App(_apporder.app).m_owner());
+		require(msg.sender == App(_apporder.app).owner());
 		m_presigned[_apporder.hash()] = true;
 		return true;
 	}
@@ -138,7 +138,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
-		require(msg.sender == Dataset(_datasetorder.dataset).m_owner());
+		require(msg.sender == Dataset(_datasetorder.dataset).owner());
 		m_presigned[_datasetorder.hash()] = true;
 		return true;
 	}
@@ -147,7 +147,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).m_owner());
+		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
 		m_presigned[_workerpoolorder.hash()] = true;
 		return true;
 	}
@@ -220,20 +220,20 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 
 		// app
 		ids.appHash  = _apporder.hash();
-		ids.appOwner = App(_apporder.app).m_owner();
+		ids.appOwner = App(_apporder.app).owner();
 		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
-			ids.datasetOwner = Dataset(_datasetorder.dataset).m_owner();
+			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
 			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
-		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
+		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
 		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
@@ -333,7 +333,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	public returns (bool)
 	{
 		bytes32 dapporderHash = _apporder.hash();
-		require(msg.sender == App(_apporder.app).m_owner());
+		require(msg.sender == App(_apporder.app).owner());
 		// require(verify(msg.sender, dapporderHash, _apporder.sign));
 		m_consumed[dapporderHash] = _apporder.volume;
 		emit ClosedAppOrder(dapporderHash);
@@ -345,7 +345,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	public returns (bool)
 	{
 		bytes32 dataorderHash = _datasetorder.hash();
-		require(msg.sender == Dataset(_datasetorder.dataset).m_owner());
+		require(msg.sender == Dataset(_datasetorder.dataset).owner());
 		// require(verify(msg.sender, dataorderHash, _datasetorder.sign));
 		m_consumed[dataorderHash] = _datasetorder.volume;
 		emit ClosedDatasetOrder(dataorderHash);
@@ -357,7 +357,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA
 	public returns (bool)
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash();
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).m_owner());
+		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
 		// require(verify(msg.sender, poolorderHash, _workerpoolorder.sign));
 		m_consumed[poolorderHash] = _workerpoolorder.volume;
 		emit ClosedWorkerpoolOrder(poolorderHash);

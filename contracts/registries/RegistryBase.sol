@@ -3,8 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import "../../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
 
-import '../tools/Ownable.sol';
-
 contract RegistryBase
 {
 

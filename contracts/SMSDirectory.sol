@@ -1,7 +1,7 @@
 pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import './tools/Ownable.sol';
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract SMSDirectory
 {
@@ -24,7 +24,7 @@ contract SMSDirectory
 	function setSMS(address _ressource, bytes calldata _sms)
 	external
 	{
-		require(_ressource == msg.sender || OwnableImmutable(_ressource).m_owner() == msg.sender);
+		require(_ressource == msg.sender || Ownable(_ressource).owner() == msg.sender);
 		m_entries[_ressource] = _sms;
 	}
 
