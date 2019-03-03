@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 
 const { assert } = require('chai');
@@ -79,10 +78,10 @@ module.exports = async function(callback) {
 		workerpoolorderHash = "0x218b9fa3880e87e75b0a79623ffebfb7aeed9594dbcc0ffbe4ce3a175987652b"
 		requestorderHash    = "0x6df038a81c559044eb8fcc67b71c2a1982b9efd43ff2d60639c5211dfa31e775"
 
-		assert.equal(await (await App.at       (apporder.app              )).m_owner(), appProvider    );
-		assert.equal(await (await Dataset.at   (datasetorder.dataset      )).m_owner(), datasetProvider);
-		assert.equal(await (await Workerpool.at(workerpoolorder.workerpool)).m_owner(), scheduler      );
-		assert.equal(requestorder.requester,                                            user           );
+		assert.equal(await (await App.at       (apporder.app              )).owner(), appProvider    );
+		assert.equal(await (await Dataset.at   (datasetorder.dataset      )).owner(), datasetProvider);
+		assert.equal(await (await Workerpool.at(workerpoolorder.workerpool)).owner(), scheduler      );
+		assert.equal(requestorder.requester,                                          user           );
 
 		assert(await IexecClerkInstance.verifySignature(appProvider,     apporderHash,        apporder.sign,        {}));
 		assert(await IexecClerkInstance.verifySignature(datasetProvider, datasetorderHash,    datasetorder.sign,    {}));

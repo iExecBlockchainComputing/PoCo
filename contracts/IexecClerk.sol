@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
@@ -11,6 +11,7 @@ import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
 import "./Escrow.sol";
+import "./Relay.sol";
 import "./IexecHubAccessor.sol";
 
 /**
@@ -18,7 +19,7 @@ import "./IexecHubAccessor.sol";
  */
 import "./IexecClerkABILegacy.sol";
 
-contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
+contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 {
 	using SafeMath          for uint256;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
@@ -133,7 +134,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
-		require(msg.sender == App(_apporder.app).m_owner());
+		require(msg.sender == App(_apporder.app).owner());
 		m_presigned[_apporder.hash()] = true;
 		return true;
 	}
@@ -142,7 +143,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
-		require(msg.sender == Dataset(_datasetorder.dataset).m_owner());
+		require(msg.sender == Dataset(_datasetorder.dataset).owner());
 		m_presigned[_datasetorder.hash()] = true;
 		return true;
 	}
@@ -151,7 +152,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).m_owner());
+		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
 		m_presigned[_workerpoolorder.hash()] = true;
 		return true;
 	}
@@ -224,20 +225,20 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 
 		// app
 		ids.appHash  = _apporder.hash();
-		ids.appOwner = App(_apporder.app).m_owner();
+		ids.appOwner = App(_apporder.app).owner();
 		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
-			ids.datasetOwner = Dataset(_datasetorder.dataset).m_owner();
+			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
 			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
-		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).m_owner();
+		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
 		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
@@ -337,7 +338,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	public returns (bool)
 	{
 		bytes32 dapporderHash = _apporder.hash();
-		require(msg.sender == App(_apporder.app).m_owner());
+		require(msg.sender == App(_apporder.app).owner());
 		// require(verify(msg.sender, dapporderHash, _apporder.sign));
 		m_consumed[dapporderHash] = _apporder.volume;
 		emit ClosedAppOrder(dapporderHash);
@@ -349,7 +350,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	public returns (bool)
 	{
 		bytes32 dataorderHash = _datasetorder.hash();
-		require(msg.sender == Dataset(_datasetorder.dataset).m_owner());
+		require(msg.sender == Dataset(_datasetorder.dataset).owner());
 		// require(verify(msg.sender, dataorderHash, _datasetorder.sign));
 		m_consumed[dataorderHash] = _datasetorder.volume;
 		emit ClosedDatasetOrder(dataorderHash);
@@ -361,7 +362,7 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 	public returns (bool)
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash();
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).m_owner());
+		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
 		// require(verify(msg.sender, poolorderHash, _workerpoolorder.sign));
 		m_consumed[poolorderHash] = _workerpoolorder.volume;
 		emit ClosedWorkerpoolOrder(poolorderHash);
@@ -395,26 +396,26 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
-	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
+	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
-		reward(_worker, _amount);
+		reward(_worker, _amount, _taskid);
 	}
 
-	function seizeContribution(bytes32 _dealid, address _worker)
+	function seizeContribution(bytes32 _dealid, address _worker, bytes32 _taskid)
 	external onlyIexecHub
 	{
-		seize(_worker, m_deals[_dealid].workerStake);
+		seize(_worker, m_deals[_dealid].workerStake, _taskid);
 	}
 
-	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
+	function rewardForScheduling(bytes32 _dealid, uint256 _amount, bytes32 _taskid)
 	external onlyIexecHub
 	{
-		reward(m_deals[_dealid].workerpool.owner, _amount);
+		reward(m_deals[_dealid].workerpool.owner, _amount, _taskid);
 	}
 
-	function successWork(bytes32 _dealid)
+	function successWork(bytes32 _dealid, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
@@ -426,16 +427,19 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
 		// seize requester funds
-		seize (deal.requester, requesterstake);
+		seize(deal.requester, requesterstake, _taskid);
+		// dapp reward
+		if (deal.app.price > 0)
+		{
+			reward(deal.app.owner, deal.app.price, _taskid);
+		}
+		// data reward
+		if (deal.dataset.price > 0 && deal.dataset.pointer != address(0))
+		{
+			reward(deal.dataset.owner, deal.dataset.price, _taskid);
+		}
 		// unlock pool stake
 		unlock(deal.workerpool.owner, poolstake);
-		// dapp reward
-		reward(deal.app.owner, deal.app.price);
-		// data reward
-		if (deal.dataset.pointer != address(0))
-		{
-			reward(deal.dataset.owner, deal.dataset.price);
-		}
 		// pool reward performed by consensus manager
 
 		/**
@@ -449,12 +453,12 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 			        .percentage(KITTY_RATIO) // fraction
 			        .max(KITTY_MIN)          // at least this
 			        .min(kitty);             // but not more than available
-			seize (address(0),            kitty);
-			reward(deal.workerpool.owner, kitty);
+			seize (address(0),            kitty, _taskid);
+			reward(deal.workerpool.owner, kitty, _taskid);
 		}
 	}
 
-	function failedWork(bytes32 _dealid)
+	function failedWork(bytes32 _dealid, bytes32 _taskid)
 	external onlyIexecHub
 	{
 		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
@@ -465,10 +469,10 @@ contract IexecClerk is Escrow, IexecHubAccessor, ECDSA, IexecClerkABILegacy
 		uint256 poolstake = deal.workerpool.price
 		                    .percentage(WORKERPOOL_STAKE_RATIO);
 
-		unlock(deal.requester,        requesterstake);
-		seize (deal.workerpool.owner, poolstake     );
-		reward(address(0),            poolstake     ); // → Kitty / Burn
-		lock  (address(0),            poolstake     ); // → Kitty / Burn
+		unlock(deal.requester,        requesterstake    );
+		seize (deal.workerpool.owner, poolstake, _taskid);
+		reward(address(0),            poolstake, _taskid); // → Kitty / Burn
+		lock  (address(0),            poolstake         ); // → Kitty / Burn
 	}
 
 

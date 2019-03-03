@@ -1,9 +1,9 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import '../tools/Ownable.sol';
+import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract App is OwnableImmutable
+contract App is Ownable
 {
 	/**
 	 * Members
@@ -25,8 +25,8 @@ contract App is OwnableImmutable
 		bytes32        _appChecksum,
 		bytes   memory _appMREnclave)
 	public
-	OwnableImmutable(_appOwner)
 	{
+		transferOwnership(_appOwner);
 		m_appName      = _appName;
 		m_appType      = _appType;
 		m_appMultiaddr = _appMultiaddr;

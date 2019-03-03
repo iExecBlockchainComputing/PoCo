@@ -1,9 +1,9 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import '../tools/Ownable.sol';
+import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract Workerpool is OwnableImmutable
+contract Workerpool is Ownable
 {
 	/**
 	 * Parameters
@@ -26,8 +26,8 @@ contract Workerpool is OwnableImmutable
 		address        _workerpoolOwner,
 		string  memory _workerpoolDescription)
 	public
-	OwnableImmutable(_workerpoolOwner)
 	{
+		transferOwnership(_workerpoolOwner);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable

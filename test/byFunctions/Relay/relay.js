@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
@@ -43,7 +42,7 @@ contract('Relay', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var RelayInstance              = null;
+	var IexecClerkInstance              = null;
 	var BrokerInstance             = null;
 
 	var AppInstance        = null;
@@ -53,7 +52,7 @@ contract('Relay', async (accounts) => {
 	var apporder        = null;
 	var datasetorder    = null;
 	var workerpoolorder = null;
-	var requestorder       = null;
+	var requestorder    = null;
 	var dealid          = null;
 	var taskid          = null;
 
@@ -83,7 +82,6 @@ contract('Relay', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		RelayInstance              = await Relay.deployed();
 		BrokerInstance             = await Broker.deployed();
 
 		odbtools.setup({
@@ -335,10 +333,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastAppOrder", async () => {
-		txMined = await RelayInstance.broadcastAppOrder(apporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.broadcastAppOrder(apporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, RelayInstance.address, "BroadcastAppOrder");
+		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastAppOrder");
 		assert.equal(events[0].args.apporder.app,                apporder.app               );
 		assert.equal(events[0].args.apporder.appprice,           apporder.appprice          );
 		assert.equal(events[0].args.apporder.volume,             apporder.volume            );
@@ -352,10 +350,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastDatasetOrder", async () => {
-		txMined = await RelayInstance.broadcastDatasetOrder(datasetorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.broadcastDatasetOrder(datasetorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, RelayInstance.address, "BroadcastDatasetOrder");
+		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastDatasetOrder");
 		assert.equal(events[0].args.datasetorder.dataset,            datasetorder.dataset           );
 		assert.equal(events[0].args.datasetorder.datasetprice,       datasetorder.datasetprice      );
 		assert.equal(events[0].args.datasetorder.volume,             datasetorder.volume            );
@@ -369,10 +367,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastWorkerpoolOrder", async () => {
-		txMined = await RelayInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, RelayInstance.address, "BroadcastWorkerpoolOrder");
+		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastWorkerpoolOrder");
 		assert.equal(events[0].args.workerpoolorder.workerpool,        workerpoolorder.workerpool       );
 		assert.equal(events[0].args.workerpoolorder.workerpoolprice,   workerpoolorder.workerpoolprice  );
 		assert.equal(events[0].args.workerpoolorder.volume,            workerpoolorder.volume           );
@@ -389,10 +387,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastRequestOrder", async () => {
-		txMined = await RelayInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, RelayInstance.address, "BroadcastRequestOrder");
+		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastRequestOrder");
 		assert.equal(events[0].args.requestorder.app,                requestorder.app               );
 		assert.equal(events[0].args.requestorder.appmaxprice,        requestorder.appmaxprice       );
 		assert.equal(events[0].args.requestorder.dataset,            requestorder.dataset           );

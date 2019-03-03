@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
 import "../../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
@@ -101,19 +101,19 @@ library IexecODBLibOrders
 		bytes32 versionHash = keccak256(bytes(_domain.version));
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_domain, 32))
-			let temp2 := mload(add(_domain,  0))
-			let temp3 := mload(add(_domain, 32))
+			let temp1 := mload(sub(_domain, 0x20))
+			let temp2 := mload(add(_domain, 0x00))
+			let temp3 := mload(add(_domain, 0x20))
 			// Write typeHash and sub-hashes
-			mstore(sub(_domain, 32),    typeHash)
-			mstore(add(_domain,  0),    nameHash)
-			mstore(add(_domain, 32), versionHash)
+			mstore(sub(_domain, 0x20),    typeHash)
+			mstore(add(_domain, 0x00),    nameHash)
+			mstore(add(_domain, 0x20), versionHash)
 			// Compute hash
-			domainhash := keccak256(sub(_domain, 32), 160) // 160 = 32 + 128
+			domainhash := keccak256(sub(_domain, 0x20), 0xA0) // 160 = 32 + 128
 			// Restore memory
-			mstore(sub(_domain, 32), temp1)
-			mstore(add(_domain,  0), temp2)
-			mstore(add(_domain, 32), temp3)
+			mstore(sub(_domain, 0x20), temp1)
+			mstore(add(_domain, 0x00), temp2)
+			mstore(add(_domain, 0x20), temp3)
 		}
 	}
 	function hash(AppOrder memory _apporder)
@@ -138,13 +138,13 @@ library IexecODBLibOrders
 		bytes32 typeHash = APPORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_apporder, 32))
+			let temp1 := mload(sub(_apporder, 0x20))
 			// Write typeHash and sub-hashes
-			mstore(sub(_apporder, 32), typeHash)
+			mstore(sub(_apporder, 0x20), typeHash)
 			// Compute hash
-			apphash := keccak256(sub(_apporder, 32), 288) // 288 = 32 + 256
+			apphash := keccak256(sub(_apporder, 0x20), 0x120) // 288 = 32 + 256
 			// Restore memory
-			mstore(sub(_apporder, 32), temp1)
+			mstore(sub(_apporder, 0x20), temp1)
 		}
 	}
 	function hash(DatasetOrder memory _datasetorder)
@@ -169,13 +169,13 @@ library IexecODBLibOrders
 		bytes32 typeHash = DATASETORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_datasetorder, 32))
+			let temp1 := mload(sub(_datasetorder, 0x20))
 			// Write typeHash and sub-hashes
-			mstore(sub(_datasetorder, 32), typeHash)
+			mstore(sub(_datasetorder, 0x20), typeHash)
 			// Compute hash
-			datasethash := keccak256(sub(_datasetorder, 32), 288) // 288 = 32 + 256
+			datasethash := keccak256(sub(_datasetorder, 0x20), 0x120) // 288 = 32 + 256
 			// Restore memory
-			mstore(sub(_datasetorder, 32), temp1)
+			mstore(sub(_datasetorder, 0x20), temp1)
 		}
 	}
 	function hash(WorkerpoolOrder memory _workerpoolorder)
@@ -202,13 +202,13 @@ library IexecODBLibOrders
 		bytes32 typeHash = WORKERPOOLORDER_TYPEHASH;
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_workerpoolorder, 32))
+			let temp1 := mload(sub(_workerpoolorder, 0x20))
 			// Write typeHash and sub-hashes
-			mstore(sub(_workerpoolorder, 32), typeHash)
+			mstore(sub(_workerpoolorder, 0x20), typeHash)
 			// Compute hash
-			workerpoolhash := keccak256(sub(_workerpoolorder, 32), 352) // 352 = 32 + 320
+			workerpoolhash := keccak256(sub(_workerpoolorder, 0x20), 0x160) // 352 = 32 + 320
 			// Restore memory
-			mstore(sub(_workerpoolorder, 32), temp1)
+			mstore(sub(_workerpoolorder, 0x20), temp1)
 		}
 	}
 	function hash(RequestOrder memory _requestorder)
@@ -243,16 +243,16 @@ library IexecODBLibOrders
 		bytes32 paramsHash = keccak256(bytes(_requestorder.params));
 		assembly {
 			// Back up select memory
-			let temp1 := mload(sub(_requestorder,  32))
-			let temp2 := mload(add(_requestorder, 416))
+			let temp1 := mload(sub(_requestorder, 0x020))
+			let temp2 := mload(add(_requestorder, 0x1A0))
 			// Write typeHash and sub-hashes
-			mstore(sub(_requestorder,  32), typeHash)
-			mstore(add(_requestorder, 416), paramsHash)
+			mstore(sub(_requestorder, 0x020), typeHash)
+			mstore(add(_requestorder, 0x1A0), paramsHash)
 			// Compute hash
-			requesthash := keccak256(sub(_requestorder, 32), 512) // 512 = 32 + 480
+			requesthash := keccak256(sub(_requestorder, 0x20), 0x200) // 512 = 32 + 480
 			// Restore memory
-			mstore(sub(_requestorder,  32), temp1)
-			mstore(add(_requestorder, 416), temp2)
+			mstore(sub(_requestorder, 0x020), temp1)
+			mstore(add(_requestorder, 0x1A0), temp2)
 		}
 	}
 

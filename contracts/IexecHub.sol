@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
@@ -7,7 +7,6 @@ import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 import "./libs/IexecODBLibCore.sol";
-import "./libs/IexecODBLibOrders.sol";
 import "./registries/RegistryBase.sol";
 import "./CategoryManager.sol";
 import "./IexecClerk.sol";
@@ -19,8 +18,7 @@ import "./IexecHubABILegacy.sol";
 
 contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 {
-	using SafeMath          for uint256;
-	using IexecODBLibOrders for *;
+	using SafeMath for uint256;
 
 	/***************************************************************************
 	 *                                Constants                                *
@@ -359,7 +357,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 		/**
 		 * Stake and reward management
 		 */
-		iexecclerk.successWork(task.dealid);
+		iexecclerk.successWork(task.dealid, _taskid);
 		distributeRewards(_taskid);
 
 		/**
@@ -429,7 +427,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward);
+				iexecclerk.unlockAndRewardForContribution(task.dealid, worker, workerReward, _taskid);
 
 				// Only reward if replication happened
 				if (task.contributors.length > 1)
@@ -446,7 +444,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 			else // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
 				// No Reward
-				iexecclerk.seizeContribution(task.dealid, worker);
+				iexecclerk.seizeContribution(task.dealid, worker, _taskid);
 
 				// Always punish bad contributors
 				{
@@ -462,7 +460,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 			}
 		}
 		// totalReward now contains the scheduler share
-		iexecclerk.rewardForScheduling(task.dealid, totalReward);
+		iexecclerk.rewardForScheduling(task.dealid, totalReward, _taskid);
 	}
 
 	function claim(
@@ -479,7 +477,7 @@ contract IexecHub is CategoryManager, IOracle, ECDSA, IexecHubABILegacy
 		/**
 		 * Stake management
 		 */
-		iexecclerk.failedWork(task.dealid);
+		iexecclerk.failedWork(task.dealid, _taskid);
 		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
 			address worker = task.contributors[i];

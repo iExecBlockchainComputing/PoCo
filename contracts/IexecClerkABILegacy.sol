@@ -32,19 +32,19 @@ contract IexecClerkABILegacy
 	function unlockContribution(bytes32 _dealid, address _worker)
 	external;
 
-	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount)
+	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount, bytes32 _taskid)
 	external;
 
-	function seizeContribution(bytes32 _dealid, address _worker)
+	function seizeContribution(bytes32 _dealid, address _worker, bytes32 _taskid)
 	external;
 
-	function rewardForScheduling(bytes32 _dealid, uint256 _amount)
+	function rewardForScheduling(bytes32 _dealid, uint256 _amount, bytes32 _taskid)
 	external;
 
-	function successWork(bytes32 _dealid)
+	function successWork(bytes32 _dealid, bytes32 _taskid)
 	external;
 
-	function failedWork(bytes32 _dealid)
+	function failedWork(bytes32 _dealid, bytes32 _taskid)
 	external;
 
 

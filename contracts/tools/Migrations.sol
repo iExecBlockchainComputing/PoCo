@@ -1,21 +1,16 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 
-import "./Ownable.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract Migrations
+contract Migrations is Ownable
 {
-	address public owner;
 	uint256 public lastCompletedMigration;
 
-	modifier onlyOwner() {
-		require (msg.sender == owner);
-		_;
+	constructor()
+	public
+	{
 	}
 
-	constructor() public {
-		owner = msg.sender;
-	}
-	
 	function setCompleted(uint completed) public onlyOwner
 	{
 		lastCompletedMigration = completed;
@@ -25,9 +20,5 @@ contract Migrations
 	{
 		Migrations upgraded = Migrations(newAddress);
 		upgraded.setCompleted(lastCompletedMigration);
-	}
-
-	function transferOwnership(address newOwner) public onlyOwner {
-		if (newOwner != address(0)) owner = newOwner;
 	}
 }

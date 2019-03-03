@@ -1,14 +1,12 @@
-var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecODBLibOrders  = artifacts.require("./IexecODBLibOrders.sol");
-// var ECDSA              = artifacts.require("./ECDSA.sol");
-var IexecHub           = artifacts.require("./IexecHub.sol");
-var IexecClerk         = artifacts.require("./IexecClerk.sol");
-var AppRegistry        = artifacts.require("./AppRegistry.sol");
-var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
-var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
-var Relay              = artifacts.require("./Relay.sol");
-var Broker             = artifacts.require("./Broker.sol");
-var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
+var RLC                = artifacts.require("rlc-faucet-contract/RLC");
+var IexecODBLibOrders  = artifacts.require("IexecODBLibOrders");
+var IexecHub           = artifacts.require("IexecHub");
+var IexecClerk         = artifacts.require("IexecClerk");
+var AppRegistry        = artifacts.require("AppRegistry");
+var DatasetRegistry    = artifacts.require("DatasetRegistry");
+var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
+var Broker             = artifacts.require("Broker");
+var SMSDirectory       = artifacts.require("SMSDirectory");
 
 const fs = require("fs-extra");
 const BN = require('bn.js');
@@ -111,13 +109,10 @@ module.exports = async function(deployer, network, accounts)
 	// experimental, do not deploy
 	if (chaintype == "private")
 	{
-		await deployer.deploy(Relay);
 		await deployer.deploy(Broker, IexecClerkInstance.address);
 		await deployer.deploy(SMSDirectory);
-		RelayInstance        = await Relay.deployed();
 		BrokerInstance       = await Broker.deployed();
 		SMSDirectoryInstance = await SMSDirectory.deployed();
-		console.log("Relay deployed at address: " + RelayInstance.address);
 		console.log("Broker deployed at address: " + BrokerInstance.address);
 		console.log("SMSDirectory deployed at address: " + SMSDirectoryInstance.address);
 	}

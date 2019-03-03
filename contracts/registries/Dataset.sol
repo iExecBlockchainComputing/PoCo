@@ -1,9 +1,9 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import '../tools/Ownable.sol';
+import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract Dataset is OwnableImmutable
+contract Dataset is Ownable
 {
 	/**
 	 * Members
@@ -21,8 +21,8 @@ contract Dataset is OwnableImmutable
 		bytes   memory _datasetMultiaddr,
 		bytes32        _datasetChecksum)
 	public
-	OwnableImmutable(_datasetOwner)
 	{
+		transferOwnership(_datasetOwner);
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;

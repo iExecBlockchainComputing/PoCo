@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
@@ -73,7 +73,7 @@ contract Broker
 			_workerpoolorder,
 			_requestorder);
 
-		address payer = Workerpool(_workerpoolorder.workerpool).m_owner();
+		address payer = Workerpool(_workerpoolorder.workerpool).owner();
 		uint256 price = m_preferences[payer].reward + tx.gasprice.min(m_preferences[payer].maxgasprice) * (87000 + gasBefore - gasleft());
 		m_balance[payer] = m_balance[payer].sub(price);
 		msg.sender.transfer(price);

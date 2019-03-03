@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
@@ -52,7 +51,6 @@ contract('SMSDirectory', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var RelayInstance              = null;
 	var BrokerInstance             = null;
 	var SMSDirectoryInstance       = null;
 
@@ -93,7 +91,6 @@ contract('SMSDirectory', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		RelayInstance              = await Relay.deployed();
 		BrokerInstance             = await Broker.deployed();
 		SMSDirectoryInstance       = await SMSDirectory.deployed();
 

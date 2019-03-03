@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Relay              = artifacts.require("./Relay.sol");
 var Broker             = artifacts.require("./Broker.sol");
 
 var IexecHubABILegacy   = artifacts.require("./IexecHubABILegacy.sol");
@@ -43,7 +42,6 @@ contract('IexecHub', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var RelayInstance              = null;
 	var BrokerInstance             = null;
 
 	var AppInstance        = null;
@@ -73,8 +71,6 @@ contract('IexecHub', async (accounts) => {
 		DataRegistryInstance = "0x57D329161189f3DD3d032C76b7C98397FEEcC8ea";
 		DappRegistryInstance = "0x2a748e99C4116c29F3f84aad7c3984567287b5F3";
 		PoolRegistryInstance = "0x9aF85b827Dd74aAc5cB6DeA0b0ED97A73c6FCCc7";
-		RelayInstance        = "0x81Ce57EF7f6d129A38D6Cd13cBCf006732550059";
-		BrokerInstance       = "0x24EeD66326c190950F9d9581682d08F35b6C7ed3";
 		*/
 		// IexecClerkInstance         = await IexecClerk.at("0x8BE59dA9Bf70e75Aa56bF29A3e55d22e882F91bA");
 		IexecClerkInstance         = await IexecClerk.at("0x537C423A919110BcC8C05ecBDa39Ba8d30192061");

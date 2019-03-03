@@ -1,10 +1,11 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import "./libs/IexecODBLibCore.sol";
-import "./tools/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract CategoryManager is OwnableMutable
+import "./libs/IexecODBLibCore.sol";
+
+contract CategoryManager is Ownable
 {
 	/**
 	 * Content
