@@ -26,12 +26,14 @@ contract App is Ownable
 		bytes   memory _appMREnclave)
 	public
 	{
-		transferOwnership(_appOwner);
+		_transferOwnership(_appOwner);
 		m_appName      = _appName;
 		m_appType      = _appType;
 		m_appMultiaddr = _appMultiaddr;
 		m_appChecksum  = _appChecksum;
 		m_appMREnclave = _appMREnclave;
 	}
+
+	function transferOwnership(address) public { require(false, "disabled"); }
 
 }
