@@ -38,7 +38,7 @@ contract PubKeyDirectory
 		assembly { size := extcodesize(_contract) }
 		require(size > 0);
 		// Check operation is performed by the owner
-		require(Ownable(_contract).owner() == msg.sender);
+		require(_contract == msg.sender || Ownable(_contract).owner() == msg.sender);
 		// Store public key
 		m_pubkeys[_contract] = _key;
 	}
