@@ -49,6 +49,6 @@ contract Workerpool is Ownable
 		m_schedulerRewardRatioPolicy = _newSchedulerRewardRatioPolicy;
 	}
 
-	function transferOwnership(address) public { require(false, "disabled"); }
+	function transferOwnership(address) public { revert("disabled"); }
 
 }

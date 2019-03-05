@@ -147,6 +147,14 @@ module.exports = {
 			requestorder.salt,
 		]));
 	},
+	typedStructHash: function(hash)
+	{
+		return web3.utils.soliditySha3(
+			{ t: 'bytes',   v: "0x1901"                    },
+			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
+			{ t: 'bytes32', v: hash                        },
+		)
+	},
 	/* NOT EIP712 compliant */
 	authorizationHash: function(authorization)
 	{
@@ -156,6 +164,7 @@ module.exports = {
 			{ t: 'address', v: authorization.enclave },
 		);
 	},
+	/* NOT EIP712 compliant */
 	contributionHash: function(result)
 	{
 		return web3.utils.soliditySha3(
@@ -167,11 +176,7 @@ module.exports = {
 	/* signature schemes */
 	signStruct: function(struct, hash, key)
 	{
-		sig = ethUtil.ecsign(Buffer.from(web3.utils.soliditySha3(
-			{ t: 'bytes',   v: "0x1901"                    },
-			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
-			{ t: 'bytes32', v: hash                        },
-		).substr(2), 'hex'), key);
+		sig = ethUtil.ecsign(Buffer.from(this.typedStructHash(hash).substr(2), 'hex'), key);
 		struct.sign = {
 			r: ethUtil.bufferToHex(sig.r),
 			s: ethUtil.bufferToHex(sig.s),
@@ -179,6 +184,7 @@ module.exports = {
 		}
 		return struct;
 	},
+
 	signMessage: function(obj, hash, wallet)
 	{
 		return web3.eth.sign(hash, wallet).then(function(signature) {

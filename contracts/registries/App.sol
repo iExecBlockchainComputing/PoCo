@@ -34,6 +34,6 @@ contract App is Ownable
 		m_appMREnclave = _appMREnclave;
 	}
 
-	function transferOwnership(address) public { require(false, "disabled"); }
+	function transferOwnership(address) public { revert("disabled"); }
 
 }

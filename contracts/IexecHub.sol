@@ -1,17 +1,16 @@
 pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
 import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
-import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 import "./libs/IexecODBLibCore.sol";
 import "./registries/RegistryBase.sol";
 import "./CategoryManager.sol";
+import "./SignatureVerifier.sol";
 import "./IexecClerk.sol";
 
-contract IexecHub is CategoryManager, IOracle, ECDSA
+contract IexecHub is CategoryManager, IOracle, SignatureVerifier
 {
 	using SafeMath for uint256;
 
@@ -128,15 +127,6 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 	}
 
 	/***************************************************************************
-	 *                       Hashing and signature tools                       *
-	 ***************************************************************************/
-	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
-	internal view returns (bool valid)
-	{
-		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
-	}
-
-	/***************************************************************************
 	 *                            Consensus methods                            *
 	 ***************************************************************************/
 	function initialize(bytes32 _dealid, uint256 idx)
@@ -185,37 +175,31 @@ contract IexecHub is CategoryManager, IOracle, ECDSA
 		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		require(checkIdentity(
+		require(verifySignature(
 			deal.workerpool.owner,
-			recover(
-				toEthSignedMessageHash(
-					keccak256(abi.encodePacked(
-						msg.sender,
-						_taskid,
-						_enclaveChallenge
-					))
-				),
-				_workerpoolSign
+			toEthSignedMessageHash(
+				keccak256(abi.encodePacked(
+					msg.sender,
+					_taskid,
+					_enclaveChallenge
+				))
 			),
-			4
+			_workerpoolSign
 		));
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
-		require(_enclaveChallenge == address(0) || checkIdentity(
+		require(_enclaveChallenge == address(0) || verifySignature(
 			_enclaveChallenge,
-			recover(
-				toEthSignedMessageHash(
-					keccak256(abi.encodePacked(
-						_resultHash,
-						_resultSeal
-					))
-				),
-				_enclaveSign
+			toEthSignedMessageHash(
+				keccak256(abi.encodePacked(
+					_resultHash,
+					_resultSeal
+				))
 			),
-			4
+			_enclaveSign
 		));
 
 		// Update contribution entry

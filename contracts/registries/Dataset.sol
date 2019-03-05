@@ -28,6 +28,6 @@ contract Dataset is Ownable
 		m_datasetChecksum  = _datasetChecksum;
 	}
 
-	function transferOwnership(address) public { require(false, "disabled"); }
+	function transferOwnership(address) public { revert("disabled"); }
 
 }
