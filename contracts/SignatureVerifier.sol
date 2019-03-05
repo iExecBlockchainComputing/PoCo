@@ -1,7 +1,7 @@
 pragma solidity ^0.5.3;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
+import "../node_modules/iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 contract SignatureVerifier is ECDSA
@@ -9,7 +9,7 @@ contract SignatureVerifier is ECDSA
 	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
 	internal view returns (bool valid)
 	{
-		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
+		return _identity == _candidate || IERC734(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
 	}
 
 	// internal ?
