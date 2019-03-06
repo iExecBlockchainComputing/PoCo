@@ -1,7 +1,8 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
+import "../node_modules/iexec-solidity/contracts/ERC1271/IERC1271.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 contract SignatureVerifier is ECDSA
@@ -19,15 +20,7 @@ contract SignatureVerifier is ECDSA
 		ECDSA.signature memory _signature)
 	public view returns (bool)
 	{
-		return checkIdentity(
-			_identity,
-			recover(_hash, _signature),
-			2 // canceling an order requires ACTION (2) from the owning identity, signature with 2 or 4?
-		);
-
-		// CHANGE FOR:
-		// bytes32 structhash = toEthTypedStructHash(_hash, EIP712DOMAIN_SEPARATOR);
-		// return idendity == recover(structHash, _signature) || IERC1271(identity).isValidSignature(structHash, abi.encodePacked(_signature.r, _signature.s, _signature.v)) == 0x20c13b0b;
+		return _identity == recover(_hash, _signature) || IERC1271(_identity).isValidSignature(_hash, abi.encodePacked(_signature.r, _signature.s, _signature.v));
 	}
 
 }

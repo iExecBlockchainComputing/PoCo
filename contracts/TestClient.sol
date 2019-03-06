@@ -1,7 +1,6 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
-
 
 contract TestClient is IOracleConsumer
 {
