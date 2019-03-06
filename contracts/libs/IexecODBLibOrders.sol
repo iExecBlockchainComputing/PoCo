@@ -1,8 +1,6 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-// import "../../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
-
 library IexecODBLibOrders
 {
 	// bytes32 public constant    EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
@@ -34,7 +32,6 @@ library IexecODBLibOrders
 		address requesterrestrict;
 		bytes32 salt;
 		bytes   sign;
-		// ECDSA.signature sign;
 	}
 	struct DatasetOrder
 	{
@@ -47,7 +44,6 @@ library IexecODBLibOrders
 		address requesterrestrict;
 		bytes32 salt;
 		bytes   sign;
-		// ECDSA.signature sign;
 	}
 	struct WorkerpoolOrder
 	{
@@ -62,7 +58,6 @@ library IexecODBLibOrders
 		address requesterrestrict;
 		bytes32 salt;
 		bytes   sign;
-		// ECDSA.signature sign;
 	}
 	struct RequestOrder
 	{
@@ -82,7 +77,6 @@ library IexecODBLibOrders
 		string  params;
 		bytes32 salt;
 		bytes   sign;
-		// ECDSA.signature sign;
 	}
 
 	function hash(EIP712Domain memory _domain)

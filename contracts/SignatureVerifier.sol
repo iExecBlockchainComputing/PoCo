@@ -14,16 +14,6 @@ contract SignatureVerifier is ECDSA
 	}
 
 	// internal ?
-	// function verifySignature(
-	// 	address                _identity,
-	// 	bytes32                _hash,
-	// 	ECDSA.signature memory _signature)
-	// public view returns (bool)
-	// {
-	// 	return recoverCheck(_identity, _hash, _signature) || IERC1271(_identity).isValidSignature(_hash, abi.encodePacked(_signature.r, _signature.s, _signature.v));
-	// }
-
-	// internal ?
 	function verifySignature(
 		address      _identity,
 		bytes32      _hash,
@@ -32,14 +22,6 @@ contract SignatureVerifier is ECDSA
 	{
 		return recoverCheck(_identity, _hash, _signature) || IERC1271(_identity).isValidSignature(_hash, _signature);
 	}
-
-	// recoverCheck does not revert if signature has invalid format
-	// function recoverCheck(address candidate, bytes32 hash, signature memory sign)
-	// internal pure returns (bool)
-	// {
-	// 	if (sign.v != 27 && sign.v != 28) return false;
-	// 	return candidate == ecrecover(hash, sign.v, sign.r, sign.s);
-	// }
 
 	// recoverCheck does not revert if signature has invalid format
 	function recoverCheck(address candidate, bytes32 hash, bytes memory sign)

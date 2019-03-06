@@ -164,8 +164,6 @@ contract IexecHub is CategoryManager, IOracle, SignatureVerifier
 		address      _enclaveChallenge,
 		bytes memory _enclaveSign,
 		bytes memory _workerpoolSign)
-		// ECDSA.signature memory _enclaveSign,
-		// ECDSA.signature memory _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
