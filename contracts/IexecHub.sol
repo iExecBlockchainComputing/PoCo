@@ -158,12 +158,14 @@ contract IexecHub is CategoryManager, IOracle, SignatureVerifier
 
 	// TODO: make external w/ calldata
 	function contribute(
-		bytes32                _taskid,
-		bytes32                _resultHash,
-		bytes32                _resultSeal,
-		address                _enclaveChallenge,
-		ECDSA.signature memory _enclaveSign,
-		ECDSA.signature memory _workerpoolSign)
+		bytes32      _taskid,
+		bytes32      _resultHash,
+		bytes32      _resultSeal,
+		address      _enclaveChallenge,
+		bytes memory _enclaveSign,
+		bytes memory _workerpoolSign)
+		// ECDSA.signature memory _enclaveSign,
+		// ECDSA.signature memory _workerpoolSign)
 	public
 	{
 		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];

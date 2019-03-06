@@ -177,22 +177,18 @@ module.exports = {
 	signStruct: function(struct, hash, key)
 	{
 		sig = ethUtil.ecsign(Buffer.from(this.typedStructHash(hash).substr(2), 'hex'), key);
-		struct.sign = {
-			r: ethUtil.bufferToHex(sig.r),
-			s: ethUtil.bufferToHex(sig.s),
-			v: sig.v,
-		}
+		struct.sign = '0x' +
+		[ ethUtil.bufferToHex(sig.r).substr(2)
+		, ethUtil.bufferToHex(sig.s).substr(2)
+		, ethUtil.bufferToHex(sig.v).substr(2)
+		].join('');
 		return struct;
 	},
 
 	signMessage: function(obj, hash, wallet)
 	{
 		return web3.eth.sign(hash, wallet).then(function(signature) {
-			obj.sign = {
-				r:             "0x" + signature.substr( 2, 64),
-				s:             "0x" + signature.substr(66, 64),
-				v: 27 + Number("0x" + signature.substr(    -2)),
-			};
+			obj.sign = signature;
 			return obj
 		});
 	},

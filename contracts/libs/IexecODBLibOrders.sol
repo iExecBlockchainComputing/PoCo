@@ -1,7 +1,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "../../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
+// import "../../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 library IexecODBLibOrders
 {
@@ -33,7 +33,8 @@ library IexecODBLibOrders
 		address workerpoolrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		ECDSA.signature sign;
+		bytes   sign;
+		// ECDSA.signature sign;
 	}
 	struct DatasetOrder
 	{
@@ -45,7 +46,8 @@ library IexecODBLibOrders
 		address workerpoolrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		ECDSA.signature sign;
+		bytes   sign;
+		// ECDSA.signature sign;
 	}
 	struct WorkerpoolOrder
 	{
@@ -59,7 +61,8 @@ library IexecODBLibOrders
 		address datasetrestrict;
 		address requesterrestrict;
 		bytes32 salt;
-		ECDSA.signature sign;
+		bytes   sign;
+		// ECDSA.signature sign;
 	}
 	struct RequestOrder
 	{
@@ -78,7 +81,8 @@ library IexecODBLibOrders
 		address callback;
 		string  params;
 		bytes32 salt;
-		ECDSA.signature sign;
+		bytes   sign;
+		// ECDSA.signature sign;
 	}
 
 	function hash(EIP712Domain memory _domain)

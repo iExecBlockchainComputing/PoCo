@@ -79,16 +79,14 @@ contract('IexecClerk', async (accounts) => {
 		entry = { hash: web3.utils.soliditySha3({ t: 'bytes32', v: web3.utils.randomHex(32) }) };
 		odbtools.signStruct(entry, entry.hash, wallets.addressToPrivate(iexecAdmin));
 
-		assert.isFalse      (await IexecClerkInstance.viewPresigned(entry.hash),                                                                                                                                        "Error with the validation of signatures");
-		assert.isTrue       (await IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(user,                   odbtools.typedStructHash(entry.hash), { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(constants.NULL.ADDRESS, odbtools.typedStructHash(entry.hash), { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             web3.utils.randomHex(32),             { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             constants.NULL.BYTES32,               { v: entry.sign.v, r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), { v: 0,            r: entry.sign.r,             s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), { v: entry.sign.v, r: web3.utils.randomHex(32), s: entry.sign.s             }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), { v: entry.sign.v, r: entry.sign.r,             s: web3.utils.randomHex(32) }, {}), "Error with the validation of signatures");
-		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), constants.NULL.SIGNATURE,                                                      {}), "Error with the validation of signatures");
+		assert.isFalse      (await IexecClerkInstance.viewPresigned(entry.hash),                                                                                   "Error with the validation of signatures");
+		assert.isTrue       (await IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), entry.sign,               {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(user,                   odbtools.typedStructHash(entry.hash), entry.sign,               {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(constants.NULL.ADDRESS, odbtools.typedStructHash(entry.hash), entry.sign,               {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             web3.utils.randomHex(32),             entry.sign,               {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             constants.NULL.BYTES32,               entry.sign,               {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), web3.utils.randomHex(65), {}), "Error with the validation of signatures");
+		await shouldFail.reverting(IexecClerkInstance.verifySignature(iexecAdmin,             odbtools.typedStructHash(entry.hash), constants.NULL.SIGNATURE, {}), "Error with the validation of signatures");
 	});
 
 
