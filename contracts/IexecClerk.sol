@@ -1,9 +1,7 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/ERC725_IdentityProxy/IERC725.sol";
 import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
-import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
@@ -12,14 +10,19 @@ import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
 import "./Escrow.sol";
 import "./Relay.sol";
+import "./SignatureVerifier.sol";
 import "./IexecHubAccessor.sol";
 
+<<<<<<< HEAD
 /**
  * /!\ TEMPORARY LEGACY /!\
  */
 import "./IexecClerkABILegacy.sol";
 
 contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILegacy
+=======
+contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
+>>>>>>> next
 {
 	using SafeMath          for uint256;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
@@ -34,6 +37,9 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	uint256 public constant WORKERPOOL_STAKE_RATIO = 30;
 	uint256 public constant KITTY_RATIO            = 10;
 	uint256 public constant KITTY_MIN              = 1000000000; // TODO: 1RLC ?
+
+	// For authorizations
+	uint256 public constant GROUPMEMBER_PURPOSE    = 4;
 
 	/***************************************************************************
 	 *                            EIP712 signature                             *
@@ -102,29 +108,6 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	external view returns (bool presigned)
 	{
 		return m_presigned[_id];
-	}
-
-	/***************************************************************************
-	 *                       Hashing and signature tools                       *
-	 ***************************************************************************/
-	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
-	internal view returns (bool valid)
-	{
-		return _identity == _candidate || IERC725(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || Identity contract
-	}
-
-	// internal ?
-	function verifySignature(
-		address                _identity,
-		bytes32                _hash,
-		ECDSA.signature memory _signature)
-	public view returns (bool)
-	{
-		return checkIdentity(
-			_identity,
-			recover(toEthTypedStructHash(_hash, EIP712DOMAIN_SEPARATOR), _signature),
-			2 // canceling an order requires ACTION (2) from the owning identity, signature with 2 or 4?
-		);
 	}
 
 	/***************************************************************************
@@ -204,16 +187,16 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
 		require(_requestorder.dataset == _datasetorder.dataset);
-		require(_requestorder.workerpool           == address(0) || checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, 4)); // requestorder.workerpool is a restriction
-		require(_apporder.datasetrestrict          == address(0) || checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       4));
-		require(_apporder.workerpoolrestrict       == address(0) || checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, 4));
-		require(_apporder.requesterrestrict        == address(0) || checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     4));
-		require(_datasetorder.apprestrict          == address(0) || checkIdentity(_datasetorder.apprestrict,          _apporder.app,               4));
-		require(_datasetorder.workerpoolrestrict   == address(0) || checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, 4));
-		require(_datasetorder.requesterrestrict    == address(0) || checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     4));
-		require(_workerpoolorder.apprestrict       == address(0) || checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               4));
-		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       4));
-		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     4));
+		require(_requestorder.workerpool           == address(0) || checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE)); // requestorder.workerpool is a restriction
+		require(_apporder.datasetrestrict          == address(0) || checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
+		require(_apporder.workerpoolrestrict       == address(0) || checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE));
+		require(_apporder.requesterrestrict        == address(0) || checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     GROUPMEMBER_PURPOSE));
+		require(_datasetorder.apprestrict          == address(0) || checkIdentity(_datasetorder.apprestrict,          _apporder.app,               GROUPMEMBER_PURPOSE));
+		require(_datasetorder.workerpoolrestrict   == address(0) || checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE));
+		require(_datasetorder.requesterrestrict    == address(0) || checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     GROUPMEMBER_PURPOSE));
+		require(_workerpoolorder.apprestrict       == address(0) || checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               GROUPMEMBER_PURPOSE));
+		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
+		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE));
 
 		require(iexechub.checkResources(_apporder.app, _datasetorder.dataset, _workerpoolorder.workerpool));
 
@@ -226,24 +209,24 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 		// app
 		ids.appHash  = _apporder.hash();
 		ids.appOwner = App(_apporder.app).owner();
-		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
+		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, toEthTypedStructHash(ids.appHash, EIP712DOMAIN_SEPARATOR), _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash();
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
-			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, toEthTypedStructHash(ids.datasetHash, EIP712DOMAIN_SEPARATOR), _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash();
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
-		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, toEthTypedStructHash(ids.workerpoolHash, EIP712DOMAIN_SEPARATOR), _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash();
-		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, toEthTypedStructHash(ids.requestHash, EIP712DOMAIN_SEPARATOR), _requestorder.sign));
 
 		/**
 		 * Check availability
@@ -339,7 +322,6 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	{
 		bytes32 dapporderHash = _apporder.hash();
 		require(msg.sender == App(_apporder.app).owner());
-		// require(verify(msg.sender, dapporderHash, _apporder.sign));
 		m_consumed[dapporderHash] = _apporder.volume;
 		emit ClosedAppOrder(dapporderHash);
 		return true;
@@ -351,7 +333,6 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	{
 		bytes32 dataorderHash = _datasetorder.hash();
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
-		// require(verify(msg.sender, dataorderHash, _datasetorder.sign));
 		m_consumed[dataorderHash] = _datasetorder.volume;
 		emit ClosedDatasetOrder(dataorderHash);
 		return true;
@@ -363,7 +344,6 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash();
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
-		// require(verify(msg.sender, poolorderHash, _workerpoolorder.sign));
 		m_consumed[poolorderHash] = _workerpoolorder.volume;
 		emit ClosedWorkerpoolOrder(poolorderHash);
 		return true;
@@ -375,7 +355,6 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILega
 	{
 		bytes32 requestorderHash = _requestorder.hash();
 		require(msg.sender == _requestorder.requester);
-		// require(verify(msg.sender, requestorderHash, _requestorder.sign));
 		m_consumed[requestorderHash] = _requestorder.volume;
 		emit ClosedRequestOrder(requestorderHash);
 		return true;

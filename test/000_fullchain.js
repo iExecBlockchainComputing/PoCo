@@ -250,7 +250,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				appProvider,
-				odbtools.AppOrderStructHash(apporder),
+				odbtools.typedStructHash(odbtools.AppOrderStructHash(apporder)),
 				apporder.sign,
 				{}
 			),
@@ -279,7 +279,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
-				odbtools.DatasetOrderStructHash(datasetorder),
+				odbtools.typedStructHash(odbtools.DatasetOrderStructHash(datasetorder)),
 				datasetorder.sign,
 				{}
 			),
@@ -310,7 +310,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				scheduler,
-				odbtools.WorkerpoolOrderStructHash(workerpoolorder),
+				odbtools.typedStructHash(odbtools.WorkerpoolOrderStructHash(workerpoolorder)),
 				workerpoolorder.sign,
 				{}
 			),
@@ -346,7 +346,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				user,
-				odbtools.RequestOrderStructHash(requestorder),
+				odbtools.typedStructHash(odbtools.RequestOrderStructHash(requestorder)),
 				requestorder.sign,
 				{}
 			),
