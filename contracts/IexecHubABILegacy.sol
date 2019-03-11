@@ -43,8 +43,19 @@ contract IexecHubABILegacy
 	function resultFor(bytes32 id)
 	external view returns (bytes memory);
 
-	function initialize(bytes32 _dealid, uint256 idx)
+	function initialize(
+		bytes32 _dealid,
+		uint256 idx)
 	public returns (bytes32);
+
+	function contribute(
+		bytes32      _taskid,
+		bytes32      _resultHash,
+		bytes32      _resultSeal,
+		address      _enclaveChallenge,
+		bytes memory _enclaveSign,
+		bytes memory _workerpoolSign)
+	public;
 
 	function reveal(
 		bytes32 _taskid,
@@ -101,19 +112,6 @@ contract IexecHubABILegacy
 	, bytes32
 	, address
 	);
-
-	function contributeABILegacy(
-		bytes32 _taskid,
-		bytes32 _resultHash,
-		bytes32 _resultSeal,
-		address _enclaveChallenge,
-		uint8   _enclaveSign_v,
-		bytes32 _enclaveSign_r,
-		bytes32 _enclaveSign_s,
-		uint8   _poolSign_v,
-		bytes32 _poolSign_r,
-		bytes32 _poolSign_s)
-	external;
 
 	function viewCategoryABILegacy(uint256 _catid)
 	external view returns (string memory, string memory, uint256);

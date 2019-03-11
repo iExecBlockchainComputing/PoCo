@@ -244,7 +244,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstanceFull.verifySignature(
 				appProvider,
-				odbtools.AppOrderStructHash(apporder),
+				odbtools.typedStructHash(odbtools.AppOrderStructHash(apporder)),
 				apporder.sign,
 				{}
 			),
@@ -273,7 +273,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstanceFull.verifySignature(
 				datasetProvider,
-				odbtools.DatasetOrderStructHash(datasetorder),
+				odbtools.typedStructHash(odbtools.DatasetOrderStructHash(datasetorder)),
 				datasetorder.sign,
 				{}
 			),
@@ -304,7 +304,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstanceFull.verifySignature(
 				scheduler,
-				odbtools.WorkerpoolOrderStructHash(workerpoolorder),
+				odbtools.typedStructHash(odbtools.WorkerpoolOrderStructHash(workerpoolorder)),
 				workerpoolorder.sign,
 				{}
 			),
@@ -340,7 +340,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstanceFull.verifySignature(
 				user,
-				odbtools.RequestOrderStructHash(requestorder),
+				odbtools.typedStructHash(odbtools.RequestOrderStructHash(requestorder)),
 				requestorder.sign,
 				{}
 			),
@@ -571,17 +571,13 @@ contract('IexecHub', async (accounts) => {
 	it(">> signed contribute", async () => {
 		for (w of workers)
 		{
-			txMined = await IexecHubInstance.contributeABILegacy(
+			txMined = await IexecHubInstance.contribute(
 				authorizations[w.address].taskid, // task (authorization)
 				results[w.address].hash,          // common    (result)
 				results[w.address].seal,          // unique    (result)
 				w.enclave,                        // address   (enclave)
-				results[w.address].sign.v,        // signature (enclave)
-				results[w.address].sign.r,        // signature (enclave)
-				results[w.address].sign.s,        // signature (enclave)
-				authorizations[w.address].sign.v, // signature (authorization)
-				authorizations[w.address].sign.r, // signature (authorization)
-				authorizations[w.address].sign.s, // signature (authorization)
+				results[w.address].sign,          // signature (enclave)
+				authorizations[w.address].sign,   // signature (authorization)
 				{ from: w.address }
 			);
 

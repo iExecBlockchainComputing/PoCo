@@ -13,16 +13,12 @@ import "./Relay.sol";
 import "./SignatureVerifier.sol";
 import "./IexecHubAccessor.sol";
 
-<<<<<<< HEAD
 /**
  * /!\ TEMPORARY LEGACY /!\
  */
 import "./IexecClerkABILegacy.sol";
 
-contract IexecClerk is Escrow, Relay, IexecHubAccessor, ECDSA, IexecClerkABILegacy
-=======
-contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
->>>>>>> next
+contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, IexecClerkABILegacy
 {
 	using SafeMath          for uint256;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
