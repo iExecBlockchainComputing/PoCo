@@ -155,6 +155,12 @@ module.exports = {
 			{ t: 'bytes32', v: hash                        },
 		)
 	},
+
+	AppOrderTypedStructHash:        function (order) { return this.typedStructHash(this.AppOrderStructHash       (order)); },
+	DatasetOrderTypedStructHash:    function (order) { return this.typedStructHash(this.DatasetOrderStructHash   (order)); },
+	WorkerpoolOrderTypedStructHash: function (order) { return this.typedStructHash(this.WorkerpoolOrderStructHash(order)); },
+	RequestOrderTypedStructHash:    function (order) { return this.typedStructHash(this.RequestOrderStructHash   (order)); },
+
 	/* NOT EIP712 compliant */
 	authorizationHash: function(authorization)
 	{
@@ -176,7 +182,7 @@ module.exports = {
 	/* signature schemes */
 	signStruct: function(struct, hash, key)
 	{
-		sig = ethUtil.ecsign(Buffer.from(this.typedStructHash(hash).substr(2), 'hex'), key);
+		sig = ethUtil.ecsign(Buffer.from(hash.substr(2), 'hex'), key);
 		struct.sign = '0x' +
 		[ ethUtil.bufferToHex(sig.r).substr(2)
 		, ethUtil.bufferToHex(sig.s).substr(2)
@@ -194,12 +200,12 @@ module.exports = {
 	},
 
 	/* wrappers */
-	signAppOrder:        function(apporder,        key    ) { return this.signStruct (apporder,        this.AppOrderStructHash       (apporder),        key    ); },
-	signDatasetOrder:    function(datasetorder,    key    ) { return this.signStruct (datasetorder,    this.DatasetOrderStructHash   (datasetorder),    key    ); },
-	signWorkerpoolOrder: function(workerpoolorder, key    ) { return this.signStruct (workerpoolorder, this.WorkerpoolOrderStructHash(workerpoolorder), key    ); },
-	signRequestOrder:    function(requestorder,    key    ) { return this.signStruct (requestorder,    this.RequestOrderStructHash   (requestorder),    key    ); },
-	signAuthorization:   function(authorization,   address) { return this.signMessage(authorization,   this.authorizationHash        (authorization),   address); },
-	signContribution:    function(contribution,    address) { return this.signMessage(contribution,    this.contributionHash         (contribution ),   address); },
+	signAppOrder:        function(apporder,        key    ) { return this.signStruct (apporder,        this.AppOrderTypedStructHash       (apporder),        key    ); },
+	signDatasetOrder:    function(datasetorder,    key    ) { return this.signStruct (datasetorder,    this.DatasetOrderTypedStructHash   (datasetorder),    key    ); },
+	signWorkerpoolOrder: function(workerpoolorder, key    ) { return this.signStruct (workerpoolorder, this.WorkerpoolOrderTypedStructHash(workerpoolorder), key    ); },
+	signRequestOrder:    function(requestorder,    key    ) { return this.signStruct (requestorder,    this.RequestOrderTypedStructHash   (requestorder),    key    ); },
+	signAuthorization:   function(authorization,   address) { return this.signMessage(authorization,   this.authorizationHash             (authorization),   address); },
+	signContribution:    function(contribution,    address) { return this.signMessage(contribution,    this.contributionHash              (contribution ),   address); },
 
 	hashByteResult: function(taskid, byteresult)
 	{

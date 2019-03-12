@@ -301,14 +301,14 @@ contract('Fullchain', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
-		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
-		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
+		assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder       ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder   ));
+		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder   ));
 		assert.equal(events[0].args.volume,         1                                                  );
 
 		// Deals
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
 		assert.equal(deals[0], events[0].args.dealid);
 	});
 

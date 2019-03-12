@@ -250,7 +250,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				appProvider,
-				odbtools.typedStructHash(odbtools.AppOrderStructHash(apporder)),
+				odbtools.AppOrderTypedStructHash(apporder),
 				apporder.sign,
 				{}
 			),
@@ -279,7 +279,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
-				odbtools.typedStructHash(odbtools.DatasetOrderStructHash(datasetorder)),
+				odbtools.DatasetOrderTypedStructHash(datasetorder),
 				datasetorder.sign,
 				{}
 			),
@@ -310,7 +310,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				scheduler,
-				odbtools.typedStructHash(odbtools.WorkerpoolOrderStructHash(workerpoolorder)),
+				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
 				workerpoolorder.sign,
 				{}
 			),
@@ -346,7 +346,7 @@ contract('Fullchain', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				user,
-				odbtools.typedStructHash(odbtools.RequestOrderStructHash(requestorder)),
+				odbtools.RequestOrderTypedStructHash(requestorder),
 				requestorder.sign,
 				{}
 			),
@@ -443,8 +443,8 @@ contract('Fullchain', async (accounts) => {
 		console.log("Match orders: ", txMined.receipt.gasUsed);
 
 		dealid = web3.utils.soliditySha3(
-			{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
-			{ t: 'uint256', v: 0                                             },
+			{ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(requestorder) },
+			{ t: 'uint256', v: 0                                                  },
 		);
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
@@ -452,12 +452,12 @@ contract('Fullchain', async (accounts) => {
 		assert.equal(events[0].args.dealid,     dealid                    );
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
-		assert.equal(events[0].args.dealid,         dealid                                             );
-		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder       ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder   ));
-		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder   ));
-		assert.equal(events[0].args.volume,         1                                                  );
+		assert.equal(events[0].args.dealid,         dealid                                                 );
+		assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder       ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder   ));
+		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder   ));
+		assert.equal(events[0].args.volume,         1                                                      );
 	});
 
 	/***************************************************************************

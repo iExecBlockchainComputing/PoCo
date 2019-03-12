@@ -396,22 +396,22 @@ contract('Fullchain', async (accounts) => {
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched");
-		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder        ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder    ));
-		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder1));
-		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder    ));
+		assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder        ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder    ));
+		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder1));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder    ));
 		assert.equal(events[0].args.volume,         2                                                   );
 		var deal0 = events[0].args.dealid;
 
 		events = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched");
-		assert.equal(events[0].args.appHash,        odbtools.AppOrderStructHash       (apporder        ));
-		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderStructHash   (datasetorder    ));
-		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder2));
-		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderStructHash   (requestorder    ));
+		assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder        ));
+		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder    ));
+		assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder2));
+		assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder    ));
 		assert.equal(events[0].args.volume,         1                                                   );
 		var deal1 = events[0].args.dealid;
 
-		dealids = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
+		dealids = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
 		assert.equal(dealids[0], deal0);
 		assert.equal(dealids[1], deal1);
 	});

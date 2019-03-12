@@ -256,7 +256,7 @@ contract('Broker', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				appProvider,
-				odbtools.typedStructHash(odbtools.AppOrderStructHash(apporder)),
+				odbtools.AppOrderTypedStructHash(apporder),
 				apporder.sign,
 				{}
 			),
@@ -285,7 +285,7 @@ contract('Broker', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
-				odbtools.typedStructHash(odbtools.DatasetOrderStructHash(datasetorder)),
+				odbtools.DatasetOrderTypedStructHash(datasetorder),
 				datasetorder.sign,
 				{}
 			),
@@ -316,7 +316,7 @@ contract('Broker', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				scheduler,
-				odbtools.typedStructHash(odbtools.WorkerpoolOrderStructHash(workerpoolorder)),
+				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
 				workerpoolorder.sign,
 				{}
 			),
@@ -352,7 +352,7 @@ contract('Broker', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				user,
-				odbtools.typedStructHash(odbtools.RequestOrderStructHash(requestorder)),
+				odbtools.RequestOrderTypedStructHash(requestorder),
 				requestorder.sign,
 				{}
 			),
@@ -400,16 +400,16 @@ contract('Broker', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// dealid = web3.utils.soliditySha3(
-		// 	{ t: 'bytes32', v: odbtools.RequestOrderStructHash(requestorder) },
+		// 	{ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(requestorder) },
 		// 	{ t: 'uint256', v: 0                                             },
 		// );
 		// assert.equal(txMined.events.SchedulerNotice.returnValues.workerpool,   WorkerpoolInstance.address                         );
 		// assert.equal(txMined.events.SchedulerNotice.returnValues.dealid,       dealid                                             );
 		// assert.equal(txMined.events.OrdersMatched.returnValues.dealid,         dealid                                             );
-		// assert.equal(txMined.events.OrdersMatched.returnValues.appHash,        odbtools.AppOrderStructHash(apporder)              );
-		// assert.equal(txMined.events.OrdersMatched.returnValues.datasetHash,    odbtools.DatasetOrderStructHash(datasetorder)      );
-		// assert.equal(txMined.events.OrdersMatched.returnValues.workerpoolHash, odbtools.WorkerpoolOrderStructHash(workerpoolorder));
-		// assert.equal(txMined.events.OrdersMatched.returnValues.requestHash,    odbtools.RequestOrderStructHash(requestorder)      );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.appHash,        odbtools.AppOrderTypedStructHash(apporder)              );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.datasetHash,    odbtools.DatasetOrderTypedStructHash(datasetorder)      );
+		// assert.equal(txMined.events.OrdersMatched.returnValues.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder));
+		// assert.equal(txMined.events.OrdersMatched.returnValues.requestHash,    odbtools.RequestOrderTypedStructHash(requestorder)      );
 		// assert.equal(txMined.events.OrdersMatched.returnValues.volume,         1                                                  );
 	});
 
