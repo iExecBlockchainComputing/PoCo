@@ -16,6 +16,7 @@ import "./IexecHubAccessor.sol";
 contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 {
 	using SafeMath          for uint256;
+	using IexecODBLibOrders for bytes32;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
 	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
 	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
@@ -109,7 +110,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	public returns (bool)
 	{
 		require(msg.sender == App(_apporder.app).owner());
-		m_presigned[_apporder.hash()] = true;
+		m_presigned[_apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
 		return true;
 	}
 
@@ -118,7 +119,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	public returns (bool)
 	{
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
-		m_presigned[_datasetorder.hash()] = true;
+		m_presigned[_datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
 		return true;
 	}
 
@@ -127,7 +128,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	public returns (bool)
 	{
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
-		m_presigned[_workerpoolorder.hash()] = true;
+		m_presigned[_workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
 		return true;
 	}
 
@@ -136,7 +137,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	public returns (bool)
 	{
 		require(msg.sender == _requestorder.requester);
-		m_presigned[_requestorder.hash()] = true;
+		m_presigned[_requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
 		return true;
 	}
 
@@ -198,26 +199,26 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 		ids.hasDataset = _datasetorder.dataset != address(0);
 
 		// app
-		ids.appHash  = _apporder.hash();
+		ids.appHash  = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.appOwner = App(_apporder.app).owner();
-		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, toEthTypedStructHash(ids.appHash, EIP712DOMAIN_SEPARATOR), _apporder.sign));
+		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
-			ids.datasetHash  = _datasetorder.hash();
+			ids.datasetHash  = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
-			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, toEthTypedStructHash(ids.datasetHash, EIP712DOMAIN_SEPARATOR), _datasetorder.sign));
+			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
-		ids.workerpoolHash  = _workerpoolorder.hash();
+		ids.workerpoolHash  = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
-		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, toEthTypedStructHash(ids.workerpoolHash, EIP712DOMAIN_SEPARATOR), _workerpoolorder.sign));
+		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
-		ids.requestHash = _requestorder.hash();
-		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, toEthTypedStructHash(ids.requestHash, EIP712DOMAIN_SEPARATOR), _requestorder.sign));
+		ids.requestHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
+		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability
@@ -311,7 +312,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	function cancelAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
 	public returns (bool)
 	{
-		bytes32 dapporderHash = _apporder.hash();
+		bytes32 dapporderHash = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == App(_apporder.app).owner());
 		m_consumed[dapporderHash] = _apporder.volume;
 		emit ClosedAppOrder(dapporderHash);
@@ -322,7 +323,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
-		bytes32 dataorderHash = _datasetorder.hash();
+		bytes32 dataorderHash = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
 		m_consumed[dataorderHash] = _datasetorder.volume;
 		emit ClosedDatasetOrder(dataorderHash);
@@ -333,7 +334,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
-		bytes32 poolorderHash = _workerpoolorder.hash();
+		bytes32 poolorderHash = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
 		m_consumed[poolorderHash] = _workerpoolorder.volume;
 		emit ClosedWorkerpoolOrder(poolorderHash);
@@ -344,7 +345,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier
 	function cancelRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
-		bytes32 requestorderHash = _requestorder.hash();
+		bytes32 requestorderHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == _requestorder.requester);
 		m_consumed[requestorderHash] = _requestorder.volume;
 		emit ClosedRequestOrder(requestorderHash);

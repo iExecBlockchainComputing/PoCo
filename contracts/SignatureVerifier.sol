@@ -3,9 +3,8 @@ pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
 import "../node_modules/iexec-solidity/contracts/ERC1271/IERC1271.sol";
-import "../node_modules/iexec-solidity/contracts/Libs/ECDSA.sol";
 
-contract SignatureVerifier is ECDSA
+contract SignatureVerifier
 {
 	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
 	internal view returns (bool valid)
@@ -42,4 +41,9 @@ contract SignatureVerifier is ECDSA
 		return candidate == ecrecover(hash, v, r, s);
 	}
 
+	function toEthSignedMessageHash(bytes32 hash)
+	internal pure returns (bytes32)
+	{
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+	}
 }

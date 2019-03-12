@@ -158,10 +158,10 @@ contract('IexecClerk', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		apporder_hash        = odbtools.AppOrderStructHash       (apporder       );
-		datasetorder_hash    = odbtools.DatasetOrderStructHash   (datasetorder   );
-		workerpoolorder_hash = odbtools.WorkerpoolOrderStructHash(workerpoolorder);
-		requestorder_hash    = odbtools.RequestOrderStructHash   (requestorder   );
+		apporder_hash        = odbtools.AppOrderTypedStructHash       (apporder       );
+		datasetorder_hash    = odbtools.DatasetOrderTypedStructHash   (datasetorder   );
+		workerpoolorder_hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		requestorder_hash    = odbtools.RequestOrderTypedStructHash   (requestorder   );
 
 		txsMined = await Promise.all([
 			IexecClerkInstance.signAppOrder       (apporder,        { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),

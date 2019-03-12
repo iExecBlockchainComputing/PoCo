@@ -279,8 +279,8 @@ contract('IexecClerk', async (accounts) => {
 			{},
 		);
 
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
@@ -314,8 +314,8 @@ contract('IexecClerk', async (accounts) => {
 			{ dataset: constants.NULL.ADDRESS },
 		);
 
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
@@ -349,8 +349,8 @@ contract('IexecClerk', async (accounts) => {
 			{ volume: 10 },
 		);
 
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(_requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
 
 		deal = await IexecClerkInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );

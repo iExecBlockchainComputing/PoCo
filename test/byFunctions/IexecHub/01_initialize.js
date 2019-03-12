@@ -298,7 +298,7 @@ contract('IexecHub', async (accounts) => {
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
+		deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
 	});
 
 	it("[1.1] Initialization - Correct", async () => {

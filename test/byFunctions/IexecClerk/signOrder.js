@@ -61,6 +61,13 @@ contract('IexecClerk', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		BrokerInstance             = await Broker.deployed();
 
+		odbtools.setup({
+			name:              "iExecODB",
+			version:           "3.0-alpha",
+			chainId:           await web3.eth.net.getId(),
+			verifyingContract: IexecClerkInstance.address,
+		});
+
 		/**
 		 * Token distribution
 		 */
@@ -243,10 +250,10 @@ contract('IexecClerk', async (accounts) => {
 			sign:               constants.NULL.SIGNATURE,
 		};
 
-		apporder_hash        = odbtools.AppOrderStructHash       (apporder       );
-		datasetorder_hash    = odbtools.DatasetOrderStructHash   (datasetorder   );
-		workerpoolorder_hash = odbtools.WorkerpoolOrderStructHash(workerpoolorder);
-		requestorder_hash    = odbtools.RequestOrderStructHash   (requestorder   );
+		apporder_hash        = odbtools.AppOrderTypedStructHash       (apporder       );
+		datasetorder_hash    = odbtools.DatasetOrderTypedStructHash   (datasetorder   );
+		workerpoolorder_hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		requestorder_hash    = odbtools.RequestOrderTypedStructHash   (requestorder   );
 	});
 
 	/***************************************************************************

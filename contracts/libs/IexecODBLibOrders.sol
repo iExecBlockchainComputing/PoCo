@@ -254,4 +254,9 @@ library IexecODBLibOrders
 		}
 	}
 
+	function toEthTypedStructHash(bytes32 _structHash, bytes32 _domainHash)
+	public pure returns (bytes32 typedStructHash)
+	{
+		return keccak256(abi.encodePacked("\x19\x01", _domainHash, _structHash));
+	}
 }

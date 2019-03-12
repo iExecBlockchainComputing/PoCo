@@ -290,7 +290,7 @@ contract('ERC1154: resultFor', async (accounts) => {
 		// Deals
 		deals[0] = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
 		deals[1] = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
-		// deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderStructHash(requestorder));
+		// deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
 	});
 
 	it("[setup] Initialization", async () => {

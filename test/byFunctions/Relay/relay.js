@@ -228,7 +228,7 @@ contract('Relay', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				appProvider,
-				odbtools.typedStructHash(odbtools.AppOrderStructHash(apporder)),
+				odbtools.AppOrderTypedStructHash(apporder),
 				apporder.sign,
 				{}
 			),
@@ -257,7 +257,7 @@ contract('Relay', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
-				odbtools.typedStructHash(odbtools.DatasetOrderStructHash(datasetorder)),
+				odbtools.DatasetOrderTypedStructHash(datasetorder),
 				datasetorder.sign,
 				{}
 			),
@@ -288,7 +288,7 @@ contract('Relay', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				scheduler,
-				odbtools.typedStructHash(odbtools.WorkerpoolOrderStructHash(workerpoolorder)),
+				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
 				workerpoolorder.sign,
 				{}
 			),
@@ -324,7 +324,7 @@ contract('Relay', async (accounts) => {
 		assert.isTrue(
 			await IexecClerkInstance.verifySignature(
 				user,
-				odbtools.typedStructHash(odbtools.RequestOrderStructHash(requestorder)),
+				odbtools.RequestOrderTypedStructHash(requestorder),
 				requestorder.sign,
 				{}
 			),
