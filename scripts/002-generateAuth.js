@@ -66,8 +66,8 @@ module.exports = async function(callback) {
 			user            = accounts[9];
 		});
 
-		enclave = "0x7943E75A48FEf0376CCDcdda87fea71a4A9730C4";
-		dealid  = "0x86531e845b454343529f687fdb5be644aeb77224c8707050dd7b094685fddec7",
+		enclave = "0x51792FFbf6C1ccA5c9A9E6e227529b265254599b";
+		dealid  = "0x23e9a6c8621582399a2626b67c2c11d3058c26eeabf97911fdf507a25beede6a",
 		taskid  = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
 		if ((await IexecHubInstance.viewTask(taskid)).status == 0)
@@ -81,17 +81,16 @@ module.exports = async function(callback) {
 			enclave: enclave,
 		};
 
-		signature = await web3.eth.sign(web3.utils.soliditySha3(
+		authorization.sign = await web3.eth.sign(web3.utils.soliditySha3(
 			{ t: 'address', v: authorization.worker  },
 			{ t: 'bytes32', v: authorization.taskid  },
 			{ t: 'address', v: authorization.enclave },
 		), scheduler)
-
-		authorization.sign = {
-			r:             "0x" + signature.substr( 2, 64),
-			s:             "0x" + signature.substr(66, 64),
-			v: 27 + Number("0x" + signature.substr(    -2)),
-		}
+		authorization.workersign = await web3.eth.sign(web3.utils.soliditySha3(
+			{ t: 'address', v: authorization.worker  },
+			{ t: 'bytes32', v: authorization.taskid  },
+			{ t: 'address', v: authorization.enclave },
+		), authorization.worker)
 
 		console.log("=== authorization ===")
 		console.log(authorization)
