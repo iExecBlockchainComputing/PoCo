@@ -1,4 +1,4 @@
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
 import "./libs/IexecODBLibOrders.sol";
