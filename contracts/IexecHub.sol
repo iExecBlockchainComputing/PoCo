@@ -1,4 +1,4 @@
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
 import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
@@ -366,7 +366,8 @@ contract IexecHub is CategoryManager, IOracle, SignatureVerifier, IexecHubABILeg
 			 * TODO: gas provided?
 			 */
 			require(gasleft() > 100000);
-			callbackTarget.call.gas(100000)(abi.encodeWithSignature(
+			bool success;
+			(success,) = callbackTarget.call.gas(100000)(abi.encodeWithSignature(
 				"receiveResult(bytes32,bytes)",
 				_taskid,
 				_results
