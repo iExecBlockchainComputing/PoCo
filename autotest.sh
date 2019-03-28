@@ -2,8 +2,8 @@
 
 trap catch INT
 
-TESTRPC="/usr/bin/ganache-cli -m 'actual surround disorder swim upgrade devote digital misery truly verb slide final' -l 8000000"
-TRUFFLE="/home/amxx/Work/iExec/code/PoCo-dev/node_modules/.bin/truffle"
+GANACHE="node_modules/.bin/ganache-cli -m \"actual surround disorder swim upgrade devote digital misery truly verb slide final\" -l 8000000 -i 1544020727674"
+TRUFFLE="./node_modules/.bin/truffle"
 
 function print_style
 {
@@ -21,16 +21,16 @@ function print_style
 function initialize
 {
 	mkdir -p logs
-	# starting testrpc
-	print_style 'info' "Starting testrpc daemon in a tmux session\n"
-	tmux new-session -s testrpc -d script -f logs/testrpc.$date.log -c "$TESTRPC" || exit 1
+	# starting ganache
+	print_style 'info' "Starting ganache daemon in a tmux session\n"
+	tmux new-session -s ganache -d script -f logs/ganache.$date.log -c "$GANACHE" || exit 1
 }
 function finalize
 {
-	# stopping testrpc
-	print_style 'info' "Stoping testrpc daemon\n"
-	tmux kill-session -t testrpc || exit 1
-	rm -f logs/testrpc.$date.log
+	# stopping ganache
+	print_style 'info' "Stoping ganache daemon\n"
+	tmux kill-session -t ganache || exit 1
+	rm -f logs/ganache.$date.log
 }
 
 function catch
