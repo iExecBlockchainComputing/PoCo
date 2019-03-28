@@ -60,6 +60,14 @@ contract('IexecClerk', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		BrokerInstance             = await Broker.deployed();
+
+		odbtools.setup({
+			name:              "iExecODB",
+			version:           "3.0-alpha",
+			chainId:           await web3.eth.net.getId(),
+			verifyingContract: IexecClerkInstance.address,
+		});
+
 	});
 
 	/***************************************************************************
