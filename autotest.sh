@@ -94,7 +94,7 @@ function runTests
 			catch
 		else
 			print_style 'success' "success\n"
-			rm -f $logfile
+			#rm -f $logfile
 		fi
 		break # just for testing
 	done
