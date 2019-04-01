@@ -1,3 +1,10 @@
+node('master') {
+    stage('Choose Label') {
+        LABEL = 'jenkins-agent-machine-1'
+    }
+}
+
+
 pipeline {
 
     environment {
@@ -5,12 +12,11 @@ pipeline {
         dockerImage1sec = ''
         dockerImage20sec = ''
         buildWhenTagContains = 'lv-'
-        mainAgent = 'jenkins-agent-machine-1'
     }
 
     agent {
 	    node {
-	        label mainAgent
+	        label "${LABEL}"
 	    }
 	}
 
@@ -19,8 +25,8 @@ pipeline {
         stage('Truffle tests') {
 			agent {
 			    docker {
-			        image 'node:latest'
-			        label mainAgent
+			        image 'node:7.4'
+			        label "${LABEL}"
 			    }
 			}
 			steps{
@@ -82,8 +88,8 @@ pipeline {
         	when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
             agent {
                 docker { 
-                	image 'node:latest'
-                	label mainAgent
+                	image 'node:7.4'
+                	label "${LABEL}"
                 }
             }
             steps {
@@ -102,7 +108,7 @@ pipeline {
 		    agent {
 		        docker {
 		            image 'node:7.4'
-		            label mainAgent
+		            label "${LABEL}"
 		        }
 		    }
 		    steps { 
