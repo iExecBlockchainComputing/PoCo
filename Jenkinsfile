@@ -25,7 +25,7 @@ pipeline {
         stage('Truffle tests') {
 			agent {
 			    docker {
-			        image 'node:7.4'
+			        image 'node:11'
 			        label "${LABEL}"
 			    }
 			}
@@ -88,7 +88,7 @@ pipeline {
         	when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
             agent {
                 docker { 
-                	image 'node:7.4'
+                	image 'node:11'
                 	label "${LABEL}"
                 }
             }
@@ -107,7 +107,7 @@ pipeline {
 		    when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 		    agent {
 		        docker {
-		            image 'node:7.4'
+		            image 'node:11'
 		            label "${LABEL}"
 		        }
 		    }
