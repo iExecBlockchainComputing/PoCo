@@ -33,7 +33,7 @@ pipeline {
 				sh "echo 'Starting truffle tests'"
 				sh "npm install"
 				sh "./autotest.sh"
-				//archiveArtifacts artifacts: 'logs/**'
+				archiveArtifacts artifacts: 'logs/**'
 			}
 	    }
 
