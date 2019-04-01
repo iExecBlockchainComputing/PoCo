@@ -5,11 +5,12 @@ pipeline {
         dockerImage1sec = ''
         dockerImage20sec = ''
         buildWhenTagContains = 'lv-'
+        mainAgent = 'jenkins-agent-machine-1'
     }
 
     agent {
 	    node {
-	        label 'jenkins-agent-machine-1'
+	        label mainAgent
 	    }
 	}
 
@@ -19,7 +20,7 @@ pipeline {
 			agent {
 			    docker {
 			        image 'node:latest'
-			        label 'jenkins-agent-machine-1'
+			        label mainAgent
 			    }
 			}
 			steps{
@@ -82,7 +83,7 @@ pipeline {
             agent {
                 docker { 
                 	image 'node:latest'
-                	label 'jenkins-agent-machine-1'
+                	label mainAgent
                 }
             }
             steps {
@@ -101,7 +102,7 @@ pipeline {
 		    agent {
 		        docker {
 		            image 'node:7.4'
-		            label 'jenkins-agent-machine-1'
+		            label mainAgent
 		        }
 		    }
 		    steps { 
