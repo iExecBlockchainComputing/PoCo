@@ -96,7 +96,6 @@ function runTests
 			print_style 'success' "success\n"
 			#rm -f $logfile
 		fi
-		break # just for testing
 	done
 }
 
