@@ -1,8 +1,8 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 trap catch INT
 
-GANACHE="node_modules/.bin/ganache-cli -m \"actual surround disorder swim upgrade devote digital misery truly verb slide final\" -l 8000000 -i 1544020727674"
+GANACHE="./node_modules/.bin/ganache-cli"
 TRUFFLE="./node_modules/.bin/truffle"
 
 function print_style
@@ -22,15 +22,16 @@ function initialize
 {
 	mkdir -p logs
 	# starting ganache
-	print_style 'info' "Starting ganache daemon in a tmux session\n"
-	tmux new-session -s ganache -d script -f logs/ganache.$date.log -c "$GANACHE" || exit 1
+	nohup $GANACHE -m "actual surround disorder swim upgrade devote digital misery truly verb slide final" -l 8000000 -i 1544020727674 >> logs/ganache.$date.log 2>&1&
+	GANACHE_PID=$!
+	print_style 'info' "Started ganache daemon (pid=$GANACHE_PID)\n"
 }
 function finalize
 {
 	# stopping ganache
-	print_style 'info' "Stoping ganache daemon\n"
-	tmux kill-session -t ganache || exit 1
 	rm -f logs/ganache.$date.log
+	kill -9 $GANACHE_PID
+	print_style 'info' "Killed ganache daemon (pid=$GANACHE_PID)\n"
 }
 
 function catch
@@ -93,7 +94,7 @@ function runTests
 			catch
 		else
 			print_style 'success' "success\n"
-			rm -f $logfile
+			# rm -f $logfile
 		fi
 	done
 }
