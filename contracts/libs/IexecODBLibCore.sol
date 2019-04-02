@@ -74,6 +74,7 @@ library IexecODBLibCore
 		uint256   revealCounter;
 		uint256   winnerCounter;
 		address[] contributors;
+		bytes32   resultDigest;
 		bytes     results;
 	}
 

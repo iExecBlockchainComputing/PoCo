@@ -285,6 +285,7 @@ contract IexecHub is CategoryManager, IOracle, SignatureVerifier
 
 		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
+		task.resultDigest   = _resultDigest;
 
 		emit TaskReveal(_taskid, msg.sender, _resultDigest);
 	}
