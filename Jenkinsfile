@@ -11,7 +11,7 @@ pipeline {
         registry = 'nexus.iex.ec'
         dockerImage1sec = ''
         dockerImage20sec = ''
-        buildWhenTagContains = 'lv-'
+        buildWhenTagContains = 'lv'
     }
 
     agent {
@@ -88,7 +88,7 @@ pipeline {
         stage('Deploy on Kovan') {
         	when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
             agent {
-                docker { 
+                docker {
                 	image 'node:11'
                 	label "${LABEL}"
                 }
@@ -112,7 +112,7 @@ pipeline {
 		            label "${LABEL}"
 		        }
 		    }
-		    steps { 
+		    steps {
 		        withNPM(npmrcConfig:'iexecteam-npmrc') {
 		            echo "Performing npm build..."
 		            sh 'npm whoami'
@@ -121,5 +121,5 @@ pipeline {
 		}
 
     }
-    
+
 }
