@@ -222,7 +222,7 @@ contract('SMSDirectory', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: dataset success", async () => {
-		txMined = await SMSDirectoryInstance.setSMS(
+		txMined = await SMSDirectoryInstance.setSMS_owned(
 			DatasetInstance.address,
 			encodeMultiaddr("/dnsaddr/sms1.iex.ec/tcp/4001"),
 			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -248,7 +248,7 @@ contract('SMSDirectory', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: takeover", async () => {
-		await shouldFail.reverting(SMSDirectoryInstance.setSMS(
+		await shouldFail.reverting(SMSDirectoryInstance.setSMS_owned(
 			DatasetInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -256,7 +256,7 @@ contract('SMSDirectory', async (accounts) => {
 	});
 
 	it("[Genesis] SMS registration: wrong smart-contract", async () => {
-		await shouldFail.reverting(SMSDirectoryInstance.setSMS(
+		await shouldFail.reverting(SMSDirectoryInstance.setSMS_owned(
 			SMSDirectoryInstance.address,
 			encodeMultiaddr("/dnsaddr/wrongsms.iex.ec/tcp/4001"),
 			{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }

@@ -1,6 +1,6 @@
 pragma solidity ^0.5.7;
 
-import "../../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "iexec-solidity/contracts/Libs/SafeMath.sol";
 
 contract RegistryBase
 {

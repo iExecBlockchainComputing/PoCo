@@ -1,8 +1,8 @@
 pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
-import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
+import "iexec-solidity/contracts/Libs/SafeMath.sol";
 
 import "./libs/IexecODBLibCore.sol";
 import "./registries/RegistryBase.sol";
