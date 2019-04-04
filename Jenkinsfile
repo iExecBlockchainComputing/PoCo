@@ -30,9 +30,9 @@ pipeline {
 			}
 			steps{
 				sh "echo 'Starting truffle tests'"
-				//sh "npm install"
-				//sh "./autotest.sh"
-				//archiveArtifacts artifacts: 'logs/**'
+				sh "npm install"
+				sh "./autotest.sh"
+				archiveArtifacts artifacts: 'logs/**'
 			}
 		}
 
@@ -85,7 +85,7 @@ pipeline {
 		}
 
 		stage('Deploy on Kovan') {
-			//when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
+			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			agent {
 				docker {
 					image 'node:11'
