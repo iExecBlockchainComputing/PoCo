@@ -30,9 +30,9 @@ pipeline {
 			}
 			steps{
 				sh "echo 'Starting truffle tests'"
-				sh "npm install"
-				sh "./autotest.sh"
-				archiveArtifacts artifacts: 'logs/**'
+				//sh "npm install"
+				//sh "./autotest.sh"
+				//archiveArtifacts artifacts: 'logs/**'
 			}
 		}
 
@@ -85,7 +85,7 @@ pipeline {
 		}
 
 		stage('Deploy on Kovan') {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
+			//when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			agent {
 				docker {
 					image 'node:11'
@@ -93,7 +93,9 @@ pipeline {
 				}
 			}
 			steps {
-				withCredentials([string(credentialsId: 'kovan-deployer-mnemonic', variable: 'DEPLOYER_MNEMONIC')]) {
+				withCredentials([
+						string(credentialsId: 'kovan-deployer-mnemonic', variable: 'DEPLOYER_MNEMONIC'),
+						string(credentialsId: 'kovan-node', variable: 'KOVAN_NODE')]) {
 					sh "sed -i '/ethereumjs-util/d' package.json"
 					sh "npm install"
 					sh "./node_modules/.bin/truffle migrate --network kovan"
