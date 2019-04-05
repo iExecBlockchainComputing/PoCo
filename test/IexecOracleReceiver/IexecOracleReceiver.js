@@ -51,7 +51,6 @@ contract('IexecOracleReceiver', async (accounts) => {
 	var WorkerpoolInstance = null;
 
 	var apporder         = null;
-	var datasetorder     = null;
 	var workerpoolorder1 = null;
 	var workerpoolorder2 = null;
 	var requestorder     = null;
@@ -93,8 +92,6 @@ contract('IexecOracleReceiver', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
-
-		IexecOracleReceiverInstance = await IexecOracleReceiver.new(IexecHubInstance.address);
 
 		/**
 		 * Token distribution
@@ -181,8 +178,8 @@ contract('IexecOracleReceiver', async (accounts) => {
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
-	it("[Setup] Environment & Deal", async () => {
-		// Ressources
+	it("[Setup] App & Workerpool deployment", async () => {
+		// CREATEAPP
 		txMined = await AppRegistryInstance.createApp(
 			appProvider,
 			"R Clifford Attractors",
@@ -196,6 +193,7 @@ contract('IexecOracleReceiver', async (accounts) => {
 		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
 		AppInstance = await App.at(events[0].args.app);
 
+		// CREATEWORKERPOOL
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 			scheduler,
 			"A test workerpool",
@@ -207,7 +205,19 @@ contract('IexecOracleReceiver', async (accounts) => {
 
 		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+	});
 
+	it("[Setup] Oracle deployment", async () => {
+		// ORACLE
+		IexecOracleReceiverInstance = await IexecOracleReceiver.new(
+			IexecHubInstance.address,
+			AppInstance.address,
+			constants.NULL.ADDRESS,
+			WorkerpoolInstance.address,
+		);
+	});
+
+	it("[Setup] Orders & Deal", async () => {
 		// Orders
 		apporder = odbtools.signAppOrder(
 			{
@@ -222,20 +232,6 @@ contract('IexecOracleReceiver', async (accounts) => {
 				sign:               constants.NULL.SIGNATURE,
 			},
 			wallets.addressToPrivate(appProvider)
-		);
-		datasetorder = odbtools.signDatasetOrder(
-			{
-				dataset:            constants.NULL.ADDRESS,
-				datasetprice:       0,
-				volume:             0,
-				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-				apprestrict:        constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               constants.NULL.BYTES32,
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(datasetProvider)
 		);
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
@@ -276,7 +272,7 @@ contract('IexecOracleReceiver', async (accounts) => {
 		);
 
 		// Market
-		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.matchOrders(apporder, constants.NULL.DATAORDER, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		deal = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
 	});

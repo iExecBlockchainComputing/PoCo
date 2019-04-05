@@ -5,12 +5,15 @@ import "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
 
 import "../IexecClerk.sol";
 import "../IexecHub.sol";
+import "../SignatureVerifier.sol";
 
-
-contract IexecOracleReceiver is IOracleConsumer
+contract IexecOracleReceiver is SignatureVerifier, IOracleConsumer
 {
 	IexecHub   public m_iexecHub;
 	IexecClerk public m_iexecClerk;
+	address    public m_authorizedApp;
+	address    public m_authorizedDataset;
+	address    public m_authorizedWorkerpool;
 
 	struct timedValue
 	{
@@ -23,11 +26,19 @@ contract IexecOracleReceiver is IOracleConsumer
 	event ResultReady(bytes32 indexed oracleCallId);
 	event ValueChange(bytes32 indexed id, uint256 oldDate, uint256 oldValue, uint256 newDate, uint256 newValue);
 
-	constructor(IexecHub _iexecHub)
+	constructor(
+		IexecHub _iexecHub
+	,	address  _authorizedApp
+	,	address  _authorizedDataset
+	,	address  _authorizedWorkerpool
+	)
 	public
 	{
-		m_iexecHub   = _iexecHub;
-		m_iexecClerk = m_iexecHub.iexecclerk();
+		m_iexecHub             = _iexecHub;
+		m_iexecClerk           = m_iexecHub.iexecclerk();
+		m_authorizedApp        = _authorizedApp;
+		m_authorizedDataset    = _authorizedDataset;
+		m_authorizedWorkerpool = _authorizedWorkerpool;
 	}
 
 	function receiveResult(bytes32 _oracleCallId, bytes calldata)
@@ -42,11 +53,11 @@ contract IexecOracleReceiver is IOracleConsumer
 	)
 	internal returns (bool)
 	{
-		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED, "result-not-available");
-		require(task.resultDigest == keccak256(task.results), "result-not-validated-by-consensus");
-		// require(m_whitelist[deal.app.pointer]);
-		// require(m_whitelist[deal.dataset.pointer]);
-		// require(m_whitelist[deal.workerpool.pointer]);
+		require(task.status      == IexecODBLibCore.TaskStatusEnum.COMPLETED,                                       "result-not-available"             );
+		require(task.resultDigest == keccak256(task.results),                                                       "result-not-validated-by-consensus");
+		require(checkIdentity(m_authorizedApp,        deal.app.pointer,        m_iexecClerk.GROUPMEMBER_PURPOSE()), "unauthorized-app"                 );
+		require(checkIdentity(m_authorizedDataset,    deal.dataset.pointer,    m_iexecClerk.GROUPMEMBER_PURPOSE()), "unauthorized-dataset"             );
+		require(checkIdentity(m_authorizedWorkerpool, deal.workerpool.pointer, m_iexecClerk.GROUPMEMBER_PURPOSE()), "unauthorized-workerpool"          );
 		return true;
 	}
 
