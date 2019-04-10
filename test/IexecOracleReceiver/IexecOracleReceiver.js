@@ -67,7 +67,16 @@ contract('IexecOracleReceiver', async (accounts) => {
 	const id         = web3.utils.keccak256(details);
 	const parameters = JSON.stringify({date,details});
 	const result     = web3.eth.abi.encodeParameters(['uint256','string','uint256'],[date,details,value]);
-	const consensus  = web3.utils.keccak256(result);
+
+	const workers     = [
+		// { address: worker1, enclave: sgxEnclave,             raw: web3.utils.keccak256(result) },
+		{ address: worker1, enclave: constants.NULL.ADDRESS, raw: web3.utils.keccak256(result) },
+		{ address: worker2, enclave: constants.NULL.ADDRESS, raw: web3.utils.keccak256(result) },
+		{ address: worker3, enclave: constants.NULL.ADDRESS, raw: web3.utils.keccak256(result) },
+	];
+	const trusttarget = 2 ** workers.length;
+
+	var totalgas = 0;
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
@@ -240,7 +249,7 @@ contract('IexecOracleReceiver', async (accounts) => {
 				volume:            1000,
 				tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
 				category:          4,
-				trust:             0,
+				trust:             trusttarget,
 				apprestrict:       constants.NULL.ADDRESS,
 				datasetrestrict:   constants.NULL.ADDRESS,
 				requesterrestrict: constants.NULL.ADDRESS,
@@ -260,7 +269,7 @@ contract('IexecOracleReceiver', async (accounts) => {
 				volume:             1,
 				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 				category:           4,
-				trust:              0,
+				trust:              trusttarget,
 				requester:          user,
 				beneficiary:        user,
 				callback:           IexecOracleReceiverInstance.address,
@@ -274,6 +283,8 @@ contract('IexecOracleReceiver', async (accounts) => {
 		// Market
 		txMined = await IexecClerkInstance.matchOrders(apporder, constants.NULL.DATAORDER, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		totalgas += txMined.receipt.gasUsed;
+
 		deal = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
 	});
 
@@ -284,30 +295,39 @@ contract('IexecOracleReceiver', async (accounts) => {
 	function sendContribution(authorization, results)
 	{
 		return IexecHubInstance.contribute(
-				authorization.taskid,                                   // task (authorization)
-				results.hash,                                           // common    (result)
-				results.seal,                                           // unique    (result)
-				authorization.enclave,                                  // address   (enclave)
-				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
-				authorization.sign,                                     // signature (authorization)
-				{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
-			);
+			authorization.taskid,                                   // task (authorization)
+			results.hash,                                           // common    (result)
+			results.seal,                                           // unique    (result)
+			authorization.enclave,                                  // address   (enclave)
+			results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
+			authorization.sign,                                     // signature (authorization)
+			{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+		);
 	}
 
 	it("[setup] Contribute", async () => {
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: worker1, taskid: task, enclave: constants.NULL.ADDRESS }, scheduler),
-			odbtools.sealByteResult(task, consensus, worker1),
-		);
+		for (w of workers)
+		{
+			txMined = await sendContribution(
+				await odbtools.signAuthorization({ worker: w.address, taskid: task, enclave: w.enclave }, scheduler),
+				await (w.enclave == constants.NULL.ADDRESS ? x => x : x => odbtools.signContribution(x, w.enclave))(odbtools.sealByteResult(task, w.raw, w.address))
+			);
+			totalgas += txMined.receipt.gasUsed;
+		}
 	});
 
 	it("[setup] Reveal", async () => {
-		await IexecHubInstance.reveal(task, odbtools.hashByteResult(task, consensus).digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+		for (w of workers)
+		{
+			txMined = await IexecHubInstance.reveal(task, odbtools.hashByteResult(task, w.raw).digest, { from: w.address, gas: constants.AMOUNT_GAS_PROVIDED });
+			totalgas += txMined.receipt.gasUsed;
+		}
 	});
 
 	it("Finalize", async () => {
 		txMined = await IexecHubInstance.finalize(task, result, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		totalgas += txMined.receipt.gasUsed;
 		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  task, "check taskid");
 		assert.equal(events[0].args.results, result, "check consensus (results)");
@@ -327,10 +347,15 @@ contract('IexecOracleReceiver', async (accounts) => {
 		assert.equal(events[0].args.newDate.toNumber(),  date );
 		assert.equal(events[0].args.newValue.toNumber(), value);
 
+		totalgas += txMined.receipt.gasUsed;
 		const valueAfter = await IexecOracleReceiverInstance.values(id);
 		assert.equal(valueAfter.date,    date   );
 		assert.equal(valueAfter.details, details);
 		assert.equal(valueAfter.value,   value  );
+	});
+
+	it("Logs", async () => {
+		console.log("total gas used:", totalgas)
 	});
 
 });
