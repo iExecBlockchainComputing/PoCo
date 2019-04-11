@@ -98,15 +98,14 @@ module.exports = async function(callback) {
 		Kb = Buffer.from('personalSecret').toString('base64')
 		console.log("=== beneficiary ===")
 		console.log(user)
-		signature = await web3.eth.sign(Kb, user)
-		console.log({ 'sign': signature, 'secret': Kb })
+		signature = await web3.eth.sign("iexec_sms_secret:"+Kb, user)
+		console.log(JSON.stringify({ 'sign': signature, 'secret': Kb }))	}
 
 		Kd = Buffer.from('datasetSecret').toString('base64')
 		console.log("=== dataset ===")
-		signature = await web3.eth.sign(Kd, datasetProvider)
+		signature = await web3.eth.sign("iexec_sms_secret:"+Kd, datasetProvider)
 		console.log(datasetProvider)
-		console.log({ 'sign': signature, 'secret': Kd })
-	}
+		console.log(JSON.stringify({ 'sign': signature, 'secret': Kd }))	}
 	catch (e)
 	{
 		callback(e)
