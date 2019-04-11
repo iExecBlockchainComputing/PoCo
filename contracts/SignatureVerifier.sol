@@ -1,8 +1,8 @@
 pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
-import "../node_modules/iexec-solidity/contracts/ERC1271/IERC1271.sol";
+import "iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
+import "iexec-solidity/contracts/ERC1271/IERC1271.sol";
 
 contract SignatureVerifier
 {

@@ -2,8 +2,8 @@
 
 trap catch INT
 
-GANACHE=./node_modules/.bin/ganache-cli
-TRUFFLE=./node_modules/.bin/truffle
+GANACHE="./node_modules/.bin/ganache-cli"
+TRUFFLE="./node_modules/.bin/truffle"
 
 function print_style
 {
@@ -94,7 +94,11 @@ function runTests
 			catch
 		else
 			print_style 'success' "success\n"
+<<<<<<< HEAD
 			#rm -f $logfile
+=======
+			# rm -f $logfile
+>>>>>>> next
 		fi
 	done
 }

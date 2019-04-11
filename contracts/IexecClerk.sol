@@ -1,7 +1,7 @@
 pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/iexec-solidity/contracts/Libs/SafeMath.sol";
+import "iexec-solidity/contracts/Libs/SafeMath.sol";
 
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.7;
 pragma experimental ABIEncoderV2;
 
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "./libs/IexecODBLibCore.sol";
 
