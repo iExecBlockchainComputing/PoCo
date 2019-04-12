@@ -93,19 +93,20 @@ module.exports = async function(callback) {
 		), authorization.worker)
 
 		console.log("=== authorization ===")
-		console.log(authorization)
+		console.log(JSON.stringify(authorization))
 
 		Kb = Buffer.from('personalSecret').toString('base64')
+		signature = await web3.eth.sign("iexec_sms_secret:"+Kb, user)
 		console.log("=== beneficiary ===")
 		console.log(user)
-		signature = await web3.eth.sign("iexec_sms_secret:"+Kb, user)
-		console.log(JSON.stringify({ 'sign': signature, 'secret': Kb }))	}
+		console.log(JSON.stringify({ 'sign': signature, 'secret': Kb }))
 
 		Kd = Buffer.from('datasetSecret').toString('base64')
-		console.log("=== dataset ===")
 		signature = await web3.eth.sign("iexec_sms_secret:"+Kd, datasetProvider)
+		console.log("=== dataset ===")
 		console.log(datasetProvider)
-		console.log(JSON.stringify({ 'sign': signature, 'secret': Kd }))	}
+		console.log(JSON.stringify({ 'sign': signature, 'secret': Kd }))
+	}
 	catch (e)
 	{
 		callback(e)
