@@ -84,16 +84,24 @@ contract('IexecOracleReceiver', async (accounts) => {
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
 
+		// tx = new web3.eth.Contract(IexecOracleReceiver._json.abi).deploy({
+		// 	data: IexecOracleReceiver.bytecode,
+		// 	arguments: ["0x6140B1d51c11B217c2D23EA52dcC6918bD5F38e4"]
+		// }).encodeABI();
+		// console.log("TX", tx);
+		// console.log(IexecOracleReceiver._json.compiler);
+
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecHub.deployed();
-		IexecClerkInstance         = await IexecClerk.deployed();
-		AppRegistryInstance        = await AppRegistry.deployed();
-		DatasetRegistryInstance    = await DatasetRegistry.deployed();
-		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		BrokerInstance             = await Broker.deployed();
+		RLCInstance                 = await RLC.deployed();
+		IexecHubInstance            = await IexecHub.deployed();
+		IexecClerkInstance          = await IexecClerk.deployed();
+		AppRegistryInstance         = await AppRegistry.deployed();
+		DatasetRegistryInstance     = await DatasetRegistry.deployed();
+		WorkerpoolRegistryInstance  = await WorkerpoolRegistry.deployed();
+		BrokerInstance              = await Broker.deployed();
+		IexecOracleReceiverInstance = await IexecOracleReceiver.new(IexecHubInstance.address);
 
 		odbtools.setup({
 			name:              "iExecODB",
@@ -218,11 +226,12 @@ contract('IexecOracleReceiver', async (accounts) => {
 
 	it("[Setup] Oracle deployment", async () => {
 		// ORACLE
-		IexecOracleReceiverInstance = await IexecOracleReceiver.new(
-			IexecHubInstance.address,
+		await IexecOracleReceiverInstance.setEnv(
 			AppInstance.address,
 			constants.NULL.ADDRESS,
 			WorkerpoolInstance.address,
+			constants.NULL.BYTES32,
+			0
 		);
 	});
 
