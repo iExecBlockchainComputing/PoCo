@@ -94,11 +94,7 @@ function runTests
 			catch
 		else
 			print_style 'success' "success\n"
-<<<<<<< HEAD
-			#rm -f $logfile
-=======
 			# rm -f $logfile
->>>>>>> next
 		fi
 	done
 }
