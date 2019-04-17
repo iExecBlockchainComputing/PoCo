@@ -107,7 +107,7 @@ pipeline {
 					echo "Performing npm build..."
 					sh 'ls ./build'
 					sh 'npm whoami'
-					sh 'npm publish --tag next'
+					sh 'npm publish --tag next --dry-run'
 				}
 			}
 		}
