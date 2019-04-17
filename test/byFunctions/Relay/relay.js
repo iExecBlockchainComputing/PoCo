@@ -7,8 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
-var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr    = require('multiaddr');
@@ -43,7 +41,6 @@ contract('Relay', async (accounts) => {
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
 	var IexecClerkInstance         = null;
-	var BrokerInstance             = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
@@ -82,7 +79,6 @@ contract('Relay', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		BrokerInstance             = await Broker.deployed();
 
 		odbtools.setup({
 			name:              "iExecODB",
