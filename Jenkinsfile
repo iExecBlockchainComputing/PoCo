@@ -117,6 +117,7 @@ pipeline {
 				withNPM(npmrcConfig:'iexecteam-npmrc') {
 					echo "Performing npm build..."
 					sh 'npm whoami'
+					sh 'npm publish --tag next'
 				}
 			}
 		}
