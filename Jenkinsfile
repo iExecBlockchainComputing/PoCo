@@ -102,20 +102,10 @@ pipeline {
 					sh "mkdir ./build/contracts-min"
 					sh "for f in \$(ls ./build/contracts); do cat ./build/contracts/\$f | ./node_modules/.bin/jqn 'pick([\"abi\",\"networks\"])' --color=false -j >> ./build/contracts-min/\$f; done"
 				}
-			}
-		}
-
-		stage('Push npm') {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			agent {
-				docker {
-					image 'node:11'
-					label "${LABEL}"
-				}
-			}
-			steps {
+				
 				withNPM(npmrcConfig:'iexecteam-npmrc') {
 					echo "Performing npm build..."
+					sh 'ls ./build'
 					sh 'npm whoami'
 					sh 'npm publish --tag next'
 				}
