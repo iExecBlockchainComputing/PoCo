@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
 
 var IexecHubABILegacy   = artifacts.require("./IexecHubABILegacy.sol");
 var IexecClerkABILegacy = artifacts.require("./IexecClerkABILegacy.sol");
@@ -42,7 +41,6 @@ contract('IexecHub', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var BrokerInstance             = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
@@ -82,7 +80,6 @@ contract('IexecHub', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		BrokerInstance             = await Broker.deployed();
 
 		/**
 		 * For ABILegacy

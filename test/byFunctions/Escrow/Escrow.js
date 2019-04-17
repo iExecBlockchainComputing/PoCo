@@ -7,8 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
-var SMSDirectory       = artifacts.require("./SMSDirectory.sol");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr    = require('multiaddr');
@@ -44,7 +42,6 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var BrokerInstance             = null;
 
 	var categories = [];
 
@@ -63,7 +60,6 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		BrokerInstance             = await Broker.deployed();
 	});
 
 	/***************************************************************************

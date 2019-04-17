@@ -5,8 +5,6 @@ var IexecClerk         = artifacts.require("IexecClerk");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
-var Broker             = artifacts.require("Broker");
-var SMSDirectory       = artifacts.require("SMSDirectory");
 
 const fs = require("fs-extra");
 const BN = require('bn.js');
@@ -60,9 +58,6 @@ module.exports = async function(deployer, network, accounts)
 
 	await deployer.deploy(IexecODBLibOrders);
 	await deployer.link(IexecODBLibOrders, IexecClerk);
-	// await deployer.deploy(ECDSA);
-	// await deployer.link(ECDSA, IexecClerk);
-	// await deployer.link(ECDSA, IexecHub);
 
 	await deployer.deploy(IexecHub);
 	IexecHubInstance = await IexecHub.deployed();
@@ -105,17 +100,6 @@ module.exports = async function(deployer, network, accounts)
 
 	await IexecHubInstance.transferOwnership(owner);
 	console.log("setCategoriesCreator to " + owner);
-
-	// experimental, do not deploy
-	if (chaintype == "private")
-	{
-		await deployer.deploy(Broker, IexecClerkInstance.address);
-		await deployer.deploy(SMSDirectory);
-		BrokerInstance       = await Broker.deployed();
-		SMSDirectoryInstance = await SMSDirectory.deployed();
-		console.log("Broker deployed at address: " + BrokerInstance.address);
-		console.log("SMSDirectory deployed at address: " + SMSDirectoryInstance.address);
-	}
 
 	// Starting deposit for all test wallets
 	if (chaintype == "private" || chaintype == "kovan")
