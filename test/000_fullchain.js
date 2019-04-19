@@ -10,9 +10,9 @@ var Workerpool         = artifacts.require("./Workerpool.sol");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr   = require('multiaddr');
-const   constants   = require("./constants");
+const   constants   = require("../utils/constants");
 const   odbtools    = require('../utils/odb-tools');
-const   wallets     = require('./wallets');
+const   wallets     = require('../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -81,7 +81,7 @@ contract('Fullchain', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-		
+
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
