@@ -209,6 +209,7 @@ Saving artifacts...
     },*/
   },
     solc: {
+        version: "0.5.7",
         optimizer: {
             enabled: true,
             runs: 200
