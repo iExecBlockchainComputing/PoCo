@@ -96,7 +96,13 @@ module.exports = async function(deployer, network, accounts)
 		,	categoriesConfigFileJson.categories[i].workClockTimeRef
 		);
 	}
-	console.log("countCategory is now: " + await IexecHubInstance.countCategory());
+
+	var catCount = await IexecHubInstance.countCategory();
+	console.log("countCategory is now: " + catCount);
+	for(var i = 0; i < await IexecHubInstance.countCategory(); ++i)
+	{
+		console.log([ "category", i, ":", ...await IexecHubInstance.viewCategory(i)].join(" "));
+	}
 
 	await IexecHubInstance.transferOwnership(owner);
 	console.log("setCategoriesCreator to " + owner);

@@ -11,10 +11,11 @@ var Workerpool         = artifacts.require("./Workerpool.sol");
 var IexecHubABILegacy   = artifacts.require("./IexecHubABILegacy.sol");
 var IexecClerkABILegacy = artifacts.require("./IexecClerkABILegacy.sol");
 
-const constants = require("./constants");
-const odbtools  = require('../utils/odb-tools');
-
-const wallets   = require('./wallets');
+const { shouldFail } = require('openzeppelin-test-helpers');
+const   multiaddr    = require('multiaddr');
+const   constants    = require("../utils/constants");
+const   odbtools     = require('../utils/odb-tools');
+const   wallets      = require('../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {

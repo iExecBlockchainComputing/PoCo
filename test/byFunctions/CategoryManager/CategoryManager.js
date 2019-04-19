@@ -10,9 +10,9 @@ var Workerpool         = artifacts.require("./Workerpool.sol");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr    = require('multiaddr');
-const   constants    = require("../../constants");
+const   constants    = require("../../../utils/constants");
 const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../wallets');
+const   wallets      = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -73,39 +73,39 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 *                    CategoryManager - create and view                    *
 	 ***************************************************************************/
 	it("CategoryManager - create and view #1: view fail", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
-		await shouldFail.throwing(IexecHubInstance.viewCategory(6));
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
+		await shouldFail.throwing(IexecHubInstance.viewCategory(5));
+		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 		await shouldFail.reverting(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #3: authorized create", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 
 		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = extractEvents(txMined, IexecHubInstance.address, "CreateCategory");
-		assert.equal(events[0].args.catid,            6,                       "check catid"           );
+		assert.equal(events[0].args.catid,            5,                       "check catid"           );
 		assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
 		assert.equal(events[0].args.description,      "Small but impractical", "check description"     );
 		assert.equal(events[0].args.workClockTimeRef, 3,                       "check workClockTimeRef");
 
-		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #4: view created", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
 
-		category = await IexecHubInstance.viewCategory(6);
+		category = await IexecHubInstance.viewCategory(5);
 		assert.equal(category.name,             "Tiny",                  "check name"            );
 		assert.equal(category.description,      "Small but impractical", "check description"     );
 		assert.equal(category.workClockTimeRef, 3,                       "check workClockTimeRef");
 
-		assert.equal(await IexecHubInstance.countCategory(), 7, "Error in category count");
+		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
 	});
 });
