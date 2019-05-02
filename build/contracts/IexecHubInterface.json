@@ -29,15 +29,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.7+commit.6da8b019\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"checkResources\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/ubuntu/jenkins-agent/workspace/PoCo-dev_lv3.0.30-3@2/contracts/IexecHubInterface.sol\":\"IexecHubInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/ubuntu/jenkins-agent/workspace/PoCo-dev_lv3.0.30-3@2/contracts/IexecHubInterface.sol\":{\"keccak256\":\"0xf13797057152e30911b1210792542cc19ac29ab31257e5f4bfa95cfc55380901\",\"urls\":[\"bzzr://3d55c59354308041bd4d1f6d92146b119b8d88bcb128ff8eb3d0b82c153c7a15\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.7+commit.6da8b019\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"checkResources\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecHubInterface.sol\":\"IexecHubInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecHubInterface.sol\":{\"keccak256\":\"0xf13797057152e30911b1210792542cc19ac29ab31257e5f4bfa95cfc55380901\",\"urls\":[\"bzzr://3d55c59354308041bd4d1f6d92146b119b8d88bcb128ff8eb3d0b82c153c7a15\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.5.7;\n\ninterface IexecHubInterface\n{\n\tfunction checkResources(address, address, address)\n\texternal view returns (bool);\n}\n",
-  "sourcePath": "/home/ubuntu/jenkins-agent/workspace/PoCo-dev_lv3.0.30-3@2/contracts/IexecHubInterface.sol",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecHubInterface.sol",
   "ast": {
-    "absolutePath": "/home/ubuntu/jenkins-agent/workspace/PoCo-dev_lv3.0.30-3@2/contracts/IexecHubInterface.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecHubInterface.sol",
     "exportedSymbols": {
       "IexecHubInterface": [
         4613
@@ -214,7 +214,7 @@
     "src": "0:140:7"
   },
   "legacyAST": {
-    "absolutePath": "/home/ubuntu/jenkins-agent/workspace/PoCo-dev_lv3.0.30-3@2/contracts/IexecHubInterface.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecHubInterface.sol",
     "exportedSymbols": {
       "IexecHubInterface": [
         4613
@@ -396,7 +396,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.6",
-  "updatedAt": "2019-04-19T18:57:48.500Z",
+  "updatedAt": "2019-05-02T14:43:40.866Z",
   "devdoc": {
     "methods": {}
   },
