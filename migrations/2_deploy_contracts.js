@@ -19,6 +19,11 @@ module.exports = async function(deployer, network, accounts)
 
 	switch (chaintype)
 	{
+		case "mainnet":
+			RLCInstance = await RLC.at("0x607F4C5BB672230e8672085532f7e901544a7375")
+			owner = "0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53";
+			break;
+
 		case "kovan":
 			RLCInstance = await RLC.at("0xc57538846ec405ea25deb00e0f9b29a432d53507")
 			owner = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
@@ -31,11 +36,6 @@ module.exports = async function(deployer, network, accounts)
 
 		case "ropsten":
 			RLCInstance = await RLC.at("0x7314dc4d7794b5e7894212ca1556ae8e3de58621")
-			owner = null;
-			break;
-
-		case "mainnet":
-			RLCInstance = await RLC.at("0x607F4C5BB672230e8672085532f7e901544a7375")
 			owner = null;
 			break;
 
