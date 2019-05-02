@@ -1,0 +1,133 @@
+{
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewEntry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x65a2c104"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "viewCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc0a8cae2"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_entry",
+          "type": "address"
+        }
+      ],
+      "name": "isRegistered",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc3c5a547"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "datasetOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "dataset",
+          "type": "address"
+        }
+      ],
+      "name": "CreateDataset",
+      "type": "event",
+      "signature": "0xc5e9a0444252e8a20898687252d27723c1618ca87f02347205b490f55fc41035"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_datasetOwner",
+          "type": "address"
+        },
+        {
+          "name": "_datasetName",
+          "type": "string"
+        },
+        {
+          "name": "_datasetMultiaddr",
+          "type": "bytes"
+        },
+        {
+          "name": "_datasetChecksum",
+          "type": "bytes32"
+        }
+      ],
+      "name": "createDataset",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x3354bcdb"
+    }
+  ],
+  "networks": {
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0x6a262f1b7b0f90a20De0b7463d4aaAa4Cbb9C75e",
+      "transactionHash": "0x7a7b977d2639c1bae669ba3d1c0a1a3385f09bdbf1dd7d085b5f0685ff947444"
+    }
+  }
+}

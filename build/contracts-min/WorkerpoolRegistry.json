@@ -1,0 +1,130 @@
+{
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewEntry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x65a2c104"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "viewCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc0a8cae2"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_entry",
+          "type": "address"
+        }
+      ],
+      "name": "isRegistered",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc3c5a547"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "workerpoolOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "workerpool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "workerpoolDescription",
+          "type": "string"
+        }
+      ],
+      "name": "CreateWorkerpool",
+      "type": "event",
+      "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_workerpoolOwner",
+          "type": "address"
+        },
+        {
+          "name": "_workerpoolDescription",
+          "type": "string"
+        }
+      ],
+      "name": "createWorkerpool",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xe40238f4"
+    }
+  ],
+  "networks": {
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0x79A37CA0894bBcc9932b58284d006D65eA33E492",
+      "transactionHash": "0x98755ce52ab26e1f0c9bdf238aed7d3115f02dc3d655c54196ef99f5b2aa9400"
+    }
+  }
+}

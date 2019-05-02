@@ -1,0 +1,1265 @@
+{
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_identity",
+          "type": "address"
+        },
+        {
+          "name": "_hash",
+          "type": "bytes32"
+        },
+        {
+          "name": "_signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifySignature",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x01751998"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "createCategory",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x298503d9"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "appregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x45b637a9"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "CONSENSUS_DURATION_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x45b99d28"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_catid",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewCategory",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "name": "workClockTimeRef",
+              "type": "uint256"
+            }
+          ],
+          "name": "category",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x4f5f44ec"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REVEAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x5fde601d"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x715018a6"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "CONTRIBUTION_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x7b244832"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x8da5cb5b"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x8f32d59b"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "workerpoolregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x90a0f546"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "FINAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x90fc26b1"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "iexecclerk",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xb01c6846"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "datasetregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xb1b11d2c"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "countCategory",
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc140996f"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REVEAL_DURATION_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xe9ebbaf8"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xf2fde38b"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "workerpool",
+          "type": "address"
+        }
+      ],
+      "name": "TaskInitialize",
+      "type": "event",
+      "signature": "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskContribute",
+      "type": "event",
+      "signature": "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "consensus",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskConsensus",
+      "type": "event",
+      "signature": "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "digest",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskReveal",
+      "type": "event",
+      "signature": "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskReopen",
+      "type": "event",
+      "signature": "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "results",
+          "type": "bytes"
+        }
+      ],
+      "name": "TaskFinalize",
+      "type": "event",
+      "signature": "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskClaimed",
+      "type": "event",
+      "signature": "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AccurateContribution",
+      "type": "event",
+      "signature": "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "FaultyContribution",
+      "type": "event",
+      "signature": "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "catid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "CreateCategory",
+      "type": "event",
+      "signature": "0x62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event",
+      "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_iexecclerkAddress",
+          "type": "address"
+        },
+        {
+          "name": "_appregistryAddress",
+          "type": "address"
+        },
+        {
+          "name": "_datasetregistryAddress",
+          "type": "address"
+        },
+        {
+          "name": "_workerpoolregistryAddress",
+          "type": "address"
+        }
+      ],
+      "name": "attachContracts",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x4704511d"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewTask",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "name": "dealid",
+              "type": "bytes32"
+            },
+            {
+              "name": "idx",
+              "type": "uint256"
+            },
+            {
+              "name": "timeref",
+              "type": "uint256"
+            },
+            {
+              "name": "contributionDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "revealDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "finalDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "consensusValue",
+              "type": "bytes32"
+            },
+            {
+              "name": "revealCounter",
+              "type": "uint256"
+            },
+            {
+              "name": "winnerCounter",
+              "type": "uint256"
+            },
+            {
+              "name": "contributors",
+              "type": "address[]"
+            },
+            {
+              "name": "resultDigest",
+              "type": "bytes32"
+            },
+            {
+              "name": "results",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xadccf0d5"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_worker",
+          "type": "address"
+        }
+      ],
+      "name": "viewContribution",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "name": "resultHash",
+              "type": "bytes32"
+            },
+            {
+              "name": "resultSeal",
+              "type": "bytes32"
+            },
+            {
+              "name": "enclaveChallenge",
+              "type": "address"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xe741363b"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_worker",
+          "type": "address"
+        }
+      ],
+      "name": "viewScore",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xdb230b52"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "app",
+          "type": "address"
+        },
+        {
+          "name": "dataset",
+          "type": "address"
+        },
+        {
+          "name": "workerpool",
+          "type": "address"
+        }
+      ],
+      "name": "checkResources",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x097d630d"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "resultFor",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xd09cc57e"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_dealid",
+          "type": "bytes32"
+        },
+        {
+          "name": "idx",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x5b36c66b"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_resultHash",
+          "type": "bytes32"
+        },
+        {
+          "name": "_resultSeal",
+          "type": "bytes32"
+        },
+        {
+          "name": "_enclaveChallenge",
+          "type": "address"
+        },
+        {
+          "name": "_enclaveSign",
+          "type": "bytes"
+        },
+        {
+          "name": "_workerpoolSign",
+          "type": "bytes"
+        }
+      ],
+      "name": "contribute",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x34623484"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_resultDigest",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reveal",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xfc334e8c"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reopen",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xf6c68e10"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_results",
+          "type": "bytes"
+        }
+      ],
+      "name": "finalize",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xc037f13e"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "claim",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xbd66528a"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_dealid",
+          "type": "bytes32[]"
+        },
+        {
+          "name": "_idx",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "initializeArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xb504681d"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "claimArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xfa055d7e"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_dealid",
+          "type": "bytes32[]"
+        },
+        {
+          "name": "_idx",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "initializeAndClaimArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xf722cb32"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewTaskABILegacy",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x248ad6a0"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_worker",
+          "type": "address"
+        }
+      ],
+      "name": "viewContributionABILegacy",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x11e35aba"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_catid",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewCategoryABILegacy",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xf9353b8d"
+    }
+  ],
+  "networks": {
+    "42": {
+      "events": {
+        "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            }
+          ],
+          "name": "TaskInitialize",
+          "type": "event",
+          "signature": "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06"
+        },
+        "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "hash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskContribute",
+          "type": "event",
+          "signature": "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb"
+        },
+        "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "consensus",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskConsensus",
+          "type": "event",
+          "signature": "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3"
+        },
+        "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "digest",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReveal",
+          "type": "event",
+          "signature": "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959"
+        },
+        "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReopen",
+          "type": "event",
+          "signature": "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b"
+        },
+        "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "results",
+              "type": "bytes"
+            }
+          ],
+          "name": "TaskFinalize",
+          "type": "event",
+          "signature": "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044"
+        },
+        "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskClaimed",
+          "type": "event",
+          "signature": "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8"
+        },
+        "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "AccurateContribution",
+          "type": "event",
+          "signature": "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492"
+        },
+        "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "FaultyContribution",
+          "type": "event",
+          "signature": "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb"
+        },
+        "0x62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "catid",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "workClockTimeRef",
+              "type": "uint256"
+            }
+          ],
+          "name": "CreateCategory",
+          "type": "event",
+          "signature": "0x62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        }
+      },
+      "links": {},
+      "address": "0xC75f4909185f712F2795563B956CCF62b76A6e13",
+      "transactionHash": "0xb1b6bf7324e0ea206541d5ab93e1737d89ae755d3dceb6d6a19bb2a6fb862010"
+    }
+  }
+}

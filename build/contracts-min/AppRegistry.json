@@ -1,0 +1,141 @@
+{
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewEntry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x65a2c104"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "viewCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc0a8cae2"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_entry",
+          "type": "address"
+        }
+      ],
+      "name": "isRegistered",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc3c5a547"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "appOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "app",
+          "type": "address"
+        }
+      ],
+      "name": "CreateApp",
+      "type": "event",
+      "signature": "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_appOwner",
+          "type": "address"
+        },
+        {
+          "name": "_appName",
+          "type": "string"
+        },
+        {
+          "name": "_appType",
+          "type": "string"
+        },
+        {
+          "name": "_appMultiaddr",
+          "type": "bytes"
+        },
+        {
+          "name": "_appChecksum",
+          "type": "bytes32"
+        },
+        {
+          "name": "_appMREnclave",
+          "type": "bytes"
+        }
+      ],
+      "name": "createApp",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x3f7868ff"
+    }
+  ],
+  "networks": {
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0x72c173A1185F3d145ab17D36480D4D96D2082d38",
+      "transactionHash": "0x96aa04535bd75fccec3db62eb0573699861e744ede726873f2ca33413e75fed0"
+    }
+  }
+}

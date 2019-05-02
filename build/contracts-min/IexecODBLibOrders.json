@@ -1,0 +1,417 @@
+{
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "APPORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x207dbbfe"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "WORKERPOOLORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x65db1dbb"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "DATASETORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x6f84d2da"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REQUESTORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x9a6f72ee"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "EIP712DOMAIN_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xc49f91d3"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "apphash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0x916984c2"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "requesthash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0x285ae657"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "datasethash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0x916984c2"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "workerpoolhash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0xdb8e81ca"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "version",
+              "type": "string"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            },
+            {
+              "name": "verifyingContract",
+              "type": "address"
+            }
+          ],
+          "name": "_domain",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "domainhash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0x4f4a2819"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_structHash",
+          "type": "bytes32"
+        },
+        {
+          "name": "_domainHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "toEthTypedStructHash",
+      "outputs": [
+        {
+          "name": "typedStructHash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function",
+      "signature": "0x176eaa49"
+    }
+  ],
+  "networks": {
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0xFf6c6Ec1a33FBf3bab20c25523b0d90969B83d6a",
+      "transactionHash": "0xfd94678a2beb5254545f670ed6c26e76378c365a4ebab7bae90d16e7a1107d7a"
+    }
+  }
+}
