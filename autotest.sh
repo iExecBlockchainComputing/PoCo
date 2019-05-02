@@ -58,12 +58,12 @@ function runCompile
 	fi
 }
 
-function runDeploy
+function runMigrate
 {
-	# try deploying contracts
-	logfile="logs/deploy.$date.log"
-	printf "Deploying ... "
-	$TRUFFLE deploy > $logfile 2>&1
+	# try migrating contracts
+	logfile="logs/migrate.$date.log"
+	printf "Migrating ... "
+	$TRUFFLE migrate > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
 		print_style 'danger' "failure\n"
@@ -105,6 +105,6 @@ checkpoint="$1"
 # MAIN
 initialize
 runCompile
-runDeploy
+runMigrate
 runTests
 finalize
