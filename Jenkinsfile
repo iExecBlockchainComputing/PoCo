@@ -83,33 +83,5 @@ pipeline {
 				}
 			}
 		}
-
-		stage('Deploy on Kovan') {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			agent {
-				docker {
-					image 'node:11'
-					label "${LABEL}"
-				}
-			}
-			steps {
-				withCredentials([
-						string(credentialsId: 'kovan-deployer-mnemonic', variable: 'DEPLOYER_MNEMONIC'),
-						string(credentialsId: 'kovan-node', variable: 'KOVAN_NODE')]) {
-					sh "sed -i '/ethereumjs-util/d' package.json"
-					sh "npm install"
-					sh "./node_modules/.bin/truffle migrate --network kovan"
-					sh "mkdir ./build/contracts-min"
-					sh "for f in \$(ls ./build/contracts); do cat ./build/contracts/\$f | ./node_modules/.bin/jqn 'pick([\"abi\",\"networks\"])' --color=false -j >> ./build/contracts-min/\$f; done"
-				}
-				
-				withNPM(npmrcConfig:'iexecteam-npmrc') {
-					echo "Performing npm build..."
-					sh 'ls ./build'
-					sh 'npm whoami'
-					sh 'npm publish --tag next'
-				}
-			}
-		}
 	}
 }
