@@ -36,14 +36,14 @@
     "absolutePath": "iexec-solidity/contracts/ERC1271/IERC1271.sol",
     "exportedSymbols": {
       "IERC1271": [
-        5750
+        5761
       ]
     },
-    "id": 5751,
+    "id": 5762,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5737,
+        "id": 5748,
         "literals": [
           "solidity",
           "^",
@@ -59,19 +59,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5750,
+        "id": 5761,
         "linearizedBaseContracts": [
-          5750
+          5761
         ],
         "name": "IERC1271",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 5740,
+            "id": 5751,
             "name": "MAGICVALUE",
             "nodeType": "VariableDeclaration",
-            "scope": 5750,
+            "scope": 5761,
             "src": "100:48:22",
             "stateVariable": true,
             "storageLocation": "default",
@@ -80,7 +80,7 @@
               "typeString": "bytes4"
             },
             "typeName": {
-              "id": 5738,
+              "id": 5749,
               "name": "bytes4",
               "nodeType": "ElementaryTypeName",
               "src": "100:6:22",
@@ -92,7 +92,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "30783230633133623062",
-              "id": 5739,
+              "id": 5750,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -112,22 +112,22 @@
           {
             "body": null,
             "documentation": "@dev Should return whether the signature provided is valid for the provided data\n@param _data Arbitrary length data signed on the behalf of address(this)\n@param _signature Signature byte array associated with _data\n\t * MUST return the bytes4 magic value 0x20c13b0b when function passes.\nMUST NOT modify state (using STATICCALL for solc < 0.5, view modifier for solc > 0.5)\nMUST allow external calls",
-            "id": 5749,
+            "id": 5760,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "isValidSignature",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5745,
+              "id": 5756,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5742,
+                  "id": 5753,
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "788:13:22",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -136,7 +136,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5741,
+                    "id": 5752,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "788:7:22",
@@ -150,10 +150,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5744,
+                  "id": 5755,
                   "name": "_signature",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "805:23:22",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -162,7 +162,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5743,
+                    "id": 5754,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "805:5:22",
@@ -178,15 +178,15 @@
               "src": "784:47:22"
             },
             "returnParameters": {
-              "id": 5748,
+              "id": 5759,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5747,
+                  "id": 5758,
                   "name": "isValid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "856:12:22",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -195,7 +195,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5746,
+                    "id": 5757,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "856:4:22",
@@ -210,14 +210,14 @@
               ],
               "src": "855:14:22"
             },
-            "scope": 5750,
+            "scope": 5761,
             "src": "759:111:22",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 5751,
+        "scope": 5762,
         "src": "25:847:22"
       }
     ],
@@ -227,14 +227,14 @@
     "absolutePath": "iexec-solidity/contracts/ERC1271/IERC1271.sol",
     "exportedSymbols": {
       "IERC1271": [
-        5750
+        5761
       ]
     },
-    "id": 5751,
+    "id": 5762,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5737,
+        "id": 5748,
         "literals": [
           "solidity",
           "^",
@@ -250,19 +250,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5750,
+        "id": 5761,
         "linearizedBaseContracts": [
-          5750
+          5761
         ],
         "name": "IERC1271",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 5740,
+            "id": 5751,
             "name": "MAGICVALUE",
             "nodeType": "VariableDeclaration",
-            "scope": 5750,
+            "scope": 5761,
             "src": "100:48:22",
             "stateVariable": true,
             "storageLocation": "default",
@@ -271,7 +271,7 @@
               "typeString": "bytes4"
             },
             "typeName": {
-              "id": 5738,
+              "id": 5749,
               "name": "bytes4",
               "nodeType": "ElementaryTypeName",
               "src": "100:6:22",
@@ -283,7 +283,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "30783230633133623062",
-              "id": 5739,
+              "id": 5750,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -303,22 +303,22 @@
           {
             "body": null,
             "documentation": "@dev Should return whether the signature provided is valid for the provided data\n@param _data Arbitrary length data signed on the behalf of address(this)\n@param _signature Signature byte array associated with _data\n\t * MUST return the bytes4 magic value 0x20c13b0b when function passes.\nMUST NOT modify state (using STATICCALL for solc < 0.5, view modifier for solc > 0.5)\nMUST allow external calls",
-            "id": 5749,
+            "id": 5760,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "isValidSignature",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5745,
+              "id": 5756,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5742,
+                  "id": 5753,
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "788:13:22",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -327,7 +327,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5741,
+                    "id": 5752,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "788:7:22",
@@ -341,10 +341,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5744,
+                  "id": 5755,
                   "name": "_signature",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "805:23:22",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -353,7 +353,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5743,
+                    "id": 5754,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "805:5:22",
@@ -369,15 +369,15 @@
               "src": "784:47:22"
             },
             "returnParameters": {
-              "id": 5748,
+              "id": 5759,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5747,
+                  "id": 5758,
                   "name": "isValid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5749,
+                  "scope": 5760,
                   "src": "856:12:22",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -386,7 +386,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5746,
+                    "id": 5757,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "856:4:22",
@@ -401,14 +401,14 @@
               ],
               "src": "855:14:22"
             },
-            "scope": 5750,
+            "scope": 5761,
             "src": "759:111:22",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 5751,
+        "scope": 5762,
         "src": "25:847:22"
       }
     ],
@@ -419,8 +419,8 @@
     "version": "0.5.7+commit.6da8b019.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.6",
-  "updatedAt": "2019-05-02T14:43:40.896Z",
+  "schemaVersion": "3.0.8",
+  "updatedAt": "2019-05-03T09:48:00.478Z",
   "devdoc": {
     "methods": {
       "isValidSignature(bytes32,bytes)": {

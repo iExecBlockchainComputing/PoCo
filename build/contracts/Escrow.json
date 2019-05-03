@@ -317,7 +317,7 @@
         "id": 86,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 5820,
+        "sourceUnit": 5831,
         "src": "59:57:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -328,7 +328,7 @@
         "id": 87,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 6169,
+        "sourceUnit": 6180,
         "src": "117:52:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -339,7 +339,7 @@
         "id": 88,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 4913,
+        "sourceUnit": 4924,
         "src": "171:36:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -364,10 +364,10 @@
               "id": 89,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6168,
+              "referencedDeclaration": 6179,
               "src": "234:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$6168",
+                "typeIdentifier": "t_contract$_SafeMath_$6179",
                 "typeString": "library SafeMath"
               }
             },
@@ -394,7 +394,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$5819",
+              "typeIdentifier": "t_contract$_IERC20_$5830",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -402,10 +402,10 @@
               "id": 92,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5819,
+              "referencedDeclaration": 5830,
               "src": "300:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$5819",
+                "typeIdentifier": "t_contract$_IERC20_$5830",
                 "typeString": "contract IERC20"
               }
             },
@@ -422,7 +422,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
               "typeString": "mapping(address => struct IexecODBLibCore.Account)"
             },
             "typeName": {
@@ -440,7 +440,7 @@
               "nodeType": "Mapping",
               "src": "352:43:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                 "typeString": "mapping(address => struct IexecODBLibCore.Account)"
               },
               "valueType": {
@@ -448,10 +448,10 @@
                 "id": 95,
                 "name": "IexecODBLibCore.Account",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 4818,
+                "referencedDeclaration": 4829,
                 "src": "371:23:1",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Account_$4818_storage_ptr",
+                  "typeIdentifier": "t_struct$_Account_$4829_storage_ptr",
                   "typeString": "struct IexecODBLibCore.Account"
                 }
               }
@@ -1054,7 +1054,7 @@
                       "referencedDeclaration": 93,
                       "src": "891:5:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$5819",
+                        "typeIdentifier": "t_contract$_IERC20_$5830",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -1088,10 +1088,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5819,
+                        "referencedDeclaration": 5830,
                         "src": "899:6:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$5819_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$5830_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -1105,13 +1105,13 @@
                       "nodeType": "FunctionCall",
                       "src": "899:14:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$5819",
+                        "typeIdentifier": "t_contract$_IERC20_$5830",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "891:22:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$5819",
+                      "typeIdentifier": "t_contract$_IERC20_$5830",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -1192,7 +1192,7 @@
                       "referencedDeclaration": 97,
                       "src": "1055:10:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                        "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                         "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                       }
                     },
@@ -1217,7 +1217,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1055:17:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Account_$4818_storage",
+                      "typeIdentifier": "t_struct$_Account_$4829_storage",
                       "typeString": "struct IexecODBLibCore.Account storage ref"
                     }
                   },
@@ -1283,7 +1283,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Account_$4818_memory_ptr",
+                    "typeIdentifier": "t_struct$_Account_$4829_memory_ptr",
                     "typeString": "struct IexecODBLibCore.Account"
                   },
                   "typeName": {
@@ -1291,10 +1291,10 @@
                     "id": 161,
                     "name": "IexecODBLibCore.Account",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 4818,
+                    "referencedDeclaration": 4829,
                     "src": "1003:23:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Account_$4818_storage_ptr",
+                      "typeIdentifier": "t_struct$_Account_$4829_storage_ptr",
                       "typeString": "struct IexecODBLibCore.Account"
                     }
                   },
@@ -1331,7 +1331,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "1207:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1361,7 +1361,7 @@
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6316,
+                                "referencedDeclaration": 6327,
                                 "src": "1227:4:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Escrow_$485",
@@ -1441,7 +1441,7 @@
                             "referencedDeclaration": 93,
                             "src": "1188:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -1452,7 +1452,7 @@
                           "lValueRequested": false,
                           "memberName": "transferFrom",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5802,
+                          "referencedDeclaration": 5813,
                           "src": "1188:18:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -1485,10 +1485,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1180:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -1534,7 +1534,7 @@
                           "referencedDeclaration": 97,
                           "src": "1247:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -1547,7 +1547,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6292,
+                            "referencedDeclaration": 6303,
                             "src": "1258:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -1575,7 +1575,7 @@
                         "nodeType": "IndexAccess",
                         "src": "1247:22:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -1586,7 +1586,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "1247:28:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1632,7 +1632,7 @@
                               "referencedDeclaration": 97,
                               "src": "1278:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -1645,7 +1645,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6292,
+                                "referencedDeclaration": 6303,
                                 "src": "1289:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -1673,7 +1673,7 @@
                             "nodeType": "IndexAccess",
                             "src": "1278:22:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -1684,7 +1684,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "1278:28:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -1698,7 +1698,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "1278:32:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -1741,7 +1741,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "1336:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2031,10 +2031,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1460:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2074,7 +2074,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "1522:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -2104,7 +2104,7 @@
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6316,
+                                "referencedDeclaration": 6327,
                                 "src": "1542:4:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Escrow_$485",
@@ -2184,7 +2184,7 @@
                             "referencedDeclaration": 93,
                             "src": "1503:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -2195,7 +2195,7 @@
                           "lValueRequested": false,
                           "memberName": "transferFrom",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5802,
+                          "referencedDeclaration": 5813,
                           "src": "1503:18:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -2228,10 +2228,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1495:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2277,7 +2277,7 @@
                           "referencedDeclaration": 97,
                           "src": "1562:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -2302,7 +2302,7 @@
                         "nodeType": "IndexAccess",
                         "src": "1562:19:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -2313,7 +2313,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "1562:25:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2359,7 +2359,7 @@
                               "referencedDeclaration": 97,
                               "src": "1590:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -2384,7 +2384,7 @@
                             "nodeType": "IndexAccess",
                             "src": "1590:19:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -2395,7 +2395,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "1590:25:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -2409,7 +2409,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "1590:29:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -2452,7 +2452,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "1648:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2775,10 +2775,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1812:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3268,7 +3268,7 @@
                           "referencedDeclaration": 97,
                           "src": "2036:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -3281,7 +3281,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6292,
+                            "referencedDeclaration": 6303,
                             "src": "2047:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -3309,7 +3309,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2036:22:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -3320,7 +3320,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2036:28:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3366,7 +3366,7 @@
                               "referencedDeclaration": 97,
                               "src": "2067:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -3379,7 +3379,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6292,
+                                "referencedDeclaration": 6303,
                                 "src": "2078:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -3407,7 +3407,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2067:22:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -3418,7 +3418,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2067:28:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -3432,7 +3432,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2067:32:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -3478,7 +3478,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "2135:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -3533,7 +3533,7 @@
                             "referencedDeclaration": 93,
                             "src": "2120:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -3544,7 +3544,7 @@
                           "lValueRequested": false,
                           "memberName": "transfer",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5782,
+                          "referencedDeclaration": 5793,
                           "src": "2120:14:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -3577,10 +3577,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "2112:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -3617,7 +3617,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "2174:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -3824,7 +3824,7 @@
                           "referencedDeclaration": 97,
                           "src": "2358:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -3849,7 +3849,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2358:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -3860,7 +3860,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2358:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3906,7 +3906,7 @@
                               "referencedDeclaration": 97,
                               "src": "2384:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -3931,7 +3931,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2384:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -3942,7 +3942,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2384:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -3956,7 +3956,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "2384:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -4209,7 +4209,7 @@
                           "referencedDeclaration": 97,
                           "src": "2592:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -4234,7 +4234,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2592:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -4245,7 +4245,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "2592:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4291,7 +4291,7 @@
                               "referencedDeclaration": 97,
                               "src": "2619:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -4316,7 +4316,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2619:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -4327,7 +4327,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "2619:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -4341,7 +4341,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2619:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -4594,7 +4594,7 @@
                           "referencedDeclaration": 97,
                           "src": "2806:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -4619,7 +4619,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2806:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -4630,7 +4630,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2806:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4676,7 +4676,7 @@
                               "referencedDeclaration": 97,
                               "src": "2833:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -4701,7 +4701,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2833:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -4712,7 +4712,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2833:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -4726,7 +4726,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2833:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -4778,7 +4778,7 @@
                           "referencedDeclaration": 97,
                           "src": "2873:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -4803,7 +4803,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2873:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -4814,7 +4814,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "2873:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4860,7 +4860,7 @@
                               "referencedDeclaration": 97,
                               "src": "2900:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -4885,7 +4885,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2900:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -4896,7 +4896,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "2900:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -4910,7 +4910,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "2900:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5120,7 +5120,7 @@
                           "referencedDeclaration": 97,
                           "src": "3076:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -5145,7 +5145,7 @@
                         "nodeType": "IndexAccess",
                         "src": "3076:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -5156,7 +5156,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "3076:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -5202,7 +5202,7 @@
                               "referencedDeclaration": 97,
                               "src": "3103:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -5227,7 +5227,7 @@
                             "nodeType": "IndexAccess",
                             "src": "3103:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -5238,7 +5238,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "3103:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -5252,7 +5252,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "3103:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5304,7 +5304,7 @@
                           "referencedDeclaration": 97,
                           "src": "3144:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -5329,7 +5329,7 @@
                         "nodeType": "IndexAccess",
                         "src": "3144:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -5340,7 +5340,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "3144:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -5386,7 +5386,7 @@
                               "referencedDeclaration": 97,
                               "src": "3171:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -5411,7 +5411,7 @@
                             "nodeType": "IndexAccess",
                             "src": "3171:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -5422,7 +5422,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "3171:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -5436,7 +5436,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "3171:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5662,7 +5662,7 @@
         "id": 86,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 5820,
+        "sourceUnit": 5831,
         "src": "59:57:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5673,7 +5673,7 @@
         "id": 87,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 6169,
+        "sourceUnit": 6180,
         "src": "117:52:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5684,7 +5684,7 @@
         "id": 88,
         "nodeType": "ImportDirective",
         "scope": 486,
-        "sourceUnit": 4913,
+        "sourceUnit": 4924,
         "src": "171:36:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5709,10 +5709,10 @@
               "id": 89,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6168,
+              "referencedDeclaration": 6179,
               "src": "234:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$6168",
+                "typeIdentifier": "t_contract$_SafeMath_$6179",
                 "typeString": "library SafeMath"
               }
             },
@@ -5739,7 +5739,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$5819",
+              "typeIdentifier": "t_contract$_IERC20_$5830",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -5747,10 +5747,10 @@
               "id": 92,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5819,
+              "referencedDeclaration": 5830,
               "src": "300:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$5819",
+                "typeIdentifier": "t_contract$_IERC20_$5830",
                 "typeString": "contract IERC20"
               }
             },
@@ -5767,7 +5767,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
               "typeString": "mapping(address => struct IexecODBLibCore.Account)"
             },
             "typeName": {
@@ -5785,7 +5785,7 @@
               "nodeType": "Mapping",
               "src": "352:43:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                 "typeString": "mapping(address => struct IexecODBLibCore.Account)"
               },
               "valueType": {
@@ -5793,10 +5793,10 @@
                 "id": 95,
                 "name": "IexecODBLibCore.Account",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 4818,
+                "referencedDeclaration": 4829,
                 "src": "371:23:1",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Account_$4818_storage_ptr",
+                  "typeIdentifier": "t_struct$_Account_$4829_storage_ptr",
                   "typeString": "struct IexecODBLibCore.Account"
                 }
               }
@@ -6399,7 +6399,7 @@
                       "referencedDeclaration": 93,
                       "src": "891:5:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$5819",
+                        "typeIdentifier": "t_contract$_IERC20_$5830",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -6433,10 +6433,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5819,
+                        "referencedDeclaration": 5830,
                         "src": "899:6:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$5819_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$5830_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -6450,13 +6450,13 @@
                       "nodeType": "FunctionCall",
                       "src": "899:14:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$5819",
+                        "typeIdentifier": "t_contract$_IERC20_$5830",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "891:22:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$5819",
+                      "typeIdentifier": "t_contract$_IERC20_$5830",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -6537,7 +6537,7 @@
                       "referencedDeclaration": 97,
                       "src": "1055:10:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                        "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                         "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                       }
                     },
@@ -6562,7 +6562,7 @@
                     "nodeType": "IndexAccess",
                     "src": "1055:17:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Account_$4818_storage",
+                      "typeIdentifier": "t_struct$_Account_$4829_storage",
                       "typeString": "struct IexecODBLibCore.Account storage ref"
                     }
                   },
@@ -6628,7 +6628,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Account_$4818_memory_ptr",
+                    "typeIdentifier": "t_struct$_Account_$4829_memory_ptr",
                     "typeString": "struct IexecODBLibCore.Account"
                   },
                   "typeName": {
@@ -6636,10 +6636,10 @@
                     "id": 161,
                     "name": "IexecODBLibCore.Account",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 4818,
+                    "referencedDeclaration": 4829,
                     "src": "1003:23:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Account_$4818_storage_ptr",
+                      "typeIdentifier": "t_struct$_Account_$4829_storage_ptr",
                       "typeString": "struct IexecODBLibCore.Account"
                     }
                   },
@@ -6676,7 +6676,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "1207:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -6706,7 +6706,7 @@
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6316,
+                                "referencedDeclaration": 6327,
                                 "src": "1227:4:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Escrow_$485",
@@ -6786,7 +6786,7 @@
                             "referencedDeclaration": 93,
                             "src": "1188:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -6797,7 +6797,7 @@
                           "lValueRequested": false,
                           "memberName": "transferFrom",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5802,
+                          "referencedDeclaration": 5813,
                           "src": "1188:18:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -6830,10 +6830,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1180:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -6879,7 +6879,7 @@
                           "referencedDeclaration": 97,
                           "src": "1247:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -6892,7 +6892,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6292,
+                            "referencedDeclaration": 6303,
                             "src": "1258:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -6920,7 +6920,7 @@
                         "nodeType": "IndexAccess",
                         "src": "1247:22:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -6931,7 +6931,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "1247:28:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -6977,7 +6977,7 @@
                               "referencedDeclaration": 97,
                               "src": "1278:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -6990,7 +6990,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6292,
+                                "referencedDeclaration": 6303,
                                 "src": "1289:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -7018,7 +7018,7 @@
                             "nodeType": "IndexAccess",
                             "src": "1278:22:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -7029,7 +7029,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "1278:28:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -7043,7 +7043,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "1278:32:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -7086,7 +7086,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "1336:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -7376,10 +7376,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1460:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -7419,7 +7419,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "1522:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -7449,7 +7449,7 @@
                                 "name": "this",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6316,
+                                "referencedDeclaration": 6327,
                                 "src": "1542:4:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_contract$_Escrow_$485",
@@ -7529,7 +7529,7 @@
                             "referencedDeclaration": 93,
                             "src": "1503:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -7540,7 +7540,7 @@
                           "lValueRequested": false,
                           "memberName": "transferFrom",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5802,
+                          "referencedDeclaration": 5813,
                           "src": "1503:18:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -7573,10 +7573,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1495:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -7622,7 +7622,7 @@
                           "referencedDeclaration": 97,
                           "src": "1562:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -7647,7 +7647,7 @@
                         "nodeType": "IndexAccess",
                         "src": "1562:19:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -7658,7 +7658,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "1562:25:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -7704,7 +7704,7 @@
                               "referencedDeclaration": 97,
                               "src": "1590:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -7729,7 +7729,7 @@
                             "nodeType": "IndexAccess",
                             "src": "1590:19:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -7740,7 +7740,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "1590:25:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -7754,7 +7754,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "1590:29:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -7797,7 +7797,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "1648:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -8120,10 +8120,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "1812:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -8613,7 +8613,7 @@
                           "referencedDeclaration": 97,
                           "src": "2036:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -8626,7 +8626,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6292,
+                            "referencedDeclaration": 6303,
                             "src": "2047:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -8654,7 +8654,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2036:22:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -8665,7 +8665,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2036:28:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -8711,7 +8711,7 @@
                               "referencedDeclaration": 97,
                               "src": "2067:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -8724,7 +8724,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6292,
+                                "referencedDeclaration": 6303,
                                 "src": "2078:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -8752,7 +8752,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2067:22:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -8763,7 +8763,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2067:28:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -8777,7 +8777,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2067:32:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -8823,7 +8823,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6292,
+                              "referencedDeclaration": 6303,
                               "src": "2135:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -8878,7 +8878,7 @@
                             "referencedDeclaration": 93,
                             "src": "2120:5:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$5819",
+                              "typeIdentifier": "t_contract$_IERC20_$5830",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -8889,7 +8889,7 @@
                           "lValueRequested": false,
                           "memberName": "transfer",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5782,
+                          "referencedDeclaration": 5793,
                           "src": "2120:14:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -8922,10 +8922,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6295,
-                        6296
+                        6306,
+                        6307
                       ],
-                      "referencedDeclaration": 6295,
+                      "referencedDeclaration": 6306,
                       "src": "2112:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -8962,7 +8962,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6292,
+                          "referencedDeclaration": 6303,
                           "src": "2174:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -9169,7 +9169,7 @@
                           "referencedDeclaration": 97,
                           "src": "2358:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -9194,7 +9194,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2358:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -9205,7 +9205,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2358:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -9251,7 +9251,7 @@
                               "referencedDeclaration": 97,
                               "src": "2384:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -9276,7 +9276,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2384:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -9287,7 +9287,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2384:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -9301,7 +9301,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "2384:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9554,7 +9554,7 @@
                           "referencedDeclaration": 97,
                           "src": "2592:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -9579,7 +9579,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2592:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -9590,7 +9590,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "2592:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -9636,7 +9636,7 @@
                               "referencedDeclaration": 97,
                               "src": "2619:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -9661,7 +9661,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2619:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -9672,7 +9672,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "2619:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -9686,7 +9686,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2619:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9939,7 +9939,7 @@
                           "referencedDeclaration": 97,
                           "src": "2806:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -9964,7 +9964,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2806:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -9975,7 +9975,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "2806:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10021,7 +10021,7 @@
                               "referencedDeclaration": 97,
                               "src": "2833:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -10046,7 +10046,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2833:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -10057,7 +10057,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "2833:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -10071,7 +10071,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "2833:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10123,7 +10123,7 @@
                           "referencedDeclaration": 97,
                           "src": "2873:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -10148,7 +10148,7 @@
                         "nodeType": "IndexAccess",
                         "src": "2873:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -10159,7 +10159,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "2873:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10205,7 +10205,7 @@
                               "referencedDeclaration": 97,
                               "src": "2900:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -10230,7 +10230,7 @@
                             "nodeType": "IndexAccess",
                             "src": "2900:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -10241,7 +10241,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "2900:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -10255,7 +10255,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "2900:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10465,7 +10465,7 @@
                           "referencedDeclaration": 97,
                           "src": "3076:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -10490,7 +10490,7 @@
                         "nodeType": "IndexAccess",
                         "src": "3076:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -10501,7 +10501,7 @@
                       "lValueRequested": true,
                       "memberName": "locked",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4817,
+                      "referencedDeclaration": 4828,
                       "src": "3076:24:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10547,7 +10547,7 @@
                               "referencedDeclaration": 97,
                               "src": "3103:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -10572,7 +10572,7 @@
                             "nodeType": "IndexAccess",
                             "src": "3103:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -10583,7 +10583,7 @@
                           "lValueRequested": false,
                           "memberName": "locked",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4817,
+                          "referencedDeclaration": 4828,
                           "src": "3103:24:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -10597,7 +10597,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 6011,
+                        "referencedDeclaration": 6022,
                         "src": "3103:28:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10649,7 +10649,7 @@
                           "referencedDeclaration": 97,
                           "src": "3144:10:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                             "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                           }
                         },
@@ -10674,7 +10674,7 @@
                         "nodeType": "IndexAccess",
                         "src": "3144:17:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Account_$4818_storage",
+                          "typeIdentifier": "t_struct$_Account_$4829_storage",
                           "typeString": "struct IexecODBLibCore.Account storage ref"
                         }
                       },
@@ -10685,7 +10685,7 @@
                       "lValueRequested": true,
                       "memberName": "stake",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4815,
+                      "referencedDeclaration": 4826,
                       "src": "3144:23:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10731,7 +10731,7 @@
                               "referencedDeclaration": 97,
                               "src": "3171:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4818_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$4829_storage_$",
                                 "typeString": "mapping(address => struct IexecODBLibCore.Account storage ref)"
                               }
                             },
@@ -10756,7 +10756,7 @@
                             "nodeType": "IndexAccess",
                             "src": "3171:17:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Account_$4818_storage",
+                              "typeIdentifier": "t_struct$_Account_$4829_storage",
                               "typeString": "struct IexecODBLibCore.Account storage ref"
                             }
                           },
@@ -10767,7 +10767,7 @@
                           "lValueRequested": false,
                           "memberName": "stake",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4815,
+                          "referencedDeclaration": 4826,
                           "src": "3171:23:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -10781,7 +10781,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 5987,
+                        "referencedDeclaration": 5998,
                         "src": "3171:27:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10976,8 +10976,8 @@
     "version": "0.5.7+commit.6da8b019.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.6",
-  "updatedAt": "2019-05-02T14:43:40.716Z",
+  "schemaVersion": "3.0.8",
+  "updatedAt": "2019-05-03T09:48:00.426Z",
   "devdoc": {
     "methods": {}
   },

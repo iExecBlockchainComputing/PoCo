@@ -220,7 +220,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 83,
-        "sourceUnit": 6278,
+        "sourceUnit": 6289,
         "src": "59:63:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -231,7 +231,7 @@
         "id": 4,
         "nodeType": "ImportDirective",
         "scope": 83,
-        "sourceUnit": 4913,
+        "sourceUnit": 4924,
         "src": "124:36:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -245,10 +245,10 @@
               "id": 5,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6277,
+              "referencedDeclaration": 6288,
               "src": "190:7:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6277",
+                "typeIdentifier": "t_contract$_Ownable_$6288",
                 "typeString": "contract Ownable"
               }
             },
@@ -258,7 +258,7 @@
           }
         ],
         "contractDependencies": [
-          6277
+          6288
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -266,7 +266,7 @@
         "id": 82,
         "linearizedBaseContracts": [
           82,
-          6277
+          6288
         ],
         "name": "CategoryManager",
         "nodeType": "ContractDefinition",
@@ -281,7 +281,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+              "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
               "typeString": "struct IexecODBLibCore.Category[]"
             },
             "typeName": {
@@ -290,10 +290,10 @@
                 "id": 7,
                 "name": "IexecODBLibCore.Category",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 4825,
+                "referencedDeclaration": 4836,
                 "src": "223:24:0",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Category_$4825_storage_ptr",
+                  "typeIdentifier": "t_struct$_Category_$4836_storage_ptr",
                   "typeString": "struct IexecODBLibCore.Category"
                 }
               },
@@ -302,7 +302,7 @@
               "nodeType": "ArrayTypeName",
               "src": "223:26:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage_ptr",
                 "typeString": "struct IexecODBLibCore.Category[]"
               }
             },
@@ -482,7 +482,7 @@
                       "referencedDeclaration": 9,
                       "src": "591:12:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                         "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                       }
                     },
@@ -507,7 +507,7 @@
                     "nodeType": "IndexAccess",
                     "src": "591:20:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Category_$4825_storage",
+                      "typeIdentifier": "t_struct$_Category_$4836_storage",
                       "typeString": "struct IexecODBLibCore.Category storage ref"
                     }
                   },
@@ -572,7 +572,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Category_$4825_memory_ptr",
+                    "typeIdentifier": "t_struct$_Category_$4836_memory_ptr",
                     "typeString": "struct IexecODBLibCore.Category"
                   },
                   "typeName": {
@@ -580,10 +580,10 @@
                     "id": 27,
                     "name": "IexecODBLibCore.Category",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 4825,
+                    "referencedDeclaration": 4836,
                     "src": "537:24:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Category_$4825_storage_ptr",
+                      "typeIdentifier": "t_struct$_Category_$4836_storage_ptr",
                       "typeString": "struct IexecODBLibCore.Category"
                     }
                   },
@@ -617,7 +617,7 @@
                       "referencedDeclaration": 9,
                       "src": "694:12:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                         "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                       }
                     },
@@ -811,10 +811,10 @@
                               "name": "IexecODBLibCore",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 4912,
+                              "referencedDeclaration": 4923,
                               "src": "938:15:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$4912_$",
+                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$4923_$",
                                 "typeString": "type(library IexecODBLibCore)"
                               }
                             },
@@ -825,10 +825,10 @@
                             "lValueRequested": false,
                             "memberName": "Category",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 4825,
+                            "referencedDeclaration": 4836,
                             "src": "938:24:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_struct$_Category_$4825_storage_ptr_$",
+                              "typeIdentifier": "t_type$_t_struct$_Category_$4836_storage_ptr_$",
                               "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
                             }
                           },
@@ -842,7 +842,7 @@
                           "nodeType": "FunctionCall",
                           "src": "938:74:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Category_$4825_memory",
+                            "typeIdentifier": "t_struct$_Category_$4836_memory",
                             "typeString": "struct IexecODBLibCore.Category memory"
                           }
                         }
@@ -850,7 +850,7 @@
                       "expression": {
                         "argumentTypes": [
                           {
-                            "typeIdentifier": "t_struct$_Category_$4825_memory",
+                            "typeIdentifier": "t_struct$_Category_$4836_memory",
                             "typeString": "struct IexecODBLibCore.Category memory"
                           }
                         ],
@@ -863,7 +863,7 @@
                           "referencedDeclaration": 9,
                           "src": "920:12:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                             "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                           }
                         },
@@ -877,7 +877,7 @@
                         "referencedDeclaration": null,
                         "src": "920:17:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$4825_storage_$returns$_t_uint256_$",
+                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$4836_storage_$returns$_t_uint256_$",
                           "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
                         }
                       },
@@ -1064,7 +1064,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 6211,
+                  "referencedDeclaration": 6222,
                   "src": "871:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1244,7 +1244,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 83,
-        "sourceUnit": 6278,
+        "sourceUnit": 6289,
         "src": "59:63:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1255,7 +1255,7 @@
         "id": 4,
         "nodeType": "ImportDirective",
         "scope": 83,
-        "sourceUnit": 4913,
+        "sourceUnit": 4924,
         "src": "124:36:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1269,10 +1269,10 @@
               "id": 5,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6277,
+              "referencedDeclaration": 6288,
               "src": "190:7:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6277",
+                "typeIdentifier": "t_contract$_Ownable_$6288",
                 "typeString": "contract Ownable"
               }
             },
@@ -1282,7 +1282,7 @@
           }
         ],
         "contractDependencies": [
-          6277
+          6288
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -1290,7 +1290,7 @@
         "id": 82,
         "linearizedBaseContracts": [
           82,
-          6277
+          6288
         ],
         "name": "CategoryManager",
         "nodeType": "ContractDefinition",
@@ -1305,7 +1305,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+              "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
               "typeString": "struct IexecODBLibCore.Category[]"
             },
             "typeName": {
@@ -1314,10 +1314,10 @@
                 "id": 7,
                 "name": "IexecODBLibCore.Category",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 4825,
+                "referencedDeclaration": 4836,
                 "src": "223:24:0",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Category_$4825_storage_ptr",
+                  "typeIdentifier": "t_struct$_Category_$4836_storage_ptr",
                   "typeString": "struct IexecODBLibCore.Category"
                 }
               },
@@ -1326,7 +1326,7 @@
               "nodeType": "ArrayTypeName",
               "src": "223:26:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage_ptr",
+                "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage_ptr",
                 "typeString": "struct IexecODBLibCore.Category[]"
               }
             },
@@ -1506,7 +1506,7 @@
                       "referencedDeclaration": 9,
                       "src": "591:12:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                         "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                       }
                     },
@@ -1531,7 +1531,7 @@
                     "nodeType": "IndexAccess",
                     "src": "591:20:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Category_$4825_storage",
+                      "typeIdentifier": "t_struct$_Category_$4836_storage",
                       "typeString": "struct IexecODBLibCore.Category storage ref"
                     }
                   },
@@ -1596,7 +1596,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Category_$4825_memory_ptr",
+                    "typeIdentifier": "t_struct$_Category_$4836_memory_ptr",
                     "typeString": "struct IexecODBLibCore.Category"
                   },
                   "typeName": {
@@ -1604,10 +1604,10 @@
                     "id": 27,
                     "name": "IexecODBLibCore.Category",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 4825,
+                    "referencedDeclaration": 4836,
                     "src": "537:24:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Category_$4825_storage_ptr",
+                      "typeIdentifier": "t_struct$_Category_$4836_storage_ptr",
                       "typeString": "struct IexecODBLibCore.Category"
                     }
                   },
@@ -1641,7 +1641,7 @@
                       "referencedDeclaration": 9,
                       "src": "694:12:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                        "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                         "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                       }
                     },
@@ -1835,10 +1835,10 @@
                               "name": "IexecODBLibCore",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 4912,
+                              "referencedDeclaration": 4923,
                               "src": "938:15:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$4912_$",
+                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$4923_$",
                                 "typeString": "type(library IexecODBLibCore)"
                               }
                             },
@@ -1849,10 +1849,10 @@
                             "lValueRequested": false,
                             "memberName": "Category",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 4825,
+                            "referencedDeclaration": 4836,
                             "src": "938:24:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_struct$_Category_$4825_storage_ptr_$",
+                              "typeIdentifier": "t_type$_t_struct$_Category_$4836_storage_ptr_$",
                               "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
                             }
                           },
@@ -1866,7 +1866,7 @@
                           "nodeType": "FunctionCall",
                           "src": "938:74:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Category_$4825_memory",
+                            "typeIdentifier": "t_struct$_Category_$4836_memory",
                             "typeString": "struct IexecODBLibCore.Category memory"
                           }
                         }
@@ -1874,7 +1874,7 @@
                       "expression": {
                         "argumentTypes": [
                           {
-                            "typeIdentifier": "t_struct$_Category_$4825_memory",
+                            "typeIdentifier": "t_struct$_Category_$4836_memory",
                             "typeString": "struct IexecODBLibCore.Category memory"
                           }
                         ],
@@ -1887,7 +1887,7 @@
                           "referencedDeclaration": 9,
                           "src": "920:12:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_array$_t_struct$_Category_$4825_storage_$dyn_storage",
+                            "typeIdentifier": "t_array$_t_struct$_Category_$4836_storage_$dyn_storage",
                             "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
                           }
                         },
@@ -1901,7 +1901,7 @@
                         "referencedDeclaration": null,
                         "src": "920:17:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$4825_storage_$returns$_t_uint256_$",
+                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$4836_storage_$returns$_t_uint256_$",
                           "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
                         }
                       },
@@ -2088,7 +2088,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 6211,
+                  "referencedDeclaration": 6222,
                   "src": "871:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2237,8 +2237,8 @@
     "version": "0.5.7+commit.6da8b019.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.6",
-  "updatedAt": "2019-05-02T14:43:40.695Z",
+  "schemaVersion": "3.0.8",
+  "updatedAt": "2019-05-03T09:48:00.425Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

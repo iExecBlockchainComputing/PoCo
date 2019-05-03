@@ -4,8 +4,9 @@ PATH_MAIN = ./build/contracts/
 PATH_MIN  = ./build/contracts-min/
 OBJECTS   = $(patsubst $(PATH_MAIN)%.json, %, $(wildcard $(PATH_MAIN)*.json))
 
-# MERGE
-MERGED = ./build/sources/merged.sol
+# FLATTEN
+PATH_FLAT = ./build/sources/
+FILE_FLAT = flattened.sol
 SRCS   =                                                                      \
 	node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol          \
 	node_modules/iexec-solidity/contracts/Libs/SafeMath.sol                     \
@@ -33,21 +34,23 @@ SRCS   =                                                                      \
 	contracts/IexecHubABILegacy.sol                                             \
 	contracts/IexecHub.sol                                                      \
 
-.PHONY: minify merge
+.PHONY: minify flatten
 
 all:
-	@echo "Usage: make [minify|merge]"
+	@echo "Usage: make [minify|flatten]"
 
 minify: $(OBJECTS)
 
 $(OBJECTS): % : $(PATH_MAIN)%.json makefile
+	@mkdir -p $(PATH_MIN)
 	@echo -n "Minification of $@.json ..."
 	@cat $< | $(JQN) 'pick(["abi","networks"])' --color=false -j > $(PATH_MIN)/$@.json
 	@echo " done"
 
-merge: $(MERGED)
+flatten: $(PATH_FLAT)$(FILE_FLAT)
 
-$(MERGED): $(FILES) makefile
+$(PATH_FLAT)$(FILE_FLAT): $(FILES) makefile
+	@mkdir -p $(PATH_FLAT)
 	@rm -f $@
 	@echo "pragma solidity ^0.5.7;" >> $@
 	@echo "pragma experimental ABIEncoderV2;" >> $@

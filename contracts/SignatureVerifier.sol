@@ -6,10 +6,16 @@ import "iexec-solidity/contracts/ERC1271/IERC1271.sol";
 
 contract SignatureVerifier
 {
+	function addrToKey(address _addr)
+	internal pure returns (bytes32)
+	{
+		return bytes32(uint256(_addr));
+	}
+
 	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
 	internal view returns (bool valid)
 	{
-		return _identity == _candidate || IERC734(_identity).keyHasPurpose(keccak256(abi.encode(_candidate)), _purpose); // Simple address || ERC 734 identity contract
+		return _identity == _candidate || IERC734(_identity).keyHasPurpose(addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
 	}
 
 	// internal ?
