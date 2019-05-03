@@ -52,7 +52,7 @@ flatten: $(PATH_FLAT)$(FILE_FLAT)
 $(PATH_FLAT)$(FILE_FLAT): $(FILES) makefile
 	@mkdir -p $(PATH_FLAT)
 	@rm -f $@
-	@echo "pragma solidity ^0.5.7;" >> $@
+	@echo "pragma solidity ^0.5.8;" >> $@
 	@echo "pragma experimental ABIEncoderV2;" >> $@
 	@$(foreach file, $(SRCS),                                    \
 		echo -n "Adding $(file) to $@ ...";                        \
