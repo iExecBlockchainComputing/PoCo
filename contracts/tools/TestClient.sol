@@ -1,4 +1,4 @@
-pragma solidity ^0.5.7;
+pragma solidity ^0.5.8;
 
 import "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
 
