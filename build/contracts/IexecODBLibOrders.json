@@ -1,0 +1,420 @@
+{
+  "contractName": "IexecODBLibOrders",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "APPORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "WORKERPOOLORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "DATASETORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REQUESTORDER_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "EIP712DOMAIN_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "apphash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "requesthash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "datasethash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "workerpoolhash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "version",
+              "type": "string"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            },
+            {
+              "name": "verifyingContract",
+              "type": "address"
+            }
+          ],
+          "name": "_domain",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "domainhash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_structHash",
+          "type": "bytes32"
+        },
+        {
+          "name": "_domainHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "toEthTypedStructHash",
+      "outputs": [
+        {
+          "name": "typedStructHash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x610aec610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600436106100d0576000357c01000000000000000000000000000000000000000000000000000000009004806358b505861161009857806358b505861461013f57806365db1dbb146101525780636f84d2da1461015a5780639a6f72ee14610162578063c49f91d31461016a578063eca34ccf14610172576100d0565b806304951329146100d55780630813424e146100fe578063176eaa4914610111578063207dbbfe146101245780632bd4c7341461012c575b600080fd5b6100e86100e3366004610897565b610185565b6040516100f591906109fd565b60405180910390f35b6100e861010c366004610909565b6101b8565b6100e861011f36600461085d565b610201565b6100e8610235565b6100e861013a366004610897565b610259565b6100e861014d36600461093e565b61028c565b6100e86102bf565b6100e86102e3565b6100e8610307565b6100e861032b565b6100e86101803660046108d4565b61034f565b601f190180517f60815a0eeec47dddf1615fe53b31d016c31444e01b9d796db365443a6445d00882526101208220915290565b6101a08101805180516020820120601f1990930180517ff24e853034a3a450aba845a82914fbb564ad85accca6cf62be112a154520fae082529383526102008120939052905290565b600081836040516020016102169291906109cc565b6040516020818303038152906040528051906020012090505b92915050565b7f60815a0eeec47dddf1615fe53b31d016c31444e01b9d796db365443a6445d00881565b601f190180517f6cfc932a5a3d22c4359295b9f433edff52b60703fa47690a04a83e40933dd47c82526101208220915290565b601f190180517faa3429fb281b34691803133d3d978a75bb77c617ed6bc9aa162b9b30920022bb82526101608220915290565b7faa3429fb281b34691803133d3d978a75bb77c617ed6bc9aa162b9b30920022bb81565b7f6cfc932a5a3d22c4359295b9f433edff52b60703fa47690a04a83e40933dd47c81565b7ff24e853034a3a450aba845a82914fbb564ad85accca6cf62be112a154520fae081565b7f8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f81565b805180516020808301919091208184018051805193810193909320601f19860180517f8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f825293875290825260a0812092905292909352905290565b803561022f81610a92565b803561022f81610aa9565b600082601f8301126103d157600080fd5b81356103e46103df82610a32565b610a0b565b9150808252602083016020830185838301111561040057600080fd5b61040b838284610a86565b50505092915050565b6000610120828403121561042757600080fd5b610432610120610a0b565b9050600061044084846103aa565b8252506020610451848483016103b5565b6020830152506040610465848285016103b5565b6040830152506060610479848285016103b5565b606083015250608061048d848285016103aa565b60808301525060a06104a1848285016103aa565b60a08301525060c06104b5848285016103aa565b60c08301525060e06104c9848285016103b5565b60e08301525061010082013567ffffffffffffffff8111156104ea57600080fd5b6104f6848285016103c0565b6101008301525092915050565b60006080828403121561051557600080fd5b61051f6080610a0b565b9050813567ffffffffffffffff81111561053857600080fd5b610544848285016103c0565b825250602082013567ffffffffffffffff81111561056157600080fd5b61056d848285016103c0565b6020830152506040610581848285016103b5565b6040830152506060610595848285016103aa565b60608301525092915050565b600061020082840312156105b457600080fd5b6105bf610200610a0b565b905060006105cd84846103aa565b82525060206105de848483016103b5565b60208301525060406105f2848285016103aa565b6040830152506060610606848285016103b5565b606083015250608061061a848285016103aa565b60808301525060a061062e848285016103b5565b60a08301525060c0610642848285016103aa565b60c08301525060e0610656848285016103b5565b60e08301525061010061066b848285016103b5565b61010083015250610120610681848285016103b5565b61012083015250610140610697848285016103b5565b610140830152506101606106ad848285016103aa565b610160830152506101806106c3848285016103aa565b610180830152506101a082013567ffffffffffffffff8111156106e557600080fd5b6106f1848285016103c0565b6101a0830152506101c0610707848285016103b5565b6101c0830152506101e082013567ffffffffffffffff81111561072957600080fd5b610735848285016103c0565b6101e08301525092915050565b6000610160828403121561075557600080fd5b610760610160610a0b565b9050600061076e84846103aa565b825250602061077f848483016103b5565b6020830152506040610793848285016103b5565b60408301525060606107a7848285016103b5565b60608301525060806107bb848285016103b5565b60808301525060a06107cf848285016103b5565b60a08301525060c06107e3848285016103aa565b60c08301525060e06107f7848285016103aa565b60e08301525061010061080c848285016103aa565b61010083015250610120610822848285016103b5565b6101208301525061014082013567ffffffffffffffff81111561084457600080fd5b610850848285016103c0565b6101408301525092915050565b6000806040838503121561087057600080fd5b600061087c85856103b5565b925050602061088d858286016103b5565b9150509250929050565b6000602082840312156108a957600080fd5b813567ffffffffffffffff8111156108c057600080fd5b6108cc84828501610414565b949350505050565b6000602082840312156108e657600080fd5b813567ffffffffffffffff8111156108fd57600080fd5b6108cc84828501610503565b60006020828403121561091b57600080fd5b813567ffffffffffffffff81111561093257600080fd5b6108cc848285016105a1565b60006020828403121561095057600080fd5b813567ffffffffffffffff81111561096757600080fd5b6108cc84828501610742565b61097c81610a6a565b82525050565b61097c61098e82610a6a565b610a6a565b60006109a0600283610a5a565b7f1901000000000000000000000000000000000000000000000000000000000000815260020192915050565b60006109d782610993565b91506109e38285610982565b6020820191506109f38284610982565b5060200192915050565b6020810161022f8284610973565b60405181810167ffffffffffffffff81118282101715610a2a57600080fd5b604052919050565b600067ffffffffffffffff821115610a4957600080fd5b506020601f91909101601f19160190565b919050565b600061022f82610a6d565b90565b73ffffffffffffffffffffffffffffffffffffffff1690565b82818337506000910152565b610a9b81610a5f565b8114610aa657600080fd5b50565b610a9b81610a6a56fea265627a7a7230582081bf9fc2eb372157bcb91bd227d3b2458bb62b7dfca74f0cdbe151bc4ae5e4ac6c6578706572696d656e74616cf50037",
+  "networks": {
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0xDCC919242c49e45E768B6CB11C85dAD60B3191CC",
+      "transactionHash": "0x64a1ca832a39682fad2209714ff49afe3b1da72383caa2fe210d111bd19c7a73"
+    },
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0xaC4D131e8b20860544b6772086Ab994Dfb9ba10B",
+      "transactionHash": "0x2ccb21bb1681d907a36f00829dd66c45f8f9f1e1f712445f648cc0ae1dfb86e8"
+    },
+    "42": {
+      "events": {},
+      "links": {},
+      "address": "0xA796dfEf7A306736379ece27B05f255A68016b99",
+      "transactionHash": "0x344a33b9f858f29b3ae0addb0287f64a964817621ecd317c93c65f62e21c9f25"
+    }
+  }
+}

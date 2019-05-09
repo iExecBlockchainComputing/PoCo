@@ -1,0 +1,32 @@
+{
+  "contractName": "IexecHubAccessor",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "iexechub",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_iexechub",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516020806101348339810180604052602081101561003057600080fd5b5051600160a060020a03811661004557600080fd5b60008054600160a060020a03909216600160a060020a031990921691909117905560c0806100746000396000f3fe6080604052348015600f57600080fd5b50600436106044577c010000000000000000000000000000000000000000000000000000000060003504638d52e41381146049575b600080fd5b604f6078565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60005473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a72305820fc0859026169b67cfaa742adcb85c28d5f490c7e0d044ca53509db67ed39b1cc0029",
+  "networks": {}
+}
