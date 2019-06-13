@@ -34,7 +34,7 @@ contract IexecClerk is EscrowERC20, Relay, IexecHubAccessor, SignatureVerifier, 
 	uint256 public constant WORKERPOOL_STAKE_RATIO = 30;
 	uint256 public constant KITTY_RATIO            = 10;
 	uint256 public constant KITTY_MIN              = 1000000000; // TODO: 1RLC ?
-	address public constant KITTY_ADDRESS          = 0x0000000000000000000000000000000000000001;
+	address public constant KITTY_ADDRESS          = address(bytes20(keccak256(bytes("iExecKitty"))));
 
 	// For authorizations
 	uint256 public constant GROUPMEMBER_PURPOSE    = 4;

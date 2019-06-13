@@ -118,21 +118,24 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 	/**
 	 * Wallet methods: Internal
 	 */
-	function reward(address user, uint256 amount, bytes32 ref) internal /* returns (bool) */
+	function reward(address user, uint256 amount, bytes32 ref)
+		internal /* returns (bool) */
 	{
 		_transfer(address(this), user, amount);
 		emit Reward(user, amount, ref);
 		/* return true; */
 	}
 
-	function seize(address user, uint256 amount, bytes32 ref) internal /* returns (bool) */
+	function seize(address user, uint256 amount, bytes32 ref)
+		internal /* returns (bool) */
 	{
 		_frozens[user] = _frozens[user].sub(amount);
 		emit Seize(user, amount, ref);
 		/* return true; */
 	}
 
-	function lock(address user, uint256 amount) internal /* returns (bool) */
+	function lock(address user, uint256 amount)
+		internal /* returns (bool) */
 	{
 		_transfer(user, address(this), amount);
 		_frozens[user] = _frozens[user].add(amount);
@@ -140,7 +143,8 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 		/* return true; */
 	}
 
-	function unlock(address user, uint256 amount) internal /* returns (bool) */
+	function unlock(address user, uint256 amount)
+		internal /* returns (bool) */
 	{
 		_transfer(address(this), user, amount);
 		_frozens[user] = _frozens[user].sub(amount);
