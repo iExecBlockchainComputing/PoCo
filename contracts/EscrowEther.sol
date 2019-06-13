@@ -14,11 +14,6 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 	using SafeMath for uint256;
 
 	/**
-	* token contract for transfers.
-	*/
-	IERC20 private _baseToken;
-
-	/**
 	 * Escrow content
 	 */
 	mapping (address => uint256) private _frozens;
@@ -35,11 +30,10 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 	/**
 	 * Constructor
 	 */
-	constructor(address _token)
+	constructor()
 		public
-		ERC20Detailed("stakeRLC", "sRLC", 9)
+		ERC20Detailed("stakeEther", "sETH", 18)
 	{
-		_baseToken = IERC20(_token);
 	}
 
 	/**
@@ -61,37 +55,43 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 	function token()
 		external view returns (address)
 	{
-		return address(_baseToken);
+		return address(0);
 	}
 
 	/**
 	 * Wallet methods: public
 	 */
-	function deposit(uint256 amount)
-		external returns (bool)
+	function ()
+		external payable
 	{
-		_deposit(msg.sender, amount);
-		_mint(msg.sender, amount);
+		_mint(msg.sender, msg.value);
+	}
+
+	function deposit()
+		external payable returns (bool)
+	{
+		_mint(msg.sender, msg.value);
 		return true;
 	}
 
-	function depositFor(uint256 amount, address target)
-		external returns (bool)
+	function depositFor(address target)
+		external payable returns (bool)
 	{
-		_deposit(msg.sender, amount);
-		_mint(target, amount);
+		_mint(target, msg.value);
 		return true;
 	}
 
 	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
-		external returns (bool)
+		external payable returns (bool)
 	{
 		require(amounts.length == targets.length);
+		uint256 remaining = msg.value;
 		for (uint i = 0; i < amounts.length; ++i)
 		{
-			_deposit(msg.sender, amounts[i]);
+			remaining = remaining.sub(amounts[i]);
 			_mint(targets[i], amounts[i]);
 		}
+		_mint(msg.sender, remaining);
 		return true;
 	}
 
@@ -99,21 +99,8 @@ contract EscrowERC20 is ERC20, ERC20Detailed
 		external returns (bool)
 	{
 		_burn(msg.sender, amount);
-		_withdraw(msg.sender, amount);
+		msg.sender.transfer(amount);
 		return true;
-	}
-
-	// internal methods
-	function _deposit(address from, uint256 amount)
-		internal
-	{
-		require(_baseToken.transferFrom(from, address(this), amount));
-	}
-
-	function _withdraw(address to, uint256 amount)
-		internal
-	{
-		_baseToken.transfer(to, amount);
 	}
 
 	/**
