@@ -384,20 +384,20 @@ contract('Fullchain', async (accounts) => {
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(extractEvents(txsMined[0], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[1], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[2], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[3], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[4], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[5], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		assert.equal(extractEvents(txsMined[6], IexecClerkInstance.address, "Deposit")[0].args.amount, 1000);
-		// assert.equal(txsMined[0].events.Deposit.returnValues.owner,  scheduler, "check deposit recipient");
-		// assert.equal(txsMined[1].events.Deposit.returnValues.owner,  worker1,   "check deposit recipient");
-		// assert.equal(txsMined[2].events.Deposit.returnValues.owner,  worker2,   "check deposit recipient");
-		// assert.equal(txsMined[3].events.Deposit.returnValues.owner,  worker3,   "check deposit recipient");
-		// assert.equal(txsMined[4].events.Deposit.returnValues.owner,  worker4,   "check deposit recipient");
-		// assert.equal(txsMined[5].events.Deposit.returnValues.owner,  worker5,   "check deposit recipient");
-		// assert.equal(txsMined[6].events.Deposit.returnValues.owner,  user,      "check deposit recipient");
+		assert.equal(extractEvents(txsMined[0], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[0], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[1], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[1], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[2], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[2], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[3], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[3], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[4], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[4], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[5], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[5], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[6], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[6], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
 	});
 
 	/***************************************************************************

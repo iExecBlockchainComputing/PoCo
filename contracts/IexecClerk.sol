@@ -8,7 +8,7 @@ import "./libs/IexecODBLibOrders.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./Escrow.sol";
+import "./EscrowERC20.sol";
 import "./Relay.sol";
 import "./SignatureVerifier.sol";
 import "./IexecHubAccessor.sol";
@@ -18,7 +18,7 @@ import "./IexecHubAccessor.sol";
  */
 import "./IexecClerkABILegacy.sol";
 
-contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, IexecClerkABILegacy
+contract IexecClerk is EscrowERC20, Relay, IexecHubAccessor, SignatureVerifier, IexecClerkABILegacy
 {
 	using SafeMath          for uint256;
 	using IexecODBLibOrders for bytes32;
@@ -34,6 +34,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 	uint256 public constant WORKERPOOL_STAKE_RATIO = 30;
 	uint256 public constant KITTY_RATIO            = 10;
 	uint256 public constant KITTY_MIN              = 1000000000; // TODO: 1RLC ?
+	address public constant KITTY_ADDRESS          = 0x0000000000000000000000000000000000000001;
 
 	// For authorizations
 	uint256 public constant GROUPMEMBER_PURPOSE    = 4;
@@ -69,7 +70,7 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 		address _iexechub,
 		uint256 _chainid)
 	public
-	Escrow(_token)
+	EscrowERC20(_token)
 	IexecHubAccessor(_iexechub)
 	{
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
@@ -422,14 +423,14 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 		 * Retrieve part of the kitty
 		 * TODO: remove / keep ?
 		 */
-		uint256 kitty = m_accounts[address(0)].locked;
+		uint256 kitty = frozenOf(KITTY_ADDRESS);
 		if (kitty > 0)
 		{
 			kitty = kitty
 			        .percentage(KITTY_RATIO) // fraction
 			        .max(KITTY_MIN)          // at least this
 			        .min(kitty);             // but not more than available
-			seize (address(0),            kitty, _taskid);
+			seize (KITTY_ADDRESS,         kitty, _taskid);
 			reward(deal.workerpool.owner, kitty, _taskid);
 		}
 	}
@@ -447,8 +448,8 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 
 		unlock(deal.requester,        requesterstake    );
 		seize (deal.workerpool.owner, poolstake, _taskid);
-		reward(address(0),            poolstake, _taskid); // → Kitty / Burn
-		lock  (address(0),            poolstake         ); // → Kitty / Burn
+		reward(KITTY_ADDRESS,         poolstake, _taskid); // → Kitty / Burn
+		lock  (KITTY_ADDRESS,         poolstake         ); // → Kitty / Burn
 	}
 
 
@@ -541,10 +542,9 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 		);
 	}
 
-	function viewAccountABILegacy(address _user)
+	function viewAccountABILegacy(address owner)
 	external view returns (uint256, uint256)
 	{
-		IexecODBLibCore.Account memory account = m_accounts[_user];
-		return ( account.stake, account.locked );
+		return ( balanceOf(owner), frozenOf(owner) );
 	}
 }
