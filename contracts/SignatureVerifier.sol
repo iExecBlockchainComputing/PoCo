@@ -1,4 +1,4 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
 import "iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";

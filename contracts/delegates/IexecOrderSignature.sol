@@ -1,7 +1,7 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecStore.sol";
+import "../IexecDelegateBase.sol";
 
 
 interface IexecOrderSignature
@@ -21,7 +21,7 @@ interface IexecOrderSignature
 	function cancelRequestOrder   (IexecODBLibOrders.RequestOrder    calldata) external returns (bool);
 }
 
-contract IexecOrderSignatureDelegate is IexecOrderSignature, IexecStore
+contract IexecOrderSignatureDelegate is IexecOrderSignature, IexecDelegateBase
 {
 	using IexecODBLibOrders for bytes32;
 	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;

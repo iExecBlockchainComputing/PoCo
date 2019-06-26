@@ -1,7 +1,7 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecStore.sol";
+import "../IexecDelegateBase.sol";
 
 
 interface IexecRelay
@@ -17,7 +17,7 @@ interface IexecRelay
 	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    calldata) external;
 }
 
-contract IexecRelayDelegate is IexecRelay, IexecStore
+contract IexecRelayDelegate is IexecRelay, IexecDelegateBase
 {
 	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        calldata _apporder       ) external { emit BroadcastAppOrder       (_apporder       ); }
 	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    calldata _datasetorder   ) external { emit BroadcastDatasetOrder   (_datasetorder   ); }

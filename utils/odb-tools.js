@@ -226,4 +226,24 @@ module.exports = {
 	hashResult: function(taskid, result)          { return this.hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result })         ); },
 	sealResult: function(taskid, result, address) { return this.sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address); },
 
+	requestToDeal: async function(IexecClerk, requestHash)
+	{
+		let idx     = 0;
+		let dealids = [];
+		while (true)
+		{
+			let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
+			let deal = await IexecClerk.viewDeal(dealid);
+			if (deal.botSize == 0)
+			{
+				return dealids;
+			}
+			else
+			{
+				dealids.push(dealid);
+				idx += deal.botSize;
+			}
+		}
+	}
+
 };

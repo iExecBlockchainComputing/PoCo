@@ -1,8 +1,13 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
 import "./IexecStore.sol";
-import "./IexecABILegacy.sol";
+import "./delegates/IexecAccessors.sol";
+import "./delegates/IexecABILegacy.sol";
+import "./delegates/IexecCategoryManager.sol";
+import "./delegates/IexecCore.sol";
+import "./delegates/IexecOrderSignature.sol";
+import "./delegates/IexecRelay.sol";
 
 
 contract IexecStackABILegacy is IexecStore, IexecABILegacy
@@ -45,7 +50,6 @@ contract IexecStackABILegacy is IexecStore, IexecABILegacy
 	// function viewAccount(address) external view returns (IexecODBLibCore.Account memory);
 	function token() external view returns (address);
 	// function viewDeal(bytes32) external view returns (IexecODBLibCore.Deal memory);
-	function viewRequestDeals(bytes32) external view returns (bytes32[] memory);
 	function viewConsumed(bytes32) external view returns (uint256);
 	function viewPresigned(bytes32) external view returns (bool);
 	// function viewTask(bytes32) external view returns (IexecODBLibCore.Task memory);

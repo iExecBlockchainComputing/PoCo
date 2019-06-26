@@ -1,4 +1,4 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 
 import "iexec-solidity/contracts/Libs/SafeMath.sol";
 import "iexec-solidity/contracts/ERC20_Token/IERC20.sol";
@@ -39,7 +39,6 @@ contract IexecStore is ERC1538Store
 	bytes32 public          EIP712DOMAIN_SEPARATOR;
 
 	mapping(bytes32 =>                    IexecODBLibCore.Deal         ) internal m_deals;
-	mapping(bytes32 =>                    bytes32[]                    ) internal m_requestdeals;
 	mapping(bytes32 =>                    uint256                      ) internal m_consumed;
 	mapping(bytes32 =>                    bool                         ) internal m_presigned;
 	mapping(bytes32 =>                    IexecODBLibCore.Task         ) internal m_tasks;

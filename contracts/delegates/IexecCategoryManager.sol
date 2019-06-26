@@ -1,7 +1,7 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecStore.sol";
+import "../IexecDelegateBase.sol";
 
 
 interface IexecCategoryManager
@@ -11,7 +11,7 @@ interface IexecCategoryManager
 	function createCategory(string calldata,string calldata,uint256) external returns (uint256);
 }
 
-contract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore
+contract IexecCategoryManagerDelegate is IexecCategoryManager, IexecDelegateBase
 {
 	/**
 	 * Methods

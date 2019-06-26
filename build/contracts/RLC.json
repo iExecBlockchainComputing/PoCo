@@ -11347,14 +11347,61 @@
       "updated_at": 1507187064558
     },
     "1544020727674": {
-      "events": {},
+      "events": {
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event",
+          "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event",
+          "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+        }
+      },
       "links": {},
       "address": "0x6E59DB8ed3cd44e22972C6a1C26253B671C3d353",
       "transactionHash": "0x5fd4fecbd808d5c47659d240e40976a167c12813ee9be07d2471deafd2498222"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T15:15:59.087Z",
+  "updatedAt": "2019-06-26T20:17:56.506Z",
   "devdoc": {
     "methods": {}
   },

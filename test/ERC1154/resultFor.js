@@ -284,9 +284,9 @@ contract('ERC1154: resultFor', async (accounts) => {
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		// Deals
-		deals[0] = extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
-		deals[1] = extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid;
-		// deals = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
+		deals = await odbtools.requestToDeal(IexecClerkInstance, odbtools.RequestOrderTypedStructHash(requestorder));
+		assert.equal(deals[0], extractEvents(txsMined[0], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid);
+		assert.equal(deals[1], extractEvents(txsMined[1], IexecClerkInstance.address, "OrdersMatched")[0].args.dealid);
 	});
 
 	it("[setup] Initialization", async () => {

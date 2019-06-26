@@ -1,8 +1,8 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
 import "../SignatureVerifier.sol";
-import "../IexecStore.sol";
+import "../IexecDelegateBase.sol";
 
 
 interface IexecCore
@@ -52,7 +52,7 @@ interface IexecCore
 	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
 }
 
-contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
+contract IexecCoreDelegate is IexecCore, IexecDelegateBase, SignatureVerifier
 {
 	using SafeMath for uint256;
 	using IexecODBLibOrders for bytes32;
@@ -482,8 +482,6 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 		deal.botSize              = volume;
 		deal.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
 		deal.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
-
-		m_requestdeals[ids.requestHash].push(dealid);
 
 		/**
 		 * Update consumed

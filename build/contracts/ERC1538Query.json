@@ -155,7 +155,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"_index\",\"type\":\"uint256\"}],\"name\":\"functionByIndex\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes4\"},{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_signature\",\"type\":\"string\"}],\"name\":\"delegateAddress\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"functionSignatures\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_delegate\",\"type\":\"address\"}],\"name\":\"delegateFunctionSignatures\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_signature\",\"type\":\"string\"}],\"name\":\"functionExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"delegateAddresses\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalFunctions\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"bytes4\"}],\"name\":\"functionById\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes4\"},{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Query.sol\":\"ERC1538Query\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Query.sol\":{\"keccak256\":\"0xd68ce7398237e385e6c14335606dd9ceaa42b03d1205bcba9f30b56e5a836836\",\"urls\":[\"bzzr://b8300f72f907a9e329a4331251a6d597cbeccf33c29e8222e51daed1a1784ac9\",\"dweb:/ipfs/QmQQ6sMGmuvhC8YEXEAm4GebomCisUELJqG6d1yS5Vxpbw\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x3a52277003bcb21969bdee76b3c02fe703638d23b1f77243a09f0bed87f4fbbb\",\"urls\":[\"bzzr://8a464aa2ae1faaa8c5c4cd8bcb0d211de146ea383b3ab2a384549b5bc7a8b86c\",\"dweb:/ipfs/QmVim3BG5Jp9NzyMf7bAmdNNyE3jEMGErbuv8tYQhqCKrq\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"_index\",\"type\":\"uint256\"}],\"name\":\"functionByIndex\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes4\"},{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_signature\",\"type\":\"string\"}],\"name\":\"delegateAddress\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"functionSignatures\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_delegate\",\"type\":\"address\"}],\"name\":\"delegateFunctionSignatures\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_signature\",\"type\":\"string\"}],\"name\":\"functionExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"delegateAddresses\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalFunctions\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"bytes4\"}],\"name\":\"functionById\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"bytes4\"},{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Query.sol\":\"ERC1538Query\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Query.sol\":{\"keccak256\":\"0xd68ce7398237e385e6c14335606dd9ceaa42b03d1205bcba9f30b56e5a836836\",\"urls\":[\"bzzr://b8300f72f907a9e329a4331251a6d597cbeccf33c29e8222e51daed1a1784ac9\",\"dweb:/ipfs/QmQQ6sMGmuvhC8YEXEAm4GebomCisUELJqG6d1yS5Vxpbw\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x66915cd76b29c3554f5447927e9f757b5126ac09a2c4ebdad662288ed2cd48da\",\"urls\":[\"bzzr://5d4742936cd68a6c60168bd558b36baf44f23f28b92d38f5d7154825751ab306\",\"dweb:/ipfs/QmVATUDofc5GQUhsb4SGAB97MQRAPb34e6KKeyatwzDYwh\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
@@ -942,7 +942,7 @@
         "contractDependencies": [
           438,
           1001,
-          8118
+          8099
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -951,7 +951,7 @@
         "linearizedBaseContracts": [
           984,
           1001,
-          8118,
+          8099,
           438
         ],
         "name": "ERC1538QueryDelegate",
@@ -1157,10 +1157,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8136,
-                        8137
+                        8117,
+                        8118
                       ],
-                      "referencedDeclaration": 8137,
+                      "referencedDeclaration": 8118,
                       "src": "1218:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1266,7 +1266,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 8127,
+                            "referencedDeclaration": 8108,
                             "src": "1319:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -1717,7 +1717,7 @@
                                   "name": "keccak256",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 8127,
+                                  "referencedDeclaration": 8108,
                                   "src": "1635:9:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -2134,10 +2134,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8138,
-                        8139
+                        8119,
+                        8120
                       ],
-                      "referencedDeclaration": 8139,
+                      "referencedDeclaration": 8120,
                       "src": "1757:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -4602,7 +4602,7 @@
                                     "name": "keccak256",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 8127,
+                                    "referencedDeclaration": 8108,
                                     "src": "3423:9:2",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -5944,10 +5944,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8136,
-                        8137
+                        8117,
+                        8118
                       ],
-                      "referencedDeclaration": 8137,
+                      "referencedDeclaration": 8118,
                       "src": "4073:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -6058,7 +6058,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 8127,
+                            "referencedDeclaration": 8108,
                             "src": "4191:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -6652,7 +6652,7 @@
                                     "name": "keccak256",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 8127,
+                                    "referencedDeclaration": 8108,
                                     "src": "4616:9:2",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -8559,7 +8559,7 @@
         "contractDependencies": [
           438,
           1001,
-          8118
+          8099
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -8568,7 +8568,7 @@
         "linearizedBaseContracts": [
           984,
           1001,
-          8118,
+          8099,
           438
         ],
         "name": "ERC1538QueryDelegate",
@@ -8774,10 +8774,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8136,
-                        8137
+                        8117,
+                        8118
                       ],
-                      "referencedDeclaration": 8137,
+                      "referencedDeclaration": 8118,
                       "src": "1218:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -8883,7 +8883,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 8127,
+                            "referencedDeclaration": 8108,
                             "src": "1319:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -9334,7 +9334,7 @@
                                   "name": "keccak256",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 8127,
+                                  "referencedDeclaration": 8108,
                                   "src": "1635:9:2",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -9751,10 +9751,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8138,
-                        8139
+                        8119,
+                        8120
                       ],
-                      "referencedDeclaration": 8139,
+                      "referencedDeclaration": 8120,
                       "src": "1757:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -12219,7 +12219,7 @@
                                     "name": "keccak256",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 8127,
+                                    "referencedDeclaration": 8108,
                                     "src": "3423:9:2",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -13561,10 +13561,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        8136,
-                        8137
+                        8117,
+                        8118
                       ],
-                      "referencedDeclaration": 8137,
+                      "referencedDeclaration": 8118,
                       "src": "4073:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -13675,7 +13675,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 8127,
+                            "referencedDeclaration": 8108,
                             "src": "4191:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -14269,7 +14269,7 @@
                                     "name": "keccak256",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 8127,
+                                    "referencedDeclaration": 8108,
                                     "src": "4616:9:2",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -15398,11 +15398,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.9+commit.e560f70d.Emscripten.clang"
+    "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T15:12:50.217Z",
+  "updatedAt": "2019-06-26T20:11:57.688Z",
   "devdoc": {
     "methods": {}
   },

@@ -407,7 +407,7 @@ contract('Fullchain', async (accounts) => {
 		assert.equal(events[0].args.volume,         1                                                   );
 		var deal1 = events[0].args.dealid;
 
-		dealids = await IexecClerkInstance.viewRequestDeals(odbtools.RequestOrderTypedStructHash(requestorder));
+		dealids = await odbtools.requestToDeal(IexecClerkInstance, odbtools.RequestOrderTypedStructHash(requestorder));
 		assert.equal(dealids[0], deal0);
 		assert.equal(dealids[1], deal1);
 	});

@@ -10,6 +10,7 @@ var ERC1538Proxy   = artifacts.require("ERC1538Proxy");
 
 var ERC1538Query         = artifacts.require("ERC1538QueryDelegate");
 var IexecAccessors       = artifacts.require("IexecAccessorsDelegate");
+var IexecABILegacy       = artifacts.require("IexecABILegacyDelegate");
 var IexecCategoryManager = artifacts.require("IexecCategoryManagerDelegate");
 var IexecCore            = artifacts.require("IexecCoreDelegate");
 var IexecOrderSignature  = artifacts.require("IexecOrderSignatureDelegate");
@@ -106,6 +107,7 @@ module.exports = async function(deployer, network, accounts)
 	contracts = [
 		ERC1538Query,
 		IexecAccessors,
+		IexecABILegacy,
 		IexecCategoryManager,
 		IexecCore,
 		IexecOrderSignature,
