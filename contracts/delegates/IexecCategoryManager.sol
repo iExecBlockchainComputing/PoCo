@@ -6,13 +6,9 @@ import "../IexecStore.sol";
 
 interface IexecCategoryManager
 {
-	event CreateCategory(
-		uint256 catid,
-		string  name,
-		string  description,
-		uint256 workClockTimeRef);
+	event CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);
 
-	function createCategory(string calldata name, string calldata description, uint256 workClockTimeRef) external returns (uint256);
+	function createCategory(string calldata,string calldata,uint256) external returns (uint256);
 }
 
 contract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore
@@ -30,7 +26,8 @@ contract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore
 			name,
 			description,
 			workClockTimeRef
-		));
+		)) - 1;
+
 		emit CreateCategory(
 			catid,
 			name,

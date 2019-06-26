@@ -11,10 +11,10 @@ interface IexecRelay
 	event BroadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder workerpoolorder);
 	event BroadcastRequestOrder   (IexecODBLibOrders.RequestOrder    requestorder   );
 
-	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        calldata _apporder       ) external;
-	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    calldata _datasetorder   ) external;
-	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder calldata _workerpoolorder) external;
-	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    calldata _requestorder   ) external;
+	function broadcastAppOrder       (IexecODBLibOrders.AppOrder        calldata) external;
+	function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    calldata) external;
+	function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder calldata) external;
+	function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    calldata) external;
 }
 
 contract IexecRelayDelegate is IexecRelay, IexecStore

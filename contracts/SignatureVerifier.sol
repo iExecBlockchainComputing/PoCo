@@ -18,7 +18,7 @@ contract SignatureVerifier
 		return _identity == _candidate || IERC734(_identity).keyHasPurpose(addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
 	}
 
-	function verifySignature(
+	function checkSignature(
 		address      _identity,
 		bytes32      _hash,
 		bytes memory _signature)

@@ -5,7 +5,7 @@ import "../SignatureVerifier.sol";
 import "../IexecStore.sol";
 
 
-contract IexecCore // make interface
+interface IexecCore
 {
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -30,16 +30,17 @@ contract IexecCore // make interface
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
 	function configure(uint256,address,string calldata,string calldata,uint8,address,address,address) external;
-	function transfer(address recipient, uint256 amount) external returns (bool);
-	function approve(address spender, uint256 value) external returns (bool);
-	function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-	function increaseAllowance(address spender, uint256 addedValue) external returns (bool);
-	function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool);
+	function transfer(address,uint256) external returns (bool);
+	function approve(address,uint256) external returns (bool);
+	function transferFrom(address,address,uint256) external returns (bool);
+	function increaseAllowance(address,uint256) external returns (bool);
+	function decreaseAllowance(address,uint256) external returns (bool);
 	function deposit(uint256) external returns (bool);
 	function depositFor(uint256,address) external returns (bool);
-	function depositForArray(uint256[] calldata, address[] calldata) external returns (bool);
+	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
 	function withdraw(uint256) external returns (bool);
-	function matchOrders(IexecODBLibOrders.AppOrder memory,IexecODBLibOrders.DatasetOrder memory,IexecODBLibOrders.WorkerpoolOrder memory,IexecODBLibOrders.RequestOrder memory) public returns (bytes32);
+	function verifySignature(address,bytes32,bytes calldata) external view returns (bool);
+	function matchOrders(IexecODBLibOrders.AppOrder calldata,IexecODBLibOrders.DatasetOrder calldata,IexecODBLibOrders.WorkerpoolOrder calldata,IexecODBLibOrders.RequestOrder calldata) external returns (bytes32);
 	function initialize(bytes32,uint256) external returns (bytes32);
 	function contribute(bytes32,bytes32,bytes32,address,bytes calldata,bytes calldata) external;
 	function reveal(bytes32,bytes32) external;
@@ -357,6 +358,11 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 	/***************************************************************************
 	 *                           ODB order matching                            *
 	 ***************************************************************************/
+	function verifySignature(address _identity, bytes32 _hash, bytes calldata _signature)
+	external view returns (bool)
+	{
+		return checkSignature(_identity, _hash, _signature);
+	}
 
 	struct Identities
 	{
@@ -417,24 +423,24 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 		// app
 		ids.appHash  = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.appOwner = App(_apporder.app).owner();
-		require(m_presigned[ids.appHash] || verifySignature(ids.appOwner, ids.appHash, _apporder.sign));
+		require(m_presigned[ids.appHash] || checkSignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
-			require(m_presigned[ids.datasetHash] || verifySignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(m_presigned[ids.datasetHash] || checkSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
-		require(m_presigned[ids.workerpoolHash] || verifySignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(m_presigned[ids.workerpoolHash] || checkSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		require(m_presigned[ids.requestHash] || verifySignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(m_presigned[ids.requestHash] || checkSignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability
@@ -476,6 +482,8 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 		deal.botSize              = volume;
 		deal.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
 		deal.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
+
+		m_requestdeals[ids.requestHash].push(dealid);
 
 		/**
 		 * Update consumed
@@ -571,7 +579,7 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-		require(verifySignature(
+		require(checkSignature(
 			deal.workerpool.owner,
 			toEthSignedMessageHash(
 				keccak256(abi.encodePacked(
@@ -587,7 +595,7 @@ contract IexecCoreDelegate is IexecCore, IexecStore, SignatureVerifier
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
-		require(_enclaveChallenge == address(0) || verifySignature(
+		require(_enclaveChallenge == address(0) || checkSignature(
 			_enclaveChallenge,
 			toEthSignedMessageHash(
 				keccak256(abi.encodePacked(

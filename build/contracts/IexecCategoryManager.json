@@ -32,15 +32,15 @@
       "constant": false,
       "inputs": [
         {
-          "name": "name",
+          "name": "",
           "type": "string"
         },
         {
-          "name": "description",
+          "name": "",
           "type": "string"
         },
         {
-          "name": "workClockTimeRef",
+          "name": "",
           "type": "uint256"
         }
       ],
@@ -56,28 +56,28 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":\"IexecCategoryManager\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x3a52277003bcb21969bdee76b3c02fe703638d23b1f77243a09f0bed87f4fbbb\",\"urls\":[\"bzzr://8a464aa2ae1faaa8c5c4cd8bcb0d211de146ea383b3ab2a384549b5bc7a8b86c\",\"dweb:/ipfs/QmVim3BG5Jp9NzyMf7bAmdNNyE3jEMGErbuv8tYQhqCKrq\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0x2d775c3b02200e341bae0106d9e624d6c196c62b69a43f2cc545e596e6248557\",\"urls\":[\"bzzr://80da2a564db32da2c0f58657b2935b064631fcb07508bb30df6f65a0ced2974d\",\"dweb:/ipfs/QmYj5A2VU7DnGup6MH5wEoVP21LRPMqtkSr2dUpZ1mM9Ym\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0x1bd93c1cb5fb0c4fb4116d7880e2cfc39c0012889815efd0688fac798c63908e\",\"urls\":[\"bzzr://57b83ec1bbca7492a4d09786750e9a7da24316bbe2edcc21768a8f99e778f172\",\"dweb:/ipfs/QmZEvcnMSK9b7QWh6KZg6zsN6kijXmFfa6FWjwC1vVsFDS\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x7a1d4ba5ea12857f01fc0fe390b7f3d27ec13b1a90376d7d2bced73d5fe01071\",\"urls\":[\"bzzr://5931ed33a8c1a685d869a007d38cecad5c6ec399876778c2f074d603207c77b9\",\"dweb:/ipfs/QmYspdznwxFYApS2zfsv4gv6tEv8kuhjtKyadiyRUKRqje\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x3cdb4d28d6f79f3ecf72b42741905f0db1cdcbb07021f4b37eb6d3e774037045\",\"urls\":[\"bzzr://d578d40561ad375854a86f2b6c75ce19eb8d6017f7ba42c7afd03bacc349d58c\",\"dweb:/ipfs/QmP6keKXq3m9y1otoXvL8rY8p72fSYu84csN3jzJHi1WAV\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0xc9b96bcda3b1de86e1a888c8311d0761a97a24baed12770d9c7a63b4622578eb\",\"urls\":[\"bzzr://cf514b7467068735cdf493e487dcab476a2a56cf45d001372f6581a13f8bcb85\",\"dweb:/ipfs/QmQE5nA9jUeGp9mggZ2X5tF94gig95F8rouBH1cGnWhzQD\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x7af42fd11b693ce51d4dc0490558c2d596aed0115e8482ee0a6b91f4c0965423\",\"urls\":[\"bzzr://8a711af496932215143748c738617ce8822e82cde2c440ac73875c9d37817ce6\",\"dweb:/ipfs/QmXh6LFctza4fKDGiBfmtEXQwaDiTcfBrMcqfTQgNuagER\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xeed691bc7395c6bee23aa241e44d71be3c6d8c13104e941ebc0b8b1599b1db3b\",\"urls\":[\"bzzr://82b1f2a38209647d94e9b047e24428dfaea286e7854f7f9a7969c57072f2cc35\",\"dweb:/ipfs/QmcmSmYfH6gA4HeTBbx7zESgr21YsyUmFyF6kqvY38cVmc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0x78387047fcf0a9983948d40cfae6ca85deeca1855574b92c43341622621c75d9\",\"urls\":[\"bzzr://89150c90e166a3d6d7db41da1a82f47dec403b4d7a8305e3d342ce81d116986a\",\"dweb:/ipfs/QmQRepLV2Nu65fJZ5VbL2Kv5TQeKr6H5QhpReBKDeaQ9eV\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":\"IexecCategoryManager\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x3a52277003bcb21969bdee76b3c02fe703638d23b1f77243a09f0bed87f4fbbb\",\"urls\":[\"bzzr://8a464aa2ae1faaa8c5c4cd8bcb0d211de146ea383b3ab2a384549b5bc7a8b86c\",\"dweb:/ipfs/QmVim3BG5Jp9NzyMf7bAmdNNyE3jEMGErbuv8tYQhqCKrq\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0x39777f0c29cf6cd605d5f4096effa7790d66ac22aa103e6be8c64803785b2835\",\"urls\":[\"bzzr://8a3233c9e93700f1f002455d05c5412ba1fcf9470ade14eac121a50dda70522e\",\"dweb:/ipfs/QmdjB7PzXLwpDy248grzA42E4RSnYtviyFpTG1jV7UJF4z\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0xe8f6fd97195e12ec3474c7a44f1430f92b92651ec703fc22082d833bf6095478\",\"urls\":[\"bzzr://01abac5b70a9cdd70ccc240b787555e11135614af4517a72c18c00a9b4ac3943\",\"dweb:/ipfs/QmczA69M36RHm7dgDXyKYVCZNTowxGNyYEKdL5EKXpZ2hd\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x7a1d4ba5ea12857f01fc0fe390b7f3d27ec13b1a90376d7d2bced73d5fe01071\",\"urls\":[\"bzzr://5931ed33a8c1a685d869a007d38cecad5c6ec399876778c2f074d603207c77b9\",\"dweb:/ipfs/QmYspdznwxFYApS2zfsv4gv6tEv8kuhjtKyadiyRUKRqje\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x3cdb4d28d6f79f3ecf72b42741905f0db1cdcbb07021f4b37eb6d3e774037045\",\"urls\":[\"bzzr://d578d40561ad375854a86f2b6c75ce19eb8d6017f7ba42c7afd03bacc349d58c\",\"dweb:/ipfs/QmP6keKXq3m9y1otoXvL8rY8p72fSYu84csN3jzJHi1WAV\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0xc9b96bcda3b1de86e1a888c8311d0761a97a24baed12770d9c7a63b4622578eb\",\"urls\":[\"bzzr://cf514b7467068735cdf493e487dcab476a2a56cf45d001372f6581a13f8bcb85\",\"dweb:/ipfs/QmQE5nA9jUeGp9mggZ2X5tF94gig95F8rouBH1cGnWhzQD\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x7af42fd11b693ce51d4dc0490558c2d596aed0115e8482ee0a6b91f4c0965423\",\"urls\":[\"bzzr://8a711af496932215143748c738617ce8822e82cde2c440ac73875c9d37817ce6\",\"dweb:/ipfs/QmXh6LFctza4fKDGiBfmtEXQwaDiTcfBrMcqfTQgNuagER\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xeed691bc7395c6bee23aa241e44d71be3c6d8c13104e941ebc0b8b1599b1db3b\",\"urls\":[\"bzzr://82b1f2a38209647d94e9b047e24428dfaea286e7854f7f9a7969c57072f2cc35\",\"dweb:/ipfs/QmcmSmYfH6gA4HeTBbx7zESgr21YsyUmFyF6kqvY38cVmc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0x78387047fcf0a9983948d40cfae6ca85deeca1855574b92c43341622621c75d9\",\"urls\":[\"bzzr://89150c90e166a3d6d7db41da1a82f47dec403b4d7a8305e3d342ce81d116986a\",\"dweb:/ipfs/QmQRepLV2Nu65fJZ5VbL2Kv5TQeKr6H5QhpReBKDeaQ9eV\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\nimport \"../IexecStore.sol\";\n\n\ninterface IexecCategoryManager\n{\n\tevent CreateCategory(\n\t\tuint256 catid,\n\t\tstring  name,\n\t\tstring  description,\n\t\tuint256 workClockTimeRef);\n\n\tfunction createCategory(string calldata name, string calldata description, uint256 workClockTimeRef) external returns (uint256);\n}\n\ncontract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore\n{\n\t/**\n\t * Methods\n\t */\n\tfunction createCategory(\n\t\tstring  calldata name,\n\t\tstring  calldata description,\n\t\tuint256          workClockTimeRef)\n\texternal onlyOwner returns (uint256)\n\t{\n\t\tuint256 catid = m_categories.push(IexecODBLibCore.Category(\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t));\n\t\temit CreateCategory(\n\t\t\tcatid,\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t);\n\t\treturn catid;\n\t}\n}\n",
+  "source": "pragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\nimport \"../IexecStore.sol\";\n\n\ninterface IexecCategoryManager\n{\n\tevent CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);\n\n\tfunction createCategory(string calldata,string calldata,uint256) external returns (uint256);\n}\n\ncontract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore\n{\n\t/**\n\t * Methods\n\t */\n\tfunction createCategory(\n\t\tstring  calldata name,\n\t\tstring  calldata description,\n\t\tuint256          workClockTimeRef)\n\texternal onlyOwner returns (uint256)\n\t{\n\t\tuint256 catid = m_categories.push(IexecODBLibCore.Category(\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t)) - 1;\n\n\t\temit CreateCategory(\n\t\t\tcatid,\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t);\n\t\treturn catid;\n\t}\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
     "exportedSymbols": {
       "IexecCategoryManager": [
-        1686
+        2579
       ],
       "IexecCategoryManagerDelegate": [
-        1726
+        2621
       ]
     },
-    "id": 1727,
+    "id": 2622,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1662,
+        "id": 2555,
         "literals": [
           "solidity",
           "^",
@@ -85,25 +85,25 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:8"
+        "src": "0:23:10"
       },
       {
-        "id": 1663,
+        "id": 2556,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "24:33:8"
+        "src": "24:33:10"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol",
         "file": "../IexecStore.sol",
-        "id": 1664,
+        "id": 2557,
         "nodeType": "ImportDirective",
-        "scope": 1727,
-        "sourceUnit": 1164,
-        "src": "59:27:8",
+        "scope": 2622,
+        "sourceUnit": 1748,
+        "src": "59:27:10",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -113,9 +113,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1686,
+        "id": 2579,
         "linearizedBaseContracts": [
-          1686
+          2579
         ],
         "name": "IexecCategoryManager",
         "nodeType": "ContractDefinition",
@@ -123,21 +123,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1674,
+            "id": 2567,
             "name": "CreateCategory",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1673,
+              "id": 2566,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1666,
+                  "id": 2559,
                   "indexed": false,
                   "name": "catid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "147:13:8",
+                  "scope": 2567,
+                  "src": "144:13:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -145,10 +145,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1665,
+                    "id": 2558,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "147:7:8",
+                    "src": "144:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -159,12 +159,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1668,
+                  "id": 2561,
                   "indexed": false,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "164:12:8",
+                  "scope": 2567,
+                  "src": "159:12:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -172,10 +172,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1667,
+                    "id": 2560,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "164:6:8",
+                    "src": "159:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -186,12 +186,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1670,
+                  "id": 2563,
                   "indexed": false,
                   "name": "description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "180:19:8",
+                  "scope": 2567,
+                  "src": "173:19:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -199,10 +199,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1669,
+                    "id": 2562,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "180:6:8",
+                    "src": "173:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -213,12 +213,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1672,
+                  "id": 2565,
                   "indexed": false,
                   "name": "workClockTimeRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "203:24:8",
+                  "scope": 2567,
+                  "src": "194:24:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -226,10 +226,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1671,
+                    "id": 2564,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "203:7:8",
+                    "src": "194:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -239,115 +239,82 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "143:85:8"
+              "src": "143:76:10"
             },
-            "src": "123:106:8"
+            "src": "123:97:10"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 1685,
+            "id": 2578,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "createCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1681,
+              "id": 2574,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1676,
-                  "name": "name",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "256:20:8",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_calldata_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 1675,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "256:6:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1678,
-                  "name": "description",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "278:27:8",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_calldata_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 1677,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "278:6:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1680,
-                  "name": "workClockTimeRef",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "307:24:8",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 1679,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "307:7:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "255:77:8"
-            },
-            "returnParameters": {
-              "id": 1684,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1683,
+                  "id": 2569,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "351:7:8",
+                  "scope": 2578,
+                  "src": "247:15:10",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2568,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "247:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2571,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "263:15:10",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2570,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "263:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2573,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "279:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -355,10 +322,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1682,
+                    "id": 2572,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "351:7:8",
+                    "src": "279:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -368,17 +335,50 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "350:9:8"
+              "src": "246:41:10"
             },
-            "scope": 1686,
-            "src": "232:128:8",
+            "returnParameters": {
+              "id": 2577,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2576,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "306:7:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2575,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "306:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "305:9:10"
+            },
+            "scope": 2579,
+            "src": "223:92:10",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1727,
-        "src": "89:273:8"
+        "scope": 2622,
+        "src": "89:228:10"
       },
       {
         "baseContracts": [
@@ -386,77 +386,77 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1687,
+              "id": 2580,
               "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1686,
-              "src": "405:20:8",
+              "referencedDeclaration": 2579,
+              "src": "360:20:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$2579",
                 "typeString": "contract IexecCategoryManager"
               }
             },
-            "id": 1688,
+            "id": 2581,
             "nodeType": "InheritanceSpecifier",
-            "src": "405:20:8"
+            "src": "360:20:10"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1689,
+              "id": 2582,
               "name": "IexecStore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1163,
-              "src": "427:10:8",
+              "referencedDeclaration": 1747,
+              "src": "382:10:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecStore_$1163",
+                "typeIdentifier": "t_contract$_IexecStore_$1747",
                 "typeString": "contract IexecStore"
               }
             },
-            "id": 1690,
+            "id": 2583,
             "nodeType": "InheritanceSpecifier",
-            "src": "427:10:8"
+            "src": "382:10:10"
           }
         ],
         "contractDependencies": [
           1001,
-          1163,
-          1686,
-          7085
+          1747,
+          2579,
+          8118
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1726,
+        "id": 2621,
         "linearizedBaseContracts": [
-          1726,
-          1163,
+          2621,
+          1747,
           1001,
-          7085,
-          1686
+          8118,
+          2579
         ],
         "name": "IexecCategoryManagerDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1724,
+              "id": 2619,
               "nodeType": "Block",
-              "src": "621:216:8",
+              "src": "576:221:10",
               "statements": [
                 {
                   "assignments": [
-                    1704
+                    2597
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1704,
+                      "id": 2597,
                       "name": "catid",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1724,
-                      "src": "625:13:8",
+                      "scope": 2619,
+                      "src": "580:13:10",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -464,10 +464,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 1703,
+                        "id": 2596,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "625:7:8",
+                        "src": "580:7:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -477,160 +477,197 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1714,
+                  "id": 2609,
                   "initialValue": {
                     "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "id": 1709,
-                            "name": "name",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1692,
-                            "src": "688:4:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            }
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 1710,
-                            "name": "description",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1694,
-                            "src": "697:11:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            }
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 1711,
-                            "name": "workClockTimeRef",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1696,
-                            "src": "713:16:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            },
-                            {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            },
-                            {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          ],
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 1707,
-                            "name": "IexecODBLibCore",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 5819,
-                            "src": "659:15:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$5819_$",
-                              "typeString": "type(library IexecODBLibCore)"
-                            }
-                          },
-                          "id": 1708,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "memberName": "Category",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5732,
-                          "src": "659:24:8",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_struct$_Category_$5732_storage_ptr_$",
-                            "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
-                          }
-                        },
-                        "id": 1712,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "structConstructorCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "659:74:8",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Category_$5732_memory",
-                          "typeString": "struct IexecODBLibCore.Category memory"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_struct$_Category_$5732_memory",
-                          "typeString": "struct IexecODBLibCore.Category memory"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 1705,
-                        "name": "m_categories",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 1142,
-                        "src": "641:12:8",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_Category_$5732_storage_$dyn_storage",
-                          "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
-                        }
-                      },
-                      "id": 1706,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "push",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": null,
-                      "src": "641:17:8",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$5732_storage_$returns$_t_uint256_$",
-                        "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
-                      }
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
                     },
-                    "id": 1713,
+                    "id": 2608,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
-                    "kind": "functionCall",
                     "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "641:93:8",
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 2602,
+                              "name": "name",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2585,
+                              "src": "643:4:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2603,
+                              "name": "description",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2587,
+                              "src": "652:11:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2604,
+                              "name": "workClockTimeRef",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2589,
+                              "src": "668:16:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              },
+                              {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 2600,
+                              "name": "IexecODBLibCore",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 6751,
+                              "src": "614:15:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$6751_$",
+                                "typeString": "type(library IexecODBLibCore)"
+                              }
+                            },
+                            "id": 2601,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "Category",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 6664,
+                            "src": "614:24:10",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_struct$_Category_$6664_storage_ptr_$",
+                              "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
+                            }
+                          },
+                          "id": 2605,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "structConstructorCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "614:74:10",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Category_$6664_memory",
+                            "typeString": "struct IexecODBLibCore.Category memory"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_struct$_Category_$6664_memory",
+                            "typeString": "struct IexecODBLibCore.Category memory"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 2598,
+                          "name": "m_categories",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1726,
+                          "src": "596:12:10",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_array$_t_struct$_Category_$6664_storage_$dyn_storage",
+                            "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
+                          }
+                        },
+                        "id": 2599,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "push",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "596:17:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$6664_storage_$returns$_t_uint256_$",
+                          "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
+                        }
+                      },
+                      "id": 2606,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "596:93:10",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "-",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "31",
+                      "id": 2607,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "692:1:10",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "596:97:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "625:109:8"
+                  "src": "580:113:10"
                 },
                 {
                   "eventCall": {
@@ -638,12 +675,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1716,
+                        "id": 2611,
                         "name": "catid",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1704,
-                        "src": "762:5:8",
+                        "referencedDeclaration": 2597,
+                        "src": "722:5:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -651,12 +688,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1717,
+                        "id": 2612,
                         "name": "name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1692,
-                        "src": "772:4:8",
+                        "referencedDeclaration": 2585,
+                        "src": "732:4:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
                           "typeString": "string calldata"
@@ -664,12 +701,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1718,
+                        "id": 2613,
                         "name": "description",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1694,
-                        "src": "781:11:8",
+                        "referencedDeclaration": 2587,
+                        "src": "741:11:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
                           "typeString": "string calldata"
@@ -677,12 +714,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1719,
+                        "id": 2614,
                         "name": "workClockTimeRef",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1696,
-                        "src": "797:16:8",
+                        "referencedDeclaration": 2589,
+                        "src": "757:16:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -708,18 +745,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 1715,
+                      "id": 2610,
                       "name": "CreateCategory",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1674,
-                      "src": "743:14:8",
+                      "referencedDeclaration": 2567,
+                      "src": "703:14:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,string memory,string memory,uint256)"
                       }
                     },
-                    "id": 1720,
+                    "id": 2615,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -727,75 +764,75 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "743:74:8",
+                    "src": "703:74:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1721,
+                  "id": 2616,
                   "nodeType": "EmitStatement",
-                  "src": "738:79:8"
+                  "src": "698:79:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1722,
+                    "id": 2617,
                     "name": "catid",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1704,
-                    "src": "828:5:8",
+                    "referencedDeclaration": 2597,
+                    "src": "788:5:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 1702,
-                  "id": 1723,
+                  "functionReturnParameters": 2595,
+                  "id": 2618,
                   "nodeType": "Return",
-                  "src": "821:12:8"
+                  "src": "781:12:10"
                 }
               ]
             },
             "documentation": "Methods",
-            "id": 1725,
+            "id": 2620,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 1699,
+                "id": 2592,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1698,
+                  "id": 2591,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 7018,
-                  "src": "592:9:8",
+                  "referencedDeclaration": 8051,
+                  "src": "547:9:10",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "592:9:8"
+                "src": "547:9:10"
               }
             ],
             "name": "createCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1697,
+              "id": 2590,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1692,
+                  "id": 2585,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "490:21:8",
+                  "scope": 2620,
+                  "src": "445:21:10",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -803,10 +840,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1691,
+                    "id": 2584,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "490:6:8",
+                    "src": "445:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -817,11 +854,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1694,
+                  "id": 2587,
                   "name": "description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "515:28:8",
+                  "scope": 2620,
+                  "src": "470:28:10",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -829,10 +866,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1693,
+                    "id": 2586,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "515:6:8",
+                    "src": "470:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -843,11 +880,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1696,
+                  "id": 2589,
                   "name": "workClockTimeRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "547:33:8",
+                  "scope": 2620,
+                  "src": "502:33:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -855,10 +892,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1695,
+                    "id": 2588,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "547:7:8",
+                    "src": "502:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -868,19 +905,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "486:95:8"
+              "src": "441:95:10"
             },
             "returnParameters": {
-              "id": 1702,
+              "id": 2595,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1701,
+                  "id": 2594,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "611:7:8",
+                  "scope": 2620,
+                  "src": "566:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -888,10 +925,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1700,
+                    "id": 2593,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "611:7:8",
+                    "src": "566:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -901,36 +938,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "610:9:8"
+              "src": "565:9:10"
             },
-            "scope": 1726,
-            "src": "463:374:8",
+            "scope": 2621,
+            "src": "418:379:10",
             "stateMutability": "nonpayable",
-            "superFunction": 1685,
+            "superFunction": 2578,
             "visibility": "external"
           }
         ],
-        "scope": 1727,
-        "src": "364:475:8"
+        "scope": 2622,
+        "src": "319:480:10"
       }
     ],
-    "src": "0:840:8"
+    "src": "0:800:10"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
     "exportedSymbols": {
       "IexecCategoryManager": [
-        1686
+        2579
       ],
       "IexecCategoryManagerDelegate": [
-        1726
+        2621
       ]
     },
-    "id": 1727,
+    "id": 2622,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1662,
+        "id": 2555,
         "literals": [
           "solidity",
           "^",
@@ -938,25 +975,25 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:8"
+        "src": "0:23:10"
       },
       {
-        "id": 1663,
+        "id": 2556,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "24:33:8"
+        "src": "24:33:10"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol",
         "file": "../IexecStore.sol",
-        "id": 1664,
+        "id": 2557,
         "nodeType": "ImportDirective",
-        "scope": 1727,
-        "sourceUnit": 1164,
-        "src": "59:27:8",
+        "scope": 2622,
+        "sourceUnit": 1748,
+        "src": "59:27:10",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -966,9 +1003,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1686,
+        "id": 2579,
         "linearizedBaseContracts": [
-          1686
+          2579
         ],
         "name": "IexecCategoryManager",
         "nodeType": "ContractDefinition",
@@ -976,21 +1013,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1674,
+            "id": 2567,
             "name": "CreateCategory",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1673,
+              "id": 2566,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1666,
+                  "id": 2559,
                   "indexed": false,
                   "name": "catid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "147:13:8",
+                  "scope": 2567,
+                  "src": "144:13:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -998,10 +1035,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1665,
+                    "id": 2558,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "147:7:8",
+                    "src": "144:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1012,12 +1049,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1668,
+                  "id": 2561,
                   "indexed": false,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "164:12:8",
+                  "scope": 2567,
+                  "src": "159:12:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1025,10 +1062,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1667,
+                    "id": 2560,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "164:6:8",
+                    "src": "159:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1039,12 +1076,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1670,
+                  "id": 2563,
                   "indexed": false,
                   "name": "description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "180:19:8",
+                  "scope": 2567,
+                  "src": "173:19:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1052,10 +1089,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1669,
+                    "id": 2562,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "180:6:8",
+                    "src": "173:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1066,12 +1103,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 1672,
+                  "id": 2565,
                   "indexed": false,
                   "name": "workClockTimeRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1674,
-                  "src": "203:24:8",
+                  "scope": 2567,
+                  "src": "194:24:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1079,10 +1116,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1671,
+                    "id": 2564,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "203:7:8",
+                    "src": "194:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1092,115 +1129,82 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "143:85:8"
+              "src": "143:76:10"
             },
-            "src": "123:106:8"
+            "src": "123:97:10"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 1685,
+            "id": 2578,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "createCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1681,
+              "id": 2574,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1676,
-                  "name": "name",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "256:20:8",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_calldata_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 1675,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "256:6:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1678,
-                  "name": "description",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "278:27:8",
-                  "stateVariable": false,
-                  "storageLocation": "calldata",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_string_calldata_ptr",
-                    "typeString": "string"
-                  },
-                  "typeName": {
-                    "id": 1677,
-                    "name": "string",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "278:6:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_string_storage_ptr",
-                      "typeString": "string"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 1680,
-                  "name": "workClockTimeRef",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "307:24:8",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 1679,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "307:7:8",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "255:77:8"
-            },
-            "returnParameters": {
-              "id": 1684,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 1683,
+                  "id": 2569,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1685,
-                  "src": "351:7:8",
+                  "scope": 2578,
+                  "src": "247:15:10",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2568,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "247:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2571,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "263:15:10",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2570,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "263:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2573,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "279:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1208,10 +1212,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1682,
+                    "id": 2572,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "351:7:8",
+                    "src": "279:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1221,17 +1225,50 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "350:9:8"
+              "src": "246:41:10"
             },
-            "scope": 1686,
-            "src": "232:128:8",
+            "returnParameters": {
+              "id": 2577,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2576,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2578,
+                  "src": "306:7:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2575,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "306:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "305:9:10"
+            },
+            "scope": 2579,
+            "src": "223:92:10",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 1727,
-        "src": "89:273:8"
+        "scope": 2622,
+        "src": "89:228:10"
       },
       {
         "baseContracts": [
@@ -1239,77 +1276,77 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1687,
+              "id": 2580,
               "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1686,
-              "src": "405:20:8",
+              "referencedDeclaration": 2579,
+              "src": "360:20:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$2579",
                 "typeString": "contract IexecCategoryManager"
               }
             },
-            "id": 1688,
+            "id": 2581,
             "nodeType": "InheritanceSpecifier",
-            "src": "405:20:8"
+            "src": "360:20:10"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1689,
+              "id": 2582,
               "name": "IexecStore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1163,
-              "src": "427:10:8",
+              "referencedDeclaration": 1747,
+              "src": "382:10:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecStore_$1163",
+                "typeIdentifier": "t_contract$_IexecStore_$1747",
                 "typeString": "contract IexecStore"
               }
             },
-            "id": 1690,
+            "id": 2583,
             "nodeType": "InheritanceSpecifier",
-            "src": "427:10:8"
+            "src": "382:10:10"
           }
         ],
         "contractDependencies": [
           1001,
-          1163,
-          1686,
-          7085
+          1747,
+          2579,
+          8118
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1726,
+        "id": 2621,
         "linearizedBaseContracts": [
-          1726,
-          1163,
+          2621,
+          1747,
           1001,
-          7085,
-          1686
+          8118,
+          2579
         ],
         "name": "IexecCategoryManagerDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1724,
+              "id": 2619,
               "nodeType": "Block",
-              "src": "621:216:8",
+              "src": "576:221:10",
               "statements": [
                 {
                   "assignments": [
-                    1704
+                    2597
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1704,
+                      "id": 2597,
                       "name": "catid",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1724,
-                      "src": "625:13:8",
+                      "scope": 2619,
+                      "src": "580:13:10",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -1317,10 +1354,10 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 1703,
+                        "id": 2596,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
-                        "src": "625:7:8",
+                        "src": "580:7:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1330,160 +1367,197 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1714,
+                  "id": 2609,
                   "initialValue": {
                     "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "arguments": [
-                          {
-                            "argumentTypes": null,
-                            "id": 1709,
-                            "name": "name",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1692,
-                            "src": "688:4:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            }
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 1710,
-                            "name": "description",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1694,
-                            "src": "697:11:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            }
-                          },
-                          {
-                            "argumentTypes": null,
-                            "id": 1711,
-                            "name": "workClockTimeRef",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 1696,
-                            "src": "713:16:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          }
-                        ],
-                        "expression": {
-                          "argumentTypes": [
-                            {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            },
-                            {
-                              "typeIdentifier": "t_string_calldata_ptr",
-                              "typeString": "string calldata"
-                            },
-                            {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          ],
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 1707,
-                            "name": "IexecODBLibCore",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 5819,
-                            "src": "659:15:8",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$5819_$",
-                              "typeString": "type(library IexecODBLibCore)"
-                            }
-                          },
-                          "id": 1708,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "memberName": "Category",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": 5732,
-                          "src": "659:24:8",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_struct$_Category_$5732_storage_ptr_$",
-                            "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
-                          }
-                        },
-                        "id": 1712,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "kind": "structConstructorCall",
-                        "lValueRequested": false,
-                        "names": [],
-                        "nodeType": "FunctionCall",
-                        "src": "659:74:8",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Category_$5732_memory",
-                          "typeString": "struct IexecODBLibCore.Category memory"
-                        }
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_struct$_Category_$5732_memory",
-                          "typeString": "struct IexecODBLibCore.Category memory"
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": null,
-                        "id": 1705,
-                        "name": "m_categories",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 1142,
-                        "src": "641:12:8",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_Category_$5732_storage_$dyn_storage",
-                          "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
-                        }
-                      },
-                      "id": 1706,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "lValueRequested": false,
-                      "memberName": "push",
-                      "nodeType": "MemberAccess",
-                      "referencedDeclaration": null,
-                      "src": "641:17:8",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$5732_storage_$returns$_t_uint256_$",
-                        "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
-                      }
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
                     },
-                    "id": 1713,
+                    "id": 2608,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
-                    "kind": "functionCall",
                     "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "641:93:8",
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 2602,
+                              "name": "name",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2585,
+                              "src": "643:4:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2603,
+                              "name": "description",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2587,
+                              "src": "652:11:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2604,
+                              "name": "workClockTimeRef",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2589,
+                              "src": "668:16:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              },
+                              {
+                                "typeIdentifier": "t_string_calldata_ptr",
+                                "typeString": "string calldata"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 2600,
+                              "name": "IexecODBLibCore",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 6751,
+                              "src": "614:15:10",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$6751_$",
+                                "typeString": "type(library IexecODBLibCore)"
+                              }
+                            },
+                            "id": 2601,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "Category",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 6664,
+                            "src": "614:24:10",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_struct$_Category_$6664_storage_ptr_$",
+                              "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
+                            }
+                          },
+                          "id": 2605,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "structConstructorCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "614:74:10",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Category_$6664_memory",
+                            "typeString": "struct IexecODBLibCore.Category memory"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_struct$_Category_$6664_memory",
+                            "typeString": "struct IexecODBLibCore.Category memory"
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 2598,
+                          "name": "m_categories",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1726,
+                          "src": "596:12:10",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_array$_t_struct$_Category_$6664_storage_$dyn_storage",
+                            "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
+                          }
+                        },
+                        "id": 2599,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "push",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "596:17:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$6664_storage_$returns$_t_uint256_$",
+                          "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
+                        }
+                      },
+                      "id": 2606,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "596:93:10",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "-",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "31",
+                      "id": 2607,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "692:1:10",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "596:97:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "625:109:8"
+                  "src": "580:113:10"
                 },
                 {
                   "eventCall": {
@@ -1491,12 +1565,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1716,
+                        "id": 2611,
                         "name": "catid",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1704,
-                        "src": "762:5:8",
+                        "referencedDeclaration": 2597,
+                        "src": "722:5:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1504,12 +1578,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1717,
+                        "id": 2612,
                         "name": "name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1692,
-                        "src": "772:4:8",
+                        "referencedDeclaration": 2585,
+                        "src": "732:4:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
                           "typeString": "string calldata"
@@ -1517,12 +1591,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1718,
+                        "id": 2613,
                         "name": "description",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1694,
-                        "src": "781:11:8",
+                        "referencedDeclaration": 2587,
+                        "src": "741:11:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
                           "typeString": "string calldata"
@@ -1530,12 +1604,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 1719,
+                        "id": 2614,
                         "name": "workClockTimeRef",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1696,
-                        "src": "797:16:8",
+                        "referencedDeclaration": 2589,
+                        "src": "757:16:10",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1561,18 +1635,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 1715,
+                      "id": 2610,
                       "name": "CreateCategory",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1674,
-                      "src": "743:14:8",
+                      "referencedDeclaration": 2567,
+                      "src": "703:14:10",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,string memory,string memory,uint256)"
                       }
                     },
-                    "id": 1720,
+                    "id": 2615,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1580,75 +1654,75 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "743:74:8",
+                    "src": "703:74:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1721,
+                  "id": 2616,
                   "nodeType": "EmitStatement",
-                  "src": "738:79:8"
+                  "src": "698:79:10"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1722,
+                    "id": 2617,
                     "name": "catid",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1704,
-                    "src": "828:5:8",
+                    "referencedDeclaration": 2597,
+                    "src": "788:5:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 1702,
-                  "id": 1723,
+                  "functionReturnParameters": 2595,
+                  "id": 2618,
                   "nodeType": "Return",
-                  "src": "821:12:8"
+                  "src": "781:12:10"
                 }
               ]
             },
             "documentation": "Methods",
-            "id": 1725,
+            "id": 2620,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 1699,
+                "id": 2592,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1698,
+                  "id": 2591,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 7018,
-                  "src": "592:9:8",
+                  "referencedDeclaration": 8051,
+                  "src": "547:9:10",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "592:9:8"
+                "src": "547:9:10"
               }
             ],
             "name": "createCategory",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1697,
+              "id": 2590,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1692,
+                  "id": 2585,
                   "name": "name",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "490:21:8",
+                  "scope": 2620,
+                  "src": "445:21:10",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1656,10 +1730,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1691,
+                    "id": 2584,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "490:6:8",
+                    "src": "445:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1670,11 +1744,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1694,
+                  "id": 2587,
                   "name": "description",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "515:28:8",
+                  "scope": 2620,
+                  "src": "470:28:10",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1682,10 +1756,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1693,
+                    "id": 2586,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "515:6:8",
+                    "src": "470:6:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1696,11 +1770,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 1696,
+                  "id": 2589,
                   "name": "workClockTimeRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "547:33:8",
+                  "scope": 2620,
+                  "src": "502:33:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1708,10 +1782,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1695,
+                    "id": 2588,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "547:7:8",
+                    "src": "502:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1721,19 +1795,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "486:95:8"
+              "src": "441:95:10"
             },
             "returnParameters": {
-              "id": 1702,
+              "id": 2595,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1701,
+                  "id": 2594,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1725,
-                  "src": "611:7:8",
+                  "scope": 2620,
+                  "src": "566:7:10",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1741,10 +1815,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1700,
+                    "id": 2593,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "611:7:8",
+                    "src": "566:7:10",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1754,20 +1828,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "610:9:8"
+              "src": "565:9:10"
             },
-            "scope": 1726,
-            "src": "463:374:8",
+            "scope": 2621,
+            "src": "418:379:10",
             "stateMutability": "nonpayable",
-            "superFunction": 1685,
+            "superFunction": 2578,
             "visibility": "external"
           }
         ],
-        "scope": 1727,
-        "src": "364:475:8"
+        "scope": 2622,
+        "src": "319:480:10"
       }
     ],
-    "src": "0:840:8"
+    "src": "0:800:10"
   },
   "compiler": {
     "name": "solc",
@@ -1775,7 +1849,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T13:40:39.293Z",
+  "updatedAt": "2019-06-26T15:12:50.241Z",
   "devdoc": {
     "methods": {}
   },

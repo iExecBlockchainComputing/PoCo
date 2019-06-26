@@ -1,12 +1,12 @@
-var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub           = artifacts.require("./IexecHub.sol");
-var IexecClerk         = artifacts.require("./IexecClerk.sol");
-var AppRegistry        = artifacts.require("./AppRegistry.sol");
-var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
-var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
-var App                = artifacts.require("./App.sol");
-var Dataset            = artifacts.require("./Dataset.sol");
-var Workerpool         = artifacts.require("./Workerpool.sol");
+var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
+var ERC1538Proxy       = artifacts.require("ERC1538Proxy");
+var IexecStack         = artifacts.require("IexecStack");
+var AppRegistry        = artifacts.require("AppRegistry");
+var DatasetRegistry    = artifacts.require("DatasetRegistry");
+var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
+var App                = artifacts.require("App");
+var Dataset            = artifacts.require("Dataset");
+var Workerpool         = artifacts.require("Workerpool");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr    = require('multiaddr');
@@ -64,8 +64,8 @@ contract('IexecHub', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecHub.deployed();
-		IexecClerkInstance         = await IexecClerk.deployed();
+		IexecHubInstance           = await IexecStack.at((await ERC1538Proxy.deployed()).address);
+		IexecClerkInstance         = await IexecStack.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();

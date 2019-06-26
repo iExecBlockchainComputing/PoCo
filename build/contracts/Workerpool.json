@@ -175,22 +175,22 @@
   "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"m_workerpoolDescription\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"m_schedulerRewardRatioPolicy\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"m_workerStakeRatioPolicy\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newWorkerStakeRatioPolicy\",\"type\":\"uint256\"},{\"name\":\"_newSchedulerRewardRatioPolicy\",\"type\":\"uint256\"}],\"name\":\"changePolicy\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_workerpoolOwner\",\"type\":\"address\"},{\"name\":\"_workerpoolDescription\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"oldWorkerStakeRatioPolicy\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"newWorkerStakeRatioPolicy\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"oldSchedulerRewardRatioPolicy\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"newSchedulerRewardRatioPolicy\",\"type\":\"uint256\"}],\"name\":\"PolicyUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"}}},\"userdoc\":{\"methods\":{\"constructor\":\"Constructor\"}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":\"Workerpool\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0x78387047fcf0a9983948d40cfae6ca85deeca1855574b92c43341622621c75d9\",\"urls\":[\"bzzr://89150c90e166a3d6d7db41da1a82f47dec403b4d7a8305e3d342ce81d116986a\",\"dweb:/ipfs/QmQRepLV2Nu65fJZ5VbL2Kv5TQeKr6H5QhpReBKDeaQ9eV\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
   "bytecode": "0x608060405234801561001057600080fd5b506040516106d23803806106d28339818101604052604081101561003357600080fd5b81516020830180519193928301929164010000000081111561005457600080fd5b8201602081018481111561006757600080fd5b815164010000000081118282018710171561008157600080fd5b5050600080546001600160a01b03191633178082556040519295506001600160a01b0316935091506000805160206106b2833981519152908290a36100ce826001600160e01b036100f316565b80516100e190600190602084019061019b565b5050601e600255506001600355610236565b6001600160a01b038116610152576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252602681526020018061068c6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216916000805160206106b283398151915291a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106101dc57805160ff1916838001178555610209565b82800160010185558215610209579182015b828111156102095782518255916020019190600101906101ee565b50610215929150610219565b5090565b61023391905b80821115610215576000815560010161021f565b90565b610447806102456000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c80638f32d59b1161005b5780638f32d59b14610152578063b55e75af1461016e578063f199413c14610176578063f2fde38b1461019957610088565b8063584feb3a1461008d578063715018a61461010a57806387639c68146101145780638da5cb5b1461012e575b600080fd5b6100956101bf565b6040805160208082528351818301528351919283929083019185019080838360005b838110156100cf5781810151838201526020016100b7565b50505050905090810190601f1680156100fc5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b61011261024c565b005b61011c6102ef565b60408051918252519081900360200190f35b6101366102f5565b604080516001600160a01b039092168252519081900360200190f35b61015a610304565b604080519115158252519081900360200190f35b61011c610315565b6101126004803603604081101561018c57600080fd5b508035906020013561031b565b610112600480360360208110156101af57600080fd5b50356001600160a01b03166103da565b60018054604080516020600284861615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156102445780601f1061021957610100808354040283529160200191610244565b820191906000526020600020905b81548152906001019060200180831161022757829003601f168201915b505050505081565b610254610304565b6102a5576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60035481565b6000546001600160a01b031690565b6000546001600160a01b0316331490565b60025481565b610323610304565b610374576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b606481111561038257600080fd5b60025460035460408051928352602083018590528281019190915260608201839052517f61f37ef3a6d587ce2d6be79492e1fac570f2745787015db7ed95ad4397b05c1e9181900360800190a1600291909155600355565b6040805162461bcd60e51b8152602060048201526008602482015267191a5cd8589b195960c21b604482015290519081900360640190fdfea265627a7a723058204a07f7967b745d41430ad5711fae5115a25ae9fd8fc8fa1d5476748e18cf4f6f64736f6c634300050900324f776e61626c653a206e6577206f776e657220697320746865207a65726f20616464726573738be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
   "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100885760003560e01c80638f32d59b1161005b5780638f32d59b14610152578063b55e75af1461016e578063f199413c14610176578063f2fde38b1461019957610088565b8063584feb3a1461008d578063715018a61461010a57806387639c68146101145780638da5cb5b1461012e575b600080fd5b6100956101bf565b6040805160208082528351818301528351919283929083019185019080838360005b838110156100cf5781810151838201526020016100b7565b50505050905090810190601f1680156100fc5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b61011261024c565b005b61011c6102ef565b60408051918252519081900360200190f35b6101366102f5565b604080516001600160a01b039092168252519081900360200190f35b61015a610304565b604080519115158252519081900360200190f35b61011c610315565b6101126004803603604081101561018c57600080fd5b508035906020013561031b565b610112600480360360208110156101af57600080fd5b50356001600160a01b03166103da565b60018054604080516020600284861615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156102445780601f1061021957610100808354040283529160200191610244565b820191906000526020600020905b81548152906001019060200180831161022757829003601f168201915b505050505081565b610254610304565b6102a5576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60035481565b6000546001600160a01b031690565b6000546001600160a01b0316331490565b60025481565b610323610304565b610374576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b606481111561038257600080fd5b60025460035460408051928352602083018590528281019190915260608201839052517f61f37ef3a6d587ce2d6be79492e1fac570f2745787015db7ed95ad4397b05c1e9181900360800190a1600291909155600355565b6040805162461bcd60e51b8152602060048201526008602482015267191a5cd8589b195960c21b604482015290519081900360640190fdfea265627a7a723058204a07f7967b745d41430ad5711fae5115a25ae9fd8fc8fa1d5476748e18cf4f6f64736f6c63430005090032",
-  "sourceMap": "90:1302:19:-;;;567:295;8:9:-1;5:2;;;30:1;27;20:12;5:2;567:295:19;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;567:295:19;;;;;;;;;;;;;;19:11:-1;11:20;;8:2;;;44:1;41;34:12;8:2;62:21;;123:4;114:14;;138:31;;;135:2;;;182:1;179;172:12;135:2;213:10;;261:11;244:29;;285:43;;;282:58;-1:-1;233:115;230:2;;;361:1;358;351:12;230:2;-1:-1;;657:6:25;:19;;-1:-1:-1;;;;;;657:19:25;666:10;657:19;;;;691:40;;-1:-1:-1;;567:295:19;;-1:-1:-1;;;;;;724:6:25;;;;-1:-1:-1;657:6:25;;-1:-1:-1;691:40:25;657:6;;-1:-1:-1;;657:6:25;-1:-1:-1;;;;;691:40:25;657:6;;691:40;669:36:19;688:16;669:18;:36::i;:::-;709:53;;;;:23;;:53;;;;;:::i;:::-;-1:-1:-1;;797:2:19;766:24;:33;-1:-1:-1;845:1:19;814:28;:32;90:1302;;2093:225:25;-1:-1:-1;;;;;2166:22:25;;2158:73;;;;-1:-1:-1;;;2158:73:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2267:6;;;2246:38;;-1:-1:-1;;;;;;;2246:38:25;;;;2267:6;;;;;;-1:-1:-1;;2267:6:25;-1:-1:-1;;;;;2246:38:25;;2294:6;:17;;-1:-1:-1;;;;;;2294:17:25;-1:-1:-1;;;;;2294:17:25;;;;;;;;;;2093:225::o;90:1302:19:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;90:1302:19;;;-1:-1:-1;90:1302:19;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
-  "deployedSourceMap": "90:1302:19:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;90:1302:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;149:38;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;149:38:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1599:137:25;;;:::i;:::-;;260:43:19;;;:::i;:::-;;;;;;;;;;;;;;;;814:77:25;;;:::i;:::-;;;;-1:-1:-1;;;;;814:77:25;;;;;;;;;;;;;;1165:90;;;:::i;:::-;;;;;;;;;;;;;;;;;;190:39:19;;;:::i;865:455::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;865:455:19;;;;;;;:::i;1323:66::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1323:66:19;-1:-1:-1;;;;;1323:66:19;;:::i;149:38::-;;;;;;;;;;;;;;;-1:-1:-1;;149:38:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1599:137:25:-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1697:1;1681:6;;1660:40;;-1:-1:-1;;;;;1681:6:25;;;;1660:40;;1697:1;;1660:40;1727:1;1710:19;;-1:-1:-1;;;;;;1710:19:25;;;1599:137::o;260:43:19:-;;;;:::o;814:77:25:-;852:7;878:6;-1:-1:-1;;;;;878:6:25;;814:77::o;1165:90::-;1205:4;1242:6;-1:-1:-1;;;;;1242:6:25;1228:10;:20;;1165:90::o;190:39:19:-;;;;:::o;865:455::-;1018:9:25;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1033:3:19;999:30;:37;;991:46;;;;;;1064:24;;1125:28;;1047:142;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1194:24;:57;;;;1255:28;:61;865:455::o;1323:66::-;1368:18;;;-1:-1:-1;;;1368:18:19;;;;;;;;;;;;-1:-1:-1;;;1368:18:19;;;;;;;;;;;;;",
+  "sourceMap": "90:1302:21:-;;;567:295;8:9:-1;5:2;;;30:1;27;20:12;5:2;567:295:21;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;567:295:21;;;;;;;;;;;;;;19:11:-1;11:20;;8:2;;;44:1;41;34:12;8:2;62:21;;123:4;114:14;;138:31;;;135:2;;;182:1;179;172:12;135:2;213:10;;261:11;244:29;;285:43;;;282:58;-1:-1;233:115;230:2;;;361:1;358;351:12;230:2;-1:-1;;657:6:30;:19;;-1:-1:-1;;;;;;657:19:30;666:10;657:19;;;;691:40;;-1:-1:-1;;567:295:21;;-1:-1:-1;;;;;;724:6:30;;;;-1:-1:-1;657:6:30;;-1:-1:-1;691:40:30;657:6;;-1:-1:-1;;657:6:30;-1:-1:-1;;;;;691:40:30;657:6;;691:40;669:36:21;688:16;669:18;:36::i;:::-;709:53;;;;:23;;:53;;;;;:::i;:::-;-1:-1:-1;;797:2:21;766:24;:33;-1:-1:-1;845:1:21;814:28;:32;90:1302;;2093:225:30;-1:-1:-1;;;;;2166:22:30;;2158:73;;;;-1:-1:-1;;;2158:73:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2267:6;;;2246:38;;-1:-1:-1;;;;;;;2246:38:30;;;;2267:6;;;;;;-1:-1:-1;;2267:6:30;-1:-1:-1;;;;;2246:38:30;;2294:6;:17;;-1:-1:-1;;;;;;2294:17:30;-1:-1:-1;;;;;2294:17:30;;;;;;;;;;2093:225::o;90:1302:21:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;90:1302:21;;;-1:-1:-1;90:1302:21;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "90:1302:21:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;90:1302:21;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;149:38;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;149:38:21;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1599:137:30;;;:::i;:::-;;260:43:21;;;:::i;:::-;;;;;;;;;;;;;;;;814:77:30;;;:::i;:::-;;;;-1:-1:-1;;;;;814:77:30;;;;;;;;;;;;;;1165:90;;;:::i;:::-;;;;;;;;;;;;;;;;;;190:39:21;;;:::i;865:455::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;865:455:21;;;;;;;:::i;1323:66::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1323:66:21;-1:-1:-1;;;;;1323:66:21;;:::i;149:38::-;;;;;;;;;;;;;;;-1:-1:-1;;149:38:21;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1599:137:30:-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1697:1;1681:6;;1660:40;;-1:-1:-1;;;;;1681:6:30;;;;1660:40;;1697:1;;1660:40;1727:1;1710:19;;-1:-1:-1;;;;;;1710:19:30;;;1599:137::o;260:43:21:-;;;;:::o;814:77:30:-;852:7;878:6;-1:-1:-1;;;;;878:6:30;;814:77::o;1165:90::-;1205:4;1242:6;-1:-1:-1;;;;;1242:6:30;1228:10;:20;;1165:90::o;190:39:21:-;;;;:::o;865:455::-;1018:9:30;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1033:3:21;999:30;:37;;991:46;;;;;;1064:24;;1125:28;;1047:142;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1194:24;:57;;;;1255:28;:61;865:455::o;1323:66::-;1368:18;;;-1:-1:-1;;;1368:18:21;;;;;;;;;;;;-1:-1:-1;;;1368:18:21;;;;;;;;;;;;;",
   "source": "pragma solidity ^0.5.9;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\n\ncontract Workerpool is Ownable\n{\n\t/**\n\t * Parameters\n\t */\n\tstring  public m_workerpoolDescription;\n\tuint256 public m_workerStakeRatioPolicy;     // % of reward to stake\n\tuint256 public m_schedulerRewardRatioPolicy; // % of reward given to scheduler\n\n\t/**\n\t * Events\n\t */\n\tevent PolicyUpdate(\n\t\tuint256 oldWorkerStakeRatioPolicy,     uint256 newWorkerStakeRatioPolicy,\n\t\tuint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy);\n\n\t/**\n\t * Constructor\n\t */\n\tconstructor(\n\t\taddress        _workerpoolOwner,\n\t\tstring  memory _workerpoolDescription)\n\tpublic\n\t{\n\t\t_transferOwnership(_workerpoolOwner);\n\t\tm_workerpoolDescription      = _workerpoolDescription;\n\t\tm_workerStakeRatioPolicy     = 30; // mutable\n\t\tm_schedulerRewardRatioPolicy = 1;  // mutable\n\t}\n\n\tfunction changePolicy(\n\t\tuint256 _newWorkerStakeRatioPolicy,\n\t\tuint256 _newSchedulerRewardRatioPolicy)\n\tpublic onlyOwner\n\t{\n\t\trequire(_newSchedulerRewardRatioPolicy <= 100);\n\n\t\temit PolicyUpdate(\n\t\t\tm_workerStakeRatioPolicy,     _newWorkerStakeRatioPolicy,\n\t\t\tm_schedulerRewardRatioPolicy, _newSchedulerRewardRatioPolicy\n\t\t);\n\n\t\tm_workerStakeRatioPolicy     = _newWorkerStakeRatioPolicy;\n\t\tm_schedulerRewardRatioPolicy = _newSchedulerRewardRatioPolicy;\n\t}\n\n\tfunction transferOwnership(address) public { revert(\"disabled\"); }\n\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol",
     "exportedSymbols": {
       "Workerpool": [
-        6485
+        7417
       ]
     },
-    "id": 6486,
+    "id": 7418,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6400,
+        "id": 7332,
         "literals": [
           "solidity",
           "^",
@@ -198,16 +198,16 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:19"
+        "src": "0:23:21"
       },
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 6401,
+        "id": 7333,
         "nodeType": "ImportDirective",
-        "scope": 6486,
-        "sourceUnit": 7086,
-        "src": "25:63:19",
+        "scope": 7418,
+        "sourceUnit": 8119,
+        "src": "25:63:21",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -217,42 +217,42 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6402,
+              "id": 7334,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7085,
-              "src": "113:7:19",
+              "referencedDeclaration": 8118,
+              "src": "113:7:21",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$7085",
+                "typeIdentifier": "t_contract$_Ownable_$8118",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 6403,
+            "id": 7335,
             "nodeType": "InheritanceSpecifier",
-            "src": "113:7:19"
+            "src": "113:7:21"
           }
         ],
         "contractDependencies": [
-          7085
+          8118
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6485,
+        "id": 7417,
         "linearizedBaseContracts": [
-          6485,
-          7085
+          7417,
+          8118
         ],
         "name": "Workerpool",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 6405,
+            "id": 7337,
             "name": "m_workerpoolDescription",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "149:38:19",
+            "scope": 7417,
+            "src": "149:38:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -260,10 +260,10 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 6404,
+              "id": 7336,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "149:6:19",
+              "src": "149:6:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -274,11 +274,11 @@
           },
           {
             "constant": false,
-            "id": 6407,
+            "id": 7339,
             "name": "m_workerStakeRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "190:39:19",
+            "scope": 7417,
+            "src": "190:39:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -286,10 +286,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6406,
+              "id": 7338,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "190:7:19",
+              "src": "190:7:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -300,11 +300,11 @@
           },
           {
             "constant": false,
-            "id": 6409,
+            "id": 7341,
             "name": "m_schedulerRewardRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "260:43:19",
+            "scope": 7417,
+            "src": "260:43:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -312,10 +312,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6408,
+              "id": 7340,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "260:7:19",
+              "src": "260:7:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -327,21 +327,21 @@
           {
             "anonymous": false,
             "documentation": "Events",
-            "id": 6419,
+            "id": 7351,
             "name": "PolicyUpdate",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6418,
+              "id": 7350,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6411,
+                  "id": 7343,
                   "indexed": false,
                   "name": "oldWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "384:33:19",
+                  "scope": 7351,
+                  "src": "384:33:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -349,10 +349,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6410,
+                    "id": 7342,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "384:7:19",
+                    "src": "384:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -363,12 +363,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6413,
+                  "id": 7345,
                   "indexed": false,
                   "name": "newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "423:33:19",
+                  "scope": 7351,
+                  "src": "423:33:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -376,10 +376,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6412,
+                    "id": 7344,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "423:7:19",
+                    "src": "423:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -390,12 +390,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6415,
+                  "id": 7347,
                   "indexed": false,
                   "name": "oldSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "460:37:19",
+                  "scope": 7351,
+                  "src": "460:37:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -403,10 +403,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6414,
+                    "id": 7346,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "460:7:19",
+                    "src": "460:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -417,12 +417,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6417,
+                  "id": 7349,
                   "indexed": false,
                   "name": "newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "499:37:19",
+                  "scope": 7351,
+                  "src": "499:37:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -430,10 +430,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6416,
+                    "id": 7348,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "499:7:19",
+                    "src": "499:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -443,15 +443,15 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "380:157:19"
+              "src": "380:157:21"
             },
-            "src": "362:176:19"
+            "src": "362:176:21"
           },
           {
             "body": {
-              "id": 6442,
+              "id": 7374,
               "nodeType": "Block",
-              "src": "665:197:19",
+              "src": "665:197:21",
               "statements": [
                 {
                   "expression": {
@@ -459,12 +459,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6427,
+                        "id": 7359,
                         "name": "_workerpoolOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6421,
-                        "src": "688:16:19",
+                        "referencedDeclaration": 7353,
+                        "src": "688:16:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -478,18 +478,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 6426,
+                      "id": 7358,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7084,
-                      "src": "669:18:19",
+                      "referencedDeclaration": 8117,
+                      "src": "669:18:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 6428,
+                    "id": 7360,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -497,32 +497,32 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "669:36:19",
+                    "src": "669:36:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6429,
+                  "id": 7361,
                   "nodeType": "ExpressionStatement",
-                  "src": "669:36:19"
+                  "src": "669:36:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6432,
+                    "id": 7364,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6430,
+                      "id": 7362,
                       "name": "m_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6405,
-                      "src": "709:23:19",
+                      "referencedDeclaration": 7337,
+                      "src": "709:23:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
                         "typeString": "string storage ref"
@@ -532,43 +532,43 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6431,
+                      "id": 7363,
                       "name": "_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6423,
-                      "src": "740:22:19",
+                      "referencedDeclaration": 7355,
+                      "src": "740:22:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
                         "typeString": "string memory"
                       }
                     },
-                    "src": "709:53:19",
+                    "src": "709:53:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage",
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 6433,
+                  "id": 7365,
                   "nodeType": "ExpressionStatement",
-                  "src": "709:53:19"
+                  "src": "709:53:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6436,
+                    "id": 7368,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6434,
+                      "id": 7366,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6407,
-                      "src": "766:24:19",
+                      "referencedDeclaration": 7339,
+                      "src": "766:24:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -579,14 +579,14 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "3330",
-                      "id": 6435,
+                      "id": 7367,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "797:2:19",
+                      "src": "797:2:21",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_30_by_1",
@@ -594,32 +594,32 @@
                       },
                       "value": "30"
                     },
-                    "src": "766:33:19",
+                    "src": "766:33:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6437,
+                  "id": 7369,
                   "nodeType": "ExpressionStatement",
-                  "src": "766:33:19"
+                  "src": "766:33:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6440,
+                    "id": 7372,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6438,
+                      "id": 7370,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6409,
-                      "src": "814:28:19",
+                      "referencedDeclaration": 7341,
+                      "src": "814:28:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -630,14 +630,14 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "31",
-                      "id": 6439,
+                      "id": 7371,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "845:1:19",
+                      "src": "845:1:21",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_1_by_1",
@@ -645,36 +645,36 @@
                       },
                       "value": "1"
                     },
-                    "src": "814:32:19",
+                    "src": "814:32:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6441,
+                  "id": 7373,
                   "nodeType": "ExpressionStatement",
-                  "src": "814:32:19"
+                  "src": "814:32:21"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 6443,
+            "id": 7375,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6424,
+              "id": 7356,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6421,
+                  "id": 7353,
                   "name": "_workerpoolOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6443,
-                  "src": "582:31:19",
+                  "scope": 7375,
+                  "src": "582:31:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -682,10 +682,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6420,
+                    "id": 7352,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "582:7:19",
+                    "src": "582:7:21",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -697,11 +697,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6423,
+                  "id": 7355,
                   "name": "_workerpoolDescription",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6443,
-                  "src": "617:37:19",
+                  "scope": 7375,
+                  "src": "617:37:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -709,10 +709,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6422,
+                    "id": 7354,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "617:6:19",
+                    "src": "617:6:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -722,25 +722,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "578:77:19"
+              "src": "578:77:21"
             },
             "returnParameters": {
-              "id": 6425,
+              "id": 7357,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "665:0:19"
+              "src": "665:0:21"
             },
-            "scope": 6485,
-            "src": "567:295:19",
+            "scope": 7417,
+            "src": "567:295:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 6473,
+              "id": 7405,
               "nodeType": "Block",
-              "src": "987:333:19",
+              "src": "987:333:21",
               "statements": [
                 {
                   "expression": {
@@ -752,19 +752,19 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 6455,
+                        "id": 7387,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 6453,
+                          "id": 7385,
                           "name": "_newSchedulerRewardRatioPolicy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6447,
-                          "src": "999:30:19",
+                          "referencedDeclaration": 7379,
+                          "src": "999:30:21",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -775,14 +775,14 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "313030",
-                          "id": 6454,
+                          "id": 7386,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "1033:3:19",
+                          "src": "1033:3:21",
                           "subdenomination": null,
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_100_by_1",
@@ -790,7 +790,7 @@
                           },
                           "value": "100"
                         },
-                        "src": "999:37:19",
+                        "src": "999:37:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -804,21 +804,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 6452,
+                      "id": 7384,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7103,
-                        7104
+                        8136,
+                        8137
                       ],
-                      "referencedDeclaration": 7103,
-                      "src": "991:7:19",
+                      "referencedDeclaration": 8136,
+                      "src": "991:7:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 6456,
+                    "id": 7388,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -826,15 +826,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "991:46:19",
+                    "src": "991:46:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6457,
+                  "id": 7389,
                   "nodeType": "ExpressionStatement",
-                  "src": "991:46:19"
+                  "src": "991:46:21"
                 },
                 {
                   "eventCall": {
@@ -842,12 +842,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6459,
+                        "id": 7391,
                         "name": "m_workerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6407,
-                        "src": "1064:24:19",
+                        "referencedDeclaration": 7339,
+                        "src": "1064:24:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -855,12 +855,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6460,
+                        "id": 7392,
                         "name": "_newWorkerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6445,
-                        "src": "1094:26:19",
+                        "referencedDeclaration": 7377,
+                        "src": "1094:26:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -868,12 +868,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6461,
+                        "id": 7393,
                         "name": "m_schedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6409,
-                        "src": "1125:28:19",
+                        "referencedDeclaration": 7341,
+                        "src": "1125:28:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -881,12 +881,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6462,
+                        "id": 7394,
                         "name": "_newSchedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6447,
-                        "src": "1155:30:19",
+                        "referencedDeclaration": 7379,
+                        "src": "1155:30:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -912,18 +912,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6458,
+                      "id": 7390,
                       "name": "PolicyUpdate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6419,
-                      "src": "1047:12:19",
+                      "referencedDeclaration": 7351,
+                      "src": "1047:12:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,uint256,uint256,uint256)"
                       }
                     },
-                    "id": 6463,
+                    "id": 7395,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -931,32 +931,32 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1047:142:19",
+                    "src": "1047:142:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6464,
+                  "id": 7396,
                   "nodeType": "EmitStatement",
-                  "src": "1042:147:19"
+                  "src": "1042:147:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6467,
+                    "id": 7399,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6465,
+                      "id": 7397,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6407,
-                      "src": "1194:24:19",
+                      "referencedDeclaration": 7339,
+                      "src": "1194:24:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -966,43 +966,43 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6466,
+                      "id": 7398,
                       "name": "_newWorkerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6445,
-                      "src": "1225:26:19",
+                      "referencedDeclaration": 7377,
+                      "src": "1225:26:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "1194:57:19",
+                    "src": "1194:57:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6468,
+                  "id": 7400,
                   "nodeType": "ExpressionStatement",
-                  "src": "1194:57:19"
+                  "src": "1194:57:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6471,
+                    "id": 7403,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6469,
+                      "id": 7401,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6409,
-                      "src": "1255:28:19",
+                      "referencedDeclaration": 7341,
+                      "src": "1255:28:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1012,67 +1012,67 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6470,
+                      "id": 7402,
                       "name": "_newSchedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6447,
-                      "src": "1286:30:19",
+                      "referencedDeclaration": 7379,
+                      "src": "1286:30:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "1255:61:19",
+                    "src": "1255:61:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6472,
+                  "id": 7404,
                   "nodeType": "ExpressionStatement",
-                  "src": "1255:61:19"
+                  "src": "1255:61:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 6474,
+            "id": 7406,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 6450,
+                "id": 7382,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 6449,
+                  "id": 7381,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 7018,
-                  "src": "976:9:19",
+                  "referencedDeclaration": 8051,
+                  "src": "976:9:21",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "976:9:19"
+                "src": "976:9:21"
               }
             ],
             "name": "changePolicy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6448,
+              "id": 7380,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6445,
+                  "id": 7377,
                   "name": "_newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6474,
-                  "src": "890:34:19",
+                  "scope": 7406,
+                  "src": "890:34:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1080,10 +1080,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6444,
+                    "id": 7376,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "890:7:19",
+                    "src": "890:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1094,11 +1094,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6447,
+                  "id": 7379,
                   "name": "_newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6474,
-                  "src": "928:38:19",
+                  "scope": 7406,
+                  "src": "928:38:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1106,10 +1106,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6446,
+                    "id": 7378,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "928:7:19",
+                    "src": "928:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1119,25 +1119,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "886:81:19"
+              "src": "886:81:21"
             },
             "returnParameters": {
-              "id": 6451,
+              "id": 7383,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "987:0:19"
+              "src": "987:0:21"
             },
-            "scope": 6485,
-            "src": "865:455:19",
+            "scope": 7417,
+            "src": "865:455:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 6483,
+              "id": 7415,
               "nodeType": "Block",
-              "src": "1366:23:19",
+              "src": "1366:23:21",
               "statements": [
                 {
                   "expression": {
@@ -1146,14 +1146,14 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 6480,
+                        "id": 7412,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1375:10:19",
+                        "src": "1375:10:21",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_37a170f786e458179522ad8acdf045019b62598928e7a1acbbae427b70fe1ee5",
@@ -1169,21 +1169,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 6479,
+                      "id": 7411,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7105,
-                        7106
+                        8138,
+                        8139
                       ],
-                      "referencedDeclaration": 7106,
-                      "src": "1368:6:19",
+                      "referencedDeclaration": 8139,
+                      "src": "1368:6:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 6481,
+                    "id": 7413,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1191,36 +1191,36 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1368:18:19",
+                    "src": "1368:18:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6482,
+                  "id": 7414,
                   "nodeType": "ExpressionStatement",
-                  "src": "1368:18:19"
+                  "src": "1368:18:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 6484,
+            "id": 7416,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6477,
+              "id": 7409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6476,
+                  "id": 7408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6484,
-                  "src": "1350:7:19",
+                  "scope": 7416,
+                  "src": "1350:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1228,10 +1228,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6475,
+                    "id": 7407,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1350:7:19",
+                    "src": "1350:7:21",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1242,39 +1242,39 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1349:9:19"
+              "src": "1349:9:21"
             },
             "returnParameters": {
-              "id": 6478,
+              "id": 7410,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1366:0:19"
+              "src": "1366:0:21"
             },
-            "scope": 6485,
-            "src": "1323:66:19",
+            "scope": 7417,
+            "src": "1323:66:21",
             "stateMutability": "nonpayable",
-            "superFunction": 7060,
+            "superFunction": 8093,
             "visibility": "public"
           }
         ],
-        "scope": 6486,
-        "src": "90:1302:19"
+        "scope": 7418,
+        "src": "90:1302:21"
       }
     ],
-    "src": "0:1393:19"
+    "src": "0:1393:21"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol",
     "exportedSymbols": {
       "Workerpool": [
-        6485
+        7417
       ]
     },
-    "id": 6486,
+    "id": 7418,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6400,
+        "id": 7332,
         "literals": [
           "solidity",
           "^",
@@ -1282,16 +1282,16 @@
           ".9"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:19"
+        "src": "0:23:21"
       },
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 6401,
+        "id": 7333,
         "nodeType": "ImportDirective",
-        "scope": 6486,
-        "sourceUnit": 7086,
-        "src": "25:63:19",
+        "scope": 7418,
+        "sourceUnit": 8119,
+        "src": "25:63:21",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1301,42 +1301,42 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6402,
+              "id": 7334,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7085,
-              "src": "113:7:19",
+              "referencedDeclaration": 8118,
+              "src": "113:7:21",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$7085",
+                "typeIdentifier": "t_contract$_Ownable_$8118",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 6403,
+            "id": 7335,
             "nodeType": "InheritanceSpecifier",
-            "src": "113:7:19"
+            "src": "113:7:21"
           }
         ],
         "contractDependencies": [
-          7085
+          8118
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6485,
+        "id": 7417,
         "linearizedBaseContracts": [
-          6485,
-          7085
+          7417,
+          8118
         ],
         "name": "Workerpool",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 6405,
+            "id": 7337,
             "name": "m_workerpoolDescription",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "149:38:19",
+            "scope": 7417,
+            "src": "149:38:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1344,10 +1344,10 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 6404,
+              "id": 7336,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "149:6:19",
+              "src": "149:6:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -1358,11 +1358,11 @@
           },
           {
             "constant": false,
-            "id": 6407,
+            "id": 7339,
             "name": "m_workerStakeRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "190:39:19",
+            "scope": 7417,
+            "src": "190:39:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1370,10 +1370,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6406,
+              "id": 7338,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "190:7:19",
+              "src": "190:7:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -1384,11 +1384,11 @@
           },
           {
             "constant": false,
-            "id": 6409,
+            "id": 7341,
             "name": "m_schedulerRewardRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 6485,
-            "src": "260:43:19",
+            "scope": 7417,
+            "src": "260:43:21",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1396,10 +1396,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6408,
+              "id": 7340,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "260:7:19",
+              "src": "260:7:21",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -1411,21 +1411,21 @@
           {
             "anonymous": false,
             "documentation": "Events",
-            "id": 6419,
+            "id": 7351,
             "name": "PolicyUpdate",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6418,
+              "id": 7350,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6411,
+                  "id": 7343,
                   "indexed": false,
                   "name": "oldWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "384:33:19",
+                  "scope": 7351,
+                  "src": "384:33:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1433,10 +1433,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6410,
+                    "id": 7342,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "384:7:19",
+                    "src": "384:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1447,12 +1447,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6413,
+                  "id": 7345,
                   "indexed": false,
                   "name": "newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "423:33:19",
+                  "scope": 7351,
+                  "src": "423:33:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1460,10 +1460,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6412,
+                    "id": 7344,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "423:7:19",
+                    "src": "423:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1474,12 +1474,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6415,
+                  "id": 7347,
                   "indexed": false,
                   "name": "oldSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "460:37:19",
+                  "scope": 7351,
+                  "src": "460:37:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1487,10 +1487,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6414,
+                    "id": 7346,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "460:7:19",
+                    "src": "460:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1501,12 +1501,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6417,
+                  "id": 7349,
                   "indexed": false,
                   "name": "newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6419,
-                  "src": "499:37:19",
+                  "scope": 7351,
+                  "src": "499:37:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1514,10 +1514,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6416,
+                    "id": 7348,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "499:7:19",
+                    "src": "499:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1527,15 +1527,15 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "380:157:19"
+              "src": "380:157:21"
             },
-            "src": "362:176:19"
+            "src": "362:176:21"
           },
           {
             "body": {
-              "id": 6442,
+              "id": 7374,
               "nodeType": "Block",
-              "src": "665:197:19",
+              "src": "665:197:21",
               "statements": [
                 {
                   "expression": {
@@ -1543,12 +1543,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6427,
+                        "id": 7359,
                         "name": "_workerpoolOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6421,
-                        "src": "688:16:19",
+                        "referencedDeclaration": 7353,
+                        "src": "688:16:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -1562,18 +1562,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 6426,
+                      "id": 7358,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7084,
-                      "src": "669:18:19",
+                      "referencedDeclaration": 8117,
+                      "src": "669:18:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 6428,
+                    "id": 7360,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1581,32 +1581,32 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "669:36:19",
+                    "src": "669:36:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6429,
+                  "id": 7361,
                   "nodeType": "ExpressionStatement",
-                  "src": "669:36:19"
+                  "src": "669:36:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6432,
+                    "id": 7364,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6430,
+                      "id": 7362,
                       "name": "m_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6405,
-                      "src": "709:23:19",
+                      "referencedDeclaration": 7337,
+                      "src": "709:23:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
                         "typeString": "string storage ref"
@@ -1616,43 +1616,43 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6431,
+                      "id": 7363,
                       "name": "_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6423,
-                      "src": "740:22:19",
+                      "referencedDeclaration": 7355,
+                      "src": "740:22:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
                         "typeString": "string memory"
                       }
                     },
-                    "src": "709:53:19",
+                    "src": "709:53:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage",
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 6433,
+                  "id": 7365,
                   "nodeType": "ExpressionStatement",
-                  "src": "709:53:19"
+                  "src": "709:53:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6436,
+                    "id": 7368,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6434,
+                      "id": 7366,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6407,
-                      "src": "766:24:19",
+                      "referencedDeclaration": 7339,
+                      "src": "766:24:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1663,14 +1663,14 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "3330",
-                      "id": 6435,
+                      "id": 7367,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "797:2:19",
+                      "src": "797:2:21",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_30_by_1",
@@ -1678,32 +1678,32 @@
                       },
                       "value": "30"
                     },
-                    "src": "766:33:19",
+                    "src": "766:33:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6437,
+                  "id": 7369,
                   "nodeType": "ExpressionStatement",
-                  "src": "766:33:19"
+                  "src": "766:33:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6440,
+                    "id": 7372,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6438,
+                      "id": 7370,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6409,
-                      "src": "814:28:19",
+                      "referencedDeclaration": 7341,
+                      "src": "814:28:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1714,14 +1714,14 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "31",
-                      "id": 6439,
+                      "id": 7371,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "845:1:19",
+                      "src": "845:1:21",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_1_by_1",
@@ -1729,36 +1729,36 @@
                       },
                       "value": "1"
                     },
-                    "src": "814:32:19",
+                    "src": "814:32:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6441,
+                  "id": 7373,
                   "nodeType": "ExpressionStatement",
-                  "src": "814:32:19"
+                  "src": "814:32:21"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 6443,
+            "id": 7375,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6424,
+              "id": 7356,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6421,
+                  "id": 7353,
                   "name": "_workerpoolOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6443,
-                  "src": "582:31:19",
+                  "scope": 7375,
+                  "src": "582:31:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1766,10 +1766,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6420,
+                    "id": 7352,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "582:7:19",
+                    "src": "582:7:21",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1781,11 +1781,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6423,
+                  "id": 7355,
                   "name": "_workerpoolDescription",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6443,
-                  "src": "617:37:19",
+                  "scope": 7375,
+                  "src": "617:37:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -1793,10 +1793,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6422,
+                    "id": 7354,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "617:6:19",
+                    "src": "617:6:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1806,25 +1806,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "578:77:19"
+              "src": "578:77:21"
             },
             "returnParameters": {
-              "id": 6425,
+              "id": 7357,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "665:0:19"
+              "src": "665:0:21"
             },
-            "scope": 6485,
-            "src": "567:295:19",
+            "scope": 7417,
+            "src": "567:295:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 6473,
+              "id": 7405,
               "nodeType": "Block",
-              "src": "987:333:19",
+              "src": "987:333:21",
               "statements": [
                 {
                   "expression": {
@@ -1836,19 +1836,19 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 6455,
+                        "id": 7387,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 6453,
+                          "id": 7385,
                           "name": "_newSchedulerRewardRatioPolicy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6447,
-                          "src": "999:30:19",
+                          "referencedDeclaration": 7379,
+                          "src": "999:30:21",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
@@ -1859,14 +1859,14 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "313030",
-                          "id": 6454,
+                          "id": 7386,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "kind": "number",
                           "lValueRequested": false,
                           "nodeType": "Literal",
-                          "src": "1033:3:19",
+                          "src": "1033:3:21",
                           "subdenomination": null,
                           "typeDescriptions": {
                             "typeIdentifier": "t_rational_100_by_1",
@@ -1874,7 +1874,7 @@
                           },
                           "value": "100"
                         },
-                        "src": "999:37:19",
+                        "src": "999:37:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1888,21 +1888,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 6452,
+                      "id": 7384,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7103,
-                        7104
+                        8136,
+                        8137
                       ],
-                      "referencedDeclaration": 7103,
-                      "src": "991:7:19",
+                      "referencedDeclaration": 8136,
+                      "src": "991:7:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 6456,
+                    "id": 7388,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1910,15 +1910,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "991:46:19",
+                    "src": "991:46:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6457,
+                  "id": 7389,
                   "nodeType": "ExpressionStatement",
-                  "src": "991:46:19"
+                  "src": "991:46:21"
                 },
                 {
                   "eventCall": {
@@ -1926,12 +1926,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6459,
+                        "id": 7391,
                         "name": "m_workerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6407,
-                        "src": "1064:24:19",
+                        "referencedDeclaration": 7339,
+                        "src": "1064:24:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1939,12 +1939,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6460,
+                        "id": 7392,
                         "name": "_newWorkerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6445,
-                        "src": "1094:26:19",
+                        "referencedDeclaration": 7377,
+                        "src": "1094:26:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1952,12 +1952,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6461,
+                        "id": 7393,
                         "name": "m_schedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6409,
-                        "src": "1125:28:19",
+                        "referencedDeclaration": 7341,
+                        "src": "1125:28:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1965,12 +1965,12 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 6462,
+                        "id": 7394,
                         "name": "_newSchedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6447,
-                        "src": "1155:30:19",
+                        "referencedDeclaration": 7379,
+                        "src": "1155:30:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1996,18 +1996,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6458,
+                      "id": 7390,
                       "name": "PolicyUpdate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6419,
-                      "src": "1047:12:19",
+                      "referencedDeclaration": 7351,
+                      "src": "1047:12:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,uint256,uint256,uint256)"
                       }
                     },
-                    "id": 6463,
+                    "id": 7395,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2015,32 +2015,32 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1047:142:19",
+                    "src": "1047:142:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6464,
+                  "id": 7396,
                   "nodeType": "EmitStatement",
-                  "src": "1042:147:19"
+                  "src": "1042:147:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6467,
+                    "id": 7399,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6465,
+                      "id": 7397,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6407,
-                      "src": "1194:24:19",
+                      "referencedDeclaration": 7339,
+                      "src": "1194:24:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2050,43 +2050,43 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6466,
+                      "id": 7398,
                       "name": "_newWorkerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6445,
-                      "src": "1225:26:19",
+                      "referencedDeclaration": 7377,
+                      "src": "1225:26:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "1194:57:19",
+                    "src": "1194:57:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6468,
+                  "id": 7400,
                   "nodeType": "ExpressionStatement",
-                  "src": "1194:57:19"
+                  "src": "1194:57:21"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 6471,
+                    "id": 7403,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 6469,
+                      "id": 7401,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6409,
-                      "src": "1255:28:19",
+                      "referencedDeclaration": 7341,
+                      "src": "1255:28:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -2096,67 +2096,67 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 6470,
+                      "id": 7402,
                       "name": "_newSchedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6447,
-                      "src": "1286:30:19",
+                      "referencedDeclaration": 7379,
+                      "src": "1286:30:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "1255:61:19",
+                    "src": "1255:61:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 6472,
+                  "id": 7404,
                   "nodeType": "ExpressionStatement",
-                  "src": "1255:61:19"
+                  "src": "1255:61:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 6474,
+            "id": 7406,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 6450,
+                "id": 7382,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 6449,
+                  "id": 7381,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 7018,
-                  "src": "976:9:19",
+                  "referencedDeclaration": 8051,
+                  "src": "976:9:21",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "976:9:19"
+                "src": "976:9:21"
               }
             ],
             "name": "changePolicy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6448,
+              "id": 7380,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6445,
+                  "id": 7377,
                   "name": "_newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6474,
-                  "src": "890:34:19",
+                  "scope": 7406,
+                  "src": "890:34:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2164,10 +2164,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6444,
+                    "id": 7376,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "890:7:19",
+                    "src": "890:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2178,11 +2178,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6447,
+                  "id": 7379,
                   "name": "_newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6474,
-                  "src": "928:38:19",
+                  "scope": 7406,
+                  "src": "928:38:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2190,10 +2190,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6446,
+                    "id": 7378,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "928:7:19",
+                    "src": "928:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2203,25 +2203,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "886:81:19"
+              "src": "886:81:21"
             },
             "returnParameters": {
-              "id": 6451,
+              "id": 7383,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "987:0:19"
+              "src": "987:0:21"
             },
-            "scope": 6485,
-            "src": "865:455:19",
+            "scope": 7417,
+            "src": "865:455:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 6483,
+              "id": 7415,
               "nodeType": "Block",
-              "src": "1366:23:19",
+              "src": "1366:23:21",
               "statements": [
                 {
                   "expression": {
@@ -2230,14 +2230,14 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 6480,
+                        "id": 7412,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "1375:10:19",
+                        "src": "1375:10:21",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_37a170f786e458179522ad8acdf045019b62598928e7a1acbbae427b70fe1ee5",
@@ -2253,21 +2253,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 6479,
+                      "id": 7411,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7105,
-                        7106
+                        8138,
+                        8139
                       ],
-                      "referencedDeclaration": 7106,
-                      "src": "1368:6:19",
+                      "referencedDeclaration": 8139,
+                      "src": "1368:6:21",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 6481,
+                    "id": 7413,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2275,36 +2275,36 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1368:18:19",
+                    "src": "1368:18:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6482,
+                  "id": 7414,
                   "nodeType": "ExpressionStatement",
-                  "src": "1368:18:19"
+                  "src": "1368:18:21"
                 }
               ]
             },
             "documentation": null,
-            "id": 6484,
+            "id": 7416,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6477,
+              "id": 7409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6476,
+                  "id": 7408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6484,
-                  "src": "1350:7:19",
+                  "scope": 7416,
+                  "src": "1350:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2312,10 +2312,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6475,
+                    "id": 7407,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1350:7:19",
+                    "src": "1350:7:21",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -2326,26 +2326,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1349:9:19"
+              "src": "1349:9:21"
             },
             "returnParameters": {
-              "id": 6478,
+              "id": 7410,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1366:0:19"
+              "src": "1366:0:21"
             },
-            "scope": 6485,
-            "src": "1323:66:19",
+            "scope": 7417,
+            "src": "1323:66:21",
             "stateMutability": "nonpayable",
-            "superFunction": 7060,
+            "superFunction": 8093,
             "visibility": "public"
           }
         ],
-        "scope": 6486,
-        "src": "90:1302:19"
+        "scope": 7418,
+        "src": "90:1302:21"
       }
     ],
-    "src": "0:1393:19"
+    "src": "0:1393:21"
   },
   "compiler": {
     "name": "solc",
@@ -2353,7 +2353,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T13:40:39.372Z",
+  "updatedAt": "2019-06-26T15:12:50.314Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

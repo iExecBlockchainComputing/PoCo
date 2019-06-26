@@ -10,20 +10,21 @@ interface IexecAccessors
 	function symbol() external view returns (string memory);
 	function decimals() external view returns (uint8);
 	function totalSupply() external view returns (uint256);
-	function balanceOf(address account) external view returns (uint256);
-	function frozenOf(address account) external view returns (uint256);
-	function allowance(address account, address spender) external view returns (uint256);
-	function viewAccount(address account) external view returns (IexecODBLibCore.Account memory);
+	function balanceOf(address) external view returns (uint256);
+	function frozenOf(address) external view returns (uint256);
+	function allowance(address,address) external view returns (uint256);
+	function viewAccount(address) external view returns (IexecODBLibCore.Account memory);
 	function token() external view returns (address);
-	function viewDeal(bytes32 _id) external view returns (IexecODBLibCore.Deal memory deal);
-	function viewConsumed(bytes32 _id) external view returns (uint256 consumed);
-	function viewPresigned(bytes32 _id) external view returns (bool presigned);
-	function viewTask(bytes32 _taskid) external view returns (IexecODBLibCore.Task memory);
-	function viewContribution(bytes32 _taskid, address _worker) external view returns (IexecODBLibCore.Contribution memory);
-	function viewScore(address _worker) external view returns (uint256);
-	function resultFor(bytes32 id) external view returns (bytes memory);
-	function viewCategory(uint256 _catid) external view returns (IexecODBLibCore.Category memory category);
-	function countCategory() external view returns (uint256 count);
+	function viewDeal(bytes32) external view returns (IexecODBLibCore.Deal memory);
+	function viewRequestDeals(bytes32) external view returns (bytes32[] memory);
+	function viewConsumed(bytes32) external view returns (uint256);
+	function viewPresigned(bytes32) external view returns (bool);
+	function viewTask(bytes32) external view returns (IexecODBLibCore.Task memory);
+	function viewContribution(bytes32,address) external view returns (IexecODBLibCore.Contribution memory);
+	function viewScore(address) external view returns (uint256);
+	function resultFor(bytes32) external view returns (bytes memory);
+	function viewCategory(uint256) external view returns (IexecODBLibCore.Category memory);
+	function countCategory() external view returns (uint256);
 }
 
 contract IexecAccessorsDelegate is IexecAccessors, IexecStore
@@ -89,6 +90,12 @@ contract IexecAccessorsDelegate is IexecAccessors, IexecStore
 		return m_deals[_id];
 	}
 
+	function viewRequestDeals(bytes32 _id)
+	external view returns (bytes32[] memory)
+	{
+		return m_requestdeals[_id];
+	}
+
 	function viewConsumed(bytes32 _id)
 	external view returns (uint256 consumed)
 	{
@@ -139,4 +146,139 @@ contract IexecAccessorsDelegate is IexecAccessors, IexecStore
 		return m_categories.length;
 	}
 
+
+
+
+
+	function viewDealABILegacy_pt1(bytes32 _id)
+	external view returns
+	( address
+	, address
+	, uint256
+	, address
+	, address
+	, uint256
+	, address
+	, address
+	, uint256
+	)
+	{
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		return (
+			deal.app.pointer,
+			deal.app.owner,
+			deal.app.price,
+			deal.dataset.pointer,
+			deal.dataset.owner,
+			deal.dataset.price,
+			deal.workerpool.pointer,
+			deal.workerpool.owner,
+			deal.workerpool.price
+		);
+	}
+
+	function viewDealABILegacy_pt2(bytes32 _id)
+	external view returns
+	( uint256
+	, bytes32
+	, address
+	, address
+	, address
+	, string memory
+	)
+	{
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		return (
+			deal.trust,
+			deal.tag,
+			deal.requester,
+			deal.beneficiary,
+			deal.callback,
+			deal.params
+		);
+	}
+
+	function viewConfigABILegacy(bytes32 _id)
+	external view returns
+	( uint256
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	)
+	{
+		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		return (
+			deal.category,
+			deal.startTime,
+			deal.botFirst,
+			deal.botSize,
+			deal.workerStake,
+			deal.schedulerRewardRatio
+		);
+	}
+
+	function viewAccountABILegacy(address account)
+	external view returns (uint256, uint256)
+	{
+		return ( m_balances[account], m_frozens[account] );
+	}
+
+	function viewTaskABILegacy(bytes32 _taskid)
+	external view returns
+	( IexecODBLibCore.TaskStatusEnum
+	, bytes32
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	, uint256
+	, bytes32
+	, uint256
+	, uint256
+	, address[] memory
+	, bytes     memory
+	)
+	{
+		IexecODBLibCore.Task memory task = m_tasks[_taskid];
+		return (
+			task.status,
+			task.dealid,
+			task.idx,
+			task.timeref,
+			task.contributionDeadline,
+			task.revealDeadline,
+			task.finalDeadline,
+			task.consensusValue,
+			task.revealCounter,
+			task.winnerCounter,
+			task.contributors,
+			task.results
+		);
+	}
+
+	function viewContributionABILegacy(bytes32 _taskid, address _worker)
+	external view returns
+	( IexecODBLibCore.ContributionStatusEnum
+	, bytes32
+	, bytes32
+	, address
+	)
+	{
+		IexecODBLibCore.Contribution memory contribution = m_contributions[_taskid][_worker];
+		return (
+			contribution.status,
+			contribution.resultHash,
+			contribution.resultSeal,
+			contribution.enclaveChallenge
+		);
+	}
+
+	function viewCategoryABILegacy(uint256 _catid)
+	external view returns (string memory, string memory, uint256)
+	{
+		IexecODBLibCore.Category memory category = m_categories[_catid];
+		return ( category.name, category.description, category.workClockTimeRef );
+	}
 }
