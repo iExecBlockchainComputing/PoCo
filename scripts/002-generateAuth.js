@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
 
 const { assert } = require('chai');
 
@@ -66,7 +65,7 @@ module.exports = async function(callback) {
 			user            = accounts[9];
 		});
 
-		enclave = "0x51792FFbf6C1ccA5c9A9E6e227529b265254599b";
+		enclave = "0x359E020aE248cE356B4Ed6F9cf5D39D157dAC77d";
 		dealid  = "0x23e9a6c8621582399a2626b67c2c11d3058c26eeabf97911fdf507a25beede6a",
 		taskid  = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
