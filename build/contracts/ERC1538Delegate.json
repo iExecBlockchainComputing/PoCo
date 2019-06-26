@@ -7806,9 +7806,76 @@
     "name": "solc",
     "version": "0.5.9+commit.e560f70d.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1544020727674": {
+      "events": {
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        },
+        "0xaa1c0a0a78cec2470f9652e5d29540752e7a64d70f926933cebf13afaeda45de": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "message",
+              "type": "string"
+            }
+          ],
+          "name": "CommitMessage",
+          "type": "event",
+          "signature": "0xaa1c0a0a78cec2470f9652e5d29540752e7a64d70f926933cebf13afaeda45de"
+        },
+        "0x3234040ce3bd4564874e44810f198910133a1b24c4e84aac87edbf6b458f5353": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "functionId",
+              "type": "bytes4"
+            },
+            {
+              "indexed": true,
+              "name": "oldDelegate",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newDelegate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "functionSignature",
+              "type": "string"
+            }
+          ],
+          "name": "FunctionUpdate",
+          "type": "event",
+          "signature": "0x3234040ce3bd4564874e44810f198910133a1b24c4e84aac87edbf6b458f5353"
+        }
+      },
+      "links": {},
+      "address": "0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1",
+      "transactionHash": "0x4f311dca861caac520458f6964e9aead5c3f9c691d0ae74d1b9fd88979e64e6d"
+    }
+  },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T15:12:50.213Z",
+  "updatedAt": "2019-06-26T15:15:59.108Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

@@ -167,52 +167,50 @@ module.exports = async function(deployer, network, accounts)
 		console.log([ "category", i, ":", ...await IexecStackInstance.viewCategory(i)].join(" "));
 	}
 
-	// // Starting deposit for all test wallets
-	// if (chaintype == "private" || chaintype == "kovan")
-	// {
-	// 	// -------------------------------- Admin --------------------------------
-	// 	var adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
-	// 	var nRlcAmount  = 10000000;
-	//
-	// 	//For admin, put some nRLC in wallet
-	// 	await RLCInstance.transfer(adminAdress, nRlcAmount, { from: owner, gas: 4500000 });
-	// 	RLCInstance.balanceOf(adminAdress).then(balance => console.log("Wallet.balance of " + adminAdress +" is " + balance + " nRLC"));
-	//
-	// 	//And put directly some other nRLCs in account
-	// 	await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
-	// 	await IexecStackInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
-	// 	IexecStackInstance.viewAccount(adminAdress).then(balance => console.log("Account.Stack of " + adminAdress + " is " + balance.Stack + " nRLC"));
-	//
-	// 	// ------------------------------ Scheduler ------------------------------
-	// 	var schedulerAddress = "0x000a9c787a972F70F0903890E266F41c795C4DcA";
-	// 	var nRlcAmount       = 10000000;
-	//
-	// 	//For scheduler, put directly some nRLCs in account
-	// 	await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
-	// 	await IexecStackInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
-	// 	await IexecStackInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.Stack of " + schedulerAddress + " is " + balance.stake + " nRLC"));
-	//
-	// 	// ------------------------------- Workers -------------------------------
-	// 	var workerAddresses = fs.readFileSync(__dirname + "/accounts.txt").toString().split("\n");
-	// 	var nRlcAmount      = 1000;
-	//
-	// 	//For workers, put directly some nRLCs in account
-	// 	console.log("Making deposit to " + workerAddresses.length + " wallets");
-	// 	await RLCInstance.approve(IexecStackInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
-	//
-	// 	let batchSize = 50;
-	// 	for (var i = 0; i < workerAddresses.length; i += batchSize)
-	// 	{
-	// 		group = workerAddresses.slice(i, i+batchSize);
-	// 		await IexecStackInstance.depositForArray(
-	// 			Array(group.length).fill(nRlcAmount),
-	// 			group,
-	// 			{ from: owner, gas: 4500000 }
-	// 		);
-	// 		group.forEach(address => IexecStackInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
-	// 	}
-	//
-	// }
+	// Starting deposit for all test wallets
+	if (chaintype == "private" || chaintype == "kovan")
+	{
+		// -------------------------------- Admin --------------------------------
+		var adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
+		var nRlcAmount  = 10000000;
 
+		//For admin, put some nRLC in wallet
+		await RLCInstance.transfer(adminAdress, nRlcAmount, { from: owner, gas: 4500000 });
+		RLCInstance.balanceOf(adminAdress).then(balance => console.log("Wallet.balance of " + adminAdress +" is " + balance + " nRLC"));
+
+		//And put directly some other nRLCs in account
+		await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
+		await IexecStackInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
+		IexecStackInstance.viewAccount(adminAdress).then(balance => console.log("Account.Stack of " + adminAdress + " is " + balance.Stack + " nRLC"));
+
+		// ------------------------------ Scheduler ------------------------------
+		var schedulerAddress = "0x000a9c787a972F70F0903890E266F41c795C4DcA";
+		var nRlcAmount       = 10000000;
+
+		//For scheduler, put directly some nRLCs in account
+		await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
+		await IexecStackInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
+		await IexecStackInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.Stack of " + schedulerAddress + " is " + balance.stake + " nRLC"));
+
+		// ------------------------------- Workers -------------------------------
+		var workerAddresses = fs.readFileSync(__dirname + "/accounts.txt").toString().split("\n");
+		var nRlcAmount      = 1000;
+
+		//For workers, put directly some nRLCs in account
+		console.log("Making deposit to " + workerAddresses.length + " wallets");
+		await RLCInstance.approve(IexecStackInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
+
+		let batchSize = 50;
+		for (var i = 0; i < workerAddresses.length; i += batchSize)
+		{
+			group = workerAddresses.slice(i, i+batchSize);
+			await IexecStackInstance.depositForArray(
+				Array(group.length).fill(nRlcAmount),
+				group,
+				{ from: owner, gas: 4500000 }
+			);
+			group.forEach(address => IexecStackInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
+		}
+	}
 
 };
