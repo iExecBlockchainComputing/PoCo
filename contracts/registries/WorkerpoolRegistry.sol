@@ -1,4 +1,4 @@
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.9;
 
 import './Workerpool.sol';
 import './RegistryBase.sol';

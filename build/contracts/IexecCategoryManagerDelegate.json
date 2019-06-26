@@ -1,0 +1,2092 @@
+{
+  "contractName": "IexecCategoryManagerDelegate",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "EIP712DOMAIN_SEPARATOR",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "appregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "WORKERPOOL_STAKE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "KITTY_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REVEAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "GROUPMEMBER_PURPOSE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "CONTRIBUTION_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "workerpoolregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "FINAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "KITTY_ADDRESS",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "datasetregistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "KITTY_MIN",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "catid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "CreateCategory",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "createCategory",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"EIP712DOMAIN_SEPARATOR\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"appregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"WORKERPOOL_STAKE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"REVEAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"GROUPMEMBER_PURPOSE\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"CONTRIBUTION_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"workerpoolregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"FINAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_ADDRESS\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"datasetregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_MIN\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{\"createCategory(string,string,uint256)\":{\"notice\":\"Methods\"}}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":\"IexecCategoryManagerDelegate\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x3a52277003bcb21969bdee76b3c02fe703638d23b1f77243a09f0bed87f4fbbb\",\"urls\":[\"bzzr://8a464aa2ae1faaa8c5c4cd8bcb0d211de146ea383b3ab2a384549b5bc7a8b86c\",\"dweb:/ipfs/QmVim3BG5Jp9NzyMf7bAmdNNyE3jEMGErbuv8tYQhqCKrq\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0x2d775c3b02200e341bae0106d9e624d6c196c62b69a43f2cc545e596e6248557\",\"urls\":[\"bzzr://80da2a564db32da2c0f58657b2935b064631fcb07508bb30df6f65a0ced2974d\",\"dweb:/ipfs/QmYj5A2VU7DnGup6MH5wEoVP21LRPMqtkSr2dUpZ1mM9Ym\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0x1bd93c1cb5fb0c4fb4116d7880e2cfc39c0012889815efd0688fac798c63908e\",\"urls\":[\"bzzr://57b83ec1bbca7492a4d09786750e9a7da24316bbe2edcc21768a8f99e778f172\",\"dweb:/ipfs/QmZEvcnMSK9b7QWh6KZg6zsN6kijXmFfa6FWjwC1vVsFDS\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x7a1d4ba5ea12857f01fc0fe390b7f3d27ec13b1a90376d7d2bced73d5fe01071\",\"urls\":[\"bzzr://5931ed33a8c1a685d869a007d38cecad5c6ec399876778c2f074d603207c77b9\",\"dweb:/ipfs/QmYspdznwxFYApS2zfsv4gv6tEv8kuhjtKyadiyRUKRqje\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x3cdb4d28d6f79f3ecf72b42741905f0db1cdcbb07021f4b37eb6d3e774037045\",\"urls\":[\"bzzr://d578d40561ad375854a86f2b6c75ce19eb8d6017f7ba42c7afd03bacc349d58c\",\"dweb:/ipfs/QmP6keKXq3m9y1otoXvL8rY8p72fSYu84csN3jzJHi1WAV\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0xc9b96bcda3b1de86e1a888c8311d0761a97a24baed12770d9c7a63b4622578eb\",\"urls\":[\"bzzr://cf514b7467068735cdf493e487dcab476a2a56cf45d001372f6581a13f8bcb85\",\"dweb:/ipfs/QmQE5nA9jUeGp9mggZ2X5tF94gig95F8rouBH1cGnWhzQD\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x7af42fd11b693ce51d4dc0490558c2d596aed0115e8482ee0a6b91f4c0965423\",\"urls\":[\"bzzr://8a711af496932215143748c738617ce8822e82cde2c440ac73875c9d37817ce6\",\"dweb:/ipfs/QmXh6LFctza4fKDGiBfmtEXQwaDiTcfBrMcqfTQgNuagER\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xeed691bc7395c6bee23aa241e44d71be3c6d8c13104e941ebc0b8b1599b1db3b\",\"urls\":[\"bzzr://82b1f2a38209647d94e9b047e24428dfaea286e7854f7f9a7969c57072f2cc35\",\"dweb:/ipfs/QmcmSmYfH6gA4HeTBbx7zESgr21YsyUmFyF6kqvY38cVmc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0x78387047fcf0a9983948d40cfae6ca85deeca1855574b92c43341622621c75d9\",\"urls\":[\"bzzr://89150c90e166a3d6d7db41da1a82f47dec403b4d7a8305e3d342ce81d116986a\",\"dweb:/ipfs/QmQRepLV2Nu65fJZ5VbL2Kv5TQeKr6H5QhpReBKDeaQ9eV\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
+  "bytecode": "0x60806040819052600080546001600160a01b03191633178082556001600160a01b0316917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a36108d9806100576000396000f3fe608060405234801561001057600080fd5b506004361061010b5760003560e01c80637b244832116100a257806390fc26b11161007157806390fc26b11461015e5780639e986e81146101ba578063b1b11d2c146101c2578063e2e7a8c1146101ca578063f2fde38b146101d25761010b565b80637b244832146101805780638da5cb5b146101885780638f32d59b1461019d57806390a0f546146101b25761010b565b806351152de1116100de57806351152de11461015e5780635fde601d1461016657806368a9ef1c1461016e578063715018a6146101765761010b565b8063047411e714610110578063298503d91461012e57806345b637a9146101415780634ec3b9e314610156575b600080fd5b6101186101e5565b60405161012591906107a7565b60405180910390f35b61011861013c36600461062e565b6101eb565b610149610343565b60405161012591906107b5565b610118610352565b610118610357565b61011861035c565b610118610361565b61017e610366565b005b6101186103d4565b6101906103d9565b604051610125919061078b565b6101a56103e9565b6040516101259190610799565b6101496103fa565b610190610409565b610149610443565b610118610452565b61017e6101e0366004610608565b61045a565b600f5481565b60006101f56103e9565b61021a5760405162461bcd60e51b8152600401610211906107d3565b60405180910390fd5b60006019604051806060016040528089898080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250505090825250604080516020601f8a01819004810282018101909252888152918101919089908990819084018382808284376000920182905250938552505050602091820187905283546001810180865594825290829020835180516003909302909101926102d09284929091019061050b565b5060208281015180516102e9926001850192019061050b565b5060408201518160020155505090507f62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c818888888888604051610331969594939291906107e3565b60405180910390a19695505050505050565b6004546001600160a01b031681565b601e81565b600a81565b600281565b600481565b61036e6103e9565b61038a5760405162461bcd60e51b8152600401610211906107d3565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b600781565b6000546001600160a01b03165b90565b6000546001600160a01b0316331490565b6006546001600160a01b031681565b60408051808201909152600a81526969457865634b6974747960b01b6020909101527399c2268479b93fde36232351229815df80837e2481565b6005546001600160a01b031681565b633b9aca0081565b6104626103e9565b61047e5760405162461bcd60e51b8152600401610211906107d3565b6104878161048a565b50565b6001600160a01b0381166104b05760405162461bcd60e51b8152600401610211906107c3565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061054c57805160ff1916838001178555610579565b82800160010185558215610579579182015b8281111561057957825182559160200191906001019061055e565b50610585929150610589565b5090565b6103e691905b80821115610585576000815560010161058f565b80356105ae81610879565b92915050565b60008083601f8401126105c657600080fd5b50813567ffffffffffffffff8111156105de57600080fd5b6020830191508360018202830111156105f657600080fd5b9250929050565b80356105ae8161088d565b60006020828403121561061a57600080fd5b600061062684846105a3565b949350505050565b60008060008060006060868803121561064657600080fd5b853567ffffffffffffffff81111561065d57600080fd5b610669888289016105b4565b9550955050602086013567ffffffffffffffff81111561068857600080fd5b610694888289016105b4565b935093505060406106a7888289016105fd565b9150509295509295909350565b6106bd8161083c565b82525050565b6106bd81610847565b6106bd816103e6565b6106bd81610858565b60006106ea8385610833565b93506106f7838584610863565b6107008361086f565b9093019392505050565b6000610717602683610833565b7f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206181526564647265737360d01b602082015260400192915050565b600061075f602083610833565b7f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572815260200192915050565b602081016105ae82846106b4565b602081016105ae82846106c3565b602081016105ae82846106cc565b602081016105ae82846106d5565b602080825281016105ae8161070a565b602080825281016105ae81610752565b608081016107f182896106cc565b81810360208301526108048187896106de565b905081810360408301526108198185876106de565b905061082860608301846106cc565b979650505050505050565b90815260200190565b60006105ae8261084c565b151590565b6001600160a01b031690565b60006105ae8261083c565b82818337506000910152565b601f01601f191690565b6108828161083c565b811461048757600080fd5b610882816103e656fea365627a7a72305820f0b2a9ffcb8c99952c92d89a94edc961cc46ac4659f2b1b4108c00b96b7aab6d6c6578706572696d656e74616cf564736f6c63430005090040",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061010b5760003560e01c80637b244832116100a257806390fc26b11161007157806390fc26b11461015e5780639e986e81146101ba578063b1b11d2c146101c2578063e2e7a8c1146101ca578063f2fde38b146101d25761010b565b80637b244832146101805780638da5cb5b146101885780638f32d59b1461019d57806390a0f546146101b25761010b565b806351152de1116100de57806351152de11461015e5780635fde601d1461016657806368a9ef1c1461016e578063715018a6146101765761010b565b8063047411e714610110578063298503d91461012e57806345b637a9146101415780634ec3b9e314610156575b600080fd5b6101186101e5565b60405161012591906107a7565b60405180910390f35b61011861013c36600461062e565b6101eb565b610149610343565b60405161012591906107b5565b610118610352565b610118610357565b61011861035c565b610118610361565b61017e610366565b005b6101186103d4565b6101906103d9565b604051610125919061078b565b6101a56103e9565b6040516101259190610799565b6101496103fa565b610190610409565b610149610443565b610118610452565b61017e6101e0366004610608565b61045a565b600f5481565b60006101f56103e9565b61021a5760405162461bcd60e51b8152600401610211906107d3565b60405180910390fd5b60006019604051806060016040528089898080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250505090825250604080516020601f8a01819004810282018101909252888152918101919089908990819084018382808284376000920182905250938552505050602091820187905283546001810180865594825290829020835180516003909302909101926102d09284929091019061050b565b5060208281015180516102e9926001850192019061050b565b5060408201518160020155505090507f62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c818888888888604051610331969594939291906107e3565b60405180910390a19695505050505050565b6004546001600160a01b031681565b601e81565b600a81565b600281565b600481565b61036e6103e9565b61038a5760405162461bcd60e51b8152600401610211906107d3565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b600781565b6000546001600160a01b03165b90565b6000546001600160a01b0316331490565b6006546001600160a01b031681565b60408051808201909152600a81526969457865634b6974747960b01b6020909101527399c2268479b93fde36232351229815df80837e2481565b6005546001600160a01b031681565b633b9aca0081565b6104626103e9565b61047e5760405162461bcd60e51b8152600401610211906107d3565b6104878161048a565b50565b6001600160a01b0381166104b05760405162461bcd60e51b8152600401610211906107c3565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061054c57805160ff1916838001178555610579565b82800160010185558215610579579182015b8281111561057957825182559160200191906001019061055e565b50610585929150610589565b5090565b6103e691905b80821115610585576000815560010161058f565b80356105ae81610879565b92915050565b60008083601f8401126105c657600080fd5b50813567ffffffffffffffff8111156105de57600080fd5b6020830191508360018202830111156105f657600080fd5b9250929050565b80356105ae8161088d565b60006020828403121561061a57600080fd5b600061062684846105a3565b949350505050565b60008060008060006060868803121561064657600080fd5b853567ffffffffffffffff81111561065d57600080fd5b610669888289016105b4565b9550955050602086013567ffffffffffffffff81111561068857600080fd5b610694888289016105b4565b935093505060406106a7888289016105fd565b9150509295509295909350565b6106bd8161083c565b82525050565b6106bd81610847565b6106bd816103e6565b6106bd81610858565b60006106ea8385610833565b93506106f7838584610863565b6107008361086f565b9093019392505050565b6000610717602683610833565b7f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206181526564647265737360d01b602082015260400192915050565b600061075f602083610833565b7f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572815260200192915050565b602081016105ae82846106b4565b602081016105ae82846106c3565b602081016105ae82846106cc565b602081016105ae82846106d5565b602080825281016105ae8161070a565b602080825281016105ae81610752565b608081016107f182896106cc565b81810360208301526108048187896106de565b905081810360408301526108198185876106de565b905061082860608301846106cc565b979650505050505050565b90815260200190565b60006105ae8261084c565b151590565b6001600160a01b031690565b60006105ae8261083c565b82818337506000910152565b601f01601f191690565b6108828161083c565b811461048757600080fd5b610882816103e656fea365627a7a72305820f0b2a9ffcb8c99952c92d89a94edc961cc46ac4659f2b1b4108c00b96b7aab6d6c6578706572696d656e74616cf564736f6c63430005090040",
+  "sourceMap": "364:475:8:-;;;;;657:6:25;:19;;-1:-1:-1;;;;;;657:19:25;666:10;657:19;;;;-1:-1:-1;;;;;724:6:25;;691:40;;657:6;;691:40;364:475:8;;;;;;",
+  "deployedSourceMap": "364:475:8:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;364:475:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1455:46:5;;;:::i;:::-;;;;;;;;;;;;;;;;463:374:8;;;;;;;;;:::i;436:31:5:-;;;:::i;:::-;;;;;;;;1091:56;;;:::i;1150:::-;;;:::i;974:55::-;;;:::i;1397:::-;;;:::i;1599:137:25:-;;;:::i;:::-;;916:55:5;;;:::i;814:77:25:-;;;:::i;:::-;;;;;;;;1165:90;;;:::i;:::-;;;;;;;;508:38:5;;;:::i;1292:102::-;;;:::i;470:35::-;;;:::i;1209:64::-;;;:::i;1885:107:25:-;;;;;;;;;:::i;1455:46:5:-;;;;:::o;463:374:8:-;611:7;1018:9:25;:7;:9::i;:::-;1010:54;;;;-1:-1:-1;;;1010:54:25;;;;;;;;;;;;;;;;;625:13:8;641:12;659:74;;;;;;;;688:4;;659:74;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;;;659:74:8;;;-1:-1:-1;659:74:8;;;;137:4:-1;659:74:8;;;;;;;;;;;;;;;;;;;;;;697:11;;;;;;659:74;;697:11;;;;659:74;1:33:-1;99:1;81:16;;74:27;;;-1:-1;659:74:8;;;-1:-1:-1;;;659:74:8;;;;;;;27:10:-1;;39:1;23:18;;45:23;;;641:93:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;-1:-1:-1;641:93:8;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;625:109;;743:74;762:5;772:4;;781:11;;797:16;743:74;;;;;;;;;;;;;;;;;;;;828:5;463:374;-1:-1:-1;;;;;;463:374:8:o;436:31:5:-;;;-1:-1:-1;;;;;436:31:5;;:::o;1091:56::-;1145:2;1091:56;:::o;1150:::-;1204:2;1150:56;:::o;974:55::-;1028:1;974:55;:::o;1397:::-;1451:1;1397:55;:::o;1599:137:25:-;1018:9;:7;:9::i;:::-;1010:54;;;;-1:-1:-1;;;1010:54:25;;;;;;;;;1697:1;1681:6;;1660:40;;-1:-1:-1;;;;;1681:6:25;;;;1660:40;;1697:1;;1660:40;1727:1;1710:19;;-1:-1:-1;;;;;;1710:19:25;;;1599:137::o;916:55:5:-;970:1;916:55;:::o;814:77:25:-;852:7;878:6;-1:-1:-1;;;;;878:6:25;814:77;;:::o;1165:90::-;1205:4;1242:6;-1:-1:-1;;;;;1242:6:25;1228:10;:20;;1165:90::o;508:38:5:-;;;-1:-1:-1;;;;;508:38:5;;:::o;1292:102::-;1372:19;;;;;;;;;;;;-1:-1:-1;;;1372:19:5;;;;;1346:48;1292:102;:::o;470:35::-;;;-1:-1:-1;;;;;470:35:5;;:::o;1209:64::-;1263:10;1209:64;:::o;1885:107:25:-;1018:9;:7;:9::i;:::-;1010:54;;;;-1:-1:-1;;;1010:54:25;;;;;;;;;1957:28;1976:8;1957:18;:28::i;:::-;1885:107;:::o;2093:225::-;-1:-1:-1;;;;;2166:22:25;;2158:73;;;;-1:-1:-1;;;2158:73:25;;;;;;;;;2267:6;;;2246:38;;-1:-1:-1;;;;;2246:38:25;;;;2267:6;;;2246:38;;;2294:6;:17;;-1:-1:-1;;;;;;2294:17:25;-1:-1:-1;;;;;2294:17:25;;;;;;;;;;2093:225::o;364:475:8:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;364:475:8;;;-1:-1:-1;364:475:8;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;5:130:-1;72:20;;97:33;72:20;97:33;;;57:78;;;;;157:336;;;272:3;265:4;257:6;253:17;249:27;239:2;;290:1;287;280:12;239:2;-1:-1;310:20;;350:18;339:30;;336:2;;;382:1;379;372:12;336:2;416:4;408:6;404:17;392:29;;466:3;459;451:6;447:16;437:8;433:31;430:40;427:2;;;483:1;480;473:12;427:2;232:261;;;;;;501:130;568:20;;593:33;568:20;593:33;;638:241;;742:2;730:9;721:7;717:23;713:32;710:2;;;758:1;755;748:12;710:2;793:1;810:53;855:7;835:9;810:53;;;800:63;704:175;-1:-1;;;;704:175;886:743;;;;;;1064:2;1052:9;1043:7;1039:23;1035:32;1032:2;;;1080:1;1077;1070:12;1032:2;1115:31;;1166:18;1155:30;;1152:2;;;1198:1;1195;1188:12;1152:2;1226:65;1283:7;1274:6;1263:9;1259:22;1226:65;;;1216:75;;;;1094:203;1356:2;1345:9;1341:18;1328:32;1380:18;1372:6;1369:30;1366:2;;;1412:1;1409;1402:12;1366:2;1440:65;1497:7;1488:6;1477:9;1473:22;1440:65;;;1430:75;;;;1307:204;1542:2;1560:53;1605:7;1596:6;1585:9;1581:22;1560:53;;;1550:63;;1521:98;1026:603;;;;;;;;;1636:113;1719:24;1737:5;1719:24;;;1714:3;1707:37;1701:48;;;1756:104;1833:21;1848:5;1833:21;;1867:113;1950:24;1968:5;1950:24;;1987:168;2091:58;2143:5;2091:58;;2187:300;;2303:71;2367:6;2362:3;2303:71;;;2296:78;;2386:43;2422:6;2417:3;2410:5;2386:43;;;2451:29;2473:6;2451:29;;;2442:39;;;;2289:198;-1:-1;;;2289:198;2496:465;;2656:67;2720:2;2715:3;2656:67;;;2756:66;2736:87;;-1:-1;;;2852:2;2843:12;;2836:88;2952:2;2943:12;;2642:319;-1:-1;;2642:319;2970:364;;3130:67;3194:2;3189:3;3130:67;;;3230:66;3210:87;;3325:2;3316:12;;3116:218;-1:-1;;3116:218;3462:213;3580:2;3565:18;;3594:71;3569:9;3638:6;3594:71;;3682:201;3794:2;3779:18;;3808:65;3783:9;3846:6;3808:65;;3890:213;4008:2;3993:18;;4022:71;3997:9;4066:6;4022:71;;4110:255;4249:2;4234:18;;4263:92;4238:9;4328:6;4263:92;;4372:407;4563:2;4577:47;;;4548:18;;4638:131;4548:18;4638:131;;4786:407;4977:2;4991:47;;;4962:18;;5052:131;4962:18;5052:131;;5420:763;5682:3;5667:19;;5697:71;5671:9;5741:6;5697:71;;;5816:9;5810:4;5806:20;5801:2;5790:9;5786:18;5779:48;5841:88;5924:4;5915:6;5907;5841:88;;;5833:96;;5977:9;5971:4;5967:20;5962:2;5951:9;5947:18;5940:48;6002:88;6085:4;6076:6;6068;6002:88;;;5994:96;;6101:72;6169:2;6158:9;6154:18;6145:6;6101:72;;;5653:530;;;;;;;;;;6191:163;6294:19;;;6343:4;6334:14;;6287:67;6362:91;;6424:24;6442:5;6424:24;;6460:85;6526:13;6519:21;;6502:43;6631:121;-1:-1;;;;;6693:54;;6676:76;6838:163;;6938:58;6990:5;6938:58;;7145:145;7226:6;7221:3;7216;7203:30;-1:-1;7282:1;7264:16;;7257:27;7196:94;7298:97;7386:2;7366:14;-1:-1;;7362:28;;7346:49;7403:117;7472:24;7490:5;7472:24;;;7465:5;7462:35;7452:2;;7511:1;7508;7501:12;7527:117;7596:24;7614:5;7596:24;",
+  "source": "pragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\nimport \"../IexecStore.sol\";\n\n\ninterface IexecCategoryManager\n{\n\tevent CreateCategory(\n\t\tuint256 catid,\n\t\tstring  name,\n\t\tstring  description,\n\t\tuint256 workClockTimeRef);\n\n\tfunction createCategory(string calldata name, string calldata description, uint256 workClockTimeRef) external returns (uint256);\n}\n\ncontract IexecCategoryManagerDelegate is IexecCategoryManager, IexecStore\n{\n\t/**\n\t * Methods\n\t */\n\tfunction createCategory(\n\t\tstring  calldata name,\n\t\tstring  calldata description,\n\t\tuint256          workClockTimeRef)\n\texternal onlyOwner returns (uint256)\n\t{\n\t\tuint256 catid = m_categories.push(IexecODBLibCore.Category(\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t));\n\t\temit CreateCategory(\n\t\t\tcatid,\n\t\t\tname,\n\t\t\tdescription,\n\t\t\tworkClockTimeRef\n\t\t);\n\t\treturn catid;\n\t}\n}\n",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
+  "ast": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
+    "exportedSymbols": {
+      "IexecCategoryManager": [
+        1686
+      ],
+      "IexecCategoryManagerDelegate": [
+        1726
+      ]
+    },
+    "id": 1727,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1662,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:8"
+      },
+      {
+        "id": 1663,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:8"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol",
+        "file": "../IexecStore.sol",
+        "id": 1664,
+        "nodeType": "ImportDirective",
+        "scope": 1727,
+        "sourceUnit": 1164,
+        "src": "59:27:8",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1686,
+        "linearizedBaseContracts": [
+          1686
+        ],
+        "name": "IexecCategoryManager",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1674,
+            "name": "CreateCategory",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1673,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1666,
+                  "indexed": false,
+                  "name": "catid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "147:13:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1665,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "147:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1668,
+                  "indexed": false,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "164:12:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1667,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1670,
+                  "indexed": false,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "180:19:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1669,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "180:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1672,
+                  "indexed": false,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "203:24:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1671,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "203:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "143:85:8"
+            },
+            "src": "123:106:8"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 1685,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "createCategory",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1681,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1676,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "256:20:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1675,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "256:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1678,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "278:27:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1677,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "278:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1680,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "307:24:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1679,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "307:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "255:77:8"
+            },
+            "returnParameters": {
+              "id": 1684,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1683,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "351:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1682,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "351:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "350:9:8"
+            },
+            "scope": 1686,
+            "src": "232:128:8",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1727,
+        "src": "89:273:8"
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1687,
+              "name": "IexecCategoryManager",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1686,
+              "src": "405:20:8",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeString": "contract IexecCategoryManager"
+              }
+            },
+            "id": 1688,
+            "nodeType": "InheritanceSpecifier",
+            "src": "405:20:8"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1689,
+              "name": "IexecStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1163,
+              "src": "427:10:8",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecStore_$1163",
+                "typeString": "contract IexecStore"
+              }
+            },
+            "id": 1690,
+            "nodeType": "InheritanceSpecifier",
+            "src": "427:10:8"
+          }
+        ],
+        "contractDependencies": [
+          1001,
+          1163,
+          1686,
+          7085
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 1726,
+        "linearizedBaseContracts": [
+          1726,
+          1163,
+          1001,
+          7085,
+          1686
+        ],
+        "name": "IexecCategoryManagerDelegate",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 1724,
+              "nodeType": "Block",
+              "src": "621:216:8",
+              "statements": [
+                {
+                  "assignments": [
+                    1704
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1704,
+                      "name": "catid",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1724,
+                      "src": "625:13:8",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 1703,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "625:7:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1714,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 1709,
+                            "name": "name",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1692,
+                            "src": "688:4:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 1710,
+                            "name": "description",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1694,
+                            "src": "697:11:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 1711,
+                            "name": "workClockTimeRef",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1696,
+                            "src": "713:16:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            },
+                            {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 1707,
+                            "name": "IexecODBLibCore",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5819,
+                            "src": "659:15:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$5819_$",
+                              "typeString": "type(library IexecODBLibCore)"
+                            }
+                          },
+                          "id": 1708,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "Category",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 5732,
+                          "src": "659:24:8",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_struct$_Category_$5732_storage_ptr_$",
+                            "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
+                          }
+                        },
+                        "id": 1712,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "structConstructorCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "659:74:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Category_$5732_memory",
+                          "typeString": "struct IexecODBLibCore.Category memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_Category_$5732_memory",
+                          "typeString": "struct IexecODBLibCore.Category memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 1705,
+                        "name": "m_categories",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1142,
+                        "src": "641:12:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_Category_$5732_storage_$dyn_storage",
+                          "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
+                        }
+                      },
+                      "id": 1706,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "push",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "641:17:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$5732_storage_$returns$_t_uint256_$",
+                        "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
+                      }
+                    },
+                    "id": 1713,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "641:93:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "625:109:8"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 1716,
+                        "name": "catid",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1704,
+                        "src": "762:5:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1717,
+                        "name": "name",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1692,
+                        "src": "772:4:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1718,
+                        "name": "description",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1694,
+                        "src": "781:11:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1719,
+                        "name": "workClockTimeRef",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1696,
+                        "src": "797:16:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1715,
+                      "name": "CreateCategory",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1674,
+                      "src": "743:14:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256,string memory,string memory,uint256)"
+                      }
+                    },
+                    "id": 1720,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "743:74:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1721,
+                  "nodeType": "EmitStatement",
+                  "src": "738:79:8"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1722,
+                    "name": "catid",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1704,
+                    "src": "828:5:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1702,
+                  "id": 1723,
+                  "nodeType": "Return",
+                  "src": "821:12:8"
+                }
+              ]
+            },
+            "documentation": "Methods",
+            "id": 1725,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 1699,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1698,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 7018,
+                  "src": "592:9:8",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "592:9:8"
+              }
+            ],
+            "name": "createCategory",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1697,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1692,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "490:21:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1691,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "490:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1694,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "515:28:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1693,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "515:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1696,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "547:33:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1695,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "547:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "486:95:8"
+            },
+            "returnParameters": {
+              "id": 1702,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1701,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "611:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1700,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "611:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "610:9:8"
+            },
+            "scope": 1726,
+            "src": "463:374:8",
+            "stateMutability": "nonpayable",
+            "superFunction": 1685,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1727,
+        "src": "364:475:8"
+      }
+    ],
+    "src": "0:840:8"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
+    "exportedSymbols": {
+      "IexecCategoryManager": [
+        1686
+      ],
+      "IexecCategoryManagerDelegate": [
+        1726
+      ]
+    },
+    "id": 1727,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1662,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:8"
+      },
+      {
+        "id": 1663,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:8"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol",
+        "file": "../IexecStore.sol",
+        "id": 1664,
+        "nodeType": "ImportDirective",
+        "scope": 1727,
+        "sourceUnit": 1164,
+        "src": "59:27:8",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1686,
+        "linearizedBaseContracts": [
+          1686
+        ],
+        "name": "IexecCategoryManager",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1674,
+            "name": "CreateCategory",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1673,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1666,
+                  "indexed": false,
+                  "name": "catid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "147:13:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1665,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "147:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1668,
+                  "indexed": false,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "164:12:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1667,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1670,
+                  "indexed": false,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "180:19:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1669,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "180:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1672,
+                  "indexed": false,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1674,
+                  "src": "203:24:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1671,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "203:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "143:85:8"
+            },
+            "src": "123:106:8"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 1685,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "createCategory",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1681,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1676,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "256:20:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1675,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "256:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1678,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "278:27:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1677,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "278:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1680,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "307:24:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1679,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "307:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "255:77:8"
+            },
+            "returnParameters": {
+              "id": 1684,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1683,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1685,
+                  "src": "351:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1682,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "351:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "350:9:8"
+            },
+            "scope": 1686,
+            "src": "232:128:8",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1727,
+        "src": "89:273:8"
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1687,
+              "name": "IexecCategoryManager",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1686,
+              "src": "405:20:8",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeString": "contract IexecCategoryManager"
+              }
+            },
+            "id": 1688,
+            "nodeType": "InheritanceSpecifier",
+            "src": "405:20:8"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1689,
+              "name": "IexecStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1163,
+              "src": "427:10:8",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecStore_$1163",
+                "typeString": "contract IexecStore"
+              }
+            },
+            "id": 1690,
+            "nodeType": "InheritanceSpecifier",
+            "src": "427:10:8"
+          }
+        ],
+        "contractDependencies": [
+          1001,
+          1163,
+          1686,
+          7085
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 1726,
+        "linearizedBaseContracts": [
+          1726,
+          1163,
+          1001,
+          7085,
+          1686
+        ],
+        "name": "IexecCategoryManagerDelegate",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 1724,
+              "nodeType": "Block",
+              "src": "621:216:8",
+              "statements": [
+                {
+                  "assignments": [
+                    1704
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 1704,
+                      "name": "catid",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 1724,
+                      "src": "625:13:8",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 1703,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "625:7:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 1714,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 1709,
+                            "name": "name",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1692,
+                            "src": "688:4:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 1710,
+                            "name": "description",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1694,
+                            "src": "697:11:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 1711,
+                            "name": "workClockTimeRef",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1696,
+                            "src": "713:16:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            },
+                            {
+                              "typeIdentifier": "t_string_calldata_ptr",
+                              "typeString": "string calldata"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 1707,
+                            "name": "IexecODBLibCore",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5819,
+                            "src": "659:15:8",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_contract$_IexecODBLibCore_$5819_$",
+                              "typeString": "type(library IexecODBLibCore)"
+                            }
+                          },
+                          "id": 1708,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "Category",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 5732,
+                          "src": "659:24:8",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_struct$_Category_$5732_storage_ptr_$",
+                            "typeString": "type(struct IexecODBLibCore.Category storage pointer)"
+                          }
+                        },
+                        "id": 1712,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "structConstructorCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "659:74:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Category_$5732_memory",
+                          "typeString": "struct IexecODBLibCore.Category memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_Category_$5732_memory",
+                          "typeString": "struct IexecODBLibCore.Category memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 1705,
+                        "name": "m_categories",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1142,
+                        "src": "641:12:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_Category_$5732_storage_$dyn_storage",
+                          "typeString": "struct IexecODBLibCore.Category storage ref[] storage ref"
+                        }
+                      },
+                      "id": 1706,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "push",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "641:17:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_Category_$5732_storage_$returns$_t_uint256_$",
+                        "typeString": "function (struct IexecODBLibCore.Category storage ref) returns (uint256)"
+                      }
+                    },
+                    "id": 1713,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "641:93:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "625:109:8"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 1716,
+                        "name": "catid",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1704,
+                        "src": "762:5:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1717,
+                        "name": "name",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1692,
+                        "src": "772:4:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1718,
+                        "name": "description",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1694,
+                        "src": "781:11:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 1719,
+                        "name": "workClockTimeRef",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1696,
+                        "src": "797:16:8",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1715,
+                      "name": "CreateCategory",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1674,
+                      "src": "743:14:8",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256,string memory,string memory,uint256)"
+                      }
+                    },
+                    "id": 1720,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "743:74:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1721,
+                  "nodeType": "EmitStatement",
+                  "src": "738:79:8"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 1722,
+                    "name": "catid",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1704,
+                    "src": "828:5:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 1702,
+                  "id": 1723,
+                  "nodeType": "Return",
+                  "src": "821:12:8"
+                }
+              ]
+            },
+            "documentation": "Methods",
+            "id": 1725,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 1699,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 1698,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 7018,
+                  "src": "592:9:8",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "592:9:8"
+              }
+            ],
+            "name": "createCategory",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1697,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1692,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "490:21:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1691,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "490:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1694,
+                  "name": "description",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "515:28:8",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1693,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "515:6:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1696,
+                  "name": "workClockTimeRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "547:33:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1695,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "547:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "486:95:8"
+            },
+            "returnParameters": {
+              "id": 1702,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1701,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1725,
+                  "src": "611:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1700,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "611:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "610:9:8"
+            },
+            "scope": 1726,
+            "src": "463:374:8",
+            "stateMutability": "nonpayable",
+            "superFunction": 1685,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1727,
+        "src": "364:475:8"
+      }
+    ],
+    "src": "0:840:8"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.9+commit.e560f70d.Emscripten.clang"
+  },
+  "networks": {
+    "1544020727674": {
+      "events": {
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        },
+        "0x62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "catid",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "workClockTimeRef",
+              "type": "uint256"
+            }
+          ],
+          "name": "CreateCategory",
+          "type": "event",
+          "signature": "0x62bf08360c9d561749c54eaf4f8bf8cb6c8b6f4f40607bcec39a8172e714d25c"
+        }
+      },
+      "links": {},
+      "address": "0xC735fF49fa713A3ca04A14C59fa7e99e22e35EB3",
+      "transactionHash": "0x1c818c299d93822ba2e432f58e8285e5766eacd03c3c3fc9a2ade375ba417f5e"
+    }
+  },
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-06-26T13:43:41.435Z",
+  "devdoc": {
+    "methods": {
+      "isOwner()": {
+        "details": "Returns true if the caller is the current owner."
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "createCategory(string,string,uint256)": {
+        "notice": "Methods"
+      }
+    }
+  }
+}

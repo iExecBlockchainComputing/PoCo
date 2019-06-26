@@ -1,4 +1,4 @@
-pragma solidity ^0.5.8;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
@@ -18,12 +18,11 @@ contract SignatureVerifier
 		return _identity == _candidate || IERC734(_identity).keyHasPurpose(addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
 	}
 
-	// internal ?
 	function verifySignature(
 		address      _identity,
 		bytes32      _hash,
 		bytes memory _signature)
-	public view returns (bool)
+	internal view returns (bool)
 	{
 		return recoverCheck(_identity, _hash, _signature) || IERC1271(_identity).isValidSignature(_hash, _signature);
 	}

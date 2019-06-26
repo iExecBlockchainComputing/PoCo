@@ -1,0 +1,3063 @@
+{
+  "contractName": "IexecStack",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "name": "matchOrders",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "configure",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "frozenOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "createCategory",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "name": "depositForArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "contribute",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "depositFor",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelRequestOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "addedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "increaseAllowance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastRequestOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewConsumed",
+      "outputs": [
+        {
+          "name": "consumed",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastDatasetOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_catid",
+          "type": "uint256"
+        }
+      ],
+      "name": "viewCategory",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "name": "workClockTimeRef",
+              "type": "uint256"
+            }
+          ],
+          "name": "category",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelDatasetOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signWorkerpoolOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "viewAccount",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "stake",
+              "type": "uint256"
+            },
+            {
+              "name": "locked",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signAppOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signRequestOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelAppOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastWorkerpoolOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signDatasetOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "subtractedValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "decreaseAllowance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewTask",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "name": "dealid",
+              "type": "bytes32"
+            },
+            {
+              "name": "idx",
+              "type": "uint256"
+            },
+            {
+              "name": "timeref",
+              "type": "uint256"
+            },
+            {
+              "name": "contributionDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "revealDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "finalDeadline",
+              "type": "uint256"
+            },
+            {
+              "name": "consensusValue",
+              "type": "bytes32"
+            },
+            {
+              "name": "revealCounter",
+              "type": "uint256"
+            },
+            {
+              "name": "winnerCounter",
+              "type": "uint256"
+            },
+            {
+              "name": "contributors",
+              "type": "address[]"
+            },
+            {
+              "name": "resultDigest",
+              "type": "bytes32"
+            },
+            {
+              "name": "results",
+              "type": "bytes"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelWorkerpoolOrder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32[]"
+        },
+        {
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "initializeArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "name": "app",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "name": "dataset",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "name": "workerpool",
+              "type": "tuple"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "name": "botFirst",
+              "type": "uint256"
+            },
+            {
+              "name": "botSize",
+              "type": "uint256"
+            },
+            {
+              "name": "workerStake",
+              "type": "uint256"
+            },
+            {
+              "name": "schedulerRewardRatio",
+              "type": "uint256"
+            }
+          ],
+          "name": "deal",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "claim",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "finalize",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "countCategory",
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastAppOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "resultFor",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewPresigned",
+      "outputs": [
+        {
+          "name": "presigned",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_worker",
+          "type": "address"
+        }
+      ],
+      "name": "viewScore",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_taskid",
+          "type": "bytes32"
+        },
+        {
+          "name": "_worker",
+          "type": "address"
+        }
+      ],
+      "name": "viewContribution",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "name": "resultHash",
+              "type": "bytes32"
+            },
+            {
+              "name": "resultSeal",
+              "type": "bytes32"
+            },
+            {
+              "name": "enclaveChallenge",
+              "type": "address"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reopen",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32[]"
+        },
+        {
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "initializeAndClaimArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "claimArray",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "reveal",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "name": "apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastAppOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "name": "datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastDatasetOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "name": "workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastWorkerpoolOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "name": "requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastRequestOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "appHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedAppOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "datasetHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedDatasetOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "workerpoolHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedWorkerpoolOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "requestHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedRequestOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Reward",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Seize",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Lock",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Unlock",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "dealid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "appHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "datasetHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "workerpoolHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "requestHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "volume",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrdersMatched",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "workerpool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "dealid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "SchedulerNotice",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "workerpool",
+          "type": "address"
+        }
+      ],
+      "name": "TaskInitialize",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskContribute",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "consensus",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskConsensus",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "digest",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskReveal",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskReopen",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "results",
+          "type": "bytes"
+        }
+      ],
+      "name": "TaskFinalize",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AccurateContribution",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "worker",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "FaultyContribution",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "catid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "workClockTimeRef",
+          "type": "uint256"
+        }
+      ],
+      "name": "CreateCategory",
+      "type": "event"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.9+commit.e560f70d\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"spender\",\"type\":\"address\"},{\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrders\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint8\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"address\"}],\"name\":\"frozenOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"sender\",\"type\":\"address\"},{\"name\":\"recipient\",\"type\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"address[]\"}],\"name\":\"depositForArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contribute\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_requestorder\",\"type\":\"tuple\"}],\"name\":\"cancelRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"spender\",\"type\":\"address\"},{\"name\":\"addedValue\",\"type\":\"uint256\"}],\"name\":\"increaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_requestorder\",\"type\":\"tuple\"}],\"name\":\"broadcastRequestOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewConsumed\",\"outputs\":[{\"name\":\"consumed\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_datasetorder\",\"type\":\"tuple\"}],\"name\":\"broadcastDatasetOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_catid\",\"type\":\"uint256\"}],\"name\":\"viewCategory\",\"outputs\":[{\"components\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"category\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_datasetorder\",\"type\":\"tuple\"}],\"name\":\"cancelDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"signWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"address\"}],\"name\":\"viewAccount\",\"outputs\":[{\"components\":[{\"name\":\"stake\",\"type\":\"uint256\"},{\"name\":\"locked\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_apporder\",\"type\":\"tuple\"}],\"name\":\"signAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_requestorder\",\"type\":\"tuple\"}],\"name\":\"signRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_apporder\",\"type\":\"tuple\"}],\"name\":\"cancelAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"broadcastWorkerpoolOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_datasetorder\",\"type\":\"tuple\"}],\"name\":\"signDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"spender\",\"type\":\"address\"},{\"name\":\"subtractedValue\",\"type\":\"uint256\"}],\"name\":\"decreaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"recipient\",\"type\":\"address\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_taskid\",\"type\":\"bytes32\"}],\"name\":\"viewTask\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"dealid\",\"type\":\"bytes32\"},{\"name\":\"idx\",\"type\":\"uint256\"},{\"name\":\"timeref\",\"type\":\"uint256\"},{\"name\":\"contributionDeadline\",\"type\":\"uint256\"},{\"name\":\"revealDeadline\",\"type\":\"uint256\"},{\"name\":\"finalDeadline\",\"type\":\"uint256\"},{\"name\":\"consensusValue\",\"type\":\"bytes32\"},{\"name\":\"revealCounter\",\"type\":\"uint256\"},{\"name\":\"winnerCounter\",\"type\":\"uint256\"},{\"name\":\"contributors\",\"type\":\"address[]\"},{\"name\":\"resultDigest\",\"type\":\"bytes32\"},{\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"cancelWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewDeal\",\"outputs\":[{\"components\":[{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"app\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"dataset\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"workerpool\",\"type\":\"tuple\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"startTime\",\"type\":\"uint256\"},{\"name\":\"botFirst\",\"type\":\"uint256\"},{\"name\":\"botSize\",\"type\":\"uint256\"},{\"name\":\"workerStake\",\"type\":\"uint256\"},{\"name\":\"schedulerRewardRatio\",\"type\":\"uint256\"}],\"name\":\"deal\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"claim\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"finalize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"countCategory\",\"outputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"_apporder\",\"type\":\"tuple\"}],\"name\":\"broadcastAppOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"id\",\"type\":\"bytes32\"}],\"name\":\"resultFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewPresigned\",\"outputs\":[{\"name\":\"presigned\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"viewScore\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"address\"},{\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_taskid\",\"type\":\"bytes32\"},{\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"viewContribution\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"resultHash\",\"type\":\"bytes32\"},{\"name\":\"resultSeal\",\"type\":\"bytes32\"},{\"name\":\"enclaveChallenge\",\"type\":\"address\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reopen\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeAndClaimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"}],\"name\":\"claimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reveal\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"apporder\",\"type\":\"tuple\"}],\"name\":\"BroadcastAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"datasetorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"requestorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Reward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Seize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Lock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Unlock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"volume\",\"type\":\"uint256\"}],\"name\":\"OrdersMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"}],\"name\":\"SchedulerNotice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"}],\"name\":\"TaskInitialize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"TaskContribute\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"consensus\",\"type\":\"bytes32\"}],\"name\":\"TaskConsensus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"digest\",\"type\":\"bytes32\"}],\"name\":\"TaskReveal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskReopen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"TaskFinalize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"AccurateContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"FaultyContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":\"IexecStack\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x3a52277003bcb21969bdee76b3c02fe703638d23b1f77243a09f0bed87f4fbbb\",\"urls\":[\"bzzr://8a464aa2ae1faaa8c5c4cd8bcb0d211de146ea383b3ab2a384549b5bc7a8b86c\",\"dweb:/ipfs/QmVim3BG5Jp9NzyMf7bAmdNNyE3jEMGErbuv8tYQhqCKrq\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":{\"keccak256\":\"0xd6a60694e8dc014bc6c4778d636bb026334a3e4c4a5d44eca755d2252d7bf9f0\",\"urls\":[\"bzzr://a08e3322f23f7079d8104f3b458b253775e16698c83a43ca9beca6466fae50d1\",\"dweb:/ipfs/QmZmDhtU7gpuoEpoFubt2fUJh8xrMQS6pi9iLEAvTpDQpX\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0x2d775c3b02200e341bae0106d9e624d6c196c62b69a43f2cc545e596e6248557\",\"urls\":[\"bzzr://80da2a564db32da2c0f58657b2935b064631fcb07508bb30df6f65a0ced2974d\",\"dweb:/ipfs/QmYj5A2VU7DnGup6MH5wEoVP21LRPMqtkSr2dUpZ1mM9Ym\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/SignatureVerifier.sol\":{\"keccak256\":\"0xa2fbeaa0dac39bae66e60c290b717463af5dc6aeb914183da9f83db65716a3b2\",\"urls\":[\"bzzr://3a52761e6709f46beb0f45758957fdc0587d4fe135b6bfb97008d3659e9fa035\",\"dweb:/ipfs/QmXw1EhL3NAWYVunoSNtQ11UHhZ1sPYxtJnBDpnHa5bFY8\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecAccessors.sol\":{\"keccak256\":\"0xbeb599828766b309b265d284cac1089f86e6886d954b44fa4b88e40f36fcf663\",\"urls\":[\"bzzr://671bc05cb57b4e7fccccf9fd2dd073d4c2c796e75d3353eb791471664f82af0b\",\"dweb:/ipfs/QmbnY7R2Ftjp4nKmkJtBpShuzxubdYSf7EdXBDEMzsvJvZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0x1bd93c1cb5fb0c4fb4116d7880e2cfc39c0012889815efd0688fac798c63908e\",\"urls\":[\"bzzr://57b83ec1bbca7492a4d09786750e9a7da24316bbe2edcc21768a8f99e778f172\",\"dweb:/ipfs/QmZEvcnMSK9b7QWh6KZg6zsN6kijXmFfa6FWjwC1vVsFDS\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCore.sol\":{\"keccak256\":\"0xcb1ba0ff176706fa71d9fb8e02f1045b76e4c39865c8b04f1e8e39bd7903a989\",\"urls\":[\"bzzr://181de8584bb55128b3918540f42bfc799bdc43a6e7bfe94f06eff34ade03b875\",\"dweb:/ipfs/Qmco1QEoW9wMfAQMbmA1QJF9rzGFd8TAi2GmnW31yeuztC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol\":{\"keccak256\":\"0x5067f7ddc9f9b6800a33ae4aab3202a85adc87cbdd726034af83e4b107f0ab41\",\"urls\":[\"bzzr://aaac84c2ab2235af0876d581c73a837bad439f933ea878141ef461e6f8820b39\",\"dweb:/ipfs/QmdusCJKGndz5ZwBDrqiqgeeAtSRThw4gTMCX4XzjhCoUH\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol\":{\"keccak256\":\"0x790b329025b42d739fa26d4068e391ef24cf5ab1ed249064052a3b3e7dccc855\",\"urls\":[\"bzzr://2b73e5f6324e0a90da19b6f05628c93093cf68db3019103aa227094c4ecf2af8\",\"dweb:/ipfs/QmTWtYQ6XNe2iF8K2hFN6aG8RV2hcXp7akMhPHksk14JQj\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x7a1d4ba5ea12857f01fc0fe390b7f3d27ec13b1a90376d7d2bced73d5fe01071\",\"urls\":[\"bzzr://5931ed33a8c1a685d869a007d38cecad5c6ec399876778c2f074d603207c77b9\",\"dweb:/ipfs/QmYspdznwxFYApS2zfsv4gv6tEv8kuhjtKyadiyRUKRqje\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x3cdb4d28d6f79f3ecf72b42741905f0db1cdcbb07021f4b37eb6d3e774037045\",\"urls\":[\"bzzr://d578d40561ad375854a86f2b6c75ce19eb8d6017f7ba42c7afd03bacc349d58c\",\"dweb:/ipfs/QmP6keKXq3m9y1otoXvL8rY8p72fSYu84csN3jzJHi1WAV\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0xc9b96bcda3b1de86e1a888c8311d0761a97a24baed12770d9c7a63b4622578eb\",\"urls\":[\"bzzr://cf514b7467068735cdf493e487dcab476a2a56cf45d001372f6581a13f8bcb85\",\"dweb:/ipfs/QmQE5nA9jUeGp9mggZ2X5tF94gig95F8rouBH1cGnWhzQD\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x7af42fd11b693ce51d4dc0490558c2d596aed0115e8482ee0a6b91f4c0965423\",\"urls\":[\"bzzr://8a711af496932215143748c738617ce8822e82cde2c440ac73875c9d37817ce6\",\"dweb:/ipfs/QmXh6LFctza4fKDGiBfmtEXQwaDiTcfBrMcqfTQgNuagER\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xeed691bc7395c6bee23aa241e44d71be3c6d8c13104e941ebc0b8b1599b1db3b\",\"urls\":[\"bzzr://82b1f2a38209647d94e9b047e24428dfaea286e7854f7f9a7969c57072f2cc35\",\"dweb:/ipfs/QmcmSmYfH6gA4HeTBbx7zESgr21YsyUmFyF6kqvY38cVmc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0x78387047fcf0a9983948d40cfae6ca85deeca1855574b92c43341622621c75d9\",\"urls\":[\"bzzr://89150c90e166a3d6d7db41da1a82f47dec403b4d7a8305e3d342ce81d116986a\",\"dweb:/ipfs/QmQRepLV2Nu65fJZ5VbL2Kv5TQeKr6H5QhpReBKDeaQ9eV\"]},\"iexec-solidity/contracts/ERC1271/IERC1271.sol\":{\"keccak256\":\"0x90daa992bd38a335a1e6503b4b815b5aa5315366637dc0cb0b98e7f39096c842\",\"urls\":[\"bzzr://9c88f54779ee800bd2235d96ea251b3c80e45d4c127db93a9a71a8b9235becb2\",\"dweb:/ipfs/QmYUozJfjw7r62NVhfu2p9i9iREcSygNx3pW6YvxpTXx7J\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol\":{\"keccak256\":\"0x46532e2d419a87bf604b354318a19d56a3dc25fa7ad6f94c77bd2aa8ce54a755\",\"urls\":[\"bzzr://8ada95bcec956bdd6e7c4e3ec840e9e13cfc04584668d0df2c00459f94d74541\",\"dweb:/ipfs/QmPMM8Prd6iG2g23gbu3arBiy8F8CiDuEZMJPd99WYpXbf\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\nimport \"./delegates/IexecAccessors.sol\";\nimport \"./delegates/IexecCategoryManager.sol\";\nimport \"./delegates/IexecCore.sol\";\nimport \"./delegates/IexecOrderSignature.sol\";\nimport \"./delegates/IexecRelay.sol\";\n\ncontract IexecStack is IexecAccessors, IexecCategoryManager, IexecCore, IexecOrderSignature, IexecRelay\n{}\n",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
+  "ast": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
+    "exportedSymbols": {
+      "IexecStack": [
+        1020
+      ]
+    },
+    "id": 1021,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1003,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "id": 1004,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:4"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecAccessors.sol",
+        "file": "./delegates/IexecAccessors.sol",
+        "id": 1005,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 1661,
+        "src": "59:40:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
+        "file": "./delegates/IexecCategoryManager.sol",
+        "id": 1006,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 1727,
+        "src": "100:46:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCore.sol",
+        "file": "./delegates/IexecCore.sol",
+        "id": 1007,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5244,
+        "src": "147:35:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol",
+        "file": "./delegates/IexecOrderSignature.sol",
+        "id": 1008,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5633,
+        "src": "183:45:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
+        "file": "./delegates/IexecRelay.sol",
+        "id": 1009,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5719,
+        "src": "229:36:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1010,
+              "name": "IexecAccessors",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1430,
+              "src": "290:14:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecAccessors_$1430",
+                "typeString": "contract IexecAccessors"
+              }
+            },
+            "id": 1011,
+            "nodeType": "InheritanceSpecifier",
+            "src": "290:14:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1012,
+              "name": "IexecCategoryManager",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1686,
+              "src": "306:20:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeString": "contract IexecCategoryManager"
+              }
+            },
+            "id": 1013,
+            "nodeType": "InheritanceSpecifier",
+            "src": "306:20:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1014,
+              "name": "IexecCore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2047,
+              "src": "328:9:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCore_$2047",
+                "typeString": "contract IexecCore"
+              }
+            },
+            "id": 1015,
+            "nodeType": "InheritanceSpecifier",
+            "src": "328:9:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1016,
+              "name": "IexecOrderSignature",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5320,
+              "src": "339:19:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecOrderSignature_$5320",
+                "typeString": "contract IexecOrderSignature"
+              }
+            },
+            "id": 1017,
+            "nodeType": "InheritanceSpecifier",
+            "src": "339:19:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1018,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5673,
+              "src": "360:10:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$5673",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 1019,
+            "nodeType": "InheritanceSpecifier",
+            "src": "360:10:4"
+          }
+        ],
+        "contractDependencies": [
+          1430,
+          1686,
+          2047,
+          5320,
+          5673
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1020,
+        "linearizedBaseContracts": [
+          1020,
+          5673,
+          5320,
+          2047,
+          1686,
+          1430
+        ],
+        "name": "IexecStack",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 1021,
+        "src": "267:106:4"
+      }
+    ],
+    "src": "0:374:4"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
+    "exportedSymbols": {
+      "IexecStack": [
+        1020
+      ]
+    },
+    "id": 1021,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1003,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "id": 1004,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:4"
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecAccessors.sol",
+        "file": "./delegates/IexecAccessors.sol",
+        "id": 1005,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 1661,
+        "src": "59:40:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol",
+        "file": "./delegates/IexecCategoryManager.sol",
+        "id": 1006,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 1727,
+        "src": "100:46:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCore.sol",
+        "file": "./delegates/IexecCore.sol",
+        "id": 1007,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5244,
+        "src": "147:35:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol",
+        "file": "./delegates/IexecOrderSignature.sol",
+        "id": 1008,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5633,
+        "src": "183:45:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
+        "file": "./delegates/IexecRelay.sol",
+        "id": 1009,
+        "nodeType": "ImportDirective",
+        "scope": 1021,
+        "sourceUnit": 5719,
+        "src": "229:36:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1010,
+              "name": "IexecAccessors",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1430,
+              "src": "290:14:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecAccessors_$1430",
+                "typeString": "contract IexecAccessors"
+              }
+            },
+            "id": 1011,
+            "nodeType": "InheritanceSpecifier",
+            "src": "290:14:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1012,
+              "name": "IexecCategoryManager",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1686,
+              "src": "306:20:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$1686",
+                "typeString": "contract IexecCategoryManager"
+              }
+            },
+            "id": 1013,
+            "nodeType": "InheritanceSpecifier",
+            "src": "306:20:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1014,
+              "name": "IexecCore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2047,
+              "src": "328:9:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecCore_$2047",
+                "typeString": "contract IexecCore"
+              }
+            },
+            "id": 1015,
+            "nodeType": "InheritanceSpecifier",
+            "src": "328:9:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1016,
+              "name": "IexecOrderSignature",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5320,
+              "src": "339:19:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecOrderSignature_$5320",
+                "typeString": "contract IexecOrderSignature"
+              }
+            },
+            "id": 1017,
+            "nodeType": "InheritanceSpecifier",
+            "src": "339:19:4"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1018,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 5673,
+              "src": "360:10:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$5673",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 1019,
+            "nodeType": "InheritanceSpecifier",
+            "src": "360:10:4"
+          }
+        ],
+        "contractDependencies": [
+          1430,
+          1686,
+          2047,
+          5320,
+          5673
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1020,
+        "linearizedBaseContracts": [
+          1020,
+          5673,
+          5320,
+          2047,
+          1686,
+          1430
+        ],
+        "name": "IexecStack",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 1021,
+        "src": "267:106:4"
+      }
+    ],
+    "src": "0:374:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.9+commit.e560f70d.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-06-26T13:43:41.415Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
