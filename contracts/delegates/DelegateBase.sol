@@ -1,9 +1,9 @@
 pragma solidity ^0.5.10;
 
-import "./IexecStore.sol";
+import "../Store.sol";
 
 
-contract IexecDelegateBase is IexecStore
+contract DelegateBase is Store
 {
 	constructor()
 	public

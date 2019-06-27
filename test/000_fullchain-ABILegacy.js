@@ -1,6 +1,6 @@
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecStack         = artifacts.require("IexecStack");
+var IexecInterface     = artifacts.require("IexecInterface");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -8,7 +8,7 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-var IexecStackABILegacy = artifacts.require("IexecStackABILegacy");
+var IexecInterfaceABILegacy = artifacts.require("IexecInterfaceABILegacy");
 
 const { shouldFail } = require('openzeppelin-test-helpers');
 const   multiaddr    = require('multiaddr');
@@ -78,8 +78,8 @@ contract('IexecHub', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecStack.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecStack.at((await ERC1538Proxy.deployed()).address);
+		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -88,8 +88,8 @@ contract('IexecHub', async (accounts) => {
 		 * For ABILegacy
 		 */
 		IexecClerkInstanceFull = IexecClerkInstance;
-		IexecHubInstance       = await IexecStackABILegacy.at(IexecHubInstance.address);
-		IexecClerkInstance     = await IexecStackABILegacy.at(IexecClerkInstance.address);
+		IexecHubInstance       = await IexecInterfaceABILegacy.at(IexecHubInstance.address);
+		IexecClerkInstance     = await IexecInterfaceABILegacy.at(IexecClerkInstance.address);
 
 		/**
 		 * Domain setup

@@ -1,17 +1,21 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "./IexecStore.sol";
+import "./Store.sol";
 import "./delegates/IexecAccessors.sol";
 import "./delegates/IexecAccessorsABILegacy.sol";
 import "./delegates/IexecCategoryManager.sol";
-import "./delegates/IexecPoco.sol";
+import "./delegates/IexecERC20.sol";
+// import "./delegates/IexecEscrowNative.sol";
+import "./delegates/IexecEscrowToken.sol";
 import "./delegates/IexecOrderSignature.sol";
+import "./delegates/IexecPoco.sol";
 import "./delegates/IexecRelay.sol";
 
 
-contract IexecStackABILegacy is IexecStore, IexecAccessorsABILegacy
+contract IexecInterfaceABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay
 {
+/*
 	event CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -92,4 +96,5 @@ contract IexecStackABILegacy is IexecStore, IexecAccessorsABILegacy
 	// function broadcastDatasetOrder   (IexecODBLibOrders.DatasetOrder    memory _datasetorder   ) public;
 	// function broadcastWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder) public;
 	// function broadcastRequestOrder   (IexecODBLibOrders.RequestOrder    memory _requestorder   ) public;
+*/
 }

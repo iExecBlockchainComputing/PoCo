@@ -1,9 +1,9 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
+import "./DelegateBase.sol";
 import "./IexecERC20.sol";
-import "../SignatureVerifier.sol";
-import "../IexecDelegateBase.sol";
+import "../libs/SignatureVerifier.sol";
 
 
 interface IexecPoco
@@ -42,7 +42,7 @@ interface IexecPoco
 	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
 }
 
-contract IexecPocoDelegate is IexecPoco, IexecDelegateBase, IexecERC20Common, SignatureVerifier
+contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
 	using IexecODBLibOrders for bytes32;

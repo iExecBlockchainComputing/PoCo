@@ -12,12 +12,13 @@ import "./registries/Workerpool.sol";
 import "./registries/RegistryBase.sol";
 
 
-contract IexecStore is ERC1538Store
+contract Store is ERC1538Store
 {
 	RegistryBase public appregistry;
 	RegistryBase public datasetregistry;
 	RegistryBase public workerpoolregistry;
 
+	// Escrow
 	IERC20  internal m_baseToken;
 	string  internal m_name;
 	string  internal m_symbol;
@@ -27,6 +28,7 @@ contract IexecStore is ERC1538Store
 	mapping (address =>                     uint256 ) internal m_frozens;
 	mapping (address => mapping (address => uint256)) internal m_allowances;
 
+	// Poco
 	uint256 public constant CONTRIBUTION_DEADLINE_RATIO = 7;
 	uint256 public constant REVEAL_DEADLINE_RATIO       = 2;
 	uint256 public constant FINAL_DEADLINE_RATIO        = 10;
@@ -47,6 +49,7 @@ contract IexecStore is ERC1538Store
 	mapping(bytes32 => mapping(bytes32 => uint256                     )) internal m_groupweight;
 	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;
 
+	// Categories
 	IexecODBLibCore.Category[] m_categories;
 
 	modifier onlyScheduler(bytes32 _taskid)

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecDelegateBase.sol";
+import "./DelegateBase.sol";
 
 
 interface IexecAccessors
@@ -26,7 +26,7 @@ interface IexecAccessors
 	function countCategory() external view returns (uint256);
 }
 
-contract IexecAccessorsDelegate is IexecAccessors, IexecDelegateBase
+contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 {
 
 	function name()

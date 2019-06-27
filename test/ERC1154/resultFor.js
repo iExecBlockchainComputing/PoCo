@@ -1,6 +1,6 @@
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecStack         = artifacts.require("IexecStack");
+var IexecInterface     = artifacts.require("IexecInterface");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -64,8 +64,8 @@ contract('ERC1154: resultFor', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecStack.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecStack.at((await ERC1538Proxy.deployed()).address);
+		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();

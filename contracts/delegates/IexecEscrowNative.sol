@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
+import "./DelegateBase.sol";
 import "./IexecERC20.sol";
-import "../IexecDelegateBase.sol";
 
 
 interface IexecEscrowNative
@@ -14,7 +14,7 @@ interface IexecEscrowNative
 	function withdraw(uint256) external returns (bool);
 }
 
-contract IexecEscrowNativeDelegate is IexecEscrowNative, IexecDelegateBase, IexecERC20Common
+contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC20Common
 {
 	/***************************************************************************
 	 *                         Escrow methods: public                          *

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecDelegateBase.sol";
+import "./DelegateBase.sol";
 
 
 interface IexecERC20
@@ -16,7 +16,7 @@ interface IexecERC20
 	function decreaseAllowance(address,uint256) external returns (bool);
 }
 
-contract IexecERC20Common is IexecStore
+contract IexecERC20Common is DelegateBase
 {
 	using SafeMathExtended for uint256;
 
@@ -65,7 +65,7 @@ contract IexecERC20Common is IexecStore
 	}
 }
 
-contract IexecERC20Delegate is IexecERC20, IexecDelegateBase, IexecERC20Common
+contract IexecERC20Delegate is IexecERC20, DelegateBase, IexecERC20Common
 {
 	function transfer(address recipient, uint256 amount)
 		public returns (bool)

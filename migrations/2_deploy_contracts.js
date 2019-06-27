@@ -1,6 +1,6 @@
 var RLC                = artifacts.require("rlc-faucet-contract/RLC");
 var IexecODBLibOrders  = artifacts.require("IexecODBLibOrders");
-var IexecStack         = artifacts.require("IexecStack");
+var IexecInterface     = artifacts.require("IexecInterface");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -130,10 +130,11 @@ module.exports = async function(deployer, network, accounts)
 			"Linking " + contracts[id].contractName
 		);
 	}
+
 	/***************************************************************************
 	 *                             Configure Stack                             *
 	 ***************************************************************************/
-	IexecStackInstance = await IexecStack.at(IexecInstance.address);
+	IexecInterfaceInstance = await IexecInterface.at(IexecInstance.address);
 
 	await deployer.deploy(AppRegistry);
 	await deployer.deploy(DatasetRegistry);
@@ -145,8 +146,7 @@ module.exports = async function(deployer, network, accounts)
 	console.log("DatasetRegistry    deployed at address: " + DatasetRegistryInstance.address);
 	console.log("WorkerpoolRegistry deployed at address: " + WorkerpoolRegistryInstance.address);
 
-
-	await IexecStackInstance.configure(
+	await IexecInterfaceInstance.configure(
 		chainid,
 		RLCInstance.address,
 		"Hub RLC",
@@ -161,20 +161,23 @@ module.exports = async function(deployer, network, accounts)
 	for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
 	{
 		console.log("create category : " + categoriesConfigFileJson.categories[i].name);
-		await IexecStackInstance.createCategory(
+		await IexecInterfaceInstance.createCategory(
 			categoriesConfigFileJson.categories[i].name
 		,	JSON.stringify(categoriesConfigFileJson.categories[i].description)
 		,	categoriesConfigFileJson.categories[i].workClockTimeRef
 		);
 	}
 
-	var catCount = await IexecStackInstance.countCategory();
+	var catCount = await IexecInterfaceInstance.countCategory();
 	console.log("countCategory is now: " + catCount);
-	for(var i = 0; i < await IexecStackInstance.countCategory(); ++i)
+	for(var i = 0; i < await IexecInterfaceInstance.countCategory(); ++i)
 	{
-		console.log([ "category", i, ":", ...await IexecStackInstance.viewCategory(i)].join(" "));
+		console.log([ "category", i, ":", ...await IexecInterfaceInstance.viewCategory(i)].join(" "));
 	}
 
+	/***************************************************************************
+	 *                             Wallets deposit                             *
+	 ***************************************************************************/
 	// Starting deposit for all test wallets
 	if (chaintype == "private" || chaintype == "kovan")
 	{
@@ -187,18 +190,18 @@ module.exports = async function(deployer, network, accounts)
 		RLCInstance.balanceOf(adminAdress).then(balance => console.log("Wallet.balance of " + adminAdress +" is " + balance + " nRLC"));
 
 		//And put directly some other nRLCs in account
-		await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
-		await IexecStackInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
-		IexecStackInstance.viewAccount(adminAdress).then(balance => console.log("Account.Stack of " + adminAdress + " is " + balance.Stack + " nRLC"));
+		await RLCInstance.approve(IexecInterfaceInstance.address, nRlcAmount, { from: owner });
+		await IexecInterfaceInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
+		IexecInterfaceInstance.viewAccount(adminAdress).then(balance => console.log("Account.Stack of " + adminAdress + " is " + balance.Stack + " nRLC"));
 
 		// ------------------------------ Scheduler ------------------------------
 		var schedulerAddress = "0x000a9c787a972F70F0903890E266F41c795C4DcA";
 		var nRlcAmount       = 10000000;
 
 		//For scheduler, put directly some nRLCs in account
-		await RLCInstance.approve(IexecStackInstance.address, nRlcAmount, { from: owner });
-		await IexecStackInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
-		await IexecStackInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.Stack of " + schedulerAddress + " is " + balance.stake + " nRLC"));
+		await RLCInstance.approve(IexecInterfaceInstance.address, nRlcAmount, { from: owner });
+		await IexecInterfaceInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
+		await IexecInterfaceInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.Stack of " + schedulerAddress + " is " + balance.stake + " nRLC"));
 
 		// ------------------------------- Workers -------------------------------
 		var workerAddresses = fs.readFileSync(__dirname + "/accounts.txt").toString().split("\n");
@@ -206,19 +209,32 @@ module.exports = async function(deployer, network, accounts)
 
 		//For workers, put directly some nRLCs in account
 		console.log("Making deposit to " + workerAddresses.length + " wallets");
-		await RLCInstance.approve(IexecStackInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
+		await RLCInstance.approve(IexecInterfaceInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
 
 		let batchSize = 50;
 		for (var i = 0; i < workerAddresses.length; i += batchSize)
 		{
 			group = workerAddresses.slice(i, i+batchSize);
-			await IexecStackInstance.depositForArray(
+			await IexecInterfaceInstance.depositForArray(
 				Array(group.length).fill(nRlcAmount),
 				group,
 				{ from: owner, gas: 4500000 }
 			);
-			group.forEach(address => IexecStackInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
+			group.forEach(address => IexecInterfaceInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
 		}
+	}
+
+	/***************************************************************************
+	 *                          ERC1538 list methods                           *
+	 ***************************************************************************/
+	let ERC1538QueryInstace = await ERC1538Query.at(IexecInstance.address);
+	let functionCount = await ERC1538QueryInstace.totalFunctions();
+
+	console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
+	for (let i = 0; i < functionCount; ++i)
+	{
+		let functionDetails = await ERC1538QueryInstace.functionByIndex(i);
+		console.log(`[${i}] ${functionDetails.delegate} ${functionDetails.signature}`);
 	}
 
 };

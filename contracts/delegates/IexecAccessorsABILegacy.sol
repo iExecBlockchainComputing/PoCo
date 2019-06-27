@@ -1,7 +1,7 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
-import "../IexecDelegateBase.sol";
+import "./DelegateBase.sol";
 
 
 interface IexecAccessorsABILegacy
@@ -70,7 +70,7 @@ interface IexecAccessorsABILegacy
 	);
 }
 
-contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, IexecDelegateBase
+contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBase
 {
 	function viewDealABILegacy_pt1(bytes32 _id)
 	external view returns
