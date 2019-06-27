@@ -82181,9 +82181,401 @@
     "name": "solc",
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1544020727674": {
+      "events": {
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event",
+          "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event",
+          "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        },
+        "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event",
+          "signature": "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364"
+        },
+        "0xc2aca55aa696938c7e95842e8939ca0fbb2120a3eeb8948cdcee2b70da566672": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "ref",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Reward",
+          "type": "event",
+          "signature": "0xc2aca55aa696938c7e95842e8939ca0fbb2120a3eeb8948cdcee2b70da566672"
+        },
+        "0x1bccc549c38561cd5b57f0db11ceb8dde1b0b6ee05ab5e155b51c7c5ba64becb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "ref",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Seize",
+          "type": "event",
+          "signature": "0x1bccc549c38561cd5b57f0db11ceb8dde1b0b6ee05ab5e155b51c7c5ba64becb"
+        },
+        "0x625fed9875dada8643f2418b838ae0bc78d9a148a18eee4ee1979ff0f3f5d427": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Lock",
+          "type": "event",
+          "signature": "0x625fed9875dada8643f2418b838ae0bc78d9a148a18eee4ee1979ff0f3f5d427"
+        },
+        "0x6381d9813cabeb57471b5a7e05078e64845ccdb563146a6911d536f24ce960f1": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Unlock",
+          "type": "event",
+          "signature": "0x6381d9813cabeb57471b5a7e05078e64845ccdb563146a6911d536f24ce960f1"
+        },
+        "0xd811b592ed0899225773e8933d8df64bd0b62761a9d7aad4ed5b22735f4610a4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "dealid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "appHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "datasetHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "requestHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "name": "OrdersMatched",
+          "type": "event",
+          "signature": "0xd811b592ed0899225773e8933d8df64bd0b62761a9d7aad4ed5b22735f4610a4"
+        },
+        "0x692ad61076dceddd0f1a861f737553dd61fc8501cf4190d29c4e90af6607f765": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "dealid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "SchedulerNotice",
+          "type": "event",
+          "signature": "0x692ad61076dceddd0f1a861f737553dd61fc8501cf4190d29c4e90af6607f765"
+        },
+        "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            }
+          ],
+          "name": "TaskInitialize",
+          "type": "event",
+          "signature": "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06"
+        },
+        "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "hash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskContribute",
+          "type": "event",
+          "signature": "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb"
+        },
+        "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "consensus",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskConsensus",
+          "type": "event",
+          "signature": "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3"
+        },
+        "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "digest",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReveal",
+          "type": "event",
+          "signature": "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959"
+        },
+        "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReopen",
+          "type": "event",
+          "signature": "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b"
+        },
+        "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "results",
+              "type": "bytes"
+            }
+          ],
+          "name": "TaskFinalize",
+          "type": "event",
+          "signature": "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044"
+        },
+        "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskClaimed",
+          "type": "event",
+          "signature": "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8"
+        },
+        "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "AccurateContribution",
+          "type": "event",
+          "signature": "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492"
+        },
+        "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "FaultyContribution",
+          "type": "event",
+          "signature": "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb"
+        }
+      },
+      "links": {
+        "IexecODBLibOrders": "0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1"
+      },
+      "address": "0x16392cc0c5E23720CE0e1937589F318C5b3057eF",
+      "transactionHash": "0xc6545163436834c8cd7d65760d2a829b408ea51c417b0966e07b825da8866877"
+    }
+  },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-27T10:05:58.588Z",
+  "updatedAt": "2019-06-27T11:33:55.794Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

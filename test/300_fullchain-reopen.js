@@ -1,3 +1,4 @@
+
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
 var IexecStack         = artifacts.require("IexecStack");
@@ -13,6 +14,8 @@ const   multiaddr   = require('multiaddr');
 const   constants   = require("../utils/constants");
 const   odbtools    = require('../utils/odb-tools');
 const   wallets     = require('../utils/wallets');
+
+Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
 function extractEvents(txMined, address, name)
 {

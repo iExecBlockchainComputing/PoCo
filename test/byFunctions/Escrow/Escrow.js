@@ -14,6 +14,8 @@ const   constants    = require("../../../utils/constants");
 const   odbtools     = require('../../../utils/odb-tools');
 const   wallets      = require('../../../utils/wallets');
 
+Object.extract = (obj, keys) => keys.map(key => obj[key]);
+
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -65,12 +67,13 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw error #1", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-			IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+
 
 		await shouldFail.reverting(IexecClerkInstance.withdraw(100));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -78,24 +81,26 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit error #1", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		await shouldFail.reverting(IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	it("Escrow - DepositFor error #1", async () => {
-		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.equal(await RLCInstance.balanceOf(scheduler), 0, "wrong rlc balance");
+		assert.equal(await RLCInstance.balanceOf(user     ), 0, "wrong rlc balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		await shouldFail.reverting(IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler), 0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(scheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
-		IexecClerkInstance.viewAccount(user     ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -103,19 +108,19 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Approve", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		txMined = await RLCInstance.transfer(user, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		txMined = await RLCInstance.approve(IexecClerkInstance.address, 100000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -123,24 +128,26 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit error #2", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		await shouldFail.reverting(IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	it("Escrow - DepositFor error #2", async () => {
-		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.equal(await RLCInstance.balanceOf(scheduler),          0, "wrong rlc balance");
+		assert.equal(await RLCInstance.balanceOf(user     ), 1000000000, "wrong rlc balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		await shouldFail.reverting(IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler),          0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(scheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
-		IexecClerkInstance.viewAccount(user     ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -148,7 +155,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Deposit success", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
 		txMined = await IexecClerkInstance.deposit(50000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -159,12 +166,14 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.value, 50000000,               "check amount");
 
 		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 	});
 
 	it("Escrow - DepositFor success", async () => {
-		assert.equal(await RLCInstance.balanceOf(user), 950000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.equal(await RLCInstance.balanceOf(scheduler),         0, "wrong rlc balance");
+		assert.equal(await RLCInstance.balanceOf(user     ), 950000000, "wrong rlc balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [        0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 
 		txMined = await IexecClerkInstance.depositFor(50000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -176,8 +185,8 @@ contract('IexecClerk: Escrow', async (accounts) => {
 
 		assert.equal(await RLCInstance.balanceOf(scheduler),         0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 900000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(scheduler).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
-		IexecClerkInstance.viewAccount(user     ).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user     ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -185,12 +194,12 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw error #2", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 
 		await shouldFail.reverting(IexecClerkInstance.withdraw(100000000));
 
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -198,7 +207,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw success", async () => {
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 50000000, 0 ], "check balance");
 
 		txMined = await IexecClerkInstance.withdraw(10000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -209,7 +218,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.value, 10000000,               "check amount");
 
 		assert.equal(await RLCInstance.balanceOf(user), 910000000, "wrong rlc balance");
-		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 40000000, 0 ], "check balance"));
+		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 40000000, 0 ], "check balance");
 	});
 
 	/***************************************************************************

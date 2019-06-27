@@ -11125,9 +11125,89 @@
     "name": "solc",
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1544020727674": {
+      "events": {
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        },
+        "0x7343f75be43aba524f85326508cd975d016ef7884676377366c69a7c32e30668": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "appHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "ClosedAppOrder",
+          "type": "event",
+          "signature": "0x7343f75be43aba524f85326508cd975d016ef7884676377366c69a7c32e30668"
+        },
+        "0xcf52e3228bc482a6656d8ab56c09888b1c5bf6aaadba0185e96a34836f2bb1d4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "datasetHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "ClosedDatasetOrder",
+          "type": "event",
+          "signature": "0xcf52e3228bc482a6656d8ab56c09888b1c5bf6aaadba0185e96a34836f2bb1d4"
+        },
+        "0x145ad51e4496173bca15e24e7eb46f9ab3a10eea0497e2801a3a6806c06113a3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "workerpoolHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "ClosedWorkerpoolOrder",
+          "type": "event",
+          "signature": "0x145ad51e4496173bca15e24e7eb46f9ab3a10eea0497e2801a3a6806c06113a3"
+        },
+        "0x582f43f2a741cbe708aae3b8d38a4efc3d09d7e81919697b3ca693f4c444cc05": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "requestHash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "ClosedRequestOrder",
+          "type": "event",
+          "signature": "0x582f43f2a741cbe708aae3b8d38a4efc3d09d7e81919697b3ca693f4c444cc05"
+        }
+      },
+      "links": {
+        "IexecODBLibOrders": "0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1"
+      },
+      "address": "0x6f8C9B1395d03d9Cc355bD9867E15C9283419b38",
+      "transactionHash": "0xf6d45f621c5d1a2937c987aec66958907ad36616841cf7ccc4651919a60a0628"
+    }
+  },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-27T10:05:58.560Z",
+  "updatedAt": "2019-06-27T11:33:55.752Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
