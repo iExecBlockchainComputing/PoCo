@@ -1,14 +1,13 @@
 pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
+import "./IexecERC20.sol";
 import "../SignatureVerifier.sol";
 import "../IexecDelegateBase.sol";
 
 
 interface IexecCore
 {
-	event Transfer(address indexed from, address indexed to, uint256 value);
-	event Approval(address indexed owner, address indexed spender, uint256 value);
 	event Withdraw(address owner, uint256 amount);
 	event Reward  (address owner, uint256 amount, bytes32 ref);
 	event Seize   (address owner, uint256 amount, bytes32 ref);
@@ -30,15 +29,6 @@ interface IexecCore
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
 	function configure(uint256,address,string calldata,string calldata,uint8,address,address,address) external;
-	function transfer(address,uint256) external returns (bool);
-	function approve(address,uint256) external returns (bool);
-	function transferFrom(address,address,uint256) external returns (bool);
-	function increaseAllowance(address,uint256) external returns (bool);
-	function decreaseAllowance(address,uint256) external returns (bool);
-	function deposit(uint256) external returns (bool);
-	function depositFor(uint256,address) external returns (bool);
-	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
-	function withdraw(uint256) external returns (bool);
 	function verifySignature(address,bytes32,bytes calldata) external view returns (bool);
 	function matchOrders(IexecODBLibOrders.AppOrder calldata,IexecODBLibOrders.DatasetOrder calldata,IexecODBLibOrders.WorkerpoolOrder calldata,IexecODBLibOrders.RequestOrder calldata) external returns (bytes32);
 	function initialize(bytes32,uint256) external returns (bytes32);
@@ -52,7 +42,7 @@ interface IexecCore
 	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
 }
 
-contract IexecCoreDelegate is IexecCore, IexecDelegateBase, SignatureVerifier
+contract IexecCoreDelegate is IexecCore, IexecDelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMath for uint256;
 	using IexecODBLibOrders for bytes32;
@@ -90,138 +80,6 @@ contract IexecCoreDelegate is IexecCore, IexecDelegateBase, SignatureVerifier
 		, chainId:           _chainid
 		, verifyingContract: address(this)
 		}).hash();
-	}
-
-	/***************************************************************************
-	 *                              ERC20 methods                              *
-	 ***************************************************************************/
-	function transfer(address recipient, uint256 amount)
-		public returns (bool)
-	{
-			_transfer(msg.sender, recipient, amount);
-			return true;
-	}
-
-	function approve(address spender, uint256 value)
-		public returns (bool)
-	{
-			_approve(msg.sender, spender, value);
-			return true;
-	}
-
-	function transferFrom(address sender, address recipient, uint256 amount)
-		public returns (bool)
-	{
-			_transfer(sender, recipient, amount);
-			_approve(sender, msg.sender, m_allowances[sender][msg.sender].sub(amount));
-			return true;
-	}
-
-	function increaseAllowance(address spender, uint256 addedValue)
-		public returns (bool)
-	{
-			_approve(msg.sender, spender, m_allowances[msg.sender][spender].add(addedValue));
-			return true;
-	}
-
-
-	function decreaseAllowance(address spender, uint256 subtractedValue)
-		public returns (bool)
-	{
-			_approve(msg.sender, spender, m_allowances[msg.sender][spender].sub(subtractedValue));
-			return true;
-	}
-
-	function _transfer(address sender, address recipient, uint256 amount)
-		internal
-	{
-			require(sender != address(0), "ERC20: transfer from the zero address");
-			require(recipient != address(0), "ERC20: transfer to the zero address");
-
-			m_balances[sender] = m_balances[sender].sub(amount);
-			m_balances[recipient] = m_balances[recipient].add(amount);
-			emit Transfer(sender, recipient, amount);
-	}
-
-	function _mint(address account, uint256 amount)
-		internal
-	{
-			require(account != address(0), "ERC20: mint to the zero address");
-
-			m_totalSupply = m_totalSupply.add(amount);
-			m_balances[account] = m_balances[account].add(amount);
-			emit Transfer(address(0), account, amount);
-	}
-
-	function _burn(address account, uint256 value)
-		internal
-	{
-			require(account != address(0), "ERC20: burn from the zero address");
-
-			m_totalSupply = m_totalSupply.sub(value);
-			m_balances[account] = m_balances[account].sub(value);
-			emit Transfer(account, address(0), value);
-	}
-
-	function _approve(address owner, address spender, uint256 value)
-		internal
-	{
-			require(owner != address(0), "ERC20: approve from the zero address");
-			require(spender != address(0), "ERC20: approve to the zero address");
-
-			m_allowances[owner][spender] = value;
-			emit Approval(owner, spender, value);
-	}
-
-	/***************************************************************************
-	 *                         Escrow methods: public                          *
-	 ***************************************************************************/
-	function deposit(uint256 amount)
-		external returns (bool)
-	{
-		_deposit(msg.sender, amount);
-		_mint(msg.sender, amount);
-		return true;
-	}
-
-	function depositFor(uint256 amount, address target)
-		external returns (bool)
-	{
-		_deposit(msg.sender, amount);
-		_mint(target, amount);
-		return true;
-	}
-
-	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
-		external returns (bool)
-	{
-		require(amounts.length == targets.length);
-		for (uint i = 0; i < amounts.length; ++i)
-		{
-			_deposit(msg.sender, amounts[i]);
-			_mint(targets[i], amounts[i]);
-		}
-		return true;
-	}
-
-	function withdraw(uint256 amount)
-		external returns (bool)
-	{
-		_burn(msg.sender, amount);
-		_withdraw(msg.sender, amount);
-		return true;
-	}
-
-	function _deposit(address from, uint256 amount)
-		internal
-	{
-		require(m_baseToken.transferFrom(from, address(this), amount));
-	}
-
-	function _withdraw(address to, uint256 amount)
-		internal
-	{
-		m_baseToken.transfer(to, amount);
 	}
 
 	/***************************************************************************

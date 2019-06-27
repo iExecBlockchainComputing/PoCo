@@ -8,14 +8,18 @@ var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
 var ERC1538        = artifacts.require("ERC1538Delegate");
 var ERC1538Proxy   = artifacts.require("ERC1538Proxy");
 
-var ERC1538Query         = artifacts.require("ERC1538QueryDelegate");
-var IexecAccessors       = artifacts.require("IexecAccessorsDelegate");
-var IexecABILegacy       = artifacts.require("IexecABILegacyDelegate");
-var IexecCategoryManager = artifacts.require("IexecCategoryManagerDelegate");
-var IexecCore            = artifacts.require("IexecCoreDelegate");
-var IexecOrderSignature  = artifacts.require("IexecOrderSignatureDelegate");
-var IexecRelay           = artifacts.require("IexecRelayDelegate");
+var ERC1538Query            = artifacts.require("ERC1538QueryDelegate");
+var IexecAccessors          = artifacts.require("IexecAccessorsDelegate");
+var IexecAccessorsABILegacy = artifacts.require("IexecAccessorsABILegacyDelegate");
+var IexecCategoryManager    = artifacts.require("IexecCategoryManagerDelegate");
+var IexecCore               = artifacts.require("IexecCoreDelegate");
+var IexecERC20              = artifacts.require("IexecERC20Delegate");
+var IexecEscrowToken        = artifacts.require("IexecEscrowTokenDelegate");
+var IexecEscrowNative       = artifacts.require("IexecEscrowNativeDelegate");
+var IexecOrderSignature     = artifacts.require("IexecOrderSignatureDelegate");
+var IexecRelay              = artifacts.require("IexecRelayDelegate");
 
+const USENATIVE = false;
 
 const fs = require("fs-extra");
 const BN = require('bn.js');
@@ -107,9 +111,11 @@ module.exports = async function(deployer, network, accounts)
 	contracts = [
 		ERC1538Query,
 		IexecAccessors,
-		IexecABILegacy,
+		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecCore,
+		IexecERC20,
+		USENATIVE ? IexecEscrowNative : IexecEscrowToken,
 		IexecOrderSignature,
 		IexecRelay,
 	]

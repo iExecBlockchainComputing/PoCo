@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import "../IexecDelegateBase.sol";
 
 
-interface IexecABILegacy
+interface IexecAccessorsABILegacy
 {
 	function viewAccountABILegacy(address _user)
 	external view returns (uint256, uint256);
@@ -70,7 +70,7 @@ interface IexecABILegacy
 	);
 }
 
-contract IexecABILegacyDelegate is IexecABILegacy, IexecDelegateBase
+contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, IexecDelegateBase
 {
 	function viewDealABILegacy_pt1(bytes32 _id)
 	external view returns

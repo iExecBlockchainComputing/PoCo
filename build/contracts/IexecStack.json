@@ -2891,21 +2891,21 @@
       "type": "event"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"EIP712DOMAIN_SEPARATOR\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrders\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint8\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"frozenOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"address[]\"}],\"name\":\"depositForArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contribute\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"increaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"appregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastRequestOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewConsumed\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastDatasetOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"WORKERPOOL_STAKE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"viewCategory\",\"outputs\":[{\"components\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"REVEAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"GROUPMEMBER_PURPOSE\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewAccount\",\"outputs\":[{\"components\":[{\"name\":\"stake\",\"type\":\"uint256\"},{\"name\":\"locked\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"CONTRIBUTION_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"workerpoolregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"FINAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastWorkerpoolOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_ADDRESS\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"decreaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewTask\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"dealid\",\"type\":\"bytes32\"},{\"name\":\"idx\",\"type\":\"uint256\"},{\"name\":\"timeref\",\"type\":\"uint256\"},{\"name\":\"contributionDeadline\",\"type\":\"uint256\"},{\"name\":\"revealDeadline\",\"type\":\"uint256\"},{\"name\":\"finalDeadline\",\"type\":\"uint256\"},{\"name\":\"consensusValue\",\"type\":\"bytes32\"},{\"name\":\"revealCounter\",\"type\":\"uint256\"},{\"name\":\"winnerCounter\",\"type\":\"uint256\"},{\"name\":\"contributors\",\"type\":\"address[]\"},{\"name\":\"resultDigest\",\"type\":\"bytes32\"},{\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"datasetregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewDeal\",\"outputs\":[{\"components\":[{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"app\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"dataset\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"workerpool\",\"type\":\"tuple\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"startTime\",\"type\":\"uint256\"},{\"name\":\"botFirst\",\"type\":\"uint256\"},{\"name\":\"botSize\",\"type\":\"uint256\"},{\"name\":\"workerStake\",\"type\":\"uint256\"},{\"name\":\"schedulerRewardRatio\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"claim\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"finalize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"countCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastAppOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resultFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewPresigned\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewScore\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_MIN\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewContribution\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"resultHash\",\"type\":\"bytes32\"},{\"name\":\"resultSeal\",\"type\":\"bytes32\"},{\"name\":\"enclaveChallenge\",\"type\":\"address\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reopen\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeAndClaimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"}],\"name\":\"claimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reveal\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"apporder\",\"type\":\"tuple\"}],\"name\":\"BroadcastAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"datasetorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"requestorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Reward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Seize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Lock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Unlock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"volume\",\"type\":\"uint256\"}],\"name\":\"OrdersMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"}],\"name\":\"SchedulerNotice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"}],\"name\":\"TaskInitialize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"TaskContribute\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"consensus\",\"type\":\"bytes32\"}],\"name\":\"TaskConsensus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"digest\",\"type\":\"bytes32\"}],\"name\":\"TaskReveal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskReopen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"TaskFinalize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"AccurateContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"FaultyContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":\"IexecStack\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x66915cd76b29c3554f5447927e9f757b5126ac09a2c4ebdad662288ed2cd48da\",\"urls\":[\"bzzr://5d4742936cd68a6c60168bd558b36baf44f23f28b92d38f5d7154825751ab306\",\"dweb:/ipfs/QmVATUDofc5GQUhsb4SGAB97MQRAPb34e6KKeyatwzDYwh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecDelegateBase.sol\":{\"keccak256\":\"0xdfddf9e4b61f152088ddc08c535685c56501a6b2b78c453564f7bde1674f09ce\",\"urls\":[\"bzzr://93cff41add3678efb46380fbc3483ef4d2af701d79154d9a2cb03fb4c9318b43\",\"dweb:/ipfs/Qma5Rvs2mUqH1tZiWXFvda8fhxg1NcEJwkntBRsdGdz29A\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":{\"keccak256\":\"0xa0d3bb7839e76974428ad10a09eb877396609d7daa00d6f97d4d570bb0866ab0\",\"urls\":[\"bzzr://dce50a9fd2830910972efd6646dd2fe3096759e0644a5d5a19596a8d357abb97\",\"dweb:/ipfs/QmdPkctGBsYbUQNtHCgGeR1wAoEmk3U6njksEdsyohL7nJ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0xe803936ec8bc87c1694da338416c26cdd205ee08c9fb708cd84f777cb747cfdc\",\"urls\":[\"bzzr://724a131cc14e33661914046880d0e4141b26fc7c5fd316145ee3e76507734eaf\",\"dweb:/ipfs/QmZnSHnXhtJRPx226xXhpwE6WA1x9x9TtVKE1kqn1Q94EX\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/SignatureVerifier.sol\":{\"keccak256\":\"0x0200f553f02d7efc076539eacf80f32834b604e567305700dae85de501a3b3ac\",\"urls\":[\"bzzr://d53b8f581fc8c421ebc666c43ffe9f4a40a010e07a3cf30ee94b20ccd30cbcae\",\"dweb:/ipfs/QmQMtJtqbvD5T6LfxSVvDDb5RhVmXKb6KX96Yjs7jdZkbC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecAccessors.sol\":{\"keccak256\":\"0xbbf661026aef5fdf4fd87dc9af7209fe734ed8e912ac9882a217756f4ecfc401\",\"urls\":[\"bzzr://3de418e21838f9682612f6bb148ec8bad9cddecfe638ff54630e22a58f9c3d56\",\"dweb:/ipfs/QmZu4c9ukf8Wk1kK2oLzraCWok2Vv9PKmqNjNYApVsRuJn\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0xa746f381cc922d814c52c21ada8fdbfcd3cc8df98953d435ce74e4623999a548\",\"urls\":[\"bzzr://229db6aff22bc51eae6136df0e159f54bc5b4222021b81a9770600f0879d5454\",\"dweb:/ipfs/QmVt8AvbtxtEbXxQcw19JFtHZA2DNNurnKJhGkQc5397Zu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCore.sol\":{\"keccak256\":\"0xe93017ebd7a5fa32f4e5f843f2ecbdb923abfb53bfaa5b3cb045fadcf2db9e64\",\"urls\":[\"bzzr://be2f3d1281444da2e0a3d7cea36ae7447eb6ff484ad84e9d9702892dcfd038d5\",\"dweb:/ipfs/QmXCaNaCfjYPMuYhrGLnnQYnPvCehMGMTBx2kKcRuUmAQD\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol\":{\"keccak256\":\"0xda406e49cdd82555e6273218375383fdf2917e6c619046dc89b3b2762d609c6a\",\"urls\":[\"bzzr://e390dc4bdb65b72c791a19e43ec91044f9f625c0c2032587e15753578d87c748\",\"dweb:/ipfs/QmbMqUJcBJNDyweYmtzj8QnSvmZoVdHVsVL7tJ79YhCMd2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol\":{\"keccak256\":\"0x7db6b1fac79d8528f744c2a8ebf3baa2bbde28ac060a3315482f37c73d2cc698\",\"urls\":[\"bzzr://39792150ee16c494a77709b82b3e16f23482f2c5240b1ccfd9b9682c0139da06\",\"dweb:/ipfs/QmYUrBVPkVREueCdFvs2BVTzSSKDB2KER4drd8dNnxAVoL\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x91cf1d5a92d3fe9496eefce4d0d43a0c38b9e85e1e160cae1f9939fe9d847883\",\"urls\":[\"bzzr://8035ad0105e36de313db1df3026f9a20bd39681384851fba20cf97ddc130e00c\",\"dweb:/ipfs/QmYdtVZ2sfPcRzm8XnHLgbQSuaBXHVEFu3x4rSi9e1RLYP\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x6a753df9f1aa6d23caa3b5b87ca991a15d5cd9e04b92f596a4eada62261709f9\",\"urls\":[\"bzzr://110b0f0b9f53e66defa793467c7bb266a9b280f3dfbe1a637542b3dc7b9af2be\",\"dweb:/ipfs/QmS96gGVxgMFEHe4aYZDHi4GZqiZ32P1NtgAB2nuGEUni2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0x032ff25783de4b582da1dca2ffce83e03e485f770da564bef692e07e6dc93d16\",\"urls\":[\"bzzr://f2809f498bff69d5be559ecb20db255c2bd063f387b608b2ba9a74e80e989b84\",\"dweb:/ipfs/QmTp49YNJsuWnk71GxZXfwyUwgkJdNJwMS7MiJeFbHvRVv\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x9e400abd020df6da9887927f7b7693b142f52325b66b10cddb367e4f260506b1\",\"urls\":[\"bzzr://a6247f0779952a2404109638cf8dadcc37d8c4ad882abc579a3b4783ce599882\",\"dweb:/ipfs/QmZVGYKQyGp7KBiJSgQw8QDWSJEVrQDRjedMsXzqzsR4zj\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xbf44083375c5c4eef9ca8e47824532031d138169d0ec4bb3f4f51516bd5f5a58\",\"urls\":[\"bzzr://5e2210915c6b0c456b853a0fe0eef07ee1f9745f7f5c4148894b1d20ab5207b7\",\"dweb:/ipfs/QmT6ENugbFPe6ArWsj2RJkJUVQytwHMVSLhsNcpuXNy8mA\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0xe0fbe61ee4a4048e43aa622124cbdc1118448ab2f49405fdf3073660ff1e6a36\",\"urls\":[\"bzzr://a84912863c68f4d913e699f1944ba885ca909d182a9a5b41b8419dcd3431c2c4\",\"dweb:/ipfs/QmSYX3rWrM9N49EDNVD1eE7xcb9cTEHc57ZAm76v4GKugZ\"]},\"iexec-solidity/contracts/ERC1271/IERC1271.sol\":{\"keccak256\":\"0x90daa992bd38a335a1e6503b4b815b5aa5315366637dc0cb0b98e7f39096c842\",\"urls\":[\"bzzr://9c88f54779ee800bd2235d96ea251b3c80e45d4c127db93a9a71a8b9235becb2\",\"dweb:/ipfs/QmYUozJfjw7r62NVhfu2p9i9iREcSygNx3pW6YvxpTXx7J\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol\":{\"keccak256\":\"0x46532e2d419a87bf604b354318a19d56a3dc25fa7ad6f94c77bd2aa8ce54a755\",\"urls\":[\"bzzr://8ada95bcec956bdd6e7c4e3ec840e9e13cfc04584668d0df2c00459f94d74541\",\"dweb:/ipfs/QmPMM8Prd6iG2g23gbu3arBiy8F8CiDuEZMJPd99WYpXbf\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"EIP712DOMAIN_SEPARATOR\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrders\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint8\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"frozenOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"string\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256[]\"},{\"name\":\"\",\"type\":\"address[]\"}],\"name\":\"depositForArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"bytes\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contribute\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"increaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"appregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastRequestOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewConsumed\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastDatasetOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"WORKERPOOL_STAKE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"viewCategory\",\"outputs\":[{\"components\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"REVEAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"GROUPMEMBER_PURPOSE\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewAccount\",\"outputs\":[{\"components\":[{\"name\":\"stake\",\"type\":\"uint256\"},{\"name\":\"locked\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signRequestOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"CONTRIBUTION_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelAppOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"workerpoolregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"FINAL_DEADLINE_RATIO\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastWorkerpoolOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_ADDRESS\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"signDatasetOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"decreaseAllowance\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewTask\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"dealid\",\"type\":\"bytes32\"},{\"name\":\"idx\",\"type\":\"uint256\"},{\"name\":\"timeref\",\"type\":\"uint256\"},{\"name\":\"contributionDeadline\",\"type\":\"uint256\"},{\"name\":\"revealDeadline\",\"type\":\"uint256\"},{\"name\":\"finalDeadline\",\"type\":\"uint256\"},{\"name\":\"consensusValue\",\"type\":\"bytes32\"},{\"name\":\"revealCounter\",\"type\":\"uint256\"},{\"name\":\"winnerCounter\",\"type\":\"uint256\"},{\"name\":\"contributors\",\"type\":\"address[]\"},{\"name\":\"resultDigest\",\"type\":\"bytes32\"},{\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"cancelWorkerpoolOrder\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"datasetregistry\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewDeal\",\"outputs\":[{\"components\":[{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"app\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"dataset\",\"type\":\"tuple\"},{\"components\":[{\"name\":\"pointer\",\"type\":\"address\"},{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"workerpool\",\"type\":\"tuple\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"startTime\",\"type\":\"uint256\"},{\"name\":\"botFirst\",\"type\":\"uint256\"},{\"name\":\"botSize\",\"type\":\"uint256\"},{\"name\":\"workerStake\",\"type\":\"uint256\"},{\"name\":\"schedulerRewardRatio\",\"type\":\"uint256\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"claim\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"finalize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"countCategory\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastAppOrder\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resultFor\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewPresigned\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewScore\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"KITTY_MIN\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewContribution\",\"outputs\":[{\"components\":[{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"resultHash\",\"type\":\"bytes32\"},{\"name\":\"resultSeal\",\"type\":\"bytes32\"},{\"name\":\"enclaveChallenge\",\"type\":\"address\"}],\"name\":\"\",\"type\":\"tuple\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reopen\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"},{\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeAndClaimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32[]\"}],\"name\":\"claimArray\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reveal\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"apporder\",\"type\":\"tuple\"}],\"name\":\"BroadcastAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"datasetorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"apprestrict\",\"type\":\"address\"},{\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"name\":\"app\",\"type\":\"address\"},{\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"name\":\"dataset\",\"type\":\"address\"},{\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"name\":\"workerpool\",\"type\":\"address\"},{\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"name\":\"requester\",\"type\":\"address\"},{\"name\":\"volume\",\"type\":\"uint256\"},{\"name\":\"tag\",\"type\":\"bytes32\"},{\"name\":\"category\",\"type\":\"uint256\"},{\"name\":\"trust\",\"type\":\"uint256\"},{\"name\":\"beneficiary\",\"type\":\"address\"},{\"name\":\"callback\",\"type\":\"address\"},{\"name\":\"params\",\"type\":\"string\"},{\"name\":\"salt\",\"type\":\"bytes32\"},{\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"name\":\"requestorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Reward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Seize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Lock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Unlock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"appHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"datasetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"workerpoolHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"requestHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"volume\",\"type\":\"uint256\"}],\"name\":\"OrdersMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"dealid\",\"type\":\"bytes32\"}],\"name\":\"SchedulerNotice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"workerpool\",\"type\":\"address\"}],\"name\":\"TaskInitialize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"TaskContribute\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"consensus\",\"type\":\"bytes32\"}],\"name\":\"TaskConsensus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"digest\",\"type\":\"bytes32\"}],\"name\":\"TaskReveal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskReopen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"TaskFinalize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"AccurateContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"FaultyContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":\"IexecStack\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x66915cd76b29c3554f5447927e9f757b5126ac09a2c4ebdad662288ed2cd48da\",\"urls\":[\"bzzr://5d4742936cd68a6c60168bd558b36baf44f23f28b92d38f5d7154825751ab306\",\"dweb:/ipfs/QmVATUDofc5GQUhsb4SGAB97MQRAPb34e6KKeyatwzDYwh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecDelegateBase.sol\":{\"keccak256\":\"0xdfddf9e4b61f152088ddc08c535685c56501a6b2b78c453564f7bde1674f09ce\",\"urls\":[\"bzzr://93cff41add3678efb46380fbc3483ef4d2af701d79154d9a2cb03fb4c9318b43\",\"dweb:/ipfs/Qma5Rvs2mUqH1tZiWXFvda8fhxg1NcEJwkntBRsdGdz29A\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol\":{\"keccak256\":\"0x0d7bf3f41d68c78514803d951d1dad9a9d4bbc6497246f3d32e69561f7e80fc5\",\"urls\":[\"bzzr://9e4beff498e2381d37202ba8f8829718ea3fab1194762d2c59dfc48ea1bb07b4\",\"dweb:/ipfs/QmNyPh9W4qMXDoBmXCTkmUB63C3Zp3Fejw8oXMxqp5iZAj\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStore.sol\":{\"keccak256\":\"0xe803936ec8bc87c1694da338416c26cdd205ee08c9fb708cd84f777cb747cfdc\",\"urls\":[\"bzzr://724a131cc14e33661914046880d0e4141b26fc7c5fd316145ee3e76507734eaf\",\"dweb:/ipfs/QmZnSHnXhtJRPx226xXhpwE6WA1x9x9TtVKE1kqn1Q94EX\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/SignatureVerifier.sol\":{\"keccak256\":\"0x0200f553f02d7efc076539eacf80f32834b604e567305700dae85de501a3b3ac\",\"urls\":[\"bzzr://d53b8f581fc8c421ebc666c43ffe9f4a40a010e07a3cf30ee94b20ccd30cbcae\",\"dweb:/ipfs/QmQMtJtqbvD5T6LfxSVvDDb5RhVmXKb6KX96Yjs7jdZkbC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecAccessors.sol\":{\"keccak256\":\"0xbbf661026aef5fdf4fd87dc9af7209fe734ed8e912ac9882a217756f4ecfc401\",\"urls\":[\"bzzr://3de418e21838f9682612f6bb148ec8bad9cddecfe638ff54630e22a58f9c3d56\",\"dweb:/ipfs/QmZu4c9ukf8Wk1kK2oLzraCWok2Vv9PKmqNjNYApVsRuJn\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCategoryManager.sol\":{\"keccak256\":\"0xa746f381cc922d814c52c21ada8fdbfcd3cc8df98953d435ce74e4623999a548\",\"urls\":[\"bzzr://229db6aff22bc51eae6136df0e159f54bc5b4222021b81a9770600f0879d5454\",\"dweb:/ipfs/QmVt8AvbtxtEbXxQcw19JFtHZA2DNNurnKJhGkQc5397Zu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecCore.sol\":{\"keccak256\":\"0x378f1095f7cd0c2a8104b075935fc13fbed287d08ebfe60c8214bf8fe6525d0d\",\"urls\":[\"bzzr://680e2337f1f3a0d170fa06c5d92d17e454d2304dc9215df9a03fa09478edc027\",\"dweb:/ipfs/QmT5FQu7qYvRkQaukHhEb9nisVjDR2NEY2VoNNdH1d4rss\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecERC20.sol\":{\"keccak256\":\"0x2bfe2ed44193f8b38f5c32b326b776db81c7c069d71b509cad9bdfad38a1c667\",\"urls\":[\"bzzr://3028dcb2d180a76788c56bece2f8548b9c2102f8037f7e0a94d2525e300dd901\",\"dweb:/ipfs/QmdMrVrcRCM46jbvhCZBn7Krx75f7iPF6YH4W7fFhj1qK7\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecEscrowToken.sol\":{\"keccak256\":\"0x06e6078ce96e552d1ad02a92cd58507da1be756951647e434a47b6513936e1b4\",\"urls\":[\"bzzr://75b4ec93fef13bb6ceaf3ee6eaa5c52b2cdc6151be540a3cd69edd8884069367\",\"dweb:/ipfs/QmYuAozHY9BFZF2mSk1NwgmrU6sJA4mehMCRQ9eMWaHNB9\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol\":{\"keccak256\":\"0xda406e49cdd82555e6273218375383fdf2917e6c619046dc89b3b2762d609c6a\",\"urls\":[\"bzzr://e390dc4bdb65b72c791a19e43ec91044f9f625c0c2032587e15753578d87c748\",\"dweb:/ipfs/QmbMqUJcBJNDyweYmtzj8QnSvmZoVdHVsVL7tJ79YhCMd2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol\":{\"keccak256\":\"0x7db6b1fac79d8528f744c2a8ebf3baa2bbde28ac060a3315482f37c73d2cc698\",\"urls\":[\"bzzr://39792150ee16c494a77709b82b3e16f23482f2c5240b1ccfd9b9682c0139da06\",\"dweb:/ipfs/QmYUrBVPkVREueCdFvs2BVTzSSKDB2KER4drd8dNnxAVoL\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x91cf1d5a92d3fe9496eefce4d0d43a0c38b9e85e1e160cae1f9939fe9d847883\",\"urls\":[\"bzzr://8035ad0105e36de313db1df3026f9a20bd39681384851fba20cf97ddc130e00c\",\"dweb:/ipfs/QmYdtVZ2sfPcRzm8XnHLgbQSuaBXHVEFu3x4rSi9e1RLYP\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0x6a753df9f1aa6d23caa3b5b87ca991a15d5cd9e04b92f596a4eada62261709f9\",\"urls\":[\"bzzr://110b0f0b9f53e66defa793467c7bb266a9b280f3dfbe1a637542b3dc7b9af2be\",\"dweb:/ipfs/QmS96gGVxgMFEHe4aYZDHi4GZqiZ32P1NtgAB2nuGEUni2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol\":{\"keccak256\":\"0x032ff25783de4b582da1dca2ffce83e03e485f770da564bef692e07e6dc93d16\",\"urls\":[\"bzzr://f2809f498bff69d5be559ecb20db255c2bd063f387b608b2ba9a74e80e989b84\",\"dweb:/ipfs/QmTp49YNJsuWnk71GxZXfwyUwgkJdNJwMS7MiJeFbHvRVv\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol\":{\"keccak256\":\"0x9e400abd020df6da9887927f7b7693b142f52325b66b10cddb367e4f260506b1\",\"urls\":[\"bzzr://a6247f0779952a2404109638cf8dadcc37d8c4ad882abc579a3b4783ce599882\",\"dweb:/ipfs/QmZVGYKQyGp7KBiJSgQw8QDWSJEVrQDRjedMsXzqzsR4zj\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol\":{\"keccak256\":\"0xbf44083375c5c4eef9ca8e47824532031d138169d0ec4bb3f4f51516bd5f5a58\",\"urls\":[\"bzzr://5e2210915c6b0c456b853a0fe0eef07ee1f9745f7f5c4148894b1d20ab5207b7\",\"dweb:/ipfs/QmT6ENugbFPe6ArWsj2RJkJUVQytwHMVSLhsNcpuXNy8mA\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol\":{\"keccak256\":\"0xe0fbe61ee4a4048e43aa622124cbdc1118448ab2f49405fdf3073660ff1e6a36\",\"urls\":[\"bzzr://a84912863c68f4d913e699f1944ba885ca909d182a9a5b41b8419dcd3431c2c4\",\"dweb:/ipfs/QmSYX3rWrM9N49EDNVD1eE7xcb9cTEHc57ZAm76v4GKugZ\"]},\"iexec-solidity/contracts/ERC1271/IERC1271.sol\":{\"keccak256\":\"0x90daa992bd38a335a1e6503b4b815b5aa5315366637dc0cb0b98e7f39096c842\",\"urls\":[\"bzzr://9c88f54779ee800bd2235d96ea251b3c80e45d4c127db93a9a71a8b9235becb2\",\"dweb:/ipfs/QmYUozJfjw7r62NVhfu2p9i9iREcSygNx3pW6YvxpTXx7J\"]},\"iexec-solidity/contracts/ERC20_Token/IERC20.sol\":{\"keccak256\":\"0xf860a0cc0323b30b0421d82abe8d42b03199a70134db66b52306ad560169bf45\",\"urls\":[\"bzzr://8d59715dd78851719797c199ad64d8dda451be490fdd3489bc764bf33a925412\",\"dweb:/ipfs/QmSYtjtMSwRKE88mZB4wH2YXK7kc2jhju6Le1vmpjoyQ6M\"]},\"iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol\":{\"keccak256\":\"0x46532e2d419a87bf604b354318a19d56a3dc25fa7ad6f94c77bd2aa8ce54a755\",\"urls\":[\"bzzr://8ada95bcec956bdd6e7c4e3ec840e9e13cfc04584668d0df2c00459f94d74541\",\"dweb:/ipfs/QmPMM8Prd6iG2g23gbu3arBiy8F8CiDuEZMJPd99WYpXbf\"]},\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.10;\npragma experimental ABIEncoderV2;\n\nimport \"./IexecStore.sol\";\nimport \"./delegates/IexecAccessors.sol\";\nimport \"./delegates/IexecCategoryManager.sol\";\nimport \"./delegates/IexecCore.sol\";\nimport \"./delegates/IexecOrderSignature.sol\";\nimport \"./delegates/IexecRelay.sol\";\n\ncontract IexecStack is IexecStore, IexecAccessors, IexecCategoryManager, IexecCore, IexecOrderSignature, IexecRelay\n{}\n",
+  "source": "pragma solidity ^0.5.10;\npragma experimental ABIEncoderV2;\n\nimport \"./IexecStore.sol\";\nimport \"./delegates/IexecAccessors.sol\";\nimport \"./delegates/IexecCategoryManager.sol\";\nimport \"./delegates/IexecCore.sol\";\nimport \"./delegates/IexecERC20.sol\";\n// import \"./delegates/IexecEscrowNative.sol\";\nimport \"./delegates/IexecEscrowToken.sol\";\nimport \"./delegates/IexecOrderSignature.sol\";\nimport \"./delegates/IexecRelay.sol\";\n\ncontract IexecStack is IexecStore, IexecAccessors, IexecCategoryManager, IexecCore, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecRelay\n{}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
     "exportedSymbols": {
       "IexecStack": [
-        1036
+        1042
       ]
     },
-    "id": 1037,
+    "id": 1043,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -2933,8 +2933,8 @@
         "file": "./IexecStore.sol",
         "id": 1018,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 1626,
+        "scope": 1043,
+        "sourceUnit": 1632,
         "src": "60:26:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2944,8 +2944,8 @@
         "file": "./delegates/IexecAccessors.sol",
         "id": 1019,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 2543,
+        "scope": 1043,
+        "sourceUnit": 2129,
         "src": "87:40:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2955,8 +2955,8 @@
         "file": "./delegates/IexecCategoryManager.sol",
         "id": 1020,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 2611,
+        "scope": 1043,
+        "sourceUnit": 2617,
         "src": "128:46:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2966,31 +2966,53 @@
         "file": "./delegates/IexecCore.sol",
         "id": 1021,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6157,
+        "scope": 1043,
+        "sourceUnit": 5605,
         "src": "175:35:5",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecERC20.sol",
+        "file": "./delegates/IexecERC20.sol",
+        "id": 1022,
+        "nodeType": "ImportDirective",
+        "scope": 1043,
+        "sourceUnit": 6013,
+        "src": "211:36:5",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecEscrowToken.sol",
+        "file": "./delegates/IexecEscrowToken.sol",
+        "id": 1023,
+        "nodeType": "ImportDirective",
+        "scope": 1043,
+        "sourceUnit": 6389,
+        "src": "295:42:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol",
         "file": "./delegates/IexecOrderSignature.sol",
-        "id": 1022,
+        "id": 1024,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6546,
-        "src": "211:45:5",
+        "scope": 1043,
+        "sourceUnit": 6778,
+        "src": "338:45:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
         "file": "./delegates/IexecRelay.sol",
-        "id": 1023,
+        "id": 1025,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6632,
-        "src": "257:36:5",
+        "scope": 1043,
+        "sourceUnit": 6864,
+        "src": "384:36:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -3000,153 +3022,193 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1024,
+              "id": 1026,
               "name": "IexecStore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1625,
-              "src": "318:10:5",
+              "referencedDeclaration": 1631,
+              "src": "445:10:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecStore_$1625",
+                "typeIdentifier": "t_contract$_IexecStore_$1631",
                 "typeString": "contract IexecStore"
-              }
-            },
-            "id": 1025,
-            "nodeType": "InheritanceSpecifier",
-            "src": "318:10:5"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1026,
-              "name": "IexecAccessors",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2312,
-              "src": "330:14:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessors_$2312",
-                "typeString": "contract IexecAccessors"
               }
             },
             "id": 1027,
             "nodeType": "InheritanceSpecifier",
-            "src": "330:14:5"
+            "src": "445:10:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1028,
-              "name": "IexecCategoryManager",
+              "name": "IexecAccessors",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2568,
-              "src": "346:20:5",
+              "referencedDeclaration": 1898,
+              "src": "457:14:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$2568",
-                "typeString": "contract IexecCategoryManager"
+                "typeIdentifier": "t_contract$_IexecAccessors_$1898",
+                "typeString": "contract IexecAccessors"
               }
             },
             "id": 1029,
             "nodeType": "InheritanceSpecifier",
-            "src": "346:20:5"
+            "src": "457:14:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1030,
-              "name": "IexecCore",
+              "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2942,
-              "src": "368:9:5",
+              "referencedDeclaration": 2574,
+              "src": "473:20:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCore_$2942",
-                "typeString": "contract IexecCore"
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$2574",
+                "typeString": "contract IexecCategoryManager"
               }
             },
             "id": 1031,
             "nodeType": "InheritanceSpecifier",
-            "src": "368:9:5"
+            "src": "473:20:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1032,
-              "name": "IexecOrderSignature",
+              "name": "IexecCore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6233,
-              "src": "379:19:5",
+              "referencedDeclaration": 2852,
+              "src": "495:9:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecOrderSignature_$6233",
-                "typeString": "contract IexecOrderSignature"
+                "typeIdentifier": "t_contract$_IexecCore_$2852",
+                "typeString": "contract IexecCore"
               }
             },
             "id": 1033,
             "nodeType": "InheritanceSpecifier",
-            "src": "379:19:5"
+            "src": "495:9:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1034,
-              "name": "IexecRelay",
+              "name": "IexecERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6586,
-              "src": "400:10:5",
+              "referencedDeclaration": 5672,
+              "src": "506:10:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$6586",
-                "typeString": "contract IexecRelay"
+                "typeIdentifier": "t_contract$_IexecERC20_$5672",
+                "typeString": "contract IexecERC20"
               }
             },
             "id": 1035,
             "nodeType": "InheritanceSpecifier",
-            "src": "400:10:5"
+            "src": "506:10:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1036,
+              "name": "IexecEscrowToken",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6228,
+              "src": "518:16:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecEscrowToken_$6228",
+                "typeString": "contract IexecEscrowToken"
+              }
+            },
+            "id": 1037,
+            "nodeType": "InheritanceSpecifier",
+            "src": "518:16:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1038,
+              "name": "IexecOrderSignature",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6465,
+              "src": "536:19:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecOrderSignature_$6465",
+                "typeString": "contract IexecOrderSignature"
+              }
+            },
+            "id": 1039,
+            "nodeType": "InheritanceSpecifier",
+            "src": "536:19:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1040,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6818,
+              "src": "557:10:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$6818",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 1041,
+            "nodeType": "InheritanceSpecifier",
+            "src": "557:10:5"
           }
         ],
         "contractDependencies": [
           1001,
-          1625,
-          2312,
-          2568,
-          2942,
-          6233,
-          6586,
-          8099
+          1631,
+          1898,
+          2574,
+          2852,
+          5672,
+          6228,
+          6465,
+          6818,
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1036,
+        "id": 1042,
         "linearizedBaseContracts": [
-          1036,
-          6586,
-          6233,
-          2942,
-          2568,
-          2312,
-          1625,
+          1042,
+          6818,
+          6465,
+          6228,
+          5672,
+          2852,
+          2574,
+          1898,
+          1631,
           1001,
-          8099
+          8331
         ],
         "name": "IexecStack",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 1037,
-        "src": "295:118:5"
+        "scope": 1043,
+        "src": "422:148:5"
       }
     ],
-    "src": "0:414:5"
+    "src": "0:571:5"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecStack.sol",
     "exportedSymbols": {
       "IexecStack": [
-        1036
+        1042
       ]
     },
-    "id": 1037,
+    "id": 1043,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -3174,8 +3236,8 @@
         "file": "./IexecStore.sol",
         "id": 1018,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 1626,
+        "scope": 1043,
+        "sourceUnit": 1632,
         "src": "60:26:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3185,8 +3247,8 @@
         "file": "./delegates/IexecAccessors.sol",
         "id": 1019,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 2543,
+        "scope": 1043,
+        "sourceUnit": 2129,
         "src": "87:40:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3196,8 +3258,8 @@
         "file": "./delegates/IexecCategoryManager.sol",
         "id": 1020,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 2611,
+        "scope": 1043,
+        "sourceUnit": 2617,
         "src": "128:46:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3207,31 +3269,53 @@
         "file": "./delegates/IexecCore.sol",
         "id": 1021,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6157,
+        "scope": 1043,
+        "sourceUnit": 5605,
         "src": "175:35:5",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecERC20.sol",
+        "file": "./delegates/IexecERC20.sol",
+        "id": 1022,
+        "nodeType": "ImportDirective",
+        "scope": 1043,
+        "sourceUnit": 6013,
+        "src": "211:36:5",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecEscrowToken.sol",
+        "file": "./delegates/IexecEscrowToken.sol",
+        "id": 1023,
+        "nodeType": "ImportDirective",
+        "scope": 1043,
+        "sourceUnit": 6389,
+        "src": "295:42:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecOrderSignature.sol",
         "file": "./delegates/IexecOrderSignature.sol",
-        "id": 1022,
+        "id": 1024,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6546,
-        "src": "211:45:5",
+        "scope": 1043,
+        "sourceUnit": 6778,
+        "src": "338:45:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
         "file": "./delegates/IexecRelay.sol",
-        "id": 1023,
+        "id": 1025,
         "nodeType": "ImportDirective",
-        "scope": 1037,
-        "sourceUnit": 6632,
-        "src": "257:36:5",
+        "scope": 1043,
+        "sourceUnit": 6864,
+        "src": "384:36:5",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -3241,144 +3325,184 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1024,
+              "id": 1026,
               "name": "IexecStore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1625,
-              "src": "318:10:5",
+              "referencedDeclaration": 1631,
+              "src": "445:10:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecStore_$1625",
+                "typeIdentifier": "t_contract$_IexecStore_$1631",
                 "typeString": "contract IexecStore"
-              }
-            },
-            "id": 1025,
-            "nodeType": "InheritanceSpecifier",
-            "src": "318:10:5"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 1026,
-              "name": "IexecAccessors",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2312,
-              "src": "330:14:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessors_$2312",
-                "typeString": "contract IexecAccessors"
               }
             },
             "id": 1027,
             "nodeType": "InheritanceSpecifier",
-            "src": "330:14:5"
+            "src": "445:10:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1028,
-              "name": "IexecCategoryManager",
+              "name": "IexecAccessors",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2568,
-              "src": "346:20:5",
+              "referencedDeclaration": 1898,
+              "src": "457:14:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$2568",
-                "typeString": "contract IexecCategoryManager"
+                "typeIdentifier": "t_contract$_IexecAccessors_$1898",
+                "typeString": "contract IexecAccessors"
               }
             },
             "id": 1029,
             "nodeType": "InheritanceSpecifier",
-            "src": "346:20:5"
+            "src": "457:14:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1030,
-              "name": "IexecCore",
+              "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2942,
-              "src": "368:9:5",
+              "referencedDeclaration": 2574,
+              "src": "473:20:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCore_$2942",
-                "typeString": "contract IexecCore"
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$2574",
+                "typeString": "contract IexecCategoryManager"
               }
             },
             "id": 1031,
             "nodeType": "InheritanceSpecifier",
-            "src": "368:9:5"
+            "src": "473:20:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1032,
-              "name": "IexecOrderSignature",
+              "name": "IexecCore",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6233,
-              "src": "379:19:5",
+              "referencedDeclaration": 2852,
+              "src": "495:9:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecOrderSignature_$6233",
-                "typeString": "contract IexecOrderSignature"
+                "typeIdentifier": "t_contract$_IexecCore_$2852",
+                "typeString": "contract IexecCore"
               }
             },
             "id": 1033,
             "nodeType": "InheritanceSpecifier",
-            "src": "379:19:5"
+            "src": "495:9:5"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 1034,
-              "name": "IexecRelay",
+              "name": "IexecERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6586,
-              "src": "400:10:5",
+              "referencedDeclaration": 5672,
+              "src": "506:10:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$6586",
-                "typeString": "contract IexecRelay"
+                "typeIdentifier": "t_contract$_IexecERC20_$5672",
+                "typeString": "contract IexecERC20"
               }
             },
             "id": 1035,
             "nodeType": "InheritanceSpecifier",
-            "src": "400:10:5"
+            "src": "506:10:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1036,
+              "name": "IexecEscrowToken",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6228,
+              "src": "518:16:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecEscrowToken_$6228",
+                "typeString": "contract IexecEscrowToken"
+              }
+            },
+            "id": 1037,
+            "nodeType": "InheritanceSpecifier",
+            "src": "518:16:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1038,
+              "name": "IexecOrderSignature",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6465,
+              "src": "536:19:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecOrderSignature_$6465",
+                "typeString": "contract IexecOrderSignature"
+              }
+            },
+            "id": 1039,
+            "nodeType": "InheritanceSpecifier",
+            "src": "536:19:5"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1040,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6818,
+              "src": "557:10:5",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$6818",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 1041,
+            "nodeType": "InheritanceSpecifier",
+            "src": "557:10:5"
           }
         ],
         "contractDependencies": [
           1001,
-          1625,
-          2312,
-          2568,
-          2942,
-          6233,
-          6586,
-          8099
+          1631,
+          1898,
+          2574,
+          2852,
+          5672,
+          6228,
+          6465,
+          6818,
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 1036,
+        "id": 1042,
         "linearizedBaseContracts": [
-          1036,
-          6586,
-          6233,
-          2942,
-          2568,
-          2312,
-          1625,
+          1042,
+          6818,
+          6465,
+          6228,
+          5672,
+          2852,
+          2574,
+          1898,
+          1631,
           1001,
-          8099
+          8331
         ],
         "name": "IexecStack",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 1037,
-        "src": "295:118:5"
+        "scope": 1043,
+        "src": "422:148:5"
       }
     ],
-    "src": "0:414:5"
+    "src": "0:571:5"
   },
   "compiler": {
     "name": "solc",
@@ -3386,7 +3510,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T20:17:56.520Z",
+  "updatedAt": "2019-06-27T08:17:24.463Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

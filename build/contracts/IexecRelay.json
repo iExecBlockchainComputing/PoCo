@@ -493,17 +493,17 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        6586
+        6818
       ],
       "IexecRelayDelegate": [
-        6631
+        6863
       ]
     },
-    "id": 6632,
+    "id": 6864,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6547,
+        "id": 6779,
         "literals": [
           "solidity",
           "^",
@@ -511,25 +511,25 @@
           ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:14"
+        "src": "0:24:17"
       },
       {
-        "id": 6548,
+        "id": 6780,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "25:33:14"
+        "src": "25:33:17"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecDelegateBase.sol",
         "file": "../IexecDelegateBase.sol",
-        "id": 6549,
+        "id": 6781,
         "nodeType": "ImportDirective",
-        "scope": 6632,
+        "scope": 6864,
         "sourceUnit": 1015,
-        "src": "60:34:14",
+        "src": "60:34:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -539,9 +539,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6586,
+        "id": 6818,
         "linearizedBaseContracts": [
-          6586
+          6818
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -549,36 +549,36 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6553,
+            "id": 6785,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6552,
+              "id": 6784,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6551,
+                  "id": 6783,
                   "indexed": false,
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6553,
-                  "src": "152:42:14",
+                  "scope": 6785,
+                  "src": "152:42:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_memory_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6550,
+                    "id": 6782,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "152:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "152:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -586,43 +586,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "151:51:14"
+              "src": "151:51:17"
             },
-            "src": "121:82:14"
+            "src": "121:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6557,
+            "id": 6789,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6556,
+              "id": 6788,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6555,
+                  "id": 6787,
                   "indexed": false,
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6557,
-                  "src": "236:46:14",
+                  "scope": 6789,
+                  "src": "236:46:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_memory_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6554,
+                    "id": 6786,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "236:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "236:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -630,43 +630,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "235:51:14"
+              "src": "235:51:17"
             },
-            "src": "205:82:14"
+            "src": "205:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6561,
+            "id": 6793,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6560,
+              "id": 6792,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6559,
+                  "id": 6791,
                   "indexed": false,
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6561,
-                  "src": "320:49:14",
+                  "scope": 6793,
+                  "src": "320:49:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_memory_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6558,
+                    "id": 6790,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "320:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "320:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -674,43 +674,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "319:51:14"
+              "src": "319:51:17"
             },
-            "src": "289:82:14"
+            "src": "289:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6565,
+            "id": 6797,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6564,
+              "id": 6796,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6563,
+                  "id": 6795,
                   "indexed": false,
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6565,
-                  "src": "404:46:14",
+                  "scope": 6797,
+                  "src": "404:46:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_memory_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6562,
+                    "id": 6794,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "404:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "404:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -718,45 +718,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "403:51:14"
+              "src": "403:51:17"
             },
-            "src": "373:82:14"
+            "src": "373:82:17"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 6570,
+            "id": 6802,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastAppOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6568,
+              "id": 6800,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6567,
+                  "id": 6799,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6570,
-                  "src": "492:42:14",
+                  "scope": 6802,
+                  "src": "492:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6566,
+                    "id": 6798,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "492:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "492:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -764,16 +764,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "491:44:14"
+              "src": "491:44:17"
             },
             "returnParameters": {
-              "id": 6569,
+              "id": 6801,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "544:0:14"
+              "src": "544:0:17"
             },
-            "scope": 6586,
-            "src": "458:87:14",
+            "scope": 6818,
+            "src": "458:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -781,38 +781,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6575,
+            "id": 6807,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastDatasetOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6573,
+              "id": 6805,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6572,
+                  "id": 6804,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6575,
-                  "src": "581:42:14",
+                  "scope": 6807,
+                  "src": "581:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6571,
+                    "id": 6803,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "581:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "581:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -820,16 +820,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "580:44:14"
+              "src": "580:44:17"
             },
             "returnParameters": {
-              "id": 6574,
+              "id": 6806,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "633:0:14"
+              "src": "633:0:17"
             },
-            "scope": 6586,
-            "src": "547:87:14",
+            "scope": 6818,
+            "src": "547:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -837,38 +837,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6580,
+            "id": 6812,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastWorkerpoolOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6578,
+              "id": 6810,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6577,
+                  "id": 6809,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6580,
-                  "src": "670:42:14",
+                  "scope": 6812,
+                  "src": "670:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6576,
+                    "id": 6808,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "670:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "670:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -876,16 +876,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "669:44:14"
+              "src": "669:44:17"
             },
             "returnParameters": {
-              "id": 6579,
+              "id": 6811,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "722:0:14"
+              "src": "722:0:17"
             },
-            "scope": 6586,
-            "src": "636:87:14",
+            "scope": 6818,
+            "src": "636:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -893,38 +893,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6585,
+            "id": 6817,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastRequestOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6583,
+              "id": 6815,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6582,
+                  "id": 6814,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6585,
-                  "src": "759:42:14",
+                  "scope": 6817,
+                  "src": "759:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6581,
+                    "id": 6813,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "759:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "759:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -932,23 +932,23 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "758:44:14"
+              "src": "758:44:17"
             },
             "returnParameters": {
-              "id": 6584,
+              "id": 6816,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "811:0:14"
+              "src": "811:0:17"
             },
-            "scope": 6586,
-            "src": "725:87:14",
+            "scope": 6818,
+            "src": "725:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6632,
-        "src": "97:717:14"
+        "scope": 6864,
+        "src": "97:717:17"
       },
       {
         "baseContracts": [
@@ -956,66 +956,66 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6587,
+              "id": 6819,
               "name": "IexecRelay",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6586,
-              "src": "847:10:14",
+              "referencedDeclaration": 6818,
+              "src": "847:10:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$6586",
+                "typeIdentifier": "t_contract$_IexecRelay_$6818",
                 "typeString": "contract IexecRelay"
               }
             },
-            "id": 6588,
+            "id": 6820,
             "nodeType": "InheritanceSpecifier",
-            "src": "847:10:14"
+            "src": "847:10:17"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6589,
+              "id": 6821,
               "name": "IexecDelegateBase",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 1014,
-              "src": "859:17:14",
+              "src": "859:17:17",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IexecDelegateBase_$1014",
                 "typeString": "contract IexecDelegateBase"
               }
             },
-            "id": 6590,
+            "id": 6822,
             "nodeType": "InheritanceSpecifier",
-            "src": "859:17:14"
+            "src": "859:17:17"
           }
         ],
         "contractDependencies": [
           1001,
           1014,
-          1625,
-          6586,
-          8099
+          1631,
+          6818,
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6631,
+        "id": 6863,
         "linearizedBaseContracts": [
-          6631,
+          6863,
           1014,
-          1625,
+          1631,
           1001,
-          8099,
-          6586
+          8331,
+          6818
         ],
         "name": "IexecRelayDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6599,
+              "id": 6831,
               "nodeType": "Block",
-              "src": "984:52:14",
+              "src": "984:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -1023,14 +1023,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6596,
+                        "id": 6828,
                         "name": "_apporder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6592,
-                        "src": "1016:9:14",
+                        "referencedDeclaration": 6824,
+                        "src": "1016:9:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                          "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.AppOrder calldata"
                         }
                       }
@@ -1038,22 +1038,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                          "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.AppOrder calldata"
                         }
                       ],
-                      "id": 6595,
+                      "id": 6827,
                       "name": "BroadcastAppOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6553,
-                      "src": "991:17:14",
+                      "referencedDeclaration": 6785,
+                      "src": "991:17:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_AppOrder_$6778_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_AppOrder_$7010_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.AppOrder memory)"
                       }
                     },
-                    "id": 6597,
+                    "id": 6829,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1061,51 +1061,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "991:42:14",
+                    "src": "991:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6598,
+                  "id": 6830,
                   "nodeType": "EmitStatement",
-                  "src": "986:47:14"
+                  "src": "986:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6600,
+            "id": 6832,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastAppOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6593,
+              "id": 6825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6592,
+                  "id": 6824,
                   "name": "_apporder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6600,
-                  "src": "914:52:14",
+                  "scope": 6832,
+                  "src": "914:52:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6591,
+                    "id": 6823,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "914:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "914:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -1113,25 +1113,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "913:61:14"
+              "src": "913:61:17"
             },
             "returnParameters": {
-              "id": 6594,
+              "id": 6826,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "984:0:14"
+              "src": "984:0:17"
             },
-            "scope": 6631,
-            "src": "880:156:14",
+            "scope": 6863,
+            "src": "880:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6570,
+            "superFunction": 6802,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6609,
+              "id": 6841,
               "nodeType": "Block",
-              "src": "1142:52:14",
+              "src": "1142:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -1139,14 +1139,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6606,
+                        "id": 6838,
                         "name": "_datasetorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6602,
-                        "src": "1174:13:14",
+                        "referencedDeclaration": 6834,
+                        "src": "1174:13:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                          "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.DatasetOrder calldata"
                         }
                       }
@@ -1154,22 +1154,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                          "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.DatasetOrder calldata"
                         }
                       ],
-                      "id": 6605,
+                      "id": 6837,
                       "name": "BroadcastDatasetOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6557,
-                      "src": "1149:21:14",
+                      "referencedDeclaration": 6789,
+                      "src": "1149:21:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_DatasetOrder_$6797_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_DatasetOrder_$7029_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.DatasetOrder memory)"
                       }
                     },
-                    "id": 6607,
+                    "id": 6839,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1177,51 +1177,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1149:42:14",
+                    "src": "1149:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6608,
+                  "id": 6840,
                   "nodeType": "EmitStatement",
-                  "src": "1144:47:14"
+                  "src": "1144:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6610,
+            "id": 6842,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastDatasetOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6603,
+              "id": 6835,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6602,
+                  "id": 6834,
                   "name": "_datasetorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6610,
-                  "src": "1072:56:14",
+                  "scope": 6842,
+                  "src": "1072:56:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6601,
+                    "id": 6833,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "1072:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "1072:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -1229,25 +1229,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1071:61:14"
+              "src": "1071:61:17"
             },
             "returnParameters": {
-              "id": 6604,
+              "id": 6836,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1142:0:14"
+              "src": "1142:0:17"
             },
-            "scope": 6631,
-            "src": "1038:156:14",
+            "scope": 6863,
+            "src": "1038:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6575,
+            "superFunction": 6807,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6619,
+              "id": 6851,
               "nodeType": "Block",
-              "src": "1300:52:14",
+              "src": "1300:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -1255,14 +1255,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6616,
+                        "id": 6848,
                         "name": "_workerpoolorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6612,
-                        "src": "1332:16:14",
+                        "referencedDeclaration": 6844,
+                        "src": "1332:16:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.WorkerpoolOrder calldata"
                         }
                       }
@@ -1270,22 +1270,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.WorkerpoolOrder calldata"
                         }
                       ],
-                      "id": 6615,
+                      "id": 6847,
                       "name": "BroadcastWorkerpoolOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6561,
-                      "src": "1307:24:14",
+                      "referencedDeclaration": 6793,
+                      "src": "1307:24:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_WorkerpoolOrder_$6820_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_WorkerpoolOrder_$7052_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.WorkerpoolOrder memory)"
                       }
                     },
-                    "id": 6617,
+                    "id": 6849,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1293,51 +1293,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1307:42:14",
+                    "src": "1307:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6618,
+                  "id": 6850,
                   "nodeType": "EmitStatement",
-                  "src": "1302:47:14"
+                  "src": "1302:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6620,
+            "id": 6852,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastWorkerpoolOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6613,
+              "id": 6845,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6612,
+                  "id": 6844,
                   "name": "_workerpoolorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6620,
-                  "src": "1230:59:14",
+                  "scope": 6852,
+                  "src": "1230:59:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6611,
+                    "id": 6843,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "1230:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "1230:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -1345,25 +1345,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1229:61:14"
+              "src": "1229:61:17"
             },
             "returnParameters": {
-              "id": 6614,
+              "id": 6846,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1300:0:14"
+              "src": "1300:0:17"
             },
-            "scope": 6631,
-            "src": "1196:156:14",
+            "scope": 6863,
+            "src": "1196:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6580,
+            "superFunction": 6812,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6629,
+              "id": 6861,
               "nodeType": "Block",
-              "src": "1458:52:14",
+              "src": "1458:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -1371,14 +1371,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6626,
+                        "id": 6858,
                         "name": "_requestorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6622,
-                        "src": "1490:13:14",
+                        "referencedDeclaration": 6854,
+                        "src": "1490:13:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                          "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.RequestOrder calldata"
                         }
                       }
@@ -1386,22 +1386,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                          "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.RequestOrder calldata"
                         }
                       ],
-                      "id": 6625,
+                      "id": 6857,
                       "name": "BroadcastRequestOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6565,
-                      "src": "1465:21:14",
+                      "referencedDeclaration": 6797,
+                      "src": "1465:21:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_RequestOrder_$6853_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_RequestOrder_$7085_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.RequestOrder memory)"
                       }
                     },
-                    "id": 6627,
+                    "id": 6859,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1409,51 +1409,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1465:42:14",
+                    "src": "1465:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6628,
+                  "id": 6860,
                   "nodeType": "EmitStatement",
-                  "src": "1460:47:14"
+                  "src": "1460:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6630,
+            "id": 6862,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastRequestOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6623,
+              "id": 6855,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6622,
+                  "id": 6854,
                   "name": "_requestorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6630,
-                  "src": "1388:56:14",
+                  "scope": 6862,
+                  "src": "1388:56:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6621,
+                    "id": 6853,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "1388:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "1388:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -1461,42 +1461,42 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1387:61:14"
+              "src": "1387:61:17"
             },
             "returnParameters": {
-              "id": 6624,
+              "id": 6856,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1458:0:14"
+              "src": "1458:0:17"
             },
-            "scope": 6631,
-            "src": "1354:156:14",
+            "scope": 6863,
+            "src": "1354:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6585,
+            "superFunction": 6817,
             "visibility": "external"
           }
         ],
-        "scope": 6632,
-        "src": "816:696:14"
+        "scope": 6864,
+        "src": "816:696:17"
       }
     ],
-    "src": "0:1513:14"
+    "src": "0:1513:17"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/delegates/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        6586
+        6818
       ],
       "IexecRelayDelegate": [
-        6631
+        6863
       ]
     },
-    "id": 6632,
+    "id": 6864,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6547,
+        "id": 6779,
         "literals": [
           "solidity",
           "^",
@@ -1504,25 +1504,25 @@
           ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:14"
+        "src": "0:24:17"
       },
       {
-        "id": 6548,
+        "id": 6780,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "25:33:14"
+        "src": "25:33:17"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecDelegateBase.sol",
         "file": "../IexecDelegateBase.sol",
-        "id": 6549,
+        "id": 6781,
         "nodeType": "ImportDirective",
-        "scope": 6632,
+        "scope": 6864,
         "sourceUnit": 1015,
-        "src": "60:34:14",
+        "src": "60:34:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1532,9 +1532,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6586,
+        "id": 6818,
         "linearizedBaseContracts": [
-          6586
+          6818
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -1542,36 +1542,36 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6553,
+            "id": 6785,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6552,
+              "id": 6784,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6551,
+                  "id": 6783,
                   "indexed": false,
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6553,
-                  "src": "152:42:14",
+                  "scope": 6785,
+                  "src": "152:42:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_memory_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6550,
+                    "id": 6782,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "152:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "152:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -1579,43 +1579,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "151:51:14"
+              "src": "151:51:17"
             },
-            "src": "121:82:14"
+            "src": "121:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6557,
+            "id": 6789,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6556,
+              "id": 6788,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6555,
+                  "id": 6787,
                   "indexed": false,
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6557,
-                  "src": "236:46:14",
+                  "scope": 6789,
+                  "src": "236:46:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_memory_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6554,
+                    "id": 6786,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "236:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "236:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -1623,43 +1623,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "235:51:14"
+              "src": "235:51:17"
             },
-            "src": "205:82:14"
+            "src": "205:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6561,
+            "id": 6793,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6560,
+              "id": 6792,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6559,
+                  "id": 6791,
                   "indexed": false,
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6561,
-                  "src": "320:49:14",
+                  "scope": 6793,
+                  "src": "320:49:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_memory_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6558,
+                    "id": 6790,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "320:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "320:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -1667,43 +1667,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "319:51:14"
+              "src": "319:51:17"
             },
-            "src": "289:82:14"
+            "src": "289:82:17"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6565,
+            "id": 6797,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6564,
+              "id": 6796,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6563,
+                  "id": 6795,
                   "indexed": false,
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6565,
-                  "src": "404:46:14",
+                  "scope": 6797,
+                  "src": "404:46:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_memory_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_memory_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6562,
+                    "id": 6794,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "404:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "404:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -1711,45 +1711,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "403:51:14"
+              "src": "403:51:17"
             },
-            "src": "373:82:14"
+            "src": "373:82:17"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 6570,
+            "id": 6802,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastAppOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6568,
+              "id": 6800,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6567,
+                  "id": 6799,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6570,
-                  "src": "492:42:14",
+                  "scope": 6802,
+                  "src": "492:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6566,
+                    "id": 6798,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "492:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "492:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -1757,16 +1757,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "491:44:14"
+              "src": "491:44:17"
             },
             "returnParameters": {
-              "id": 6569,
+              "id": 6801,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "544:0:14"
+              "src": "544:0:17"
             },
-            "scope": 6586,
-            "src": "458:87:14",
+            "scope": 6818,
+            "src": "458:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1774,38 +1774,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6575,
+            "id": 6807,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastDatasetOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6573,
+              "id": 6805,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6572,
+                  "id": 6804,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6575,
-                  "src": "581:42:14",
+                  "scope": 6807,
+                  "src": "581:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6571,
+                    "id": 6803,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "581:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "581:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -1813,16 +1813,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "580:44:14"
+              "src": "580:44:17"
             },
             "returnParameters": {
-              "id": 6574,
+              "id": 6806,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "633:0:14"
+              "src": "633:0:17"
             },
-            "scope": 6586,
-            "src": "547:87:14",
+            "scope": 6818,
+            "src": "547:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1830,38 +1830,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6580,
+            "id": 6812,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastWorkerpoolOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6578,
+              "id": 6810,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6577,
+                  "id": 6809,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6580,
-                  "src": "670:42:14",
+                  "scope": 6812,
+                  "src": "670:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6576,
+                    "id": 6808,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "670:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "670:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -1869,16 +1869,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "669:44:14"
+              "src": "669:44:17"
             },
             "returnParameters": {
-              "id": 6579,
+              "id": 6811,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "722:0:14"
+              "src": "722:0:17"
             },
-            "scope": 6586,
-            "src": "636:87:14",
+            "scope": 6818,
+            "src": "636:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1886,38 +1886,38 @@
           {
             "body": null,
             "documentation": null,
-            "id": 6585,
+            "id": 6817,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastRequestOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6583,
+              "id": 6815,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6582,
+                  "id": 6814,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6585,
-                  "src": "759:42:14",
+                  "scope": 6817,
+                  "src": "759:42:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6581,
+                    "id": 6813,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "759:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "759:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -1925,23 +1925,23 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "758:44:14"
+              "src": "758:44:17"
             },
             "returnParameters": {
-              "id": 6584,
+              "id": 6816,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "811:0:14"
+              "src": "811:0:17"
             },
-            "scope": 6586,
-            "src": "725:87:14",
+            "scope": 6818,
+            "src": "725:87:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6632,
-        "src": "97:717:14"
+        "scope": 6864,
+        "src": "97:717:17"
       },
       {
         "baseContracts": [
@@ -1949,66 +1949,66 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6587,
+              "id": 6819,
               "name": "IexecRelay",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6586,
-              "src": "847:10:14",
+              "referencedDeclaration": 6818,
+              "src": "847:10:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$6586",
+                "typeIdentifier": "t_contract$_IexecRelay_$6818",
                 "typeString": "contract IexecRelay"
               }
             },
-            "id": 6588,
+            "id": 6820,
             "nodeType": "InheritanceSpecifier",
-            "src": "847:10:14"
+            "src": "847:10:17"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6589,
+              "id": 6821,
               "name": "IexecDelegateBase",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 1014,
-              "src": "859:17:14",
+              "src": "859:17:17",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IexecDelegateBase_$1014",
                 "typeString": "contract IexecDelegateBase"
               }
             },
-            "id": 6590,
+            "id": 6822,
             "nodeType": "InheritanceSpecifier",
-            "src": "859:17:14"
+            "src": "859:17:17"
           }
         ],
         "contractDependencies": [
           1001,
           1014,
-          1625,
-          6586,
-          8099
+          1631,
+          6818,
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6631,
+        "id": 6863,
         "linearizedBaseContracts": [
-          6631,
+          6863,
           1014,
-          1625,
+          1631,
           1001,
-          8099,
-          6586
+          8331,
+          6818
         ],
         "name": "IexecRelayDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6599,
+              "id": 6831,
               "nodeType": "Block",
-              "src": "984:52:14",
+              "src": "984:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -2016,14 +2016,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6596,
+                        "id": 6828,
                         "name": "_apporder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6592,
-                        "src": "1016:9:14",
+                        "referencedDeclaration": 6824,
+                        "src": "1016:9:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                          "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.AppOrder calldata"
                         }
                       }
@@ -2031,22 +2031,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                          "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.AppOrder calldata"
                         }
                       ],
-                      "id": 6595,
+                      "id": 6827,
                       "name": "BroadcastAppOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6553,
-                      "src": "991:17:14",
+                      "referencedDeclaration": 6785,
+                      "src": "991:17:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_AppOrder_$6778_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_AppOrder_$7010_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.AppOrder memory)"
                       }
                     },
-                    "id": 6597,
+                    "id": 6829,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2054,51 +2054,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "991:42:14",
+                    "src": "991:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6598,
+                  "id": 6830,
                   "nodeType": "EmitStatement",
-                  "src": "986:47:14"
+                  "src": "986:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6600,
+            "id": 6832,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastAppOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6593,
+              "id": 6825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6592,
+                  "id": 6824,
                   "name": "_apporder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6600,
-                  "src": "914:52:14",
+                  "scope": 6832,
+                  "src": "914:52:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$6778_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$7010_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6591,
+                    "id": 6823,
                     "name": "IexecODBLibOrders.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6778,
-                    "src": "914:26:14",
+                    "referencedDeclaration": 7010,
+                    "src": "914:26:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$6778_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$7010_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.AppOrder"
                     }
                   },
@@ -2106,25 +2106,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "913:61:14"
+              "src": "913:61:17"
             },
             "returnParameters": {
-              "id": 6594,
+              "id": 6826,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "984:0:14"
+              "src": "984:0:17"
             },
-            "scope": 6631,
-            "src": "880:156:14",
+            "scope": 6863,
+            "src": "880:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6570,
+            "superFunction": 6802,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6609,
+              "id": 6841,
               "nodeType": "Block",
-              "src": "1142:52:14",
+              "src": "1142:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -2132,14 +2132,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6606,
+                        "id": 6838,
                         "name": "_datasetorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6602,
-                        "src": "1174:13:14",
+                        "referencedDeclaration": 6834,
+                        "src": "1174:13:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                          "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.DatasetOrder calldata"
                         }
                       }
@@ -2147,22 +2147,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                          "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.DatasetOrder calldata"
                         }
                       ],
-                      "id": 6605,
+                      "id": 6837,
                       "name": "BroadcastDatasetOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6557,
-                      "src": "1149:21:14",
+                      "referencedDeclaration": 6789,
+                      "src": "1149:21:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_DatasetOrder_$6797_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_DatasetOrder_$7029_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.DatasetOrder memory)"
                       }
                     },
-                    "id": 6607,
+                    "id": 6839,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2170,51 +2170,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1149:42:14",
+                    "src": "1149:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6608,
+                  "id": 6840,
                   "nodeType": "EmitStatement",
-                  "src": "1144:47:14"
+                  "src": "1144:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6610,
+            "id": 6842,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastDatasetOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6603,
+              "id": 6835,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6602,
+                  "id": 6834,
                   "name": "_datasetorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6610,
-                  "src": "1072:56:14",
+                  "scope": 6842,
+                  "src": "1072:56:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$6797_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$7029_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6601,
+                    "id": 6833,
                     "name": "IexecODBLibOrders.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6797,
-                    "src": "1072:30:14",
+                    "referencedDeclaration": 7029,
+                    "src": "1072:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$6797_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$7029_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.DatasetOrder"
                     }
                   },
@@ -2222,25 +2222,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1071:61:14"
+              "src": "1071:61:17"
             },
             "returnParameters": {
-              "id": 6604,
+              "id": 6836,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1142:0:14"
+              "src": "1142:0:17"
             },
-            "scope": 6631,
-            "src": "1038:156:14",
+            "scope": 6863,
+            "src": "1038:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6575,
+            "superFunction": 6807,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6619,
+              "id": 6851,
               "nodeType": "Block",
-              "src": "1300:52:14",
+              "src": "1300:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -2248,14 +2248,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6616,
+                        "id": 6848,
                         "name": "_workerpoolorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6612,
-                        "src": "1332:16:14",
+                        "referencedDeclaration": 6844,
+                        "src": "1332:16:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.WorkerpoolOrder calldata"
                         }
                       }
@@ -2263,22 +2263,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                          "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.WorkerpoolOrder calldata"
                         }
                       ],
-                      "id": 6615,
+                      "id": 6847,
                       "name": "BroadcastWorkerpoolOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6561,
-                      "src": "1307:24:14",
+                      "referencedDeclaration": 6793,
+                      "src": "1307:24:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_WorkerpoolOrder_$6820_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_WorkerpoolOrder_$7052_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.WorkerpoolOrder memory)"
                       }
                     },
-                    "id": 6617,
+                    "id": 6849,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2286,51 +2286,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1307:42:14",
+                    "src": "1307:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6618,
+                  "id": 6850,
                   "nodeType": "EmitStatement",
-                  "src": "1302:47:14"
+                  "src": "1302:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6620,
+            "id": 6852,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastWorkerpoolOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6613,
+              "id": 6845,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6612,
+                  "id": 6844,
                   "name": "_workerpoolorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6620,
-                  "src": "1230:59:14",
+                  "scope": 6852,
+                  "src": "1230:59:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6611,
+                    "id": 6843,
                     "name": "IexecODBLibOrders.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6820,
-                    "src": "1230:33:14",
+                    "referencedDeclaration": 7052,
+                    "src": "1230:33:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$6820_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$7052_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.WorkerpoolOrder"
                     }
                   },
@@ -2338,25 +2338,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1229:61:14"
+              "src": "1229:61:17"
             },
             "returnParameters": {
-              "id": 6614,
+              "id": 6846,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1300:0:14"
+              "src": "1300:0:17"
             },
-            "scope": 6631,
-            "src": "1196:156:14",
+            "scope": 6863,
+            "src": "1196:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6580,
+            "superFunction": 6812,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 6629,
+              "id": 6861,
               "nodeType": "Block",
-              "src": "1458:52:14",
+              "src": "1458:52:17",
               "statements": [
                 {
                   "eventCall": {
@@ -2364,14 +2364,14 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6626,
+                        "id": 6858,
                         "name": "_requestorder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6622,
-                        "src": "1490:13:14",
+                        "referencedDeclaration": 6854,
+                        "src": "1490:13:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                          "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.RequestOrder calldata"
                         }
                       }
@@ -2379,22 +2379,22 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                          "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                           "typeString": "struct IexecODBLibOrders.RequestOrder calldata"
                         }
                       ],
-                      "id": 6625,
+                      "id": 6857,
                       "name": "BroadcastRequestOrder",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6565,
-                      "src": "1465:21:14",
+                      "referencedDeclaration": 6797,
+                      "src": "1465:21:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_RequestOrder_$6853_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_struct$_RequestOrder_$7085_memory_ptr_$returns$__$",
                         "typeString": "function (struct IexecODBLibOrders.RequestOrder memory)"
                       }
                     },
-                    "id": 6627,
+                    "id": 6859,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2402,51 +2402,51 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1465:42:14",
+                    "src": "1465:42:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6628,
+                  "id": 6860,
                   "nodeType": "EmitStatement",
-                  "src": "1460:47:14"
+                  "src": "1460:47:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 6630,
+            "id": 6862,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "broadcastRequestOrder",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6623,
+              "id": 6855,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6622,
+                  "id": 6854,
                   "name": "_requestorder",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6630,
-                  "src": "1388:56:14",
+                  "scope": 6862,
+                  "src": "1388:56:17",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$6853_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$7085_calldata_ptr",
                     "typeString": "struct IexecODBLibOrders.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6621,
+                    "id": 6853,
                     "name": "IexecODBLibOrders.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6853,
-                    "src": "1388:30:14",
+                    "referencedDeclaration": 7085,
+                    "src": "1388:30:17",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$6853_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$7085_storage_ptr",
                       "typeString": "struct IexecODBLibOrders.RequestOrder"
                     }
                   },
@@ -2454,26 +2454,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1387:61:14"
+              "src": "1387:61:17"
             },
             "returnParameters": {
-              "id": 6624,
+              "id": 6856,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1458:0:14"
+              "src": "1458:0:17"
             },
-            "scope": 6631,
-            "src": "1354:156:14",
+            "scope": 6863,
+            "src": "1354:156:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6585,
+            "superFunction": 6817,
             "visibility": "external"
           }
         ],
-        "scope": 6632,
-        "src": "816:696:14"
+        "scope": 6864,
+        "src": "816:696:17"
       }
     ],
-    "src": "0:1513:14"
+    "src": "0:1513:17"
   },
   "compiler": {
     "name": "solc",
@@ -2481,7 +2481,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T20:11:57.918Z",
+  "updatedAt": "2019-06-27T08:16:10.676Z",
   "devdoc": {
     "methods": {}
   },

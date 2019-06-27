@@ -3,14 +3,14 @@ pragma experimental ABIEncoderV2;
 
 import "./IexecStore.sol";
 import "./delegates/IexecAccessors.sol";
-import "./delegates/IexecABILegacy.sol";
+import "./delegates/IexecAccessorsABILegacy.sol";
 import "./delegates/IexecCategoryManager.sol";
 import "./delegates/IexecCore.sol";
 import "./delegates/IexecOrderSignature.sol";
 import "./delegates/IexecRelay.sol";
 
 
-contract IexecStackABILegacy is IexecStore, IexecABILegacy
+contract IexecStackABILegacy is IexecStore, IexecAccessorsABILegacy
 {
 	event CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);
 	event Transfer(address indexed from, address indexed to, uint256 value);

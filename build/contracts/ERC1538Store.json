@@ -73,8 +73,8 @@
   "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * > Note: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":\"ERC1538Store\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x66915cd76b29c3554f5447927e9f757b5126ac09a2c4ebdad662288ed2cd48da\",\"urls\":[\"bzzr://5d4742936cd68a6c60168bd558b36baf44f23f28b92d38f5d7154825751ab306\",\"dweb:/ipfs/QmVATUDofc5GQUhsb4SGAB97MQRAPb34e6KKeyatwzDYwh\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]}},\"version\":1}",
   "bytecode": "0x60806040819052600080546001600160a01b03191633178082556001600160a01b0316917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a36102e4806100576000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780638f32d59b1461007f578063f2fde38b1461009b575b600080fd5b6100596100c1565b005b610063610164565b604080516001600160a01b039092168252519081900360200190f35b610087610173565b604080519115158252519081900360200190f35b610059600480360360208110156100b157600080fd5b50356001600160a01b0316610184565b6100c9610173565b61011a576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6000546001600160a01b0316331490565b61018c610173565b6101dd576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6101e6816101e9565b50565b6001600160a01b03811661022e5760405162461bcd60e51b815260040180806020018281038252602681526020018061028a6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a265627a7a7230582059630797c20c741a2a41bd198ecfe02c30594c9c84462bee9e0715adb6518f7464736f6c634300050a0032",
   "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780638f32d59b1461007f578063f2fde38b1461009b575b600080fd5b6100596100c1565b005b610063610164565b604080516001600160a01b039092168252519081900360200190f35b610087610173565b604080519115158252519081900360200190f35b610059600480360360208110156100b157600080fd5b50356001600160a01b0316610184565b6100c9610173565b61011a576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6000546001600160a01b0316331490565b61018c610173565b6101dd576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6101e6816101e9565b50565b6001600160a01b03811661022e5760405162461bcd60e51b815260040180806020018281038252602681526020018061028a6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a265627a7a7230582059630797c20c741a2a41bd198ecfe02c30594c9c84462bee9e0715adb6518f7464736f6c634300050a0032",
-  "sourceMap": "92:451:3:-;;;;;657:6:31;:19;;-1:-1:-1;;;;;;657:19:31;666:10;657:19;;;;-1:-1:-1;;;;;724:6:31;;691:40;;657:6;;691:40;92:451:3;;;;;;",
-  "deployedSourceMap": "92:451:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;92:451:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1599:137:31;;;:::i;:::-;;814:77;;;:::i;:::-;;;;-1:-1:-1;;;;;814:77:31;;;;;;;;;;;;;;1165:90;;;:::i;:::-;;;;;;;;;;;;;;;;;;1885:107;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1885:107:31;-1:-1:-1;;;;;1885:107:31;;:::i;1599:137::-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:31;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1697:1;1681:6;;1660:40;;-1:-1:-1;;;;;1681:6:31;;;;1660:40;;1697:1;;1660:40;1727:1;1710:19;;-1:-1:-1;;;;;;1710:19:31;;;1599:137::o;814:77::-;852:7;878:6;-1:-1:-1;;;;;878:6:31;814:77;:::o;1165:90::-;1205:4;1242:6;-1:-1:-1;;;;;1242:6:31;1228:10;:20;;1165:90::o;1885:107::-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:31;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1957:28;1976:8;1957:18;:28::i;:::-;1885:107;:::o;2093:225::-;-1:-1:-1;;;;;2166:22:31;;2158:73;;;;-1:-1:-1;;;2158:73:31;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2267:6;;;2246:38;;-1:-1:-1;;;;;2246:38:31;;;;2267:6;;;2246:38;;;2294:6;:17;;-1:-1:-1;;;;;;2294:17:31;-1:-1:-1;;;;;2294:17:31;;;;;;;;;;2093:225::o",
+  "sourceMap": "92:451:3:-;;;;;657:6:34;:19;;-1:-1:-1;;;;;;657:19:34;666:10;657:19;;;;-1:-1:-1;;;;;724:6:34;;691:40;;657:6;;691:40;92:451:3;;;;;;",
+  "deployedSourceMap": "92:451:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;92:451:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1599:137:34;;;:::i;:::-;;814:77;;;:::i;:::-;;;;-1:-1:-1;;;;;814:77:34;;;;;;;;;;;;;;1165:90;;;:::i;:::-;;;;;;;;;;;;;;;;;;1885:107;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1885:107:34;-1:-1:-1;;;;;1885:107:34;;:::i;1599:137::-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:34;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1697:1;1681:6;;1660:40;;-1:-1:-1;;;;;1681:6:34;;;;1660:40;;1697:1;;1660:40;1727:1;1710:19;;-1:-1:-1;;;;;;1710:19:34;;;1599:137::o;814:77::-;852:7;878:6;-1:-1:-1;;;;;878:6:34;814:77;:::o;1165:90::-;1205:4;1242:6;-1:-1:-1;;;;;1242:6:34;1228:10;:20;;1165:90::o;1885:107::-;1018:9;:7;:9::i;:::-;1010:54;;;;;-1:-1:-1;;;1010:54:34;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1957:28;1976:8;1957:18;:28::i;:::-;1885:107;:::o;2093:225::-;-1:-1:-1;;;;;2166:22:34;;2158:73;;;;-1:-1:-1;;;2158:73:34;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2267:6;;;2246:38;;-1:-1:-1;;;;;2246:38:34;;;;2267:6;;;2246:38;;;2294:6;:17;;-1:-1:-1;;;;;;2294:17:34;-1:-1:-1;;;;;2294:17:34;;;;;;;;;;2093:225::o",
   "source": "pragma solidity ^0.5.10;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\n\n\ncontract ERC1538Store is Ownable\n{\n\t// maps functions to the delegate contracts that execute the functions\n\t// funcId => delegate contract\n\tmapping(bytes4 => address) internal m_delegates;\n\n\t// array of function signatures supported by the contract\n\tbytes[] internal m_funcSignatures;\n\n\t// maps each function signature to its position in the funcSignatures array.\n\t// signature => index+1\n\tmapping(bytes => uint256) internal m_funcSignatureToIndex;\n\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/ERC1538/ERC1538Store.sol",
   "ast": {
@@ -104,7 +104,7 @@
         "id": 987,
         "nodeType": "ImportDirective",
         "scope": 1002,
-        "sourceUnit": 8100,
+        "sourceUnit": 8332,
         "src": "26:63:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -118,10 +118,10 @@
               "id": 988,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8099,
+              "referencedDeclaration": 8331,
               "src": "117:7:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$8099",
+                "typeIdentifier": "t_contract$_Ownable_$8331",
                 "typeString": "contract Ownable"
               }
             },
@@ -131,7 +131,7 @@
           }
         ],
         "contractDependencies": [
-          8099
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -139,7 +139,7 @@
         "id": 1001,
         "linearizedBaseContracts": [
           1001,
-          8099
+          8331
         ],
         "name": "ERC1538Store",
         "nodeType": "ContractDefinition",
@@ -305,7 +305,7 @@
         "id": 987,
         "nodeType": "ImportDirective",
         "scope": 1002,
-        "sourceUnit": 8100,
+        "sourceUnit": 8332,
         "src": "26:63:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -319,10 +319,10 @@
               "id": 988,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8099,
+              "referencedDeclaration": 8331,
               "src": "117:7:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$8099",
+                "typeIdentifier": "t_contract$_Ownable_$8331",
                 "typeString": "contract Ownable"
               }
             },
@@ -332,7 +332,7 @@
           }
         ],
         "contractDependencies": [
-          8099
+          8331
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -340,7 +340,7 @@
         "id": 1001,
         "linearizedBaseContracts": [
           1001,
-          8099
+          8331
         ],
         "name": "ERC1538Store",
         "nodeType": "ContractDefinition",
@@ -485,7 +485,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-26T20:11:57.700Z",
+  "updatedAt": "2019-06-27T08:16:10.593Z",
   "devdoc": {
     "methods": {
       "isOwner()": {
