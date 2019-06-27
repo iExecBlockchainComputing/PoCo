@@ -5,7 +5,7 @@ import "./IexecStore.sol";
 import "./delegates/IexecAccessors.sol";
 import "./delegates/IexecAccessorsABILegacy.sol";
 import "./delegates/IexecCategoryManager.sol";
-import "./delegates/IexecCore.sol";
+import "./delegates/IexecPoco.sol";
 import "./delegates/IexecOrderSignature.sol";
 import "./delegates/IexecRelay.sol";
 

@@ -6,7 +6,7 @@ import "../SignatureVerifier.sol";
 import "../IexecDelegateBase.sol";
 
 
-interface IexecCore
+interface IexecPoco
 {
 	event Withdraw(address owner, uint256 amount);
 	event Reward  (address owner, uint256 amount, bytes32 ref);
@@ -42,9 +42,9 @@ interface IexecCore
 	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
 }
 
-contract IexecCoreDelegate is IexecCore, IexecDelegateBase, IexecERC20Common, SignatureVerifier
+contract IexecPocoDelegate is IexecPoco, IexecDelegateBase, IexecERC20Common, SignatureVerifier
 {
-	using SafeMath for uint256;
+	using SafeMathExtended  for uint256;
 	using IexecODBLibOrders for bytes32;
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
 	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;

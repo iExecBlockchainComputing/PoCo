@@ -1,7 +1,8 @@
 pragma solidity ^0.5.10;
 
-import "iexec-solidity/contracts/Libs/SafeMath.sol";
-import "iexec-solidity/contracts/ERC20_Token/IERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "iexec-solidity/contracts/Libs/SafeMathExtended.sol";
+import "iexec-solidity/contracts/ERC1538/ERC1538Store.sol";
 
 import "./libs/IexecODBLibCore.sol";
 import "./libs/IexecODBLibOrders.sol";
@@ -9,8 +10,6 @@ import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
 import "./registries/RegistryBase.sol";
-
-import "./ERC1538/ERC1538Store.sol";
 
 
 contract IexecStore is ERC1538Store

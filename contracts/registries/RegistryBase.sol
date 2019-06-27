@@ -1,11 +1,12 @@
 pragma solidity ^0.5.10;
 
-import "iexec-solidity/contracts/Libs/SafeMath.sol";
+import "iexec-solidity/contracts/Libs/SafeMathExtended.sol";
+
 
 contract RegistryBase
 {
 
-	using SafeMath for uint256;
+	using SafeMathExtended for uint256;
 
 	/**
 	 * Members

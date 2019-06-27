@@ -5,18 +5,18 @@ var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
 
-var ERC1538        = artifacts.require("ERC1538Delegate");
-var ERC1538Proxy   = artifacts.require("ERC1538Proxy");
+var ERC1538            = artifacts.require("iexec-solidity/ERC1538Delegate");
+var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
+var ERC1538Query       = artifacts.require("iexec-solidity/ERC1538QueryDelegate");
 
-var ERC1538Query            = artifacts.require("ERC1538QueryDelegate");
 var IexecAccessors          = artifacts.require("IexecAccessorsDelegate");
 var IexecAccessorsABILegacy = artifacts.require("IexecAccessorsABILegacyDelegate");
 var IexecCategoryManager    = artifacts.require("IexecCategoryManagerDelegate");
-var IexecCore               = artifacts.require("IexecCoreDelegate");
 var IexecERC20              = artifacts.require("IexecERC20Delegate");
 var IexecEscrowToken        = artifacts.require("IexecEscrowTokenDelegate");
 var IexecEscrowNative       = artifacts.require("IexecEscrowNativeDelegate");
 var IexecOrderSignature     = artifacts.require("IexecOrderSignatureDelegate");
+var IexecPoco               = artifacts.require("IexecPocoDelegate");
 var IexecRelay              = artifacts.require("IexecRelayDelegate");
 
 const USENATIVE = false;
@@ -94,7 +94,7 @@ module.exports = async function(deployer, network, accounts)
 	 *                          Deploy & link library                          *
 	 ***************************************************************************/
 	await deployer.deploy(IexecODBLibOrders);
-	await deployer.link(IexecODBLibOrders, IexecCore);
+	await deployer.link(IexecODBLibOrders, IexecPoco);
 	await deployer.link(IexecODBLibOrders, IexecOrderSignature);
 
 	/***************************************************************************
@@ -113,10 +113,10 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessors,
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
-		IexecCore,
 		IexecERC20,
 		USENATIVE ? IexecEscrowNative : IexecEscrowToken,
 		IexecOrderSignature,
+		IexecPoco,
 		IexecRelay,
 	]
 	console.log("Linking smart contracts to proxy")

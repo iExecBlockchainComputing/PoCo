@@ -1,5 +1,5 @@
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
-var ERC1538Proxy       = artifacts.require("ERC1538Proxy");
+var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
 var IexecStack         = artifacts.require("IexecStack");
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
