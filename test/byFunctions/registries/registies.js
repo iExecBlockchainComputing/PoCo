@@ -68,6 +68,21 @@ contract('Registries', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
+			const code = new web3.eth.Contract(App.abi).deploy({ data: App.bytecode, arguments: [] }).encodeABI();
+			const salt = web3.utils.soliditySha3(
+				{ t: 'string',  v: "App #"+i                                  },
+				{ t: 'string',  v: "DOCKER"                                   },
+				{ t: 'bytes',   v: constants.MULTIADDR_BYTES                  },
+				{ t: 'bytes32', v: web3.utils.keccak256("Content of app #"+i) },
+				{ t: 'bytes',   v: "0x1234"                                   },
+			);
+			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
+				{ t: 'bytes1',  v: '0xff'                      },
+				{ t: 'address', v: AppRegistryInstance.address },
+				{ t: 'bytes32', v: salt                        },
+				{ t: 'bytes32', v: web3.utils.keccak256(code)  },
+			).slice(26));
+
 			txMined = await AppRegistryInstance.createApp(
 				appProvider,
 				"App #"+i,
@@ -80,9 +95,10 @@ contract('Registries', async (accounts) => {
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+			assert.equal(events[0].args.app,      predictedAddress);
 			assert.equal(events[0].args.appOwner, appProvider);
 
-			AppInstances[i] = await App.at(events[0].args.app);
+			AppInstances[i] = await App.at(predictedAddress);
 			assert.equal (await AppInstances[i].owner(),                       appProvider                               );
 			assert.equal (await AppInstances[i].m_appName(),                   "App #"+i                                 );
 			assert.equal (await AppInstances[i].m_appType(),                   "DOCKER"                                  );
@@ -101,6 +117,19 @@ contract('Registries', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
+			const code = new web3.eth.Contract(Dataset.abi).deploy({ data: Dataset.bytecode, arguments: [] }).encodeABI();
+			const salt = web3.utils.soliditySha3(
+				{ t: 'string',  v: "Dataset #"+i                                  },
+				{ t: 'bytes',   v: constants.MULTIADDR_BYTES                      },
+				{ t: 'bytes32', v: web3.utils.keccak256("Content of dataset #"+i) },
+			);
+			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
+				{ t: 'bytes1',  v: '0xff'                          },
+				{ t: 'address', v: DatasetRegistryInstance.address },
+				{ t: 'bytes32', v: salt                            },
+				{ t: 'bytes32', v: web3.utils.keccak256(code)      },
+			).slice(26));
+
 			txMined = await DatasetRegistryInstance.createDataset(
 				datasetProvider,
 				"Dataset #"+i,
@@ -111,9 +140,10 @@ contract('Registries', async (accounts) => {
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+			assert.equal(events[0].args.dataset,      predictedAddress);
 			assert.equal(events[0].args.datasetOwner, datasetProvider);
 
-			DatasetInstances[i] = await Dataset.at(events[0].args.dataset);
+			DatasetInstances[i] = await Dataset.at(predictedAddress);
 			assert.equal (await DatasetInstances[i].owner(),                           datasetProvider                               );
 			assert.equal (await DatasetInstances[i].m_datasetName(),                   "Dataset #"+i                                 );
 			assert.equal (await DatasetInstances[i].m_datasetMultiaddr(),              constants.MULTIADDR_BYTES                     );
@@ -130,6 +160,17 @@ contract('Registries', async (accounts) => {
 	it("Workerpool Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
+			const code = new web3.eth.Contract(Workerpool.abi).deploy({ data: Workerpool.bytecode, arguments: [] }).encodeABI();
+			const salt = web3.utils.soliditySha3(
+				{ t: 'string', v: "Workerpool #"+i },
+			);
+			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
+				{ t: 'bytes1',  v: '0xff'                             },
+				{ t: 'address', v: WorkerpoolRegistryInstance.address },
+				{ t: 'bytes32', v: salt                               },
+				{ t: 'bytes32', v: web3.utils.keccak256(code)         },
+			).slice(26));
+
 			txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 				scheduler,
 				"Workerpool #"+i,
@@ -138,9 +179,10 @@ contract('Registries', async (accounts) => {
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+			assert.equal(events[0].args.workerpool,      predictedAddress);
 			assert.equal(events[0].args.workerpoolOwner, scheduler, "Erroneous Workerpool owner");
 
-			WorkerpoolInstances[i] = await Workerpool.at(events[0].args.workerpool);
+			WorkerpoolInstances[i] = await Workerpool.at(predictedAddress);
 			assert.equal (await WorkerpoolInstances[i].owner(),                                          scheduler,                      "Erroneous Workerpool owner"                   );
 			assert.equal (await WorkerpoolInstances[i].m_workerpoolDescription(),                        "Workerpool #"+i,               "Erroneous Workerpool description"             );
 			assert.equal (await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),                       30,                             "Erroneous Workerpool params"                  );
