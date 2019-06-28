@@ -1,8 +1,9 @@
 pragma solidity ^0.5.10;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../tools/Once.sol";
 
-contract Workerpool is Ownable
+contract Workerpool is Ownable, Once
 {
 	/**
 	 * Parameters
@@ -21,10 +22,10 @@ contract Workerpool is Ownable
 	/**
 	 * Constructor
 	 */
-	constructor(
-		address        _workerpoolOwner,
-		string  memory _workerpoolDescription)
-	public
+	function setup(
+		address          _workerpoolOwner,
+		string  calldata _workerpoolDescription)
+	external onlyOnce()
 	{
 		_transferOwnership(_workerpoolOwner);
 		m_workerpoolDescription      = _workerpoolDescription;
@@ -35,7 +36,7 @@ contract Workerpool is Ownable
 	function changePolicy(
 		uint256 _newWorkerStakeRatioPolicy,
 		uint256 _newSchedulerRewardRatioPolicy)
-	public onlyOwner
+	external onlyOwner
 	{
 		require(_newSchedulerRewardRatioPolicy <= 100);
 

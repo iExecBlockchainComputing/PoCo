@@ -68,7 +68,8 @@ contract('Ressources', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			AppInstances[i] = await App.new(
+			AppInstances[i] = await App.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await AppInstances[i].setup(
 				appProvider,
 				"App #"+i,
 				"DOCKER",
@@ -92,7 +93,8 @@ contract('Ressources', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			DatasetInstances[i] = await Dataset.new(
+			DatasetInstances[i] = await Dataset.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await DatasetInstances[i].setup(
 				datasetProvider,
 				"Dataset #"+i,
 				constants.MULTIADDR_BYTES,
@@ -112,15 +114,16 @@ contract('Ressources', async (accounts) => {
 	it("Workerpool Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			WorkerpoolInstances[i] = await Workerpool.new(
+			WorkerpoolInstances[i] = await Workerpool.new({ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+			await WorkerpoolInstances[i].setup(
 				scheduler,
 				"Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal( await WorkerpoolInstances[i].owner(),                        scheduler        );
-			assert.equal( await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i );
-			assert.equal( await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30               );
-			assert.equal( await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1                );
+			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler       );
+			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i);
+			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30              );
+			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1               );
 		}
 	});
 
@@ -136,15 +139,15 @@ contract('Ressources', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, WorkerpoolInstances[1].address, "PolicyUpdate");
-		assert.equal( events[0].args.oldWorkerStakeRatioPolicy,     30 );
-		assert.equal( events[0].args.newWorkerStakeRatioPolicy,     35 );
-		assert.equal( events[0].args.oldSchedulerRewardRatioPolicy, 1  );
-		assert.equal( events[0].args.newSchedulerRewardRatioPolicy, 5  );
+		assert.equal(events[0].args.oldWorkerStakeRatioPolicy,     30 );
+		assert.equal(events[0].args.newWorkerStakeRatioPolicy,     35 );
+		assert.equal(events[0].args.oldSchedulerRewardRatioPolicy, 1  );
+		assert.equal(events[0].args.newSchedulerRewardRatioPolicy, 5  );
 
-		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
-		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
-		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
+		assert.equal(await WorkerpoolInstances[1].owner(),                        scheduler      );
+		assert.equal(await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1");
+		assert.equal(await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35             );
+		assert.equal(await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5              );
 	});
 
 	/***************************************************************************
@@ -157,10 +160,10 @@ contract('Ressources', async (accounts) => {
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
 		));
 
-		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
-		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
-		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
+		assert.equal(await WorkerpoolInstances[1].owner(),                        scheduler      );
+		assert.equal(await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1");
+		assert.equal(await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35             );
+		assert.equal(await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5              );
 	});
 
 	/***************************************************************************
@@ -173,10 +176,10 @@ contract('Ressources', async (accounts) => {
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		));
 
-		assert.equal( await WorkerpoolInstances[1].owner(),                        scheduler       );
-		assert.equal( await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1" );
-		assert.equal( await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35              );
-		assert.equal( await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5               );
+		assert.equal(await WorkerpoolInstances[1].owner(),                        scheduler      );
+		assert.equal(await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1");
+		assert.equal(await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35             );
+		assert.equal(await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5              );
 	});
 
 });

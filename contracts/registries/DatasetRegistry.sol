@@ -1,9 +1,10 @@
 pragma solidity ^0.5.10;
 
 import './Dataset.sol';
+import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
+contract DatasetRegistry is CounterfactualFactory, RegistryBase
 {
 	event CreateDataset(address indexed datasetOwner, address dataset);
 
@@ -23,16 +24,24 @@ contract DatasetRegistry is RegistryBase //, OwnableMutable // is Owned by Iexec
 		string  calldata _datasetName,
 		bytes   calldata _datasetMultiaddr,
 		bytes32          _datasetChecksum)
-	external /* onlyOwner /*owner == IexecHub*/ returns (Dataset)
+	external returns (Dataset)
 	{
-		Dataset newDataset = new Dataset(
+		bytes32 salt = keccak256(abi.encodePacked(
+			_datasetName,
+			_datasetMultiaddr,
+			_datasetChecksum
+		));
+
+		Dataset dataset = Dataset(_create2(type(Dataset).creationCode, salt));
+		dataset.setup(
 			_datasetOwner,
 			_datasetName,
 			_datasetMultiaddr,
 			_datasetChecksum
 		);
-		require(insert(address(newDataset), _datasetOwner));
-		emit CreateDataset(_datasetOwner, address(newDataset));
-		return newDataset;
+
+		require(insert(address(dataset), _datasetOwner));
+		emit CreateDataset(_datasetOwner, address(dataset));
+		return dataset;
 	}
 }

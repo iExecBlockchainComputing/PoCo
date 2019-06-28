@@ -1,29 +1,30 @@
 pragma solidity ^0.5.10;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../tools/Once.sol";
 
-contract App is Ownable
+contract App is Ownable, Once
 {
 	/**
 	 * Members
 	 */
-	string  public m_appName;
-	string  public m_appType;
-	bytes   public m_appMultiaddr;
-	bytes32 public m_appChecksum;
-	bytes   public m_appMREnclave;
+	string  public  m_appName;
+	string  public  m_appType;
+	bytes   public  m_appMultiaddr;
+	bytes32 public  m_appChecksum;
+	bytes   public  m_appMREnclave;
 
 	/**
 	 * Constructor
 	 */
-	constructor(
-		address        _appOwner,
-		string  memory _appName,
-		string  memory _appType,
-		bytes   memory _appMultiaddr,
-		bytes32        _appChecksum,
-		bytes   memory _appMREnclave)
-	public
+	function setup(
+		address          _appOwner,
+		string  calldata _appName,
+		string  calldata _appType,
+		bytes   calldata _appMultiaddr,
+		bytes32          _appChecksum,
+		bytes   calldata _appMREnclave)
+	external onlyOnce()
 	{
 		_transferOwnership(_appOwner);
 		m_appName      = _appName;

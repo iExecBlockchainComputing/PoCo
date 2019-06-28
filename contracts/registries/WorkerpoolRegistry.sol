@@ -1,11 +1,12 @@
 pragma solidity ^0.5.10;
 
 import './Workerpool.sol';
+import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
+contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase
 {
-	event CreateWorkerpool(address indexed workerpoolOwner, address indexed workerpool, string workerpoolDescription);
+	event CreateWorkerpool(address indexed workerpoolOwner, address workerpool);
 
 	/**
 	 * Constructor
@@ -21,14 +22,21 @@ contract WorkerpoolRegistry is RegistryBase //, OwnableMutable // is Owned by Ie
 	function createWorkerpool(
 		address          _workerpoolOwner,
 		string  calldata _workerpoolDescription)
-	external /* onlyOwner /*owner == IexecHub*/ returns (Workerpool)
+	external returns (Workerpool)
 	{
-		Workerpool newWorkerpool = new Workerpool(
+		bytes32 salt = keccak256(abi.encodePacked(
+			_workerpoolDescription
+		));
+
+		Workerpool workerpool = Workerpool(_create2(type(Workerpool).creationCode, salt));
+		workerpool.setup(
 			_workerpoolOwner,
 			_workerpoolDescription
 		);
-		require(insert(address(newWorkerpool), _workerpoolOwner));
-		emit CreateWorkerpool(_workerpoolOwner, address(newWorkerpool), _workerpoolDescription);
-		return newWorkerpool;
+
+		require(insert(address(workerpool), _workerpoolOwner));
+		emit CreateWorkerpool(_workerpoolOwner, address(workerpool));
+
+		return workerpool;
 	}
 }

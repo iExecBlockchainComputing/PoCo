@@ -1,8 +1,9 @@
 pragma solidity ^0.5.10;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../tools/Once.sol";
 
-contract Dataset is Ownable
+contract Dataset is Ownable, Once
 {
 	/**
 	 * Members
@@ -14,12 +15,12 @@ contract Dataset is Ownable
 	/**
 	 * Constructor
 	 */
-	constructor(
-		address        _datasetOwner,
-		string  memory _datasetName,
-		bytes   memory _datasetMultiaddr,
-		bytes32        _datasetChecksum)
-	public
+	function setup(
+		address          _datasetOwner,
+		string  calldata _datasetName,
+		bytes   calldata _datasetMultiaddr,
+		bytes32          _datasetChecksum)
+	external onlyOnce()
 	{
 		_transferOwnership(_datasetOwner);
 		m_datasetName      = _datasetName;

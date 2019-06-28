@@ -138,8 +138,7 @@ contract('Registries', async (accounts) => {
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 			events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-			assert.equal(events[0].args.workerpoolOwner,       scheduler,        "Erroneous Workerpool owner"      );
-			assert.equal(events[0].args.workerpoolDescription, "Workerpool #"+i, "Erroneous Workerpool description");
+			assert.equal(events[0].args.workerpoolOwner, scheduler, "Erroneous Workerpool owner");
 
 			WorkerpoolInstances[i] = await Workerpool.at(events[0].args.workerpool);
 			assert.equal (await WorkerpoolInstances[i].owner(),                                          scheduler,                      "Erroneous Workerpool owner"                   );

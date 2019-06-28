@@ -1,9 +1,10 @@
 pragma solidity ^0.5.10;
 
 import './App.sol';
+import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
+contract AppRegistry is CounterfactualFactory, RegistryBase
 {
 	event CreateApp(address indexed appOwner, address app);
 
@@ -25,9 +26,18 @@ contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 		bytes   calldata _appMultiaddr,
 		bytes32          _appChecksum,
 		bytes   calldata _appMREnclave)
-	external /* onlyOwner /*owner == IexecHub*/ returns (App)
+	external returns (App)
 	{
-		App newApp = new App(
+		bytes32 salt = keccak256(abi.encodePacked(
+			_appName,
+			_appType,
+			_appMultiaddr,
+			_appChecksum,
+			_appMREnclave
+		));
+
+		App app = App(_create2(type(App).creationCode, salt));
+		app.setup(
 			_appOwner,
 			_appName,
 			_appType,
@@ -35,9 +45,11 @@ contract AppRegistry is RegistryBase //, OwnableMutable // is Owned by IexecHub
 			_appChecksum,
 			_appMREnclave
 		);
-		require(insert(address(newApp), _appOwner));
-		emit CreateApp(_appOwner, address(newApp));
-		return newApp;
+
+		require(insert(address(app), _appOwner));
+		emit CreateApp(_appOwner, address(app));
+
+		return app;
 	}
 
 }
