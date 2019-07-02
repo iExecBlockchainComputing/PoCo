@@ -16,4 +16,15 @@ contract CounterfactualFactory
 		}
 		return addr;
 	}
+
+	function _predictAddress(bytes memory _code, bytes32 _salt)
+	internal view returns (address)
+	{
+		return address(bytes20(keccak256(abi.encodePacked(
+			bytes1(0xff),
+			address(this),
+			_salt,
+			keccak256(_code)
+		)) << 0x60));
+	}
 }

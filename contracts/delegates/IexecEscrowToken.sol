@@ -11,10 +11,13 @@ interface IexecEscrowToken
 	function depositFor(uint256,address) external returns (bool);
 	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
 	function withdraw(uint256) external returns (bool);
+	function salvage() external returns (uint256);
 }
 
 contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20Common
 {
+	using SafeMathExtended for uint256;
+
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
@@ -52,6 +55,14 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20C
 		_burn(msg.sender, amount);
 		_withdraw(msg.sender, amount);
 		return true;
+	}
+
+	function salvage()
+		external onlyOwner returns (uint256)
+	{
+		uint256 delta = m_baseToken.balanceOf(address(this)).sub(m_totalSupply);
+		_mint(owner(), delta);
+		return delta;
 	}
 
 	function _deposit(address from, uint256 amount)

@@ -224,6 +224,39 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	/***************************************************************************
 	 *                                                                         *
 	 ***************************************************************************/
+	it("Escrow - Salvage success - nothing to salvage", async () => {
+		txMined = await IexecClerkInstance.salvage({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = extractEvents(txMined, IexecClerkInstance.address, "Transfer");
+		assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
+		assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
+		assert.equal(events[0].args.value, 0,                      "check amount");
+	});
+
+	it("Escrow - Salvage success - locked funds to salvage", async () => {
+		txMined = await RLCInstance.transfer(IexecClerkInstance.address, 1000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		txMined = await IexecClerkInstance.salvage({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = extractEvents(txMined, IexecClerkInstance.address, "Transfer");
+		assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
+		assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
+		assert.equal(events[0].args.value, 1000,                   "check amount");
+	});
+
+	it("Escrow - Salvage success - locked funds to salvage", async () => {
+		txMined = await RLCInstance.transfer(IexecClerkInstance.address, 1000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		await shouldFail.reverting(IexecClerkInstance.salvage({ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }));
+	});
+
+	/***************************************************************************
+	 *                                                                         *
+	 ***************************************************************************/
 	it("Escrow - Check internal functions", async function() {
 		assert.strictEqual(IexecClerkInstance.contract.reward, undefined, "expected reward internal");
 		assert.strictEqual(IexecClerkInstance.contract.seize,  undefined, "expected seize internal" );
