@@ -224,8 +224,8 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	/***************************************************************************
 	 *                                                                         *
 	 ***************************************************************************/
-	it("Escrow - Salvage success - nothing to salvage", async () => {
-		txMined = await IexecClerkInstance.salvage({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+	it("Escrow - Salvage success - nothing to recover", async () => {
+		txMined = await IexecClerkInstance.recover({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "Transfer");
@@ -234,11 +234,11 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.value, 0,                      "check amount");
 	});
 
-	it("Escrow - Salvage success - locked funds to salvage", async () => {
+	it("Escrow - Salvage success - locked funds to recover", async () => {
 		txMined = await RLCInstance.transfer(IexecClerkInstance.address, 1000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		txMined = await IexecClerkInstance.salvage({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.recover({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "Transfer");
@@ -247,11 +247,11 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.value, 1000,                   "check amount");
 	});
 
-	it("Escrow - Salvage success - locked funds to salvage", async () => {
+	it("Escrow - Salvage success - locked funds to recover", async () => {
 		txMined = await RLCInstance.transfer(IexecClerkInstance.address, 1000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		await shouldFail.reverting(IexecClerkInstance.salvage({ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await shouldFail.reverting(IexecClerkInstance.recover({ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	/***************************************************************************

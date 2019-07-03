@@ -11,7 +11,7 @@ interface IexecEscrowToken
 	function depositFor(uint256,address) external returns (bool);
 	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
 	function withdraw(uint256) external returns (bool);
-	function salvage() external returns (uint256);
+	function recover() external returns (uint256);
 }
 
 contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20Common
@@ -57,7 +57,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20C
 		return true;
 	}
 
-	function salvage()
+	function recover()
 		external onlyOwner returns (uint256)
 	{
 		uint256 delta = m_baseToken.balanceOf(address(this)).sub(m_totalSupply);

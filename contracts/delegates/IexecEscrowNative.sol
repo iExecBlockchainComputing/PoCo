@@ -12,7 +12,7 @@ interface IexecEscrowNative
 	function depositFor(address) external payable returns (bool);
 	function depositForArray(uint256[] calldata,address[] calldata) external payable returns (bool);
 	function withdraw(uint256) external returns (bool);
-	function salvage() external returns (uint256);
+	function recover() external returns (uint256);
 }
 
 contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC20Common
@@ -64,7 +64,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		return true;
 	}
 
-	function salvage()
+	function recover()
 		external onlyOwner returns (uint256)
 	{
 		uint256 delta = address(this).balance.sub(m_totalSupply);
