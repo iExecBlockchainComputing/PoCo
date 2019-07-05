@@ -69,7 +69,6 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-
 		await shouldFail.reverting(IexecClerkInstance.withdraw(100));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
@@ -252,6 +251,21 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		await shouldFail.reverting(IexecClerkInstance.recover({ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }));
+	});
+
+	/***************************************************************************
+	 *                                                                         *
+	 ***************************************************************************/
+	it("Escrow - ApproveAndCall", async () => {
+		const balanceBefore = await RLCInstance.balanceOf(iexecAdmin);
+		const accountBefore = await IexecClerkInstance.balanceOf(iexecAdmin);
+		const amount        = web3.utils.toBN(1000);
+
+		txMined = await RLCInstance.approveAndCall(IexecClerkInstance.address, amount, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		assert.equal(await RLCInstance.balanceOf(iexecAdmin),        balanceBefore.sub(amount).toString());
+		assert.equal(await IexecClerkInstance.balanceOf(iexecAdmin), accountBefore.add(amount).toString());
 	});
 
 	/***************************************************************************

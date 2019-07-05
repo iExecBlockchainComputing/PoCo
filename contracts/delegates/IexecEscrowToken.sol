@@ -12,6 +12,7 @@ interface IexecEscrowToken
 	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
 	function withdraw(uint256) external returns (bool);
 	function recover() external returns (uint256);
+	function receiveApproval(address,uint256,address,bytes calldata) external returns (bool);
 }
 
 contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20Common
@@ -63,6 +64,16 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20C
 		uint256 delta = m_baseToken.balanceOf(address(this)).sub(m_totalSupply);
 		_mint(owner(), delta);
 		return delta;
+	}
+
+	// Token Spender (endpoint for approveAndCallback calls to the proxy)
+	function receiveApproval(address sender, uint256 amount, address token, bytes calldata)
+		external returns (bool)
+	{
+		require(token == address(m_baseToken), 'wrong-token');
+		_deposit(sender, amount);
+		_mint(sender, amount);
+		return true;
 	}
 
 	function _deposit(address from, uint256 amount)
