@@ -5,8 +5,8 @@ var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
 
-var ERC1538            = artifacts.require("iexec-solidity/ERC1538Delegate");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
+var ERC1538Update      = artifacts.require("iexec-solidity/ERC1538UpdateDelegate");
 var ERC1538Query       = artifacts.require("iexec-solidity/ERC1538QueryDelegate");
 
 var IexecAccessors          = artifacts.require("IexecAccessorsDelegate");
@@ -100,10 +100,10 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                              Deploy proxy                               *
 	 ***************************************************************************/
-	await deployer.deploy(ERC1538);
-	await deployer.deploy(ERC1538Proxy, (await ERC1538.deployed()).address);
-	IexecInstance = await ERC1538.at((await ERC1538Proxy.deployed()).address);
-	console.log("IexecInstance deployed at address: " + IexecInstance.address);
+	await deployer.deploy(ERC1538Update);
+	await deployer.deploy(ERC1538Proxy, (await ERC1538Update.deployed()).address);
+	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
+	console.log("IexecInstance deployed at address: " + ERC1538.address);
 
 	/***************************************************************************
 	 *                             Setup delegate                              *
@@ -122,9 +122,9 @@ module.exports = async function(deployer, network, accounts)
 	console.log("Linking smart contracts to proxy")
 	for (id in contracts)
 	{
-		console.log("[" + id + "] IexecInstance link: " + contracts[id].contractName)
+		console.log("[" + id + "] ERC1538 link: " + contracts[id].contractName)
 		await deployer.deploy(contracts[id]);
-		await IexecInstance.updateContract(
+		await ERC1538.updateContract(
 			(await contracts[id].deployed()).address,
 			getFunctionSignatures(contracts[id].abi),
 			"Linking " + contracts[id].contractName
@@ -134,7 +134,7 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                             Configure Stack                             *
 	 ***************************************************************************/
-	IexecInterfaceInstance = await IexecInterface.at(IexecInstance.address);
+	IexecInterfaceInstance = await IexecInterface.at(ERC1538.address);
 
 	await deployer.deploy(AppRegistry);
 	await deployer.deploy(DatasetRegistry);
@@ -227,7 +227,7 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                          ERC1538 list methods                           *
 	 ***************************************************************************/
-	let ERC1538QueryInstace = await ERC1538Query.at(IexecInstance.address);
+	let ERC1538QueryInstace = await ERC1538Query.at(ERC1538.address);
 	let functionCount = await ERC1538QueryInstace.totalFunctions();
 
 	console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
