@@ -18,6 +18,7 @@ var IexecEscrowNative       = artifacts.require("IexecEscrowNativeDelegate");
 var IexecOrderSignature     = artifacts.require("IexecOrderSignatureDelegate");
 var IexecPoco               = artifacts.require("IexecPocoDelegate");
 var IexecRelay              = artifacts.require("IexecRelayDelegate");
+var ENSReverseRegistration  = artifacts.require("ENSReverseRegistrationDelegate");
 
 const USENATIVE = false;
 
@@ -118,6 +119,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecOrderSignature,
 		IexecPoco,
 		IexecRelay,
+		ENSReverseRegistration,
 	]
 	console.log("Linking smart contracts to proxy")
 	for (id in contracts)
