@@ -1,9 +1,10 @@
 pragma solidity ^0.5.10;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../tools/ENSTools.sol";
 import "../tools/Once.sol";
 
-contract Workerpool is Ownable, Once
+contract Workerpool is Ownable, Once, ENSTools
 {
 	/**
 	 * Parameters
@@ -47,6 +48,12 @@ contract Workerpool is Ownable, Once
 
 		m_workerStakeRatioPolicy     = _newWorkerStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy = _newSchedulerRewardRatioPolicy;
+	}
+
+	function registerENS(ENSRegistry ens, string calldata name)
+	external onlyOwner()
+	{
+		_reverseRegistration(ens, name);
 	}
 
 	function transferOwnership(address) public { revert("disabled"); }
