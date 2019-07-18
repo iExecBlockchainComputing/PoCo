@@ -834,6 +834,18 @@ contract('Fullchain', async (accounts) => {
 		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971,  0 ], "check balance");
 	});
 
+	it("[Finalized] Check balances - Extra", async () => {
+		assert.equal(
+			Number(await IexecInstance.totalSupply()),
+			Number(await RLCInstance.balanceOf(IexecInstance.address))
+		);
+
+		for (address of [ datasetProvider, appProvider, scheduler, worker1, worker2, worker3, worker4, worker5, user ])
+		{
+			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(address), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ Number(await IexecInstance.balanceOf(address)), Number(await IexecInstance.frozenOf(address)) ], "check balance");
+		}
+	});
+
 	/***************************************************************************
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
