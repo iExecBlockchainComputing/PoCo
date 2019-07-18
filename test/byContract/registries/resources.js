@@ -35,8 +35,7 @@ contract('Ressources', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
@@ -55,8 +54,7 @@ contract('Ressources', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -180,6 +178,18 @@ contract('Ressources', async (accounts) => {
 		assert.equal(await WorkerpoolInstances[1].m_workerpoolDescription(),      "Workerpool #1");
 		assert.equal(await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35             );
 		assert.equal(await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5              );
+	});
+
+
+	it("Ressources cannot be transfered", async () => {
+		await shouldFail.reverting(AppInstances[1].transferOwnership(user, { from: appProvider}));
+		assert.equal(await AppInstances[1].owner(), appProvider);
+
+		await shouldFail.reverting(DatasetInstances[1].transferOwnership(user, { from: datasetProvider}));
+		assert.equal(await DatasetInstances[1].owner(), datasetProvider);
+
+		await shouldFail.reverting(WorkerpoolInstances[1].transferOwnership(user, { from: scheduler}));
+		assert.equal(await WorkerpoolInstances[1].owner(), scheduler);
 	});
 
 });

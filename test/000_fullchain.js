@@ -37,8 +37,7 @@ contract('Fullchain', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
@@ -78,8 +77,7 @@ contract('Fullchain', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -88,7 +86,7 @@ contract('Fullchain', async (accounts) => {
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecClerkInstance.address,
+			verifyingContract: IexecInstance.address,
 		});
 
 		console.log("EIP712DOMAIN_TYPEHASH:   ", odbtools.EIP712DOMAIN_TYPEHASH   );
@@ -144,15 +142,15 @@ contract('Fullchain', async (accounts) => {
 		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -244,7 +242,7 @@ contract('Fullchain', async (accounts) => {
 			wallets.addressToPrivate(appProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
 				apporder.sign,
@@ -273,7 +271,7 @@ contract('Fullchain', async (accounts) => {
 			wallets.addressToPrivate(datasetProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
 				datasetorder.sign,
@@ -304,7 +302,7 @@ contract('Fullchain', async (accounts) => {
 			wallets.addressToPrivate(scheduler)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
 				workerpoolorder.sign,
@@ -340,7 +338,7 @@ contract('Fullchain', async (accounts) => {
 			wallets.addressToPrivate(user)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
 				requestorder.sign,
@@ -354,15 +352,15 @@ contract('Fullchain', async (accounts) => {
 	 *                           TEST: Check escrow                            *
 	 ***************************************************************************/
 	it("[Genesis] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 	});
 
 	/***************************************************************************
@@ -370,13 +368,13 @@ contract('Fullchain', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(1000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(1000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -386,53 +384,53 @@ contract('Fullchain', async (accounts) => {
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(extractEvents(txsMined[0], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[0], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[1], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[1], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[2], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[2], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[3], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[3], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[4], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[4], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[5], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[5], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
-		assert.equal(extractEvents(txsMined[6], IexecClerkInstance.address, "Transfer")[0].args.value, 1000);
-		assert.equal(extractEvents(txsMined[6], IexecClerkInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
+		assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);
 	});
 
 	/***************************************************************************
 	 *                      TEST: check balances - before                      *
 	 ***************************************************************************/
 	it("[Setup] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                       TEST: check score - before                        *
 	 ***************************************************************************/
 	it("[Initial] Check score", async () => {
-		assert.equal(Number(await IexecHubInstance.viewScore(worker1)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker2)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker3)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker4)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker5)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker1)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker2)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker3)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker4)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker5)), 0, "score issue");
 	});
 
 	/***************************************************************************
 	 *                           TEST: Market making                           *
 	 ***************************************************************************/
 	it(">> matchOrders", async () => {
-		txMined = await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		totalgas += txMined.receipt.gasUsed;
@@ -443,11 +441,11 @@ contract('Fullchain', async (accounts) => {
 			{ t: 'uint256', v: 0                                                  },
 		);
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "SchedulerNotice");
+		events = extractEvents(txMined, IexecInstance.address, "SchedulerNotice");
 		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 		assert.equal(events[0].args.dealid,     dealid                    );
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "OrdersMatched");
+		events = extractEvents(txMined, IexecInstance.address, "OrdersMatched");
 		assert.equal(events[0].args.dealid,         dealid                                                 );
 		assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder       ));
 		assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder   ));
@@ -460,7 +458,7 @@ contract('Fullchain', async (accounts) => {
 	 *                      TEST: deal is written onchain                      *
 	 ***************************************************************************/
 	it("[Market] Check deal", async () => {
-		deal = await IexecClerkInstance.viewDeal(dealid);
+		deal = await IexecInstance.viewDeal(dealid);
 		assert.equal    (       deal.app.pointer,           AppInstance.address,             "check deal (deal.app.pointer)"         );
 		assert.equal    (       deal.app.owner,             appProvider,                     "check deal (deal.app.owner)"           );
 		assert.equal    (Number(deal.app.price           ), apporder.appprice,               "check deal (deal.app.price)"           );
@@ -498,22 +496,22 @@ contract('Fullchain', async (accounts) => {
 	 *                     TEST: check balances - locked 1                     *
 	 ***************************************************************************/
 	it("[Market] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                    TEST: scheduler initializes task                     *
 	 ***************************************************************************/
 	it(">> initialize", async () => {
-		txMined = await IexecHubInstance.initialize(dealid, 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.initialize(dealid, 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		totalgas += txMined.receipt.gasUsed;
@@ -521,7 +519,7 @@ contract('Fullchain', async (accounts) => {
 
 		taskid = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskInitialize");
+		events = extractEvents(txMined, IexecInstance.address, "TaskInitialize");
 		assert.equal(events[0].args.taskid,     taskid                    );
 		assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 	});
@@ -530,11 +528,11 @@ contract('Fullchain', async (accounts) => {
 	 *                  TEST: work order has been initialized                  *
 	 ***************************************************************************/
 	it("[Initialized] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
+		task = await IexecInstance.viewTask(taskid);
 		assert.equal    (       task.status,                constants.TaskStatusEnum.ACTIVE                                              );
 		assert.equal    (       task.dealid,                dealid                                                                       );
 		assert.equal    (Number(task.idx),                  0                                                                            );
-		assert.equal    (Number(task.timeref),              (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.equal    (Number(task.timeref),              (await IexecInstance.viewCategory(requestorder.category)).workClockTimeRef);
 		assert.isAbove  (Number(task.contributionDeadline), 0                                                                            );
 		assert.equal    (Number(task.revealDeadline),       0                                                                            );
 		assert.isAbove  (Number(task.finalDeadline),        0                                                                            );
@@ -593,7 +591,7 @@ contract('Fullchain', async (accounts) => {
 		w = workers[0]
 		// for (w of workers)
 		{
-			txMined = await IexecHubInstance.contribute(
+			txMined = await IexecInstance.contribute(
 				authorizations[w.address].taskid,  // task (authorization)
 				results[w.address].hash,           // common    (result)
 				results[w.address].seal,           // unique    (result)
@@ -604,7 +602,7 @@ contract('Fullchain', async (accounts) => {
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
+			events = extractEvents(txMined, IexecInstance.address, "TaskContribute");
 			assert.equal(events[0].args.taskid, authorizations[w.address].taskid);
 			assert.equal(events[0].args.worker, w.address                       );
 			assert.equal(events[0].args.hash,   results[w.address].hash         );
@@ -621,7 +619,7 @@ contract('Fullchain', async (accounts) => {
 		w = workers[0]
 		// for (w of workers)
 		{
-			contribution = await IexecHubInstance.viewContribution(taskid, w.address);
+			contribution = await IexecInstance.viewContribution(taskid, w.address);
 			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
 			assert.equal(contribution.resultHash,       results[w.address].hash,                      "check contribution (contribution.resultHash)"      );
 			assert.equal(contribution.resultSeal,       results[w.address].seal,                      "check contribution (contribution.resultSeal)"      );
@@ -633,26 +631,26 @@ contract('Fullchain', async (accounts) => {
 	 *                     TEST: check balances - locked 2                     *
 	 ***************************************************************************/
 	it("[Contributed 1/2] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Contributed 1/2] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
+		task = await IexecInstance.viewTask(taskid);
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.ACTIVE                                              );
 		assert.equal    (       task.dealid,                   dealid                                                                       );
 		assert.equal    (Number(task.idx),                     0                                                                            );
-		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.equal    (Number(task.timeref),                 (await IexecInstance.viewCategory(requestorder.category)).workClockTimeRef);
 		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
 		assert.equal    (Number(task.revealDeadline),          0                                                                            );
 		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
@@ -669,7 +667,7 @@ contract('Fullchain', async (accounts) => {
 		w = workers[1]
 		// for (w of workers)
 		{
-			txMined = await IexecHubInstance.contribute(
+			txMined = await IexecInstance.contribute(
 				authorizations[w.address].taskid, // task (authorization)
 				results[w.address].hash,          // common    (result)
 				results[w.address].seal,          // unique    (result)
@@ -680,12 +678,12 @@ contract('Fullchain', async (accounts) => {
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, IexecHubInstance.address, "TaskContribute");
+			events = extractEvents(txMined, IexecInstance.address, "TaskContribute");
 			assert.equal(events[0].args.taskid, authorizations[w.address].taskid);
 			assert.equal(events[0].args.worker, w.address                       );
 			assert.equal(events[0].args.hash,   results[w.address].hash         );
 
-			events = extractEvents(txMined, IexecHubInstance.address, "TaskConsensus");
+			events = extractEvents(txMined, IexecInstance.address, "TaskConsensus");
 			assert.equal(events[0].args.taskid,    taskid        );
 			assert.equal(events[0].args.consensus, consensus.hash);
 
@@ -701,7 +699,7 @@ contract('Fullchain', async (accounts) => {
 		w = workers[1]
 		// for (w of workers)
 		{
-			contribution = await IexecHubInstance.viewContribution(taskid, w.address);
+			contribution = await IexecInstance.viewContribution(taskid, w.address);
 			assert.equal(contribution.status,           constants.ContributionStatusEnum.CONTRIBUTED, "check contribution (contribution.status)"          );
 			assert.equal(contribution.resultHash,       results[w.address].hash,                      "check contribution (contribution.resultHash)"      );
 			assert.equal(contribution.resultSeal,       results[w.address].seal,                      "check contribution (contribution.resultSeal)"      );
@@ -713,26 +711,26 @@ contract('Fullchain', async (accounts) => {
 	 *                     TEST: check balances - locked 2                     *
 	 ***************************************************************************/
 	it("[Contributed 2/2] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  993,  7 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  992,  8 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971, 29 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Contributed 2/2] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
+		task = await IexecInstance.viewTask(taskid);
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.REVEALING                                           );
 		assert.equal    (       task.dealid,                   dealid                                                                       );
 		assert.equal    (Number(task.idx),                     0                                                                            );
-		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.equal    (Number(task.timeref),                 (await IexecInstance.viewCategory(requestorder.category)).workClockTimeRef);
 		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
 		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
 		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
@@ -749,14 +747,14 @@ contract('Fullchain', async (accounts) => {
 		for (w of workers)
 		if (results[w.address].hash == consensus.hash)
 		{
-			txMined = await IexecHubInstance.reveal(
+			txMined = await IexecInstance.reveal(
 				taskid,
 				results[w.address].digest,
 				{ from: w.address }
 			);
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-			events = extractEvents(txMined, IexecHubInstance.address, "TaskReveal");
+			events = extractEvents(txMined, IexecInstance.address, "TaskReveal");
 			assert.equal(events[0].args.taskid, taskid                   );
 			assert.equal(events[0].args.worker, w.address                );
 			assert.equal(events[0].args.digest, results[w.address].digest);
@@ -770,11 +768,11 @@ contract('Fullchain', async (accounts) => {
 	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Reveal] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
+		task = await IexecInstance.viewTask(taskid);
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.REVEALING                                           );
 		assert.equal    (       task.dealid,                   dealid                                                                       );
 		assert.equal    (Number(task.idx),                     0                                                                            );
-		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.equal    (Number(task.timeref),                 (await IexecInstance.viewCategory(requestorder.category)).workClockTimeRef);
 		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
 		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
 		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
@@ -788,10 +786,10 @@ contract('Fullchain', async (accounts) => {
 	 *                        TEST: scheduler finalizes                        *
 	 ***************************************************************************/
 	it(">> finalizeWork", async () => {
-		txMined = await IexecHubInstance.finalize(taskid, web3.utils.utf8ToHex("aResult"), { from: scheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.finalize(taskid, web3.utils.utf8ToHex("aResult"), { from: scheduler, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecHubInstance.address, "TaskFinalize");
+		events = extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  taskid                         );
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"));
 
@@ -806,11 +804,11 @@ contract('Fullchain', async (accounts) => {
 	 *                         TEST: check task status                         *
 	 ***************************************************************************/
 	it("[Finalized] Check task", async () => {
-		task = await IexecHubInstance.viewTask(taskid);
+		task = await IexecInstance.viewTask(taskid);
 		assert.equal    (       task.status,                   constants.TaskStatusEnum.COMPLETED                                           );
 		assert.equal    (       task.dealid,                   dealid                                                                       );
 		assert.equal    (Number(task.idx),                     0                                                                            );
-		assert.equal    (Number(task.timeref),                 (await IexecHubInstance.viewCategory(requestorder.category)).workClockTimeRef);
+		assert.equal    (Number(task.timeref),                 (await IexecInstance.viewCategory(requestorder.category)).workClockTimeRef);
 		assert.isAbove  (Number(task.contributionDeadline),    0                                                                            );
 		assert.isAbove  (Number(task.revealDeadline),          0                                                                            );
 		assert.isAbove  (Number(task.finalDeadline),           0                                                                            );
@@ -825,26 +823,26 @@ contract('Fullchain', async (accounts) => {
 	 *                       TEST: check balance - after                       *
 	 ***************************************************************************/
 	it("[Finalized] Check balances", async () => {
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    1,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    3,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1003,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1011,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1011,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
-		assert.deepEqual(Object.extract(await IexecClerkInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    1,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    3,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1003,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1011,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1011,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000,  0 ], "check balance");
+		assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [  971,  0 ], "check balance");
 	});
 
 	/***************************************************************************
 	 *                        TEST: check score - after                        *
 	 ***************************************************************************/
 	it("[Finalized] Check score", async () => {
-		assert.equal(Number(await IexecHubInstance.viewScore(worker1)), 1, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker2)), 1, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker3)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker4)), 0, "score issue");
-		assert.equal(Number(await IexecHubInstance.viewScore(worker5)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker1)), 1, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker2)), 1, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker3)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker4)), 0, "score issue");
+		assert.equal(Number(await IexecInstance.viewScore(worker5)), 0, "score issue");
 	});
 
 	it("FINISHED", async () => {

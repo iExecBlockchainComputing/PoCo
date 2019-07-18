@@ -19,7 +19,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecClerk', async (accounts) => {
+contract('OrderSignature', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -35,8 +35,7 @@ contract('IexecClerk', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
@@ -51,8 +50,7 @@ contract('IexecClerk', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -61,7 +59,7 @@ contract('IexecClerk', async (accounts) => {
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecClerkInstance.address,
+			verifyingContract: IexecInstance.address,
 		});
 
 	});
@@ -168,10 +166,10 @@ contract('IexecClerk', async (accounts) => {
 		requestorder_hash    = odbtools.RequestOrderTypedStructHash   (requestorder   );
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.signAppOrder       (apporder,        { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.signDatasetOrder   (datasetorder,    { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.signRequestOrder   (requestorder,    { from: user,            gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.signAppOrder       (apporder,        { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.signDatasetOrder   (datasetorder,    { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.signRequestOrder   (requestorder,    { from: user,            gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -183,60 +181,60 @@ contract('IexecClerk', async (accounts) => {
 	 *                            TEST: App cancel                            *
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
+		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
+		await shouldFail.reverting(IexecInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
 	});
 
 	it("presign app order #2", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		await IexecClerkInstance.cancelAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), apporder.volume, "Error in app order presign");
+		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
+		await IexecInstance.cancelAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.equal(await IexecInstance.viewConsumed(apporder_hash), apporder.volume, "Error in app order presign");
 	});
 
 	/***************************************************************************
 	 *                            TEST: Dataset cancel                            *
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
+		await shouldFail.reverting(IexecInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
 	});
 
 	it("presign dataset order #2", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		await IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), datasetorder.volume, "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
+		await IexecInstance.cancelDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), datasetorder.volume, "Error in dataset order presign");
 	});
 
 	/***************************************************************************
 	 *                            TEST: Workerpool cancel                            *
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
+		await shouldFail.reverting(IexecInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
 	});
 
 	it("presign workerpool order #2", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		await IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), workerpoolorder.volume, "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
+		await IexecInstance.cancelWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), workerpoolorder.volume, "Error in workerpool order presign");
 	});
 
 	/***************************************************************************
 	 *                          TEST: Request cancel                           *
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
+		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
+		await shouldFail.reverting(IexecInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
 	});
 
 	it("presign request order #2", async () => {
-		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		await IexecClerkInstance.cancelRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), requestorder.volume, "Error in request order presign");
+		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
+		await IexecInstance.cancelRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), requestorder.volume, "Error in request order presign");
 	});
 
 });

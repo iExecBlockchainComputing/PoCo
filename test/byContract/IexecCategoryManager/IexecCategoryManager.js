@@ -19,7 +19,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecHub: Category manager', async (accounts) => {
+contract('CategoryManager', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -35,8 +35,7 @@ contract('IexecHub: Category manager', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
@@ -53,8 +52,7 @@ contract('IexecHub: Category manager', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -64,48 +62,48 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 *                    CategoryManager is OwnableMutable                    *
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
-		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
-		await shouldFail.reverting(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
+		assert.equal( await IexecInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
+		await shouldFail.reverting(IexecInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal( await IexecInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
 	/***************************************************************************
 	 *                    CategoryManager - create and view                    *
 	 ***************************************************************************/
 	it("CategoryManager - create and view #1: view fail", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
-		await shouldFail.reverting(IexecHubInstance.viewCategory(5));
-		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+		await shouldFail.reverting(IexecInstance.viewCategory(5));
+		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
-		await shouldFail.reverting(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+		await shouldFail.reverting(IexecInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #3: authorized create", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 
-		txMined = await IexecHubInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecHubInstance.address, "CreateCategory");
+		events = extractEvents(txMined, IexecInstance.address, "CreateCategory");
 		assert.equal(events[0].args.catid,            5,                       "check catid"           );
 		assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
 		assert.equal(events[0].args.description,      "Small but impractical", "check description"     );
 		assert.equal(events[0].args.workClockTimeRef, 3,                       "check workClockTimeRef");
 
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #4: view created", async () => {
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
 
-		category = await IexecHubInstance.viewCategory(5);
+		category = await IexecInstance.viewCategory(5);
 		assert.equal(category.name,             "Tiny",                  "check name"            );
 		assert.equal(category.description,      "Small but impractical", "check description"     );
 		assert.equal(category.workClockTimeRef, 3,                       "check workClockTimeRef");
 
-		assert.equal(await IexecHubInstance.countCategory(), 6, "Error in category count");
+		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
 	});
 });

@@ -34,7 +34,7 @@ contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase
 			_workerpoolDescription
 		);
 
-		require(insert(address(workerpool), _workerpoolOwner));
+		insert(address(workerpool), _workerpoolOwner);
 		emit CreateWorkerpool(_workerpoolOwner, address(workerpool));
 
 		return workerpool;

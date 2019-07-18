@@ -19,7 +19,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('IexecClerk', async (accounts) => {
+contract('OrderSignature', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -35,8 +35,7 @@ contract('IexecClerk', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
@@ -51,8 +50,7 @@ contract('IexecClerk', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -61,7 +59,7 @@ contract('IexecClerk', async (accounts) => {
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecClerkInstance.address,
+			verifyingContract: IexecInstance.address,
 		});
 
 		/**
@@ -111,15 +109,15 @@ contract('IexecClerk', async (accounts) => {
 		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -132,13 +130,13 @@ contract('IexecClerk', async (accounts) => {
 		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -256,64 +254,64 @@ contract('IexecClerk', async (accounts) => {
 	 *                             TEST: App sign                             *
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
-		await shouldFail.reverting(IexecClerkInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		await shouldFail.reverting(IexecInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
 	it("presign app order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
-		await IexecClerkInstance.signAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		await IexecInstance.signAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isTrue (await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
 	});
 
 	/***************************************************************************
 	 *                             TEST: Dataset sign                             *
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
-		await shouldFail.reverting(IexecClerkInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		await shouldFail.reverting(IexecInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
 	it("presign dataset order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
-		await IexecClerkInstance.signDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		await IexecInstance.signDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isTrue (await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
 	});
 
 	/***************************************************************************
 	 *                             TEST: Workerpool sign                             *
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
-		await shouldFail.reverting(IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		await shouldFail.reverting(IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
 	it("presign workerpool order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
-		await IexecClerkInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		await IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isTrue (await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
 	});
 
 	/***************************************************************************
 	 *                           TEST: Request sign                            *
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
-		await shouldFail.reverting(IexecClerkInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		await shouldFail.reverting(IexecInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 
 	it("presign request order #2", async () => {
-		assert.isFalse(await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
-		await IexecClerkInstance.signRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecClerkInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		await IexecInstance.signRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isTrue (await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
 	});
 
 	it("Matching presigned orders", async () => {
-		await IexecClerkInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 	});
 
 });

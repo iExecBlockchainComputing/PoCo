@@ -40,7 +40,7 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase
 			_datasetChecksum
 		);
 
-		require(insert(address(dataset), _datasetOwner));
+		insert(address(dataset), _datasetOwner);
 		emit CreateDataset(_datasetOwner, address(dataset));
 		return dataset;
 	}

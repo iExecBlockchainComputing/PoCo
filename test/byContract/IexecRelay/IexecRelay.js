@@ -35,12 +35,10 @@ contract('Relay', async (accounts) => {
 	let user            = accounts[9];
 
 	var RLCInstance                = null;
-	var IexecHubInstance           = null;
-	var IexecClerkInstance         = null;
+	var IexecInstance              = null;
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
-	var IexecClerkInstance         = null;
 
 	var AppInstance        = null;
 	var DatasetInstance    = null;
@@ -74,8 +72,7 @@ contract('Relay', async (accounts) => {
 		 * Retreive deployed contracts
 		 */
 		RLCInstance                = await RLC.deployed();
-		IexecHubInstance           = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-		IexecClerkInstance         = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
+		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -84,7 +81,7 @@ contract('Relay', async (accounts) => {
 			name:              "iExecODB",
 			version:           "3.0-alpha",
 			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecClerkInstance.address,
+			verifyingContract: IexecInstance.address,
 		});
 
 		/**
@@ -134,15 +131,15 @@ contract('Relay', async (accounts) => {
 		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
 
 		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
+			RLCInstance.approve(IexecInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -222,7 +219,7 @@ contract('Relay', async (accounts) => {
 			wallets.addressToPrivate(appProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
 				apporder.sign,
@@ -251,7 +248,7 @@ contract('Relay', async (accounts) => {
 			wallets.addressToPrivate(datasetProvider)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
 				datasetorder.sign,
@@ -282,7 +279,7 @@ contract('Relay', async (accounts) => {
 			wallets.addressToPrivate(scheduler)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
 				workerpoolorder.sign,
@@ -318,7 +315,7 @@ contract('Relay', async (accounts) => {
 			wallets.addressToPrivate(user)
 		);
 		assert.isTrue(
-			await IexecClerkInstance.verifySignature(
+			await IexecInstance.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
 				requestorder.sign,
@@ -329,10 +326,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastAppOrder", async () => {
-		txMined = await IexecClerkInstance.broadcastAppOrder(apporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.broadcastAppOrder(apporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastAppOrder");
+		events = extractEvents(txMined, IexecInstance.address, "BroadcastAppOrder");
 		assert.equal(events[0].args.apporder.app,                apporder.app               );
 		assert.equal(events[0].args.apporder.appprice,           apporder.appprice          );
 		assert.equal(events[0].args.apporder.volume,             apporder.volume            );
@@ -346,10 +343,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastDatasetOrder", async () => {
-		txMined = await IexecClerkInstance.broadcastDatasetOrder(datasetorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.broadcastDatasetOrder(datasetorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastDatasetOrder");
+		events = extractEvents(txMined, IexecInstance.address, "BroadcastDatasetOrder");
 		assert.equal(events[0].args.datasetorder.dataset,            datasetorder.dataset           );
 		assert.equal(events[0].args.datasetorder.datasetprice,       datasetorder.datasetprice      );
 		assert.equal(events[0].args.datasetorder.volume,             datasetorder.volume            );
@@ -363,10 +360,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastWorkerpoolOrder", async () => {
-		txMined = await IexecClerkInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastWorkerpoolOrder");
+		events = extractEvents(txMined, IexecInstance.address, "BroadcastWorkerpoolOrder");
 		assert.equal(events[0].args.workerpoolorder.workerpool,        workerpoolorder.workerpool       );
 		assert.equal(events[0].args.workerpoolorder.workerpoolprice,   workerpoolorder.workerpoolprice  );
 		assert.equal(events[0].args.workerpoolorder.volume,            workerpoolorder.volume           );
@@ -383,10 +380,10 @@ contract('Relay', async (accounts) => {
 	});
 
 	it(">> broadcastRequestOrder", async () => {
-		txMined = await IexecClerkInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		events = extractEvents(txMined, IexecClerkInstance.address, "BroadcastRequestOrder");
+		events = extractEvents(txMined, IexecInstance.address, "BroadcastRequestOrder");
 		assert.equal(events[0].args.requestorder.app,                requestorder.app               );
 		assert.equal(events[0].args.requestorder.appmaxprice,        requestorder.appmaxprice       );
 		assert.equal(events[0].args.requestorder.dataset,            requestorder.dataset           );

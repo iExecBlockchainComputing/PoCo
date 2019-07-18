@@ -46,7 +46,7 @@ contract AppRegistry is CounterfactualFactory, RegistryBase
 			_appMREnclave
 		);
 
-		require(insert(address(app), _appOwner));
+		insert(address(app), _appOwner);
 		emit CreateApp(_appOwner, address(app));
 
 		return app;
