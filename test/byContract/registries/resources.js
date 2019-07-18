@@ -67,6 +67,8 @@ contract('Ressources', async (accounts) => {
 		for (i=1; i<5; ++i)
 		{
 			AppInstances[i] = await App.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+
+			// SETUP
 			await AppInstances[i].setup(
 				appProvider,
 				"App #"+i,
@@ -76,6 +78,23 @@ contract('Ressources', async (accounts) => {
 				"0x1234",
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
+			assert.equal(await AppInstances[i].owner(),          appProvider                               );
+			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
+			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
+			assert.equal(await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES                 );
+			assert.equal(await AppInstances[i].m_appChecksum(),  web3.utils.keccak256("Content of app #"+i));
+			assert.equal(await AppInstances[i].m_appMREnclave(), "0x1234"                                  );
+
+			// CANNOT RESETUP
+			await shouldFail.reverting(AppInstances[i].setup(
+				appProvider,
+				"Other App #"+i,
+				"DOCKER",
+				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of other app #"+i),
+				"0x1234",
+				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			));
 			assert.equal(await AppInstances[i].owner(),          appProvider                               );
 			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
 			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
@@ -92,6 +111,8 @@ contract('Ressources', async (accounts) => {
 		for (i=1; i<5; ++i)
 		{
 			DatasetInstances[i] = await Dataset.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+
+			// SETUP
 			await DatasetInstances[i].setup(
 				datasetProvider,
 				"Dataset #"+i,
@@ -99,6 +120,19 @@ contract('Ressources', async (accounts) => {
 				web3.utils.keccak256("Content of dataset #"+i),
 				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
+			assert.equal(await DatasetInstances[i].owner(),              datasetProvider                               );
+			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
+			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
+			assert.equal(await DatasetInstances[i].m_datasetChecksum(),  web3.utils.keccak256("Content of dataset #"+i));
+
+			// CANNOT RESETUP
+			await shouldFail.reverting(DatasetInstances[i].setup(
+				datasetProvider,
+				"Other Dataset #"+i,
+				constants.MULTIADDR_BYTES,
+				web3.utils.keccak256("Content of other dataset #"+i),
+				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			));
 			assert.equal(await DatasetInstances[i].owner(),              datasetProvider                               );
 			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
 			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
@@ -113,11 +147,24 @@ contract('Ressources', async (accounts) => {
 		for (i=1; i<5; ++i)
 		{
 			WorkerpoolInstances[i] = await Workerpool.new({ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+
+			// SETUP
 			await WorkerpoolInstances[i].setup(
 				scheduler,
 				"Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
+			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler       );
+			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i);
+			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30              );
+			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1               );
+
+			// CANNOT RESETUP
+			await shouldFail.reverting(WorkerpoolInstances[i].setup(
+				scheduler,
+				"Other Workerpool #"+i,
+				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+			));
 			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler       );
 			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i);
 			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30              );
