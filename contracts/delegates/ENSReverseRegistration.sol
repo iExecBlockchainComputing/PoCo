@@ -2,7 +2,7 @@ pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
 
 import "./DelegateBase.sol";
-import "../tools/ENSTools.sol";
+import "../libs/ENSTools.sol";
 
 
 interface ENSReverseRegistration
@@ -10,11 +10,11 @@ interface ENSReverseRegistration
 	function registerENS(ENSRegistry, string calldata) external;
 }
 
-contract ENSReverseRegistrationDelegate is ENSReverseRegistration, DelegateBase, ENSTools
+contract ENSReverseRegistrationDelegate is ENSReverseRegistration, DelegateBase
 {
 	function registerENS(ENSRegistry ens, string calldata name)
 	external onlyOwner()
 	{
-		_reverseRegistration(ens, name);
+		ENSTools.reverseRegistration(ens, name);
 	}
 }
