@@ -4,9 +4,8 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "test": "./node_modules/.bin/truffle test",
-    "pretest": "./node_modules/.bin/testrpc > /dev/null &",
-    "posttest": "kill $(ps aux | grep testrpc |grep node|awk '{print $2}')",
+		"build":    "./node_modules/.bin/truffle compile",
+    "test":     "./autotest.sh",
     "coverage": "./node_modules/.bin/solidity-coverage"
   },
   "repository": {
