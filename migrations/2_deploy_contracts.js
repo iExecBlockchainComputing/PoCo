@@ -213,7 +213,7 @@ module.exports = async function(deployer, network, accounts)
 		console.log("Making deposit to " + workerAddresses.length + " wallets");
 		await RLCInstance.approve(IexecInterfaceInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
 
-		let batchSize = 50;
+		let batchSize = 30;
 		for (var i = 0; i < workerAddresses.length; i += batchSize)
 		{
 			group = workerAddresses.slice(i, i+batchSize);
