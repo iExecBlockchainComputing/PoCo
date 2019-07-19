@@ -304,8 +304,21 @@ contract('EscrowToken', async (accounts) => {
 		txMined = await RLCInstance.approveAndCall(IexecInstance.address, amount, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		assert.equal(await RLCInstance.balanceOf(iexecAdmin),        balanceBefore.sub(amount).toString());
+		assert.equal(await RLCInstance.balanceOf(iexecAdmin),   balanceBefore.sub(amount).toString());
 		assert.equal(await IexecInstance.balanceOf(iexecAdmin), accountBefore.add(amount).toString());
+	});
+
+	it("Escrow - ApproveAndCall - wrong token", async () => {
+		const balanceBefore = await RLCInstance.balanceOf(iexecAdmin);
+		const accountBefore = await IexecInstance.balanceOf(iexecAdmin);
+		const amount        = web3.utils.toBN(1000);
+
+		DummyToken = await RLC.new({ from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+
+		await expectRevert(DummyToken.approveAndCall(IexecInstance.address, amount, "0x", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "wrong-token");
+
+		assert.equal(await RLCInstance.balanceOf(iexecAdmin),   balanceBefore.toString());
+		assert.equal(await IexecInstance.balanceOf(iexecAdmin), accountBefore.toString());
 	});
 
 	/***************************************************************************
