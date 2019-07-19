@@ -4,8 +4,8 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-		"build":    "./node_modules/.bin/truffle compile",
-    "test":     "./autotest.sh",
+    "build": "./node_modules/.bin/truffle compile",
+    "test": "./autotest.sh",
     "coverage": "./node_modules/.bin/solidity-coverage"
   },
   "repository": {
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo-dev.git#readme",
   "dependencies": {
     "@ensdomains/ens": "^0.3.11",
+    "@ensdomains/resolver": "^0.1.9",
     "iexec-solidity": "^0.0.13",
     "openzeppelin-solidity": "^2.3.0",
     "rlc-faucet-contract": "^2.0.0"

@@ -11,9 +11,10 @@ import "./delegates/IexecEscrowToken.sol";
 import "./delegates/IexecOrderSignature.sol";
 import "./delegates/IexecPoco.sol";
 import "./delegates/IexecRelay.sol";
+import "./delegates/ENSReverseRegistration.sol";
 
 
-contract IexecInterfaceABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay
+contract IexecInterfaceABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, ENSReverseRegistration
 {
 /*
 	event CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);

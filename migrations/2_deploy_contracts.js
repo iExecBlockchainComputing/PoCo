@@ -1,14 +1,19 @@
-var RLC                = artifacts.require("rlc-faucet-contract/RLC");
-var IexecODBLibOrders  = artifacts.require("IexecODBLibOrders");
-var IexecInterface     = artifacts.require("IexecInterface");
-var AppRegistry        = artifacts.require("AppRegistry");
-var DatasetRegistry    = artifacts.require("DatasetRegistry");
-var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
-
-var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var ERC1538Update      = artifacts.require("iexec-solidity/ERC1538UpdateDelegate");
-var ERC1538Query       = artifacts.require("iexec-solidity/ERC1538QueryDelegate");
-
+// Token
+var RLC                     = artifacts.require("rlc-faucet-contract/RLC");
+// ENS
+var ENSRegistry             = artifacts.require("@ensdomains/ens/ENSRegistry");
+var FIFSRegistrar           = artifacts.require("@ensdomains/ens/FIFSRegistrar");
+var ReverseRegistrar        = artifacts.require("@ensdomains/ens/ReverseRegistrar.sol");
+var PublicResolver          = artifacts.require("@ensdomains/resolver/PublicResolver");
+// ERC1538 core & delegates
+var ERC1538Proxy            = artifacts.require("iexec-solidity/ERC1538Proxy");
+var ERC1538Update           = artifacts.require("iexec-solidity/ERC1538UpdateDelegate");
+var ERC1538Query            = artifacts.require("iexec-solidity/ERC1538QueryDelegate");
+// Libraries
+var IexecODBLibOrders       = artifacts.require("IexecODBLibOrders");
+// Interface
+var IexecInterface          = artifacts.require("IexecInterface");
+// Delegates
 var IexecAccessors          = artifacts.require("IexecAccessorsDelegate");
 var IexecAccessorsABILegacy = artifacts.require("IexecAccessorsABILegacyDelegate");
 var IexecCategoryManager    = artifacts.require("IexecCategoryManagerDelegate");
@@ -19,6 +24,10 @@ var IexecOrderSignature     = artifacts.require("IexecOrderSignatureDelegate");
 var IexecPoco               = artifacts.require("IexecPocoDelegate");
 var IexecRelay              = artifacts.require("IexecRelayDelegate");
 var ENSReverseRegistration  = artifacts.require("ENSReverseRegistrationDelegate");
+// Other contracts
+var AppRegistry             = artifacts.require("AppRegistry");
+var DatasetRegistry         = artifacts.require("DatasetRegistry");
+var WorkerpoolRegistry      = artifacts.require("WorkerpoolRegistry");
 
 const USENATIVE = false;
 
@@ -178,10 +187,118 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/***************************************************************************
+	 *                                   ENS                                   *
+	 ***************************************************************************/
+	if (chaintype == "private")
+	{
+		var ens        = null;
+		var resolver   = null;
+		var registrars = {}
+
+		function labelhash(label)
+		{
+			return web3.utils.keccak256(label.toLowerCase())
+		}
+
+		function compose(labelHash, rootHash)
+		{
+			return web3.utils.keccak256(web3.eth.abi.encodeParameters([ "bytes32", "bytes32" ], [ rootHash,  labelHash ]));
+		}
+
+		function namehash(domain)
+		{
+			hash = "0x0000000000000000000000000000000000000000000000000000000000000000";
+			domain.split('.').reverse().forEach(label => {
+				hash = compose(labelhash(label), hash);
+			});
+			return hash
+		}
+
+		async function bootstrap()
+		{
+			// ens registry
+			await deployer.deploy(ENSRegistry, { from: accounts[0] });
+			ens = await ENSRegistry.deployed();
+			// resolver
+			await deployer.deploy(PublicResolver, ens.address, { from: accounts[0] });
+			resolver = await PublicResolver.deployed();
+			// root registrar
+			registrars[""] = await FIFSRegistrar.new(ens.address, "0x0", { from: accounts[0] });
+			await ens.setOwner("0x0", registrars[""].address, { from: accounts[0] });
+
+			console.log("ENSRegistry deployed at address: " + ens.address);
+			console.log("PublicResolver deployed at address: " + resolver.address);
+		}
+
+		async function setReverseRegistrar()
+		{
+			await deployer.deploy(ReverseRegistrar, ens.address, resolver.address, { from: accounts[0] });
+			reverseregistrar = await ReverseRegistrar.deployed()
+
+			await registrars[""].register(labelhash("reverse"), accounts[0], { from: accounts[0] });
+			await ens.setSubnodeOwner(namehash("reverse"), labelhash("addr"), reverseregistrar.address);
+		}
+
+		async function registerDomain(label, domain="")
+		{
+			const name      = domain ? `${label}.${domain}` : `${label}`
+			const labelHash = labelhash(label);
+			const nameHash  = namehash(name);
+			// deploy domain registrar
+			registrars[name] = await FIFSRegistrar.new(ens.address, nameHash, { from: accounts[0] });
+			// register as subdomain
+			await registrars[domain].register(labelHash, accounts[0], { from: accounts[0] });
+			// give ownership to the new registrar
+			await ens.setOwner(nameHash, registrars[name].address, { from: accounts[0] });
+			return registrars[name];
+		}
+
+		async function registerAddress(label, domain, address)
+		{
+			const name      = `${label}.${domain}`
+			const labelHash = labelhash(label);
+			const nameHash  = namehash(name);
+			// register as subdomain
+			await registrars[domain].register(labelHash, accounts[0], { from: accounts[0] });
+			// link to ens (resolver & addr)
+			await ens.setResolver(nameHash, resolver.address, { from: accounts[0] });
+			await resolver.setAddr(nameHash, address, { from: accounts[0] });
+		}
+
+		await bootstrap();
+		await setReverseRegistrar();
+		await registerDomain("eth");
+		await registerDomain("iexec", "eth");
+		await registerAddress("admin", "iexec.eth", accounts[0]);
+		await registerAddress("token", "iexec.eth", RLCInstance.address);
+		await registerAddress("hub",   "iexec.eth", IexecInterfaceInstance.address);
+
+		await reverseregistrar.setName("admin.iexec.eth", { from: accounts[0] });
+		await IexecInterfaceInstance.registerENS(ens.address, "hub.iexec.eth");
+	}
+
+	/***************************************************************************
+	 *                          ERC1538 list methods                           *
+	 ***************************************************************************/
+	if (false)
+	{
+		let ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
+		let functionCount = await ERC1538QueryInstace.totalFunctions();
+
+		console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
+		for (let i = 0; i < functionCount; ++i)
+		{
+			let functionDetails = await ERC1538QueryInstace.functionByIndex(i);
+			console.log(`[${i}] ${functionDetails.delegate} ${functionDetails.signature}`);
+		}
+	}
+
+	/***************************************************************************
 	 *                             Wallets deposit                             *
 	 ***************************************************************************/
 	// Starting deposit for all test wallets
-	if (chaintype == "private" || chaintype == "kovan")
+	// if (chaintype == "private" || chaintype == "kovan")
+	if (false)
 	{
 		// -------------------------------- Admin --------------------------------
 		var adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
@@ -224,19 +341,6 @@ module.exports = async function(deployer, network, accounts)
 			);
 			group.forEach(address => IexecInterfaceInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
 		}
-	}
-
-	/***************************************************************************
-	 *                          ERC1538 list methods                           *
-	 ***************************************************************************/
-	let ERC1538QueryInstace = await ERC1538Query.at(ERC1538.address);
-	let functionCount = await ERC1538QueryInstace.totalFunctions();
-
-	console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
-	for (let i = 0; i < functionCount; ++i)
-	{
-		let functionDetails = await ERC1538QueryInstace.functionByIndex(i);
-		console.log(`[${i}] ${functionDetails.delegate} ${functionDetails.signature}`);
 	}
 
 };
