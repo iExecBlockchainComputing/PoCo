@@ -8,7 +8,7 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const   multiaddr   = require('multiaddr');
 const   constants   = require("../utils/constants");
 const   odbtools    = require('../utils/odb-tools');
@@ -383,6 +383,21 @@ contract('Fullchain', async (accounts) => {
 		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		assert.equal(extractEvents(txsMined[0], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[0], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[1], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[1], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[2], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[2], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[3], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[3], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[4], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[4], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[5], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[5], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
+		assert.equal(extractEvents(txsMined[6], RLCInstance.address, "Transfer")[0].args.value, 1000);
+		assert.equal(extractEvents(txsMined[6], RLCInstance.address, "Transfer")[0].args.to,    IexecInstance.address);
 
 		assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
 		assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  constants.NULL.ADDRESS);

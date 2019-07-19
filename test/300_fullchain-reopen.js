@@ -9,7 +9,7 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const   multiaddr   = require('multiaddr');
 const   constants   = require("../utils/constants");
 const   odbtools    = require('../utils/odb-tools');
@@ -371,7 +371,7 @@ contract('Fullchain', async (accounts) => {
 	});
 
 	it("Contribute #2", async () => {
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
 			odbtools.sealResult(tasks[0], "true", worker1)
 		));

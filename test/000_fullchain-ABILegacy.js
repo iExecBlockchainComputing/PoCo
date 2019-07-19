@@ -10,11 +10,11 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var IexecInterfaceABILegacy = artifacts.require("IexecInterfaceABILegacy");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../utils/constants");
-const   odbtools     = require('../utils/odb-tools');
-const   wallets      = require('../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../utils/constants");
+const odbtools  = require('../utils/odb-tools');
+const wallets   = require('../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 

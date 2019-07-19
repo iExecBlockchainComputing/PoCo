@@ -8,11 +8,11 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -86,7 +86,7 @@ contract('Ressources', async (accounts) => {
 			assert.equal(await AppInstances[i].m_appMREnclave(), "0x1234"                                  );
 
 			// CANNOT RESETUP
-			await shouldFail.reverting(AppInstances[i].setup(
+			await expectRevert.unspecified(AppInstances[i].setup(
 				appProvider,
 				"Other App #"+i,
 				"DOCKER",
@@ -126,7 +126,7 @@ contract('Ressources', async (accounts) => {
 			assert.equal(await DatasetInstances[i].m_datasetChecksum(),  web3.utils.keccak256("Content of dataset #"+i));
 
 			// CANNOT RESETUP
-			await shouldFail.reverting(DatasetInstances[i].setup(
+			await expectRevert.unspecified(DatasetInstances[i].setup(
 				datasetProvider,
 				"Other Dataset #"+i,
 				constants.MULTIADDR_BYTES,
@@ -160,7 +160,7 @@ contract('Ressources', async (accounts) => {
 			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1               );
 
 			// CANNOT RESETUP
-			await shouldFail.reverting(WorkerpoolInstances[i].setup(
+			await expectRevert.unspecified(WorkerpoolInstances[i].setup(
 				scheduler,
 				"Other Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -199,7 +199,7 @@ contract('Ressources', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+		await expectRevert.unspecified(WorkerpoolInstances[1].changePolicy(
 			0,
 			0,
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -215,7 +215,7 @@ contract('Ressources', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+		await expectRevert.unspecified(WorkerpoolInstances[1].changePolicy(
 			100, // worker stake ratio
 			150, // scheduler reward ratio (should not be above 100%)
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -229,13 +229,13 @@ contract('Ressources', async (accounts) => {
 
 
 	it("Ressources cannot be transfered", async () => {
-		await shouldFail.reverting(AppInstances[1].transferOwnership(user, { from: appProvider}));
+		await expectRevert.unspecified(AppInstances[1].transferOwnership(user, { from: appProvider}));
 		assert.equal(await AppInstances[1].owner(), appProvider);
 
-		await shouldFail.reverting(DatasetInstances[1].transferOwnership(user, { from: datasetProvider}));
+		await expectRevert.unspecified(DatasetInstances[1].transferOwnership(user, { from: datasetProvider}));
 		assert.equal(await DatasetInstances[1].owner(), datasetProvider);
 
-		await shouldFail.reverting(WorkerpoolInstances[1].transferOwnership(user, { from: scheduler}));
+		await expectRevert.unspecified(WorkerpoolInstances[1].transferOwnership(user, { from: scheduler}));
 		assert.equal(await WorkerpoolInstances[1].owner(), scheduler);
 	});
 

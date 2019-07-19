@@ -8,11 +8,11 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -371,7 +371,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - category]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -380,7 +380,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - trust]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ trust: 100 },
@@ -389,7 +389,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - appprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ appprice: 1000 },
 			{},
 			{},
@@ -398,7 +398,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - datasetprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ datasetprice: 1000 },
 			{},
@@ -407,7 +407,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ workerpoolprice: 1000 },
@@ -416,7 +416,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - apptag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
 			{},
@@ -425,7 +425,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - datasettag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
@@ -443,7 +443,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - usertag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -452,7 +452,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - requested app]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -461,7 +461,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - requested dataset]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -470,7 +470,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolrequest]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -479,7 +479,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - app-datasetrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ datasetrestrict: user },
 			{},
 			{},
@@ -496,7 +496,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ workerpoolrestrict: user },
 			{},
 			{},
@@ -513,7 +513,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ requesterrestrict: iexecAdmin },
 			{},
 			{},
@@ -530,7 +530,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - dataset-apprestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ apprestrict: user },
 			{},
@@ -547,7 +547,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ workerpoolrestrict: user },
 			{},
@@ -564,7 +564,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ requesterrestrict: iexecAdmin },
 			{},
@@ -581,7 +581,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-apprestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ apprestrict: user },
@@ -598,7 +598,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-datasetrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ datasetrestrict: user },
@@ -615,7 +615,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ requesterrestrict: iexecAdmin },
@@ -632,7 +632,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[Match - Error - volume null]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},

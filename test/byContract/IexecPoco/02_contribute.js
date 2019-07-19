@@ -8,11 +8,11 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -364,7 +364,7 @@ contract('Poco', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -390,7 +390,7 @@ contract('Poco', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			results,
@@ -405,7 +405,7 @@ contract('Poco', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -420,7 +420,7 @@ contract('Poco', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
@@ -441,7 +441,7 @@ contract('Poco', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),

@@ -8,11 +8,11 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -303,15 +303,15 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[1.2] Initialization - Error (low id)", async () => {
-		await shouldFail.reverting(IexecInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.3] Initialization - Error (high id)", async () => {
-		await shouldFail.reverting(IexecInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecInstance.initialize(deals[1], 1000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[1.4] Initialization - Error (already initialized)", async () => {
-		await shouldFail.reverting(IexecInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecInstance.initialize(deals[1], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });
