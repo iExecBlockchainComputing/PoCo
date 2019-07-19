@@ -5,6 +5,7 @@ module.exports = {
 	norpc: false,
 	copyPackages: [
 		'@ensdomains/ens',
+		'@ensdomains/resolver',
 		'iexec-solidity',
 		'openzeppelin-solidity',
 		'rlc-faucet-contract'
