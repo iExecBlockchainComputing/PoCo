@@ -13,7 +13,7 @@ module.exports = {
 	{
 		console.log("# iExec domain:", JSON.stringify(domain));
 		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
-		console.log("EIP712DOMAIN_SEPARATOR:", this.EIP712DOMAIN_SEPARATOR);
+		console.log("EIP712DOMAIN_SEPARATOR:  ", this.EIP712DOMAIN_SEPARATOR);
 	},
 
 	/* EIP712 compliant structure hashes */

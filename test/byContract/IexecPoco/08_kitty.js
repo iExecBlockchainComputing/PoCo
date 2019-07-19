@@ -92,7 +92,6 @@ contract('Poco', async (accounts) => {
 	}
 
 	describe("Setup", async () => {
-
 		describe("tokens", async () => {
 			it("distribute", async () => {
 				assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
@@ -119,6 +118,8 @@ contract('Poco', async (accounts) => {
 			});
 
 			it("balances", async () => {
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [      0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [      0, 0 ], "check balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100000, 0 ], "check balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100000, 0 ], "check balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100000, 0 ], "check balance");
