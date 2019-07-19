@@ -656,7 +656,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 				totalReward = totalReward.add(deal.workerStake);
 			}
 		}
-		require(totalLogWeight > 0);
 
 		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(deal.schedulerRewardRatio));
