@@ -14,6 +14,8 @@ const constants = require("../../utils/constants");
 const odbtools  = require('../../utils/odb-tools');
 const wallets   = require('../../utils/wallets');
 
+Object.extract = (obj, keys) => keys.map(key => obj[key]);
+
 function extractEvents(txMined, address, name)
 {
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
@@ -44,11 +46,10 @@ contract('ERC1154: resultFor', async (accounts) => {
 	var DatasetInstance    = null;
 	var WorkerpoolInstance = null;
 
-	var apporder         = null;
-	var datasetorder     = null;
-	var workerpoolorder1 = null;
-	var workerpoolorder2 = null;
-	var requestorder     = null;
+	var apporder        = null;
+	var datasetorder    = null;
+	var workerpoolorder = null;
+	var requestorder    = null;
 
 	var deals = {}
 	var tasks = {};
@@ -74,287 +75,377 @@ contract('ERC1154: resultFor', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecInstance.address,
 		});
-
-		/**
-		 * Token distribution
-		 */
-		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
-		txsMined = await Promise.all([
-			RLCInstance.transfer(appProvider,     1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(datasetProvider, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(scheduler,       1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker1,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker2,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker3,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker4,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker5,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,            1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		let balances = await Promise.all([
-			RLCInstance.balanceOf(appProvider),
-			RLCInstance.balanceOf(datasetProvider),
-			RLCInstance.balanceOf(scheduler),
-			RLCInstance.balanceOf(worker1),
-			RLCInstance.balanceOf(worker2),
-			RLCInstance.balanceOf(worker3),
-			RLCInstance.balanceOf(worker4),
-			RLCInstance.balanceOf(worker5),
-			RLCInstance.balanceOf(user)
-		]);
-		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[1], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[2], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[3], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[4], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[5], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
-
-		txsMined = await Promise.all([
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		txsMined = await Promise.all([
-			IexecInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
-	/***************************************************************************
-	 *                  TEST: App creation (by appProvider)                  *
-	 ***************************************************************************/
-	it("[Setup]", async () => {
-		// Ressources
-		txMined = await AppRegistryInstance.createApp(
-			appProvider,
-			"R Clifford Attractors",
-			"DOCKER",
-			constants.MULTIADDR_BYTES,
-			constants.NULL.BYTES32,
-			"0x",
-			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance = await App.at(events[0].args.app);
+	describe("→ setup", async () => {
+		describe("assets", async () => {
+			describe("app", async () => {
+				it("create", async () => {
+					txMined = await AppRegistryInstance.createApp(
+						appProvider,
+						"R Clifford Attractors",
+						"DOCKER",
+						constants.MULTIADDR_BYTES,
+						constants.NULL.BYTES32,
+						"0x",
+						{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+					);
+					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
+					AppInstance = await App.at(events[0].args.app);
+				});
+			});
 
-		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
-			scheduler,
-			"A test workerpool",
-			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
-		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+			describe("dataset", async () => {
+				it("create", async () => {
+					txMined = await DatasetRegistryInstance.createDataset(
+						datasetProvider,
+						"Pi",
+						constants.MULTIADDR_BYTES,
+						constants.NULL.BYTES32,
+						{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+					);
+					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
+					DatasetInstance = await Dataset.at(events[0].args.dataset);
+				});
+			});
 
-		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			describe("workerpool", async () => {
+				it("create", async () => {
+					txMined = await WorkerpoolRegistryInstance.createWorkerpool(
+						scheduler,
+						"A test workerpool",
+						{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+					);
+					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
+					WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+				});
 
-		// Orders
-		apporder = odbtools.signAppOrder(
-			{
-				app:                AppInstance.address,
-				appprice:           3,
-				volume:             1000,
-				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-				datasetrestrict:    constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(appProvider)
-		);
-		datasetorder = odbtools.signDatasetOrder(
-			{
-				dataset:            constants.NULL.ADDRESS,
-				datasetprice:       0,
-				volume:             0,
-				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-				apprestrict:        constants.NULL.ADDRESS,
-				workerpoolrestrict: constants.NULL.ADDRESS,
-				requesterrestrict:  constants.NULL.ADDRESS,
-				salt:               constants.NULL.BYTES32,
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(datasetProvider)
-		);
-		workerpoolorder_offset = odbtools.signWorkerpoolOrder(
-			{
-				workerpool:        WorkerpoolInstance.address,
-				workerpoolprice:   15,
-				volume:            1,
-				tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
-				category:          4,
-				trust:             0,
-				apprestrict:       constants.NULL.ADDRESS,
-				datasetrestrict:   constants.NULL.ADDRESS,
-				requesterrestrict: constants.NULL.ADDRESS,
-				salt:              web3.utils.randomHex(32),
-				sign:              constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(scheduler)
-		);
-		workerpoolorder = odbtools.signWorkerpoolOrder(
-			{
-				workerpool:        WorkerpoolInstance.address,
-				workerpoolprice:   25,
-				volume:            1000,
-				tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
-				category:          4,
-				trust:             0,
-				apprestrict:       constants.NULL.ADDRESS,
-				datasetrestrict:   constants.NULL.ADDRESS,
-				requesterrestrict: constants.NULL.ADDRESS,
-				salt:              web3.utils.randomHex(32),
-				sign:              constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(scheduler)
-		);
-		requestorder = odbtools.signRequestOrder(
-			{
-				app:                AppInstance.address,
-				appmaxprice:        3,
-				dataset:            constants.NULL.ADDRESS,
-				datasetmaxprice:    0,
-				workerpool:         constants.NULL.ADDRESS,
-				workerpoolmaxprice: 25,
-				volume:             10,
-				tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-				category:           4,
-				trust:              0,
-				requester:          user,
-				beneficiary:        user,
-				callback:           constants.NULL.ADDRESS,
-				params:             "<parameters>",
-				salt:               web3.utils.randomHex(32),
-				sign:               constants.NULL.SIGNATURE,
-			},
-			wallets.addressToPrivate(user)
-		);
+				it("change policy", async () => {
+					txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				});
+			});
+		});
 
-		// Market
-		txsMined = await Promise.all([
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		describe("tokens", async () => {
+			it("balances before", async () => {
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
+			});
 
-		// Deals
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(requestorder));
-		assert.equal(deals[0], extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched")[0].args.dealid);
-		assert.equal(deals[1], extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched")[0].args.dealid);
-	});
+			it("deposit", async () => {
+				assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
 
-	it("[setup] Initialization", async () => {
-		tasks[1] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 1 });                                                                    // uninitialized
-		tasks[2] = extractEvents(await IexecInstance.initialize(deals[1], 2, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // initialized
-		tasks[3] = extractEvents(await IexecInstance.initialize(deals[1], 3, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // contributions
-		tasks[4] = extractEvents(await IexecInstance.initialize(deals[1], 4, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // consensus
-		tasks[5] = extractEvents(await IexecInstance.initialize(deals[1], 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // reveal
-		tasks[6] = extractEvents(await IexecInstance.initialize(deals[1], 6, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // finalized
-	});
+				txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-	function sendContribution(authorization, results)
-	{
-		return IexecInstance.contribute(
-				authorization.taskid,                                   // task (authorization)
-				results.hash,                                           // common    (result)
-				results.seal,                                           // unique    (result)
-				authorization.enclave,                                  // address   (enclave)
-				results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
-				authorization.sign,                                     // signature (authorization)
-				{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
-			);
-	}
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.owner,   iexecAdmin);
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.spender, IexecInstance.address);
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.value,   10000000);
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.from,    iexecAdmin);
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.to,      IexecInstance.address);
+				assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.value,   10000000);
+				assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
+				assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
+				assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
 
-	it("[setup] Contribute", async () => {
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
-			odbtools.sealResult(tasks[3], "true", worker1),
-		);
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
-			odbtools.sealResult(tasks[4], "true", worker1),
-		);
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
-			odbtools.sealResult(tasks[5], "true", worker1),
-		);
-		await sendContribution(
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, scheduler),
-			odbtools.sealResult(tasks[6], "true", worker1),
-		);
-	});
+				txsMined = await Promise.all([
+					IexecInstance.transfer(scheduler, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(worker1,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(worker2,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(worker3,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(worker4,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(worker5,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+					IexecInstance.transfer(user,      1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+				]);
+				assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-	it("[setup] Reveal", async () => {
-		await IexecInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-		await IexecInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-	});
-	it("[setup] Finalize", async () => {
-		await IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
+			});
+
+			it("balances after", async () => {
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(appProvider    ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(scheduler      ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker1        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker2        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker3        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker4        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(worker5        ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(user           ), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 1000, 0 ], "check balance");
+			});
+		});
+
+		it("score", async () => {
+			assert.equal(Number(await IexecInstance.viewScore(worker1)), 0, "score issue");
+			assert.equal(Number(await IexecInstance.viewScore(worker2)), 0, "score issue");
+			assert.equal(Number(await IexecInstance.viewScore(worker3)), 0, "score issue");
+			assert.equal(Number(await IexecInstance.viewScore(worker4)), 0, "score issue");
+			assert.equal(Number(await IexecInstance.viewScore(worker5)), 0, "score issue");
+		});
 	});
 
 
-	it("resultFor - uninitialized", async () => {
-		await expectRevert.unspecified(IexecInstance.resultFor(tasks[1]));
-	});
-	it("resultFor - initialized", async () => {
-		await expectRevert.unspecified(IexecInstance.resultFor(tasks[2]));
-	});
-	it("resultFor - contributed", async () => {
-		await expectRevert.unspecified(IexecInstance.resultFor(tasks[3]));
-	});
-	it("resultFor - consensus", async () => {
-		await expectRevert.unspecified(IexecInstance.resultFor(tasks[4]));
-	});
-	it("resultFor - reveal", async () => {
-		await expectRevert.unspecified(IexecInstance.resultFor(tasks[5]));
-	});
-	it("resultFor - finalized", async () => {
-		result = await IexecInstance.resultFor(tasks[6]);
-		assert.equal(result, web3.utils.utf8ToHex("aResult 6"), "resultFor returned incorrect value");
+
+
+	describe("→ pipeline", async () => {
+		describe("[0] orders", async () => {
+			describe("app", async () => {
+				it("sign", async () => {
+					apporder = odbtools.signAppOrder(
+						{
+							app:                AppInstance.address,
+							appprice:           3,
+							volume:             1000,
+							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+							datasetrestrict:    constants.NULL.ADDRESS,
+							workerpoolrestrict: constants.NULL.ADDRESS,
+							requesterrestrict:  constants.NULL.ADDRESS,
+							salt:               web3.utils.randomHex(32),
+							sign:               constants.NULL.SIGNATURE,
+						},
+						wallets.addressToPrivate(appProvider)
+					);
+				});
+				it("verify", async () => {
+					assert.isTrue(
+						await IexecInstance.verifySignature(
+							appProvider,
+							odbtools.AppOrderTypedStructHash(apporder),
+							apporder.sign,
+							{}
+						),
+						"Error with the validation of the apporder signature"
+					);
+				});
+			});
+
+			describe("dataset", async () => {
+				it("sign", async () => {
+					datasetorder = odbtools.signDatasetOrder(
+						{
+							dataset:            DatasetInstance.address,
+							datasetprice:       0,
+							volume:             1000,
+							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+							apprestrict:        constants.NULL.ADDRESS,
+							workerpoolrestrict: constants.NULL.ADDRESS,
+							requesterrestrict:  constants.NULL.ADDRESS,
+							salt:               web3.utils.randomHex(32),
+							sign:               constants.NULL.SIGNATURE,
+						},
+						wallets.addressToPrivate(datasetProvider)
+					);
+				});
+				it("verify", async () => {
+					assert.isTrue(
+						await IexecInstance.verifySignature(
+							datasetProvider,
+							odbtools.DatasetOrderTypedStructHash(datasetorder),
+							datasetorder.sign,
+							{}
+						),
+						"Error with the validation of the datasetorder signature"
+					);
+				});
+			});
+
+			describe("workerpool", async () => {
+				it("sign", async () => {
+					workerpoolorder = odbtools.signWorkerpoolOrder(
+						{
+							workerpool:        WorkerpoolInstance.address,
+							workerpoolprice:   25,
+							volume:            1000,
+							category:          4,
+							trust:             0,
+							tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
+							apprestrict:       constants.NULL.ADDRESS,
+							datasetrestrict:   constants.NULL.ADDRESS,
+							requesterrestrict: constants.NULL.ADDRESS,
+							salt:              web3.utils.randomHex(32),
+							sign:              constants.NULL.SIGNATURE,
+						},
+						wallets.addressToPrivate(scheduler)
+					);
+				});
+				it("verify", async () => {
+					assert.isTrue(
+						await IexecInstance.verifySignature(
+							scheduler,
+							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
+							workerpoolorder.sign,
+							{}
+						),
+						"Error with the validation of the.workerpoolorder signature"
+					);
+				});
+			});
+
+			describe("request", async () => {
+				it("sign", async () => {
+					requestorder = odbtools.signRequestOrder(
+						{
+							app:                AppInstance.address,
+							appmaxprice:        3,
+							dataset:            DatasetInstance.address,
+							datasetmaxprice:    0,
+							workerpool:         constants.NULL.ADDRESS,
+							workerpoolmaxprice: 25,
+							volume:             10,
+							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+							category:           4,
+							trust:              0,
+							requester:          user,
+							beneficiary:        user,
+							callback:           constants.NULL.ADDRESS,
+							params:             "<parameters>",
+							salt:               web3.utils.randomHex(32),
+							sign:               constants.NULL.SIGNATURE,
+						},
+						wallets.addressToPrivate(user)
+					);
+				});
+				it("verify", async () => {
+					assert.isTrue(
+						await IexecInstance.verifySignature(
+							user,
+							odbtools.RequestOrderTypedStructHash(requestorder),
+							requestorder.sign,
+							{}
+						),
+						"Error with the validation of the requestorder signature"
+					);
+				});
+			});
+		});
+
+		describe("[1] order matching", async () => {
+			it("[TX] match", async () => {
+				txMined = await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(requestorder));
+			});
+		});
+
+		describe("[2] initialization", async () => {
+			it("[TX] initialize", async () => {
+				tasks[0] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[0] }, { t: 'uint256', v: 0 });                                                                                              // uninitialized
+				tasks[1] = extractEvents(await IexecInstance.initialize(deals[0], 1, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // finalized
+				tasks[2] = extractEvents(await IexecInstance.initialize(deals[0], 2, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // initialized
+				tasks[3] = extractEvents(await IexecInstance.initialize(deals[0], 3, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // contributions
+				tasks[4] = extractEvents(await IexecInstance.initialize(deals[0], 4, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // consensus
+				tasks[5] = extractEvents(await IexecInstance.initialize(deals[0], 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid; // reveal
+			});
+		});
+
+		function sendContribution(authorization, results)
+		{
+			return IexecInstance.contribute(
+					authorization.taskid,                                   // task (authorization)
+					results.hash,                                           // common    (result)
+					results.seal,                                           // unique    (result)
+					authorization.enclave,                                  // address   (enclave)
+					results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
+					authorization.sign,                                     // signature (authorization)
+					{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+				);
+		}
+
+		describe("[3] contribute", async () => {
+			it("[TX] contribute", async () => {
+				await sendContribution(
+					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, scheduler),
+					odbtools.sealResult(tasks[2], "true", worker1),
+				);
+				await sendContribution(
+					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
+					odbtools.sealResult(tasks[3], "true", worker1),
+				);
+				await sendContribution(
+					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
+					odbtools.sealResult(tasks[4], "true", worker1),
+				);
+				await sendContribution(
+					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
+					odbtools.sealResult(tasks[5], "true", worker1),
+				);
+			});
+		});
+
+		describe("[4] reveal", async () => {
+			it("[TX] reveal", async () => {
+				await IexecInstance.reveal(tasks[4], odbtools.hashResult(tasks[4], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+			});
+		});
+
+		describe("[5] finalization", async () => {
+			it("[TX] finalize", async () => {
+				await IexecInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+			});
+		});
 	});
 
+	describe("→ result for", async () => {
+		describe("uninitialized", async () => {
+			it("reverts", async () => {
+				await expectRevert.unspecified(IexecInstance.resultFor(tasks[0]));
+			});
+		});
+		describe("initialized", async () => {
+			it("reverts", async () => {
+				await expectRevert.unspecified(IexecInstance.resultFor(tasks[1]));
+			});
+		});
+		describe("contributed", async () => {
+			it("reverts", async () => {
+				await expectRevert.unspecified(IexecInstance.resultFor(tasks[2]));
+			});
+		});
+		describe("consensus", async () => {
+			it("reverts", async () => {
+				await expectRevert.unspecified(IexecInstance.resultFor(tasks[3]));
+			});
+		});
+		describe("reveal", async () => {
+			it("reverts", async () => {
+				await expectRevert.unspecified(IexecInstance.resultFor(tasks[4]));
+			});
+		});
+		describe("finalized", async () => {
+			it("valid", async () => {
+				assert.equal(await IexecInstance.resultFor(tasks[5]), web3.utils.utf8ToHex("aResult 5"), "resultFor returned incorrect value");
+			});
+		});
+	});
 });
