@@ -58,52 +58,51 @@ contract('CategoryManager', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 	});
 
-	/***************************************************************************
-	 *                    CategoryManager is OwnableMutable                    *
-	 ***************************************************************************/
-	it("CategoryManager - cant transfer ownership to null address", async () => {
-		assert.equal( await IexecInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
-		await expectRevert.unspecified(IexecInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal( await IexecInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
+	describe("view", async () => {
+		describe("invalid index", async () => {
+			it("reverts", async () => {
+				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+				await expectRevert.unspecified(IexecInstance.viewCategory(5));
+				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+			});
+		});
 	});
 
-	/***************************************************************************
-	 *                    CategoryManager - create and view                    *
-	 ***************************************************************************/
-	it("CategoryManager - create and view #1: view fail", async () => {
-		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-		await expectRevert.unspecified(IexecInstance.viewCategory(5));
-		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-	});
+	describe("create", async () => {
+		describe("unauthorized create", async () => {
+			it("reverts", async () => {
+				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+				await expectRevert.unspecified(IexecInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+			});
+		});
 
-	it("CategoryManager - create and view #2: unauthorized create", async () => {
-		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-		await expectRevert.unspecified(IexecInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-	});
+		describe("authorized", async () => {
+			it("success", async () => {
+				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 
-	it("CategoryManager - create and view #3: authorized create", async () => {
-		assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
+				txMined = await IexecInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			});
 
-		txMined = await IexecInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecInstance.address, "CreateCategory");
-		assert.equal(events[0].args.catid,            5,                       "check catid"           );
-		assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
-		assert.equal(events[0].args.description,      "Small but impractical", "check description"     );
-		assert.equal(events[0].args.workClockTimeRef, 3,                       "check workClockTimeRef");
+			it("emits event", async () => {
+				events = extractEvents(txMined, IexecInstance.address, "CreateCategory");
+				assert.equal(events[0].args.catid,            5,                       "check catid"           );
+				assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
+				assert.equal(events[0].args.description,      "Small but impractical", "check description"     );
+				assert.equal(events[0].args.workClockTimeRef, 3,                       "check workClockTimeRef");
+			});
 
-		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
-	});
+			it("count update", async () => {
+				assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
+			});
 
-	it("CategoryManager - create and view #4: view created", async () => {
-		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
-
-		category = await IexecInstance.viewCategory(5);
-		assert.equal(category.name,             "Tiny",                  "check name"            );
-		assert.equal(category.description,      "Small but impractical", "check description"     );
-		assert.equal(category.workClockTimeRef, 3,                       "check workClockTimeRef");
-
-		assert.equal(await IexecInstance.countCategory(), 6, "Error in category count");
+			it("view newly created category", async () => {
+				category = await IexecInstance.viewCategory(5);
+				assert.equal(category.name,             "Tiny",                  "check name"            );
+				assert.equal(category.description,      "Small but impractical", "check description"     );
+				assert.equal(category.workClockTimeRef, 3,                       "check workClockTimeRef");
+			});
+		});
 	});
 });
