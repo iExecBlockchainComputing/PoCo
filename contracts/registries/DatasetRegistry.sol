@@ -4,7 +4,8 @@ import './Dataset.sol';
 import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract DatasetRegistry is CounterfactualFactory, RegistryBase
+
+contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
 {
 	event CreateDataset(address indexed datasetOwner, address dataset);
 

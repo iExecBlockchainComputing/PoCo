@@ -4,7 +4,8 @@ import './Workerpool.sol';
 import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase
+
+contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
 {
 	event CreateWorkerpool(address indexed workerpoolOwner, address workerpool);
 

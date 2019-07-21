@@ -63,20 +63,25 @@ contract('Accessors', async (accounts) => {
 	/***************************************************************************
 	 *                                                                         *
 	 ***************************************************************************/
-	it("token", async () => {
-		assert.equal(await IexecInstance.token(), RLCInstance.address);
-	});
+	describe("checking constant view methods", async () => {
+		describe("escrow", async () => {
+			it("token", async () => {
+				assert.equal(await IexecInstance.token(), RLCInstance.address);
+			});
+		});
 
-	it("name", async () => {
-		assert.equal(await IexecInstance.name(), "Hub RLC");
-	});
+		describe("ERC20 metadata", async () => {
+			it("name", async () => {
+				assert.equal(await IexecInstance.name(), "Hub RLC");
+			});
 
-	it("symbol", async () => {
-		assert.equal(await IexecInstance.symbol(), "hRLC");
-	});
+			it("symbol", async () => {
+				assert.equal(await IexecInstance.symbol(), "hRLC");
+			});
 
-	it("decimals", async () => {
-		assert.equal(Number(await IexecInstance.decimals()), Number(await RLCInstance.decimals()));
+			it("decimals", async () => {
+				assert.equal(Number(await IexecInstance.decimals()), Number(await RLCInstance.decimals()));
+			});
+		});
 	});
-
 });

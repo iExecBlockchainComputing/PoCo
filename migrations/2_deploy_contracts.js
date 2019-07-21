@@ -23,7 +23,7 @@ var IexecEscrowNative       = artifacts.require("IexecEscrowNativeDelegate");
 var IexecOrderSignature     = artifacts.require("IexecOrderSignatureDelegate");
 var IexecPoco               = artifacts.require("IexecPocoDelegate");
 var IexecRelay              = artifacts.require("IexecRelayDelegate");
-var ENSReverseRegistration  = artifacts.require("ENSReverseRegistrationDelegate");
+var ENSIntegration          = artifacts.require("ENSIntegrationDelegate");
 // Other contracts
 var AppRegistry             = artifacts.require("AppRegistry");
 var DatasetRegistry         = artifacts.require("DatasetRegistry");
@@ -128,7 +128,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecOrderSignature,
 		IexecPoco,
 		IexecRelay,
-		ENSReverseRegistration,
+		ENSIntegration,
 	]
 	console.log("Linking smart contracts to proxy")
 	for (id in contracts)
@@ -269,12 +269,25 @@ module.exports = async function(deployer, network, accounts)
 		await setReverseRegistrar();
 		await registerDomain("eth");
 		await registerDomain("iexec", "eth");
-		await registerAddress("admin", "iexec.eth", accounts[0]);
-		await registerAddress("token", "iexec.eth", RLCInstance.address);
-		await registerAddress("hub",   "iexec.eth", IexecInterfaceInstance.address);
+
+		await registerDomain("registry",   "iexec.eth");
+		await registerDomain("apps",       "iexec.eth");
+		await registerDomain("datasets",   "iexec.eth");
+		await registerDomain("workerpool", "iexec.eth");
+		await registerDomain("users",      "iexec.eth");
+
+		await registerAddress("admin",      "iexec.eth",          accounts[0]);
+		await registerAddress("token",      "iexec.eth",          RLCInstance.address);
+		await registerAddress("hub",        "iexec.eth",          IexecInterfaceInstance.address);
+		await registerAddress("app",        "registry.iexec.eth", AppRegistryInstance.address);
+		await registerAddress("dataset",    "registry.iexec.eth", DatasetRegistryInstance.address);
+		await registerAddress("workerpool", "registry.iexec.eth", WorkerpoolRegistryInstance.address);
 
 		await reverseregistrar.setName("admin.iexec.eth", { from: accounts[0] });
-		await IexecInterfaceInstance.registerENS(ens.address, "hub.iexec.eth");
+		await     IexecInterfaceInstance.registerENS(ens.address, "hub.iexec.eth");
+		await        AppRegistryInstance.registerENS(ens.address, "app.registry.iexec.eth");
+		await    DatasetRegistryInstance.registerENS(ens.address, "dataset.registry.iexec.eth");
+		await WorkerpoolRegistryInstance.registerENS(ens.address, "workerpool.registry.iexec.eth");
 	}
 
 	/***************************************************************************

@@ -10,7 +10,7 @@ import "./delegates/IexecEscrowToken.sol";
 import "./delegates/IexecOrderSignature.sol";
 import "./delegates/IexecPoco.sol";
 import "./delegates/IexecRelay.sol";
-import "./delegates/ENSReverseRegistration.sol";
+import "./delegates/ENSIntegration.sol";
 
-contract IexecInterface is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, ENSReverseRegistration
+contract IexecInterface is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, ENSIntegration
 {}

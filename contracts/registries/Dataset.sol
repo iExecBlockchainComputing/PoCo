@@ -1,10 +1,11 @@
 pragma solidity ^0.5.10;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../libs/ENSTools.sol";
+import "../tools/ENSReverseRegistrationOwnable.sol";
 import "../tools/Once.sol";
 
-contract Dataset is Ownable, Once
+
+contract Dataset is Ownable, Once, ENSReverseRegistrationOwnable
 {
 	/**
 	 * Members
@@ -27,12 +28,6 @@ contract Dataset is Ownable, Once
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;
-	}
-
-	function registerENS(ENSRegistry ens, string calldata name)
-	external onlyOwner()
-	{
-		ENSTools.reverseRegistration(ens, name);
 	}
 
 	function transferOwnership(address) public { revert("disabled"); }

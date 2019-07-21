@@ -4,7 +4,8 @@ import './App.sol';
 import './CounterfactualFactory.sol';
 import './RegistryBase.sol';
 
-contract AppRegistry is CounterfactualFactory, RegistryBase
+
+contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
 {
 	event CreateApp(address indexed appOwner, address app);
 
