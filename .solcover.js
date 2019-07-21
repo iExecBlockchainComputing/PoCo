@@ -11,6 +11,7 @@ module.exports = {
 		'rlc-faucet-contract'
 	],
 	skipFiles: [
+		'delegates/IexecEscrowNative.sol',
 		'tools/Migrations.sol',
 		'tools/TestClient.sol',
 	]

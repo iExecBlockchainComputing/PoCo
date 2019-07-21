@@ -91,7 +91,7 @@ contract('Poco', async (accounts) => {
 			);
 	}
 
-	describe("Setup", async () => {
+	describe("→ setup", async () => {
 		describe("tokens", async () => {
 			it("distribute", async () => {
 				assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
@@ -266,14 +266,14 @@ contract('Poco', async (accounts) => {
 		});
 	});
 
-	describe("Fill Kitty", async () => {
-		it("match order", async () => {
+	describe("→ fill Kitty", async () => {
+		it("[1] match order", async () => {
 			txMined = await IexecInstance.matchOrders(apporder, constants.NULL.DATAORDER, workerpoolorder, requestorder1, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			deals[0] = extractEvents(txMined, IexecInstance.address, "SchedulerNotice")[0].args.dealid;
 		});
 
-		it("initialize", async () => {
+		it("[2] initialize", async () => {
 			txMined = await IexecInstance.initialize(deals[0], 0, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			tasks[0] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[0].args.taskid;
@@ -284,7 +284,7 @@ contract('Poco', async (accounts) => {
 			await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
 		});
 
-		it("claim", async () => {
+		it("[3] claim", async () => {
 			txMined = await IexecInstance.claim(tasks[0], { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		});
@@ -306,20 +306,20 @@ contract('Poco', async (accounts) => {
 		})
 	});
 
-	describe("Drain Kitty", async () => {
-		it("match order", async () => {
+	describe("→ drain Kitty", async () => {
+		it("[1] match order", async () => {
 			txMined = await IexecInstance.matchOrders(apporder, constants.NULL.DATAORDER, workerpoolorder, requestorder2, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			deals[1] = extractEvents(txMined, IexecInstance.address, "SchedulerNotice")[0].args.dealid;
 		});
 
-		it("initialize", async () => {
+		it("[2] initialize", async () => {
 			txMined = await IexecInstance.initialize(deals[1], 0, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			tasks[1] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[0].args.taskid;
 		});
 
-		it("contribute", async () => {
+		it("[3] contribute", async () => {
 			await sendContribution(
 				tasks[1],
 				worker1,
@@ -329,11 +329,11 @@ contract('Poco', async (accounts) => {
 			);
 		});
 
-		it("reveal", async () => {
+		it("[4] reveal", async () => {
 			await IexecInstance.reveal(tasks[1], odbtools.hashResult(tasks[1], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
 		});
 
-		it("finalize", async () => {
+		it("[5] finalize", async () => {
 			await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("result"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		});
 
