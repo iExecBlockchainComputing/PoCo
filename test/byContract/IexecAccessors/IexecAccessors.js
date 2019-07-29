@@ -56,7 +56,7 @@ contract('Accessors', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = await RLC.deployed();
+		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.deployed();
 		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -69,7 +69,7 @@ contract('Accessors', async (accounts) => {
 	describe("checking constant view methods", async () => {
 		describe("escrow", async () => {
 			it("token", async () => {
-				assert.equal(await IexecInstance.token(), DEPLOYMENT.asset == "Native" ? constants.NULL.ADDRESS : RLCInstance.address);
+				assert.equal(await IexecInstance.token(), RLCInstance.address);
 			});
 		});
 
@@ -83,7 +83,7 @@ contract('Accessors', async (accounts) => {
 			});
 
 			it("decimals", async () => {
-				assert.equal(Number(await IexecInstance.decimals()), Number(await RLCInstance.decimals()));
+				assert.equal(Number(await IexecInstance.decimals()), 9);
 			});
 		});
 	});

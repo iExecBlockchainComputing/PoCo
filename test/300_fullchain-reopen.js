@@ -68,7 +68,7 @@ contract('Fullchain', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = await RLC.deployed();
+		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.deployed();
 		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
