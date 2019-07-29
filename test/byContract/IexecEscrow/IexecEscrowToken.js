@@ -64,6 +64,12 @@ contract('EscrowToken', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 	});
 
+	describe("fallback", async () => {
+		it("success", async () => {
+			await expectRevert(web3.eth.sendTransaction({ from: accounts[0], to: IexecInstance.address, value: 100 }), "fallback-disabled");
+		});
+	});
+
 	describe("deposit", async () => {
 		describe("no tokens", async () => {
 			it("reverts", async () => {

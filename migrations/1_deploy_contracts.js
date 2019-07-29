@@ -44,7 +44,7 @@ function getSerializedObject(entry)
 }
 function getFunctionSignatures(abi)
 {
-	return abi
+	return (abi.some(entry => entry.type == 'fallback') ? "fallback;" : "") + abi
 		.filter(entry => entry.type == 'function')
 		.map(entry => entry.name + '(' + entry.inputs.map(getSerializedObject).join(',') + ');')
 		.join('');
