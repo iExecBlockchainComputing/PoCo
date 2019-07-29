@@ -23,19 +23,21 @@
   "author": "iExec",
   "license": "ISC",
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo-dev.git#readme",
+  "dependencies": {
+    "iexec-solidity": "^0.0.13",
+    "openzeppelin-solidity": "^2.3.0",
+    "rlc-faucet-contract": "^2.0.0"
+  },
   "devDependencies": {
-    "bn.js": "4.11.8",
+    "bn.js": "^5.0.0",
     "chai": "^4.2.0",
-    "ethereumjs-util": "^5.2.0",
-    "ganache-cli": "^6.4.3",
-    "husky": "^1.3.1",
-    "iexec-solidity": "^0.0.6",
+    "ethereumjs-util": "^6.1.0",
+    "ganache-cli": "^6.5.0",
+    "husky": "^3.0.1",
     "jq.node": "2.1.2",
-    "multiaddr": "^6.0.6",
-    "openzeppelin-solidity": "^2.2.0",
-    "openzeppelin-test-helpers": "^0.1.5",
-    "rlc-faucet-contract": "^2.0.0",
-    "truffle": "^5.0.15",
-    "truffle-hdwallet-provider": "^1.0.7"
+    "multiaddr": "^6.1.0",
+    "openzeppelin-test-helpers": "^0.4.0",
+    "truffle": "5.0.28",
+    "truffle-hdwallet-provider": "^1.0.14"
   }
 }

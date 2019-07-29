@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -67,95 +67,23 @@ contract('IexecClerk', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
-
-		/**
-		 * Token distribution
-		 */
-		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
-		txsMined = await Promise.all([
-			RLCInstance.transfer(appProvider,     1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(datasetProvider, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(scheduler,       1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker1,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker2,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker3,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker4,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker5,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,            1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		let balances = await Promise.all([
-			RLCInstance.balanceOf(appProvider),
-			RLCInstance.balanceOf(datasetProvider),
-			RLCInstance.balanceOf(scheduler),
-			RLCInstance.balanceOf(worker1),
-			RLCInstance.balanceOf(worker2),
-			RLCInstance.balanceOf(worker3),
-			RLCInstance.balanceOf(worker4),
-			RLCInstance.balanceOf(worker5),
-			RLCInstance.balanceOf(user)
-		]);
-		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[1], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[2], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[3], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[4], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[5], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
-
-		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
 	 *                             TEST: creation                              *
 	 ***************************************************************************/
+	it("Escrow deposit", async () => {
+		txsMined = await Promise.all([
+			IexecClerkInstance.deposit({ from: scheduler, value: 1000}),
+			IexecClerkInstance.deposit({ from: worker1,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker2,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker3,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker4,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker5,   value: 1000}),
+			IexecClerkInstance.deposit({ from: user,      value: 1000}),
+		]);
+	});
+
 	it("[Genesis] App Creation", async () => {
 		txMined = await AppRegistryInstance.createApp(
 			appProvider,
@@ -373,7 +301,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - category]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -382,7 +310,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - trust]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ trust: 100 },
@@ -391,7 +319,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - appprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ appprice: 1000 },
 			{},
 			{},
@@ -400,7 +328,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - datasetprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ datasetprice: 1000 },
 			{},
@@ -409,7 +337,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolprice]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ workerpoolprice: 1000 },
@@ -418,7 +346,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - apptag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
 			{},
@@ -427,7 +355,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - datasettag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ tag: "0x0000000000000000000000000000000000000000000000000000000000000001" },
 			{},
@@ -445,7 +373,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - usertag]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -454,7 +382,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - requested app]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -463,7 +391,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - requested dataset]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -472,7 +400,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpoolrequest]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},
@@ -481,7 +409,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - app-datasetrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ datasetrestrict: user },
 			{},
 			{},
@@ -498,7 +426,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ workerpoolrestrict: user },
 			{},
 			{},
@@ -515,7 +443,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{ requesterrestrict: iexecAdmin },
 			{},
 			{},
@@ -532,7 +460,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - dataset-apprestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ apprestrict: user },
 			{},
@@ -549,7 +477,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ workerpoolrestrict: user },
 			{},
@@ -566,7 +494,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{ requesterrestrict: iexecAdmin },
 			{},
@@ -583,7 +511,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-apprestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ apprestrict: user },
@@ -600,7 +528,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-datasetrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ datasetrestrict: user },
@@ -617,7 +545,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - workerpool-requesterrestrict]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{ requesterrestrict: iexecAdmin },
@@ -634,7 +562,7 @@ contract('IexecClerk', async (accounts) => {
 	});
 
 	it("[Match - Error - volume null]", async () => {
-		await shouldFail.reverting(matchOrders(
+		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
 			{},

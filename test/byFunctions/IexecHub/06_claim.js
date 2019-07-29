@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -76,90 +76,18 @@ contract('IexecHub', async (accounts) => {
 			chainId:           await web3.eth.net.getId(),
 			verifyingContract: IexecClerkInstance.address,
 		});
+	});
 
-		/**
-		 * Token distribution
-		 */
-		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
+	it("Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			RLCInstance.transfer(appProvider,     1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(datasetProvider, 1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(scheduler,       1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker1,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker2,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker3,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker4,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(worker5,         1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.transfer(user,            1000000000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED })
+			IexecClerkInstance.deposit({ from: scheduler, value: 1000}),
+			IexecClerkInstance.deposit({ from: worker1,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker2,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker3,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker4,   value: 1000}),
+			IexecClerkInstance.deposit({ from: worker5,   value: 1000}),
+			IexecClerkInstance.deposit({ from: user,      value: 1000}),
 		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		let balances = await Promise.all([
-			RLCInstance.balanceOf(appProvider),
-			RLCInstance.balanceOf(datasetProvider),
-			RLCInstance.balanceOf(scheduler),
-			RLCInstance.balanceOf(worker1),
-			RLCInstance.balanceOf(worker2),
-			RLCInstance.balanceOf(worker3),
-			RLCInstance.balanceOf(worker4),
-			RLCInstance.balanceOf(worker5),
-			RLCInstance.balanceOf(user)
-		]);
-		assert.equal(balances[0], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[1], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[2], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[3], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[4], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[5], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[6], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[7], 1000000000, "1000000000 nRLC here");
-		assert.equal(balances[8], 1000000000, "1000000000 nRLC here");
-
-		txsMined = await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker1,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker2,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker3,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker4,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: worker5,         gas: constants.AMOUNT_GAS_PROVIDED }),
-			RLCInstance.approve(IexecClerkInstance.address, 1000000, { from: user,            gas: constants.AMOUNT_GAS_PROVIDED })
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[7].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[8].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-
-		txsMined = await Promise.all([
-			IexecClerkInstance.deposit(100000, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker1,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker2,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker3,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker4,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: worker5,   gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit(100000, { from: user,      gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[4].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 	});
 
 	/***************************************************************************
@@ -385,22 +313,22 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[7.1a] Claim - Error (soon #1)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.2a] Claim - Error (soon #2)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.3a] Claim - Error (soon #3)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.4a] Claim - Error (soon #4)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.5a] Claim - Error (soon #5)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.6a] Claim - Error (soon & finalized)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -442,7 +370,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.taskid, tasks[5], "check taskid");
 	});
 	it("[7.6b] Claim - Error (finalized #7)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

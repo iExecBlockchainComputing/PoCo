@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -151,7 +151,7 @@ contract('Ressources', async (accounts) => {
 	 *                   TEST: Workerpool configuration (by user)                    *
 	 ***************************************************************************/
 	it("Workerpool Configuration #2 - owner restriction apply", async () => {
-		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+		await expectRevert.unspecified(WorkerpoolInstances[1].changePolicy(
 			0,
 			0,
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -167,7 +167,7 @@ contract('Ressources', async (accounts) => {
 	 *           TEST: Invalid workerpool configuration (by scheduler)           *
 	 ***************************************************************************/
 	it("Workerpool Configuration #3 - invalid configuration refused", async () => {
-		await shouldFail.reverting(WorkerpoolInstances[1].changePolicy(
+		await expectRevert.unspecified(WorkerpoolInstances[1].changePolicy(
 			100, // worker stake ratio
 			150, // scheduler reward ratio (should not be above 100%)
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }

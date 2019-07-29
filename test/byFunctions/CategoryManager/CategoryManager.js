@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -65,7 +65,7 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
 		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
-		await shouldFail.reverting(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: new owner is the zero address.");
 		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
@@ -74,13 +74,13 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - create and view #1: view fail", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
-		await shouldFail.throwing(IexecHubInstance.viewCategory(5));
+		await expectRevert.assertion(IexecHubInstance.viewCategory(5));
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 	});
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
-		await shouldFail.reverting(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner.");
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 	});
 
