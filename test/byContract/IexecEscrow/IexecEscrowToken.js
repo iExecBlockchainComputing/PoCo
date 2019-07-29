@@ -1,6 +1,9 @@
+// Config
+var DEPLOYMENT = require("../../../config/deployment.json")
+// Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecInterface     = artifacts.require("IexecInterface");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -21,6 +24,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
+if (DEPLOYMENT.asset == "Token")
 contract('EscrowToken', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
@@ -116,7 +120,6 @@ contract('EscrowToken', async (accounts) => {
 			});
 		});
 	});
-
 
 	describe("depositFor", async () => {
 		describe("no tokens", async () => {

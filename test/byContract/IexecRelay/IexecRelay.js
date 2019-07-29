@@ -1,6 +1,9 @@
+// Config
+var DEPLOYMENT = require("../../../config/deployment.json")
+// Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecInterface     = artifacts.require("IexecInterface");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -13,6 +16,8 @@ const multiaddr = require('multiaddr');
 const constants = require("../../../utils/constants");
 const odbtools  = require('../../../utils/odb-tools');
 const wallets   = require('../../../utils/wallets');
+
+Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
 function extractEvents(txMined, address, name)
 {

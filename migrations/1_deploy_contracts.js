@@ -1,3 +1,5 @@
+// CONFIG
+var DEPLOYMENT = require("../config/deployment.json")
 // Token
 var RLC                     = artifacts.require("rlc-faucet-contract/RLC");
 // ENS
@@ -12,7 +14,7 @@ var ERC1538Query            = artifacts.require("iexec-solidity/ERC1538QueryDele
 // Libraries
 var IexecODBLibOrders       = artifacts.require("IexecODBLibOrders");
 // Interface
-var IexecInterface          = artifacts.require("IexecInterface");
+var IexecInterface          = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 // Delegates
 var IexecAccessors          = artifacts.require("IexecAccessorsDelegate");
 var IexecAccessorsABILegacy = artifacts.require("IexecAccessorsABILegacyDelegate");
@@ -29,15 +31,11 @@ var AppRegistry             = artifacts.require("AppRegistry");
 var DatasetRegistry         = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry      = artifacts.require("WorkerpoolRegistry");
 
-const USENATIVE = false;
-
-const fs = require("fs-extra");
-
 function getSerializedObject(entry)
 {
 	if (entry.type == 'tuple')
 	{
-		return '(' + entry.components.map(getSerializedObject).join(',') + ')'
+		return '(' + entry.components.map(getSerializedObject).join(',') + ')';
 	}
 	else
 	{
@@ -49,54 +47,60 @@ function getFunctionSignatures(abi)
 	return abi
 		.filter(entry => entry.type == 'function')
 		.map(entry => entry.name + '(' + entry.inputs.map(getSerializedObject).join(',') + ');')
-		.join('')
+		.join('');
 }
 
 module.exports = async function(deployer, network, accounts)
 {
 	console.log("# web3 version:", web3.version);
 	chainid   = await web3.eth.net.getId();
-	chaintype = await web3.eth.net.getNetworkType()
+	chaintype = await web3.eth.net.getNetworkType();
 	console.log("Chainid is:", chainid);
 	console.log("Chaintype is:", chaintype);
 
-	switch (chaintype)
+	if (DEPLOYMENT.asset !== "Native")
 	{
-		case "main":
-			RLCInstance = await RLC.at("0x607F4C5BB672230e8672085532f7e901544a7375")
-			owner = "0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53";
-			break;
+		switch (chaintype)
+		{
+			case "main":
+				RLCInstance = await RLC.at("0x607F4C5BB672230e8672085532f7e901544a7375");
+				owner = "0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53";
+				break;
 
-		case "kovan":
-			RLCInstance = await RLC.at("0xc57538846ec405ea25deb00e0f9b29a432d53507")
-			owner = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
-			break;
+			case "kovan":
+				RLCInstance = await RLC.at("0xc57538846ec405ea25deb00e0f9b29a432d53507");
+				owner = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
+				break;
 
-		case "rinkeby":
-			RLCInstance = await RLC.at("0xf1e6ad3a7ef0c86c915f0fedf80ed851809bea90")
-			owner = null;
-			break;
+			case "rinkeby":
+				RLCInstance = await RLC.at("0xf1e6ad3a7ef0c86c915f0fedf80ed851809bea90");
+				owner = null;
+				break;
 
-		case "ropsten":
-			RLCInstance = await RLC.at("0x7314dc4d7794b5e7894212ca1556ae8e3de58621")
-			owner = "0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53";
-			break;
+			case "ropsten":
+				RLCInstance = await RLC.at("0x7314dc4d7794b5e7894212ca1556ae8e3de58621");
+				owner = "0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53";
+				break;
 
-		case "private":
-			await deployer.deploy(RLC);
-			RLCInstance = await RLC.deployed();
-			console.log("RLC deployed at address: " + RLCInstance.address);
-			owner = await RLCInstance.owner.call()
-			console.log("RLC faucet wallet is " + owner);
-			supply = await RLCInstance.balanceOf(owner);
-			console.log("RLC faucet supply is " + supply);
+			case "private":
+				await deployer.deploy(RLC);
+				RLCInstance = await RLC.deployed();
+				console.log(`RLC deployed at address: ${RLCInstance.address}`);
+				owner = await RLCInstance.owner.call()
+				console.log(`RLC faucet wallet is ${owner}`);
+				supply = await RLCInstance.balanceOf(owner);
+				console.log(`RLC faucet supply is ${supply}`);
+				break;
 
-			break;
-
-		default:
-			console.log("[ERROR] Migration to chaintype " + chaintype + " is not configured");
-			return 1;
-			break;
+			default:
+				console.log(`[ERROR] RLC not configured for chaintype ${chaintype}`);
+				return 1;
+				break;
+		}
+	}
+	else
+	{
+		RLCInstance = { address: "0x0000000000000000000000000000000000000000" };
 	}
 
 	/***************************************************************************
@@ -112,7 +116,7 @@ module.exports = async function(deployer, network, accounts)
 	await deployer.deploy(ERC1538Update);
 	await deployer.deploy(ERC1538Proxy, (await ERC1538Update.deployed()).address);
 	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
-	console.log("IexecInstance deployed at address: " + ERC1538.address);
+	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
 
 	/***************************************************************************
 	 *                             Setup delegate                              *
@@ -123,16 +127,17 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecERC20,
-		USENATIVE ? IexecEscrowNative : IexecEscrowToken,
+		DEPLOYMENT.asset == "Native" ? IexecEscrowNative : IexecEscrowToken,
 		IexecOrderSignature,
 		IexecPoco,
 		IexecRelay,
 		ENSIntegration,
-	]
-	console.log("Linking smart contracts to proxy")
+	];
+
+	console.log("Linking smart contracts to proxy");
 	for (id in contracts)
 	{
-		console.log("[" + id + "] ERC1538 link: " + contracts[id].contractName)
+		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
 		await deployer.deploy(contracts[id]);
 		await ERC1538.updateContract(
 			(await contracts[id].deployed()).address,
@@ -167,19 +172,14 @@ module.exports = async function(deployer, network, accounts)
 		WorkerpoolRegistryInstance.address
 	);
 
-	var categoriesConfigFileJson = JSON.parse(fs.readFileSync("./config/categories.json"));
-	for(var i = 0; i < categoriesConfigFileJson.categories.length; ++i)
+	for (cat of DEPLOYMENT.categories)
 	{
-		console.log("create category : " + categoriesConfigFileJson.categories[i].name);
-		await IexecInterfaceInstance.createCategory(
-			categoriesConfigFileJson.categories[i].name
-		,	JSON.stringify(categoriesConfigFileJson.categories[i].description)
-		,	categoriesConfigFileJson.categories[i].workClockTimeRef
-		);
+		console.log(`create category: ${cat.name}`);
+		await IexecInterfaceInstance.createCategory(cat.name, JSON.stringify(cat.description), cat.workClockTimeRef);
 	}
 
 	var catCount = await IexecInterfaceInstance.countCategory();
-	console.log("countCategory is now: " + catCount);
+	console.log(`countCategory is now: ${catCount}`);
 	for(var i = 0; i < await IexecInterfaceInstance.countCategory(); ++i)
 	{
 		console.log([ "category", i, ":", ...await IexecInterfaceInstance.viewCategory(i)].join(" "));
@@ -225,8 +225,8 @@ module.exports = async function(deployer, network, accounts)
 			registrars[""] = await FIFSRegistrar.new(ens.address, "0x0", { from: accounts[0] });
 			await ens.setOwner("0x0", registrars[""].address, { from: accounts[0] });
 
-			console.log("ENSRegistry deployed at address: " + ens.address);
-			console.log("PublicResolver deployed at address: " + resolver.address);
+			console.log(`ENSRegistry deployed at address: ${ens.address}`);
+			console.log(`PublicResolver deployed at address: ${resolver.address}`);
 		}
 
 		async function setReverseRegistrar()

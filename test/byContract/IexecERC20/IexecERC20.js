@@ -1,18 +1,23 @@
+// Config
+var DEPLOYMENT = require("../../../config/deployment.json")
+// Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecInterface     = artifacts.require("IexecInterface");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
+var App                = artifacts.require("App");
+var Dataset            = artifacts.require("Dataset");
+var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
-const { expect } = require('chai');
-
 const multiaddr = require('multiaddr');
 const constants = require("../../../utils/constants");
 const odbtools  = require('../../../utils/odb-tools');
 const wallets   = require('../../../utils/wallets');
 
+const { expect } = require('chai');
 const {
 	shouldBehaveLikeERC20,
 	shouldBehaveLikeERC20Transfer,
@@ -93,8 +98,18 @@ contract('ERC20', async (accounts) => {
 
 		this.frozenSupply = await IexecInstance.totalSupply();
 
-		txMined = await RLCInstance.approveAndCall(IexecInstance.address, initialSupply, "0x", { from: initialHolder, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		switch (DEPLOYMENT.asset)
+		{
+			case "Native":
+				txMined = await IexecInstance.deposit({ from: initialHolder, value: initialSupply, gas: constants.AMOUNT_GAS_PROVIDED });
+				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				break;
+
+			case "Token":
+				txMined = await RLCInstance.approveAndCall(IexecInstance.address, initialSupply, "0x", { from: initialHolder, gas: constants.AMOUNT_GAS_PROVIDED });
+				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				break;
+		}
 
 		assert.equal(Number(await IexecInstance.balanceOf(initialHolder)),  initialSupply);
 		assert.equal(Number(await IexecInstance.balanceOf(recipient)),      0);

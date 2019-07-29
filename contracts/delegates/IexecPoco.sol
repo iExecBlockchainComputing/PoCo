@@ -64,7 +64,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		address          _workerpoolregistryAddress)
 	external
 	{
-		require(address(m_baseToken) == address(0), "already-configured");
+		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
 
 		m_baseToken        = IERC20(_token);
 		m_name             = _name;

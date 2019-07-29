@@ -1,6 +1,9 @@
+// Config
+var DEPLOYMENT = require("../../../config/deployment.json")
+// Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecInterface     = artifacts.require("IexecInterface");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -94,10 +97,19 @@ contract('Poco', async (accounts) => {
 	describe("→ setup", async () => {
 		describe("tokens", async () => {
 			it("distribute", async () => {
-				assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
+				switch (DEPLOYMENT.asset)
+				{
+					case "Native":
+						txMined = await IexecInstance.deposit({ from: iexecAdmin, value: 10000000, gas: constants.AMOUNT_GAS_PROVIDED });
+						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+						break;
 
-				txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					case "Token":
+						assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
+						txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+						break;
+				}
 
 				txsMined = await Promise.all([
 					IexecInstance.transfer(scheduler, 100000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),

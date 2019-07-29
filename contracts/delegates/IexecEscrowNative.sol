@@ -52,7 +52,10 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 			remaining = remaining.sub(amounts[i]);
 			_mint(targets[i], amounts[i]);
 		}
-		_mint(msg.sender, remaining);
+		if (remaining > 0)
+		{
+			_mint(msg.sender, remaining);
+		}
 		return true;
 	}
 

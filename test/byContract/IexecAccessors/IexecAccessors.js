@@ -1,6 +1,9 @@
+// Config
+var DEPLOYMENT = require("../../../config/deployment.json")
+// Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
-var IexecInterface     = artifacts.require("IexecInterface");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
@@ -66,7 +69,7 @@ contract('Accessors', async (accounts) => {
 	describe("checking constant view methods", async () => {
 		describe("escrow", async () => {
 			it("token", async () => {
-				assert.equal(await IexecInstance.token(), RLCInstance.address);
+				assert.equal(await IexecInstance.token(), DEPLOYMENT.asset == "Native" ? constants.NULL.ADDRESS : RLCInstance.address);
 			});
 		});
 
