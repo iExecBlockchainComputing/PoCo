@@ -79,31 +79,8 @@
           "type": "bool"
         }
       ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_amount",
-          "type": "uint256"
-        },
-        {
-          "name": "_target",
-          "type": "address"
-        }
-      ],
-      "name": "depositFor",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
+      "payable": true,
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -417,6 +394,25 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_target",
+          "type": "address"
+        }
+      ],
+      "name": "depositFor",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [
         {
@@ -437,25 +433,6 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "deposit",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -511,6 +488,20 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [],
+      "name": "deposit",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [],
       "name": "KITTY_MIN",
@@ -544,25 +535,7 @@
       "type": "function"
     },
     {
-      "constant": true,
-      "inputs": [],
-      "name": "token",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
-        {
-          "name": "_token",
-          "type": "address"
-        },
         {
           "name": "_iexechub",
           "type": "address"
@@ -575,6 +548,11 @@
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
     },
     {
       "anonymous": false,
@@ -2271,23 +2249,13 @@
     }
   ],
   "networks": {
-    "1": {
+    "1544020727674": {
       "events": {},
-      "links": {},
-      "address": "0x3780d894DB2cB84135bBa025ba9ef0Ac518DC311",
-      "transactionHash": "0xdaa322453395d5025fb4e1096065aea830ff344122c4f1eb33db5bf274b9cc72"
-    },
-    "3": {
-      "events": {},
-      "links": {},
-      "address": "0x150ABdbD76D4f38a0D208D7ba6E8Ab7bE7B4c5F7",
-      "transactionHash": "0xc0aa599f3b9e3fab79403a36517017759419cb0fe00b0f03d660ed926a28ce53"
-    },
-    "42": {
-      "events": {},
-      "links": {},
-      "address": "0xE39859EF4Ca86AF6Cbef798d2b805bf1A6499e8f",
-      "transactionHash": "0xc7a92d95101422a190ea241ba36bef777669bec7844d13a059ace0ace748c7f2"
+      "links": {
+        "IexecODBLibOrders": "0x1b1A4149cAAE1b68a3A3Cf344D25bF5587831Cb8"
+      },
+      "address": "0x9890E75269D192Fe21E25E0Dfe2dEEbf4EeC9Ad9",
+      "transactionHash": "0x2bc000751564aa661b1343e30a72068b1018df0d05917f4d00e3dd89077b0c6a"
     }
   }
 }

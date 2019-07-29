@@ -63,7 +63,7 @@ module.exports = async function(deployer, network, accounts)
 	IexecHubInstance = await IexecHub.deployed();
 	console.log("IexecHub deployed at address: " + IexecHubInstance.address);
 
-	await deployer.deploy(IexecClerk, RLCInstance.address, IexecHubInstance.address, chainid);
+	await deployer.deploy(IexecClerk, IexecHubInstance.address, chainid);
 	IexecClerkInstance = await IexecClerk.deployed();
 	console.log("IexecClerk deployed at address: " + IexecClerkInstance.address);
 
@@ -108,7 +108,7 @@ module.exports = async function(deployer, network, accounts)
 	console.log("setCategoriesCreator to " + owner);
 
 	// Starting deposit for all test wallets
-	if (chaintype == "private" || chaintype == "kovan")
+	if (false && chaintype == "private")
 	{
 		// -------------------------------- Admin --------------------------------
 		var adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";

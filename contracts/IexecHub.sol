@@ -77,14 +77,14 @@ contract IexecHub is CategoryManager, IOracle, SignatureVerifier, IexecHubABILeg
 	}
 
 	function attachContracts(
-		address _iexecclerkAddress,
-		address _appregistryAddress,
-		address _datasetregistryAddress,
-		address _workerpoolregistryAddress)
+		address payable _iexecclerkAddress,
+		address         _appregistryAddress,
+		address         _datasetregistryAddress,
+		address         _workerpoolregistryAddress)
 	external onlyOwner
 	{
 		require(address(iexecclerk) == address(0));
-		iexecclerk         = IexecClerk  (_iexecclerkAddress  );
+		iexecclerk         = IexecClerk  (_iexecclerkAddress);
 		appregistry        = RegistryBase(_appregistryAddress);
 		datasetregistry    = RegistryBase(_datasetregistryAddress);
 		workerpoolregistry = RegistryBase(_workerpoolregistryAddress);

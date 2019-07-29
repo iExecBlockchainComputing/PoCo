@@ -28,10 +28,10 @@ contract IexecHubABILegacy
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
 	function attachContracts(
-		address _iexecclerkAddress,
-		address _appregistryAddress,
-		address _datasetregistryAddress,
-		address _workerpoolregistryAddress)
+		address payable _iexecclerkAddress,
+		address         _appregistryAddress,
+		address         _datasetregistryAddress,
+		address         _workerpoolregistryAddress)
 	external;
 
 	function viewScore(address _worker)

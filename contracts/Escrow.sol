@@ -11,11 +11,6 @@ contract Escrow
 	using SafeMath for uint256;
 
 	/**
-	* token contract for transfers.
-	*/
-	IERC20 public token;
-
-	/**
 	 * Escrow content
 	 */
 	mapping(address => IexecODBLibCore.Account) m_accounts;
@@ -34,10 +29,9 @@ contract Escrow
 	/**
 	 * Constructor
 	 */
-	constructor(address _token)
+	constructor()
 	public
 	{
-		token = IERC20(_token);
 	}
 
 	/**
@@ -52,42 +46,61 @@ contract Escrow
 	/**
 	 * Wallet methods: public
 	 */
-	function deposit(uint256 _amount)
-	external returns (bool)
+	function ()
+	external payable
 	{
-		require(token.transferFrom(msg.sender, address(this), _amount));
-		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.add(_amount);
-		emit Deposit(msg.sender, _amount);
+		_deposit(msg.sender, msg.value);
+		emit Deposit(msg.sender, msg.value);
+	}
+
+	function deposit()
+	external payable returns (bool)
+	{
+		_deposit(msg.sender, msg.value);
+		emit Deposit(msg.sender, msg.value);
 		return true;
 	}
 
-	function depositFor(uint256 _amount, address _target)
-	public returns (bool)
+	function depositFor(address _target)
+	public payable returns (bool)
 	{
 		require(_target != address(0));
-
-		require(token.transferFrom(msg.sender, address(this), _amount));
-		m_accounts[_target].stake = m_accounts[_target].stake.add(_amount);
-		emit DepositFor(msg.sender, _amount, _target);
+		_deposit(_target, msg.value);
+		emit DepositFor(msg.sender, msg.value, _target);
 		return true;
 	}
 
 	function depositForArray(uint256[] calldata _amounts, address[] calldata _targets)
-	external returns (bool)
+	external payable returns (bool)
 	{
 		require(_amounts.length == _targets.length);
+		uint256 remaining = msg.value;
 		for (uint i = 0; i < _amounts.length; ++i)
 		{
-			depositFor(_amounts[i], _targets[i]);
+			remaining = remaining.sub(_amounts[i]);
+			_deposit(_targets[i], _amounts[i]);
+			emit DepositFor(msg.sender, _amounts[i], _targets[i]);
+		}
+		if (remaining > 0)
+		{
+			_deposit(msg.sender, remaining);
+			emit Deposit(msg.sender, remaining);
 		}
 		return true;
 	}
+
+	function _deposit(address _target, uint256 _amount)
+	internal
+	{
+		m_accounts[_target].stake = m_accounts[_target].stake.add(_amount);
+	}
+
 
 	function withdraw(uint256 _amount)
 	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		require(token.transfer(msg.sender, _amount));
+		msg.sender.transfer(_amount);
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}

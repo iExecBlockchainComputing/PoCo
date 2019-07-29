@@ -65,11 +65,9 @@ contract IexecClerk is Escrow, Relay, IexecHubAccessor, SignatureVerifier, Iexec
 	 *                               Constructor                               *
 	 ***************************************************************************/
 	constructor(
-		address _token,
 		address _iexechub,
 		uint256 _chainid)
 	public
-	Escrow(_token)
 	IexecHubAccessor(_iexechub)
 	{
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
