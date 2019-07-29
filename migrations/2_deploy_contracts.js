@@ -32,7 +32,6 @@ var WorkerpoolRegistry      = artifacts.require("WorkerpoolRegistry");
 const USENATIVE = false;
 
 const fs = require("fs-extra");
-const BN = require('bn.js');
 
 function getSerializedObject(entry)
 {
