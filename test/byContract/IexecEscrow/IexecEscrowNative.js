@@ -25,7 +25,7 @@ function extractEvents(txMined, address, name)
 }
 
 if (DEPLOYMENT.asset == "Native")
-contract('EscrowToken', async (accounts) => {
+contract('EscrowNative', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
