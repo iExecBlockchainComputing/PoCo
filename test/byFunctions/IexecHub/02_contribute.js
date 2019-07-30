@@ -1,4 +1,3 @@
-var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
 var IexecHub           = artifacts.require("./IexecHub.sol");
 var IexecClerk         = artifacts.require("./IexecClerk.sol");
 var AppRegistry        = artifacts.require("./AppRegistry.sol");
@@ -34,7 +33,6 @@ contract('IexecHub', async (accounts) => {
 	let worker5         = accounts[8];
 	let user            = accounts[9];
 
-	var RLCInstance                = null;
 	var IexecHubInstance           = null;
 	var IexecClerkInstance         = null;
 	var AppRegistryInstance        = null;
@@ -63,7 +61,6 @@ contract('IexecHub', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = await RLC.deployed();
 		IexecHubInstance           = await IexecHub.deployed();
 		IexecClerkInstance         = await IexecClerk.deployed();
 		AppRegistryInstance        = await AppRegistry.deployed();

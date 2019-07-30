@@ -1,9 +1,9 @@
 {
   "contractName": "SafeMath",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Unsigned math operations with safety checks that revert on error\",\"methods\":{},\"title\":\"SafeMath\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"iexec-solidity/contracts/Libs/SafeMath.sol\":\"SafeMath\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\"]}},\"version\":1}",
-  "bytecode": "0x604c6023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a72305820356cad167af735e988c3e4d0310c98085e0d3592c0a2be007fc283a2124ce0230029",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a72305820356cad167af735e988c3e4d0310c98085e0d3592c0a2be007fc283a2124ce0230029",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Unsigned math operations with safety checks that revert on error\",\"methods\":{},\"title\":\"SafeMath\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"iexec-solidity/contracts/Libs/SafeMath.sol\":\"SafeMath\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"iexec-solidity/contracts/Libs/SafeMath.sol\":{\"keccak256\":\"0x328ae48fe8bbceaa23232dbfb414450fb378186ba4142b2fa9a06cc01301fcfb\",\"urls\":[\"bzzr://3262af37321420dca5af24bb589962486ec28ec28a1eb25d47d56ffb51a2b3e2\",\"dweb:/ipfs/QmTWjkk2Z8cHjfzJNQ21N9o7CgDuqzCmPfFoUUjUbrxiKK\"]}},\"version\":1}",
+  "bytecode": "0x60556023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a723058205639106d39e52c1c04a1064a8cbde97dd60b4aa8b79612e4c41dc6865736778864736f6c634300050a0032",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a723058205639106d39e52c1c04a1064a8cbde97dd60b4aa8b79612e4c41dc6865736778864736f6c634300050a0032",
   "sourceMap": "125:3887:25:-;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
   "deployedSourceMap": "125:3887:25:-;;;;;;;;",
   "source": "pragma solidity ^0.5.0;\n\n/**\n * @title SafeMath\n * @dev Unsigned math operations with safety checks that revert on error\n */\nlibrary SafeMath\n{\n\t/**\n\t* @dev Adds two unsigned integers, reverts on overflow.\n\t*/\n\tfunction add(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\tuint256 c = a + b;\n\t\trequire(c >= a);\n\t\treturn c;\n\t}\n\n\t/**\n\t* @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).\n\t*/\n\tfunction sub(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\trequire(b <= a);\n\t\tuint256 c = a - b;\n\t\treturn c;\n\t}\n\n\t/**\n\t* @dev Multiplies two unsigned integers, reverts on overflow.\n\t*/\n\tfunction mul(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\t// Gas optimization: this is cheaper than requiring 'a' not being zero, but the\n\t\t// benefit is lost if 'b' is also tested.\n\t\t// See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522\n\t\tif (a == 0)\n\t\t{\n\t\t\treturn 0;\n\t\t}\n\t\tuint256 c = a * b;\n\t\trequire(c / a == b);\n\t\treturn c;\n\t}\n\n\t/**\n\t* @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.\n\t*/\n\tfunction div(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\t\t// Solidity only automatically asserts when dividing by 0\n\t\t\trequire(b > 0);\n\t\t\tuint256 c = a / b;\n\t\t\t// assert(a == b * c + a % b); // There is no case in which this doesn't hold\n\t\t\treturn c;\n\t}\n\n\t/**\n\t* @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),\n\t* reverts when dividing by zero.\n\t*/\n\tfunction mod(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\trequire(b != 0);\n\t\treturn a % b;\n\t}\n\n\t/**\n\t* @dev Returns the largest of two numbers.\n\t*/\n\tfunction max(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\treturn a >= b ? a : b;\n\t}\n\n\t/**\n\t* @dev Returns the smallest of two numbers.\n\t*/\n\tfunction min(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\treturn a < b ? a : b;\n\t}\n\n\t/**\n\t* @dev Multiplies the a by the fraction b/c\n\t*/\n\tfunction mulByFraction(uint256 a, uint256 b, uint256 c) internal pure returns (uint256)\n\t{\n\t\treturn div(mul(a, b), c);\n\t}\n\n\t/**\n\t* @dev Return b percents of a (equivalent to a percents of b)\n\t*/\n\tfunction percentage(uint256 a, uint256 b) internal pure returns (uint256)\n\t{\n\t\treturn mulByFraction(a, b, 100);\n\t}\n\n\t/**\n\t* @dev Returns the base 2 log of x\n\t* @notice Source : https://ethereum.stackexchange.com/questions/8086/logarithm-math-operation-in-solidity\n\t*/\n\tfunction log(uint x) internal pure returns (uint y)\n\t{\n\t\tassembly\n\t\t{\n\t\t\tlet arg := x\n\t\t\tx := sub(x,1)\n\t\t\tx := or(x, div(x, 0x02))\n\t\t\tx := or(x, div(x, 0x04))\n\t\t\tx := or(x, div(x, 0x10))\n\t\t\tx := or(x, div(x, 0x100))\n\t\t\tx := or(x, div(x, 0x10000))\n\t\t\tx := or(x, div(x, 0x100000000))\n\t\t\tx := or(x, div(x, 0x10000000000000000))\n\t\t\tx := or(x, div(x, 0x100000000000000000000000000000000))\n\t\t\tx := add(x, 1)\n\t\t\tlet m := mload(0x40)\n\t\t\tmstore(m,           0xf8f9cbfae6cc78fbefe7cdc3a1793dfcf4f0e8bbd8cec470b6a28a7a5a3e1efd)\n\t\t\tmstore(add(m,0x20), 0xf5ecf1b3e9debc68e1d9cfabc5997135bfb7a7a3938b7b606b5b4b3f2f1f0ffe)\n\t\t\tmstore(add(m,0x40), 0xf6e4ed9ff2d6b458eadcdf97bd91692de2d4da8fd2d0ac50c6ae9a8272523616)\n\t\t\tmstore(add(m,0x60), 0xc8c0b887b0a8a4489c948c7f847c6125746c645c544c444038302820181008ff)\n\t\t\tmstore(add(m,0x80), 0xf7cae577eec2a03cf3bad76fb589591debb2dd67e0aa9834bea6925f6a4a2e0e)\n\t\t\tmstore(add(m,0xa0), 0xe39ed557db96902cd38ed14fad815115c786af479b7e83247363534337271707)\n\t\t\tmstore(add(m,0xc0), 0xc976c13bb96e881cb166a933a55e490d9d56952b8d4e801485467d2362422606)\n\t\t\tmstore(add(m,0xe0), 0x753a6d1b65325d0c552a4d1345224105391a310b29122104190a110309020100)\n\t\t\tmstore(0x40, add(m, 0x100))\n\t\t\tlet magic := 0x818283848586878898a8b8c8d8e8f929395969799a9b9d9e9faaeb6bedeeff\n\t\t\tlet shift := 0x100000000000000000000000000000000000000000000000000000000000000\n\t\t\tlet a := div(mul(x, magic), shift)\n\t\t\ty := div(mload(add(m,sub(255,a))), shift)\n\t\t\ty := add(y, mul(256, gt(arg, 0x8000000000000000000000000000000000000000000000000000000000000000)))\n\t\t}\n\t}\n}\n",
@@ -2533,25 +2533,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2858:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
                         "src": "2555:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "2633:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2578,7 +2560,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2605:1:25",
+                        "src": "2569:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2587,7 +2569,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2569:1:25",
+                        "src": "2605:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2605,16 +2587,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2690:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "2620:1:25",
+                        "src": "2633:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2641,7 +2614,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2756:1:25",
+                        "src": "2721:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2650,7 +2623,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2799:1:25",
+                        "src": "2756:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2668,7 +2641,16 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2721:1:25",
+                        "src": "2690:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "2620:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2758,6 +2740,15 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
+                        "src": "2799:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
                         "src": "2736:1:25",
                         "valueSize": 1
                       }
@@ -2768,6 +2759,15 @@
                         "isOffset": false,
                         "isSlot": false,
                         "src": "2729:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "2858:1:25",
                         "valueSize": 1
                       }
                     },
@@ -2790,20 +2790,20 @@
                       }
                     },
                     {
-                      "y": {
-                        "declaration": 6198,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "3905:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
                       "x": {
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "3839:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "y": {
+                        "declaration": 6198,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "3905:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5435,25 +5435,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2858:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
                         "src": "2555:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "2633:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5480,7 +5462,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2605:1:25",
+                        "src": "2569:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5489,7 +5471,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2569:1:25",
+                        "src": "2605:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5507,16 +5489,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2690:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
-                      "x": {
-                        "declaration": 6195,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "2620:1:25",
+                        "src": "2633:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5543,7 +5516,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2756:1:25",
+                        "src": "2721:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5552,7 +5525,7 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2799:1:25",
+                        "src": "2756:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5570,7 +5543,16 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
-                        "src": "2721:1:25",
+                        "src": "2690:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "2620:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5660,6 +5642,15 @@
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
+                        "src": "2799:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
                         "src": "2736:1:25",
                         "valueSize": 1
                       }
@@ -5670,6 +5661,15 @@
                         "isOffset": false,
                         "isSlot": false,
                         "src": "2729:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "x": {
+                        "declaration": 6195,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "2858:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5692,20 +5692,20 @@
                       }
                     },
                     {
-                      "y": {
-                        "declaration": 6198,
-                        "isOffset": false,
-                        "isSlot": false,
-                        "src": "3905:1:25",
-                        "valueSize": 1
-                      }
-                    },
-                    {
                       "x": {
                         "declaration": 6195,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "3839:1:25",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "y": {
+                        "declaration": 6198,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "3905:1:25",
                         "valueSize": 1
                       }
                     },
@@ -5814,11 +5814,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+    "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-29T07:58:51.698Z",
+  "updatedAt": "2019-07-30T09:36:58.391Z",
   "devdoc": {
     "details": "Unsigned math operations with safety checks that revert on error",
     "methods": {},
