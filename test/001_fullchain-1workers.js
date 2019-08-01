@@ -272,8 +272,7 @@ contract('Fullchain', async (accounts) => {
 						await IexecInstance.verifySignature(
 							appProvider,
 							odbtools.AppOrderTypedStructHash(apporder),
-							apporder.sign,
-							{}
+							apporder.sign
 						),
 						"Error with the validation of the apporder signature"
 					);
@@ -302,8 +301,7 @@ contract('Fullchain', async (accounts) => {
 						await IexecInstance.verifySignature(
 							datasetProvider,
 							odbtools.DatasetOrderTypedStructHash(datasetorder),
-							datasetorder.sign,
-							{}
+							datasetorder.sign
 						),
 						"Error with the validation of the datasetorder signature"
 					);
@@ -334,8 +332,7 @@ contract('Fullchain', async (accounts) => {
 						await IexecInstance.verifySignature(
 							scheduler,
 							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-							workerpoolorder.sign,
-							{}
+							workerpoolorder.sign
 						),
 						"Error with the validation of the.workerpoolorder signature"
 					);
@@ -371,8 +368,7 @@ contract('Fullchain', async (accounts) => {
 						await IexecInstance.verifySignature(
 							user,
 							odbtools.RequestOrderTypedStructHash(requestorder),
-							requestorder.sign,
-							{}
+							requestorder.sign
 						),
 						"Error with the validation of the requestorder signature"
 					);

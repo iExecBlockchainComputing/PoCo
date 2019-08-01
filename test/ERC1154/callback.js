@@ -261,8 +261,7 @@ contract('ERC1154: callback', async (accounts) => {
 						await IexecInstance.verifySignature(
 							appProvider,
 							odbtools.AppOrderTypedStructHash(apporder),
-							apporder.sign,
-							{}
+							apporder.sign
 						),
 						"Error with the validation of the apporder signature"
 					);
@@ -291,8 +290,7 @@ contract('ERC1154: callback', async (accounts) => {
 						await IexecInstance.verifySignature(
 							datasetProvider,
 							odbtools.DatasetOrderTypedStructHash(datasetorder),
-							datasetorder.sign,
-							{}
+							datasetorder.sign
 						),
 						"Error with the validation of the datasetorder signature"
 					);
@@ -323,8 +321,7 @@ contract('ERC1154: callback', async (accounts) => {
 						await IexecInstance.verifySignature(
 							scheduler,
 							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-							workerpoolorder.sign,
-							{}
+							workerpoolorder.sign
 						),
 						"Error with the validation of the.workerpoolorder signature"
 					);
@@ -361,8 +358,7 @@ contract('ERC1154: callback', async (accounts) => {
 							await IexecInstance.verifySignature(
 								user,
 								odbtools.RequestOrderTypedStructHash(requestorder1),
-								requestorder1.sign,
-								{}
+								requestorder1.sign
 							),
 							"Error with the validation of the requestorder signature"
 						);
@@ -397,8 +393,7 @@ contract('ERC1154: callback', async (accounts) => {
 							await IexecInstance.verifySignature(
 								user,
 								odbtools.RequestOrderTypedStructHash(requestorder2),
-								requestorder2.sign,
-								{}
+								requestorder2.sign
 							),
 							"Error with the validation of the requestorder signature"
 						);
@@ -433,8 +428,7 @@ contract('ERC1154: callback', async (accounts) => {
 							await IexecInstance.verifySignature(
 								user,
 								odbtools.RequestOrderTypedStructHash(requestorder3),
-								requestorder3.sign,
-								{}
+								requestorder3.sign
 							),
 							"Error with the validation of the requestorder signature"
 						);
