@@ -254,9 +254,33 @@ library IexecODBLibOrders
 		}
 	}
 
+	function toEthSignedMessageHash(bytes32 msg_hash)
+	public pure returns (bytes32)
+	{
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", msg_hash));
+	}
+
 	function toEthTypedStructHash(bytes32 _structHash, bytes32 _domainHash)
 	public pure returns (bytes32 typedStructHash)
 	{
 		return keccak256(abi.encodePacked("\x19\x01", _domainHash, _structHash));
+	}
+
+	function recover(bytes32 hash, bytes memory sign)
+	public pure returns (address)
+	{
+		bytes32 r;
+		bytes32 s;
+		uint8   v;
+		if (sign.length != 65) revert();
+		assembly
+		{
+			r :=         mload(add(sign, 0x20))
+			s :=         mload(add(sign, 0x40))
+			v := byte(0, mload(add(sign, 0x60)))
+		}
+		if (v < 27) v += 27;
+		if (v != 27 && v != 28) revert();
+		return ecrecover(hash, v, r, s);
 	}
 }
