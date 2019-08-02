@@ -206,11 +206,10 @@ module.exports = async function(deployer, network, accounts)
 
 		function namehash(domain)
 		{
-			hash = "0x0000000000000000000000000000000000000000000000000000000000000000";
-			domain.split('.').reverse().forEach(label => {
-				hash = compose(labelhash(label), hash);
-			});
-			return hash
+			return domain.split('.').reverse().reduce(
+				(hash, label) => compose(labelhash(label), hash),
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
 		}
 
 		async function bootstrap()

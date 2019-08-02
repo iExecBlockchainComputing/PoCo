@@ -9,16 +9,20 @@ module.exports = {
 		return web3.utils.keccak256(label.toLowerCase())
 	},
 
-	namehash: function (domain)
+	compose: function(labelHash, rootHash)
 	{
-		hash = "0x0000000000000000000000000000000000000000000000000000000000000000";
-		domain.split('.').reverse().forEach(label => {
-			hash = web3.utils.keccak256(web3.eth.abi.encodeParameters([ "bytes32", "bytes32" ], [ hash,  this.labelhash(label) ]));
-		});
-		return hash
+		return web3.utils.keccak256(web3.eth.abi.encodeParameters([ "bytes32", "bytes32" ], [ rootHash,  labelHash ]));
 	},
 
-	resolve: async function (name)
+	namehash: function(domain)
+	{
+		return domain.split('.').reverse().reduce(
+			(hash, label) => this.compose(this.labelhash(label), hash),
+			"0x0000000000000000000000000000000000000000000000000000000000000000"
+		);
+	},
+
+	resolve: async function(name)
 	{
 		node         = this.namehash(name);
 		registry     = await ENSRegistry.deployed();
@@ -28,7 +32,7 @@ module.exports = {
 		return addr;
 	},
 
-	lookup: async function (address)
+	lookup: async function(addr)
 	{
 		node         = this.namehash(`${addr.substring(2)}.addr.reverse`);
 		registry     = await ENSRegistry.deployed();
@@ -36,6 +40,6 @@ module.exports = {
 		resolver     = await PublicResolver.at(resolveraddr);
 		name         = await resolver.name(node);
 		return name;
-	}
+	},
 
 };
