@@ -21,20 +21,20 @@ pipeline {
 
 	stages {
 
-#		stage('Truffle tests') {
-#			agent {
-#				docker {
-#					image 'node:11'
-#					label "${LABEL}"
-#				}
-#			}
-#			steps{
-#				sh "echo 'Starting truffle tests'"
-#				sh "npm install"
-#				sh "npm run autotest"
-#				archiveArtifacts artifacts: 'logs/**'
-#			}
-#		}
+//		stage('Truffle tests') {
+//			agent {
+//				docker {
+//					image 'node:11'
+//					label "${LABEL}"
+//				}
+//			}
+//			steps{
+//				sh "echo 'Starting truffle tests'"
+//				sh "npm install"
+//				sh "npm run autotest"
+//				archiveArtifacts artifacts: 'logs/**'
+//			}
+//		}
 
 		stage('Solidity coverage') {
 			agent {
