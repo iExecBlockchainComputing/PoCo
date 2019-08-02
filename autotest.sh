@@ -26,6 +26,7 @@ function initialize
 	GANACHE_PID=$!
 	print_style 'info' "Started ganache daemon (pid=$GANACHE_PID)\n"
 }
+
 function finalize
 {
 	# stopping ganache
@@ -37,7 +38,7 @@ function finalize
 function catch
 {
 	print_style 'warning' "\n*** Killing test suite ***\n"
-	finalize
+	if [[ $LAUNCH -ne 0 ]]; then finalize; fi
 	exit 1
 }
 
@@ -63,7 +64,7 @@ function runMigrate
 	# try migrating contracts
 	logfile="logs/migrate.$date.log"
 	printf "Migrating ... "
-	$TRUFFLE migrate > $logfile 2>&1
+	$TRUFFLE migrate $PARAMS > $logfile 2>&1
 	if [[ $? -ne 0 ]];
 	then
 		print_style 'danger' "failure\n"
@@ -83,10 +84,10 @@ function runTests
 		filename=$(basename $filepath)
 		logfile="logs/${filename%.*}.$date.log"
 
-		if [ "$checkpoint" \> "$filename" ]; then continue; fi
+		if [ "$CHECKPOINT" \> "$filename" ]; then continue; fi
 
 		printf "Starting test ${filepath%.*} ... "
-		$TRUFFLE test $filepath > $logfile 2>&1
+		$TRUFFLE test $filepath $PARAMS > $logfile 2>&1
 		if [[ $? -ne 0 ]];
 		then
 			print_style 'danger' "failure\n"
@@ -100,11 +101,38 @@ function runTests
 }
 
 date=$(date --utc +"%Y-%m-%dT%H:%M:%S")
-checkpoint="$1"
+
+LAUNCH=1
+COMPILE=1
+DEPLOY=1
+CHECKPOINT=""
+PARAMS=""
+
+while test $# -gt 0; do
+	case $1 in
+		--skip-launch)
+			LAUNCH=0
+			;;
+		--skip-compile)
+			COMPILE=0
+			;;
+		--skip-deploy)
+			DEPLOY=0
+			;;
+		--checkpoint)
+			CHECKPOINT=$2
+			shift
+			;;
+		*)
+			PARAMS="$PARAMS $1"
+			;;
+	esac
+	shift
+done
 
 # MAIN
-initialize
-runCompile
-runMigrate
+if [[ $LAUNCH  -ne 0 ]]; then initialize; fi
+if [[ $COMPILE -ne 0 ]]; then runCompile; fi
+if [[ $DEPLOY  -ne 0 ]]; then runMigrate; fi
 runTests
-finalize
+if [[ $LAUNCH  -ne 0 ]]; then finalize;   fi

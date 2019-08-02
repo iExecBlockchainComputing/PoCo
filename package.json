@@ -5,7 +5,9 @@
   "main": "truffle.js",
   "scripts": {
     "build": "./node_modules/.bin/truffle compile",
-    "test": "./autotest.sh",
+    "migrate": "./node_modules/.bin/truffle migrate",
+    "test": "./node_modules/.bin/truffle test",
+    "autotest": "./autotest.sh",
     "coverage": "./node_modules/.bin/solidity-coverage"
   },
   "repository": {

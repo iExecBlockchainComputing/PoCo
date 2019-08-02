@@ -179,7 +179,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	var catCount = await IexecInterfaceInstance.countCategory();
-	console.log(`countCategory is now: ${catCount}`);
+	console.log(`countCategory is now: ${catCount.toNumber()}`);
 	for(var i = 0; i < await IexecInterfaceInstance.countCategory(); ++i)
 	{
 		console.log([ "category", i, ":", ...await IexecInterfaceInstance.viewCategory(i)].join(" "));
