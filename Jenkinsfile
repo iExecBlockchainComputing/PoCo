@@ -36,6 +36,21 @@ pipeline {
 			}
 		}
 
+		stage('Solidity coverage') {
+			agent {
+				docker {
+					image 'node:11'
+					label "${LABEL}"
+				}
+			}
+			steps{
+				sh "echo 'Starting coverage test'"
+				sh "npm install"
+				sh "./node_modules/.bin/solidity-coverage"
+				archiveArtifacts artifacts: 'coverage/**'
+			}
+		}
+
 		stage('Log tag') {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
