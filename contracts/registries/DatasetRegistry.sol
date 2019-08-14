@@ -1,4 +1,4 @@
-pragma solidity ^0.5.10;
+pragma solidity ^0.5.0;
 
 import './Dataset.sol';
 import './CounterfactualFactory.sol';
