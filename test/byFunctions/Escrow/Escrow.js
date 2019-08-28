@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 var Escrow = artifacts.require("./Escrow.sol");
 
@@ -77,7 +77,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 			IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.withdraw(100));
+		await expectRevert.unspecified(IexecClerkInstance.withdraw(100));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -90,7 +90,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.deposit(100, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -100,7 +100,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 0, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.depositFor(100, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler), 0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 0, "wrong rlc balance");
@@ -135,7 +135,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.deposit(1000000000, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
@@ -145,7 +145,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 1000000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.depositFor(1000000000, scheduler, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		assert.equal(await RLCInstance.balanceOf(scheduler),          0, "wrong rlc balance");
 		assert.equal(await RLCInstance.balanceOf(user     ), 1000000000, "wrong rlc balance");
@@ -196,7 +196,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
 
-		await shouldFail.reverting(IexecClerkInstance.withdraw(100000000));
+		await expectRevert.unspecified(IexecClerkInstance.withdraw(100000000));
 
 		assert.equal(await RLCInstance.balanceOf(user), 900000000, "wrong rlc balance");
 		IexecClerkInstance.viewAccount(user).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));

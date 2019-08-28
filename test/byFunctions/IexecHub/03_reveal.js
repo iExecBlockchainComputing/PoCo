@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -440,7 +440,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.2] Reveal - Error (unset)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[2],
 			odbtools.hashResult(tasks[2], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -448,7 +448,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.3] Reveal - Error (no consensus)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[3],
 			odbtools.hashResult(tasks[3], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -471,7 +471,7 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[4], "true").digest,
 			{ from: worker4, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[4],
 			odbtools.hashResult(tasks[4], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -479,7 +479,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.6] Reveal - Error .hash)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[5],
 			odbtools.hashResult(tasks[5], "nottrue").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -492,7 +492,7 @@ contract('IexecHub', async (accounts) => {
 			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[6],
 			odbtools.hashResult(tasks[6], "true").digest,
 			{ from: worker2, gas: constants.AMOUNT_GAS_PROVIDED }
@@ -506,7 +506,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[4.7] Reveal - Error (late for reveal)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reveal(
+		await expectRevert.unspecified(IexecHubInstance.reveal(
 			tasks[7],
 			odbtools.hashResult(tasks[7], "true").digest,
 			{ from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }

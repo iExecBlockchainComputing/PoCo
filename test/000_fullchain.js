@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr   = require('multiaddr');
-const   constants   = require("../utils/constants");
-const   odbtools    = require('../utils/odb-tools');
-const   wallets     = require('../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../utils/constants");
+const odbtools  = require('../utils/odb-tools');
+const wallets   = require('../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -245,8 +245,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
-				apporder.sign,
-				{}
+				apporder.sign
 			),
 			"Error with the validation of the apporder signature"
 		);
@@ -274,8 +273,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
-				datasetorder.sign,
-				{}
+				datasetorder.sign
 			),
 			"Error with the validation of the datasetorder signature"
 		);
@@ -305,8 +303,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-				workerpoolorder.sign,
-				{}
+				workerpoolorder.sign
 			),
 			"Error with the validation of the.workerpoolorder signature"
 		);
@@ -341,8 +338,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
-				requestorder.sign,
-				{}
+				requestorder.sign
 			),
 			"Error with the validation of the requestorder signature"
 		);

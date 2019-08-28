@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -385,22 +385,22 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[7.1a] Claim - Error (soon #1)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[1], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.2a] Claim - Error (soon #2)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[2], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.3a] Claim - Error (soon #3)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[3], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.4a] Claim - Error (soon #4)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[4], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.5a] Claim - Error (soon #5)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[5], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 	it("[7.6a] Claim - Error (soon & finalized)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -442,7 +442,7 @@ contract('IexecHub', async (accounts) => {
 		assert.equal(events[0].args.taskid, tasks[5], "check taskid");
 	});
 	it("[7.6b] Claim - Error (finalized #7)", async () => {
-		await shouldFail.reverting(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.claim(tasks[6], { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -184,7 +184,7 @@ contract('IexecClerk', async (accounts) => {
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
 	});
 
@@ -199,7 +199,7 @@ contract('IexecClerk', async (accounts) => {
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
 	});
 
@@ -214,7 +214,7 @@ contract('IexecClerk', async (accounts) => {
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
 	});
 
@@ -229,7 +229,7 @@ contract('IexecClerk', async (accounts) => {
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
 		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		await shouldFail.reverting(IexecClerkInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecClerkInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecClerkInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
 	});
 

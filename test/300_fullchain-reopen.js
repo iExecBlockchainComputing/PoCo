@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr   = require('multiaddr');
-const   constants   = require("../utils/constants");
-const   odbtools    = require('../utils/odb-tools');
-const   wallets     = require('../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../utils/constants");
+const odbtools  = require('../utils/odb-tools');
+const wallets   = require('../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -370,7 +370,7 @@ contract('Fullchain', async (accounts) => {
 	});
 
 	it("Contribute #2", async () => {
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[0], enclave: constants.NULL.ADDRESS }, scheduler),
 			odbtools.sealResult(tasks[0], "true", worker1)
 		));

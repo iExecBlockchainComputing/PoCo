@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -422,7 +422,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.2] Finalize - Error (partial - soon)", async () => {
-		await shouldFail.reverting(IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -440,15 +440,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.4] Finalize - Error (no contribution)", async () => {
-		await shouldFail.reverting(IexecHubInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[6.5] Finalize - Error (no consensus)", async () => {
-		await shouldFail.reverting(IexecHubInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[6.6] Finalize - Error (no reveal)", async () => {
-		await shouldFail.reverting(IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -458,6 +458,6 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[6.7] Finalize - Error (late)", async () => {
-		await shouldFail.reverting(IexecHubInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 });

@@ -11,11 +11,11 @@ var Workerpool         = artifacts.require("./Workerpool.sol");
 var IexecHubABILegacy   = artifacts.require("./IexecHubABILegacy.sol");
 var IexecClerkABILegacy = artifacts.require("./IexecClerkABILegacy.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../utils/constants");
-const   odbtools     = require('../utils/odb-tools');
-const   wallets      = require('../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../utils/constants");
+const odbtools  = require('../utils/odb-tools');
+const wallets   = require('../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -243,8 +243,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
-				apporder.sign,
-				{}
+				apporder.sign
 			),
 			"Error with the validation of the apporder signature"
 		);
@@ -272,8 +271,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
-				datasetorder.sign,
-				{}
+				datasetorder.sign
 			),
 			"Error with the validation of the datasetorder signature"
 		);
@@ -303,8 +301,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-				workerpoolorder.sign,
-				{}
+				workerpoolorder.sign
 			),
 			"Error with the validation of the.workerpoolorder signature"
 		);
@@ -339,8 +336,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
-				requestorder.sign,
-				{}
+				requestorder.sign
 			),
 			"Error with the validation of the requestorder signature"
 		);

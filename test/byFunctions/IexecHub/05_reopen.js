@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -395,7 +395,7 @@ contract('IexecHub', async (accounts) => {
 
 
 	it("[5.1] Reopen - Error (early)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reopen(tasks[1], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.reopen(tasks[1], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -412,15 +412,15 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[5.3] Reopen - Error (status #1 - currently unset)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reopen(tasks[3], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.reopen(tasks[3], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[5.4] Reopen - Error (status #2 - currently active)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reopen(tasks[4], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.reopen(tasks[4], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("[5.5] Reopen - Error (counter)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reopen(tasks[5], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.reopen(tasks[5], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 	it("clock fast forward", async () => {
@@ -430,7 +430,7 @@ contract('IexecHub', async (accounts) => {
 	});
 
 	it("[5.6] Reopen - Error (late)", async () => {
-		await shouldFail.reverting(IexecHubInstance.reopen(tasks[6], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+		await expectRevert.unspecified(IexecHubInstance.reopen(tasks[6], { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
 	});
 
 });

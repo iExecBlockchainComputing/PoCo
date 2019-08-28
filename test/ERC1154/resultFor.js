@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../utils/constants");
-const   odbtools     = require('../../utils/odb-tools');
-const   wallets      = require('../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../utils/constants");
+const odbtools  = require('../../utils/odb-tools');
+const wallets   = require('../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -340,19 +340,19 @@ contract('ERC1154: resultFor', async (accounts) => {
 
 
 	it("resultFor - uninitialized", async () => {
-		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[1]));
+		await expectRevert.unspecified(IexecHubInstance.resultFor(tasks[1]));
 	});
 	it("resultFor - initialized", async () => {
-		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[2]));
+		await expectRevert.unspecified(IexecHubInstance.resultFor(tasks[2]));
 	});
 	it("resultFor - contributed", async () => {
-		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[3]));
+		await expectRevert.unspecified(IexecHubInstance.resultFor(tasks[3]));
 	});
 	it("resultFor - consensus", async () => {
-		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[4]));
+		await expectRevert.unspecified(IexecHubInstance.resultFor(tasks[4]));
 	});
 	it("resultFor - reveal", async () => {
-		await shouldFail.reverting(IexecHubInstance.resultFor(tasks[5]));
+		await expectRevert.unspecified(IexecHubInstance.resultFor(tasks[5]));
 	});
 	it("resultFor - finalized", async () => {
 		result = await IexecHubInstance.resultFor(tasks[6]);

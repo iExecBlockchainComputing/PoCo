@@ -8,11 +8,11 @@ var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
 
-const { shouldFail } = require('openzeppelin-test-helpers');
-const   multiaddr    = require('multiaddr');
-const   constants    = require("../../../utils/constants");
-const   odbtools     = require('../../../utils/odb-tools');
-const   wallets      = require('../../../utils/wallets');
+const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const multiaddr = require('multiaddr');
+const constants = require("../../../utils/constants");
+const odbtools  = require('../../../utils/odb-tools');
+const wallets   = require('../../../utils/wallets');
 
 function extractEvents(txMined, address, name)
 {
@@ -366,7 +366,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -392,7 +392,7 @@ contract('IexecHub', async (accounts) => {
 			__enclave
 		);
 		// Second error
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			results,
@@ -407,7 +407,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
@@ -422,7 +422,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = sgxEnclave;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
@@ -443,7 +443,7 @@ contract('IexecHub', async (accounts) => {
 		__enclave = constants.NULL.ADDRESS;
 		__raw     = "true"
 
-		await shouldFail.reverting(sendContribution(
+		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
