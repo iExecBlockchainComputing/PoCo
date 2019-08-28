@@ -62,7 +62,7 @@ contract('IexecHub: Category manager', async (accounts) => {
 	 ***************************************************************************/
 	it("CategoryManager - cant transfer ownership to null address", async () => {
 		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
-		await expectRevert(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: new owner is the zero address.");
+		await expectRevert.unspecified(IexecHubInstance.transferOwnership(constants.NULL.ADDRESS, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal( await IexecHubInstance.owner(), iexecAdmin, "Erroneous Workerpool owner");
 	});
 
@@ -77,7 +77,7 @@ contract('IexecHub: Category manager', async (accounts) => {
 
 	it("CategoryManager - create and view #2: unauthorized create", async () => {
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
-		await expectRevert(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner.");
+		await expectRevert.unspecified(IexecHubInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
 		assert.equal(await IexecHubInstance.countCategory(), 5, "Error in category count");
 	});
 
