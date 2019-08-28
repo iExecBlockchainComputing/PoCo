@@ -19,26 +19,30 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 {
 	using SafeMathExtended for uint256;
 
+	constant uint256 internal nRLCtoWei = 10 ** 9;
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
 	function ()
 		external payable
 	{
-		_mint(msg.sender, msg.value);
+		_mint(msg.sender, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
 	}
 
 	function deposit()
 		external payable returns (bool)
 	{
-		_mint(msg.sender, msg.value);
+		_mint(msg.sender, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
 		return true;
 	}
 
 	function depositFor(address target)
 		external payable returns (bool)
 	{
-		_mint(target, msg.value);
+		_mint(target, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
 		return true;
 	}
 
@@ -49,13 +53,10 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		uint256 remaining = msg.value;
 		for (uint i = 0; i < amounts.length; ++i)
 		{
-			remaining = remaining.sub(amounts[i]);
 			_mint(targets[i], amounts[i]);
+			remaining = remaining.sub(_amounts[i].mul(nRLCtoWei));
 		}
-		if (remaining > 0)
-		{
-			_mint(msg.sender, remaining);
-		}
+		msg.sender.transfer(remaining);
 		return true;
 	}
 
@@ -63,14 +64,14 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		external returns (bool)
 	{
 		_burn(msg.sender, amount);
-		msg.sender.transfer(amount);
+		msg.sender.transfer(amount.mul(nRLCtoWei));
 		return true;
 	}
 
 	function recover()
 		external onlyOwner returns (uint256)
 	{
-		uint256 delta = address(this).balance.sub(m_totalSupply);
+		uint256 delta = address(this).balance.div(nRLCtoWei).sub(m_totalSupply);
 		_mint(owner(), delta);
 		return delta;
 	}
