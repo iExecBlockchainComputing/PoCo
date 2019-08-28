@@ -146,14 +146,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol",
     "exportedSymbols": {
       "Dataset": [
-        5381
+        5417
       ]
     },
-    "id": 5382,
+    "id": 5418,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5333,
+        "id": 5369,
         "literals": [
           "solidity",
           "^",
@@ -166,10 +166,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5334,
+        "id": 5370,
         "nodeType": "ImportDirective",
-        "scope": 5382,
-        "sourceUnit": 6335,
+        "scope": 5418,
+        "sourceUnit": 6371,
         "src": "25:63:14",
         "symbolAliases": [],
         "unitAlias": ""
@@ -180,41 +180,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5335,
+              "id": 5371,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6334,
+              "referencedDeclaration": 6370,
               "src": "110:7:14",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6334",
+                "typeIdentifier": "t_contract$_Ownable_$6370",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5336,
+            "id": 5372,
             "nodeType": "InheritanceSpecifier",
             "src": "110:7:14"
           }
         ],
         "contractDependencies": [
-          6334
+          6370
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5381,
+        "id": 5417,
         "linearizedBaseContracts": [
-          5381,
-          6334
+          5417,
+          6370
         ],
         "name": "Dataset",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5338,
+            "id": 5374,
             "name": "m_datasetName",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "143:28:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -223,7 +223,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5337,
+              "id": 5373,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "143:6:14",
@@ -237,10 +237,10 @@
           },
           {
             "constant": false,
-            "id": 5340,
+            "id": 5376,
             "name": "m_datasetMultiaddr",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "174:33:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -249,7 +249,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5339,
+              "id": 5375,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "174:5:14",
@@ -263,10 +263,10 @@
           },
           {
             "constant": false,
-            "id": 5342,
+            "id": 5378,
             "name": "m_datasetChecksum",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "210:32:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -275,7 +275,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 5341,
+              "id": 5377,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "210:7:14",
@@ -289,7 +289,7 @@
           },
           {
             "body": {
-              "id": 5369,
+              "id": 5405,
               "nodeType": "Block",
               "src": "428:161:14",
               "statements": [
@@ -299,11 +299,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5354,
+                        "id": 5390,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5344,
+                        "referencedDeclaration": 5380,
                         "src": "451:13:14",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -318,18 +318,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5353,
+                      "id": 5389,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6333,
+                      "referencedDeclaration": 6369,
                       "src": "432:18:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5355,
+                    "id": 5391,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -343,25 +343,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5356,
+                  "id": 5392,
                   "nodeType": "ExpressionStatement",
                   "src": "432:33:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5359,
+                    "id": 5395,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5357,
+                      "id": 5393,
                       "name": "m_datasetName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5338,
+                      "referencedDeclaration": 5374,
                       "src": "469:13:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -372,11 +372,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5358,
+                      "id": 5394,
                       "name": "_datasetName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5346,
+                      "referencedDeclaration": 5382,
                       "src": "490:12:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -389,25 +389,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5360,
+                  "id": 5396,
                   "nodeType": "ExpressionStatement",
                   "src": "469:33:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5363,
+                    "id": 5399,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5361,
+                      "id": 5397,
                       "name": "m_datasetMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5340,
+                      "referencedDeclaration": 5376,
                       "src": "506:18:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -418,11 +418,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5362,
+                      "id": 5398,
                       "name": "_datasetMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5348,
+                      "referencedDeclaration": 5384,
                       "src": "527:17:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -435,25 +435,25 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5364,
+                  "id": 5400,
                   "nodeType": "ExpressionStatement",
                   "src": "506:38:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5367,
+                    "id": 5403,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5365,
+                      "id": 5401,
                       "name": "m_datasetChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5342,
+                      "referencedDeclaration": 5378,
                       "src": "548:17:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -464,11 +464,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5366,
+                      "id": 5402,
                       "name": "_datasetChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5350,
+                      "referencedDeclaration": 5386,
                       "src": "569:16:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -481,29 +481,29 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 5368,
+                  "id": 5404,
                   "nodeType": "ExpressionStatement",
                   "src": "548:37:14"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5370,
+            "id": 5406,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5351,
+              "id": 5387,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5344,
+                  "id": 5380,
                   "name": "_datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "287:28:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -512,7 +512,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5343,
+                    "id": 5379,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "287:7:14",
@@ -527,10 +527,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5346,
+                  "id": 5382,
                   "name": "_datasetName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "319:27:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -539,7 +539,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5345,
+                    "id": 5381,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "319:6:14",
@@ -553,10 +553,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5348,
+                  "id": 5384,
                   "name": "_datasetMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "350:32:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -565,7 +565,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5347,
+                    "id": 5383,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "350:5:14",
@@ -579,10 +579,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5350,
+                  "id": 5386,
                   "name": "_datasetChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "386:31:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -591,7 +591,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5349,
+                    "id": 5385,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:7:14",
@@ -607,12 +607,12 @@
               "src": "283:135:14"
             },
             "returnParameters": {
-              "id": 5352,
+              "id": 5388,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "428:0:14"
             },
-            "scope": 5381,
+            "scope": 5417,
             "src": "272:317:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -620,7 +620,7 @@
           },
           {
             "body": {
-              "id": 5379,
+              "id": 5415,
               "nodeType": "Block",
               "src": "635:23:14",
               "statements": [
@@ -631,7 +631,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5376,
+                        "id": 5412,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -654,21 +654,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5375,
+                      "id": 5411,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6354,
-                        6355
+                        6390,
+                        6391
                       ],
-                      "referencedDeclaration": 6355,
+                      "referencedDeclaration": 6391,
                       "src": "637:6:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5377,
+                    "id": 5413,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -682,29 +682,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5378,
+                  "id": 5414,
                   "nodeType": "ExpressionStatement",
                   "src": "637:18:14"
                 }
               ]
             },
             "documentation": null,
-            "id": 5380,
+            "id": 5416,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5373,
+              "id": 5409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5372,
+                  "id": 5408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5380,
+                  "scope": 5416,
                   "src": "619:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -713,7 +713,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5371,
+                    "id": 5407,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "619:7:14",
@@ -730,19 +730,19 @@
               "src": "618:9:14"
             },
             "returnParameters": {
-              "id": 5374,
+              "id": 5410,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "635:0:14"
             },
-            "scope": 5381,
+            "scope": 5417,
             "src": "592:66:14",
             "stateMutability": "nonpayable",
-            "superFunction": 6309,
+            "superFunction": 6345,
             "visibility": "public"
           }
         ],
-        "scope": 5382,
+        "scope": 5418,
         "src": "90:571:14"
       }
     ],
@@ -752,14 +752,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol",
     "exportedSymbols": {
       "Dataset": [
-        5381
+        5417
       ]
     },
-    "id": 5382,
+    "id": 5418,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5333,
+        "id": 5369,
         "literals": [
           "solidity",
           "^",
@@ -772,10 +772,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5334,
+        "id": 5370,
         "nodeType": "ImportDirective",
-        "scope": 5382,
-        "sourceUnit": 6335,
+        "scope": 5418,
+        "sourceUnit": 6371,
         "src": "25:63:14",
         "symbolAliases": [],
         "unitAlias": ""
@@ -786,41 +786,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5335,
+              "id": 5371,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6334,
+              "referencedDeclaration": 6370,
               "src": "110:7:14",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6334",
+                "typeIdentifier": "t_contract$_Ownable_$6370",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5336,
+            "id": 5372,
             "nodeType": "InheritanceSpecifier",
             "src": "110:7:14"
           }
         ],
         "contractDependencies": [
-          6334
+          6370
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5381,
+        "id": 5417,
         "linearizedBaseContracts": [
-          5381,
-          6334
+          5417,
+          6370
         ],
         "name": "Dataset",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5338,
+            "id": 5374,
             "name": "m_datasetName",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "143:28:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -829,7 +829,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5337,
+              "id": 5373,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "143:6:14",
@@ -843,10 +843,10 @@
           },
           {
             "constant": false,
-            "id": 5340,
+            "id": 5376,
             "name": "m_datasetMultiaddr",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "174:33:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -855,7 +855,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5339,
+              "id": 5375,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "174:5:14",
@@ -869,10 +869,10 @@
           },
           {
             "constant": false,
-            "id": 5342,
+            "id": 5378,
             "name": "m_datasetChecksum",
             "nodeType": "VariableDeclaration",
-            "scope": 5381,
+            "scope": 5417,
             "src": "210:32:14",
             "stateVariable": true,
             "storageLocation": "default",
@@ -881,7 +881,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 5341,
+              "id": 5377,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "210:7:14",
@@ -895,7 +895,7 @@
           },
           {
             "body": {
-              "id": 5369,
+              "id": 5405,
               "nodeType": "Block",
               "src": "428:161:14",
               "statements": [
@@ -905,11 +905,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5354,
+                        "id": 5390,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5344,
+                        "referencedDeclaration": 5380,
                         "src": "451:13:14",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -924,18 +924,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5353,
+                      "id": 5389,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6333,
+                      "referencedDeclaration": 6369,
                       "src": "432:18:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5355,
+                    "id": 5391,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -949,25 +949,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5356,
+                  "id": 5392,
                   "nodeType": "ExpressionStatement",
                   "src": "432:33:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5359,
+                    "id": 5395,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5357,
+                      "id": 5393,
                       "name": "m_datasetName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5338,
+                      "referencedDeclaration": 5374,
                       "src": "469:13:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -978,11 +978,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5358,
+                      "id": 5394,
                       "name": "_datasetName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5346,
+                      "referencedDeclaration": 5382,
                       "src": "490:12:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -995,25 +995,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5360,
+                  "id": 5396,
                   "nodeType": "ExpressionStatement",
                   "src": "469:33:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5363,
+                    "id": 5399,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5361,
+                      "id": 5397,
                       "name": "m_datasetMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5340,
+                      "referencedDeclaration": 5376,
                       "src": "506:18:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -1024,11 +1024,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5362,
+                      "id": 5398,
                       "name": "_datasetMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5348,
+                      "referencedDeclaration": 5384,
                       "src": "527:17:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -1041,25 +1041,25 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5364,
+                  "id": 5400,
                   "nodeType": "ExpressionStatement",
                   "src": "506:38:14"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5367,
+                    "id": 5403,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5365,
+                      "id": 5401,
                       "name": "m_datasetChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5342,
+                      "referencedDeclaration": 5378,
                       "src": "548:17:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1070,11 +1070,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5366,
+                      "id": 5402,
                       "name": "_datasetChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5350,
+                      "referencedDeclaration": 5386,
                       "src": "569:16:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1087,29 +1087,29 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 5368,
+                  "id": 5404,
                   "nodeType": "ExpressionStatement",
                   "src": "548:37:14"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5370,
+            "id": 5406,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5351,
+              "id": 5387,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5344,
+                  "id": 5380,
                   "name": "_datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "287:28:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1118,7 +1118,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5343,
+                    "id": 5379,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "287:7:14",
@@ -1133,10 +1133,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5346,
+                  "id": 5382,
                   "name": "_datasetName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "319:27:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1145,7 +1145,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5345,
+                    "id": 5381,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "319:6:14",
@@ -1159,10 +1159,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5348,
+                  "id": 5384,
                   "name": "_datasetMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "350:32:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1171,7 +1171,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5347,
+                    "id": 5383,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "350:5:14",
@@ -1185,10 +1185,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5350,
+                  "id": 5386,
                   "name": "_datasetChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5370,
+                  "scope": 5406,
                   "src": "386:31:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1197,7 +1197,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5349,
+                    "id": 5385,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:7:14",
@@ -1213,12 +1213,12 @@
               "src": "283:135:14"
             },
             "returnParameters": {
-              "id": 5352,
+              "id": 5388,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "428:0:14"
             },
-            "scope": 5381,
+            "scope": 5417,
             "src": "272:317:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1226,7 +1226,7 @@
           },
           {
             "body": {
-              "id": 5379,
+              "id": 5415,
               "nodeType": "Block",
               "src": "635:23:14",
               "statements": [
@@ -1237,7 +1237,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5376,
+                        "id": 5412,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1260,21 +1260,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5375,
+                      "id": 5411,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6354,
-                        6355
+                        6390,
+                        6391
                       ],
-                      "referencedDeclaration": 6355,
+                      "referencedDeclaration": 6391,
                       "src": "637:6:14",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5377,
+                    "id": 5413,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1288,29 +1288,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5378,
+                  "id": 5414,
                   "nodeType": "ExpressionStatement",
                   "src": "637:18:14"
                 }
               ]
             },
             "documentation": null,
-            "id": 5380,
+            "id": 5416,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5373,
+              "id": 5409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5372,
+                  "id": 5408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5380,
+                  "scope": 5416,
                   "src": "619:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1319,7 +1319,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5371,
+                    "id": 5407,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "619:7:14",
@@ -1336,19 +1336,19 @@
               "src": "618:9:14"
             },
             "returnParameters": {
-              "id": 5374,
+              "id": 5410,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "635:0:14"
             },
-            "scope": 5381,
+            "scope": 5417,
             "src": "592:66:14",
             "stateMutability": "nonpayable",
-            "superFunction": 6309,
+            "superFunction": 6345,
             "visibility": "public"
           }
         ],
-        "scope": 5382,
+        "scope": 5418,
         "src": "90:571:14"
       }
     ],
@@ -1360,7 +1360,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.13",
-  "updatedAt": "2019-08-28T08:45:54.218Z",
+  "updatedAt": "2019-08-28T10:01:49.247Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

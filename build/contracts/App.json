@@ -182,14 +182,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol",
     "exportedSymbols": {
       "App": [
-        5266
+        5302
       ]
     },
-    "id": 5267,
+    "id": 5303,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5202,
+        "id": 5238,
         "literals": [
           "solidity",
           "^",
@@ -202,10 +202,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5203,
+        "id": 5239,
         "nodeType": "ImportDirective",
-        "scope": 5267,
-        "sourceUnit": 6335,
+        "scope": 5303,
+        "sourceUnit": 6371,
         "src": "25:63:12",
         "symbolAliases": [],
         "unitAlias": ""
@@ -216,41 +216,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5204,
+              "id": 5240,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6334,
+              "referencedDeclaration": 6370,
               "src": "106:7:12",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6334",
+                "typeIdentifier": "t_contract$_Ownable_$6370",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5205,
+            "id": 5241,
             "nodeType": "InheritanceSpecifier",
             "src": "106:7:12"
           }
         ],
         "contractDependencies": [
-          6334
+          6370
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5266,
+        "id": 5302,
         "linearizedBaseContracts": [
-          5266,
-          6334
+          5302,
+          6370
         ],
         "name": "App",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5207,
+            "id": 5243,
             "name": "m_appName",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "139:24:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -259,7 +259,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5206,
+              "id": 5242,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "139:6:12",
@@ -273,10 +273,10 @@
           },
           {
             "constant": false,
-            "id": 5209,
+            "id": 5245,
             "name": "m_appType",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "166:24:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -285,7 +285,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5208,
+              "id": 5244,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "166:6:12",
@@ -299,10 +299,10 @@
           },
           {
             "constant": false,
-            "id": 5211,
+            "id": 5247,
             "name": "m_appMultiaddr",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "193:29:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -311,7 +311,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5210,
+              "id": 5246,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "193:5:12",
@@ -325,10 +325,10 @@
           },
           {
             "constant": false,
-            "id": 5213,
+            "id": 5249,
             "name": "m_appChecksum",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "225:28:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -337,7 +337,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 5212,
+              "id": 5248,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "225:7:12",
@@ -351,10 +351,10 @@
           },
           {
             "constant": false,
-            "id": 5215,
+            "id": 5251,
             "name": "m_appMREnclave",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "256:29:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -363,7 +363,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5214,
+              "id": 5250,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "256:5:12",
@@ -377,7 +377,7 @@
           },
           {
             "body": {
-              "id": 5254,
+              "id": 5290,
               "nodeType": "Block",
               "src": "514:196:12",
               "statements": [
@@ -387,11 +387,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5231,
+                        "id": 5267,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5217,
+                        "referencedDeclaration": 5253,
                         "src": "537:9:12",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -406,18 +406,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5230,
+                      "id": 5266,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6333,
+                      "referencedDeclaration": 6369,
                       "src": "518:18:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5232,
+                    "id": 5268,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -431,25 +431,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5233,
+                  "id": 5269,
                   "nodeType": "ExpressionStatement",
                   "src": "518:29:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5236,
+                    "id": 5272,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5234,
+                      "id": 5270,
                       "name": "m_appName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5207,
+                      "referencedDeclaration": 5243,
                       "src": "551:9:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -460,11 +460,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5235,
+                      "id": 5271,
                       "name": "_appName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5219,
+                      "referencedDeclaration": 5255,
                       "src": "568:8:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -477,25 +477,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5237,
+                  "id": 5273,
                   "nodeType": "ExpressionStatement",
                   "src": "551:25:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5240,
+                    "id": 5276,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5238,
+                      "id": 5274,
                       "name": "m_appType",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5209,
+                      "referencedDeclaration": 5245,
                       "src": "580:9:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -506,11 +506,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5239,
+                      "id": 5275,
                       "name": "_appType",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5221,
+                      "referencedDeclaration": 5257,
                       "src": "597:8:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -523,25 +523,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5241,
+                  "id": 5277,
                   "nodeType": "ExpressionStatement",
                   "src": "580:25:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5244,
+                    "id": 5280,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5242,
+                      "id": 5278,
                       "name": "m_appMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5211,
+                      "referencedDeclaration": 5247,
                       "src": "609:14:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -552,11 +552,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5243,
+                      "id": 5279,
                       "name": "_appMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5223,
+                      "referencedDeclaration": 5259,
                       "src": "626:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -569,25 +569,25 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5245,
+                  "id": 5281,
                   "nodeType": "ExpressionStatement",
                   "src": "609:30:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5248,
+                    "id": 5284,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5246,
+                      "id": 5282,
                       "name": "m_appChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5213,
+                      "referencedDeclaration": 5249,
                       "src": "643:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -598,11 +598,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5247,
+                      "id": 5283,
                       "name": "_appChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5225,
+                      "referencedDeclaration": 5261,
                       "src": "660:12:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -615,25 +615,25 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 5249,
+                  "id": 5285,
                   "nodeType": "ExpressionStatement",
                   "src": "643:29:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5252,
+                    "id": 5288,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5250,
+                      "id": 5286,
                       "name": "m_appMREnclave",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5215,
+                      "referencedDeclaration": 5251,
                       "src": "676:14:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -644,11 +644,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5251,
+                      "id": 5287,
                       "name": "_appMREnclave",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5227,
+                      "referencedDeclaration": 5263,
                       "src": "693:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -661,29 +661,29 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5253,
+                  "id": 5289,
                   "nodeType": "ExpressionStatement",
                   "src": "676:30:12"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5255,
+            "id": 5291,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5228,
+              "id": 5264,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5217,
+                  "id": 5253,
                   "name": "_appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "330:24:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -692,7 +692,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5216,
+                    "id": 5252,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "330:7:12",
@@ -707,10 +707,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5219,
+                  "id": 5255,
                   "name": "_appName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "358:23:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -719,7 +719,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5218,
+                    "id": 5254,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "358:6:12",
@@ -733,10 +733,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5221,
+                  "id": 5257,
                   "name": "_appType",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "385:23:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -745,7 +745,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5220,
+                    "id": 5256,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "385:6:12",
@@ -759,10 +759,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5223,
+                  "id": 5259,
                   "name": "_appMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "412:28:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -771,7 +771,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5222,
+                    "id": 5258,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "412:5:12",
@@ -785,10 +785,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5225,
+                  "id": 5261,
                   "name": "_appChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "444:27:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -797,7 +797,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5224,
+                    "id": 5260,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "444:7:12",
@@ -811,10 +811,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5227,
+                  "id": 5263,
                   "name": "_appMREnclave",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "475:28:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -823,7 +823,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5226,
+                    "id": 5262,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "475:5:12",
@@ -839,12 +839,12 @@
               "src": "326:178:12"
             },
             "returnParameters": {
-              "id": 5229,
+              "id": 5265,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "514:0:12"
             },
-            "scope": 5266,
+            "scope": 5302,
             "src": "315:395:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -852,7 +852,7 @@
           },
           {
             "body": {
-              "id": 5264,
+              "id": 5300,
               "nodeType": "Block",
               "src": "756:23:12",
               "statements": [
@@ -863,7 +863,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5261,
+                        "id": 5297,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -886,21 +886,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5260,
+                      "id": 5296,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6354,
-                        6355
+                        6390,
+                        6391
                       ],
-                      "referencedDeclaration": 6355,
+                      "referencedDeclaration": 6391,
                       "src": "758:6:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5262,
+                    "id": 5298,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -914,29 +914,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5263,
+                  "id": 5299,
                   "nodeType": "ExpressionStatement",
                   "src": "758:18:12"
                 }
               ]
             },
             "documentation": null,
-            "id": 5265,
+            "id": 5301,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5258,
+              "id": 5294,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5257,
+                  "id": 5293,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5265,
+                  "scope": 5301,
                   "src": "740:7:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -945,7 +945,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5256,
+                    "id": 5292,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "740:7:12",
@@ -962,19 +962,19 @@
               "src": "739:9:12"
             },
             "returnParameters": {
-              "id": 5259,
+              "id": 5295,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "756:0:12"
             },
-            "scope": 5266,
+            "scope": 5302,
             "src": "713:66:12",
             "stateMutability": "nonpayable",
-            "superFunction": 6309,
+            "superFunction": 6345,
             "visibility": "public"
           }
         ],
-        "scope": 5267,
+        "scope": 5303,
         "src": "90:692:12"
       }
     ],
@@ -984,14 +984,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol",
     "exportedSymbols": {
       "App": [
-        5266
+        5302
       ]
     },
-    "id": 5267,
+    "id": 5303,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5202,
+        "id": 5238,
         "literals": [
           "solidity",
           "^",
@@ -1004,10 +1004,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5203,
+        "id": 5239,
         "nodeType": "ImportDirective",
-        "scope": 5267,
-        "sourceUnit": 6335,
+        "scope": 5303,
+        "sourceUnit": 6371,
         "src": "25:63:12",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1018,41 +1018,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5204,
+              "id": 5240,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6334,
+              "referencedDeclaration": 6370,
               "src": "106:7:12",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6334",
+                "typeIdentifier": "t_contract$_Ownable_$6370",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5205,
+            "id": 5241,
             "nodeType": "InheritanceSpecifier",
             "src": "106:7:12"
           }
         ],
         "contractDependencies": [
-          6334
+          6370
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5266,
+        "id": 5302,
         "linearizedBaseContracts": [
-          5266,
-          6334
+          5302,
+          6370
         ],
         "name": "App",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5207,
+            "id": 5243,
             "name": "m_appName",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "139:24:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1061,7 +1061,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5206,
+              "id": 5242,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "139:6:12",
@@ -1075,10 +1075,10 @@
           },
           {
             "constant": false,
-            "id": 5209,
+            "id": 5245,
             "name": "m_appType",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "166:24:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1087,7 +1087,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5208,
+              "id": 5244,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "166:6:12",
@@ -1101,10 +1101,10 @@
           },
           {
             "constant": false,
-            "id": 5211,
+            "id": 5247,
             "name": "m_appMultiaddr",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "193:29:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1113,7 +1113,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5210,
+              "id": 5246,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "193:5:12",
@@ -1127,10 +1127,10 @@
           },
           {
             "constant": false,
-            "id": 5213,
+            "id": 5249,
             "name": "m_appChecksum",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "225:28:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1139,7 +1139,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 5212,
+              "id": 5248,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "225:7:12",
@@ -1153,10 +1153,10 @@
           },
           {
             "constant": false,
-            "id": 5215,
+            "id": 5251,
             "name": "m_appMREnclave",
             "nodeType": "VariableDeclaration",
-            "scope": 5266,
+            "scope": 5302,
             "src": "256:29:12",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1165,7 +1165,7 @@
               "typeString": "bytes"
             },
             "typeName": {
-              "id": 5214,
+              "id": 5250,
               "name": "bytes",
               "nodeType": "ElementaryTypeName",
               "src": "256:5:12",
@@ -1179,7 +1179,7 @@
           },
           {
             "body": {
-              "id": 5254,
+              "id": 5290,
               "nodeType": "Block",
               "src": "514:196:12",
               "statements": [
@@ -1189,11 +1189,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5231,
+                        "id": 5267,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5217,
+                        "referencedDeclaration": 5253,
                         "src": "537:9:12",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1208,18 +1208,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5230,
+                      "id": 5266,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6333,
+                      "referencedDeclaration": 6369,
                       "src": "518:18:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5232,
+                    "id": 5268,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1233,25 +1233,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5233,
+                  "id": 5269,
                   "nodeType": "ExpressionStatement",
                   "src": "518:29:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5236,
+                    "id": 5272,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5234,
+                      "id": 5270,
                       "name": "m_appName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5207,
+                      "referencedDeclaration": 5243,
                       "src": "551:9:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -1262,11 +1262,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5235,
+                      "id": 5271,
                       "name": "_appName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5219,
+                      "referencedDeclaration": 5255,
                       "src": "568:8:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -1279,25 +1279,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5237,
+                  "id": 5273,
                   "nodeType": "ExpressionStatement",
                   "src": "551:25:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5240,
+                    "id": 5276,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5238,
+                      "id": 5274,
                       "name": "m_appType",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5209,
+                      "referencedDeclaration": 5245,
                       "src": "580:9:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -1308,11 +1308,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5239,
+                      "id": 5275,
                       "name": "_appType",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5221,
+                      "referencedDeclaration": 5257,
                       "src": "597:8:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -1325,25 +1325,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5241,
+                  "id": 5277,
                   "nodeType": "ExpressionStatement",
                   "src": "580:25:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5244,
+                    "id": 5280,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5242,
+                      "id": 5278,
                       "name": "m_appMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5211,
+                      "referencedDeclaration": 5247,
                       "src": "609:14:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -1354,11 +1354,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5243,
+                      "id": 5279,
                       "name": "_appMultiaddr",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5223,
+                      "referencedDeclaration": 5259,
                       "src": "626:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -1371,25 +1371,25 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5245,
+                  "id": 5281,
                   "nodeType": "ExpressionStatement",
                   "src": "609:30:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5248,
+                    "id": 5284,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5246,
+                      "id": 5282,
                       "name": "m_appChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5213,
+                      "referencedDeclaration": 5249,
                       "src": "643:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1400,11 +1400,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5247,
+                      "id": 5283,
                       "name": "_appChecksum",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5225,
+                      "referencedDeclaration": 5261,
                       "src": "660:12:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1417,25 +1417,25 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 5249,
+                  "id": 5285,
                   "nodeType": "ExpressionStatement",
                   "src": "643:29:12"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5252,
+                    "id": 5288,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5250,
+                      "id": 5286,
                       "name": "m_appMREnclave",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5215,
+                      "referencedDeclaration": 5251,
                       "src": "676:14:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
@@ -1446,11 +1446,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5251,
+                      "id": 5287,
                       "name": "_appMREnclave",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5227,
+                      "referencedDeclaration": 5263,
                       "src": "693:13:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -1463,29 +1463,29 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 5253,
+                  "id": 5289,
                   "nodeType": "ExpressionStatement",
                   "src": "676:30:12"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5255,
+            "id": 5291,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5228,
+              "id": 5264,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5217,
+                  "id": 5253,
                   "name": "_appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "330:24:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1494,7 +1494,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5216,
+                    "id": 5252,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "330:7:12",
@@ -1509,10 +1509,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5219,
+                  "id": 5255,
                   "name": "_appName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "358:23:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1521,7 +1521,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5218,
+                    "id": 5254,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "358:6:12",
@@ -1535,10 +1535,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5221,
+                  "id": 5257,
                   "name": "_appType",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "385:23:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1547,7 +1547,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5220,
+                    "id": 5256,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "385:6:12",
@@ -1561,10 +1561,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5223,
+                  "id": 5259,
                   "name": "_appMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "412:28:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1573,7 +1573,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5222,
+                    "id": 5258,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "412:5:12",
@@ -1587,10 +1587,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5225,
+                  "id": 5261,
                   "name": "_appChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "444:27:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1599,7 +1599,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5224,
+                    "id": 5260,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "444:7:12",
@@ -1613,10 +1613,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5227,
+                  "id": 5263,
                   "name": "_appMREnclave",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5255,
+                  "scope": 5291,
                   "src": "475:28:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1625,7 +1625,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5226,
+                    "id": 5262,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "475:5:12",
@@ -1641,12 +1641,12 @@
               "src": "326:178:12"
             },
             "returnParameters": {
-              "id": 5229,
+              "id": 5265,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "514:0:12"
             },
-            "scope": 5266,
+            "scope": 5302,
             "src": "315:395:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1654,7 +1654,7 @@
           },
           {
             "body": {
-              "id": 5264,
+              "id": 5300,
               "nodeType": "Block",
               "src": "756:23:12",
               "statements": [
@@ -1665,7 +1665,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5261,
+                        "id": 5297,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1688,21 +1688,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5260,
+                      "id": 5296,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6354,
-                        6355
+                        6390,
+                        6391
                       ],
-                      "referencedDeclaration": 6355,
+                      "referencedDeclaration": 6391,
                       "src": "758:6:12",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5262,
+                    "id": 5298,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1716,29 +1716,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5263,
+                  "id": 5299,
                   "nodeType": "ExpressionStatement",
                   "src": "758:18:12"
                 }
               ]
             },
             "documentation": null,
-            "id": 5265,
+            "id": 5301,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5258,
+              "id": 5294,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5257,
+                  "id": 5293,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5265,
+                  "scope": 5301,
                   "src": "740:7:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1747,7 +1747,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5256,
+                    "id": 5292,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "740:7:12",
@@ -1764,19 +1764,19 @@
               "src": "739:9:12"
             },
             "returnParameters": {
-              "id": 5259,
+              "id": 5295,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "756:0:12"
             },
-            "scope": 5266,
+            "scope": 5302,
             "src": "713:66:12",
             "stateMutability": "nonpayable",
-            "superFunction": 6309,
+            "superFunction": 6345,
             "visibility": "public"
           }
         ],
-        "scope": 5267,
+        "scope": 5303,
         "src": "90:692:12"
       }
     ],
@@ -1788,7 +1788,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.13",
-  "updatedAt": "2019-08-28T08:45:54.217Z",
+  "updatedAt": "2019-08-28T10:01:49.245Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

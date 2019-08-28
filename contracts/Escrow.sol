@@ -15,7 +15,7 @@ contract Escrow
 	 */
 	mapping(address => IexecODBLibCore.Account) m_accounts;
 
-	uint256 internal nRLC2wei = 10 ** 9;
+	uint256 internal constant nRLCtoWei = 10 ** 9;
 
 	/**
 	 * Events
@@ -51,17 +51,17 @@ contract Escrow
 	function ()
 	external payable
 	{
-		_deposit(msg.sender, msg.value / nRLC2wei);
-		msg.sender.transfer(msg.value % nRLC2wei);
-		emit Deposit(msg.sender, msg.value / nRLC2wei);
+		_deposit(msg.sender, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		emit Deposit(msg.sender, msg.value.div(nRLCtoWei));
 	}
 
 	function deposit()
 	external payable returns (bool)
 	{
-		_deposit(msg.sender, msg.value / nRLC2wei);
-		msg.sender.transfer(msg.value % nRLC2wei);
-		emit Deposit(msg.sender, msg.value / nRLC2wei);
+		_deposit(msg.sender, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		emit Deposit(msg.sender, msg.value.div(nRLCtoWei));
 		return true;
 	}
 
@@ -69,9 +69,9 @@ contract Escrow
 	public payable returns (bool)
 	{
 		require(_target != address(0));
-		_deposit(_target, msg.value / nRLC2wei);
-		msg.sender.transfer(msg.value % nRLC2wei);
-		emit DepositFor(msg.sender, msg.value / nRLC2wei, _target);
+		_deposit(_target, msg.value.div(nRLCtoWei));
+		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		emit DepositFor(msg.sender, msg.value.div(nRLCtoWei), _target);
 		return true;
 	}
 
@@ -84,12 +84,9 @@ contract Escrow
 		{
 			_deposit(_targets[i], _amounts[i]);
 			emit DepositFor(msg.sender, _amounts[i], _targets[i]);
-			remaining = remaining.sub(_amounts[i] * nRLC2wei);
+			remaining = remaining.sub(_amounts[i].mul(nRLCtoWei));
 		}
-		if (remaining > 0)
-		{
-			msg.sender.transfer(remaining);
-		}
+		msg.sender.transfer(remaining);
 		return true;
 	}
 
@@ -104,7 +101,7 @@ contract Escrow
 	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		msg.sender.transfer(_amount * nRLC2wei);
+		msg.sender.transfer(_amount.mul(nRLCtoWei));
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}
