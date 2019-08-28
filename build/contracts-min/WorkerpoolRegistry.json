@@ -114,23 +114,35 @@
     }
   ],
   "networks": {
-    "1": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolDescription",
+              "type": "string"
+            }
+          ],
+          "name": "CreateWorkerpool",
+          "type": "event",
+          "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+        }
+      },
       "links": {},
-      "address": "0xc398052563469e6Ea7C442aBf124aADE7ec2CC92",
-      "transactionHash": "0x40922fde7e8828a485d932e328bc2ab27da0670697cf8eeea3ab47e2acfec7a0"
-    },
-    "3": {
-      "events": {},
-      "links": {},
-      "address": "0x7496e025D0B48d16ddEF510795C3a8F78Be013cD",
-      "transactionHash": "0x331042a81711647995af8f399ff08f6c3811f662236fce2d9ddd7992e757b558"
-    },
-    "42": {
-      "events": {},
-      "links": {},
-      "address": "0x3f4C18C322064576C048b1284b700288ffEf126B",
-      "transactionHash": "0x936a001d326d67a950caaaabe0653d8168058503048a2e643e3c893acf1e7912"
+      "address": "0x990A501B4E4286198e60165767cAe8AD29bC7F99",
+      "transactionHash": "0x5d6b02deaa319f31daf73510305b7be30a131a37c77f1de742bcf55e045ee50f"
     }
   }
 }

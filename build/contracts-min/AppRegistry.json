@@ -125,23 +125,30 @@
     }
   ],
   "networks": {
-    "1": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "appOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "app",
+              "type": "address"
+            }
+          ],
+          "name": "CreateApp",
+          "type": "event",
+          "signature": "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50"
+        }
+      },
       "links": {},
-      "address": "0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29",
-      "transactionHash": "0x67b08c8f26c9f9edd8d57b2e8e3869c0696b107b20188d4fb8d883022e199468"
-    },
-    "3": {
-      "events": {},
-      "links": {},
-      "address": "0xBfcD02144FECd53855Dc66227D5F87b1f42aE768",
-      "transactionHash": "0xa4546fb2f117e66e022d964ae8240ad475c3ab11b8dfb8e0e517d25b9f808e6a"
-    },
-    "42": {
-      "events": {},
-      "links": {},
-      "address": "0xd4945a24566AbF3517F81230Ff89820C3Dd39E33",
-      "transactionHash": "0xfe75f673b9ba52db34eda92f014099a847cfb7c41754bff7de97fde731525ee1"
+      "address": "0x53FE6d70aaCe842E924D65590BbF938f0De8B16c",
+      "transactionHash": "0x668843ea924706b8d3bc1017af919988756aa0f633dc32b8050c20121722ffd1"
     }
   }
 }
