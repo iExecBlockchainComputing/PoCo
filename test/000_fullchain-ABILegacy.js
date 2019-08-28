@@ -169,7 +169,7 @@ contract('Fullchain', async (accounts) => {
 				switch (DEPLOYMENT.asset)
 				{
 					case "Native":
-						txMined = await IexecInstance.deposit({ from: iexecAdmin, value: 10000000, gas: constants.AMOUNT_GAS_PROVIDED });
+						txMined = await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
 						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
@@ -713,7 +713,7 @@ contract('Fullchain', async (accounts) => {
 			assert.equal(
 				Number(await IexecInstance.totalSupply()),
 				DEPLOYMENT.asset == "Native"
-					? Number(await web3.eth.getBalance(IexecInstance.address))
+					? Number(await web3.eth.getBalance(IexecInstance.address)) / 10 ** 9
 					: Number(await RLCInstance.balanceOf(IexecInstance.address))
 			);
 

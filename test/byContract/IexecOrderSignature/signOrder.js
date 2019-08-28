@@ -75,7 +75,7 @@ contract('OrderSignature', async (accounts) => {
 		switch (DEPLOYMENT.asset)
 		{
 			case "Native":
-				await IexecInstance.deposit({ from: iexecAdmin, value: 10000000, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
 				break;
 
 			case "Token":

@@ -275,7 +275,7 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain("users",      "iexec.eth");
 
 		await registerAddress("admin",      "iexec.eth",          accounts[0]);
-		await registerAddress("token",      "iexec.eth",          RLCInstance.address);
+		await registerAddress("rlc",        "iexec.eth",          RLCInstance.address);
 		await registerAddress("hub",        "iexec.eth",          IexecInterfaceInstance.address);
 		await registerAddress("app",        "registry.iexec.eth", AppRegistryInstance.address);
 		await registerAddress("dataset",    "registry.iexec.eth", DatasetRegistryInstance.address);

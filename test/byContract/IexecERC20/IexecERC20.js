@@ -101,7 +101,7 @@ contract('ERC20', async (accounts) => {
 		switch (DEPLOYMENT.asset)
 		{
 			case "Native":
-				txMined = await IexecInstance.deposit({ from: initialHolder, value: initialSupply, gas: constants.AMOUNT_GAS_PROVIDED });
+				txMined = await IexecInstance.deposit({ from: initialHolder, value: initialSupply * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 				break;
 

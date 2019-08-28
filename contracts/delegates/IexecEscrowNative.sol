@@ -19,7 +19,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 {
 	using SafeMathExtended for uint256;
 
-	constant uint256 internal nRLCtoWei = 10 ** 9;
+	uint256 internal constant nRLCtoWei = 10 ** 9;
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
@@ -54,7 +54,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		for (uint i = 0; i < amounts.length; ++i)
 		{
 			_mint(targets[i], amounts[i]);
-			remaining = remaining.sub(_amounts[i].mul(nRLCtoWei));
+			remaining = remaining.sub(amounts[i].mul(nRLCtoWei));
 		}
 		msg.sender.transfer(remaining);
 		return true;
