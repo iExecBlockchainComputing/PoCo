@@ -128,14 +128,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/DatasetRegistry.sol",
     "exportedSymbols": {
       "DatasetRegistry": [
-        5420
+        5440
       ]
     },
-    "id": 5421,
+    "id": 5441,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5363,
+        "id": 5383,
         "literals": [
           "solidity",
           "^",
@@ -148,10 +148,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol",
         "file": "./Dataset.sol",
-        "id": 5364,
+        "id": 5384,
         "nodeType": "ImportDirective",
-        "scope": 5421,
-        "sourceUnit": 5362,
+        "scope": 5441,
+        "sourceUnit": 5382,
         "src": "25:23:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -159,10 +159,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol",
         "file": "./RegistryBase.sol",
-        "id": 5365,
+        "id": 5385,
         "nodeType": "ImportDirective",
-        "scope": 5421,
-        "sourceUnit": 5527,
+        "scope": 5441,
+        "sourceUnit": 5547,
         "src": "49:28:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -173,32 +173,32 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5366,
+              "id": 5386,
               "name": "RegistryBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5526,
+              "referencedDeclaration": 5546,
               "src": "107:12:15",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_RegistryBase_$5526",
+                "typeIdentifier": "t_contract$_RegistryBase_$5546",
                 "typeString": "contract RegistryBase"
               }
             },
-            "id": 5367,
+            "id": 5387,
             "nodeType": "InheritanceSpecifier",
             "src": "107:12:15"
           }
         ],
         "contractDependencies": [
-          5361,
-          5526
+          5381,
+          5546
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5420,
+        "id": 5440,
         "linearizedBaseContracts": [
-          5420,
-          5526
+          5440,
+          5546
         ],
         "name": "DatasetRegistry",
         "nodeType": "ContractDefinition",
@@ -206,20 +206,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5373,
+            "id": 5393,
             "name": "CreateDataset",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5372,
+              "id": 5392,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5369,
+                  "id": 5389,
                   "indexed": true,
                   "name": "datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5373,
+                  "scope": 5393,
                   "src": "186:28:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -228,7 +228,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5368,
+                    "id": 5388,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "186:7:15",
@@ -243,11 +243,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5371,
+                  "id": 5391,
                   "indexed": false,
                   "name": "dataset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5373,
+                  "scope": 5393,
                   "src": "216:15:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -256,7 +256,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5370,
+                    "id": 5390,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "216:7:15",
@@ -276,31 +276,31 @@
           },
           {
             "body": {
-              "id": 5376,
+              "id": 5396,
               "nodeType": "Block",
               "src": "285:4:15",
               "statements": []
             },
             "documentation": "Constructor",
-            "id": 5377,
+            "id": 5397,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5374,
+              "id": 5394,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "273:2:15"
             },
             "returnParameters": {
-              "id": 5375,
+              "id": 5395,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "285:0:15"
             },
-            "scope": 5420,
+            "scope": 5440,
             "src": "262:27:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -308,37 +308,37 @@
           },
           {
             "body": {
-              "id": 5418,
+              "id": 5438,
               "nodeType": "Block",
               "src": "553:256:15",
               "statements": [
                 {
                   "assignments": [
-                    5391
+                    5411
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5391,
+                      "id": 5411,
                       "name": "newDataset",
                       "nodeType": "VariableDeclaration",
-                      "scope": 5418,
+                      "scope": 5438,
                       "src": "557:18:15",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Dataset_$5361",
+                        "typeIdentifier": "t_contract$_Dataset_$5381",
                         "typeString": "contract Dataset"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5390,
+                        "id": 5410,
                         "name": "Dataset",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5361,
+                        "referencedDeclaration": 5381,
                         "src": "557:7:15",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Dataset_$5361",
+                          "typeIdentifier": "t_contract$_Dataset_$5381",
                           "typeString": "contract Dataset"
                         }
                       },
@@ -346,17 +346,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5399,
+                  "id": 5419,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5394,
+                        "id": 5414,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5379,
+                        "referencedDeclaration": 5399,
                         "src": "594:13:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -365,11 +365,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5395,
+                        "id": 5415,
                         "name": "_datasetName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5381,
+                        "referencedDeclaration": 5401,
                         "src": "612:12:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -378,11 +378,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5396,
+                        "id": 5416,
                         "name": "_datasetMultiaddr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5383,
+                        "referencedDeclaration": 5403,
                         "src": "629:17:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -391,11 +391,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5397,
+                        "id": 5417,
                         "name": "_datasetChecksum",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5385,
+                        "referencedDeclaration": 5405,
                         "src": "651:16:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -422,7 +422,7 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 5393,
+                      "id": 5413,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -430,23 +430,23 @@
                       "nodeType": "NewExpression",
                       "src": "578:11:15",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$returns$_t_contract$_Dataset_$5361_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$returns$_t_contract$_Dataset_$5381_$",
                         "typeString": "function (address,string memory,bytes memory,bytes32) returns (contract Dataset)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5392,
+                        "id": 5412,
                         "name": "Dataset",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5361,
+                        "referencedDeclaration": 5381,
                         "src": "582:7:15",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Dataset_$5361",
+                          "typeIdentifier": "t_contract$_Dataset_$5381",
                           "typeString": "contract Dataset"
                         }
                       }
                     },
-                    "id": 5398,
+                    "id": 5418,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -456,7 +456,7 @@
                     "nodeType": "FunctionCall",
                     "src": "578:93:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
@@ -475,14 +475,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 5403,
+                                "id": 5423,
                                 "name": "newDataset",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 5391,
+                                "referencedDeclaration": 5411,
                                 "src": "698:10:15",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_Dataset_$5361",
+                                  "typeIdentifier": "t_contract$_Dataset_$5381",
                                   "typeString": "contract Dataset"
                                 }
                               }
@@ -490,11 +490,11 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_Dataset_$5361",
+                                  "typeIdentifier": "t_contract$_Dataset_$5381",
                                   "typeString": "contract Dataset"
                                 }
                               ],
-                              "id": 5402,
+                              "id": 5422,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -507,7 +507,7 @@
                               },
                               "typeName": "address"
                             },
-                            "id": 5404,
+                            "id": 5424,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -523,11 +523,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 5405,
+                            "id": 5425,
                             "name": "_datasetOwner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5379,
+                            "referencedDeclaration": 5399,
                             "src": "711:13:15",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -546,18 +546,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 5401,
+                          "id": 5421,
                           "name": "insert",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5525,
+                          "referencedDeclaration": 5545,
                           "src": "683:6:15",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address,address) returns (bool)"
                           }
                         },
-                        "id": 5406,
+                        "id": 5426,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -579,21 +579,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5400,
+                      "id": 5420,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "675:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5407,
+                    "id": 5427,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -607,7 +607,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5408,
+                  "id": 5428,
                   "nodeType": "ExpressionStatement",
                   "src": "675:51:15"
                 },
@@ -617,11 +617,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5410,
+                        "id": 5430,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5379,
+                        "referencedDeclaration": 5399,
                         "src": "749:13:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -633,14 +633,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 5412,
+                            "id": 5432,
                             "name": "newDataset",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5391,
+                            "referencedDeclaration": 5411,
                             "src": "772:10:15",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Dataset_$5361",
+                              "typeIdentifier": "t_contract$_Dataset_$5381",
                               "typeString": "contract Dataset"
                             }
                           }
@@ -648,11 +648,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Dataset_$5361",
+                              "typeIdentifier": "t_contract$_Dataset_$5381",
                               "typeString": "contract Dataset"
                             }
                           ],
-                          "id": 5411,
+                          "id": 5431,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -665,7 +665,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 5413,
+                        "id": 5433,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -691,18 +691,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5409,
+                      "id": 5429,
                       "name": "CreateDataset",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5373,
+                      "referencedDeclaration": 5393,
                       "src": "735:13:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$returns$__$",
                         "typeString": "function (address,address)"
                       }
                     },
-                    "id": 5414,
+                    "id": 5434,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -716,48 +716,48 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5415,
+                  "id": 5435,
                   "nodeType": "EmitStatement",
                   "src": "730:54:15"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5416,
+                    "id": 5436,
                     "name": "newDataset",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5391,
+                    "referencedDeclaration": 5411,
                     "src": "795:10:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
-                  "functionReturnParameters": 5389,
-                  "id": 5417,
+                  "functionReturnParameters": 5409,
+                  "id": 5437,
                   "nodeType": "Return",
                   "src": "788:17:15"
                 }
               ]
             },
             "documentation": "Dataset creation",
-            "id": 5419,
+            "id": 5439,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "createDataset",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5386,
+              "id": 5406,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5379,
+                  "id": 5399,
                   "name": "_datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "349:30:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -766,7 +766,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5378,
+                    "id": 5398,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "349:7:15",
@@ -781,10 +781,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5381,
+                  "id": 5401,
                   "name": "_datasetName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "383:29:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -793,7 +793,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5380,
+                    "id": 5400,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "383:6:15",
@@ -807,10 +807,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5383,
+                  "id": 5403,
                   "name": "_datasetMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "416:34:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -819,7 +819,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5382,
+                    "id": 5402,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "416:5:15",
@@ -833,10 +833,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5385,
+                  "id": 5405,
                   "name": "_datasetChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "454:33:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -845,7 +845,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5384,
+                    "id": 5404,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "454:7:15",
@@ -861,31 +861,31 @@
               "src": "345:143:15"
             },
             "returnParameters": {
-              "id": 5389,
+              "id": 5409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5388,
+                  "id": 5408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "543:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Dataset_$5361",
+                    "typeIdentifier": "t_contract$_Dataset_$5381",
                     "typeString": "contract Dataset"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5387,
+                    "id": 5407,
                     "name": "Dataset",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5361,
+                    "referencedDeclaration": 5381,
                     "src": "543:7:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
@@ -895,14 +895,14 @@
               ],
               "src": "542:9:15"
             },
-            "scope": 5420,
+            "scope": 5440,
             "src": "323:486:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5421,
+        "scope": 5441,
         "src": "79:732:15"
       }
     ],
@@ -912,14 +912,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/DatasetRegistry.sol",
     "exportedSymbols": {
       "DatasetRegistry": [
-        5420
+        5440
       ]
     },
-    "id": 5421,
+    "id": 5441,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5363,
+        "id": 5383,
         "literals": [
           "solidity",
           "^",
@@ -932,10 +932,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Dataset.sol",
         "file": "./Dataset.sol",
-        "id": 5364,
+        "id": 5384,
         "nodeType": "ImportDirective",
-        "scope": 5421,
-        "sourceUnit": 5362,
+        "scope": 5441,
+        "sourceUnit": 5382,
         "src": "25:23:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -943,10 +943,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol",
         "file": "./RegistryBase.sol",
-        "id": 5365,
+        "id": 5385,
         "nodeType": "ImportDirective",
-        "scope": 5421,
-        "sourceUnit": 5527,
+        "scope": 5441,
+        "sourceUnit": 5547,
         "src": "49:28:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -957,32 +957,32 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5366,
+              "id": 5386,
               "name": "RegistryBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5526,
+              "referencedDeclaration": 5546,
               "src": "107:12:15",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_RegistryBase_$5526",
+                "typeIdentifier": "t_contract$_RegistryBase_$5546",
                 "typeString": "contract RegistryBase"
               }
             },
-            "id": 5367,
+            "id": 5387,
             "nodeType": "InheritanceSpecifier",
             "src": "107:12:15"
           }
         ],
         "contractDependencies": [
-          5361,
-          5526
+          5381,
+          5546
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5420,
+        "id": 5440,
         "linearizedBaseContracts": [
-          5420,
-          5526
+          5440,
+          5546
         ],
         "name": "DatasetRegistry",
         "nodeType": "ContractDefinition",
@@ -990,20 +990,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5373,
+            "id": 5393,
             "name": "CreateDataset",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5372,
+              "id": 5392,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5369,
+                  "id": 5389,
                   "indexed": true,
                   "name": "datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5373,
+                  "scope": 5393,
                   "src": "186:28:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1012,7 +1012,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5368,
+                    "id": 5388,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "186:7:15",
@@ -1027,11 +1027,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5371,
+                  "id": 5391,
                   "indexed": false,
                   "name": "dataset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5373,
+                  "scope": 5393,
                   "src": "216:15:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1040,7 +1040,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5370,
+                    "id": 5390,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "216:7:15",
@@ -1060,31 +1060,31 @@
           },
           {
             "body": {
-              "id": 5376,
+              "id": 5396,
               "nodeType": "Block",
               "src": "285:4:15",
               "statements": []
             },
             "documentation": "Constructor",
-            "id": 5377,
+            "id": 5397,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5374,
+              "id": 5394,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "273:2:15"
             },
             "returnParameters": {
-              "id": 5375,
+              "id": 5395,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "285:0:15"
             },
-            "scope": 5420,
+            "scope": 5440,
             "src": "262:27:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1092,37 +1092,37 @@
           },
           {
             "body": {
-              "id": 5418,
+              "id": 5438,
               "nodeType": "Block",
               "src": "553:256:15",
               "statements": [
                 {
                   "assignments": [
-                    5391
+                    5411
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5391,
+                      "id": 5411,
                       "name": "newDataset",
                       "nodeType": "VariableDeclaration",
-                      "scope": 5418,
+                      "scope": 5438,
                       "src": "557:18:15",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Dataset_$5361",
+                        "typeIdentifier": "t_contract$_Dataset_$5381",
                         "typeString": "contract Dataset"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5390,
+                        "id": 5410,
                         "name": "Dataset",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5361,
+                        "referencedDeclaration": 5381,
                         "src": "557:7:15",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Dataset_$5361",
+                          "typeIdentifier": "t_contract$_Dataset_$5381",
                           "typeString": "contract Dataset"
                         }
                       },
@@ -1130,17 +1130,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5399,
+                  "id": 5419,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5394,
+                        "id": 5414,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5379,
+                        "referencedDeclaration": 5399,
                         "src": "594:13:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1149,11 +1149,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5395,
+                        "id": 5415,
                         "name": "_datasetName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5381,
+                        "referencedDeclaration": 5401,
                         "src": "612:12:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1162,11 +1162,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5396,
+                        "id": 5416,
                         "name": "_datasetMultiaddr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5383,
+                        "referencedDeclaration": 5403,
                         "src": "629:17:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -1175,11 +1175,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5397,
+                        "id": 5417,
                         "name": "_datasetChecksum",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5385,
+                        "referencedDeclaration": 5405,
                         "src": "651:16:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1206,7 +1206,7 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 5393,
+                      "id": 5413,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1214,23 +1214,23 @@
                       "nodeType": "NewExpression",
                       "src": "578:11:15",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$returns$_t_contract$_Dataset_$5361_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$returns$_t_contract$_Dataset_$5381_$",
                         "typeString": "function (address,string memory,bytes memory,bytes32) returns (contract Dataset)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5392,
+                        "id": 5412,
                         "name": "Dataset",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5361,
+                        "referencedDeclaration": 5381,
                         "src": "582:7:15",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Dataset_$5361",
+                          "typeIdentifier": "t_contract$_Dataset_$5381",
                           "typeString": "contract Dataset"
                         }
                       }
                     },
-                    "id": 5398,
+                    "id": 5418,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1240,7 +1240,7 @@
                     "nodeType": "FunctionCall",
                     "src": "578:93:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
@@ -1259,14 +1259,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 5403,
+                                "id": 5423,
                                 "name": "newDataset",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 5391,
+                                "referencedDeclaration": 5411,
                                 "src": "698:10:15",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_Dataset_$5361",
+                                  "typeIdentifier": "t_contract$_Dataset_$5381",
                                   "typeString": "contract Dataset"
                                 }
                               }
@@ -1274,11 +1274,11 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_Dataset_$5361",
+                                  "typeIdentifier": "t_contract$_Dataset_$5381",
                                   "typeString": "contract Dataset"
                                 }
                               ],
-                              "id": 5402,
+                              "id": 5422,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1291,7 +1291,7 @@
                               },
                               "typeName": "address"
                             },
-                            "id": 5404,
+                            "id": 5424,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1307,11 +1307,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 5405,
+                            "id": 5425,
                             "name": "_datasetOwner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5379,
+                            "referencedDeclaration": 5399,
                             "src": "711:13:15",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1330,18 +1330,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 5401,
+                          "id": 5421,
                           "name": "insert",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5525,
+                          "referencedDeclaration": 5545,
                           "src": "683:6:15",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address,address) returns (bool)"
                           }
                         },
-                        "id": 5406,
+                        "id": 5426,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1363,21 +1363,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5400,
+                      "id": 5420,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "675:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5407,
+                    "id": 5427,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1391,7 +1391,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5408,
+                  "id": 5428,
                   "nodeType": "ExpressionStatement",
                   "src": "675:51:15"
                 },
@@ -1401,11 +1401,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5410,
+                        "id": 5430,
                         "name": "_datasetOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5379,
+                        "referencedDeclaration": 5399,
                         "src": "749:13:15",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1417,14 +1417,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 5412,
+                            "id": 5432,
                             "name": "newDataset",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5391,
+                            "referencedDeclaration": 5411,
                             "src": "772:10:15",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Dataset_$5361",
+                              "typeIdentifier": "t_contract$_Dataset_$5381",
                               "typeString": "contract Dataset"
                             }
                           }
@@ -1432,11 +1432,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Dataset_$5361",
+                              "typeIdentifier": "t_contract$_Dataset_$5381",
                               "typeString": "contract Dataset"
                             }
                           ],
-                          "id": 5411,
+                          "id": 5431,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1449,7 +1449,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 5413,
+                        "id": 5433,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1475,18 +1475,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5409,
+                      "id": 5429,
                       "name": "CreateDataset",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5373,
+                      "referencedDeclaration": 5393,
                       "src": "735:13:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$returns$__$",
                         "typeString": "function (address,address)"
                       }
                     },
-                    "id": 5414,
+                    "id": 5434,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1500,48 +1500,48 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5415,
+                  "id": 5435,
                   "nodeType": "EmitStatement",
                   "src": "730:54:15"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5416,
+                    "id": 5436,
                     "name": "newDataset",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5391,
+                    "referencedDeclaration": 5411,
                     "src": "795:10:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
-                  "functionReturnParameters": 5389,
-                  "id": 5417,
+                  "functionReturnParameters": 5409,
+                  "id": 5437,
                   "nodeType": "Return",
                   "src": "788:17:15"
                 }
               ]
             },
             "documentation": "Dataset creation",
-            "id": 5419,
+            "id": 5439,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "createDataset",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5386,
+              "id": 5406,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5379,
+                  "id": 5399,
                   "name": "_datasetOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "349:30:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1550,7 +1550,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5378,
+                    "id": 5398,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "349:7:15",
@@ -1565,10 +1565,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5381,
+                  "id": 5401,
                   "name": "_datasetName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "383:29:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1577,7 +1577,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5380,
+                    "id": 5400,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "383:6:15",
@@ -1591,10 +1591,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5383,
+                  "id": 5403,
                   "name": "_datasetMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "416:34:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1603,7 +1603,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5382,
+                    "id": 5402,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "416:5:15",
@@ -1617,10 +1617,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5385,
+                  "id": 5405,
                   "name": "_datasetChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "454:33:15",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1629,7 +1629,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5384,
+                    "id": 5404,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "454:7:15",
@@ -1645,31 +1645,31 @@
               "src": "345:143:15"
             },
             "returnParameters": {
-              "id": 5389,
+              "id": 5409,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5388,
+                  "id": 5408,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5419,
+                  "scope": 5439,
                   "src": "543:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Dataset_$5361",
+                    "typeIdentifier": "t_contract$_Dataset_$5381",
                     "typeString": "contract Dataset"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5387,
+                    "id": 5407,
                     "name": "Dataset",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5361,
+                    "referencedDeclaration": 5381,
                     "src": "543:7:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Dataset_$5361",
+                      "typeIdentifier": "t_contract$_Dataset_$5381",
                       "typeString": "contract Dataset"
                     }
                   },
@@ -1679,14 +1679,14 @@
               ],
               "src": "542:9:15"
             },
-            "scope": 5420,
+            "scope": 5440,
             "src": "323:486:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5421,
+        "scope": 5441,
         "src": "79:732:15"
       }
     ],
@@ -1697,15 +1697,34 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {
-    "133": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0xc5e9a0444252e8a20898687252d27723c1618ca87f02347205b490f55fc41035": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "datasetOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "dataset",
+              "type": "address"
+            }
+          ],
+          "name": "CreateDataset",
+          "type": "event",
+          "signature": "0xc5e9a0444252e8a20898687252d27723c1618ca87f02347205b490f55fc41035"
+        }
+      },
       "links": {},
-      "address": "0xEe8f71bCc3AF6aac0C12f428F53258c193109250",
-      "transactionHash": "0xa4236ad3880125ab3ccf33796db7efcd9184c170c638e23a159b0a12325fad0d"
+      "address": "0xFCd86d04dbAEB9d6B48283A352f867675401E263",
+      "transactionHash": "0x3557f04935d08442d173a8e92a738077e2884b86a12b87cca2a9673d89f1f095"
     }
   },
-  "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-30T10:00:42.870Z",
+  "schemaVersion": "3.0.13",
+  "updatedAt": "2019-08-28T09:51:40.557Z",
   "devdoc": {
     "methods": {}
   },

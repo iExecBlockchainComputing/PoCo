@@ -125,11 +125,30 @@
     }
   ],
   "networks": {
-    "133": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "appOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "app",
+              "type": "address"
+            }
+          ],
+          "name": "CreateApp",
+          "type": "event",
+          "signature": "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50"
+        }
+      },
       "links": {},
-      "address": "0xbA07bf909297bd9781bDcE2625F20b47213Ad0a0",
-      "transactionHash": "0x73ecaa99ef8bc14f5894f3fe57d298e3fd0ad8599f6c574bb002198ffd394fb6"
+      "address": "0x1980b45a7842bc256BD06E7Aa9590cf3692D42ED",
+      "transactionHash": "0xad22de119e770fa6272170784210bb8574f4f670e59414fdb6588cbf31642c56"
     }
   }
 }

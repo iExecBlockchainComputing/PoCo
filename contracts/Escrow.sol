@@ -15,6 +15,8 @@ contract Escrow
 	 */
 	mapping(address => IexecODBLibCore.Account) m_accounts;
 
+	uint256 internal nRLC2wei = 10 ** 9;
+
 	/**
 	 * Events
 	 */
@@ -49,15 +51,17 @@ contract Escrow
 	function ()
 	external payable
 	{
-		_deposit(msg.sender, msg.value);
-		emit Deposit(msg.sender, msg.value);
+		_deposit(msg.sender, msg.value / nRLC2wei);
+		msg.sender.transfer(msg.value % nRLC2wei);
+		emit Deposit(msg.sender, msg.value / nRLC2wei);
 	}
 
 	function deposit()
 	external payable returns (bool)
 	{
-		_deposit(msg.sender, msg.value);
-		emit Deposit(msg.sender, msg.value);
+		_deposit(msg.sender, msg.value / nRLC2wei);
+		msg.sender.transfer(msg.value % nRLC2wei);
+		emit Deposit(msg.sender, msg.value / nRLC2wei);
 		return true;
 	}
 
@@ -65,8 +69,9 @@ contract Escrow
 	public payable returns (bool)
 	{
 		require(_target != address(0));
-		_deposit(_target, msg.value);
-		emit DepositFor(msg.sender, msg.value, _target);
+		_deposit(_target, msg.value / nRLC2wei);
+		msg.sender.transfer(msg.value % nRLC2wei);
+		emit DepositFor(msg.sender, msg.value / nRLC2wei, _target);
 		return true;
 	}
 
@@ -77,14 +82,13 @@ contract Escrow
 		uint256 remaining = msg.value;
 		for (uint i = 0; i < _amounts.length; ++i)
 		{
-			remaining = remaining.sub(_amounts[i]);
 			_deposit(_targets[i], _amounts[i]);
 			emit DepositFor(msg.sender, _amounts[i], _targets[i]);
+			remaining = remaining.sub(_amounts[i] * nRLC2wei);
 		}
 		if (remaining > 0)
 		{
-			_deposit(msg.sender, remaining);
-			emit Deposit(msg.sender, remaining);
+			msg.sender.transfer(remaining);
 		}
 		return true;
 	}
@@ -100,7 +104,7 @@ contract Escrow
 	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		msg.sender.transfer(_amount);
+		msg.sender.transfer(_amount * nRLC2wei);
 		emit Withdraw(msg.sender, _amount);
 		return true;
 	}

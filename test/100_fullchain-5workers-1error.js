@@ -224,13 +224,13 @@ contract('Fullchain', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit({ from: scheduler, value: 1000}),
-			IexecClerkInstance.deposit({ from: worker1,   value: 1000}),
-			IexecClerkInstance.deposit({ from: worker2,   value: 1000}),
-			IexecClerkInstance.deposit({ from: worker3,   value: 1000}),
-			IexecClerkInstance.deposit({ from: worker4,   value: 1000}),
-			IexecClerkInstance.deposit({ from: worker5,   value: 1000}),
-			IexecClerkInstance.deposit({ from: user,      value: 1000}),
+			IexecClerkInstance.deposit({ from: scheduler, value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: worker1,   value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: worker2,   value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: worker3,   value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: worker4,   value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: worker5,   value: 1000 * 10 ** 9 }),
+			IexecClerkInstance.deposit({ from: user,      value: 1000 * 10 ** 9 }),
 		]);
 	});
 

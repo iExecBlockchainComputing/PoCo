@@ -114,11 +114,35 @@
     }
   ],
   "networks": {
-    "133": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolDescription",
+              "type": "string"
+            }
+          ],
+          "name": "CreateWorkerpool",
+          "type": "event",
+          "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+        }
+      },
       "links": {},
-      "address": "0x4bf36B6055A1FdaAab7FB34c611EA0171B61e3E0",
-      "transactionHash": "0xa9a19fc42429ceef1978e14eb6a583be11e796ca3ac8965aa2f0fd3d73ab0e86"
+      "address": "0x94c0D2e9fF98E82f084dA0a93d82AFEd72512cF2",
+      "transactionHash": "0xe55f171d6784e384fef45052c3c004cb43bb37774eb9a266c94ca793a4b2a1a5"
     }
   }
 }

@@ -43,6 +43,8 @@ contract('IexecClerk: Escrow', async (accounts) => {
 
 	var categories = [];
 
+	var dust = 42;
+
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
@@ -63,22 +65,41 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		await expectRevert.unspecified(IexecClerkInstance.withdraw(100));
 	});
 
+	it("Escrow - dust avoidance", async () => {
+		IexecClerkInstance.viewAccount(iexecAdmin).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
+
+		txMined = await web3.eth.sendTransaction({ from: iexecAdmin, to: IexecClerkInstance.address, value: dust });
+		// EVENT NOT PARSED CORRECTLY
+		// events = extractEvents(txMined, IexecClerkInstance.address, "Deposit");
+		// assert.equal(events[0].args.owner,  worker1,  "check owner" );
+		// assert.equal(events[0].args.amount, 50000000, "check amount");
+
+		IexecClerkInstance.viewAccount(iexecAdmin).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 0 * 10**9);
+	});
+
 	it("Escrow - fallback success", async () => {
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
 
-		txMined = await web3.eth.sendTransaction({ from:worker1, to: IexecClerkInstance.address, value: 50000000});
+		txMined = await web3.eth.sendTransaction({ from:worker1, to: IexecClerkInstance.address, value: 50000000 * 10 ** 9 + dust });
 		// EVENT NOT PARSED CORRECTLY
 		// events = extractEvents(txMined, IexecClerkInstance.address, "Deposit");
 		// assert.equal(events[0].args.owner,  worker1,  "check owner" );
 		// assert.equal(events[0].args.amount, 50000000, "check amount");
 
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 50000000 * 10**9);
 	});
 
 	it("Escrow - Deposit success", async () => {
 		IexecClerkInstance.viewAccount(worker2).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
 
-		txMined = await IexecClerkInstance.deposit({ from: worker2, value: 50000000, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.deposit({ from: worker2, value: 50000000 * 10 ** 9 + dust, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "Deposit");
@@ -86,13 +107,16 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.amount, 50000000, "check amount");
 
 		IexecClerkInstance.viewAccount(worker2).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 50000000 * 10**9);
 	});
 
 	it("Escrow - DepositFor success", async () => {
 		IexecClerkInstance.viewAccount(worker3).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
 		IexecClerkInstance.viewAccount(worker4).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
 
-		txMined = await IexecClerkInstance.depositFor(worker3, { from: worker4, value: 50000000, gas: constants.AMOUNT_GAS_PROVIDED });
+		txMined = await IexecClerkInstance.depositFor(worker3, { from: worker4, value: 50000000 * 10 ** 9 + dust, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 		events = extractEvents(txMined, IexecClerkInstance.address, "DepositFor");
@@ -102,6 +126,26 @@ contract('IexecClerk: Escrow', async (accounts) => {
 
 		IexecClerkInstance.viewAccount(worker3).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
 		IexecClerkInstance.viewAccount(worker4).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [        0, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 50000000 * 10**9);
+	});
+
+	it("Escrow - DepositForArray success", async () => {
+		IexecClerkInstance.viewAccount(worker5).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 0, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
+
+		txMined = await IexecClerkInstance.depositForArray([10000000], [worker5], { from: worker4, value: 50000000 * 10 ** 9 + dust, gas: constants.AMOUNT_GAS_PROVIDED });
+		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+
+		events = extractEvents(txMined, IexecClerkInstance.address, "DepositFor");
+		assert.equal(events[0].args.owner,  worker4,  "check owner" );
+		assert.equal(events[0].args.amount, 10000000, "check amount");
+		assert.equal(events[0].args.target, worker5,  "check target");
+
+		IexecClerkInstance.viewAccount(worker4).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [        0, 0 ], "check balance"));
+		IexecClerkInstance.viewAccount(worker5).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 10000000, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 10000000 * 10**9);
 	});
 
 	/***************************************************************************
@@ -109,10 +153,13 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw error #2", async () => {
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
 
 		await expectRevert.unspecified(IexecClerkInstance.withdraw(100000000, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED }));
 
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) + 0 * 10**9);
 	});
 
 	/***************************************************************************
@@ -120,6 +167,7 @@ contract('IexecClerk: Escrow', async (accounts) => {
 	 ***************************************************************************/
 	it("Escrow - Withdraw success", async () => {
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 50000000, 0 ], "check balance"));
+		balanceBefore = await web3.eth.getBalance(IexecClerkInstance.address);
 
 		txMined = await IexecClerkInstance.withdraw(10000000, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -129,6 +177,8 @@ contract('IexecClerk: Escrow', async (accounts) => {
 		assert.equal(events[0].args.amount, 10000000, "check amount");
 
 		IexecClerkInstance.viewAccount(worker1).then(balance => assert.deepEqual([ Number(balance.stake), Number(balance.locked) ], [ 40000000, 0 ], "check balance"));
+		balanceAfter = await web3.eth.getBalance(IexecClerkInstance.address);
+		assert.equal(Number(balanceAfter), Number(balanceBefore) - 10000000 * 10**9);
 	});
 
 });

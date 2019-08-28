@@ -180,8 +180,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
-				apporder.sign,
-				{}
+				apporder.sign
 			),
 			"Error with the validation of the apporder signature"
 		);
@@ -209,8 +208,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
-				datasetorder.sign,
-				{}
+				datasetorder.sign
 			),
 			"Error with the validation of the datasetorder signature"
 		);
@@ -219,7 +217,7 @@ contract('IexecHub', async (accounts) => {
 	/***************************************************************************
 	 *             TEST: Workerpool order signature (by scheduler)             *
 	 ***************************************************************************/
-	it("[Genesis] Generate.workerpool order", async () => {
+	it("[Genesis] Generate workerpool order", async () => {
 		workerpoolorder = odbtools.signWorkerpoolOrder(
 			{
 				workerpool:        WorkerpoolInstance.address,
@@ -240,8 +238,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-				workerpoolorder.sign,
-				{}
+				workerpoolorder.sign
 			),
 			"Error with the validation of the.workerpoolorder signature"
 		);
@@ -276,8 +273,7 @@ contract('IexecHub', async (accounts) => {
 			await IexecClerkInstanceFull.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
-				requestorder.sign,
-				{}
+				requestorder.sign
 			),
 			"Error with the validation of the requestorder signature"
 		);
@@ -302,13 +298,13 @@ contract('IexecHub', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstanceFull.deposit({ from: scheduler, value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: worker1,   value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: worker2,   value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: worker3,   value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: worker4,   value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: worker5,   value: 1000}),
-			IexecClerkInstanceFull.deposit({ from: user,      value: 1000}),
+			IexecClerkInstanceFull.deposit({ from: scheduler, value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: worker1,   value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: worker2,   value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: worker3,   value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: worker4,   value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: worker5,   value: 1000 * 10**9 }),
+			IexecClerkInstanceFull.deposit({ from: user,      value: 1000 * 10**9 }),
 		]);
 	});
 

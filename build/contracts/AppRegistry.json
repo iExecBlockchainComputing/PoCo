@@ -136,14 +136,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/AppRegistry.sol",
     "exportedSymbols": {
       "AppRegistry": [
-        5311
+        5331
       ]
     },
-    "id": 5312,
+    "id": 5332,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5248,
+        "id": 5268,
         "literals": [
           "solidity",
           "^",
@@ -156,10 +156,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol",
         "file": "./App.sol",
-        "id": 5249,
+        "id": 5269,
         "nodeType": "ImportDirective",
-        "scope": 5312,
-        "sourceUnit": 5247,
+        "scope": 5332,
+        "sourceUnit": 5267,
         "src": "25:19:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -167,10 +167,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol",
         "file": "./RegistryBase.sol",
-        "id": 5250,
+        "id": 5270,
         "nodeType": "ImportDirective",
-        "scope": 5312,
-        "sourceUnit": 5527,
+        "scope": 5332,
+        "sourceUnit": 5547,
         "src": "45:28:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -181,32 +181,32 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5251,
+              "id": 5271,
               "name": "RegistryBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5526,
+              "referencedDeclaration": 5546,
               "src": "99:12:13",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_RegistryBase_$5526",
+                "typeIdentifier": "t_contract$_RegistryBase_$5546",
                 "typeString": "contract RegistryBase"
               }
             },
-            "id": 5252,
+            "id": 5272,
             "nodeType": "InheritanceSpecifier",
             "src": "99:12:13"
           }
         ],
         "contractDependencies": [
-          5246,
-          5526
+          5266,
+          5546
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5311,
+        "id": 5331,
         "linearizedBaseContracts": [
-          5311,
-          5526
+          5331,
+          5546
         ],
         "name": "AppRegistry",
         "nodeType": "ContractDefinition",
@@ -214,20 +214,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5258,
+            "id": 5278,
             "name": "CreateApp",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5257,
+              "id": 5277,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5254,
+                  "id": 5274,
                   "indexed": true,
                   "name": "appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5258,
+                  "scope": 5278,
                   "src": "174:24:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -236,7 +236,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5253,
+                    "id": 5273,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "174:7:13",
@@ -251,11 +251,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5256,
+                  "id": 5276,
                   "indexed": false,
                   "name": "app",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5258,
+                  "scope": 5278,
                   "src": "200:11:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -264,7 +264,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5255,
+                    "id": 5275,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "200:7:13",
@@ -284,31 +284,31 @@
           },
           {
             "body": {
-              "id": 5261,
+              "id": 5281,
               "nodeType": "Block",
               "src": "265:4:13",
               "statements": []
             },
             "documentation": "Constructor",
-            "id": 5262,
+            "id": 5282,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5259,
+              "id": 5279,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "253:2:13"
             },
             "returnParameters": {
-              "id": 5260,
+              "id": 5280,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "265:0:13"
             },
-            "scope": 5311,
+            "scope": 5331,
             "src": "242:27:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -316,37 +316,37 @@
           },
           {
             "body": {
-              "id": 5309,
+              "id": 5329,
               "nodeType": "Block",
               "src": "568:235:13",
               "statements": [
                 {
                   "assignments": [
-                    5280
+                    5300
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5280,
+                      "id": 5300,
                       "name": "newApp",
                       "nodeType": "VariableDeclaration",
-                      "scope": 5309,
+                      "scope": 5329,
                       "src": "572:10:13",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_App_$5246",
+                        "typeIdentifier": "t_contract$_App_$5266",
                         "typeString": "contract App"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5279,
+                        "id": 5299,
                         "name": "App",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5246,
+                        "referencedDeclaration": 5266,
                         "src": "572:3:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_App_$5246",
+                          "typeIdentifier": "t_contract$_App_$5266",
                           "typeString": "contract App"
                         }
                       },
@@ -354,17 +354,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5290,
+                  "id": 5310,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5283,
+                        "id": 5303,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5264,
+                        "referencedDeclaration": 5284,
                         "src": "597:9:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -373,11 +373,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5284,
+                        "id": 5304,
                         "name": "_appName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5266,
+                        "referencedDeclaration": 5286,
                         "src": "611:8:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -386,11 +386,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5285,
+                        "id": 5305,
                         "name": "_appType",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5268,
+                        "referencedDeclaration": 5288,
                         "src": "624:8:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -399,11 +399,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5286,
+                        "id": 5306,
                         "name": "_appMultiaddr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5270,
+                        "referencedDeclaration": 5290,
                         "src": "637:13:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -412,11 +412,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5287,
+                        "id": 5307,
                         "name": "_appChecksum",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5272,
+                        "referencedDeclaration": 5292,
                         "src": "655:12:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -425,11 +425,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5288,
+                        "id": 5308,
                         "name": "_appMREnclave",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5274,
+                        "referencedDeclaration": 5294,
                         "src": "672:13:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -464,7 +464,7 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 5282,
+                      "id": 5302,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -472,23 +472,23 @@
                       "nodeType": "NewExpression",
                       "src": "585:7:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_contract$_App_$5246_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_contract$_App_$5266_$",
                         "typeString": "function (address,string memory,string memory,bytes memory,bytes32,bytes memory) returns (contract App)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5281,
+                        "id": 5301,
                         "name": "App",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5246,
+                        "referencedDeclaration": 5266,
                         "src": "589:3:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_App_$5246",
+                          "typeIdentifier": "t_contract$_App_$5266",
                           "typeString": "contract App"
                         }
                       }
                     },
-                    "id": 5289,
+                    "id": 5309,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -498,7 +498,7 @@
                     "nodeType": "FunctionCall",
                     "src": "585:104:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
@@ -517,14 +517,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 5294,
+                                "id": 5314,
                                 "name": "newApp",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 5280,
+                                "referencedDeclaration": 5300,
                                 "src": "716:6:13",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_App_$5246",
+                                  "typeIdentifier": "t_contract$_App_$5266",
                                   "typeString": "contract App"
                                 }
                               }
@@ -532,11 +532,11 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_App_$5246",
+                                  "typeIdentifier": "t_contract$_App_$5266",
                                   "typeString": "contract App"
                                 }
                               ],
-                              "id": 5293,
+                              "id": 5313,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -549,7 +549,7 @@
                               },
                               "typeName": "address"
                             },
-                            "id": 5295,
+                            "id": 5315,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -565,11 +565,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 5296,
+                            "id": 5316,
                             "name": "_appOwner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5264,
+                            "referencedDeclaration": 5284,
                             "src": "725:9:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -588,18 +588,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 5292,
+                          "id": 5312,
                           "name": "insert",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5525,
+                          "referencedDeclaration": 5545,
                           "src": "701:6:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address,address) returns (bool)"
                           }
                         },
-                        "id": 5297,
+                        "id": 5317,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -621,21 +621,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5291,
+                      "id": 5311,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "693:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5298,
+                    "id": 5318,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -649,7 +649,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5299,
+                  "id": 5319,
                   "nodeType": "ExpressionStatement",
                   "src": "693:43:13"
                 },
@@ -659,11 +659,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5301,
+                        "id": 5321,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5264,
+                        "referencedDeclaration": 5284,
                         "src": "755:9:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -675,14 +675,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 5303,
+                            "id": 5323,
                             "name": "newApp",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5280,
+                            "referencedDeclaration": 5300,
                             "src": "774:6:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_App_$5246",
+                              "typeIdentifier": "t_contract$_App_$5266",
                               "typeString": "contract App"
                             }
                           }
@@ -690,11 +690,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_App_$5246",
+                              "typeIdentifier": "t_contract$_App_$5266",
                               "typeString": "contract App"
                             }
                           ],
-                          "id": 5302,
+                          "id": 5322,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -707,7 +707,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 5304,
+                        "id": 5324,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -733,18 +733,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5300,
+                      "id": 5320,
                       "name": "CreateApp",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5258,
+                      "referencedDeclaration": 5278,
                       "src": "745:9:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$returns$__$",
                         "typeString": "function (address,address)"
                       }
                     },
-                    "id": 5305,
+                    "id": 5325,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -758,48 +758,48 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5306,
+                  "id": 5326,
                   "nodeType": "EmitStatement",
                   "src": "740:42:13"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5307,
+                    "id": 5327,
                     "name": "newApp",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5280,
+                    "referencedDeclaration": 5300,
                     "src": "793:6:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
-                  "functionReturnParameters": 5278,
-                  "id": 5308,
+                  "functionReturnParameters": 5298,
+                  "id": 5328,
                   "nodeType": "Return",
                   "src": "786:13:13"
                 }
               ]
             },
             "documentation": "App creation",
-            "id": 5310,
+            "id": 5330,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "createApp",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5275,
+              "id": 5295,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5264,
+                  "id": 5284,
                   "name": "_appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "321:26:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -808,7 +808,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5263,
+                    "id": 5283,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "321:7:13",
@@ -823,10 +823,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5266,
+                  "id": 5286,
                   "name": "_appName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "351:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -835,7 +835,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5265,
+                    "id": 5285,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "351:6:13",
@@ -849,10 +849,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5268,
+                  "id": 5288,
                   "name": "_appType",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "380:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -861,7 +861,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5267,
+                    "id": 5287,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "380:6:13",
@@ -875,10 +875,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5270,
+                  "id": 5290,
                   "name": "_appMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "409:30:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -887,7 +887,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5269,
+                    "id": 5289,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "409:5:13",
@@ -901,10 +901,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5272,
+                  "id": 5292,
                   "name": "_appChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "443:29:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -913,7 +913,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5271,
+                    "id": 5291,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "443:7:13",
@@ -927,10 +927,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5274,
+                  "id": 5294,
                   "name": "_appMREnclave",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "476:30:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -939,7 +939,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5273,
+                    "id": 5293,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "476:5:13",
@@ -955,31 +955,31 @@
               "src": "317:190:13"
             },
             "returnParameters": {
-              "id": 5278,
+              "id": 5298,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5277,
+                  "id": 5297,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "562:3:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_App_$5246",
+                    "typeIdentifier": "t_contract$_App_$5266",
                     "typeString": "contract App"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5276,
+                    "id": 5296,
                     "name": "App",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5246,
+                    "referencedDeclaration": 5266,
                     "src": "562:3:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
@@ -989,14 +989,14 @@
               ],
               "src": "561:5:13"
             },
-            "scope": 5311,
+            "scope": 5331,
             "src": "299:504:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5312,
+        "scope": 5332,
         "src": "75:731:13"
       }
     ],
@@ -1006,14 +1006,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/AppRegistry.sol",
     "exportedSymbols": {
       "AppRegistry": [
-        5311
+        5331
       ]
     },
-    "id": 5312,
+    "id": 5332,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5248,
+        "id": 5268,
         "literals": [
           "solidity",
           "^",
@@ -1026,10 +1026,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/App.sol",
         "file": "./App.sol",
-        "id": 5249,
+        "id": 5269,
         "nodeType": "ImportDirective",
-        "scope": 5312,
-        "sourceUnit": 5247,
+        "scope": 5332,
+        "sourceUnit": 5267,
         "src": "25:19:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1037,10 +1037,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryBase.sol",
         "file": "./RegistryBase.sol",
-        "id": 5250,
+        "id": 5270,
         "nodeType": "ImportDirective",
-        "scope": 5312,
-        "sourceUnit": 5527,
+        "scope": 5332,
+        "sourceUnit": 5547,
         "src": "45:28:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1051,32 +1051,32 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5251,
+              "id": 5271,
               "name": "RegistryBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5526,
+              "referencedDeclaration": 5546,
               "src": "99:12:13",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_RegistryBase_$5526",
+                "typeIdentifier": "t_contract$_RegistryBase_$5546",
                 "typeString": "contract RegistryBase"
               }
             },
-            "id": 5252,
+            "id": 5272,
             "nodeType": "InheritanceSpecifier",
             "src": "99:12:13"
           }
         ],
         "contractDependencies": [
-          5246,
-          5526
+          5266,
+          5546
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5311,
+        "id": 5331,
         "linearizedBaseContracts": [
-          5311,
-          5526
+          5331,
+          5546
         ],
         "name": "AppRegistry",
         "nodeType": "ContractDefinition",
@@ -1084,20 +1084,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5258,
+            "id": 5278,
             "name": "CreateApp",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5257,
+              "id": 5277,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5254,
+                  "id": 5274,
                   "indexed": true,
                   "name": "appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5258,
+                  "scope": 5278,
                   "src": "174:24:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1106,7 +1106,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5253,
+                    "id": 5273,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "174:7:13",
@@ -1121,11 +1121,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5256,
+                  "id": 5276,
                   "indexed": false,
                   "name": "app",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5258,
+                  "scope": 5278,
                   "src": "200:11:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1134,7 +1134,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5255,
+                    "id": 5275,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "200:7:13",
@@ -1154,31 +1154,31 @@
           },
           {
             "body": {
-              "id": 5261,
+              "id": 5281,
               "nodeType": "Block",
               "src": "265:4:13",
               "statements": []
             },
             "documentation": "Constructor",
-            "id": 5262,
+            "id": 5282,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5259,
+              "id": 5279,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "253:2:13"
             },
             "returnParameters": {
-              "id": 5260,
+              "id": 5280,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "265:0:13"
             },
-            "scope": 5311,
+            "scope": 5331,
             "src": "242:27:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1186,37 +1186,37 @@
           },
           {
             "body": {
-              "id": 5309,
+              "id": 5329,
               "nodeType": "Block",
               "src": "568:235:13",
               "statements": [
                 {
                   "assignments": [
-                    5280
+                    5300
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5280,
+                      "id": 5300,
                       "name": "newApp",
                       "nodeType": "VariableDeclaration",
-                      "scope": 5309,
+                      "scope": 5329,
                       "src": "572:10:13",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_App_$5246",
+                        "typeIdentifier": "t_contract$_App_$5266",
                         "typeString": "contract App"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5279,
+                        "id": 5299,
                         "name": "App",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5246,
+                        "referencedDeclaration": 5266,
                         "src": "572:3:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_App_$5246",
+                          "typeIdentifier": "t_contract$_App_$5266",
                           "typeString": "contract App"
                         }
                       },
@@ -1224,17 +1224,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5290,
+                  "id": 5310,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5283,
+                        "id": 5303,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5264,
+                        "referencedDeclaration": 5284,
                         "src": "597:9:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1243,11 +1243,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5284,
+                        "id": 5304,
                         "name": "_appName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5266,
+                        "referencedDeclaration": 5286,
                         "src": "611:8:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1256,11 +1256,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5285,
+                        "id": 5305,
                         "name": "_appType",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5268,
+                        "referencedDeclaration": 5288,
                         "src": "624:8:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1269,11 +1269,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5286,
+                        "id": 5306,
                         "name": "_appMultiaddr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5270,
+                        "referencedDeclaration": 5290,
                         "src": "637:13:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -1282,11 +1282,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5287,
+                        "id": 5307,
                         "name": "_appChecksum",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5272,
+                        "referencedDeclaration": 5292,
                         "src": "655:12:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1295,11 +1295,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5288,
+                        "id": 5308,
                         "name": "_appMREnclave",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5274,
+                        "referencedDeclaration": 5294,
                         "src": "672:13:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -1334,7 +1334,7 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 5282,
+                      "id": 5302,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1342,23 +1342,23 @@
                       "nodeType": "NewExpression",
                       "src": "585:7:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_contract$_App_$5246_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_address_$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_bytes_memory_ptr_$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_contract$_App_$5266_$",
                         "typeString": "function (address,string memory,string memory,bytes memory,bytes32,bytes memory) returns (contract App)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5281,
+                        "id": 5301,
                         "name": "App",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 5246,
+                        "referencedDeclaration": 5266,
                         "src": "589:3:13",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_App_$5246",
+                          "typeIdentifier": "t_contract$_App_$5266",
                           "typeString": "contract App"
                         }
                       }
                     },
-                    "id": 5289,
+                    "id": 5309,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1368,7 +1368,7 @@
                     "nodeType": "FunctionCall",
                     "src": "585:104:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
@@ -1387,14 +1387,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 5294,
+                                "id": 5314,
                                 "name": "newApp",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 5280,
+                                "referencedDeclaration": 5300,
                                 "src": "716:6:13",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_App_$5246",
+                                  "typeIdentifier": "t_contract$_App_$5266",
                                   "typeString": "contract App"
                                 }
                               }
@@ -1402,11 +1402,11 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_App_$5246",
+                                  "typeIdentifier": "t_contract$_App_$5266",
                                   "typeString": "contract App"
                                 }
                               ],
-                              "id": 5293,
+                              "id": 5313,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1419,7 +1419,7 @@
                               },
                               "typeName": "address"
                             },
-                            "id": 5295,
+                            "id": 5315,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1435,11 +1435,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 5296,
+                            "id": 5316,
                             "name": "_appOwner",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5264,
+                            "referencedDeclaration": 5284,
                             "src": "725:9:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1458,18 +1458,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 5292,
+                          "id": 5312,
                           "name": "insert",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5525,
+                          "referencedDeclaration": 5545,
                           "src": "701:6:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_address_$returns$_t_bool_$",
                             "typeString": "function (address,address) returns (bool)"
                           }
                         },
-                        "id": 5297,
+                        "id": 5317,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1491,21 +1491,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5291,
+                      "id": 5311,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "693:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5298,
+                    "id": 5318,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1519,7 +1519,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5299,
+                  "id": 5319,
                   "nodeType": "ExpressionStatement",
                   "src": "693:43:13"
                 },
@@ -1529,11 +1529,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5301,
+                        "id": 5321,
                         "name": "_appOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5264,
+                        "referencedDeclaration": 5284,
                         "src": "755:9:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1545,14 +1545,14 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 5303,
+                            "id": 5323,
                             "name": "newApp",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 5280,
+                            "referencedDeclaration": 5300,
                             "src": "774:6:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_App_$5246",
+                              "typeIdentifier": "t_contract$_App_$5266",
                               "typeString": "contract App"
                             }
                           }
@@ -1560,11 +1560,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_App_$5246",
+                              "typeIdentifier": "t_contract$_App_$5266",
                               "typeString": "contract App"
                             }
                           ],
-                          "id": 5302,
+                          "id": 5322,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1577,7 +1577,7 @@
                           },
                           "typeName": "address"
                         },
-                        "id": 5304,
+                        "id": 5324,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1603,18 +1603,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5300,
+                      "id": 5320,
                       "name": "CreateApp",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5258,
+                      "referencedDeclaration": 5278,
                       "src": "745:9:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$returns$__$",
                         "typeString": "function (address,address)"
                       }
                     },
-                    "id": 5305,
+                    "id": 5325,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1628,48 +1628,48 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5306,
+                  "id": 5326,
                   "nodeType": "EmitStatement",
                   "src": "740:42:13"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5307,
+                    "id": 5327,
                     "name": "newApp",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5280,
+                    "referencedDeclaration": 5300,
                     "src": "793:6:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
-                  "functionReturnParameters": 5278,
-                  "id": 5308,
+                  "functionReturnParameters": 5298,
+                  "id": 5328,
                   "nodeType": "Return",
                   "src": "786:13:13"
                 }
               ]
             },
             "documentation": "App creation",
-            "id": 5310,
+            "id": 5330,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "createApp",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5275,
+              "id": 5295,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5264,
+                  "id": 5284,
                   "name": "_appOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "321:26:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1678,7 +1678,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5263,
+                    "id": 5283,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "321:7:13",
@@ -1693,10 +1693,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5266,
+                  "id": 5286,
                   "name": "_appName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "351:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1705,7 +1705,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5265,
+                    "id": 5285,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "351:6:13",
@@ -1719,10 +1719,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5268,
+                  "id": 5288,
                   "name": "_appType",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "380:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1731,7 +1731,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5267,
+                    "id": 5287,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "380:6:13",
@@ -1745,10 +1745,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5270,
+                  "id": 5290,
                   "name": "_appMultiaddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "409:30:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1757,7 +1757,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5269,
+                    "id": 5289,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "409:5:13",
@@ -1771,10 +1771,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5272,
+                  "id": 5292,
                   "name": "_appChecksum",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "443:29:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1783,7 +1783,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5271,
+                    "id": 5291,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "443:7:13",
@@ -1797,10 +1797,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5274,
+                  "id": 5294,
                   "name": "_appMREnclave",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "476:30:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1809,7 +1809,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5273,
+                    "id": 5293,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "476:5:13",
@@ -1825,31 +1825,31 @@
               "src": "317:190:13"
             },
             "returnParameters": {
-              "id": 5278,
+              "id": 5298,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5277,
+                  "id": 5297,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5310,
+                  "scope": 5330,
                   "src": "562:3:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_App_$5246",
+                    "typeIdentifier": "t_contract$_App_$5266",
                     "typeString": "contract App"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5276,
+                    "id": 5296,
                     "name": "App",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5246,
+                    "referencedDeclaration": 5266,
                     "src": "562:3:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_App_$5246",
+                      "typeIdentifier": "t_contract$_App_$5266",
                       "typeString": "contract App"
                     }
                   },
@@ -1859,14 +1859,14 @@
               ],
               "src": "561:5:13"
             },
-            "scope": 5311,
+            "scope": 5331,
             "src": "299:504:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5312,
+        "scope": 5332,
         "src": "75:731:13"
       }
     ],
@@ -1877,15 +1877,34 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {
-    "133": {
-      "events": {},
+    "1544020727674": {
+      "events": {
+        "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "appOwner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "app",
+              "type": "address"
+            }
+          ],
+          "name": "CreateApp",
+          "type": "event",
+          "signature": "0x5ba7d57c324ec2334af956c7950558163a5c6871ef98815cd971f14607e97d50"
+        }
+      },
       "links": {},
-      "address": "0xbA07bf909297bd9781bDcE2625F20b47213Ad0a0",
-      "transactionHash": "0x73ecaa99ef8bc14f5894f3fe57d298e3fd0ad8599f6c574bb002198ffd394fb6"
+      "address": "0xfc1A931c9375c2C7D7A374538b3A48BAF0462CdB",
+      "transactionHash": "0xf6068b7ad64049887b52908dc0323291f1f41276165d56a30bbc3d7a4635e801"
     }
   },
-  "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-30T10:00:42.869Z",
+  "schemaVersion": "3.0.13",
+  "updatedAt": "2019-08-28T09:51:40.556Z",
   "devdoc": {
     "methods": {}
   },

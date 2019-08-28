@@ -183,14 +183,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol",
     "exportedSymbols": {
       "Workerpool": [
-        5613
+        5633
       ]
     },
-    "id": 5614,
+    "id": 5634,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5528,
+        "id": 5548,
         "literals": [
           "solidity",
           "^",
@@ -203,10 +203,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5529,
+        "id": 5549,
         "nodeType": "ImportDirective",
-        "scope": 5614,
-        "sourceUnit": 6315,
+        "scope": 5634,
+        "sourceUnit": 6335,
         "src": "25:63:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -217,41 +217,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5530,
+              "id": 5550,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6314,
+              "referencedDeclaration": 6334,
               "src": "113:7:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6314",
+                "typeIdentifier": "t_contract$_Ownable_$6334",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5531,
+            "id": 5551,
             "nodeType": "InheritanceSpecifier",
             "src": "113:7:17"
           }
         ],
         "contractDependencies": [
-          6314
+          6334
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5613,
+        "id": 5633,
         "linearizedBaseContracts": [
-          5613,
-          6314
+          5633,
+          6334
         ],
         "name": "Workerpool",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5533,
+            "id": 5553,
             "name": "m_workerpoolDescription",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "149:38:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -260,7 +260,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5532,
+              "id": 5552,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "149:6:17",
@@ -274,10 +274,10 @@
           },
           {
             "constant": false,
-            "id": 5535,
+            "id": 5555,
             "name": "m_workerStakeRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "190:39:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -286,7 +286,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5534,
+              "id": 5554,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "190:7:17",
@@ -300,10 +300,10 @@
           },
           {
             "constant": false,
-            "id": 5537,
+            "id": 5557,
             "name": "m_schedulerRewardRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "260:43:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -312,7 +312,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5536,
+              "id": 5556,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "260:7:17",
@@ -327,20 +327,20 @@
           {
             "anonymous": false,
             "documentation": "Events",
-            "id": 5547,
+            "id": 5567,
             "name": "PolicyUpdate",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5546,
+              "id": 5566,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5539,
+                  "id": 5559,
                   "indexed": false,
                   "name": "oldWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "384:33:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -349,7 +349,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5538,
+                    "id": 5558,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "384:7:17",
@@ -363,11 +363,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5541,
+                  "id": 5561,
                   "indexed": false,
                   "name": "newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "423:33:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -376,7 +376,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5540,
+                    "id": 5560,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:17",
@@ -390,11 +390,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5543,
+                  "id": 5563,
                   "indexed": false,
                   "name": "oldSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "460:37:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -403,7 +403,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5542,
+                    "id": 5562,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "460:7:17",
@@ -417,11 +417,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5545,
+                  "id": 5565,
                   "indexed": false,
                   "name": "newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "499:37:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -430,7 +430,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5544,
+                    "id": 5564,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "499:7:17",
@@ -449,7 +449,7 @@
           },
           {
             "body": {
-              "id": 5570,
+              "id": 5590,
               "nodeType": "Block",
               "src": "665:197:17",
               "statements": [
@@ -459,11 +459,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5555,
+                        "id": 5575,
                         "name": "_workerpoolOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5549,
+                        "referencedDeclaration": 5569,
                         "src": "688:16:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -478,18 +478,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5554,
+                      "id": 5574,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6313,
+                      "referencedDeclaration": 6333,
                       "src": "669:18:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5556,
+                    "id": 5576,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -503,25 +503,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5557,
+                  "id": 5577,
                   "nodeType": "ExpressionStatement",
                   "src": "669:36:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5560,
+                    "id": 5580,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5558,
+                      "id": 5578,
                       "name": "m_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5533,
+                      "referencedDeclaration": 5553,
                       "src": "709:23:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -532,11 +532,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5559,
+                      "id": 5579,
                       "name": "_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5551,
+                      "referencedDeclaration": 5571,
                       "src": "740:22:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -549,25 +549,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5561,
+                  "id": 5581,
                   "nodeType": "ExpressionStatement",
                   "src": "709:53:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5564,
+                    "id": 5584,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5562,
+                      "id": 5582,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5535,
+                      "referencedDeclaration": 5555,
                       "src": "766:24:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -579,7 +579,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "3330",
-                      "id": 5563,
+                      "id": 5583,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -600,25 +600,25 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5565,
+                  "id": 5585,
                   "nodeType": "ExpressionStatement",
                   "src": "766:33:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5568,
+                    "id": 5588,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5566,
+                      "id": 5586,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5537,
+                      "referencedDeclaration": 5557,
                       "src": "814:28:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -630,7 +630,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "31",
-                      "id": 5567,
+                      "id": 5587,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -651,29 +651,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5569,
+                  "id": 5589,
                   "nodeType": "ExpressionStatement",
                   "src": "814:32:17"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5571,
+            "id": 5591,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5552,
+              "id": 5572,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5549,
+                  "id": 5569,
                   "name": "_workerpoolOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5571,
+                  "scope": 5591,
                   "src": "582:31:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -682,7 +682,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5548,
+                    "id": 5568,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "582:7:17",
@@ -697,10 +697,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5551,
+                  "id": 5571,
                   "name": "_workerpoolDescription",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5571,
+                  "scope": 5591,
                   "src": "617:37:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -709,7 +709,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5550,
+                    "id": 5570,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "617:6:17",
@@ -725,12 +725,12 @@
               "src": "578:77:17"
             },
             "returnParameters": {
-              "id": 5553,
+              "id": 5573,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "665:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "567:295:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -738,7 +738,7 @@
           },
           {
             "body": {
-              "id": 5601,
+              "id": 5621,
               "nodeType": "Block",
               "src": "987:333:17",
               "statements": [
@@ -752,18 +752,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 5583,
+                        "id": 5603,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 5581,
+                          "id": 5601,
                           "name": "_newSchedulerRewardRatioPolicy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5575,
+                          "referencedDeclaration": 5595,
                           "src": "999:30:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -775,7 +775,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "313030",
-                          "id": 5582,
+                          "id": 5602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -804,21 +804,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5580,
+                      "id": 5600,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "991:7:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5584,
+                    "id": 5604,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -832,7 +832,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5585,
+                  "id": 5605,
                   "nodeType": "ExpressionStatement",
                   "src": "991:46:17"
                 },
@@ -842,11 +842,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5587,
+                        "id": 5607,
                         "name": "m_workerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5535,
+                        "referencedDeclaration": 5555,
                         "src": "1064:24:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -855,11 +855,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5588,
+                        "id": 5608,
                         "name": "_newWorkerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5573,
+                        "referencedDeclaration": 5593,
                         "src": "1094:26:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -868,11 +868,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5589,
+                        "id": 5609,
                         "name": "m_schedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5537,
+                        "referencedDeclaration": 5557,
                         "src": "1125:28:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -881,11 +881,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5590,
+                        "id": 5610,
                         "name": "_newSchedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5575,
+                        "referencedDeclaration": 5595,
                         "src": "1155:30:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -912,18 +912,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 5586,
+                      "id": 5606,
                       "name": "PolicyUpdate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5547,
+                      "referencedDeclaration": 5567,
                       "src": "1047:12:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,uint256,uint256,uint256)"
                       }
                     },
-                    "id": 5591,
+                    "id": 5611,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -937,25 +937,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5592,
+                  "id": 5612,
                   "nodeType": "EmitStatement",
                   "src": "1042:147:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5595,
+                    "id": 5615,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5593,
+                      "id": 5613,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5535,
+                      "referencedDeclaration": 5555,
                       "src": "1194:24:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -966,11 +966,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5594,
+                      "id": 5614,
                       "name": "_newWorkerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5573,
+                      "referencedDeclaration": 5593,
                       "src": "1225:26:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -983,25 +983,25 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5596,
+                  "id": 5616,
                   "nodeType": "ExpressionStatement",
                   "src": "1194:57:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5599,
+                    "id": 5619,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5597,
+                      "id": 5617,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5537,
+                      "referencedDeclaration": 5557,
                       "src": "1255:28:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1012,11 +1012,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5598,
+                      "id": 5618,
                       "name": "_newSchedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5575,
+                      "referencedDeclaration": 5595,
                       "src": "1286:30:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1029,27 +1029,27 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5600,
+                  "id": 5620,
                   "nodeType": "ExpressionStatement",
                   "src": "1255:61:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 5602,
+            "id": 5622,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 5578,
+                "id": 5598,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5577,
+                  "id": 5597,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 6247,
+                  "referencedDeclaration": 6267,
                   "src": "976:9:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1063,15 +1063,15 @@
             "name": "changePolicy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5576,
+              "id": 5596,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5573,
+                  "id": 5593,
                   "name": "_newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5602,
+                  "scope": 5622,
                   "src": "890:34:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1080,7 +1080,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5572,
+                    "id": 5592,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "890:7:17",
@@ -1094,10 +1094,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5575,
+                  "id": 5595,
                   "name": "_newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5602,
+                  "scope": 5622,
                   "src": "928:38:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1106,7 +1106,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5574,
+                    "id": 5594,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "928:7:17",
@@ -1122,12 +1122,12 @@
               "src": "886:81:17"
             },
             "returnParameters": {
-              "id": 5579,
+              "id": 5599,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "987:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "865:455:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1135,7 +1135,7 @@
           },
           {
             "body": {
-              "id": 5611,
+              "id": 5631,
               "nodeType": "Block",
               "src": "1366:23:17",
               "statements": [
@@ -1146,7 +1146,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5608,
+                        "id": 5628,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1169,21 +1169,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5607,
+                      "id": 5627,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6334,
-                        6335
+                        6354,
+                        6355
                       ],
-                      "referencedDeclaration": 6335,
+                      "referencedDeclaration": 6355,
                       "src": "1368:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5609,
+                    "id": 5629,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1197,29 +1197,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5610,
+                  "id": 5630,
                   "nodeType": "ExpressionStatement",
                   "src": "1368:18:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 5612,
+            "id": 5632,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5605,
+              "id": 5625,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5604,
+                  "id": 5624,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5612,
+                  "scope": 5632,
                   "src": "1350:7:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1228,7 +1228,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5603,
+                    "id": 5623,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1350:7:17",
@@ -1245,19 +1245,19 @@
               "src": "1349:9:17"
             },
             "returnParameters": {
-              "id": 5606,
+              "id": 5626,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1366:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "1323:66:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6289,
+            "superFunction": 6309,
             "visibility": "public"
           }
         ],
-        "scope": 5614,
+        "scope": 5634,
         "src": "90:1302:17"
       }
     ],
@@ -1267,14 +1267,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Workerpool.sol",
     "exportedSymbols": {
       "Workerpool": [
-        5613
+        5633
       ]
     },
-    "id": 5614,
+    "id": 5634,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5528,
+        "id": 5548,
         "literals": [
           "solidity",
           "^",
@@ -1287,10 +1287,10 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
         "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
-        "id": 5529,
+        "id": 5549,
         "nodeType": "ImportDirective",
-        "scope": 5614,
-        "sourceUnit": 6315,
+        "scope": 5634,
+        "sourceUnit": 6335,
         "src": "25:63:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1301,41 +1301,41 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5530,
+              "id": 5550,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6314,
+              "referencedDeclaration": 6334,
               "src": "113:7:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$6314",
+                "typeIdentifier": "t_contract$_Ownable_$6334",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 5531,
+            "id": 5551,
             "nodeType": "InheritanceSpecifier",
             "src": "113:7:17"
           }
         ],
         "contractDependencies": [
-          6314
+          6334
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5613,
+        "id": 5633,
         "linearizedBaseContracts": [
-          5613,
-          6314
+          5633,
+          6334
         ],
         "name": "Workerpool",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 5533,
+            "id": 5553,
             "name": "m_workerpoolDescription",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "149:38:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1344,7 +1344,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 5532,
+              "id": 5552,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "149:6:17",
@@ -1358,10 +1358,10 @@
           },
           {
             "constant": false,
-            "id": 5535,
+            "id": 5555,
             "name": "m_workerStakeRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "190:39:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1370,7 +1370,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5534,
+              "id": 5554,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "190:7:17",
@@ -1384,10 +1384,10 @@
           },
           {
             "constant": false,
-            "id": 5537,
+            "id": 5557,
             "name": "m_schedulerRewardRatioPolicy",
             "nodeType": "VariableDeclaration",
-            "scope": 5613,
+            "scope": 5633,
             "src": "260:43:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1396,7 +1396,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5536,
+              "id": 5556,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "260:7:17",
@@ -1411,20 +1411,20 @@
           {
             "anonymous": false,
             "documentation": "Events",
-            "id": 5547,
+            "id": 5567,
             "name": "PolicyUpdate",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5546,
+              "id": 5566,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5539,
+                  "id": 5559,
                   "indexed": false,
                   "name": "oldWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "384:33:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1433,7 +1433,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5538,
+                    "id": 5558,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "384:7:17",
@@ -1447,11 +1447,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5541,
+                  "id": 5561,
                   "indexed": false,
                   "name": "newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "423:33:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1460,7 +1460,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5540,
+                    "id": 5560,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:17",
@@ -1474,11 +1474,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5543,
+                  "id": 5563,
                   "indexed": false,
                   "name": "oldSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "460:37:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1487,7 +1487,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5542,
+                    "id": 5562,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "460:7:17",
@@ -1501,11 +1501,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5545,
+                  "id": 5565,
                   "indexed": false,
                   "name": "newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5547,
+                  "scope": 5567,
                   "src": "499:37:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1514,7 +1514,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5544,
+                    "id": 5564,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "499:7:17",
@@ -1533,7 +1533,7 @@
           },
           {
             "body": {
-              "id": 5570,
+              "id": 5590,
               "nodeType": "Block",
               "src": "665:197:17",
               "statements": [
@@ -1543,11 +1543,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5555,
+                        "id": 5575,
                         "name": "_workerpoolOwner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5549,
+                        "referencedDeclaration": 5569,
                         "src": "688:16:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1562,18 +1562,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5554,
+                      "id": 5574,
                       "name": "_transferOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6313,
+                      "referencedDeclaration": 6333,
                       "src": "669:18:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 5556,
+                    "id": 5576,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1587,25 +1587,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5557,
+                  "id": 5577,
                   "nodeType": "ExpressionStatement",
                   "src": "669:36:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5560,
+                    "id": 5580,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5558,
+                      "id": 5578,
                       "name": "m_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5533,
+                      "referencedDeclaration": 5553,
                       "src": "709:23:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_storage",
@@ -1616,11 +1616,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5559,
+                      "id": 5579,
                       "name": "_workerpoolDescription",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5551,
+                      "referencedDeclaration": 5571,
                       "src": "740:22:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
@@ -1633,25 +1633,25 @@
                       "typeString": "string storage ref"
                     }
                   },
-                  "id": 5561,
+                  "id": 5581,
                   "nodeType": "ExpressionStatement",
                   "src": "709:53:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5564,
+                    "id": 5584,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5562,
+                      "id": 5582,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5535,
+                      "referencedDeclaration": 5555,
                       "src": "766:24:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1663,7 +1663,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "3330",
-                      "id": 5563,
+                      "id": 5583,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1684,25 +1684,25 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5565,
+                  "id": 5585,
                   "nodeType": "ExpressionStatement",
                   "src": "766:33:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5568,
+                    "id": 5588,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5566,
+                      "id": 5586,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5537,
+                      "referencedDeclaration": 5557,
                       "src": "814:28:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1714,7 +1714,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "31",
-                      "id": 5567,
+                      "id": 5587,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1735,29 +1735,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5569,
+                  "id": 5589,
                   "nodeType": "ExpressionStatement",
                   "src": "814:32:17"
                 }
               ]
             },
             "documentation": "Constructor",
-            "id": 5571,
+            "id": 5591,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5552,
+              "id": 5572,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5549,
+                  "id": 5569,
                   "name": "_workerpoolOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5571,
+                  "scope": 5591,
                   "src": "582:31:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1766,7 +1766,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5548,
+                    "id": 5568,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "582:7:17",
@@ -1781,10 +1781,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5551,
+                  "id": 5571,
                   "name": "_workerpoolDescription",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5571,
+                  "scope": 5591,
                   "src": "617:37:17",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1793,7 +1793,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5550,
+                    "id": 5570,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "617:6:17",
@@ -1809,12 +1809,12 @@
               "src": "578:77:17"
             },
             "returnParameters": {
-              "id": 5553,
+              "id": 5573,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "665:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "567:295:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1822,7 +1822,7 @@
           },
           {
             "body": {
-              "id": 5601,
+              "id": 5621,
               "nodeType": "Block",
               "src": "987:333:17",
               "statements": [
@@ -1836,18 +1836,18 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 5583,
+                        "id": 5603,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 5581,
+                          "id": 5601,
                           "name": "_newSchedulerRewardRatioPolicy",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 5575,
+                          "referencedDeclaration": 5595,
                           "src": "999:30:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -1859,7 +1859,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "313030",
-                          "id": 5582,
+                          "id": 5602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1888,21 +1888,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 5580,
+                      "id": 5600,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6332,
-                        6333
+                        6352,
+                        6353
                       ],
-                      "referencedDeclaration": 6332,
+                      "referencedDeclaration": 6352,
                       "src": "991:7:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 5584,
+                    "id": 5604,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1916,7 +1916,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5585,
+                  "id": 5605,
                   "nodeType": "ExpressionStatement",
                   "src": "991:46:17"
                 },
@@ -1926,11 +1926,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5587,
+                        "id": 5607,
                         "name": "m_workerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5535,
+                        "referencedDeclaration": 5555,
                         "src": "1064:24:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1939,11 +1939,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5588,
+                        "id": 5608,
                         "name": "_newWorkerStakeRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5573,
+                        "referencedDeclaration": 5593,
                         "src": "1094:26:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1952,11 +1952,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5589,
+                        "id": 5609,
                         "name": "m_schedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5537,
+                        "referencedDeclaration": 5557,
                         "src": "1125:28:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1965,11 +1965,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5590,
+                        "id": 5610,
                         "name": "_newSchedulerRewardRatioPolicy",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5575,
+                        "referencedDeclaration": 5595,
                         "src": "1155:30:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1996,18 +1996,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 5586,
+                      "id": 5606,
                       "name": "PolicyUpdate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5547,
+                      "referencedDeclaration": 5567,
                       "src": "1047:12:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$returns$__$",
                         "typeString": "function (uint256,uint256,uint256,uint256)"
                       }
                     },
-                    "id": 5591,
+                    "id": 5611,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2021,25 +2021,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5592,
+                  "id": 5612,
                   "nodeType": "EmitStatement",
                   "src": "1042:147:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5595,
+                    "id": 5615,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5593,
+                      "id": 5613,
                       "name": "m_workerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5535,
+                      "referencedDeclaration": 5555,
                       "src": "1194:24:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2050,11 +2050,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5594,
+                      "id": 5614,
                       "name": "_newWorkerStakeRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5573,
+                      "referencedDeclaration": 5593,
                       "src": "1225:26:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2067,25 +2067,25 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5596,
+                  "id": 5616,
                   "nodeType": "ExpressionStatement",
                   "src": "1194:57:17"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5599,
+                    "id": 5619,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5597,
+                      "id": 5617,
                       "name": "m_schedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5537,
+                      "referencedDeclaration": 5557,
                       "src": "1255:28:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2096,11 +2096,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5598,
+                      "id": 5618,
                       "name": "_newSchedulerRewardRatioPolicy",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5575,
+                      "referencedDeclaration": 5595,
                       "src": "1286:30:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2113,27 +2113,27 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5600,
+                  "id": 5620,
                   "nodeType": "ExpressionStatement",
                   "src": "1255:61:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 5602,
+            "id": 5622,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 5578,
+                "id": 5598,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5577,
+                  "id": 5597,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 6247,
+                  "referencedDeclaration": 6267,
                   "src": "976:9:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2147,15 +2147,15 @@
             "name": "changePolicy",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5576,
+              "id": 5596,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5573,
+                  "id": 5593,
                   "name": "_newWorkerStakeRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5602,
+                  "scope": 5622,
                   "src": "890:34:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2164,7 +2164,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5572,
+                    "id": 5592,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "890:7:17",
@@ -2178,10 +2178,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5575,
+                  "id": 5595,
                   "name": "_newSchedulerRewardRatioPolicy",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5602,
+                  "scope": 5622,
                   "src": "928:38:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2190,7 +2190,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5574,
+                    "id": 5594,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "928:7:17",
@@ -2206,12 +2206,12 @@
               "src": "886:81:17"
             },
             "returnParameters": {
-              "id": 5579,
+              "id": 5599,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "987:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "865:455:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2219,7 +2219,7 @@
           },
           {
             "body": {
-              "id": 5611,
+              "id": 5631,
               "nodeType": "Block",
               "src": "1366:23:17",
               "statements": [
@@ -2230,7 +2230,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "64697361626c6564",
-                        "id": 5608,
+                        "id": 5628,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2253,21 +2253,21 @@
                           "typeString": "literal_string \"disabled\""
                         }
                       ],
-                      "id": 5607,
+                      "id": 5627,
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        6334,
-                        6335
+                        6354,
+                        6355
                       ],
-                      "referencedDeclaration": 6335,
+                      "referencedDeclaration": 6355,
                       "src": "1368:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (string memory) pure"
                       }
                     },
-                    "id": 5609,
+                    "id": 5629,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2281,29 +2281,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5610,
+                  "id": 5630,
                   "nodeType": "ExpressionStatement",
                   "src": "1368:18:17"
                 }
               ]
             },
             "documentation": null,
-            "id": 5612,
+            "id": 5632,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "transferOwnership",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5605,
+              "id": 5625,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5604,
+                  "id": 5624,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5612,
+                  "scope": 5632,
                   "src": "1350:7:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2312,7 +2312,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5603,
+                    "id": 5623,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1350:7:17",
@@ -2329,19 +2329,19 @@
               "src": "1349:9:17"
             },
             "returnParameters": {
-              "id": 5606,
+              "id": 5626,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1366:0:17"
             },
-            "scope": 5613,
+            "scope": 5633,
             "src": "1323:66:17",
             "stateMutability": "nonpayable",
-            "superFunction": 6289,
+            "superFunction": 6309,
             "visibility": "public"
           }
         ],
-        "scope": 5614,
+        "scope": 5634,
         "src": "90:1302:17"
       }
     ],
@@ -2352,8 +2352,8 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-30T09:36:58.386Z",
+  "schemaVersion": "3.0.13",
+  "updatedAt": "2019-08-28T08:45:54.219Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

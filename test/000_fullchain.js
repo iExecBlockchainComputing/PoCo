@@ -175,8 +175,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				appProvider,
 				odbtools.AppOrderTypedStructHash(apporder),
-				apporder.sign,
-				{}
+				apporder.sign
 			),
 			"Error with the validation of the apporder signature"
 		);
@@ -204,8 +203,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				datasetProvider,
 				odbtools.DatasetOrderTypedStructHash(datasetorder),
-				datasetorder.sign,
-				{}
+				datasetorder.sign
 			),
 			"Error with the validation of the datasetorder signature"
 		);
@@ -235,8 +233,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				scheduler,
 				odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-				workerpoolorder.sign,
-				{}
+				workerpoolorder.sign
 			),
 			"Error with the validation of the.workerpoolorder signature"
 		);
@@ -271,8 +268,7 @@ contract('Fullchain', async (accounts) => {
 			await IexecClerkInstance.verifySignature(
 				user,
 				odbtools.RequestOrderTypedStructHash(requestorder),
-				requestorder.sign,
-				{}
+				requestorder.sign
 			),
 			"Error with the validation of the requestorder signature"
 		);
@@ -298,13 +294,13 @@ contract('Fullchain', async (accounts) => {
 	 ***************************************************************************/
 	it("[Setup] Escrow deposit", async () => {
 		txsMined = await Promise.all([
-			IexecClerkInstance.deposit({ from: scheduler, value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: worker1,   value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: worker2,   value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: worker3,   value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: worker4,   value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: worker5,   value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecClerkInstance.deposit({ from: user,      value: 1000, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: scheduler, value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: worker1,   value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: worker2,   value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: worker3,   value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: worker4,   value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: worker5,   value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecClerkInstance.deposit({ from: user,      value: 1000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }),
 		]);
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
