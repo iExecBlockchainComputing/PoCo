@@ -1610,6 +1610,36 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {
+    "133": {
+      "events": {
+        "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolDescription",
+              "type": "string"
+            }
+          ],
+          "name": "CreateWorkerpool",
+          "type": "event",
+          "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+        }
+      },
+      "links": {},
+      "address": "0x1Cae59C7745A61dD37CD17f174745959D0f3f400",
+      "transactionHash": "0x03eb2b9be8835f8b3971f4fc0f1c7386b83c0793f8ec7935110b5ef1c5faf0e9"
+    },
     "1544020727674": {
       "events": {
         "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
@@ -1642,7 +1672,7 @@
     }
   },
   "schemaVersion": "3.0.13",
-  "updatedAt": "2019-08-28T13:13:08.465Z",
+  "updatedAt": "2019-09-02T10:02:47.887Z",
   "devdoc": {
     "methods": {}
   },

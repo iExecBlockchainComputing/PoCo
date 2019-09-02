@@ -113,5 +113,66 @@
       "type": "function"
     }
   ],
-  "networks": {}
+  "networks": {
+    "133": {
+      "events": {
+        "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolDescription",
+              "type": "string"
+            }
+          ],
+          "name": "CreateWorkerpool",
+          "type": "event",
+          "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+        }
+      },
+      "links": {},
+      "address": "0x1Cae59C7745A61dD37CD17f174745959D0f3f400",
+      "transactionHash": "0x03eb2b9be8835f8b3971f4fc0f1c7386b83c0793f8ec7935110b5ef1c5faf0e9"
+    },
+    "1544020727674": {
+      "events": {
+        "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "workerpoolDescription",
+              "type": "string"
+            }
+          ],
+          "name": "CreateWorkerpool",
+          "type": "event",
+          "signature": "0xc1bcdd8228d0d7750d2a9fea671d1fe9eb0b751661857d93dee400659670e52c"
+        }
+      },
+      "links": {},
+      "address": "0xBfBfD8ABc99fA00Ead2C46879A7D06011CbA73c5",
+      "transactionHash": "0x0548542237aa4192257847ebf417f95f8296349018e4cc43616e936866717808"
+    }
+  }
 }

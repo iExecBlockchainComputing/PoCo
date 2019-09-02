@@ -28,13 +28,13 @@ module.exports =
 		},
 		mainnet:
 		{
-			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.KOVAN_NODE),
+			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.MAINNET_NODE),
 			network_id: '1',
 			gasPrice:   22000000000, //22Gwei
 		},
 		ropsten:
 		{
-			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.KOVAN_NODE),
+			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.ROPSTEN_NODE),
 			network_id: '3',
 			gasPrice:   22000000000, //22Gwei
 		},
@@ -42,6 +42,12 @@ module.exports =
 			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.KOVAN_NODE),
 			network_id: '42',
 			gasPrice:   10000000000, //10Gwei
+		},
+		viviani: {
+      provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC_VIVIANI, process.env.VIVIANI_NODE),
+      network_id: '133',
+      gasPrice:   1000000000, //1Gwei
+			gas:        6000000,
 		}
 	},
 	compilers: {
