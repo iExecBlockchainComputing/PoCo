@@ -12,8 +12,8 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 	/**
 	 * Constructor
 	 */
-	constructor()
-	public
+	constructor(address _previous)
+	public RegistryBase(_previous)
 	{
 	}
 

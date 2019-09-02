@@ -151,9 +151,9 @@ module.exports = async function(deployer, network, accounts)
 	 ***************************************************************************/
 	IexecInterfaceInstance = await IexecInterface.at(ERC1538.address);
 
-	await deployer.deploy(AppRegistry);
-	await deployer.deploy(DatasetRegistry);
-	await deployer.deploy(WorkerpoolRegistry);
+	await deployer.deploy(AppRegistry,        "0x0000000000000000000000000000000000000000");
+	await deployer.deploy(DatasetRegistry,    "0x0000000000000000000000000000000000000000");
+	await deployer.deploy(WorkerpoolRegistry, "0x0000000000000000000000000000000000000000");
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();

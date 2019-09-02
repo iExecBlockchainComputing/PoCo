@@ -12,8 +12,8 @@ contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase, ENSReverseRe
 	/**
 	 * Constructor
 	 */
-	constructor()
-	public
+	constructor(address _previous)
+	public RegistryBase(_previous)
 	{
 	}
 

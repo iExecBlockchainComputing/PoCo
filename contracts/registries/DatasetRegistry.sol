@@ -12,8 +12,8 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegis
 	/**
 	 * Constructor
 	 */
-	constructor()
-	public
+	constructor(address _previous)
+	public RegistryBase(_previous)
 	{
 	}
 
