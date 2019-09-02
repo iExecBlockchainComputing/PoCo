@@ -15,12 +15,15 @@ contract RegistryBase
 	mapping(address => mapping(uint256 => address)) m_byOwnerByIndex;
 	mapping(address => uint256                    ) m_countByOwner;
 
+	address public m_previous;
+
 	/**
 	 * Constructor
 	 */
-	constructor()
+	constructor(address _previous)
 	public
 	{
+		m_previous = _previous;
 	}
 
 	/**
@@ -29,7 +32,7 @@ contract RegistryBase
 	function isRegistered(address _entry)
 	public view returns (bool)
 	{
-		return m_registered[_entry];
+		return m_registered[_entry] || (m_previous != address(0) && RegistryBase(m_previous).isRegistered(_entry));
 	}
 
 	function viewEntry(address _owner, uint256 _index)
