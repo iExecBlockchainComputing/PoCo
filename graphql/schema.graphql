@@ -99,3 +99,43 @@ type Contribution @entity {
 # 	balance:                      BigInt!
 # 	frozen:                       BigInt!
 # }
+
+type AccountDeposit @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+	sender:                       String!
+}
+
+type AccountWithdraw @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+	receiver:                     String!
+}
+
+type AccountReward @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+	task:                         Task!
+}
+
+type AccountSeize @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+	task:                         Task!
+}
+
+type AccountLock @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+}
+
+type AccountUnlock @entity {
+	id:                           ID!
+	account:                      String!
+	value:                        BigInt!
+}

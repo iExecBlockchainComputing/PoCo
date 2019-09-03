@@ -1121,3 +1121,333 @@ export class Contribution extends Entity {
     }
   }
 }
+
+export class AccountDeposit extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountDeposit entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountDeposit entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountDeposit", id.toString(), this);
+  }
+
+  static load(id: string): AccountDeposit | null {
+    return store.get("AccountDeposit", id) as AccountDeposit | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+
+  get sender(): string {
+    let value = this.get("sender");
+    return value.toString();
+  }
+
+  set sender(value: string) {
+    this.set("sender", Value.fromString(value));
+  }
+}
+
+export class AccountWithdraw extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountWithdraw entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountWithdraw entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountWithdraw", id.toString(), this);
+  }
+
+  static load(id: string): AccountWithdraw | null {
+    return store.get("AccountWithdraw", id) as AccountWithdraw | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+
+  get receiver(): string {
+    let value = this.get("receiver");
+    return value.toString();
+  }
+
+  set receiver(value: string) {
+    this.set("receiver", Value.fromString(value));
+  }
+}
+
+export class AccountReward extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountReward entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountReward entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountReward", id.toString(), this);
+  }
+
+  static load(id: string): AccountReward | null {
+    return store.get("AccountReward", id) as AccountReward | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+
+  get task(): string {
+    let value = this.get("task");
+    return value.toString();
+  }
+
+  set task(value: string) {
+    this.set("task", Value.fromString(value));
+  }
+}
+
+export class AccountSeize extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountSeize entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountSeize entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountSeize", id.toString(), this);
+  }
+
+  static load(id: string): AccountSeize | null {
+    return store.get("AccountSeize", id) as AccountSeize | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+
+  get task(): string {
+    let value = this.get("task");
+    return value.toString();
+  }
+
+  set task(value: string) {
+    this.set("task", Value.fromString(value));
+  }
+}
+
+export class AccountLock extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountLock entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountLock entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountLock", id.toString(), this);
+  }
+
+  static load(id: string): AccountLock | null {
+    return store.get("AccountLock", id) as AccountLock | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+}
+
+export class AccountUnlock extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountUnlock entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountUnlock entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountUnlock", id.toString(), this);
+  }
+
+  static load(id: string): AccountUnlock | null {
+    return store.get("AccountUnlock", id) as AccountUnlock | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
+  }
+}

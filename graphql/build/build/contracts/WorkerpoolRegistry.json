@@ -3,12 +3,10 @@
     "constant": true,
     "inputs": [
       {
-        "internalType": "address",
         "name": "_owner",
         "type": "address"
       },
       {
-        "internalType": "uint256",
         "name": "_index",
         "type": "uint256"
       }
@@ -16,83 +14,8 @@
     "name": "viewEntry",
     "outputs": [
       {
-        "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "contract ENSRegistry",
-        "name": "ens",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "registerENS",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "m_previous",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isOwner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "payable": false,
@@ -103,7 +26,6 @@
     "constant": true,
     "inputs": [
       {
-        "internalType": "address",
         "name": "_owner",
         "type": "address"
       }
@@ -111,7 +33,6 @@
     "name": "viewCount",
     "outputs": [
       {
-        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -124,7 +45,6 @@
     "constant": true,
     "inputs": [
       {
-        "internalType": "address",
         "name": "_entry",
         "type": "address"
       }
@@ -132,7 +52,6 @@
     "name": "isRegistered",
     "outputs": [
       {
-        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
@@ -142,28 +61,7 @@
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_previous",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -173,49 +71,31 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "address",
         "name": "workerpoolOwner",
         "type": "address"
       },
       {
-        "indexed": false,
-        "internalType": "address",
+        "indexed": true,
         "name": "workerpool",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "workerpoolDescription",
+        "type": "string"
       }
     ],
     "name": "CreateWorkerpool",
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
     "constant": false,
     "inputs": [
       {
-        "internalType": "address",
         "name": "_workerpoolOwner",
         "type": "address"
       },
       {
-        "internalType": "string",
         "name": "_workerpoolDescription",
         "type": "string"
       }
@@ -223,7 +103,6 @@
     "name": "createWorkerpool",
     "outputs": [
       {
-        "internalType": "contract Workerpool",
         "name": "",
         "type": "address"
       }

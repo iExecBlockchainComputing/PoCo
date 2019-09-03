@@ -1,34 +1,77 @@
-import { InitializeCall, TaskInitialize } from '../generated/IexecInterface/IexecInterface'
-import { App, Dataset, Workerpool, Category, Deal, Task, Contribution } from '../generated/schema'
+import { Deposit, DepositFor, Withdraw, Reward, Seize, Lock, Unlock } from '../generated/IexecClerk/IexecClerk'
+import { AccountDeposit, AccountWithdraw, AccountReward, AccountSeize, AccountLock, AccountUnlock } from '../generated/schema'
 
-import { EthereumBlock } from '@graphprotocol/graph-ts'
+export function handleDeposit(event: Deposit): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
 
-export function handleBlock(block: EthereumBlock): void {
-  let id = block.hash.toHex()
-  let entity = new App(id)
-  entity.save()
+	let o     = new AccountDeposit(`${txhash}-${evindex}`)
+	o.account = event.params.owner.toHex()
+	o.value   = event.params.amount
+	o.sender  = event.params.owner.toHex()
+	o.save()
 }
 
+export function handleDepositFor(event: DepositFor): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
 
+	let o     = new AccountDeposit(`${txhash}-${evindex}`)
+	o.account = event.params.target.toHex()
+	o.value   = event.params.amount
+	o.sender  = event.params.owner.toHex()
+	o.save()
+}
 
-// export function handleInitialize(call: InitializeCall): void {
-// 	let dealid = call.inputs._dealid.toHex()
-// 	let index  = call.inputs.idx
-// 	let taskid = call.outputs.value0.toHex()
-//
-// 	let deal = Deal.load(dealid) || new Deal(dealid)
-// 	let task = Task.load(taskid) || new Task(taskid)
-//
-// 	task.status = "ACTIVE"
-// 	task.index  = index
-// 	task.dealid = dealid
-//
-// 	deal.save()
-// 	task.save()
-// }
-//
-// export function handleTaskInitialize(event: TaskInitialize): void {
-// 	let taskid = event.params.taskid.toHex()
-// 	let task = Task.load(taskid) || new Task(taskid)
-// 	task.save()
-// }
+export function handleWithdraw(event: Withdraw): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
+
+	let o      = new AccountWithdraw(`${txhash}-${evindex}`)
+	o.account  = event.params.owner.toHex()
+	o.value    = event.params.amount
+	o.receiver = event.params.owner.toHex()
+	o.save()
+}
+
+export function handleReward(event: Reward): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
+
+	let o     = new AccountReward(`${txhash}-${evindex}`)
+	o.account = event.params.user.toHex()
+	o.value   = event.params.amount
+	o.task    = event.params.ref.toHex()
+	o.save()
+}
+
+export function handleSeize(event: Seize): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
+
+	let o     = new AccountSeize(`${txhash}-${evindex}`)
+	o.account = event.params.user.toHex()
+	o.value   = event.params.amount
+	o.task    = event.params.ref.toHex()
+	o.save()
+}
+
+export function handleLock(event: Lock): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
+
+	let o     = new AccountLock(`${txhash}-${evindex}`)
+	o.account = event.params.user.toHex()
+	o.value   = event.params.amount
+	o.save()
+}
+
+export function handleUnlock(event: Unlock): void {
+	let txhash  = event.transaction.hash.toHex()
+	let evindex = event.transactionLogIndex
+
+	let o     = new AccountUnlock(`${txhash}-${evindex}`)
+	o.account = event.params.user.toHex()
+	o.value   = event.params.amount
+	o.save()
+}
