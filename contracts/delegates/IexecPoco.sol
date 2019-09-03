@@ -411,7 +411,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		// setup denominator
 		m_totalweight[taskid] = 1;
 
-		emit TaskInitialize(taskid, m_deals[_dealid].workerpool.pointer);
+		emit TaskInitialize(taskid, deal.workerpool.pointer);
 
 		return taskid;
 	}
