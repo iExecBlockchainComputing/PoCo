@@ -42,49 +42,106 @@ export class App extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get owner(): string {
+  get owner(): string | null {
     let value = this.get("owner");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set owner(value: string) {
-    this.set("owner", Value.fromString(value));
+  set owner(value: string | null) {
+    if (value === null) {
+      this.unset("owner");
+    } else {
+      this.set("owner", Value.fromString(value as string));
+    }
   }
 
-  get name(): string {
+  get name(): string | null {
     let value = this.get("name");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
+  set name(value: string | null) {
+    if (value === null) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(value as string));
+    }
   }
 
-  get multiaddr(): Bytes {
+  get type(): string | null {
+    let value = this.get("type");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set type(value: string | null) {
+    if (value === null) {
+      this.unset("type");
+    } else {
+      this.set("type", Value.fromString(value as string));
+    }
+  }
+
+  get multiaddr(): Bytes | null {
     let value = this.get("multiaddr");
-    return value.toBytes();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
   }
 
-  set multiaddr(value: Bytes) {
-    this.set("multiaddr", Value.fromBytes(value));
+  set multiaddr(value: Bytes | null) {
+    if (value === null) {
+      this.unset("multiaddr");
+    } else {
+      this.set("multiaddr", Value.fromBytes(value as Bytes));
+    }
   }
 
-  get checksum(): string {
+  get checksum(): string | null {
     let value = this.get("checksum");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set checksum(value: string) {
-    this.set("checksum", Value.fromString(value));
+  set checksum(value: string | null) {
+    if (value === null) {
+      this.unset("checksum");
+    } else {
+      this.set("checksum", Value.fromString(value as string));
+    }
   }
 
-  get mrenclave(): Bytes {
+  get mrenclave(): Bytes | null {
     let value = this.get("mrenclave");
-    return value.toBytes();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
   }
 
-  set mrenclave(value: Bytes) {
-    this.set("mrenclave", Value.fromBytes(value));
+  set mrenclave(value: Bytes | null) {
+    if (value === null) {
+      this.unset("mrenclave");
+    } else {
+      this.set("mrenclave", Value.fromBytes(value as Bytes));
+    }
   }
 }
 
@@ -118,40 +175,72 @@ export class Dataset extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get owner(): string {
+  get owner(): string | null {
     let value = this.get("owner");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set owner(value: string) {
-    this.set("owner", Value.fromString(value));
+  set owner(value: string | null) {
+    if (value === null) {
+      this.unset("owner");
+    } else {
+      this.set("owner", Value.fromString(value as string));
+    }
   }
 
-  get name(): string {
+  get name(): string | null {
     let value = this.get("name");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
+  set name(value: string | null) {
+    if (value === null) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(value as string));
+    }
   }
 
-  get multiaddr(): Bytes {
+  get multiaddr(): Bytes | null {
     let value = this.get("multiaddr");
-    return value.toBytes();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
   }
 
-  set multiaddr(value: Bytes) {
-    this.set("multiaddr", Value.fromBytes(value));
+  set multiaddr(value: Bytes | null) {
+    if (value === null) {
+      this.unset("multiaddr");
+    } else {
+      this.set("multiaddr", Value.fromBytes(value as Bytes));
+    }
   }
 
-  get checksum(): string {
+  get checksum(): string | null {
     let value = this.get("checksum");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set checksum(value: string) {
-    this.set("checksum", Value.fromString(value));
+  set checksum(value: string | null) {
+    if (value === null) {
+      this.unset("checksum");
+    } else {
+      this.set("checksum", Value.fromString(value as string));
+    }
   }
 }
 
@@ -185,40 +274,72 @@ export class Workerpool extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get owner(): string {
+  get owner(): string | null {
     let value = this.get("owner");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set owner(value: string) {
-    this.set("owner", Value.fromString(value));
+  set owner(value: string | null) {
+    if (value === null) {
+      this.unset("owner");
+    } else {
+      this.set("owner", Value.fromString(value as string));
+    }
   }
 
-  get description(): string {
+  get description(): string | null {
     let value = this.get("description");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set description(value: string) {
-    this.set("description", Value.fromString(value));
+  set description(value: string | null) {
+    if (value === null) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(value as string));
+    }
   }
 
-  get workerStakeRatio(): BigInt {
+  get workerStakeRatio(): BigInt | null {
     let value = this.get("workerStakeRatio");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set workerStakeRatio(value: BigInt) {
-    this.set("workerStakeRatio", Value.fromBigInt(value));
+  set workerStakeRatio(value: BigInt | null) {
+    if (value === null) {
+      this.unset("workerStakeRatio");
+    } else {
+      this.set("workerStakeRatio", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get schedulerRewardRatio(): BigInt {
+  get schedulerRewardRatio(): BigInt | null {
     let value = this.get("schedulerRewardRatio");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set schedulerRewardRatio(value: BigInt) {
-    this.set("schedulerRewardRatio", Value.fromBigInt(value));
+  set schedulerRewardRatio(value: BigInt | null) {
+    if (value === null) {
+      this.unset("schedulerRewardRatio");
+    } else {
+      this.set("schedulerRewardRatio", Value.fromBigInt(value as BigInt));
+    }
   }
 }
 
@@ -252,31 +373,55 @@ export class Category extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get name(): string {
+  get name(): string | null {
     let value = this.get("name");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
+  set name(value: string | null) {
+    if (value === null) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(value as string));
+    }
   }
 
-  get description(): string {
+  get description(): string | null {
     let value = this.get("description");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set description(value: string) {
-    this.set("description", Value.fromString(value));
+  set description(value: string | null) {
+    if (value === null) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(value as string));
+    }
   }
 
-  get workClockTimeRef(): BigInt {
+  get workClockTimeRef(): BigInt | null {
     let value = this.get("workClockTimeRef");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set workClockTimeRef(value: BigInt) {
-    this.set("workClockTimeRef", Value.fromBigInt(value));
+  set workClockTimeRef(value: BigInt | null) {
+    if (value === null) {
+      this.unset("workClockTimeRef");
+    } else {
+      this.set("workClockTimeRef", Value.fromBigInt(value as BigInt));
+    }
   }
 }
 
@@ -310,166 +455,361 @@ export class Deal extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get app(): string {
+  get app(): string | null {
     let value = this.get("app");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set app(value: string) {
-    this.set("app", Value.fromString(value));
+  set app(value: string | null) {
+    if (value === null) {
+      this.unset("app");
+    } else {
+      this.set("app", Value.fromString(value as string));
+    }
   }
 
-  get appPrice(): BigInt {
+  get appOwner(): string | null {
+    let value = this.get("appOwner");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set appOwner(value: string | null) {
+    if (value === null) {
+      this.unset("appOwner");
+    } else {
+      this.set("appOwner", Value.fromString(value as string));
+    }
+  }
+
+  get appPrice(): BigInt | null {
     let value = this.get("appPrice");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set appPrice(value: BigInt) {
-    this.set("appPrice", Value.fromBigInt(value));
+  set appPrice(value: BigInt | null) {
+    if (value === null) {
+      this.unset("appPrice");
+    } else {
+      this.set("appPrice", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get dataset(): string {
+  get dataset(): string | null {
     let value = this.get("dataset");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set dataset(value: string) {
-    this.set("dataset", Value.fromString(value));
+  set dataset(value: string | null) {
+    if (value === null) {
+      this.unset("dataset");
+    } else {
+      this.set("dataset", Value.fromString(value as string));
+    }
   }
 
-  get datasetPrice(): BigInt {
+  get datasetOwner(): string | null {
+    let value = this.get("datasetOwner");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set datasetOwner(value: string | null) {
+    if (value === null) {
+      this.unset("datasetOwner");
+    } else {
+      this.set("datasetOwner", Value.fromString(value as string));
+    }
+  }
+
+  get datasetPrice(): BigInt | null {
     let value = this.get("datasetPrice");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set datasetPrice(value: BigInt) {
-    this.set("datasetPrice", Value.fromBigInt(value));
+  set datasetPrice(value: BigInt | null) {
+    if (value === null) {
+      this.unset("datasetPrice");
+    } else {
+      this.set("datasetPrice", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get workerpool(): string {
+  get workerpool(): string | null {
     let value = this.get("workerpool");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set workerpool(value: string) {
-    this.set("workerpool", Value.fromString(value));
+  set workerpool(value: string | null) {
+    if (value === null) {
+      this.unset("workerpool");
+    } else {
+      this.set("workerpool", Value.fromString(value as string));
+    }
   }
 
-  get workerpoolPrice(): BigInt {
+  get workerpoolOwner(): string | null {
+    let value = this.get("workerpoolOwner");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workerpoolOwner(value: string | null) {
+    if (value === null) {
+      this.unset("workerpoolOwner");
+    } else {
+      this.set("workerpoolOwner", Value.fromString(value as string));
+    }
+  }
+
+  get workerpoolPrice(): BigInt | null {
     let value = this.get("workerpoolPrice");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set workerpoolPrice(value: BigInt) {
-    this.set("workerpoolPrice", Value.fromBigInt(value));
+  set workerpoolPrice(value: BigInt | null) {
+    if (value === null) {
+      this.unset("workerpoolPrice");
+    } else {
+      this.set("workerpoolPrice", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get trust(): BigInt {
+  get trust(): BigInt | null {
     let value = this.get("trust");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set trust(value: BigInt) {
-    this.set("trust", Value.fromBigInt(value));
+  set trust(value: BigInt | null) {
+    if (value === null) {
+      this.unset("trust");
+    } else {
+      this.set("trust", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get category(): string {
+  get category(): string | null {
     let value = this.get("category");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set category(value: string) {
-    this.set("category", Value.fromString(value));
+  set category(value: string | null) {
+    if (value === null) {
+      this.unset("category");
+    } else {
+      this.set("category", Value.fromString(value as string));
+    }
   }
 
-  get tag(): string {
+  get tag(): string | null {
     let value = this.get("tag");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set tag(value: string) {
-    this.set("tag", Value.fromString(value));
+  set tag(value: string | null) {
+    if (value === null) {
+      this.unset("tag");
+    } else {
+      this.set("tag", Value.fromString(value as string));
+    }
   }
 
-  get requester(): string {
+  get requester(): string | null {
     let value = this.get("requester");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set requester(value: string) {
-    this.set("requester", Value.fromString(value));
+  set requester(value: string | null) {
+    if (value === null) {
+      this.unset("requester");
+    } else {
+      this.set("requester", Value.fromString(value as string));
+    }
   }
 
-  get beneficiary(): string {
+  get beneficiary(): string | null {
     let value = this.get("beneficiary");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set beneficiary(value: string) {
-    this.set("beneficiary", Value.fromString(value));
+  set beneficiary(value: string | null) {
+    if (value === null) {
+      this.unset("beneficiary");
+    } else {
+      this.set("beneficiary", Value.fromString(value as string));
+    }
   }
 
-  get callback(): string {
+  get callback(): string | null {
     let value = this.get("callback");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set callback(value: string) {
-    this.set("callback", Value.fromString(value));
+  set callback(value: string | null) {
+    if (value === null) {
+      this.unset("callback");
+    } else {
+      this.set("callback", Value.fromString(value as string));
+    }
   }
 
-  get params(): string {
+  get params(): string | null {
     let value = this.get("params");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set params(value: string) {
-    this.set("params", Value.fromString(value));
+  set params(value: string | null) {
+    if (value === null) {
+      this.unset("params");
+    } else {
+      this.set("params", Value.fromString(value as string));
+    }
   }
 
-  get startTime(): BigInt {
+  get startTime(): BigInt | null {
     let value = this.get("startTime");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set startTime(value: BigInt) {
-    this.set("startTime", Value.fromBigInt(value));
+  set startTime(value: BigInt | null) {
+    if (value === null) {
+      this.unset("startTime");
+    } else {
+      this.set("startTime", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get botFirst(): BigInt {
+  get botFirst(): BigInt | null {
     let value = this.get("botFirst");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set botFirst(value: BigInt) {
-    this.set("botFirst", Value.fromBigInt(value));
+  set botFirst(value: BigInt | null) {
+    if (value === null) {
+      this.unset("botFirst");
+    } else {
+      this.set("botFirst", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get botSize(): BigInt {
+  get botSize(): BigInt | null {
     let value = this.get("botSize");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set botSize(value: BigInt) {
-    this.set("botSize", Value.fromBigInt(value));
+  set botSize(value: BigInt | null) {
+    if (value === null) {
+      this.unset("botSize");
+    } else {
+      this.set("botSize", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get workerStake(): BigInt {
+  get workerStake(): BigInt | null {
     let value = this.get("workerStake");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set workerStake(value: BigInt) {
-    this.set("workerStake", Value.fromBigInt(value));
+  set workerStake(value: BigInt | null) {
+    if (value === null) {
+      this.unset("workerStake");
+    } else {
+      this.set("workerStake", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get schedulerRewardRatio(): BigInt {
+  get schedulerRewardRatio(): BigInt | null {
     let value = this.get("schedulerRewardRatio");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set schedulerRewardRatio(value: BigInt) {
-    this.set("schedulerRewardRatio", Value.fromBigInt(value));
+  set schedulerRewardRatio(value: BigInt | null) {
+    if (value === null) {
+      this.unset("schedulerRewardRatio");
+    } else {
+      this.set("schedulerRewardRatio", Value.fromBigInt(value as BigInt));
+    }
   }
 }
 
@@ -503,31 +843,55 @@ export class Task extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get status(): string {
+  get status(): string | null {
     let value = this.get("status");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set status(value: string) {
-    this.set("status", Value.fromString(value));
+  set status(value: string | null) {
+    if (value === null) {
+      this.unset("status");
+    } else {
+      this.set("status", Value.fromString(value as string));
+    }
   }
 
-  get index(): BigInt {
+  get index(): BigInt | null {
     let value = this.get("index");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set index(value: BigInt) {
-    this.set("index", Value.fromBigInt(value));
+  set index(value: BigInt | null) {
+    if (value === null) {
+      this.unset("index");
+    } else {
+      this.set("index", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get dealid(): string {
+  get dealid(): string | null {
     let value = this.get("dealid");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set dealid(value: string) {
-    this.set("dealid", Value.fromString(value));
+  set dealid(value: string | null) {
+    if (value === null) {
+      this.unset("dealid");
+    } else {
+      this.set("dealid", Value.fromString(value as string));
+    }
   }
 
   get contributions(): Array<string> {
@@ -539,58 +903,106 @@ export class Task extends Entity {
     this.set("contributions", Value.fromStringArray(value));
   }
 
-  get resultDigest(): string {
+  get resultDigest(): string | null {
     let value = this.get("resultDigest");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set resultDigest(value: string) {
-    this.set("resultDigest", Value.fromString(value));
+  set resultDigest(value: string | null) {
+    if (value === null) {
+      this.unset("resultDigest");
+    } else {
+      this.set("resultDigest", Value.fromString(value as string));
+    }
   }
 
-  get results(): string {
+  get results(): string | null {
     let value = this.get("results");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set results(value: string) {
-    this.set("results", Value.fromString(value));
+  set results(value: string | null) {
+    if (value === null) {
+      this.unset("results");
+    } else {
+      this.set("results", Value.fromString(value as string));
+    }
   }
 
-  get contributionDeadline(): BigInt {
+  get contributionDeadline(): BigInt | null {
     let value = this.get("contributionDeadline");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set contributionDeadline(value: BigInt) {
-    this.set("contributionDeadline", Value.fromBigInt(value));
+  set contributionDeadline(value: BigInt | null) {
+    if (value === null) {
+      this.unset("contributionDeadline");
+    } else {
+      this.set("contributionDeadline", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get revealDeadline(): BigInt {
+  get revealDeadline(): BigInt | null {
     let value = this.get("revealDeadline");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set revealDeadline(value: BigInt) {
-    this.set("revealDeadline", Value.fromBigInt(value));
+  set revealDeadline(value: BigInt | null) {
+    if (value === null) {
+      this.unset("revealDeadline");
+    } else {
+      this.set("revealDeadline", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get finalDeadline(): BigInt {
+  get finalDeadline(): BigInt | null {
     let value = this.get("finalDeadline");
-    return value.toBigInt();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set finalDeadline(value: BigInt) {
-    this.set("finalDeadline", Value.fromBigInt(value));
+  set finalDeadline(value: BigInt | null) {
+    if (value === null) {
+      this.unset("finalDeadline");
+    } else {
+      this.set("finalDeadline", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get consensusValue(): string {
+  get consensusValue(): string | null {
     let value = this.get("consensusValue");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set consensusValue(value: string) {
-    this.set("consensusValue", Value.fromString(value));
+  set consensusValue(value: string | null) {
+    if (value === null) {
+      this.unset("consensusValue");
+    } else {
+      this.set("consensusValue", Value.fromString(value as string));
+    }
   }
 }
 
@@ -624,48 +1036,88 @@ export class Contribution extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get status(): string {
+  get status(): string | null {
     let value = this.get("status");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set status(value: string) {
-    this.set("status", Value.fromString(value));
+  set status(value: string | null) {
+    if (value === null) {
+      this.unset("status");
+    } else {
+      this.set("status", Value.fromString(value as string));
+    }
   }
 
-  get worker(): string {
+  get worker(): string | null {
     let value = this.get("worker");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set worker(value: string) {
-    this.set("worker", Value.fromString(value));
+  set worker(value: string | null) {
+    if (value === null) {
+      this.unset("worker");
+    } else {
+      this.set("worker", Value.fromString(value as string));
+    }
   }
 
-  get hash(): string {
+  get hash(): string | null {
     let value = this.get("hash");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set hash(value: string) {
-    this.set("hash", Value.fromString(value));
+  set hash(value: string | null) {
+    if (value === null) {
+      this.unset("hash");
+    } else {
+      this.set("hash", Value.fromString(value as string));
+    }
   }
 
-  get seal(): string {
+  get seal(): string | null {
     let value = this.get("seal");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set seal(value: string) {
-    this.set("seal", Value.fromString(value));
+  set seal(value: string | null) {
+    if (value === null) {
+      this.unset("seal");
+    } else {
+      this.set("seal", Value.fromString(value as string));
+    }
   }
 
-  get challenge(): string {
+  get challenge(): string | null {
     let value = this.get("challenge");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set challenge(value: string) {
-    this.set("challenge", Value.fromString(value));
+  set challenge(value: string | null) {
+    if (value === null) {
+      this.unset("challenge");
+    } else {
+      this.set("challenge", Value.fromString(value as string));
+    }
   }
 }

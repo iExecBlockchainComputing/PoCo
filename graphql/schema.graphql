@@ -1,55 +1,59 @@
 type App @entity {
 	id:                           ID!
-	owner:                        String!
-	name:                         String!
-	multiaddr:                    Bytes!
-	checksum:                     String!
-	mrenclave:                    Bytes!
+	owner:                        String
+	name:                         String
+	type:                         String
+	multiaddr:                    Bytes
+	checksum:                     String
+	mrenclave:                    Bytes
 }
 
 type Dataset @entity {
 	id:                           ID!
-	owner:                        String!
-	name:                         String!
-	multiaddr:                    Bytes!
-	checksum:                     String!
+	owner:                        String
+	name:                         String
+	multiaddr:                    Bytes
+	checksum:                     String
 }
 
 type Workerpool @entity {
 	id:                           ID!
-	owner:                        String!
-	description:                  String!
-	workerStakeRatio:             BigInt!
-	schedulerRewardRatio:         BigInt!
+	owner:                        String
+	description:                  String
+	workerStakeRatio:             BigInt
+	schedulerRewardRatio:         BigInt
 }
 
 type Category @entity {
 	id:                           ID!
-	name:                         String!
-	description:                  String!
-	workClockTimeRef:             BigInt!
+	name:                         String
+	description:                  String
+	workClockTimeRef:             BigInt
 }
 
 type Deal @entity {
 	id:                           ID!
-	app:                          App!
-	appPrice:                     BigInt!
-	dataset:                      Dataset!
-	datasetPrice:                 BigInt!
-	workerpool:                   Workerpool!
-	workerpoolPrice:              BigInt!
-	trust:                        BigInt!
-	category:                     Category!
-	tag:                          String!
-	requester:                    String!
-	beneficiary:                  String!
-	callback:                     String!
-	params:                       String!
-	startTime:                    BigInt!
-	botFirst:                     BigInt!
-	botSize:                      BigInt!
-	workerStake:                  BigInt!
-	schedulerRewardRatio:         BigInt!
+	app:                          App
+	appOwner:                     String
+	appPrice:                     BigInt
+	dataset:                      Dataset
+	datasetOwner:                 String
+	datasetPrice:                 BigInt
+	workerpool:                   Workerpool
+	workerpoolOwner:              String
+	workerpoolPrice:              BigInt
+	trust:                        BigInt
+	category:                     Category
+	tag:                          String
+	requester:                    String
+	beneficiary:                  String
+	callback:                     String
+	params:                       String
+	startTime:                    BigInt
+	botFirst:                     BigInt
+	botSize:                      BigInt
+	workerStake:                  BigInt
+	schedulerRewardRatio:         BigInt
 }
 
 enum TaskStatus {
@@ -62,16 +66,16 @@ enum TaskStatus {
 
 type Task @entity {
 	id:                           ID!
-	status:                       TaskStatus!
-	index:                        BigInt!
-	dealid:                       Deal!
+	status:                       TaskStatus
+	index:                        BigInt
+	dealid:                       Deal
 	contributions:                [Contribution!]!
-	resultDigest:                 String!
-	results:                      String!
-	contributionDeadline:         BigInt!
-	revealDeadline:               BigInt!
-	finalDeadline:                BigInt!
-	consensusValue:               String!
+	resultDigest:                 String
+	results:                      String
+	contributionDeadline:         BigInt
+	revealDeadline:               BigInt
+	finalDeadline:                BigInt
+	consensusValue:               String
 }
 
 enum ContributionStatus {
@@ -83,9 +87,9 @@ enum ContributionStatus {
 
 type Contribution @entity {
 	id:                           ID!
-	status:                       ContributionStatus!
-	worker:                       String!
-	hash:                         String!
-	seal:                         String!
-	challenge:                    String!
+	status:                       ContributionStatus
+	worker:                       String
+	hash:                         String
+	seal:                         String
+	challenge:                    String
 }

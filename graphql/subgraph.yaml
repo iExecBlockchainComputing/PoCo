@@ -5,33 +5,33 @@ schema:
   file: ./schema.graphql
 dataSources:
 # ============================== iExec Interface ==============================
-  - kind: ethereum/contract
-    name: IexecInterface
-    network: ganache
-    source:
-      address: '0xAB5047aDAFa5493f885343FeF3c55241a51E7027'
-      abi: IexecInterface
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      entities:
-        - Category
-        - Deal
-        - Task
-        - Contribution
-      abis:
-        - name: IexecInterface
-          file: ../build/contracts/IexecInterfaceNative.json
-      blockHandlers:
-        - handler: handleBlock
-      file: ./src/mapping_core.ts
+  # - kind: ethereum/contract
+  #   name: IexecInterface
+  #   network: ganache
+  #   source:
+  #     address: '0xAB5047aDAFa5493f885343FeF3c55241a51E7027'
+  #     abi: IexecInterface
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.3
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - Category
+  #       - Deal
+  #       - Task
+  #       - Contribution
+  #     abis:
+  #       - name: IexecInterface
+  #         file: ../build/contracts/IexecInterfaceNative.json
+  #     blockHandlers:
+  #       - handler: handleBlock
+  #     file: ./src/mapping_core.ts
 # =============================== App registry ================================
   - kind: ethereum/contract
     name: AppRegistry
-    network: ganache
+    network: mainnet
     source:
-      address: '0x1b1A4149cAAE1b68a3A3Cf344D25bF5587831Cb8'
+      address: '0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29'
       abi: AppRegistry
     mapping:
       kind: ethereum/events
@@ -49,9 +49,9 @@ dataSources:
 # ============================= Dataset registry ==============================
   - kind: ethereum/contract
     name: DatasetRegistry
-    network: ganache
+    network: mainnet
     source:
-      address: '0x5f5fA88B291CaBd3b95E7B6e2b0e10474Ef9123D'
+      address: '0xC28F63b8379087F02E09da1BC62148874E730Ffd'
       abi: DatasetRegistry
     mapping:
       kind: ethereum/events
@@ -69,9 +69,9 @@ dataSources:
 # ============================ Workerpool registry ============================
   - kind: ethereum/contract
     name: WorkerpoolRegistry
-    network: ganache
+    network: mainnet
     source:
-      address: '0x9890E75269D192Fe21E25E0Dfe2dEEbf4EeC9Ad9'
+      address: '0xc398052563469e6Ea7C442aBf124aADE7ec2CC92'
       abi: WorkerpoolRegistry
     mapping:
       kind: ethereum/events
