@@ -1,14 +1,24 @@
-var RLC                = artifacts.require("../node_modules/rlc-faucet-contract/contracts/RLC.sol");
-var IexecHub           = artifacts.require("./IexecHub.sol");
-var IexecClerk         = artifacts.require("./IexecClerk.sol");
-var AppRegistry        = artifacts.require("./AppRegistry.sol");
-var DatasetRegistry    = artifacts.require("./DatasetRegistry.sol");
-var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
-var App                = artifacts.require("./App.sol");
-var Dataset            = artifacts.require("./Dataset.sol");
-var Workerpool         = artifacts.require("./Workerpool.sol");
+// Config
+var DEPLOYMENT = require("../config/deployment.json")
+// Artefacts
+var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
+var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
+var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
+var AppRegistry        = artifacts.require("AppRegistry");
+var DatasetRegistry    = artifacts.require("DatasetRegistry");
+var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
+var App                = artifacts.require("App");
+var Dataset            = artifacts.require("Dataset");
+var Workerpool         = artifacts.require("Workerpool");
 
 const { assert } = require('chai');
+// const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+// const multiaddr = require('multiaddr');
+const constants = require("../utils/constants");
+// const odbtools  = require('../utils/odb-tools');
+// const wallets   = require('../utils/wallets');
+
+Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
 function extractEvents(txMined, address, name)
 {
@@ -33,75 +43,70 @@ module.exports = async function(callback) {
 	try
 	{
 		console.log("# web3 version:", web3.version);
-		console.log("ChainId:  ", await web3.eth.net.getId());
-		console.log("ChainType:", await web3.eth.net.getNetworkType());
 
-		var IexecClerkInstance         = await IexecClerk.at("0x8BE59dA9Bf70e75Aa56bF29A3e55d22e882F91bA");
-		var RLCInstance                = await RLC.at(await IexecClerkInstance.token());
-		var IexecHubInstance           = await IexecHub.at(await IexecClerkInstance.iexechub());
-		var AppRegistryInstance        = await AppRegistry.at(await IexecHubInstance.appregistry());
-		var DatasetRegistryInstance    = await DatasetRegistry.at(await IexecHubInstance.datasetregistry());
-		var WorkerpoolRegistryInstance = await WorkerpoolRegistry.at(await IexecHubInstance.workerpoolregistry());
+		var IexecInstance              = await IexecInterface.at("0xAB5047aDAFa5493f885343FeF3c55241a51E7027");
+		var RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.at(await IexecInstance.token());
+		var AppRegistryInstance        = await AppRegistry.at(await IexecInstance.appregistry());
+		var DatasetRegistryInstance    = await DatasetRegistry.at(await IexecInstance.datasetregistry());
+		var WorkerpoolRegistryInstance = await WorkerpoolRegistry.at(await IexecInstance.workerpoolregistry());
 
-		console.log("IexecClerk:        ", IexecClerkInstance.address        );
+		console.log("IexecInstance:     ", IexecInstance.address             );
 		console.log("RLC:               ", RLCInstance.address               );
-		console.log("IexecHub:          ", IexecHubInstance.address          );
 		console.log("AppRegistry:       ", AppRegistryInstance.address       );
 		console.log("DatasetRegistry:   ", DatasetRegistryInstance.address   );
 		console.log("WorkerpoolRegistry:", WorkerpoolRegistryInstance.address);
 
-		web3.eth.getAccounts(function(err, accounts) {
-			assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-			iexecAdmin      = accounts[0];
-			sgxEnclave      = accounts[0];
-			appProvider     = accounts[1];
-			datasetProvider = accounts[2];
-			scheduler       = accounts[3];
-			worker1         = accounts[4];
-			worker2         = accounts[5];
-			worker3         = accounts[6];
-			worker4         = accounts[7];
-			worker5         = accounts[8];
-			user            = accounts[9];
-		});
+		accounts = await web3.eth.getAccounts();
+		assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+		iexecAdmin      = accounts[0];
+		sgxEnclave      = accounts[0];
+		appProvider     = accounts[1];
+		datasetProvider = accounts[2];
+		scheduler       = accounts[3];
+		worker1         = accounts[4];
+		worker2         = accounts[5];
+		worker3         = accounts[6];
+		worker4         = accounts[7];
+		worker5         = accounts[8];
+		user            = accounts[9];
 
-		assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
-
-		await Promise.all([
-			RLCInstance.transfer(appProvider,     toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(datasetProvider, toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(scheduler,       toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(worker1,         toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(worker2,         toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(worker3,         toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(worker4,         toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(worker5,         toRLC(100), { from: iexecAdmin }),
-			RLCInstance.transfer(user,            toRLC(100), { from: iexecAdmin }),
-		]);
-
-		await Promise.all([
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: appProvider     }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: datasetProvider }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: scheduler       }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker1         }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker2         }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker3         }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker4         }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker5         }),
-			RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: user            }),
-		]);
-
-		await Promise.all([
-			IexecClerkInstance.deposit(toRLC(100), { from: appProvider     }),
-			IexecClerkInstance.deposit(toRLC(100), { from: datasetProvider }),
-			IexecClerkInstance.deposit(toRLC(100), { from: scheduler       }),
-			IexecClerkInstance.deposit(toRLC(100), { from: worker1         }),
-			IexecClerkInstance.deposit(toRLC(100), { from: worker2         }),
-			IexecClerkInstance.deposit(toRLC(100), { from: worker3         }),
-			IexecClerkInstance.deposit(toRLC(100), { from: worker4         }),
-			IexecClerkInstance.deposit(toRLC(100), { from: worker5         }),
-			IexecClerkInstance.deposit(toRLC(100), { from: user            }),
-		]);
+	// 	assert.equal(await RLCInstance.owner(), iexecAdmin, "iexecAdmin should own the RLC smart contract");
+	//
+	// 	await Promise.all([
+	// 		RLCInstance.transfer(appProvider,     toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(datasetProvider, toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(scheduler,       toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(worker1,         toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(worker2,         toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(worker3,         toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(worker4,         toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(worker5,         toRLC(100), { from: iexecAdmin }),
+	// 		RLCInstance.transfer(user,            toRLC(100), { from: iexecAdmin }),
+	// 	]);
+	//
+	// 	await Promise.all([
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: appProvider     }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: datasetProvider }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: scheduler       }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker1         }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker2         }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker3         }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker4         }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: worker5         }),
+	// 		RLCInstance.approve(IexecClerkInstance.address, toRLC(100), { from: user            }),
+	// 	]);
+	//
+	// 	await Promise.all([
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: appProvider     }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: datasetProvider }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: scheduler       }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: worker1         }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: worker2         }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: worker3         }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: worker4         }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: worker5         }),
+	// 		IexecClerkInstance.deposit(toRLC(100), { from: user            }),
+	// 	]);
 
 		// APP
 		var appaddress = await AppRegistryInstance.viewEntry(appProvider, 1);
