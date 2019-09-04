@@ -23,13 +23,9 @@ import {
 	Unlock,
 } from '../../generated/schema'
 
-function createEventID(event: EthereumEvent): string
-{
-	return event.block.number.toString().concat('-').concat(event.logIndex.toString())
-}
-
-function fetchAccount(id: string): Account { return ( Account.load(id) || new Account(id) ) as Account }
-function fetchTask   (id: string): Task    { return ( Task.load(id)    || new Task(id)    ) as Task    }
+function createEventID(event: EthereumEvent): string  { return event.block.number.toString().concat('-').concat(event.logIndex.toString()) }
+function fetchAccount (id:    string       ): Account { return ( Account.load(id) || new Account(id) ) as Account }
+function fetchTask    (id:    string       ): Task    { return ( Task.load(id)    || new Task(id)    ) as Task    }
 
 export function handleDeposit(event: DepositEvent): void {
 	let account = fetchAccount(event.params.owner.toHexString()); account.save()

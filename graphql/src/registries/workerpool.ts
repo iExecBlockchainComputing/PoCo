@@ -8,14 +8,12 @@ import {
 } from '../../generated/WorkerpoolRegistry/Workerpool'
 
 import {
+	Account,
 	Workerpool,
 	PolicyUpdate,
 } from '../../generated/schema'
 
-function createEventID(event: EthereumEvent): string
-{
-	return event.block.number.toString().concat('-').concat(event.logIndex.toString())
-}
+function createEventID(event: EthereumEvent): string { return event.block.number.toString().concat('-').concat(event.logIndex.toString()) }
 
 export function handlePolicyUpdate(event: PolicyUpdateEvent): void
 {
