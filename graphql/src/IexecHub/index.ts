@@ -1,0 +1,3 @@
+export {
+	handleCreateCategory,
+} from './categorymanager'

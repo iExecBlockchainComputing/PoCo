@@ -4,7 +4,7 @@ repository: https://github.com/iExecBlockchainComputing/PoCo-dev
 schema:
   file: ./schema.graphql
 dataSources:
-# ================================= iExec Hub =================================
+# ================================= IexecHub ==================================
   - kind: ethereum/contract
     name: IexecHub
     network: mainnet
@@ -17,15 +17,16 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Category
-        - Task
-        - Contribution
       abis:
         - name: IexecHub
           file: ../build/contracts/IexecHub.json
-      blockHandlers:
-        - handler: handleBlock
-      file: ./src/mapping_hub.ts
-# ================================ iExec Clerk ================================
+        - name: CategoryManager
+          file: ../build/contracts/CategoryManager.json
+      eventHandlers:
+        - event: CreateCategory(uint256,string,string,uint256)
+          handler: handleCreateCategory
+      file: ./src/IexecHub
+# ================================ IexecClerk =================================
   - kind: ethereum/contract
     name: IexecClerk
     network: mainnet
@@ -37,13 +38,35 @@ dataSources:
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       entities:
-        - Deal
+        - Account
+        - Task
+        - Deposit
+        - Withdraw
+        - Reward
+        - Seize
+        - Lock
+        - Unlock
       abis:
         - name: IexecClerk
           file: ../build/contracts/IexecClerk.json
-      blockHandlers:
-        - handler: handleBlock
-      file: ./src/mapping_clerk.ts
+        - name: Escrow
+          file: ../build/contracts/Escrow.json
+      eventHandlers:
+        - event: Deposit(address,uint256)
+          handler: handleDeposit
+        - event: DepositFor(address,uint256,address)
+          handler: handleDepositFor
+        - event: Withdraw(address,uint256)
+          handler: handleWithdraw
+        - event: Reward(address,uint256,bytes32)
+          handler: handleReward
+        - event: Seize(address,uint256,bytes32)
+          handler: handleSeize
+        - event: Lock(address,uint256)
+          handler: handleLock
+        - event: Unlock(address,uint256)
+          handler: handleUnlock
+      file: ./src/IexecClerk
 # =============================== App registry ================================
   - kind: ethereum/contract
     name: AppRegistry
@@ -58,12 +81,14 @@ dataSources:
       entities:
         - App
       abis:
+        - name: App
+          file: ../build/contracts/App.json
         - name: AppRegistry
           file: ../build/contracts/AppRegistry.json
-      callHandlers:
-        - function: createApp(address,string,string,bytes,bytes32,bytes)
-          handler: handleCreateAppCall
-      file: ./src/mapping_apps.ts
+      eventHandlers:
+        - event: CreateApp(indexed address,address)
+          handler: handleCreateApp
+      file: ./src/registries
 # ============================= Dataset registry ==============================
   - kind: ethereum/contract
     name: DatasetRegistry
@@ -78,12 +103,14 @@ dataSources:
       entities:
         - Dataset
       abis:
+        - name: Dataset
+          file: ../build/contracts/Dataset.json
         - name: DatasetRegistry
           file: ../build/contracts/DatasetRegistry.json
-      callHandlers:
-        - function: createDataset(address,string,bytes,bytes32)
-          handler: handleCreateDatasetCall
-      file: ./src/mapping_datasets.ts
+      eventHandlers:
+        - event: CreateDataset(indexed address,address)
+          handler: handleCreateDataset
+      file: ./src/registries
 # ============================ Workerpool registry ============================
   - kind: ethereum/contract
     name: WorkerpoolRegistry
@@ -98,9 +125,31 @@ dataSources:
       entities:
         - Workerpool
       abis:
+        - name: Workerpool
+          file: ../build/contracts/Workerpool.json
         - name: WorkerpoolRegistry
           file: ../build/contracts/WorkerpoolRegistry.json
-      callHandlers:
-        - function: createWorkerpool(address,string)
-          handler: handleCreateWorkerpoolCall
-      file: ./src/mapping_workerpools.ts
+      eventHandlers:
+        - event: CreateWorkerpool(indexed address,indexed address,string)
+          handler: handleCreateWorkerpool
+      file: ./src/registries
+# ================================ Workerpool =================================
+  - kind: ethereum/contract
+    name: Workerpool
+    network: mainnet
+    source:
+      abi: Workerpool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Workerpool
+        - PolicyChange
+      abis:
+        - name: Workerpool
+          file: ../build/contracts/Workerpool.json
+      eventHandlers:
+        - event: PolicyUpdate(uint256,uint256,uint256,uint256)
+          handler: handlePolicyUpdate
+      file: ./src/registries

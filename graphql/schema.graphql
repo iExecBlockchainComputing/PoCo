@@ -1,6 +1,17 @@
+type Account @entity {
+	id:                           ID!
+}
+
+interface Event {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+}
+
+# ================================ Ressources =================================
 type App @entity {
 	id:                           ID!
-	owner:                        String
+	owner:                        Account!
 	name:                         String
 	type:                         String
 	multiaddr:                    Bytes
@@ -10,7 +21,7 @@ type App @entity {
 
 type Dataset @entity {
 	id:                           ID!
-	owner:                        String
+	owner:                        Account!
 	name:                         String
 	multiaddr:                    Bytes
 	checksum:                     String
@@ -18,12 +29,24 @@ type Dataset @entity {
 
 type Workerpool @entity {
 	id:                           ID!
-	owner:                        String
+	owner:                        Account!
 	description:                  String
 	workerStakeRatio:             BigInt
 	schedulerRewardRatio:         BigInt
 }
 
+type PolicyUpdate implements Event @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	workerpool:                   Workerpool!
+	oldWorkerStakeRatio:          BigInt!
+	newWorkerStakeRatio:          BigInt!
+	oldSchedulerRewardRatio:      BigInt!
+	newSchedulerRewardRatio:      BigInt!
+}
+
+# =================================== PoCo ====================================
 type Category @entity {
 	id:                           ID!
 	name:                         String
@@ -33,20 +56,21 @@ type Category @entity {
 
 type Deal @entity {
 	id:                           ID!
+	tasks:                        [Task!]!
 	app:                          App
-	appOwner:                     String
+	appOwner:                     Account
 	appPrice:                     BigInt
 	dataset:                      Dataset
-	datasetOwner:                 String
+	datasetOwner:                 Account
 	datasetPrice:                 BigInt
 	workerpool:                   Workerpool
-	workerpoolOwner:              String
+	workerpoolOwner:              Account
 	workerpoolPrice:              BigInt
 	trust:                        BigInt
 	category:                     Category
 	tag:                          String
-	requester:                    String
-	beneficiary:                  String
+	requester:                    Account
+	beneficiary:                  Account
 	callback:                     String
 	params:                       String
 	startTime:                    BigInt
@@ -66,9 +90,9 @@ enum TaskStatus {
 
 type Task @entity {
 	id:                           ID!
-	status:                       TaskStatus
+	status:                       TaskStatus!
+	deal:                         Deal!
 	index:                        BigInt
-	dealid:                       Deal
 	contributions:                [Contribution!]!
 	resultDigest:                 String
 	results:                      String
@@ -88,54 +112,69 @@ enum ContributionStatus {
 type Contribution @entity {
 	id:                           ID!
 	status:                       ContributionStatus
-	worker:                       String
+	worker:                       Account
 	hash:                         String
 	seal:                         String
 	challenge:                    String
 }
 
-# type Account @entity {
-# 	id:                           ID!
-# 	balance:                      BigInt!
-# 	frozen:                       BigInt!
-# }
-
-type AccountDeposit @entity {
+# ============================== Token movements ==============================
+interface AccountEvent {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
-	sender:                       String!
 }
 
-type AccountWithdraw @entity {
+type Deposit implements AccountEvent @entity {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
-	receiver:                     String!
+	from:                         Account!
 }
 
-type AccountReward @entity {
+type Withdraw implements AccountEvent @entity {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
+	value:                        BigInt!
+	to:                           Account!
+}
+
+type Reward implements AccountEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
 	task:                         Task!
 }
 
-type AccountSeize @entity {
+type Seize implements AccountEvent @entity {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
 	task:                         Task!
 }
 
-type AccountLock @entity {
+type Lock implements AccountEvent @entity {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
 }
 
-type AccountUnlock @entity {
+type Unlock implements AccountEvent @entity {
 	id:                           ID!
-	account:                      String!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	account:                      Account!
 	value:                        BigInt!
 }
