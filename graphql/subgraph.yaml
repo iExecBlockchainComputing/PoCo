@@ -25,6 +25,20 @@ dataSources:
       eventHandlers:
         - event: CreateCategory(uint256,string,string,uint256)
           handler: handleCreateCategory
+        - event: TaskInitialize(indexed bytes32,indexed address)
+          handler: handleTaskInitialize
+        - event: TaskContribute(indexed bytes32,indexed address,bytes32)
+          handler: handleTaskContribute
+        - event: TaskConsensus(indexed bytes32,bytes32)
+          handler: handleTaskConsensus
+        - event: TaskReveal(indexed bytes32,indexed address,bytes32)
+          handler: handleTaskReveal
+        - event: TaskReopen(indexed bytes32)
+          handler: handleTaskReopen
+        - event: TaskFinalize(indexed bytes32,bytes)
+          handler: handleTaskFinalize
+        - event: TaskClaimed(indexed bytes32)
+          handler: handleTaskClaimed
       file: ./src/IexecHub
 # ================================ IexecClerk =================================
   - kind: ethereum/contract
@@ -66,6 +80,8 @@ dataSources:
           handler: handleLock
         - event: Unlock(address,uint256)
           handler: handleUnlock
+        - event: OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)
+          handler: handleOrdersMatched
       file: ./src/IexecClerk
 # =============================== App registry ================================
   - kind: ethereum/contract

@@ -1,5 +1,13 @@
 type Account @entity {
 	id:                           ID!
+	apps:                         [App!]! @derivedFrom(field: "owner")
+	datasets:                     [Dataset!]! @derivedFrom(field: "owner")
+	workerpools:                  [Workerpool!]! @derivedFrom(field: "owner")
+	events:                       [AccountEvent!]! @derivedFrom(field: "account")
+	contributions:                [Contribution!]! @derivedFrom(field: "worker")
+	asRequester:                  [Deal!]! @derivedFrom(field: "requester")
+	asBeneficiary:                [Deal!]! @derivedFrom(field: "beneficiary")
+	asCallback:                   [Deal!]! @derivedFrom(field: "callback")
 }
 
 interface Event {
@@ -17,6 +25,7 @@ type App @entity {
 	multiaddr:                    Bytes
 	checksum:                     String
 	mrenclave:                    Bytes
+	usages:                       [Deal!]! @derivedFrom(field: "app")
 }
 
 type Dataset @entity {
@@ -25,6 +34,7 @@ type Dataset @entity {
 	name:                         String
 	multiaddr:                    Bytes
 	checksum:                     String
+	usages:                       [Deal!]! @derivedFrom(field: "dataset")
 }
 
 type Workerpool @entity {
@@ -33,6 +43,8 @@ type Workerpool @entity {
 	description:                  String
 	workerStakeRatio:             BigInt
 	schedulerRewardRatio:         BigInt
+	usages:                       [Deal!]! @derivedFrom(field: "workerpool")
+	events:                       [PolicyUpdate!]! @derivedFrom(field: "workerpool")
 }
 
 type PolicyUpdate implements Event @entity {
@@ -56,28 +68,28 @@ type Category @entity {
 
 type Deal @entity {
 	id:                           ID!
-	tasks:                        [Task!]!
-	app:                          App
-	appOwner:                     Account
-	appPrice:                     BigInt
-	dataset:                      Dataset
-	datasetOwner:                 Account
-	datasetPrice:                 BigInt
-	workerpool:                   Workerpool
-	workerpoolOwner:              Account
-	workerpoolPrice:              BigInt
-	trust:                        BigInt
-	category:                     Category
-	tag:                          String
-	requester:                    Account
-	beneficiary:                  Account
-	callback:                     String
-	params:                       String
-	startTime:                    BigInt
-	botFirst:                     BigInt
-	botSize:                      BigInt
-	workerStake:                  BigInt
-	schedulerRewardRatio:         BigInt
+	tasks:                        [Task!]! @derivedFrom(field: "deal")
+	app:                          App!
+	appOwner:                     Account!
+	appPrice:                     BigInt!
+	dataset:                      Dataset!
+	datasetOwner:                 Account!
+	datasetPrice:                 BigInt!
+	workerpool:                   Workerpool!
+	workerpoolOwner:              Account!
+	workerpoolPrice:              BigInt!
+	trust:                        BigInt!
+	category:                     Category!
+	tag:                          String!
+	requester:                    Account!
+	beneficiary:                  Account!
+	callback:                     Account!
+	params:                       String!
+	startTime:                    BigInt!
+	botFirst:                     BigInt!
+	botSize:                      BigInt!
+	workerStake:                  BigInt!
+	schedulerRewardRatio:         BigInt!
 }
 
 enum TaskStatus {
@@ -92,14 +104,16 @@ type Task @entity {
 	id:                           ID!
 	status:                       TaskStatus!
 	deal:                         Deal!
-	index:                        BigInt
-	contributions:                [Contribution!]!
-	resultDigest:                 String
-	results:                      String
-	contributionDeadline:         BigInt
-	revealDeadline:               BigInt
-	finalDeadline:                BigInt
-	consensusValue:               String
+	index:                        BigInt!
+	contributions:                [Contribution!]! @derivedFrom(field: "task")
+	consensus:                    String # set on consensus reached
+	resultDigest:                 String # set on reveal
+	results:                      String # set on finalized
+	contributionDeadline:         BigInt!
+	revealDeadline:               BigInt # set on consensus reached
+	finalDeadline:                BigInt!
+	rewards:                      [Reward!]! @derivedFrom(field: "task")
+	seizes:                       [Seize!]! @derivedFrom(field: "task")
 }
 
 enum ContributionStatus {
@@ -111,11 +125,12 @@ enum ContributionStatus {
 
 type Contribution @entity {
 	id:                           ID!
-	status:                       ContributionStatus
-	worker:                       Account
-	hash:                         String
-	seal:                         String
-	challenge:                    String
+	status:                       ContributionStatus!
+	task:                         Task!
+	worker:                       Account!
+	hash:                         String!
+	seal:                         String!
+	challenge:                    String!
 }
 
 # ============================== Token movements ==============================

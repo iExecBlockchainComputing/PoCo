@@ -7,3 +7,7 @@ export {
 	handleLock,
 	handleUnlock,
 } from './escrow'
+
+export {
+	handleOrdersMatched,
+} from './clerk'

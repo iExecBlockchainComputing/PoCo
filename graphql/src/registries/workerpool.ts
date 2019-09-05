@@ -13,7 +13,9 @@ import {
 	PolicyUpdate,
 } from '../../generated/schema'
 
-function createEventID(event: EthereumEvent): string { return event.block.number.toString().concat('-').concat(event.logIndex.toString()) }
+import {
+	createEventID,
+} from '../utils'
 
 export function handlePolicyUpdate(event: PolicyUpdateEvent): void
 {

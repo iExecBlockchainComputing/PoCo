@@ -15,16 +15,18 @@ import {
 	App,
 } from '../../generated/schema'
 
-function createEventID(event: EthereumEvent): string  { return event.block.number.toString().concat('-').concat(event.logIndex.toString()) }
-function fetchAccount (id:    string       ): Account { return ( Account.load(id) || new Account(id) ) as Account }
+import {
+	fetchAccount,
+} from '../utils'
 
 export function handleCreateApp(event: CreateAppEvent): void
 {
 	let contract = AppContract.bind(event.params.app)
-	let owner    = fetchAccount(contract.owner().toHex()); owner.save()
+
+	fetchAccount(contract.owner().toHex()).save()
 
 	let app = new App(event.params.app.toHex())
-	app.owner     = owner.id
+	app.owner     = contract.owner().toHex()
 	app.name      = contract.m_appName()
 	app.type      = contract.m_appType()
 	app.multiaddr = contract.m_appMultiaddr()
