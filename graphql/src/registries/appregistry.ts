@@ -30,7 +30,7 @@ export function handleCreateApp(event: CreateAppEvent): void
 	app.name      = contract.m_appName()
 	app.type      = contract.m_appType()
 	app.multiaddr = contract.m_appMultiaddr()
-	app.checksum  = contract.m_appChecksum().toHex()
+	app.checksum  = contract.m_appChecksum()
 	app.mrenclave = contract.m_appMREnclave()
 	app.save()
 }

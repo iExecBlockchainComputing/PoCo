@@ -29,6 +29,6 @@ export function handleCreateDataset(event: CreateDatasetEvent): void
 	dataset.owner     = contract.owner().toHex()
 	dataset.name      = contract.m_datasetName()
 	dataset.multiaddr = contract.m_datasetMultiaddr()
-	dataset.checksum  = contract.m_datasetChecksum().toHex()
+	dataset.checksum  = contract.m_datasetChecksum()
 	dataset.save()
 }

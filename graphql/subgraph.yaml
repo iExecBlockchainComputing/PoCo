@@ -17,6 +17,15 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Category
+        - Task
+        - Contribution
+        - TaskInitialize
+        - TaskContribute
+        - TaskConsensus
+        - TaskReveal
+        - TaskReopen
+        - TaskFinalize
+        - TaskClaimed
       abis:
         - name: IexecHub
           file: ../build/contracts/IexecHub.json
@@ -53,7 +62,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Account
-        - Task
+        - Deal
         - Deposit
         - Withdraw
         - Reward

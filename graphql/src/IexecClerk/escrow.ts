@@ -9,8 +9,6 @@ import {
 } from '../../generated/IexecClerk/Escrow'
 
 import {
-	Account,
-	Task,
 	Deposit,
 	Withdraw,
 	Reward,
@@ -22,7 +20,6 @@ import {
 import {
 	createEventID,
 	fetchAccount,
-	fetchTask,
 } from '../utils'
 
 export function handleDeposit(event: DepositEvent): void {

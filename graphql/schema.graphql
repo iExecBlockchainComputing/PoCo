@@ -1,3 +1,11 @@
+interface Event {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+}
+
+# ============================== Address objects ==============================
+
 type Account @entity {
 	id:                           ID!
 	apps:                         [App!]! @derivedFrom(field: "owner")
@@ -10,12 +18,6 @@ type Account @entity {
 	asCallback:                   [Deal!]! @derivedFrom(field: "callback")
 }
 
-interface Event {
-	id:                           ID!
-	blockNumber:                  Int!
-	transactionID:                Bytes!
-}
-
 # ================================ Ressources =================================
 type App @entity {
 	id:                           ID!
@@ -23,7 +25,7 @@ type App @entity {
 	name:                         String
 	type:                         String
 	multiaddr:                    Bytes
-	checksum:                     String
+	checksum:                     Bytes
 	mrenclave:                    Bytes
 	usages:                       [Deal!]! @derivedFrom(field: "app")
 }
@@ -33,7 +35,7 @@ type Dataset @entity {
 	owner:                        Account!
 	name:                         String
 	multiaddr:                    Bytes
-	checksum:                     String
+	checksum:                     Bytes
 	usages:                       [Deal!]! @derivedFrom(field: "dataset")
 }
 
@@ -80,7 +82,7 @@ type Deal @entity {
 	workerpoolPrice:              BigInt!
 	trust:                        BigInt!
 	category:                     Category!
-	tag:                          String!
+	tag:                          Bytes!
 	requester:                    Account!
 	beneficiary:                  Account!
 	callback:                     Account!
@@ -106,14 +108,15 @@ type Task @entity {
 	deal:                         Deal!
 	index:                        BigInt!
 	contributions:                [Contribution!]! @derivedFrom(field: "task")
-	consensus:                    String # set on consensus reached
-	resultDigest:                 String # set on reveal
-	results:                      String # set on finalized
+	consensus:                    Bytes # set on consensus reached
+	resultDigest:                 Bytes # set on reveal
+	results:                      Bytes # set on finalized
 	contributionDeadline:         BigInt!
 	revealDeadline:               BigInt # set on consensus reached
 	finalDeadline:                BigInt!
 	rewards:                      [Reward!]! @derivedFrom(field: "task")
 	seizes:                       [Seize!]! @derivedFrom(field: "task")
+	events:                       [TaskEvent!]! @derivedFrom(field: "task")
 }
 
 enum ContributionStatus {
@@ -128,9 +131,73 @@ type Contribution @entity {
 	status:                       ContributionStatus!
 	task:                         Task!
 	worker:                       Account!
-	hash:                         String!
-	seal:                         String!
-	challenge:                    String!
+	hash:                         Bytes!
+	seal:                         Bytes!
+	challenge:                    Bytes!
+}
+
+# ============================ PoCo contributions =============================
+interface TaskEvent {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+}
+
+type TaskInitialize implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+	workerpool:                   Workerpool!
+}
+
+type TaskContribute implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+	worker:                       Account!
+	hash:                         Bytes!
+}
+
+type TaskConsensus implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+	consensus:                    Bytes!
+}
+
+type TaskReveal implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+	worker:                       Account!
+	digest:                       Bytes!
+}
+
+type TaskReopen implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+}
+
+type TaskFinalize implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
+	results:                      Bytes!
+}
+
+type TaskClaimed implements TaskEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	task:                         Task!
 }
 
 # ============================== Token movements ==============================

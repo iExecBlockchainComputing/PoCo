@@ -4,7 +4,6 @@ import {
 } from '../../generated/IexecClerk/IexecClerk'
 
 import {
-	Account,
 	Deal,
 } from '../../generated/schema'
 
@@ -32,7 +31,7 @@ export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 	d.workerpoolPrice      = deal.workerpool.price
 	d.trust                = deal.trust
 	d.category             = deal.category.toString()
-	d.tag                  = deal.tag.toHex()
+	d.tag                  = deal.tag
 	d.requester            = deal.requester.toHex()
 	d.beneficiary          = deal.beneficiary.toHex()
 	d.callback             = deal.callback.toHex()
