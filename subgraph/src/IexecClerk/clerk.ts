@@ -4,20 +4,21 @@ import {
 } from '../../generated/IexecClerk/IexecClerk'
 
 import {
+	Account,
 	Deal,
 } from '../../generated/schema'
 
 import {
-	fetchAccount,
+	initAccount,
 } from '../utils'
 
 export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 	let contract = IexecClerkContract.bind(event.address)
 	let deal     = contract.viewDeal(event.params.dealid)
 
-	fetchAccount(deal.requester.toHex()).save()
-	fetchAccount(deal.beneficiary.toHex()).save()
-	fetchAccount(deal.callback.toHex()).save()
+	initAccount(deal.requester.toHex())
+	initAccount(deal.beneficiary.toHex())
+	initAccount(deal.callback.toHex())
 
 	let d = new Deal(event.params.dealid.toHex())
 	d.app                  = deal.app.pointer.toHex()

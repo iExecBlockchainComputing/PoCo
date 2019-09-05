@@ -3,6 +3,10 @@ import {
 } from '@graphprotocol/graph-ts'
 
 import {
+	Workerpool as WorkerpoolTemplate
+} from '../../generated/templates'
+
+import {
 	Workerpool as WorkerpoolContract,
 } from '../../generated/WorkerpoolRegistry/Workerpool'
 
@@ -16,14 +20,14 @@ import {
 } from '../../generated/schema'
 
 import {
-	fetchAccount,
+	initAccount,
 } from '../utils'
 
 export function handleCreateWorkerpool(event: CreateWorkerpoolEvent): void
 {
 	let contract = WorkerpoolContract.bind(event.params.workerpool)
 
-	fetchAccount(contract.owner().toHex()).save()
+	initAccount(contract.owner().toHex())
 
 	let workerpool = new Workerpool(event.params.workerpool.toHex())
 	workerpool.owner                = contract.owner().toHex()
@@ -31,4 +35,6 @@ export function handleCreateWorkerpool(event: CreateWorkerpoolEvent): void
 	workerpool.workerStakeRatio     = contract.m_workerStakeRatioPolicy()
 	workerpool.schedulerRewardRatio = contract.m_schedulerRewardRatioPolicy()
 	workerpool.save()
+
+	WorkerpoolTemplate.create(event.params.workerpool)
 }

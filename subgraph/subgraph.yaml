@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
 description: iExecPoCoV3
 repository: https://github.com/iExecBlockchainComputing/PoCo-dev
 schema:
@@ -158,7 +158,7 @@ dataSources:
         - event: CreateWorkerpool(indexed address,indexed address,string)
           handler: handleCreateWorkerpool
       file: ./src/registries
-# ================================ Workerpool =================================
+templates:
   - kind: ethereum/contract
     name: Workerpool
     network: mainnet

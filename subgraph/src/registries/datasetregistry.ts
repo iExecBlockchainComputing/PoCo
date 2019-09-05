@@ -16,14 +16,14 @@ import {
 } from '../../generated/schema'
 
 import {
-	fetchAccount,
+	initAccount,
 } from '../utils'
 
 export function handleCreateDataset(event: CreateDatasetEvent): void
 {
 	let contract = DatasetContract.bind(event.params.dataset)
 
-	fetchAccount(contract.owner().toHex()).save()
+	initAccount(contract.owner().toHex())
 
 	let dataset = new Dataset(event.params.dataset.toHex())
 	dataset.owner     = contract.owner().toHex()

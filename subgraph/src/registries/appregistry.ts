@@ -16,14 +16,14 @@ import {
 } from '../../generated/schema'
 
 import {
-	fetchAccount,
+	initAccount,
 } from '../utils'
 
 export function handleCreateApp(event: CreateAppEvent): void
 {
 	let contract = AppContract.bind(event.params.app)
 
-	fetchAccount(contract.owner().toHex()).save()
+	initAccount(contract.owner().toHex())
 
 	let app = new App(event.params.app.toHex())
 	app.owner     = contract.owner().toHex()

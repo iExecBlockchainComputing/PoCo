@@ -5,7 +5,7 @@ import {
 import {
 	Workerpool as WorkerpoolContract,
 	PolicyUpdate as PolicyUpdateEvent,
-} from '../../generated/WorkerpoolRegistry/Workerpool'
+} from '../../generated/templates/Workerpool/Workerpool'
 
 import {
 	Account,

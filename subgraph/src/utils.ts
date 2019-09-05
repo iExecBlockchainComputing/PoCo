@@ -4,7 +4,6 @@ import {
 
 import {
 	Account,
-	Task,
 } from '../generated/schema'
 
 export function createEventID(event: EthereumEvent): string
@@ -17,12 +16,8 @@ export function createContributionID(taskid: string, worker: string): string
 	return taskid.concat('-').concat(worker)
 }
 
-export function fetchAccount(id: string): Account
+export function initAccount(id: string): void
 {
-	return ( Account.load(id) || new Account(id) ) as Account
-}
-
-export function fetchTask(id: string): Task
-{
-	return ( Task.load(id) || new Task(id) ) as Task
+	let a = new Account(id)
+	a.save()
 }

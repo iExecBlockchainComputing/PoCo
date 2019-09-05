@@ -19,11 +19,11 @@ import {
 
 import {
 	createEventID,
-	fetchAccount,
+	initAccount,
 } from '../utils'
 
 export function handleDeposit(event: DepositEvent): void {
-	fetchAccount(event.params.owner.toHexString()).save()
+	initAccount(event.params.owner.toHexString())
 
 	let op           = new Deposit(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -35,8 +35,8 @@ export function handleDeposit(event: DepositEvent): void {
 }
 
 export function handleDepositFor(event: DepositForEvent): void {
-	fetchAccount(event.params.target.toHexString()).save()
-	fetchAccount(event.params.owner.toHexString()).save()
+	initAccount(event.params.target.toHexString())
+	initAccount(event.params.owner.toHexString())
 
 	let op           = new Deposit(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -48,7 +48,7 @@ export function handleDepositFor(event: DepositForEvent): void {
 }
 
 export function handleWithdraw(event: WithdrawEvent): void {
-	fetchAccount(event.params.owner.toHexString()).save()
+	initAccount(event.params.owner.toHexString())
 
 	let op           = new Withdraw(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -60,7 +60,7 @@ export function handleWithdraw(event: WithdrawEvent): void {
 }
 
 export function handleReward(event: RewardEvent): void {
-	fetchAccount(event.params.user.toHexString()).save()
+	initAccount(event.params.user.toHexString())
 
 	let op           = new Reward(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -72,7 +72,7 @@ export function handleReward(event: RewardEvent): void {
 }
 
 export function handleSeize(event: SeizeEvent): void {
-	fetchAccount(event.params.user.toHexString()).save()
+	initAccount(event.params.user.toHexString())
 
 	let op           = new Seize(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -84,7 +84,7 @@ export function handleSeize(event: SeizeEvent): void {
 }
 
 export function handleLock(event: LockEvent): void {
-	fetchAccount(event.params.user.toHexString()).save()
+	initAccount(event.params.user.toHexString())
 
 	let op           = new Lock(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
@@ -95,7 +95,7 @@ export function handleLock(event: LockEvent): void {
 }
 
 export function handleUnlock(event: UnlockEvent): void {
-	fetchAccount(event.params.user.toHexString()).save()
+	initAccount(event.params.user.toHexString())
 
 	let op           = new Unlock(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
