@@ -1,8 +1,4 @@
 export {
-	handleCreateCategory,
-} from './categorymanager'
-
-export {
 	handleTaskInitialize,
 	handleTaskContribute,
 	handleTaskConsensus,
@@ -11,3 +7,7 @@ export {
 	handleTaskFinalize,
 	handleTaskClaimed,
 } from './hub'
+
+export {
+	handleCreateCategory,
+} from './categorymanager'
