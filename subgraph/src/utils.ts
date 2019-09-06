@@ -31,5 +31,5 @@ export function fetchAccount(id: string): Account
 
 export function toRLC(value: BigInt): BigDecimal
 {
-	return value.divDecimal(BigDecimal.fromString("1000000000"))
+	return value.divDecimal(BigDecimal.fromString("1000000000000000000"))
 }
