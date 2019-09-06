@@ -1,14 +1,17 @@
 import {
 	IexecClerk as IexecClerkContract,
 	OrdersMatched as OrdersMatchedEvent,
+	SchedulerNotice as SchedulerNoticeEvent,
 } from '../../generated/IexecClerk/IexecClerk'
 
 import {
 	Account,
 	Deal,
+	SchedulerNotice,
 } from '../../generated/schema'
 
 import {
+	createEventID,
 	initAccount,
 	toRLC,
 } from '../utils'
@@ -44,4 +47,11 @@ export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 	d.workerStake          = deal.workerStake
 	d.schedulerRewardRatio = deal.schedulerRewardRatio
 	d.save()
+}
+
+export function handleSchedulerNotice(event: SchedulerNoticeEvent): void {
+	let e = new SchedulerNotice(createEventID(event))
+	e.workerpool = event.params.workerpool.toHex()
+	e.deal       = event.params.dealid.toHex()
+	e.save()
 }

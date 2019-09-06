@@ -63,6 +63,7 @@ dataSources:
       entities:
         - Account
         - Deal
+        - SchedulerNotice
         - Deposit
         - Withdraw
         - Reward
@@ -75,6 +76,10 @@ dataSources:
         - name: Escrow
           file: ../build/contracts/Escrow.json
       eventHandlers:
+        - event: OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)
+          handler: handleOrdersMatched
+        - event: SchedulerNotice(indexed address,bytes32)
+          handler: handleSchedulerNotice
         - event: Deposit(address,uint256)
           handler: handleDeposit
         - event: DepositFor(address,uint256,address)
@@ -89,8 +94,6 @@ dataSources:
           handler: handleLock
         - event: Unlock(address,uint256)
           handler: handleUnlock
-        - event: OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)
-          handler: handleOrdersMatched
       file: ./src/IexecClerk
 # =============================== App registry ================================
   - name: AppRegistry

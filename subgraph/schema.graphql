@@ -48,18 +48,7 @@ type Workerpool @entity {
 	workerStakeRatio:             BigInt
 	schedulerRewardRatio:         BigInt
 	usages:                       [Deal!]! @derivedFrom(field: "workerpool")
-	updates:                      [PolicyUpdate!]! @derivedFrom(field: "workerpool")
-}
-
-type PolicyUpdate implements Event @entity {
-	id:                           ID!
-	blockNumber:                  Int!
-	transactionID:                Bytes!
-	workerpool:                   Workerpool!
-	oldWorkerStakeRatio:          BigInt!
-	newWorkerStakeRatio:          BigInt!
-	oldSchedulerRewardRatio:      BigInt!
-	newSchedulerRewardRatio:      BigInt!
+	events:                       [WorkerpoolEvent!]! @derivedFrom(field: "workerpool")
 }
 
 # =================================== PoCo ====================================
@@ -201,6 +190,33 @@ type TaskClaimed implements TaskEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
+}
+
+# ============================= Workerpool events =============================
+interface WorkerpoolEvent {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	workerpool:                   Workerpool!
+}
+
+type SchedulerNotice implements WorkerpoolEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	workerpool:                   Workerpool!
+	deal:                         Deal!
+}
+
+type PolicyUpdate implements WorkerpoolEvent @entity {
+	id:                           ID!
+	blockNumber:                  Int!
+	transactionID:                Bytes!
+	workerpool:                   Workerpool!
+	oldWorkerStakeRatio:          BigInt!
+	newWorkerStakeRatio:          BigInt!
+	oldSchedulerRewardRatio:      BigInt!
+	newSchedulerRewardRatio:      BigInt!
 }
 
 # ============================== Token movements ==============================
