@@ -10,6 +10,7 @@ import {
 
 import {
 	initAccount,
+	toRLC,
 } from '../utils'
 
 export function handleOrdersMatched(event: OrdersMatchedEvent): void {
@@ -23,13 +24,13 @@ export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 	let d = new Deal(event.params.dealid.toHex())
 	d.app                  = deal.app.pointer.toHex()
 	d.appOwner             = deal.app.owner.toHex()
-	d.appPrice             = deal.app.price
+	d.appPrice             = toRLC(deal.app.price)
 	d.dataset              = deal.dataset.pointer.toHex()
 	d.datasetOwner         = deal.dataset.owner.toHex()
-	d.datasetPrice         = deal.dataset.price
+	d.datasetPrice         = toRLC(deal.dataset.price)
 	d.workerpool           = deal.workerpool.pointer.toHex()
 	d.workerpoolOwner      = deal.workerpool.owner.toHex()
-	d.workerpoolPrice      = deal.workerpool.price
+	d.workerpoolPrice      = toRLC(deal.workerpool.price)
 	d.trust                = deal.trust
 	d.category             = deal.category.toString()
 	d.tag                  = deal.tag

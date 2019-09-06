@@ -8,8 +8,8 @@ interface Event {
 
 type Account @entity {
 	id:                           ID!
-	balance:                      BigInt
-	frozen:                       BigInt
+	balance:                      BigDecimal
+	frozen:                       BigDecimal
 	events:                       [AccountEvent!]! @derivedFrom(field: "account")
 	contributions:                [Contribution!]! @derivedFrom(field: "worker")
 	apps:                         [App!]! @derivedFrom(field: "owner")
@@ -76,13 +76,13 @@ type Deal @entity {
 	tasks:                        [Task!]! @derivedFrom(field: "deal")
 	app:                          App!
 	appOwner:                     Account!
-	appPrice:                     BigInt!
+	appPrice:                     BigDecimal!
 	dataset:                      Dataset!
 	datasetOwner:                 Account!
-	datasetPrice:                 BigInt!
+	datasetPrice:                 BigDecimal!
 	workerpool:                   Workerpool!
 	workerpoolOwner:              Account!
-	workerpoolPrice:              BigInt!
+	workerpoolPrice:              BigDecimal!
 	trust:                        BigInt!
 	category:                     Category!
 	tag:                          Bytes!
@@ -209,7 +209,7 @@ interface AccountEvent {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 }
 
 type Deposit implements AccountEvent @entity {
@@ -217,7 +217,7 @@ type Deposit implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 	from:                         Account!
 }
 
@@ -226,7 +226,7 @@ type Withdraw implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 	to:                           Account!
 }
 
@@ -235,7 +235,7 @@ type Reward implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 	task:                         Task!
 }
 
@@ -244,7 +244,7 @@ type Seize implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 	task:                         Task!
 }
 
@@ -253,7 +253,7 @@ type Lock implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 }
 
 type Unlock implements AccountEvent @entity {
@@ -261,5 +261,5 @@ type Unlock implements AccountEvent @entity {
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
-	value:                        BigInt!
+	value:                        BigDecimal!
 }
