@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
 
 const { assert } = require('chai');
 
@@ -37,7 +36,7 @@ module.exports = async function(callback) {
 		console.log("ChainId:  ", await web3.eth.net.getId());
 		console.log("ChainType:", await web3.eth.net.getNetworkType());
 
-		var IexecClerkInstance         = await IexecClerk.at("0x8BE59dA9Bf70e75Aa56bF29A3e55d22e882F91bA");
+		var IexecClerkInstance         = await IexecClerk.at("0x7C788C2B85E20B4Fa25bd579A6B1D0218D86BDd1");
 		var RLCInstance                = await RLC.at(await IexecClerkInstance.token());
 		var IexecHubInstance           = await IexecHub.at(await IexecClerkInstance.iexechub());
 		var AppRegistryInstance        = await AppRegistry.at(await IexecHubInstance.appregistry());
@@ -106,7 +105,7 @@ module.exports = async function(callback) {
 
 		// APP
 		var appaddress = await AppRegistryInstance.viewEntry(appProvider, 1);
-		if (appaddress == "0x0000000000000000000000000000000000000000")
+		//if (appaddress == "0x0000000000000000000000000000000000000000")
 		{
 			txMined = await AppRegistryInstance.createApp(
 				appProvider,

@@ -1,0 +1,180 @@
+specVersion: 0.0.2
+description: iExecPoCoV3
+repository: https://github.com/iExecBlockchainComputing/PoCo-dev
+schema:
+  file: ./schema.graphql
+dataSources:
+# ================================= IexecHub ==================================
+  - name: IexecHub
+    kind: ethereum/contract
+    network: viviani
+    source:
+      address: '0xD1c670F25E5D9eC66DC82feD45e38Dc3f3f0Cd65'
+      abi: IexecHub
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Category
+        - Task
+        - Contribution
+        - TaskInitialize
+        - TaskContribute
+        - TaskConsensus
+        - TaskReveal
+        - TaskReopen
+        - TaskFinalize
+        - TaskClaimed
+      abis:
+        - name: IexecHub
+          file: ../build/contracts/IexecHub.json
+        - name: CategoryManager
+          file: ../build/contracts/CategoryManager.json
+      eventHandlers:
+        - event: CreateCategory(uint256,string,string,uint256)
+          handler: handleCreateCategory
+        - event: TaskInitialize(indexed bytes32,indexed address)
+          handler: handleTaskInitialize
+        - event: TaskContribute(indexed bytes32,indexed address,bytes32)
+          handler: handleTaskContribute
+        - event: TaskConsensus(indexed bytes32,bytes32)
+          handler: handleTaskConsensus
+        - event: TaskReveal(indexed bytes32,indexed address,bytes32)
+          handler: handleTaskReveal
+        - event: TaskReopen(indexed bytes32)
+          handler: handleTaskReopen
+        - event: TaskFinalize(indexed bytes32,bytes)
+          handler: handleTaskFinalize
+        - event: TaskClaimed(indexed bytes32)
+          handler: handleTaskClaimed
+      file: ./src/IexecHub
+# ================================ IexecClerk =================================
+  - name: IexecClerk
+    kind: ethereum/contract
+    network: viviani
+    source:
+      address: '0x6bE1d1955A098ab4d68c85a89c9FF360f1dC1187'
+      abi: IexecClerk
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Account
+        - Deal
+        - Deposit
+        - Withdraw
+        - Reward
+        - Seize
+        - Lock
+        - Unlock
+      abis:
+        - name: IexecClerk
+          file: ../build/contracts/IexecClerk.json
+        - name: Escrow
+          file: ../build/contracts/Escrow.json
+      eventHandlers:
+        - event: Deposit(address,uint256)
+          handler: handleDeposit
+        - event: DepositFor(address,uint256,address)
+          handler: handleDepositFor
+        - event: Withdraw(address,uint256)
+          handler: handleWithdraw
+        - event: Reward(address,uint256,bytes32)
+          handler: handleReward
+        - event: Seize(address,uint256,bytes32)
+          handler: handleSeize
+        - event: Lock(address,uint256)
+          handler: handleLock
+        - event: Unlock(address,uint256)
+          handler: handleUnlock
+        - event: OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)
+          handler: handleOrdersMatched
+      file: ./src/IexecClerk
+# =============================== App registry ================================
+  - name: AppRegistry
+    kind: ethereum/contract
+    network: viviani
+    source:
+      address: '0xbA07bf909297bd9781bDcE2625F20b47213Ad0a0'
+      abi: AppRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - App
+      abis:
+        - name: App
+          file: ../build/contracts/App.json
+        - name: AppRegistry
+          file: ../build/contracts/AppRegistry.json
+      eventHandlers:
+        - event: CreateApp(indexed address,address)
+          handler: handleCreateApp
+      file: ./src/registries
+# ============================= Dataset registry ==============================
+  - name: DatasetRegistry
+    kind: ethereum/contract
+    network: viviani
+    source:
+      address: '0xEe8f71bCc3AF6aac0C12f428F53258c193109250'
+      abi: DatasetRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Dataset
+      abis:
+        - name: Dataset
+          file: ../build/contracts/Dataset.json
+        - name: DatasetRegistry
+          file: ../build/contracts/DatasetRegistry.json
+      eventHandlers:
+        - event: CreateDataset(indexed address,address)
+          handler: handleCreateDataset
+      file: ./src/registries
+# ============================ Workerpool registry ============================
+  - name: WorkerpoolRegistry
+    kind: ethereum/contract
+    network: viviani
+    source:
+      address: '0x4bf36B6055A1FdaAab7FB34c611EA0171B61e3E0'
+      abi: WorkerpoolRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Workerpool
+      abis:
+        - name: Workerpool
+          file: ../build/contracts/Workerpool.json
+        - name: WorkerpoolRegistry
+          file: ../build/contracts/WorkerpoolRegistry.json
+      eventHandlers:
+        - event: CreateWorkerpool(indexed address,indexed address,string)
+          handler: handleCreateWorkerpool
+      file: ./src/registries
+templates:
+  - name: Workerpool
+    kind: ethereum/contract
+    network: viviani
+    source:
+      abi: Workerpool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Workerpool
+        - PolicyChange
+      abis:
+        - name: Workerpool
+          file: ../build/contracts/Workerpool.json
+      eventHandlers:
+        - event: PolicyUpdate(uint256,uint256,uint256,uint256)
+          handler: handlePolicyUpdate
+      file: ./src/registries

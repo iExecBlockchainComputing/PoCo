@@ -1,0 +1,20 @@
+{
+  "name": "iExecGraph",
+  "version": "0.1.0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "create": "graph create amxx/iexec-poco-v3 --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create amxx/iexec-poco-v3 --node http://127.0.0.1:8020",
+    "build": "graph build",
+    "deploy": "graph deploy amxx/iexec-poco-v3 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-local": "graph deploy amxx/iexec-poco-v3 --ipfs http://localhost:5001          --node http://127.0.0.1:8020"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.15.0",
+    "@graphprotocol/graph-ts": "^0.15.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0"
+  }
+}

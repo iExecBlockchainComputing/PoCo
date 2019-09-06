@@ -7,7 +7,6 @@ var WorkerpoolRegistry = artifacts.require("./WorkerpoolRegistry.sol");
 var App                = artifacts.require("./App.sol");
 var Dataset            = artifacts.require("./Dataset.sol");
 var Workerpool         = artifacts.require("./Workerpool.sol");
-var Broker             = artifacts.require("./Broker.sol");
 
 const { assert } = require('chai');
 
@@ -85,10 +84,10 @@ module.exports = async function(callback) {
 		assert.equal(await (await Workerpool.at(workerpoolorder.workerpool)).owner(), scheduler      );
 		assert.equal(requestorder.requester,                                          user           );
 
-		assert(await IexecClerkInstance.verifySignature(appProvider,     apporderHash,        apporder.sign,        {}));
-		assert(await IexecClerkInstance.verifySignature(datasetProvider, datasetorderHash,    datasetorder.sign,    {}));
-		assert(await IexecClerkInstance.verifySignature(scheduler,       workerpoolorderHash, workerpoolorder.sign, {}));
-		assert(await IexecClerkInstance.verifySignature(user,            requestorderHash,    requestorder.sign,    {}));
+		assert(await IexecClerkInstance.verifySignature(appProvider,     apporderHash,        apporder.sign       ));
+		assert(await IexecClerkInstance.verifySignature(datasetProvider, datasetorderHash,    datasetorder.sign   ));
+		assert(await IexecClerkInstance.verifySignature(scheduler,       workerpoolorderHash, workerpoolorder.sign));
+		assert(await IexecClerkInstance.verifySignature(user,            requestorderHash,    requestorder.sign   ));
 
 		balance = await IexecClerkInstance.viewAccount(appProvider    ); console.log("balance appProvider:    ", Number(balance.stake), Number(balance.locked));
 		balance = await IexecClerkInstance.viewAccount(datasetProvider); console.log("balance datasetProvider:", Number(balance.stake), Number(balance.locked));
