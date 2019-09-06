@@ -1,4 +1,6 @@
 import {
+	BigInt,
+	BigDecimal,
 	EthereumEvent,
 } from '@graphprotocol/graph-ts'
 
@@ -25,4 +27,9 @@ export function initAccount(id: string): void
 export function fetchAccount(id: string): Account
 {
 	return (Account.load(id) || new Account(id)) as Account
+}
+
+export function toRLC(value: BigInt): BigDecimal
+{
+	return value.divDecimal(BigDecimal.fromString("1000000000"))
 }
