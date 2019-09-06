@@ -12,7 +12,7 @@ import {
 
 import {
 	createEventID,
-	initAccount,
+	fetchAccount,
 	toRLC,
 } from '../utils'
 
@@ -20,9 +20,9 @@ export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 	let contract = IexecClerkContract.bind(event.address)
 	let deal     = contract.viewDeal(event.params.dealid)
 
-	initAccount(deal.requester.toHex())
-	initAccount(deal.beneficiary.toHex())
-	initAccount(deal.callback.toHex())
+	fetchAccount(deal.requester.toHex()).save()
+	fetchAccount(deal.beneficiary.toHex()).save()
+	fetchAccount(deal.callback.toHex()).save()
 
 	let d = new Deal(event.params.dealid.toHex())
 	d.app                  = deal.app.pointer.toHex()

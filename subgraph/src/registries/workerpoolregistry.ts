@@ -20,14 +20,14 @@ import {
 } from '../../generated/schema'
 
 import {
-	initAccount,
+	fetchAccount,
 } from '../utils'
 
 export function handleCreateWorkerpool(event: CreateWorkerpoolEvent): void
 {
 	let contract = WorkerpoolContract.bind(event.params.workerpool)
 
-	initAccount(contract.owner().toHex())
+	fetchAccount(contract.owner().toHex()).save()
 
 	let workerpool = new Workerpool(event.params.workerpool.toHex())
 	workerpool.owner                = contract.owner().toHex()

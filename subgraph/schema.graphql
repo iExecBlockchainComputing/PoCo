@@ -8,8 +8,8 @@ interface Event {
 
 type Account @entity {
 	id:                           ID!
-	balance:                      BigDecimal
-	frozen:                       BigDecimal
+	balance:                      BigDecimal!
+	frozen:                       BigDecimal!
 	events:                       [AccountEvent!]! @derivedFrom(field: "account")
 	contributions:                [Contribution!]! @derivedFrom(field: "worker")
 	apps:                         [App!]! @derivedFrom(field: "owner")
@@ -24,29 +24,29 @@ type Account @entity {
 type App @entity {
 	id:                           ID!
 	owner:                        Account!
-	name:                         String
-	type:                         String
-	multiaddr:                    Bytes
-	checksum:                     Bytes
-	mrenclave:                    Bytes
+	name:                         String!
+	type:                         String!
+	multiaddr:                    Bytes!
+	checksum:                     Bytes!
+	mrenclave:                    Bytes!
 	usages:                       [Deal!]! @derivedFrom(field: "app")
 }
 
 type Dataset @entity {
 	id:                           ID!
 	owner:                        Account!
-	name:                         String
-	multiaddr:                    Bytes
-	checksum:                     Bytes
+	name:                         String!
+	multiaddr:                    Bytes!
+	checksum:                     Bytes!
 	usages:                       [Deal!]! @derivedFrom(field: "dataset")
 }
 
 type Workerpool @entity {
 	id:                           ID!
 	owner:                        Account!
-	description:                  String
-	workerStakeRatio:             BigInt
-	schedulerRewardRatio:         BigInt
+	description:                  String!
+	workerStakeRatio:             BigInt!
+	schedulerRewardRatio:         BigInt!
 	usages:                       [Deal!]! @derivedFrom(field: "workerpool")
 	events:                       [WorkerpoolEvent!]! @derivedFrom(field: "workerpool")
 }
@@ -54,9 +54,9 @@ type Workerpool @entity {
 # =================================== PoCo ====================================
 type Category @entity {
 	id:                           ID!
-	name:                         String
-	description:                  String
-	workClockTimeRef:             BigInt
+	name:                         String!
+	description:                  String!
+	workClockTimeRef:             BigInt!
 	deals:                        [Deal!]! @derivedFrom(field: "category")
 }
 
@@ -66,7 +66,7 @@ type Deal @entity {
 	app:                          App!
 	appOwner:                     Account!
 	appPrice:                     BigDecimal!
-	dataset:                      Dataset!
+	dataset:                      Dataset # can be null
 	datasetOwner:                 Account!
 	datasetPrice:                 BigDecimal!
 	workerpool:                   Workerpool!
