@@ -18,18 +18,19 @@ export function createContributionID(taskid: string, worker: string): string
 	return taskid.concat('-').concat(worker)
 }
 
-export function initAccount(id: string): void
-{
-	let a = new Account(id)
-	a.save()
-}
-
 export function fetchAccount(id: string): Account
 {
-	return (Account.load(id) || new Account(id)) as Account
+	let account = Account.load(id)
+	if (account == null)
+	{
+		account = new Account(id)
+		account.balance = BigDecimal.fromString('0')
+		account.frozen  = BigDecimal.fromString('0')
+	}
+	return account as Account
 }
 
 export function toRLC(value: BigInt): BigDecimal
 {
-	return value.divDecimal(BigDecimal.fromString("1000000000000000000"))
+	return value.divDecimal(BigDecimal.fromString('1000000000000000000'))
 }
