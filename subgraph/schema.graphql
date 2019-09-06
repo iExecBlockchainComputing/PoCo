@@ -8,6 +8,8 @@ interface Event {
 
 type Account @entity {
 	id:                           ID!
+	balance:                      BigInt
+	frozen:                       BigInt
 	apps:                         [App!]! @derivedFrom(field: "owner")
 	datasets:                     [Dataset!]! @derivedFrom(field: "owner")
 	workerpools:                  [Workerpool!]! @derivedFrom(field: "owner")

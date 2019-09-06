@@ -21,3 +21,8 @@ export function initAccount(id: string): void
 	let a = new Account(id)
 	a.save()
 }
+
+export function fetchAccount(id: string): Account
+{
+	return (Account.load(id) || new Account(id)) as Account
+}

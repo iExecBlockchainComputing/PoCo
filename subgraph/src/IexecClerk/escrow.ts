@@ -1,4 +1,8 @@
 import {
+	BigInt,
+} from '@graphprotocol/graph-ts'
+
+import {
 	Deposit    as DepositEvent,
 	DepositFor as DepositForEvent,
 	Withdraw   as WithdrawEvent,
@@ -19,88 +23,105 @@ import {
 
 import {
 	createEventID,
-	initAccount,
+	fetchAccount,
 } from '../utils'
 
 export function handleDeposit(event: DepositEvent): void {
-	initAccount(event.params.owner.toHexString())
+	let account = fetchAccount(event.params.owner.toHex())
+	account.balance += event.params.amount
+	account.save()
 
 	let op           = new Deposit(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.owner.toHexString()
+	op.account       = event.params.owner.toHex()
 	op.value         = event.params.amount
-	op.from          = event.params.owner.toHexString()
+	op.from          = event.params.owner.toHex()
 	op.save()
 }
 
 export function handleDepositFor(event: DepositForEvent): void {
-	initAccount(event.params.target.toHexString())
-	initAccount(event.params.owner.toHexString())
+	let account = fetchAccount(event.params.target.toHex())
+	account.balance += event.params.amount
+	account.save()
+
+	fetchAccount(event.params.owner.toHex()).save()
 
 	let op           = new Deposit(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.target.toHexString()
+	op.account       = event.params.target.toHex()
 	op.value         = event.params.amount
-	op.from          = event.params.owner.toHexString()
+	op.from          = event.params.owner.toHex()
 	op.save()
 }
 
 export function handleWithdraw(event: WithdrawEvent): void {
-	initAccount(event.params.owner.toHexString())
+	let account = fetchAccount(event.params.owner.toHex())
+	account.balance -= event.params.amount
+	account.save()
 
 	let op           = new Withdraw(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.owner.toHexString()
+	op.account       = event.params.owner.toHex()
 	op.value         = event.params.amount
-	op.to            = event.params.owner.toHexString()
+	op.to            = event.params.owner.toHex()
 	op.save()
 }
 
 export function handleReward(event: RewardEvent): void {
-	initAccount(event.params.user.toHexString())
+	let account = fetchAccount(event.params.user.toHex())
+	account.balance += event.params.amount
+	account.save()
 
 	let op           = new Reward(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.user.toHexString()
+	op.account       = event.params.user.toHex()
 	op.value         = event.params.amount
 	op.task          = event.params.ref.toHex()
 	op.save()
 }
 
 export function handleSeize(event: SeizeEvent): void {
-	initAccount(event.params.user.toHexString())
+	let account = fetchAccount(event.params.user.toHex())
+	account.frozen -= event.params.amount
+	account.save()
 
 	let op           = new Seize(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.user.toHexString()
+	op.account       = event.params.user.toHex()
 	op.value         = event.params.amount
 	op.task          = event.params.ref.toHex()
 	op.save()
 }
 
 export function handleLock(event: LockEvent): void {
-	initAccount(event.params.user.toHexString())
+	let account = fetchAccount(event.params.user.toHex())
+	account.balance -= event.params.amount
+	account.frozen  += event.params.amount
+	account.save()
 
 	let op           = new Lock(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.user.toHexString()
+	op.account       = event.params.user.toHex()
 	op.value         = event.params.amount
 	op.save()
 }
 
 export function handleUnlock(event: UnlockEvent): void {
-	initAccount(event.params.user.toHexString())
+	let account = fetchAccount(event.params.user.toHex())
+	account.balance += event.params.amount
+	account.frozen  -= event.params.amount
+	account.save()
 
 	let op           = new Unlock(createEventID(event))
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
-	op.account       = event.params.user.toHexString()
+	op.account       = event.params.user.toHex()
 	op.value         = event.params.amount
 	op.save()
 }

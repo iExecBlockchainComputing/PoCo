@@ -5,8 +5,8 @@ schema:
   file: ./schema.graphql
 dataSources:
 # ================================= IexecHub ==================================
-  - kind: ethereum/contract
-    name: IexecHub
+  - name: IexecHub
+    kind: ethereum/contract
     network: mainnet
     source:
       address: '0x1383c16c927c4A853684d1a9c676986f25E22111'
@@ -50,8 +50,8 @@ dataSources:
           handler: handleTaskClaimed
       file: ./src/IexecHub
 # ================================ IexecClerk =================================
-  - kind: ethereum/contract
-    name: IexecClerk
+  - name: IexecClerk
+    kind: ethereum/contract
     network: mainnet
     source:
       address: '0x3780d894DB2cB84135bBa025ba9ef0Ac518DC311'
@@ -93,8 +93,8 @@ dataSources:
           handler: handleOrdersMatched
       file: ./src/IexecClerk
 # =============================== App registry ================================
-  - kind: ethereum/contract
-    name: AppRegistry
+  - name: AppRegistry
+    kind: ethereum/contract
     network: mainnet
     source:
       address: '0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29'
@@ -115,8 +115,8 @@ dataSources:
           handler: handleCreateApp
       file: ./src/registries
 # ============================= Dataset registry ==============================
-  - kind: ethereum/contract
-    name: DatasetRegistry
+  - name: DatasetRegistry
+    kind: ethereum/contract
     network: mainnet
     source:
       address: '0xC28F63b8379087F02E09da1BC62148874E730Ffd'
@@ -137,8 +137,8 @@ dataSources:
           handler: handleCreateDataset
       file: ./src/registries
 # ============================ Workerpool registry ============================
-  - kind: ethereum/contract
-    name: WorkerpoolRegistry
+  - name: WorkerpoolRegistry
+    kind: ethereum/contract
     network: mainnet
     source:
       address: '0xc398052563469e6Ea7C442aBf124aADE7ec2CC92'
@@ -159,8 +159,8 @@ dataSources:
           handler: handleCreateWorkerpool
       file: ./src/registries
 templates:
-  - kind: ethereum/contract
-    name: Workerpool
+  - name: Workerpool
+    kind: ethereum/contract
     network: mainnet
     source:
       abi: Workerpool
