@@ -10,14 +10,14 @@ type Account @entity {
 	id:                           ID!
 	balance:                      BigInt
 	frozen:                       BigInt
+	events:                       [AccountEvent!]! @derivedFrom(field: "account")
+	contributions:                [Contribution!]! @derivedFrom(field: "worker")
 	apps:                         [App!]! @derivedFrom(field: "owner")
 	datasets:                     [Dataset!]! @derivedFrom(field: "owner")
 	workerpools:                  [Workerpool!]! @derivedFrom(field: "owner")
-	events:                       [AccountEvent!]! @derivedFrom(field: "account")
-	contributions:                [Contribution!]! @derivedFrom(field: "worker")
-	asRequester:                  [Deal!]! @derivedFrom(field: "requester")
-	asBeneficiary:                [Deal!]! @derivedFrom(field: "beneficiary")
-	asCallback:                   [Deal!]! @derivedFrom(field: "callback")
+	isRequester:                  [Deal!]! @derivedFrom(field: "requester")
+	isBeneficiary:                [Deal!]! @derivedFrom(field: "beneficiary")
+	isCallback:                   [Deal!]! @derivedFrom(field: "callback")
 }
 
 # ================================ Ressources =================================
@@ -48,7 +48,7 @@ type Workerpool @entity {
 	workerStakeRatio:             BigInt
 	schedulerRewardRatio:         BigInt
 	usages:                       [Deal!]! @derivedFrom(field: "workerpool")
-	events:                       [PolicyUpdate!]! @derivedFrom(field: "workerpool")
+	updates:                      [PolicyUpdate!]! @derivedFrom(field: "workerpool")
 }
 
 type PolicyUpdate implements Event @entity {
@@ -68,6 +68,7 @@ type Category @entity {
 	name:                         String
 	description:                  String
 	workClockTimeRef:             BigInt
+	deals:                        [Deal!]! @derivedFrom(field: "category")
 }
 
 type Deal @entity {
