@@ -62,6 +62,10 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Account
+        - AppOrder
+        - DatasetOrder
+        - WorkerpoolOrder
+        - RequesterOrder
         - Deal
         - SchedulerNotice
         - Deposit
@@ -73,6 +77,8 @@ dataSources:
       abis:
         - name: IexecClerk
           file: ../build/contracts/IexecClerk.json
+        - name: Relay
+          file: ../build/contracts/Relay.json
         - name: Escrow
           file: ../build/contracts/Escrow.json
       eventHandlers:
@@ -80,6 +86,22 @@ dataSources:
           handler: handleOrdersMatched
         - event: SchedulerNotice(indexed address,bytes32)
           handler: handleSchedulerNotice
+        # - event: ClosedAppOrder(bytes32)
+        #   handler: handleClosedAppOrder
+        # - event: ClosedDatasetOrder(bytes32)
+        #   handler: handleClosedDatasetOrder
+        # - event: ClosedWorkerpoolOrder(bytes32)
+        #   handler: handleClosedWorkerpoolOrder
+        # - event: ClosedRequestOrder(bytes32)
+        #   handler: handleClosedRequestOrder
+        # - event : BroadcastAppOrder((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes))
+        #   handler: handleBroadcastAppOrder
+        # - event : BroadcastDatasetOrder((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes))
+        #   handler: handleBroadcastDatasetOrder
+        # - event : BroadcastWorkerpoolOrder((address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes))
+        #   handler: handleBroadcastWorkerpoolOrder
+        # - event : BroadcastRequestOrder((address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+        #   handler: handleBroadcastRequestOrder
         - event: Deposit(address,uint256)
           handler: handleDeposit
         - event: DepositFor(address,uint256,address)

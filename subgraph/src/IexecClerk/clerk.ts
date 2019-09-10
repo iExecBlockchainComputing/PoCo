@@ -1,11 +1,23 @@
 import {
-	IexecClerk as IexecClerkContract,
-	OrdersMatched as OrdersMatchedEvent,
-	SchedulerNotice as SchedulerNoticeEvent,
+	IexecClerk               as IexecClerkContract,
+	OrdersMatched            as OrdersMatchedEvent,
+	SchedulerNotice          as SchedulerNoticeEvent,
+	// BroadcastAppOrder        as BroadcastAppOrderEvent,
+	// BroadcastDatasetOrder    as BroadcastDatasetOrderEvent,
+	// BroadcastWorkerpoolOrder as BroadcastWorkerpoolOrderEvent,
+	// BroadcastRequestOrder    as BroadcastRequestOrderEvent,
+	// ClosedAppOrder           as ClosedAppOrderEvent,
+	// ClosedDatasetOrder       as ClosedDatasetOrderEvent,
+	// ClosedWorkerpoolOrder    as ClosedWorkerpoolOrderEvent,
+	// ClosedRequestOrder       as ClosedRequestOrderEvent,
 } from '../../generated/IexecClerk/IexecClerk'
 
 import {
 	Account,
+	// AppOrder,
+	// DatasetOrder,
+	// WorkerpoolOrder,
+	// RequestOrder,
 	Deal,
 	SchedulerNotice,
 } from '../../generated/schema'
@@ -55,3 +67,44 @@ export function handleSchedulerNotice(event: SchedulerNoticeEvent): void {
 	e.deal       = event.params.dealid.toHex()
 	e.save()
 }
+
+// export function handleBroadcastAppOrder(event: BroadcastAppOrderEvent): void {
+// 	let orderID = "<TODO>"
+// 	let order = new AppOrder(orderID)
+// 	// order
+// 	order.save()
+// }
+// export function handleBroadcastDatasetOrder(event: BroadcastDatasetOrderEvent): void {
+// 	let orderID = "<TODO>"
+// 	let order = new DatasetOrder(orderID)
+// 	// order
+// 	order.save()
+// }
+// export function handleBroadcastWorkerpoolOrder(event: BroadcastWorkerpoolOrderEvent): void {
+// 	let orderID = "<TODO>"
+// 	let order = new WorkerpoolOrder(orderID)
+// 	// order
+// 	order.save()
+// }
+// export function handleBroadcastRequestOrder(event: BroadcastRequestOrderEvent): void {
+// 	let orderID = "<TODO>"
+// 	let order = new RequestOrder(orderID)
+// 	// order
+// 	order.save()
+// }
+//
+// export function handleClosedAppOrder(event: ClosedAppOrderEvent): void {
+// 	// Delete AppOrder(event.params.appHash)
+// }
+//
+// export function handleClosedDatasetOrder(event: ClosedDatasetOrderEvent): void {
+// 	// Delete DatasetOrder(event.params.datasetHash)
+// }
+//
+// export function handleClosedWorkerpoolOrder(event: ClosedWorkerpoolOrderEvent): void {
+// 	// Delete WorkerpoolOrder(event.params.workerpoolHash)
+// }
+//
+// export function handleClosedRequestOrder(event: ClosedRequestOrderEvent): void {
+// 	// Delete RequestOrder(event.params.requestHash)
+// }

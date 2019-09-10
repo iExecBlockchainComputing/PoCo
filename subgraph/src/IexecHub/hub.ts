@@ -1,5 +1,5 @@
 import {
-	IexecHub as IexecHubContract,
+	IexecHub       as IexecHubContract,
 	TaskInitialize as TaskInitializeEvent,
 	TaskContribute as TaskContributeEvent,
 	TaskConsensus  as TaskConsensusEvent,
@@ -59,6 +59,10 @@ export function handleTaskContribute(event: TaskContributeEvent): void {
 	c.challenge = contribution.enclaveChallenge
 	c.save()
 
+	let t = Task.load(event.params.taskid.toHex())
+	t.contributions.push(c.id)
+	t.save()
+
 	let e = new TaskContribute(createEventID(event));
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
@@ -110,16 +114,16 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 	let contract = IexecHubContract.bind(event.address)
 
 	let t = Task.load(event.params.taskid.toHex())
-	// let cids = t.contributions;
-	// for (let i = 0;  i < cids.length; ++i)
-	// {
-	// 	let c = Contribution.load(cids[i]);
-	// 	if (c.hash == t.consensus)
-	// 	{
-	// 		c.status = 'REJECTED'
-	// 		c.save()
-	// 	}
-	// }
+	let cids = t.contributions;
+	for (let i = 0;  i < cids.length; ++i)
+	{
+		let c = Contribution.load(cids[i]);
+		if (c.hash == t.consensus)
+		{
+			c.status = 'REJECTED'
+			c.save()
+		}
+	}
 	// t.contributions.forEach(cid => {
 	// 	let c = Contribution.load(cid);
 	// 	if (c.hash == t.consensus)
