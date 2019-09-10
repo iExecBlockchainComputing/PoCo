@@ -34,6 +34,7 @@ export function handleTaskInitialize(event: TaskInitializeEvent): void {
 	t.status               = 'ACTIVE'
 	t.deal                 = task.dealid.toHex()
 	t.index                = task.idx
+	t.contributions        = new Array<string>();
 	t.contributionDeadline = task.contributionDeadline
 	t.finalDeadline        = task.finalDeadline
 	t.save()
@@ -60,7 +61,9 @@ export function handleTaskContribute(event: TaskContributeEvent): void {
 	c.save()
 
 	let t = Task.load(event.params.taskid.toHex())
-	t.contributions.push(c.id)
+	let cs = t.contributions
+	cs.push(c.id)
+	t.contributions = cs
 	t.save()
 
 	let e = new TaskContribute(createEventID(event));
@@ -118,7 +121,7 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 	for (let i = 0;  i < cids.length; ++i)
 	{
 		let c = Contribution.load(cids[i]);
-		if (c.hash == t.consensus)
+		if (c.hash.toHex() == t.consensus.toHex())
 		{
 			c.status = 'REJECTED'
 			c.save()
@@ -126,7 +129,7 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 	}
 	// t.contributions.forEach(cid => {
 	// 	let c = Contribution.load(cid);
-	// 	if (c.hash == t.consensus)
+	// 	if (c.hash.toHex() == t.consensus.toHex())
 	// 	{
 	// 		c.status = 'REJECTED'
 	// 		c.save()
