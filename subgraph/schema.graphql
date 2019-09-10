@@ -5,7 +5,6 @@ interface Event {
 }
 
 # ============================== Address objects ==============================
-
 type Account @entity {
 	id:                           ID!
 	balance:                      BigDecimal!
@@ -51,6 +50,67 @@ type Workerpool @entity {
 	events:                       [WorkerpoolEvent!]! @derivedFrom(field: "workerpool")
 }
 
+type AppOrder @entity {
+	id:                           ID!
+	app:                          App!
+	appprice:                     BigDecimal!
+	volume:                       BigInt!
+	tag:                          Bytes!
+	datasetrestrict:              Bytes!
+	workerpoolrestrict:           Bytes!
+	requesterrestrict:            Bytes!
+	salt:                         Bytes!
+	sign:                         Bytes # could be null
+}
+
+type DatasetOrder @entity {
+	id:                           ID!
+	dataset:                      App!
+	datasetprice:                 BigDecimal!
+	volume:                       BigInt!
+	tag:                          Bytes!
+	apprestrict:                  Bytes!
+	workerpoolrestrict:           Bytes!
+	requesterrestrict:            Bytes!
+	salt:                         Bytes!
+	sign:                         Bytes # could be null
+}
+
+type WorkerpoolOrder @entity {
+	id:                           ID!
+	workerpool:                   Workerpool!
+	workerpoolprice:              BigDecimal!
+	volume:                       BigInt!
+	tag:                          Bytes!
+	category:                     Category!
+	trust:                        BigInt!
+	apprestrict:                  Bytes!
+	datasetrestrict:              Bytes!
+	requesterrestrict:            Bytes!
+	salt:                         Bytes!
+	sign:                         Bytes # could be null
+}
+
+type RequesterOrder @entity {
+	id:                           ID!
+	app:                          App!
+	appmaxprice:                  BigDecimal!
+	dataset:                      Dataset # could be null or whitelist
+	datasetmaxprice:              BigDecimal!
+	workerpool:                   Workerpool # could be null or whitelist
+	workerpoolmaxprice:           BigDecimal!
+	requester:                    Account!
+	volume:                       BigInt!
+	tag:                          Bytes!
+	category:                     Category!
+	trust:                        BigInt!
+	beneficiary:                  Account # could be null
+	callback:                     Account # could be null
+	params:                       String!
+	salt:                         Bytes!
+	sign:                         Bytes # could be null
+}
+
 # =================================== PoCo ====================================
 type Category @entity {
 	id:                           ID!
@@ -76,8 +136,8 @@ type Deal @entity {
 	category:                     Category!
 	tag:                          Bytes!
 	requester:                    Account!
-	beneficiary:                  Account!
-	callback:                     Account!
+	beneficiary:                  Account # could be null
+	callback:                     Account # could be null
 	params:                       String!
 	startTime:                    BigInt!
 	botFirst:                     BigInt!
@@ -99,7 +159,7 @@ type Task @entity {
 	status:                       TaskStatus!
 	deal:                         Deal!
 	index:                        BigInt!
-	contributions:                [Contribution!]! @derivedFrom(field: "task")
+	contributions:                [Contribution!]!
 	consensus:                    Bytes # set on consensus reached
 	resultDigest:                 Bytes # set on reveal
 	results:                      Bytes # set on finalized
