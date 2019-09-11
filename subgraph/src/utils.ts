@@ -30,6 +30,11 @@ export function fetchAccount(id: string): Account
 	return account as Account
 }
 
+export function toDate(timestamp: BigInt): Date
+{
+	return new Date(timestamp.toI32() * 1000)
+}
+
 export function toRLC(value: BigInt): BigDecimal
 {
 	return value.divDecimal(BigDecimal.fromString('1000000000'))
