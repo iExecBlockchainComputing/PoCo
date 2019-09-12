@@ -1,5 +1,6 @@
 interface Event {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 }
@@ -50,6 +51,7 @@ type Workerpool @entity {
 	events:                       [WorkerpoolEvent!]! @derivedFrom(field: "workerpool")
 }
 
+# ================================== Orders ===================================
 type AppOrder @entity {
 	id:                           ID!
 	app:                          App!
@@ -104,8 +106,8 @@ type RequesterOrder @entity {
 	tag:                          Bytes!
 	category:                     Category!
 	trust:                        BigInt!
-	beneficiary:                  Account # could be null
-	callback:                     Account # could be null
+	beneficiary:                  Account!
+	callback:                     Account!
 	params:                       String!
 	salt:                         Bytes!
 	sign:                         Bytes # could be null
@@ -136,8 +138,8 @@ type Deal @entity {
 	category:                     Category!
 	tag:                          Bytes!
 	requester:                    Account!
-	beneficiary:                  Account # could be null
-	callback:                     Account # could be null
+	beneficiary:                  Account!
+	callback:                     Account!
 	params:                       String!
 	startTime:                    BigInt!
 	botFirst:                     BigInt!
@@ -191,6 +193,7 @@ type Contribution @entity {
 # ============================ PoCo contributions =============================
 interface TaskEvent {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -198,6 +201,7 @@ interface TaskEvent {
 
 type TaskInitialize implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -206,6 +210,7 @@ type TaskInitialize implements TaskEvent @entity {
 
 type TaskContribute implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -215,6 +220,7 @@ type TaskContribute implements TaskEvent @entity {
 
 type TaskConsensus implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -223,6 +229,7 @@ type TaskConsensus implements TaskEvent @entity {
 
 type TaskReveal implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -232,6 +239,7 @@ type TaskReveal implements TaskEvent @entity {
 
 type TaskReopen implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -239,6 +247,7 @@ type TaskReopen implements TaskEvent @entity {
 
 type TaskFinalize implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -247,6 +256,7 @@ type TaskFinalize implements TaskEvent @entity {
 
 type TaskClaimed implements TaskEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	task:                         Task!
@@ -255,6 +265,7 @@ type TaskClaimed implements TaskEvent @entity {
 # ============================= Workerpool events =============================
 interface WorkerpoolEvent {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	workerpool:                   Workerpool!
@@ -262,6 +273,7 @@ interface WorkerpoolEvent {
 
 type SchedulerNotice implements WorkerpoolEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	workerpool:                   Workerpool!
@@ -270,6 +282,7 @@ type SchedulerNotice implements WorkerpoolEvent @entity {
 
 type PolicyUpdate implements WorkerpoolEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	workerpool:                   Workerpool!
@@ -282,6 +295,7 @@ type PolicyUpdate implements WorkerpoolEvent @entity {
 # ============================== Token movements ==============================
 interface AccountEvent {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -290,6 +304,7 @@ interface AccountEvent {
 
 type Deposit implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -299,6 +314,7 @@ type Deposit implements AccountEvent @entity {
 
 type Withdraw implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -308,6 +324,7 @@ type Withdraw implements AccountEvent @entity {
 
 type Reward implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -317,6 +334,7 @@ type Reward implements AccountEvent @entity {
 
 type Seize implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -326,6 +344,7 @@ type Seize implements AccountEvent @entity {
 
 type Lock implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!
@@ -334,6 +353,7 @@ type Lock implements AccountEvent @entity {
 
 type Unlock implements AccountEvent @entity {
 	id:                           ID!
+	timestamp:                    Int!
 	blockNumber:                  Int!
 	transactionID:                Bytes!
 	account:                      Account!

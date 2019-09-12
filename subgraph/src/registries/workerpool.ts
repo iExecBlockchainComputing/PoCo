@@ -25,6 +25,7 @@ export function handlePolicyUpdate(event: PolicyUpdateEvent): void
 	workerpool.save()
 
 	let policyupdate = new PolicyUpdate(createEventID(event))
+	policyupdate.timestamp                = event.block.timestamp.toI32()
 	policyupdate.blockNumber              = event.block.number.toI32()
 	policyupdate.transactionID            = event.transaction.hash
 	policyupdate.workerpool               = event.address.toHex()

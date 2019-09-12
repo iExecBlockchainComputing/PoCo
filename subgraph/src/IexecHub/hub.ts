@@ -40,6 +40,7 @@ export function handleTaskInitialize(event: TaskInitializeEvent): void {
 	t.save()
 
 	let e = new TaskInitialize(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -67,6 +68,7 @@ export function handleTaskContribute(event: TaskContributeEvent): void {
 	t.save()
 
 	let e = new TaskContribute(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -86,6 +88,7 @@ export function handleTaskConsensus(event: TaskConsensusEvent): void {
 	t.save()
 
 	let e = new TaskConsensus(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -105,6 +108,7 @@ export function handleTaskReveal(event: TaskRevealEvent): void {
 	c.save()
 
 	let e = new TaskReveal(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -141,6 +145,7 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 	t.save()
 
 	let e = new TaskReopen(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -156,6 +161,7 @@ export function handleTaskFinalize(event: TaskFinalizeEvent): void {
 	t.save()
 
 	let e = new TaskFinalize(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()
@@ -171,6 +177,7 @@ export function handleTaskClaimed(event: TaskClaimedEvent): void {
 	t.save()
 
 	let e = new TaskClaimed(createEventID(event));
+	e.timestamp     = event.block.timestamp.toI32()
 	e.blockNumber   = event.block.number.toI32()
 	e.transactionID = event.transaction.hash
 	e.task          = event.params.taskid.toHex()

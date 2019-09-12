@@ -31,6 +31,7 @@ export function handleDeposit(event: DepositEvent): void {
 	account.save()
 
 	let op           = new Deposit(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.owner.toHex()
@@ -49,6 +50,7 @@ export function handleDepositFor(event: DepositForEvent): void {
 	fetchAccount(event.params.owner.toHex()).save()
 
 	let op           = new Deposit(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.target.toHex()
@@ -65,6 +67,7 @@ export function handleWithdraw(event: WithdrawEvent): void {
 	account.save()
 
 	let op           = new Withdraw(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.owner.toHex()
@@ -81,6 +84,7 @@ export function handleReward(event: RewardEvent): void {
 	account.save()
 
 	let op           = new Reward(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.user.toHex()
@@ -97,6 +101,7 @@ export function handleSeize(event: SeizeEvent): void {
 	account.save()
 
 	let op           = new Seize(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.user.toHex()
@@ -114,6 +119,7 @@ export function handleLock(event: LockEvent): void {
 	account.save()
 
 	let op           = new Lock(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.user.toHex()
@@ -130,6 +136,7 @@ export function handleUnlock(event: UnlockEvent): void {
 	account.save()
 
 	let op           = new Unlock(createEventID(event))
+	op.timestamp     = event.block.timestamp.toI32()
 	op.blockNumber   = event.block.number.toI32()
 	op.transactionID = event.transaction.hash
 	op.account       = event.params.user.toHex()
