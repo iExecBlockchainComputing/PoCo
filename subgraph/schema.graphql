@@ -183,6 +183,7 @@ enum ContributionStatus {
 type Contribution @entity {
 	id:                           ID!
 	status:                       ContributionStatus!
+	timestamp:                    Int!
 	task:                         Task!
 	worker:                       Account!
 	hash:                         Bytes!

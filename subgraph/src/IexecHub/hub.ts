@@ -54,6 +54,7 @@ export function handleTaskContribute(event: TaskContributeEvent): void {
 
 	let c = new Contribution(createContributionID(event.params.taskid.toHex(), event.params.worker.toHex()))
 	c.status    = 'CONTRIBUTED'
+	c.timestamp = event.block.timestamp.toI32()
 	c.task      = event.params.taskid.toHex()
 	c.worker    = event.params.worker.toHex()
 	c.hash      = contribution.resultHash
@@ -131,13 +132,12 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 			c.save()
 		}
 	}
-	// t.contributions.forEach(cid => {
-	// 	let c = Contribution.load(cid);
-	// 	if (c.hash.toHex() == t.consensus.toHex())
-	// 	{
-	// 		c.status = 'REJECTED'
-	// 		c.save()
-	// 	}
+	// t.contributions
+	// .map<Contribution>(value => Contribution.load(value) as Contribution)
+	// .filter(contribution => contribution.hash.toHex() == t.consensus.toHex())
+	// .forEach(contribution => {
+	// 	contribution.status = 'REJECTED'
+	// 	contribution.save()
 	// })
 	t.status         = 'ACTIVE'
 	t.consensus      = null
