@@ -25,6 +25,7 @@ import {
 import {
 	createEventID,
 	fetchAccount,
+	logTransaction,
 	toRLC,
 } from '../utils'
 
@@ -63,11 +64,10 @@ export function handleOrdersMatched(event: OrdersMatchedEvent): void {
 
 export function handleSchedulerNotice(event: SchedulerNoticeEvent): void {
 	let e = new SchedulerNotice(createEventID(event))
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.workerpool    = event.params.workerpool.toHex()
-	e.deal          = event.params.dealid.toHex()
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.workerpool  = event.params.workerpool.toHex()
+	e.deal        = event.params.dealid.toHex()
 	e.save()
 }
 

@@ -24,6 +24,7 @@ import {
 import {
 	createEventID,
 	createContributionID,
+	logTransaction,
 } from '../utils'
 
 export function handleTaskInitialize(event: TaskInitializeEvent): void {
@@ -40,11 +41,10 @@ export function handleTaskInitialize(event: TaskInitializeEvent): void {
 	t.save()
 
 	let e = new TaskInitialize(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
-	e.workerpool    = event.params.workerpool.toHex()
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
+	e.workerpool  = event.params.workerpool.toHex()
 	e.save()
 }
 
@@ -69,12 +69,11 @@ export function handleTaskContribute(event: TaskContributeEvent): void {
 	t.save()
 
 	let e = new TaskContribute(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
-	e.worker        = event.params.worker.toHex()
-	e.hash          = event.params.hash
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
+	e.worker      = event.params.worker.toHex()
+	e.hash        = event.params.hash
 	e.save()
 }
 
@@ -89,11 +88,10 @@ export function handleTaskConsensus(event: TaskConsensusEvent): void {
 	t.save()
 
 	let e = new TaskConsensus(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
-	e.consensus     = event.params.consensus
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
+	e.consensus   = event.params.consensus
 	e.save()
 }
 
@@ -109,12 +107,11 @@ export function handleTaskReveal(event: TaskRevealEvent): void {
 	c.save()
 
 	let e = new TaskReveal(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
-	e.worker        = event.params.worker.toHex()
-	e.digest        = event.params.digest
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
+	e.worker      = event.params.worker.toHex()
+	e.digest      = event.params.digest
 	e.save()
 }
 
@@ -145,10 +142,9 @@ export function handleTaskReopen(event: TaskReopenEvent): void {
 	t.save()
 
 	let e = new TaskReopen(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
 	e.save()
 }
 
@@ -161,11 +157,10 @@ export function handleTaskFinalize(event: TaskFinalizeEvent): void {
 	t.save()
 
 	let e = new TaskFinalize(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
-	e.results       = event.params.results
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
+	e.results     = event.params.results
 	e.save()
 }
 
@@ -177,10 +172,9 @@ export function handleTaskClaimed(event: TaskClaimedEvent): void {
 	t.save()
 
 	let e = new TaskClaimed(createEventID(event));
-	e.timestamp     = event.block.timestamp.toI32()
-	e.blockNumber   = event.block.number.toI32()
-	e.transactionID = event.transaction.hash
-	e.task          = event.params.taskid.toHex()
+	e.transaction = logTransaction(event).id
+	e.timestamp   = event.block.timestamp
+	e.task        = event.params.taskid.toHex()
 	e.save()
 }
 

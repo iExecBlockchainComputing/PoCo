@@ -6,6 +6,7 @@ import {
 
 import {
 	Account,
+	Transaction,
 } from '../generated/schema'
 
 export function createEventID(event: EthereumEvent): string
@@ -28,6 +29,20 @@ export function fetchAccount(id: string): Account
 		account.frozen  = BigDecimal.fromString('0')
 	}
 	return account as Account
+}
+
+export function logTransaction(event: EthereumEvent): Transaction
+{
+	let tx = new Transaction(event.transaction.hash.toHex());
+	tx.from        = fetchAccount(event.transaction.from.toHex()).id;
+	tx.to          = fetchAccount(event.transaction.to.toHex()  ).id; // check event.transaction.to for null values ?
+	tx.value       = event.transaction.value;
+	tx.gasUsed     = event.transaction.gasUsed;
+	tx.gasPrice    = event.transaction.gasPrice;
+	tx.timestamp   = event.block.timestamp;
+	tx.blockNumber = event.block.number;
+	tx.save();
+	return tx as Transaction;
 }
 
 export function toDate(timestamp: BigInt): Date
