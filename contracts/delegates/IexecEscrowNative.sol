@@ -26,23 +26,20 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	function ()
 		external payable
 	{
-		_mint(msg.sender, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		_handleDeposit(msg.sender);
 	}
 
 	function deposit()
 		external payable returns (bool)
 	{
-		_mint(msg.sender, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		_handleDeposit(msg.sender);
 		return true;
 	}
 
 	function depositFor(address target)
 		external payable returns (bool)
 	{
-		_mint(target, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		_handleDeposit(target);
 		return true;
 	}
 
@@ -56,7 +53,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 			_mint(targets[i], amounts[i]);
 			remaining = remaining.sub(amounts[i].mul(nRLCtoWei));
 		}
-		msg.sender.transfer(remaining);
+		_safeWithdraw(msg.sender, remaining);
 		return true;
 	}
 
@@ -64,7 +61,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		external returns (bool)
 	{
 		_burn(msg.sender, amount);
-		msg.sender.transfer(amount.mul(nRLCtoWei));
+		_safeWithdraw(msg.sender, amount.mul(nRLCtoWei));
 		return true;
 	}
 
@@ -76,4 +73,17 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		return delta;
 	}
 
+	function _handleDeposit(address target)
+		internal
+	{
+		_mint(target, msg.value.div(nRLCtoWei));
+		_safeWithdraw(msg.sender, msg.value.mod(nRLCtoWei));
+	}
+
+	function _safeWithdraw(address payable to, uint256 value)
+		internal
+	{
+		(bool success, ) = to.call.value(value)('');
+		require(success, 'native-transfer-failled');
+	}
 }
