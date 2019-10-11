@@ -2,6 +2,7 @@ var HDWalletProvider = require("truffle-hdwallet-provider");
 
 module.exports =
 {
+	plugins: [ "truffle-security" ],
 	networks:
 	{
 		docker:

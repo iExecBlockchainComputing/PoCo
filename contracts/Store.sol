@@ -50,8 +50,9 @@ contract Store is ERC1538Store
 	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;
 
 	// Categories
-	IexecODBLibCore.Category[] m_categories;
+	IexecODBLibCore.Category[] internal m_categories;
 
+	// modifiers
 	modifier onlyScheduler(bytes32 _taskid)
 	{
 		require(msg.sender == m_deals[m_tasks[_taskid].dealid].workerpool.owner);

@@ -11,11 +11,11 @@ contract RegistryBase
 	/**
 	 * Members
 	 */
-	mapping(address => bool                       ) m_registered;
-	mapping(address => mapping(uint256 => address)) m_byOwnerByIndex;
-	mapping(address => uint256                    ) m_countByOwner;
+	mapping(address => bool                       ) internal m_registered;
+	mapping(address => mapping(uint256 => address)) internal m_byOwnerByIndex;
+	mapping(address => uint256                    ) internal m_countByOwner;
 
-	address public m_previous;
+	address internal m_previous;
 
 	/**
 	 * Constructor
@@ -45,6 +45,12 @@ contract RegistryBase
 	public view returns (uint256)
 	{
 		return m_countByOwner[_owner];
+	}
+
+	function previous()
+	public view returns (address)
+	{
+		return m_previous;
 	}
 
 	/**

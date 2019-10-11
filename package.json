@@ -4,11 +4,12 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "build": "./node_modules/.bin/truffle compile",
-    "migrate": "./node_modules/.bin/truffle migrate",
-    "test": "./node_modules/.bin/truffle test",
+    "build":    "./node_modules/.bin/truffle compile",
+    "migrate":  "./node_modules/.bin/truffle migrate",
+    "test":     "./node_modules/.bin/truffle test",
     "autotest": "./autotest.sh",
-    "coverage": "./node_modules/.bin/solidity-coverage"
+    "coverage": "./node_modules/.bin/solidity-coverage",
+    "verify":   "./node_modules/.bin/truffle run verify"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "openzeppelin-test-helpers": "^0.4.3",
     "solidity-coverage": "^0.6.7",
     "truffle": "^5.0.39",
-    "truffle-hdwallet-provider": "^1.0.17"
+    "truffle-hdwallet-provider": "^1.0.17",
+    "truffle-security": "^1.6.1"
   }
 }
