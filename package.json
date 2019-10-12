@@ -4,12 +4,12 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "build":    "./node_modules/.bin/truffle compile",
-    "migrate":  "./node_modules/.bin/truffle migrate",
-    "test":     "./node_modules/.bin/truffle test",
+    "build": "./node_modules/.bin/truffle compile",
+    "migrate": "./node_modules/.bin/truffle migrate",
+    "test": "./node_modules/.bin/truffle test",
     "autotest": "./autotest.sh",
     "coverage": "./node_modules/.bin/solidity-coverage",
-    "verify":   "./node_modules/.bin/truffle run verify"
+    "verify": "./node_modules/.bin/truffle run verify"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo-dev.git#readme",
   "dependencies": {
     "@ensdomains/ens": "^0.3.11",
-    "@ensdomains/resolver": "^0.1.9",
+    "@ensdomains/resolver": "^0.1.10",
     "iexec-solidity": "^0.0.14",
     "openzeppelin-solidity": "^2.3.0",
     "rlc-faucet-contract": "^1.0.8"
@@ -38,9 +38,9 @@
     "ganache-cli": "^6.7.0",
     "husky": "^3.0.8",
     "multiaddr": "^7.1.0",
-    "openzeppelin-test-helpers": "^0.4.3",
+    "openzeppelin-test-helpers": "^0.5.1",
     "solidity-coverage": "^0.6.7",
-    "truffle": "^5.0.39",
+    "truffle": "^5.0.40",
     "truffle-hdwallet-provider": "^1.0.17",
     "truffle-security": "^1.6.1"
   }
