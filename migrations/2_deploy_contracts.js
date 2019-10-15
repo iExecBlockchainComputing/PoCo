@@ -63,34 +63,30 @@ module.exports = async function(deployer, network, accounts)
 		console.log([ "category", i, ":", ...await IexecHubInstance.viewCategory(i)].join(" "));
 	}
 
-	// await IexecHubInstance.transferOwnership(owner);
-	// console.log("setCategoriesCreator to " + owner);
-
 	// Starting deposit for all test wallets
 	if (chaintype == "private")
 	{
 		// -------------------------------- Admin --------------------------------
 		var adminAdress = "0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E";
-		// var xRlcAmount  = "0x" + to18Decimals(10000000).toString(16);
-		var xRlcAmount  = toWei(10000000);
+		var nRLCAmount  = toWei(10000000);
 
-		//And put directly some other xRLC in account
-		await IexecClerkInstance.depositFor(adminAdress, { gas: 4500000, value: xRlcAmount });
-		IexecClerkInstance.viewAccount(adminAdress).then(balance => console.log("Account.stake of " + adminAdress + " is " + balance.stake + " xRLC"));
+		//Put directly some nRLC in account
+		await IexecClerkInstance.depositFor(adminAdress, { gas: 4500000, value: nRLCAmount });
+		IexecClerkInstance.viewAccount(adminAdress).then(balance => console.log("Account.stake of " + adminAdress + " is " + balance.stake + " nRLC"));
 
 		// ------------------------------ Scheduler ------------------------------
 		var schedulerAddress = "0x000a9c787a972F70F0903890E266F41c795C4DcA";
-		var xRlcAmount       = toWei(10000000);
+		var nRLCAmount       = toWei(10000000);
 
-		//For scheduler, put directly some xRLCs in account
-		await IexecClerkInstance.depositFor(schedulerAddress, { gas: 4500000, value: xRlcAmount });
-		await IexecClerkInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.stake of " + schedulerAddress + " is " + balance.stake + " xRLC"));
+		//For scheduler, put directly some nRLCs in account
+		await IexecClerkInstance.depositFor(schedulerAddress, { gas: 4500000, value: nRLCAmount });
+		await IexecClerkInstance.viewAccount(schedulerAddress).then(balance => console.log("Account.stake of " + schedulerAddress + " is " + balance.stake + " nRLC"));
 
 		// ------------------------------- Workers -------------------------------
 		var workerAddresses = fs.readFileSync(__dirname + "/accounts.txt").toString().split("\n");
-		var xRlcAmount      = 1000;
+		var nRLCAmount      = 1000;
 
-		//For workers, put directly some xRLCs in account
+		//For workers, put directly some nRLCs in account
 		console.log("Making deposit to " + workerAddresses.length + " wallets");
 
 		let batchSize = 50;
@@ -98,11 +94,11 @@ module.exports = async function(deployer, network, accounts)
 		{
 			group = workerAddresses.slice(i, i+batchSize);
 			await IexecClerkInstance.depositForArray(
-				Array(group.length).fill(xRlcAmount),
+				Array(group.length).fill(nRLCAmount),
 				group,
 				{ gas: 4500000, value: toWei(10000000) }
 			);
-			group.forEach(address => IexecClerkInstance.viewAccount(address).then(balance => console.log("Account.stake of " + address + " is " + balance.stake + " xRLC")));
+			group.forEach(address => IexecClerkInstance.viewAccount(address).then(balance => console.log("Account.stake of " + address + " is " + balance.stake + " nRLC")));
 		}
 	}
 };
