@@ -49,7 +49,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage1sec = docker.build (registry + "/poco-chain:${TAG_NAME}", "--build-arg BLOCK_CREATION_TIME=2")
+					dockerImage1sec = docker.build (registry + "/poco-chain:${TAG_NAME}")
 				}
 			}
 		}
