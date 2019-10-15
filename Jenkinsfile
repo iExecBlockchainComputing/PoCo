@@ -11,6 +11,7 @@ pipeline {
 		dockerImage1sec = ''
 		dockerImage20sec = ''
 		buildWhenTagContains = 'lv'
+		buildWhenSidechain = 'sidechain'
 	}
 
 	agent {
@@ -48,7 +49,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage1sec = docker.build registry + "/poco-chain:${TAG_NAME}"
+					dockerImage1sec = docker.build (registry + "/poco-chain:${TAG_NAME}", "--build-arg BLOCK_CREATION_TIME=2")
 				}
 			}
 		}
@@ -68,7 +69,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f Dockerfile_20sec .")
+					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "--build-arg BLOCK_CREATION_TIME=20 .")
 				}
 			}
 		}
@@ -79,6 +80,36 @@ pipeline {
 				script {
 					docker.withRegistry( "https://"+registry, 'nexus' ) {
 						dockerImage20sec.push()
+					}
+				}
+			}
+		}
+
+		stage('Build native poco-chain (5sec)') {
+			when {
+				expression { env.TAG_NAME != null &&
+							 env.TAG_NAME.toString().contains(buildWhenTagContains) &&
+							 env.BRANCH_NAME.toString().contains(buildWhenSidechain) } 
+			}
+
+			steps {
+				script {
+					dockerImageNative = docker.build (registry + "/poco-chain:${TAG_NAME}-native", "--build-arg BLOCK_CREATION_TIME=5 .")
+				}
+			}
+		}
+
+		stage('Push native poco-chain (5sec)') {
+			when {
+				expression { env.TAG_NAME != null &&
+							 env.TAG_NAME.toString().contains(buildWhenTagContains) &&
+							 env.BRANCH_NAME.toString().contains(buildWhenSidechain) } 
+			}
+
+			steps {
+				script {
+					docker.withRegistry( "https://"+registry, 'nexus' ) {
+						dockerImageNative.push()
 					}
 				}
 			}
