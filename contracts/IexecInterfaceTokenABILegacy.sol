@@ -10,8 +10,9 @@ import "./delegates/IexecEscrowToken.sol";
 import "./delegates/IexecOrderSignature.sol";
 import "./delegates/IexecPoco.sol";
 import "./delegates/IexecRelay.sol";
+import "./delegates/IexecTokenSpender.sol";
 import "./delegates/ENSIntegration.sol";
 
 
-contract IexecInterfaceTokenABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, ENSIntegration
+contract IexecInterfaceTokenABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {}

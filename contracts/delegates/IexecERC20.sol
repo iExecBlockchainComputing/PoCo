@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./DelegateBase.sol";
+import "./IexecTokenSpender.sol";
 
 
 interface IexecERC20
@@ -14,6 +15,7 @@ interface IexecERC20
 	function transferFrom(address,address,uint256) external returns (bool);
 	function increaseAllowance(address,uint256) external returns (bool);
 	function decreaseAllowance(address,uint256) external returns (bool);
+	function approveAndCall(address,uint256,bytes calldata) external returns (bool);
 }
 
 contract IexecERC20Common is DelegateBase
@@ -78,6 +80,14 @@ contract IexecERC20Delegate is IexecERC20, DelegateBase, IexecERC20Common
 		public returns (bool)
 	{
 			_approve(msg.sender, spender, value);
+			return true;
+	}
+
+	function approveAndCall(address spender, uint256 value, bytes memory extraData)
+		public returns (bool)
+	{
+			_approve(msg.sender, spender, value);
+			IexecTokenSpender(spender).receiveApproval(msg.sender, value, address(this), extraData);
 			return true;
 	}
 

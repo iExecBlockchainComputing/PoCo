@@ -3,6 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "./DelegateBase.sol";
 import "./IexecERC20.sol";
+import "./IexecTokenSpender.sol";
 
 
 interface IexecEscrowToken
@@ -13,10 +14,9 @@ interface IexecEscrowToken
 	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);
 	function withdraw(uint256) external returns (bool);
 	function recover() external returns (uint256);
-	function receiveApproval(address,uint256,address,bytes calldata) external returns (bool);
 }
 
-contract IexecEscrowTokenDelegate is IexecEscrowToken, DelegateBase, IexecERC20Common
+contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, DelegateBase, IexecERC20Common
 {
 	using SafeMathExtended for uint256;
 
