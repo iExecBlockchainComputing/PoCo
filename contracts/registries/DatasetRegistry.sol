@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
-import './Dataset.sol';
+import './Registry.sol';
 import './CounterfactualFactory.sol';
-import './RegistryBase.sol';
+import './Dataset.sol';
 
 
-contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
+contract DatasetRegistry is Registry, CounterfactualFactory
 {
 	event CreateDataset(address indexed datasetOwner, address dataset);
 
@@ -13,7 +13,7 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegis
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public RegistryBase(_previous)
+	public Registry(_previous)
 	{
 	}
 
@@ -35,13 +35,12 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegis
 
 		Dataset dataset = Dataset(_create2(type(Dataset).creationCode, salt));
 		dataset.setup(
-			_datasetOwner,
 			_datasetName,
 			_datasetMultiaddr,
 			_datasetChecksum
 		);
 
-		insert(address(dataset), _datasetOwner);
+		_mint(_datasetOwner, uint256(address(dataset)));
 		emit CreateDataset(_datasetOwner, address(dataset));
 		return dataset;
 	}

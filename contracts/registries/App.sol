@@ -1,11 +1,10 @@
 pragma solidity ^0.5.0;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../tools/ENSReverseRegistrationOwnable.sol";
+import "./RegistryEntry.sol";
 import "../tools/Once.sol";
 
 
-contract App is Ownable, Once, ENSReverseRegistrationOwnable
+contract App is RegistryEntry, Once
 {
 	/**
 	 * Members
@@ -19,8 +18,9 @@ contract App is Ownable, Once, ENSReverseRegistrationOwnable
 	/**
 	 * Constructor
 	 */
+	constructor() public RegistryEntry(msg.sender) {}
+
 	function setup(
-		address          _appOwner,
 		string  calldata _appName,
 		string  calldata _appType,
 		bytes   calldata _appMultiaddr,
@@ -28,14 +28,10 @@ contract App is Ownable, Once, ENSReverseRegistrationOwnable
 		bytes   calldata _appMREnclave)
 	external onlyOnce()
 	{
-		_transferOwnership(_appOwner);
 		m_appName      = _appName;
 		m_appType      = _appType;
 		m_appMultiaddr = _appMultiaddr;
 		m_appChecksum  = _appChecksum;
 		m_appMREnclave = _appMREnclave;
 	}
-
-	function transferOwnership(address) public { revert("disabled"); }
-
 }

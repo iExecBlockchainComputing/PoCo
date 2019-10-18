@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
-import './App.sol';
+import './Registry.sol';
 import './CounterfactualFactory.sol';
-import './RegistryBase.sol';
+import './App.sol';
 
 
-contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
+contract AppRegistry is Registry, CounterfactualFactory
 {
 	event CreateApp(address indexed appOwner, address app);
 
@@ -13,7 +13,7 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public RegistryBase(_previous)
+	public Registry(_previous)
 	{
 	}
 
@@ -39,7 +39,6 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 
 		App app = App(_create2(type(App).creationCode, salt));
 		app.setup(
-			_appOwner,
 			_appName,
 			_appType,
 			_appMultiaddr,
@@ -47,7 +46,7 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 			_appMREnclave
 		);
 
-		insert(address(app), _appOwner);
+		_mint(_appOwner, uint256(address(app)));
 		emit CreateApp(_appOwner, address(app));
 
 		return app;

@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol";
 
+
 contract TestClient is IOracleConsumer
 {
 	event GotResult(bytes32 indexed id, bytes result);
