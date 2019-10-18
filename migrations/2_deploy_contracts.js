@@ -260,8 +260,7 @@ module.exports = async function(deployer, network, accounts)
 			await registrars[domain].register(labelHash, accounts[0], { from: accounts[0] });
 			// link to ens (resolver & addr)
 			await ens.setResolver(nameHash, resolver.address, { from: accounts[0] });
-			// await resolver.setAddr(nameHash, address, { from: accounts[0] });
-			await resolver.setAddr(nameHash, address);
+			await resolver.setAddr(nameHash, 60, address, { from: accounts[0] });
 		}
 
 		await bootstrap();
