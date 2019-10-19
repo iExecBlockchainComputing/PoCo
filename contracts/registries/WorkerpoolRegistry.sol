@@ -12,8 +12,8 @@ contract WorkerpoolRegistry is Registry, CounterfactualFactory
 	/**
 	 * Constructor
 	 */
-	constructor(address _previous)
-	public Registry("iExec Workerpool Registry (v4)", "iExecWorkerpoolV4", _previous)
+	constructor(address _owner, address _previous)
+	public Registry(_owner, "iExec Workerpool Registry (v4)", "iExecWorkerpoolV4", _previous)
 	{
 	}
 

@@ -19,9 +19,10 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 	/**
 	 * Constructor
 	 */
-	constructor(string memory _name, string memory _symbol, address _previous)
+	constructor(address _owner, string memory _name, string memory _symbol, address _previous)
 	public
 	{
+		_transferOwnership(_owner);
 		previous = IRegistry(_previous);
 		name     = _name;
 		symbol   = _symbol;
