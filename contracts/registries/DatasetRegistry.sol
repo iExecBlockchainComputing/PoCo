@@ -13,7 +13,7 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public Registry(_previous)
+	public Registry("iExec Dataset Registry (v4)", "iExecDatasetsV4", _previous)
 	{
 	}
 

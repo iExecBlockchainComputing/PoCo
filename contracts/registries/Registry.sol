@@ -12,16 +12,19 @@ contract IRegistry is IERC721Enumerable
 
 contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownable
 {
-
 	IRegistry public previous;
+	string    public name;
+	string    public symbol;
 
 	/**
 	 * Constructor
 	 */
-	constructor(address _previous)
+	constructor(string memory _name, string memory _symbol, address _previous)
 	public
 	{
 		previous = IRegistry(_previous);
+		name     = _name;
+		symbol   = _symbol;
 	}
 
 	/**

@@ -13,7 +13,7 @@ contract AppRegistry is Registry, CounterfactualFactory
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public Registry(_previous)
+	public Registry("iExec Application Registry (v4)", "iExecAppsV4", _previous)
 	{
 	}
 
