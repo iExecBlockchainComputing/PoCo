@@ -35,6 +35,10 @@ var GenericFactory          = artifacts.require('GenericFactory')
 
 DEPLOYMENT.salt = DEPLOYMENT.salt || web3.utils.randomHex(32);
 
+const LIBRARIES = [
+	{ pattern: /__IexecODBLibOrders_____________________/g, library: IexecODBLibOrders },
+]
+
 function getSerializedObject(entry)
 {
 	if (entry.type == 'tuple')
@@ -46,6 +50,7 @@ function getSerializedObject(entry)
 		return entry.type;
 	}
 }
+
 function getFunctionSignatures(abi)
 {
 	return (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '') + abi
@@ -54,31 +59,37 @@ function getFunctionSignatures(abi)
 		.join('');
 }
 
-async function factoryDeployer(
-	contract,
-	args = [],
-	salt = '0x0000000000000000000000000000000000000000000000000000000000000000',
-	callback = '')
+async function factoryDeployer(contract, options = {})
 {
-	const factory        = await GenericFactory.deployed();
-	const constructorABI = contract._json.abi.find(e => e.type == 'constructor');
-	const library        = await IexecODBLibOrders.deployed()
-	const coreCode       = contract.bytecode.replace(/__IexecODBLibOrders_____________________/g, library.address.slice(2).toLowerCase())
-	const argsCode       = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), args).slice(2) : ''
-	const deployCode     = coreCode + argsCode
+	console.log(`[factoryDeployer] ${contract.contractName}`);
+	let factory        = await GenericFactory.deployed();
+	let constructorABI = contract._json.abi.find(e => e.type == 'constructor');
+	let coreCode       = contract.bytecode;
 
-	contract.address = await factory.predictAddress(deployCode, salt);
+	for ({ pattern, library } of LIBRARIES)
+	{
+		if (coreCode.search(pattern) != -1)
+		{
+			let { address } = await library.deployed()
+			coreCode = coreCode.replace(pattern, address.slice(2).toLowerCase())
+		}
+	}
+
+	let argsCode       = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), options.args).slice(2) : ''
+	let deployCode     = coreCode + argsCode
+
+	contract.address = await factory.predictAddress(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
 
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
-		if (callback)
+		if (options.call)
 		{
-			await factory.createContractAndCallback(deployCode, salt, callback);
+			await factory.createContractAndCallback(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000', options.call);
 		}
 		else
 		{
-			await factory.createContract(deployCode, salt);
+			await factory.createContract(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
 		}
 		console.log(`[factory] ${contract.contractName} successfully deployed`);
 	}
@@ -146,7 +157,9 @@ module.exports = async function(deployer, network, accounts)
 	 ***************************************************************************/
 	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(IexecODBLibOrders, [], DEPLOYMENT.salt);
+		await factoryDeployer(IexecODBLibOrders, {
+			salt: DEPLOYMENT.salt
+		});
 	}
 	else
 	{
@@ -160,8 +173,14 @@ module.exports = async function(deployer, network, accounts)
 	 ***************************************************************************/
 	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(ERC1538Update, [], DEPLOYMENT.salt);
-		await factoryDeployer(ERC1538Proxy, [ (await ERC1538Update.deployed()).address ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
+		await factoryDeployer(ERC1538Update, {
+			salt: DEPLOYMENT.salt
+		});
+		await factoryDeployer(ERC1538Proxy, {
+			args: [ (await ERC1538Update.deployed()).address ],
+			salt: DEPLOYMENT.salt,
+			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+		});
 	}
 	else
 	{
@@ -193,7 +212,9 @@ module.exports = async function(deployer, network, accounts)
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
 		if (DEPLOYMENT.usefactory)
 		{
-			await factoryDeployer(contracts[id], [], DEPLOYMENT.salt);
+			await factoryDeployer(contracts[id], {
+				salt: DEPLOYMENT.salt
+			});
 		}
 		else
 		{
@@ -213,9 +234,21 @@ module.exports = async function(deployer, network, accounts)
 
 	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
-		await factoryDeployer(DatasetRegistry,    [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
-		await factoryDeployer(WorkerpoolRegistry, [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
+		await factoryDeployer(AppRegistry,        {
+			args: [ '0x0000000000000000000000000000000000000000' ],
+			salt: DEPLOYMENT.salt,
+			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+		});
+		await factoryDeployer(DatasetRegistry,    {
+			args: [ '0x0000000000000000000000000000000000000000' ],
+			salt: DEPLOYMENT.salt,
+			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+		});
+		await factoryDeployer(WorkerpoolRegistry, {
+			args: [ '0x0000000000000000000000000000000000000000' ],
+			salt: DEPLOYMENT.salt,
+			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+		});
 	}
 	else
 	{
