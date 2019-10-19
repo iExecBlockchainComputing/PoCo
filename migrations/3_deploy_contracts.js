@@ -30,6 +30,7 @@ var ENSIntegration          = artifacts.require("ENSIntegrationDelegate");
 var AppRegistry             = artifacts.require("AppRegistry");
 var DatasetRegistry         = artifacts.require("DatasetRegistry");
 var WorkerpoolRegistry      = artifacts.require("WorkerpoolRegistry");
+var GenericFactory          = artifacts.require("GenericFactory");
 
 function getSerializedObject(entry)
 {
@@ -215,10 +216,10 @@ module.exports = async function(deployer, network, accounts)
 		async function bootstrap()
 		{
 			// ens registry
-			await deployer.deploy(ENSRegistry, { from: accounts[0] });
+			await deployer.deploy(ENSRegistry);
 			ens = await ENSRegistry.deployed();
 			// resolver
-			await deployer.deploy(PublicResolver, ens.address, { from: accounts[0] });
+			await deployer.deploy(PublicResolver, ens.address);
 			resolver = await PublicResolver.deployed();
 			// root registrar
 			registrars[""] = await FIFSRegistrar.new(ens.address, "0x0", { from: accounts[0] });
@@ -230,7 +231,7 @@ module.exports = async function(deployer, network, accounts)
 
 		async function setReverseRegistrar()
 		{
-			await deployer.deploy(ReverseRegistrar, ens.address, resolver.address, { from: accounts[0] });
+			await deployer.deploy(ReverseRegistrar, ens.address, resolver.address);
 			reverseregistrar = await ReverseRegistrar.deployed()
 
 			await registrars[""].register(labelhash("reverse"), accounts[0], { from: accounts[0] });
@@ -353,5 +354,4 @@ module.exports = async function(deployer, network, accounts)
 			group.forEach(address => IexecInterfaceInstance.viewAccount(address).then(balance => console.log("Account.Stack of " + address + " is " + balance.stake + " nRLC")));
 		}
 	}
-
 };

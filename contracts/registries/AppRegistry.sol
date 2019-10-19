@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
+import '../factory/CounterfactualFactory.sol';
 import './Registry.sol';
-import './CounterfactualFactory.sol';
 import './App.sol';
 
 
