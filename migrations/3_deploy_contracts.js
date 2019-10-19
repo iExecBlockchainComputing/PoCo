@@ -33,6 +33,7 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 var GenericFactory          = artifacts.require('GenericFactory')
 
+const USEFACTORY = false;
 
 function getSerializedObject(entry)
 {
@@ -60,10 +61,13 @@ async function factoryDeployer(contract, args = [], salt = '0x000000000000000000
 
 	assert(!constructorABI || constructorABI.inputs.length == args.length);
 
-	const deployCode = contract.bytecode + constructorABI ? web3.eth.abi.encodeParameters(
+	const library  = await IexecODBLibOrders.deployed()
+	const coreCode = contract.bytecode.replace(/__IexecODBLibOrders_____________________/g, library.address.slice(2).toLowerCase())
+	const argsCode = constructorABI ? web3.eth.abi.encodeParameters(
 		contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type),
 		args
-	).slice(2) : '';
+	).slice(2) : ''
+	const deployCode = coreCode + argsCode
 
 	contract.address = await factory.predictAddress(deployCode, salt);
 
@@ -135,18 +139,30 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                          Deploy & link library                          *
 	 ***************************************************************************/
-	// await factoryDeployer(IexecODBLibOrders);
-	await deployer.deploy(IexecODBLibOrders);
-	await deployer.link(IexecODBLibOrders, IexecPoco);
-	await deployer.link(IexecODBLibOrders, IexecOrderSignature);
+	if (USEFACTORY)
+	{
+		await factoryDeployer(IexecODBLibOrders);
+	}
+	else
+	{
+		await deployer.deploy(IexecODBLibOrders);
+		await deployer.link(IexecODBLibOrders, IexecPoco);
+		await deployer.link(IexecODBLibOrders, IexecOrderSignature);
+	}
 
 	/***************************************************************************
 	 *                              Deploy proxy                               *
 	 ***************************************************************************/
-	// await factoryDeployer(ERC1538Update);
-	// await factoryDeployer(ERC1538Proxy, [ accounts[0], (await ERC1538Update.deployed()).address ]);
-	await deployer.deploy(ERC1538Update);
-	await deployer.deploy(ERC1538Proxy, accounts[0], (await ERC1538Update.deployed()).address);
+	if (USEFACTORY)
+	{
+		await factoryDeployer(ERC1538Update);
+		await factoryDeployer(ERC1538Proxy, [ accounts[0], (await ERC1538Update.deployed()).address ]);
+	}
+	else
+	{
+		await deployer.deploy(ERC1538Update);
+		await deployer.deploy(ERC1538Proxy, accounts[0], (await ERC1538Update.deployed()).address);
+	}
 	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
 	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
 
@@ -170,8 +186,14 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		// await factoryDeployer(contracts[id]);
-		await deployer.deploy(contracts[id]);
+		if (USEFACTORY)
+		{
+			await factoryDeployer(contracts[id]);
+		}
+		else
+		{
+			await deployer.deploy(contracts[id]);
+		}
 		await ERC1538.updateContract(
 			(await contracts[id].deployed()).address,
 			getFunctionSignatures(contracts[id].abi),
@@ -184,12 +206,18 @@ module.exports = async function(deployer, network, accounts)
 	 ***************************************************************************/
 	IexecInterfaceInstance = await IexecInterface.at(ERC1538.address);
 
-	// await factoryDeployer(AppRegistry,        [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
-	// await factoryDeployer(DatasetRegistry,    [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
-	// await factoryDeployer(WorkerpoolRegistry, [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
-	await deployer.deploy(AppRegistry,        accounts[0], '0x0000000000000000000000000000000000000000');
-	await deployer.deploy(DatasetRegistry,    accounts[0], '0x0000000000000000000000000000000000000000');
-	await deployer.deploy(WorkerpoolRegistry, accounts[0], '0x0000000000000000000000000000000000000000');
+	if (USEFACTORY)
+	{
+		await factoryDeployer(AppRegistry,        [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
+		await factoryDeployer(DatasetRegistry,    [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
+		await factoryDeployer(WorkerpoolRegistry, [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
+	}
+	else
+	{
+		await deployer.deploy(AppRegistry,        accounts[0], '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(DatasetRegistry,    accounts[0], '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(WorkerpoolRegistry, accounts[0], '0x0000000000000000000000000000000000000000');
+	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
