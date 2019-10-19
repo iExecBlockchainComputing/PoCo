@@ -54,7 +54,11 @@ function getFunctionSignatures(abi)
 		.join('');
 }
 
-async function factoryDeployer(contract, args = [], salt = '0x0000000000000000000000000000000000000000000000000000000000000000')
+async function factoryDeployer(
+	contract,
+	args = [],
+	salt = '0x0000000000000000000000000000000000000000000000000000000000000000',
+	callback = '')
 {
 	const factory        = await GenericFactory.deployed();
 	const constructorABI = contract._json.abi.find(e => e.type == 'constructor');
@@ -68,7 +72,14 @@ async function factoryDeployer(contract, args = [], salt = '0x000000000000000000
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
-		await factory.createContract(deployCode, salt);
+		if (callback)
+		{
+			await factory.createContractAndCallback(deployCode, salt, callback);
+		}
+		else
+		{
+			await factory.createContract(deployCode, salt);
+		}
 		console.log(`[factory] ${contract.contractName} successfully deployed`);
 	}
 	else
@@ -150,12 +161,12 @@ module.exports = async function(deployer, network, accounts)
 	if (DEPLOYMENT.usefactory)
 	{
 		await factoryDeployer(ERC1538Update, [], DEPLOYMENT.salt);
-		await factoryDeployer(ERC1538Proxy, [ accounts[0], (await ERC1538Update.deployed()).address ], DEPLOYMENT.salt);
+		await factoryDeployer(ERC1538Proxy, [ (await ERC1538Update.deployed()).address ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
 	}
 	else
 	{
 		await deployer.deploy(ERC1538Update);
-		await deployer.deploy(ERC1538Proxy, accounts[0], (await ERC1538Update.deployed()).address);
+		await deployer.deploy(ERC1538Proxy, (await ERC1538Update.deployed()).address);
 	}
 	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
 	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
@@ -202,15 +213,15 @@ module.exports = async function(deployer, network, accounts)
 
 	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
-		await factoryDeployer(DatasetRegistry,    [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
-		await factoryDeployer(WorkerpoolRegistry, [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
+		await factoryDeployer(AppRegistry,        [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
+		await factoryDeployer(DatasetRegistry,    [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
+		await factoryDeployer(WorkerpoolRegistry, [ '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt, web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]));
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        accounts[0], '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    accounts[0], '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, accounts[0], '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000');
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
