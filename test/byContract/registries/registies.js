@@ -24,6 +24,12 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
+function BN2Address(n)
+{
+	const x = web3.utils.toHex(n)
+	return web3.utils.toChecksumAddress('0x' + "0".repeat(42 - x.length) + x.slice(2))
+}
+
 contract('Registries', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
@@ -66,23 +72,27 @@ contract('Registries', async (accounts) => {
 	});
 
 	/***************************************************************************
-	 *                  TEST: App creation (by appProvider)                  *
+	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/
 	it("App Creation", async () => {
-		for (i=0; i<5; ++i)
+		for (i=0; i<32; ++i)
 		{
-			const code = new web3.eth.Contract(App.abi).deploy({ data: App.bytecode, arguments: [] }).encodeABI();
-			const salt = web3.utils.soliditySha3(
-				{ t: 'string',  v: "App #"+i                                  },
-				{ t: 'string',  v: "DOCKER"                                   },
-				{ t: 'bytes',   v: constants.MULTIADDR_BYTES                  },
-				{ t: 'bytes32', v: web3.utils.keccak256("Content of app #"+i) },
-				{ t: 'bytes',   v: "0x1234"                                   },
-			);
+			const code = new web3.eth.Contract(App.abi).deploy({
+				data: App.bytecode,
+				arguments:
+				[
+					"App #"+i,
+					"DOCKER",
+					constants.MULTIADDR_BYTES,
+					web3.utils.keccak256("Content of app #"+i),
+					"0x1234",
+				]
+			}).encodeABI();
+
 			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
 				{ t: 'bytes1',  v: '0xff'                      },
 				{ t: 'address', v: AppRegistryInstance.address },
-				{ t: 'bytes32', v: salt                        },
+				{ t: 'bytes32', v: constants.NULL.BYTES32      },
 				{ t: 'bytes32', v: web3.utils.keccak256(code)  },
 			).slice(26));
 
@@ -101,7 +111,6 @@ contract('Registries', async (accounts) => {
 			assert.equal(events[0].args.app,      predictedAddress);
 			assert.equal(events[0].args.appOwner, appProvider);
 
-
 			AppInstances[i] = await App.at(predictedAddress);
 			assert.equal (await AppInstances[i].registry(),                    AppRegistryInstance.address               );
 			assert.equal (await AppInstances[i].owner(),                       appProvider                               );
@@ -114,26 +123,29 @@ contract('Registries', async (accounts) => {
 			assert.equal (await AppRegistryInstance.balanceOf(appProvider),    i+1                                       );
 			assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                                );
 
-			assert.equal (web3.utils.toChecksumAddress(web3.utils.toHex(await AppRegistryInstance.tokenOfOwnerByIndex(appProvider, i))), AppInstances[i].address);
+			assert.equal (BN2Address(await AppRegistryInstance.tokenOfOwnerByIndex(appProvider, i)), AppInstances[i].address);
 		}
 	});
 
 	/***************************************************************************
-	 *                  TEST: Dataset creation (by datasetProvider)                  *
+	 *               TEST: Dataset creation (by datasetProvider)               *
 	 ***************************************************************************/
 	it("Dataset Creation", async () => {
-		for (i=0; i<5; ++i)
+		for (i=0; i<32; ++i)
 		{
-			const code = new web3.eth.Contract(Dataset.abi).deploy({ data: Dataset.bytecode, arguments: [] }).encodeABI();
-			const salt = web3.utils.soliditySha3(
-				{ t: 'string',  v: "Dataset #"+i                                  },
-				{ t: 'bytes',   v: constants.MULTIADDR_BYTES                      },
-				{ t: 'bytes32', v: web3.utils.keccak256("Content of dataset #"+i) },
-			);
+			const code = new web3.eth.Contract(Dataset.abi).deploy({
+				data: Dataset.bytecode,
+				arguments: [
+					"Dataset #"+i,
+					constants.MULTIADDR_BYTES,
+					web3.utils.keccak256("Content of dataset #"+i),
+				]
+			}).encodeABI();
+
 			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
 				{ t: 'bytes1',  v: '0xff'                          },
 				{ t: 'address', v: DatasetRegistryInstance.address },
-				{ t: 'bytes32', v: salt                            },
+				{ t: 'bytes32', v: constants.NULL.BYTES32          },
 				{ t: 'bytes32', v: web3.utils.keccak256(code)      },
 			).slice(26));
 
@@ -160,24 +172,27 @@ contract('Registries', async (accounts) => {
 			assert.equal (await DatasetRegistryInstance.balanceOf(datasetProvider), i+1                                           );
 			assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                                 );
 
-			assert.equal (web3.utils.toChecksumAddress(web3.utils.toHex(await DatasetRegistryInstance.tokenOfOwnerByIndex(datasetProvider, i))), DatasetInstances[i].address);
+			assert.equal (BN2Address(await DatasetRegistryInstance.tokenOfOwnerByIndex(datasetProvider, i)), DatasetInstances[i].address);
 		}
 	});
 
 	/***************************************************************************
-	 *                 TEST: Workerpool creation (by scheduler)                  *
+	 *                TEST: Workerpool creation (by scheduler)                 *
 	 ***************************************************************************/
 	it("Workerpool Creation", async () => {
-		for (i=0; i<5; ++i)
+		for (i=0; i<32; ++i)
 		{
-			const code = new web3.eth.Contract(Workerpool.abi).deploy({ data: Workerpool.bytecode, arguments: [] }).encodeABI();
-			const salt = web3.utils.soliditySha3(
-				{ t: 'string', v: "Workerpool #"+i },
-			);
+			const code = new web3.eth.Contract(Workerpool.abi).deploy({
+				data: Workerpool.bytecode,
+				arguments: [
+					"Workerpool #"+i
+				]
+			}).encodeABI();
+
 			const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
 				{ t: 'bytes1',  v: '0xff'                             },
 				{ t: 'address', v: WorkerpoolRegistryInstance.address },
-				{ t: 'bytes32', v: salt                               },
+				{ t: 'bytes32', v: constants.NULL.BYTES32             },
 				{ t: 'bytes32', v: web3.utils.keccak256(code)         },
 			).slice(26));
 
@@ -202,7 +217,7 @@ contract('Registries', async (accounts) => {
 			assert.equal (await WorkerpoolRegistryInstance.balanceOf(scheduler),       i+1                                  );
 			assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address)                     );
 
-			assert.equal (web3.utils.toChecksumAddress(web3.utils.toHex(await WorkerpoolRegistryInstance.tokenOfOwnerByIndex(scheduler, i))), WorkerpoolInstances[i].address);
+			assert.equal (BN2Address(await WorkerpoolRegistryInstance.tokenOfOwnerByIndex(scheduler, i)), WorkerpoolInstances[i].address);
 		}
 	});
 

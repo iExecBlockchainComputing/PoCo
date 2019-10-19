@@ -1,10 +1,9 @@
 pragma solidity ^0.5.0;
 
 import "./RegistryEntry.sol";
-import "../tools/Once.sol";
 
 
-contract App is RegistryEntry, Once
+contract App is RegistryEntry
 {
 	/**
 	 * Members
@@ -18,15 +17,13 @@ contract App is RegistryEntry, Once
 	/**
 	 * Constructor
 	 */
-	constructor() public RegistryEntry(msg.sender) {}
-
-	function setup(
-		string  calldata _appName,
-		string  calldata _appType,
-		bytes   calldata _appMultiaddr,
-		bytes32          _appChecksum,
-		bytes   calldata _appMREnclave)
-	external onlyOnce()
+	constructor(
+		string  memory _appName,
+		string  memory _appType,
+		bytes   memory _appMultiaddr,
+		bytes32        _appChecksum,
+		bytes   memory _appMREnclave)
+	public RegistryEntry(msg.sender)
 	{
 		m_appName      = _appName;
 		m_appType      = _appType;

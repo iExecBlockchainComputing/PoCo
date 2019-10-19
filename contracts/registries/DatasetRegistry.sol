@@ -27,18 +27,17 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 		bytes32          _datasetChecksum)
 	external returns (Dataset)
 	{
-		bytes32 salt = keccak256(abi.encodePacked(
-			_datasetName,
-			_datasetMultiaddr,
-			_datasetChecksum
+		Dataset dataset = Dataset(_create2(
+			abi.encodePacked(
+				type(Dataset).creationCode,
+				abi.encode(
+					_datasetName,
+					_datasetMultiaddr,
+					_datasetChecksum
+				)
+			),
+			bytes32(0)
 		));
-
-		Dataset dataset = Dataset(_create2(type(Dataset).creationCode, salt));
-		dataset.setup(
-			_datasetName,
-			_datasetMultiaddr,
-			_datasetChecksum
-		);
 
 		_mint(_datasetOwner, uint256(address(dataset)));
 		emit CreateDataset(_datasetOwner, address(dataset));

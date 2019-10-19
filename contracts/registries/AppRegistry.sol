@@ -29,22 +29,19 @@ contract AppRegistry is Registry, CounterfactualFactory
 		bytes   calldata _appMREnclave)
 	external returns (App)
 	{
-		bytes32 salt = keccak256(abi.encodePacked(
-			_appName,
-			_appType,
-			_appMultiaddr,
-			_appChecksum,
-			_appMREnclave
+		App app = App(_create2(
+			abi.encodePacked(
+				type(App).creationCode,
+				abi.encode(
+					_appName,
+					_appType,
+					_appMultiaddr,
+					_appChecksum,
+					_appMREnclave
+				)
+			),
+			bytes32(0)
 		));
-
-		App app = App(_create2(type(App).creationCode, salt));
-		app.setup(
-			_appName,
-			_appType,
-			_appMultiaddr,
-			_appChecksum,
-			_appMREnclave
-		);
 
 		_mint(_appOwner, uint256(address(app)));
 		emit CreateApp(_appOwner, address(app));

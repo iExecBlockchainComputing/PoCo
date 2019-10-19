@@ -1,10 +1,9 @@
 pragma solidity ^0.5.0;
 
 import "./RegistryEntry.sol";
-import "../tools/Once.sol";
 
 
-contract Dataset is RegistryEntry, Once
+contract Dataset is RegistryEntry
 {
 	/**
 	 * Members
@@ -16,13 +15,11 @@ contract Dataset is RegistryEntry, Once
 	/**
 	 * Constructor
 	 */
-	constructor() public RegistryEntry(msg.sender) {}
-
-	function setup(
-		string  calldata _datasetName,
-		bytes   calldata _datasetMultiaddr,
-		bytes32          _datasetChecksum)
-	external onlyOnce()
+	constructor(
+		string  memory _datasetName,
+		bytes   memory _datasetMultiaddr,
+		bytes32        _datasetChecksum)
+	public RegistryEntry(msg.sender)
 	{
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;

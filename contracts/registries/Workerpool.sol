@@ -1,10 +1,9 @@
 pragma solidity ^0.5.0;
 
 import "./RegistryEntry.sol";
-import "../tools/Once.sol";
 
 
-contract Workerpool is RegistryEntry, Once
+contract Workerpool is RegistryEntry
 {
 	/**
 	 * Parameters
@@ -23,11 +22,9 @@ contract Workerpool is RegistryEntry, Once
 	/**
 	 * Constructor
 	 */
-	constructor() public RegistryEntry(msg.sender) {}
-
-	function setup(
-		string  calldata _workerpoolDescription)
-	external onlyOnce()
+	constructor(
+		string memory _workerpoolDescription)
+	public RegistryEntry(msg.sender)
 	{
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
