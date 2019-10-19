@@ -33,7 +33,7 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 var GenericFactory          = artifacts.require('GenericFactory')
 
-const USEFACTORY = false;
+DEPLOYMENT.salt = DEPLOYMENT.salt || web3.utils.randomHex(32);
 
 function getSerializedObject(entry)
 {
@@ -58,16 +58,10 @@ async function factoryDeployer(contract, args = [], salt = '0x000000000000000000
 {
 	const factory        = await GenericFactory.deployed();
 	const constructorABI = contract._json.abi.find(e => e.type == 'constructor');
-
-	assert(!constructorABI || constructorABI.inputs.length == args.length);
-
-	const library  = await IexecODBLibOrders.deployed()
-	const coreCode = contract.bytecode.replace(/__IexecODBLibOrders_____________________/g, library.address.slice(2).toLowerCase())
-	const argsCode = constructorABI ? web3.eth.abi.encodeParameters(
-		contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type),
-		args
-	).slice(2) : ''
-	const deployCode = coreCode + argsCode
+	const library        = await IexecODBLibOrders.deployed()
+	const coreCode       = contract.bytecode.replace(/__IexecODBLibOrders_____________________/g, library.address.slice(2).toLowerCase())
+	const argsCode       = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), args).slice(2) : ''
+	const deployCode     = coreCode + argsCode
 
 	contract.address = await factory.predictAddress(deployCode, salt);
 
@@ -75,7 +69,7 @@ async function factoryDeployer(contract, args = [], salt = '0x000000000000000000
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
 		await factory.createContract(deployCode, salt);
-		console.log(`[factory] ${contract.contractName} deployed`);
+		console.log(`[factory] ${contract.contractName} successfully deployed`);
 	}
 	else
 	{
@@ -139,9 +133,9 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                          Deploy & link library                          *
 	 ***************************************************************************/
-	if (USEFACTORY)
+	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(IexecODBLibOrders);
+		await factoryDeployer(IexecODBLibOrders, [], DEPLOYMENT.salt);
 	}
 	else
 	{
@@ -153,10 +147,10 @@ module.exports = async function(deployer, network, accounts)
 	/***************************************************************************
 	 *                              Deploy proxy                               *
 	 ***************************************************************************/
-	if (USEFACTORY)
+	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(ERC1538Update);
-		await factoryDeployer(ERC1538Proxy, [ accounts[0], (await ERC1538Update.deployed()).address ]);
+		await factoryDeployer(ERC1538Update, [], DEPLOYMENT.salt);
+		await factoryDeployer(ERC1538Proxy, [ accounts[0], (await ERC1538Update.deployed()).address ], DEPLOYMENT.salt);
 	}
 	else
 	{
@@ -186,9 +180,9 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (USEFACTORY)
+		if (DEPLOYMENT.usefactory)
 		{
-			await factoryDeployer(contracts[id]);
+			await factoryDeployer(contracts[id], [], DEPLOYMENT.salt);
 		}
 		else
 		{
@@ -206,11 +200,11 @@ module.exports = async function(deployer, network, accounts)
 	 ***************************************************************************/
 	IexecInterfaceInstance = await IexecInterface.at(ERC1538.address);
 
-	if (USEFACTORY)
+	if (DEPLOYMENT.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
-		await factoryDeployer(DatasetRegistry,    [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
-		await factoryDeployer(WorkerpoolRegistry, [ accounts[0], '0x0000000000000000000000000000000000000000' ]);
+		await factoryDeployer(AppRegistry,        [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
+		await factoryDeployer(DatasetRegistry,    [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
+		await factoryDeployer(WorkerpoolRegistry, [ accounts[0], '0x0000000000000000000000000000000000000000' ], DEPLOYMENT.salt);
 	}
 	else
 	{
