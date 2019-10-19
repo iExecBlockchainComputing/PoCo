@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "@ensdomains/ens/contracts/ENSRegistry.sol";
 import "@ensdomains/ens/contracts/ReverseRegistrar.sol";
-import "./IOwnable.sol";
+import "../interfaces/IOwnable.sol";
 
 
 contract ENSReverseRegistration is IOwnable
