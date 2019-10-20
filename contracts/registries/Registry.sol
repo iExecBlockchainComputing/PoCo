@@ -16,9 +16,6 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 	string    public name;
 	string    public symbol;
 
-	/**
-	 * Constructor
-	 */
 	constructor(string memory _name, string memory _symbol, address _previous)
 	public
 	{
@@ -27,12 +24,15 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 		symbol   = _symbol;
 	}
 
-	/**
-	 * Accessors
-	 */
 	function isRegistered(address _entry)
 	public view returns (bool)
 	{
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
+	}
+
+	function ENSReverseRegister(ENSRegistry _ens, string calldata _name)
+	external onlyOwner()
+	{
+		_ENSReverseRegister(_ens, _name);
 	}
 }

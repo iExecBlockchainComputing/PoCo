@@ -95,13 +95,13 @@ contract('ENSIntegration', async (accounts) => {
 	describe("Reverse register", async () => {
 		describe("unauthorized", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.registerENS(ENSInstance.address, "wrong.domain.eth", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner");
+				await expectRevert(IexecInstance.ENSReverseRegister(ENSInstance.address, "wrong.domain.eth", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner");
 			});
 		});
 
 		describe("authorized", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.registerENS(ENSInstance.address, "test.namespace.eth", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				txMined = await IexecInstance.ENSReverseRegister(ENSInstance.address, "test.namespace.eth", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			});
 
