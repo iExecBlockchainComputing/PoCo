@@ -273,7 +273,7 @@ library IexecODBLibOrders
 		bytes32 r;
 		bytes32 s;
 		uint8   v;
-		if (sign.length != 65) revert();
+		require(sign.length == 65);
 		assembly
 		{
 			r :=         mload(add(sign, 0x20))
@@ -281,7 +281,7 @@ library IexecODBLibOrders
 			v := byte(0, mload(add(sign, 0x60)))
 		}
 		if (v < 27) v += 27;
-		if (v != 27 && v != 28) revert();
+		require(v == 27 || v == 28);
 		return ecrecover(hash, v, r, s);
 	}
 }
