@@ -1,5 +1,6 @@
 pragma solidity ^0.5.0;
 
+
 contract CounterfactualFactory
 {
 	function _create2(bytes memory _code, bytes32 _salt)

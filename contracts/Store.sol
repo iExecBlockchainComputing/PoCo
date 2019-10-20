@@ -9,14 +9,14 @@ import "./libs/IexecODBLibOrders.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./registries/RegistryBase.sol";
+import "./registries/Registry.sol";
 
 
 contract Store is ERC1538Store
 {
-	RegistryBase public appregistry;
-	RegistryBase public datasetregistry;
-	RegistryBase public workerpoolregistry;
+	IRegistry public appregistry;
+	IRegistry public datasetregistry;
+	IRegistry public workerpoolregistry;
 
 	// Escrow
 	IERC20  internal m_baseToken;

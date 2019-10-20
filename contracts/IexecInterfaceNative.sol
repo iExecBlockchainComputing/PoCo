@@ -12,5 +12,6 @@ import "./delegates/IexecRelay.sol";
 import "./delegates/IexecTokenSpender.sol";
 import "./delegates/ENSIntegration.sol";
 
+
 contract IexecInterfaceNative is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowNative, IexecOrderSignature, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {}

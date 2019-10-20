@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
+import '../factory/CounterfactualFactory.sol';
+import './Registry.sol';
 import './Workerpool.sol';
-import './CounterfactualFactory.sol';
-import './RegistryBase.sol';
 
 
-contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
+contract WorkerpoolRegistry is Registry, CounterfactualFactory
 {
 	event CreateWorkerpool(address indexed workerpoolOwner, address workerpool);
 
@@ -13,7 +13,7 @@ contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase, ENSReverseRe
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public RegistryBase(_previous)
+	public Registry("iExec Workerpool Registry (v4)", "iExecWorkerpoolV4", _previous)
 	{
 	}
 
@@ -25,17 +25,17 @@ contract WorkerpoolRegistry is CounterfactualFactory, RegistryBase, ENSReverseRe
 		string  calldata _workerpoolDescription)
 	external returns (Workerpool)
 	{
-		bytes32 salt = keccak256(abi.encodePacked(
-			_workerpoolDescription
+		Workerpool workerpool = Workerpool(_create2(
+			abi.encodePacked(
+				type(Workerpool).creationCode,
+				abi.encode(
+					_workerpoolDescription
+				)
+			),
+			bytes32(0)
 		));
 
-		Workerpool workerpool = Workerpool(_create2(type(Workerpool).creationCode, salt));
-		workerpool.setup(
-			_workerpoolOwner,
-			_workerpoolDescription
-		);
-
-		insert(address(workerpool), _workerpoolOwner);
+		_mint(_workerpoolOwner, uint256(address(workerpool)));
 		emit CreateWorkerpool(_workerpoolOwner, address(workerpool));
 
 		return workerpool;

@@ -12,5 +12,6 @@ import "./delegates/IexecRelay.sol";
 import "./delegates/IexecTokenSpender.sol";
 import "./delegates/ENSIntegration.sol";
 
+
 contract IexecInterfaceToken is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecOrderSignature, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {}

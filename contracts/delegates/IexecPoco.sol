@@ -70,9 +70,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		m_name             = _name;
 		m_symbol           = _symbol;
 		m_decimals         = _decimal;
-		appregistry        = RegistryBase(_appregistryAddress);
-		datasetregistry    = RegistryBase(_datasetregistryAddress);
-		workerpoolregistry = RegistryBase(_workerpoolregistryAddress);
+		appregistry        = IRegistry(_appregistryAddress);
+		datasetregistry    = IRegistry(_datasetregistryAddress);
+		workerpoolregistry = IRegistry(_workerpoolregistryAddress);
 
 		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
 			name:              "iExecODB"

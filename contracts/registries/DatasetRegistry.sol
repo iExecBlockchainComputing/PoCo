@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
+import '../factory/CounterfactualFactory.sol';
+import './Registry.sol';
 import './Dataset.sol';
-import './CounterfactualFactory.sol';
-import './RegistryBase.sol';
 
 
-contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
+contract DatasetRegistry is Registry, CounterfactualFactory
 {
 	event CreateDataset(address indexed datasetOwner, address dataset);
 
@@ -13,7 +13,7 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegis
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public RegistryBase(_previous)
+	public Registry("iExec Dataset Registry (v4)", "iExecDatasetsV4", _previous)
 	{
 	}
 
@@ -27,21 +27,19 @@ contract DatasetRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegis
 		bytes32          _datasetChecksum)
 	external returns (Dataset)
 	{
-		bytes32 salt = keccak256(abi.encodePacked(
-			_datasetName,
-			_datasetMultiaddr,
-			_datasetChecksum
+		Dataset dataset = Dataset(_create2(
+			abi.encodePacked(
+				type(Dataset).creationCode,
+				abi.encode(
+					_datasetName,
+					_datasetMultiaddr,
+					_datasetChecksum
+				)
+			),
+			bytes32(0)
 		));
 
-		Dataset dataset = Dataset(_create2(type(Dataset).creationCode, salt));
-		dataset.setup(
-			_datasetOwner,
-			_datasetName,
-			_datasetMultiaddr,
-			_datasetChecksum
-		);
-
-		insert(address(dataset), _datasetOwner);
+		_mint(_datasetOwner, uint256(address(dataset)));
 		emit CreateDataset(_datasetOwner, address(dataset));
 		return dataset;
 	}

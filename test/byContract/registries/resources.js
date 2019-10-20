@@ -71,10 +71,7 @@ contract('Ressources', async (accounts) => {
 	it("App Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			AppInstances[i] = await App.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-
-			// SETUP
-			await AppInstances[i].setup(
+			txMined = await AppRegistryInstance.createApp(
 				appProvider,
 				"App #"+i,
 				"DOCKER",
@@ -83,23 +80,10 @@ contract('Ressources', async (accounts) => {
 				"0x1234",
 				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal(await AppInstances[i].owner(),          appProvider                               );
-			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
-			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
-			assert.equal(await AppInstances[i].m_appMultiaddr(), constants.MULTIADDR_BYTES                 );
-			assert.equal(await AppInstances[i].m_appChecksum(),  web3.utils.keccak256("Content of app #"+i));
-			assert.equal(await AppInstances[i].m_appMREnclave(), "0x1234"                                  );
 
-			// CANNOT RESETUP
-			await expectRevert.unspecified(AppInstances[i].setup(
-				appProvider,
-				"Other App #"+i,
-				"DOCKER",
-				constants.MULTIADDR_BYTES,
-				web3.utils.keccak256("Content of other app #"+i),
-				"0x1234",
-				{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
-			));
+			AppInstances[i] = await App.at(extractEvents(txMined, AppRegistryInstance.address, "CreateApp")[0].args.app);
+
+			assert.equal(await AppInstances[i].registry(),       AppRegistryInstance.address               );
 			assert.equal(await AppInstances[i].owner(),          appProvider                               );
 			assert.equal(await AppInstances[i].m_appName(),      "App #"+i                                 );
 			assert.equal(await AppInstances[i].m_appType(),      "DOCKER"                                  );
@@ -115,29 +99,17 @@ contract('Ressources', async (accounts) => {
 	it("Dataset Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			DatasetInstances[i] = await Dataset.new({ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-
-			// SETUP
-			await DatasetInstances[i].setup(
+			txMined = await DatasetRegistryInstance.createDataset(
 				datasetProvider,
 				"Dataset #"+i,
 				constants.MULTIADDR_BYTES,
 				web3.utils.keccak256("Content of dataset #"+i),
 				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal(await DatasetInstances[i].owner(),              datasetProvider                               );
-			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
-			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
-			assert.equal(await DatasetInstances[i].m_datasetChecksum(),  web3.utils.keccak256("Content of dataset #"+i));
 
-			// CANNOT RESETUP
-			await expectRevert.unspecified(DatasetInstances[i].setup(
-				datasetProvider,
-				"Other Dataset #"+i,
-				constants.MULTIADDR_BYTES,
-				web3.utils.keccak256("Content of other dataset #"+i),
-				{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
-			));
+			DatasetInstances[i] = await Dataset.at(extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset")[0].args.dataset);
+
+			assert.equal(await DatasetInstances[i].registry(),           DatasetRegistryInstance.address               );
 			assert.equal(await DatasetInstances[i].owner(),              datasetProvider                               );
 			assert.equal(await DatasetInstances[i].m_datasetName(),      "Dataset #"+i                                 );
 			assert.equal(await DatasetInstances[i].m_datasetMultiaddr(), constants.MULTIADDR_BYTES                     );
@@ -151,29 +123,19 @@ contract('Ressources', async (accounts) => {
 	it("Workerpool Creation", async () => {
 		for (i=1; i<5; ++i)
 		{
-			WorkerpoolInstances[i] = await Workerpool.new({ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-
-			// SETUP
-			await WorkerpoolInstances[i].setup(
+			txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 				scheduler,
 				"Workerpool #"+i,
 				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 			);
-			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler       );
-			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i);
-			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30              );
-			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1               );
 
-			// CANNOT RESETUP
-			await expectRevert.unspecified(WorkerpoolInstances[i].setup(
-				scheduler,
-				"Other Workerpool #"+i,
-				{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
-			));
-			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler       );
-			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i);
-			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30              );
-			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1               );
+			WorkerpoolInstances[i] = await Workerpool.at(extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool")[0].args.workerpool);
+
+			assert.equal(await WorkerpoolInstances[i].registry(),                     WorkerpoolRegistryInstance.address);
+			assert.equal(await WorkerpoolInstances[i].owner(),                        scheduler                         );
+			assert.equal(await WorkerpoolInstances[i].m_workerpoolDescription(),      "Workerpool #"+i                  );
+			assert.equal(await WorkerpoolInstances[i].m_workerStakeRatioPolicy(),     30                                );
+			assert.equal(await WorkerpoolInstances[i].m_schedulerRewardRatioPolicy(), 1                                 );
 		}
 	});
 
@@ -231,17 +193,4 @@ contract('Ressources', async (accounts) => {
 		assert.equal(await WorkerpoolInstances[1].m_workerStakeRatioPolicy(),     35             );
 		assert.equal(await WorkerpoolInstances[1].m_schedulerRewardRatioPolicy(), 5              );
 	});
-
-
-	it("Ressources cannot be transfered", async () => {
-		await expectRevert.unspecified(AppInstances[1].transferOwnership(user, { from: appProvider}));
-		assert.equal(await AppInstances[1].owner(), appProvider);
-
-		await expectRevert.unspecified(DatasetInstances[1].transferOwnership(user, { from: datasetProvider}));
-		assert.equal(await DatasetInstances[1].owner(), datasetProvider);
-
-		await expectRevert.unspecified(WorkerpoolInstances[1].transferOwnership(user, { from: scheduler}));
-		assert.equal(await WorkerpoolInstances[1].owner(), scheduler);
-	});
-
 });

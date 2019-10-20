@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
+import '../factory/CounterfactualFactory.sol';
+import './Registry.sol';
 import './App.sol';
-import './CounterfactualFactory.sol';
-import './RegistryBase.sol';
 
 
-contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrationOwnable
+contract AppRegistry is Registry, CounterfactualFactory
 {
 	event CreateApp(address indexed appOwner, address app);
 
@@ -13,7 +13,7 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public RegistryBase(_previous)
+	public Registry("iExec Application Registry (v4)", "iExecAppsV4", _previous)
 	{
 	}
 
@@ -29,25 +29,21 @@ contract AppRegistry is CounterfactualFactory, RegistryBase, ENSReverseRegistrat
 		bytes   calldata _appMREnclave)
 	external returns (App)
 	{
-		bytes32 salt = keccak256(abi.encodePacked(
-			_appName,
-			_appType,
-			_appMultiaddr,
-			_appChecksum,
-			_appMREnclave
+		App app = App(_create2(
+			abi.encodePacked(
+				type(App).creationCode,
+				abi.encode(
+					_appName,
+					_appType,
+					_appMultiaddr,
+					_appChecksum,
+					_appMREnclave
+				)
+			),
+			bytes32(0)
 		));
 
-		App app = App(_create2(type(App).creationCode, salt));
-		app.setup(
-			_appOwner,
-			_appName,
-			_appType,
-			_appMultiaddr,
-			_appChecksum,
-			_appMREnclave
-		);
-
-		insert(address(app), _appOwner);
+		_mint(_appOwner, uint256(address(app)));
 		emit CreateApp(_appOwner, address(app));
 
 		return app;

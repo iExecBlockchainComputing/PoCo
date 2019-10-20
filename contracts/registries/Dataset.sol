@@ -1,11 +1,9 @@
 pragma solidity ^0.5.0;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../tools/ENSReverseRegistrationOwnable.sol";
-import "../tools/Once.sol";
+import "./RegistryEntry.sol";
 
 
-contract Dataset is Ownable, Once, ENSReverseRegistrationOwnable
+contract Dataset is RegistryEntry
 {
 	/**
 	 * Members
@@ -17,19 +15,14 @@ contract Dataset is Ownable, Once, ENSReverseRegistrationOwnable
 	/**
 	 * Constructor
 	 */
-	function setup(
-		address          _datasetOwner,
-		string  calldata _datasetName,
-		bytes   calldata _datasetMultiaddr,
-		bytes32          _datasetChecksum)
-	external onlyOnce()
+	constructor(
+		string  memory _datasetName,
+		bytes   memory _datasetMultiaddr,
+		bytes32        _datasetChecksum)
+	public RegistryEntry(msg.sender)
 	{
-		_transferOwnership(_datasetOwner);
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;
 	}
-
-	function transferOwnership(address) public { revert("disabled"); }
-
 }

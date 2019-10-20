@@ -1,11 +1,9 @@
 pragma solidity ^0.5.0;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../tools/ENSReverseRegistrationOwnable.sol";
-import "../tools/Once.sol";
+import "./RegistryEntry.sol";
 
 
-contract Workerpool is Ownable, Once, ENSReverseRegistrationOwnable
+contract Workerpool is RegistryEntry
 {
 	/**
 	 * Parameters
@@ -24,12 +22,10 @@ contract Workerpool is Ownable, Once, ENSReverseRegistrationOwnable
 	/**
 	 * Constructor
 	 */
-	function setup(
-		address          _workerpoolOwner,
-		string  calldata _workerpoolDescription)
-	external onlyOnce()
+	constructor(
+		string memory _workerpoolDescription)
+	public RegistryEntry(msg.sender)
 	{
-		_transferOwnership(_workerpoolOwner);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable
@@ -38,7 +34,7 @@ contract Workerpool is Ownable, Once, ENSReverseRegistrationOwnable
 	function changePolicy(
 		uint256 _newWorkerStakeRatioPolicy,
 		uint256 _newSchedulerRewardRatioPolicy)
-	external onlyOwner
+	external onlyOwner()
 	{
 		require(_newSchedulerRewardRatioPolicy <= 100);
 
@@ -50,7 +46,4 @@ contract Workerpool is Ownable, Once, ENSReverseRegistrationOwnable
 		m_workerStakeRatioPolicy     = _newWorkerStakeRatioPolicy;
 		m_schedulerRewardRatioPolicy = _newSchedulerRewardRatioPolicy;
 	}
-
-	function transferOwnership(address) public { revert("disabled"); }
-
 }
