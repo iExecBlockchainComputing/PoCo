@@ -9,6 +9,15 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
 	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
 
+	// TODO
+	// function _chainId()
+	// internal pure returns (uint256)
+	// {
+	// 	uint256 id;
+	// 	assembly { id := chainid() }
+	// 	return id;
+	// }
+
 	function _updateDomainSeparator(uint256 _chainid)
 	internal
 	{

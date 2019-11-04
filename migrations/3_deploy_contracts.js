@@ -389,9 +389,9 @@ module.exports = async function(deployer, network, accounts)
 
 		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
 		await     IexecInterfaceInstance.ENSReverseRegister(ens.address, 'hub.iexec.eth');
-		await        AppRegistryInstance.ENSReverseRegister(ens.address, 'app.registry.iexec.eth');
-		await    DatasetRegistryInstance.ENSReverseRegister(ens.address, 'dataset.registry.iexec.eth');
-		await WorkerpoolRegistryInstance.ENSReverseRegister(ens.address, 'workerpool.registry.iexec.eth');
+		await        AppRegistryInstance.ENSReverseRegister(ens.address, 'apps.registry.iexec.eth');
+		await    DatasetRegistryInstance.ENSReverseRegister(ens.address, 'datasets.registry.iexec.eth');
+		await WorkerpoolRegistryInstance.ENSReverseRegister(ens.address, 'workerpools.registry.iexec.eth');
 	}
 
 	/***************************************************************************

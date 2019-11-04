@@ -77,18 +77,18 @@ contract('ENSIntegration', async (accounts) => {
 				assert(false);
 			} catch(e) {}
 			assert.equal(await enstools.lookup(IexecInstance.address             ), "hub.iexec.eth"                );
-			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "app.registry.iexec.eth"       );
-			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "dataset.registry.iexec.eth"   );
-			assert.equal(await enstools.lookup(WorkerpoolRegistryInstance.address), "workerpool.registry.iexec.eth");
+			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "apps.registry.iexec.eth"       );
+			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "datasets.registry.iexec.eth"   );
+			assert.equal(await enstools.lookup(WorkerpoolRegistryInstance.address), "workerpools.registry.iexec.eth");
 		})
 		it("resolve", async () => {
 			if (DEPLOYMENT.asset == "Token") {
-				assert.equal(await enstools.resolve("rlc.iexec.eth"              ), RLCInstance.address               );
+				assert.equal(await enstools.resolve("rlc.iexec.eth"               ), RLCInstance.address               );
 			}
-			assert.equal(await enstools.resolve("hub.iexec.eth"                ), IexecInstance.address             );
-			assert.equal(await enstools.resolve("app.registry.iexec.eth"       ), AppRegistryInstance.address       );
-			assert.equal(await enstools.resolve("dataset.registry.iexec.eth"   ), DatasetRegistryInstance.address   );
-			assert.equal(await enstools.resolve("workerpool.registry.iexec.eth"), WorkerpoolRegistryInstance.address);
+			assert.equal(await enstools.resolve("hub.iexec.eth"                 ), IexecInstance.address             );
+			assert.equal(await enstools.resolve("apps.registry.iexec.eth"       ), AppRegistryInstance.address       );
+			assert.equal(await enstools.resolve("datasets.registry.iexec.eth"   ), DatasetRegistryInstance.address   );
+			assert.equal(await enstools.resolve("workerpools.registry.iexec.eth"), WorkerpoolRegistryInstance.address);
 		});
 	});
 
