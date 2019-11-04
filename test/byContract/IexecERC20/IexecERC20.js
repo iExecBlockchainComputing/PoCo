@@ -11,6 +11,8 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
+var TestReceiver       = artifacts.require("TestReceiver");
+
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const multiaddr = require('multiaddr');
 const constants = require("../../../utils/constants");
@@ -45,6 +47,7 @@ contract('ERC20', async (accounts) => {
 	var AppRegistryInstance        = null;
 	var DatasetRegistryInstance    = null;
 	var WorkerpoolRegistryInstance = null;
+	var TestReceiverInstance       = null;
 
 	var categories = [];
 
@@ -62,7 +65,7 @@ contract('ERC20', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-
+		TestReceiverInstance       = await TestReceiver.new();
 	});
 
 	/***************************************************************************
@@ -276,6 +279,20 @@ contract('ERC20', async (accounts) => {
 					this.token.increaseAllowance(spender, amount, { from: initialHolder }), 'ERC20: approve to the zero address'
 				);
 			});
+		});
+	});
+
+	describe('approveAndCall', async () => {
+		it('accepted by spender', async () => {
+			await IexecInstance.approveAndCall(TestReceiverInstance.address, 10, '0x', { from: initialHolder });
+			// TODO: check event emitted by TestReceiver
+		});
+
+		it('rejected by spender', async () => {
+			await expectRevert(
+				IexecInstance.approveAndCall(TestReceiverInstance.address, 0, '0x', { from: initialHolder }),
+				'approval-refused'
+			);
 		});
 	});
 

@@ -27,7 +27,7 @@ contract IexecERC20Delegate is IexecERC20, DelegateBase, IexecERC20Common
 		public returns (bool)
 	{
 			_approve(msg.sender, spender, value);
-			IexecTokenSpender(spender).receiveApproval(msg.sender, value, address(this), extraData);
+			require(IexecTokenSpender(spender).receiveApproval(msg.sender, value, address(this), extraData), 'approval-refused');
 			return true;
 	}
 
