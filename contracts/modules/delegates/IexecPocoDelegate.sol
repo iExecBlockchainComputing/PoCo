@@ -1,86 +1,20 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
-import "./IexecERC20.sol";
-import "../libs/SignatureVerifier.sol";
+import "./IexecERC20Common.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecPoco.sol";
+import "../../libs/SignatureVerifier.sol";
 
-
-interface IexecPoco
-{
-	event Withdraw(address owner, uint256 amount);
-	event Reward  (address owner, uint256 amount, bytes32 ref);
-	event Seize   (address owner, uint256 amount, bytes32 ref);
-	event Lock    (address owner, uint256 amount);
-	event Unlock  (address owner, uint256 amount);
-
-	event OrdersMatched  (bytes32 dealid, bytes32 appHash, bytes32 datasetHash, bytes32 workerpoolHash, bytes32 requestHash, uint256 volume);
-	event SchedulerNotice(address indexed workerpool, bytes32 dealid);
-
-	event TaskInitialize(bytes32 indexed taskid, address indexed workerpool);
-	event TaskContribute(bytes32 indexed taskid, address indexed worker, bytes32 hash);
-	event TaskConsensus (bytes32 indexed taskid, bytes32 consensus);
-	event TaskReveal    (bytes32 indexed taskid, address indexed worker, bytes32 digest);
-	event TaskReopen    (bytes32 indexed taskid);
-	event TaskFinalize  (bytes32 indexed taskid, bytes results);
-	event TaskClaimed   (bytes32 indexed taskid);
-
-	event AccurateContribution(address indexed worker, bytes32 indexed taskid);
-	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
-
-	function configure(uint256,address,string calldata,string calldata,uint8,address,address,address) external;
-	function verifySignature(address,bytes32,bytes calldata) external view returns (bool);
-	function matchOrders(IexecODBLibOrders.AppOrder calldata,IexecODBLibOrders.DatasetOrder calldata,IexecODBLibOrders.WorkerpoolOrder calldata,IexecODBLibOrders.RequestOrder calldata) external returns (bytes32);
-	function initialize(bytes32,uint256) external returns (bytes32);
-	function contribute(bytes32,bytes32,bytes32,address,bytes calldata,bytes calldata) external;
-	function reveal(bytes32,bytes32) external;
-	function reopen(bytes32) external;
-	function finalize(bytes32,bytes calldata) external;
-	function claim(bytes32) external;
-	function initializeArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
-	function claimArray(bytes32[] calldata) external returns (bool);
-	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
-}
 
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
 	using IexecODBLibOrders for bytes32;
-	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
 	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
 	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
 	using IexecODBLibOrders for IexecODBLibOrders.WorkerpoolOrder;
 	using IexecODBLibOrders for IexecODBLibOrders.RequestOrder;
-
-
-	function configure(
-		uint256          _chainid,
-		address          _token,
-		string  calldata _name,
-		string  calldata _symbol,
-		uint8            _decimal,
-		address          _appregistryAddress,
-		address          _datasetregistryAddress,
-		address          _workerpoolregistryAddress)
-	external
-	{
-		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
-
-		m_baseToken        = IERC20(_token);
-		m_name             = _name;
-		m_symbol           = _symbol;
-		m_decimals         = _decimal;
-		appregistry        = IRegistry(_appregistryAddress);
-		datasetregistry    = IRegistry(_datasetregistryAddress);
-		workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-
-		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
-			name:              "iExecODB"
-		, version:           "3.0-alpha"
-		, chainId:           _chainid
-		, verifyingContract: address(this)
-		}).hash();
-	}
 
 	/***************************************************************************
 	 *                        Escrow methods: internal                         *
@@ -268,9 +202,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
 		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE));
 
-		require(                                       appregistry.isRegistered(_apporder.app));
-		require(_datasetorder.dataset == address(0) || datasetregistry.isRegistered(_datasetorder.dataset));
-		require(                                       workerpoolregistry.isRegistered(_workerpoolorder.workerpool));
+		require(                                       m_appregistry.isRegistered(_apporder.app));
+		require(_datasetorder.dataset == address(0) || m_datasetregistry.isRegistered(_datasetorder.dataset));
+		require(                                       m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool));
 
 		/**
 		 * Check orders authenticity

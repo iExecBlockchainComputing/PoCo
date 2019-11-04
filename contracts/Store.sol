@@ -9,14 +9,16 @@ import "./libs/IexecODBLibOrders.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./registries/Registry.sol";
+import "./registries/IRegistry.sol";
+
+import "./legacy/IexecHubV3.sol";
 
 
 contract Store is ERC1538Store
 {
-	IRegistry public appregistry;
-	IRegistry public datasetregistry;
-	IRegistry public workerpoolregistry;
+	IRegistry internal m_appregistry;
+	IRegistry internal m_datasetregistry;
+	IRegistry internal m_workerpoolregistry;
 
 	// Escrow
 	IERC20  internal m_baseToken;
@@ -51,6 +53,10 @@ contract Store is ERC1538Store
 
 	// Categories
 	IexecODBLibCore.Category[] internal m_categories;
+
+	// Backward compatibility
+	IexecHubV3 internal m_v3_iexecHub;
+	mapping(address => bool) internal m_v3_scoreImported;
 
 	// modifiers
 	modifier onlyScheduler(bytes32 _taskid)

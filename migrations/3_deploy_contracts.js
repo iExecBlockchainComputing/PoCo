@@ -23,6 +23,7 @@ var IexecCategoryManager    = artifacts.require('IexecCategoryManagerDelegate')
 var IexecERC20              = artifacts.require('IexecERC20Delegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
+var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
 var IexecOrderSignature     = artifacts.require('IexecOrderSignatureDelegate')
 var IexecPoco               = artifacts.require('IexecPocoDelegate')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
@@ -165,6 +166,7 @@ module.exports = async function(deployer, network, accounts)
 	{
 		await deployer.deploy(IexecODBLibOrders);
 		await deployer.link(IexecODBLibOrders, IexecPoco);
+		await deployer.link(IexecODBLibOrders, IexecMaintenance);
 		await deployer.link(IexecODBLibOrders, IexecOrderSignature);
 	}
 
@@ -200,6 +202,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecCategoryManager,
 		IexecERC20,
 		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
+		IexecMaintenance,
 		IexecOrderSignature,
 		IexecPoco,
 		IexecRelay,
@@ -252,9 +255,9 @@ module.exports = async function(deployer, network, accounts)
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000'); // TODO
+		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000'); // TODO
+		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000'); // TODO
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -271,7 +274,8 @@ module.exports = async function(deployer, network, accounts)
 		9,
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
-		WorkerpoolRegistryInstance.address
+		WorkerpoolRegistryInstance.address,
+		'0x0000000000000000000000000000000000000000' // TODO
 	);
 
 	for (cat of DEPLOYMENT.categories)

@@ -1,19 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
-import "./IexecERC20.sol";
+import "./IexecERC20Common.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecEscrowNative.sol";
 
-
-interface IexecEscrowNative
-{
-	function () external payable;
-	function deposit() external payable returns (bool);
-	function depositFor(address) external payable returns (bool);
-	function depositForArray(uint256[] calldata,address[] calldata) external payable returns (bool);
-	function withdraw(uint256) external returns (bool);
-	function recover() external returns (uint256);
-}
 
 contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC20Common
 {

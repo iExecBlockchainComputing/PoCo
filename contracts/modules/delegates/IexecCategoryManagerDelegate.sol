@@ -1,15 +1,9 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecCategoryManager.sol";
 
-
-interface IexecCategoryManager
-{
-	event CreateCategory(uint256 catid, string  name, string  description, uint256 workClockTimeRef);
-
-	function createCategory(string calldata,string calldata,uint256) external returns (uint256);
-}
 
 contract IexecCategoryManagerDelegate is IexecCategoryManager, DelegateBase
 {
