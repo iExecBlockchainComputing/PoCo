@@ -7,7 +7,7 @@ import "../interfaces/IexecMaintenance.sol";
 
 contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
-	using IexecODBLibOrders for IexecODBLibOrders.EIP712Domain;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.EIP712Domain;
 
 	// TODO
 	// function _chainId()
@@ -21,7 +21,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	function _updateDomainSeparator(uint256 _chainid)
 	internal
 	{
-		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders.EIP712Domain({
+		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders_v4.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
 		, chainId:           _chainid
@@ -51,7 +51,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_appregistry        = IRegistry(_appregistryAddress);
 		m_datasetregistry    = IRegistry(_datasetregistryAddress);
 		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-		m_v3_iexecHub        = IexecHubV3(_v3_iexecHubAddress);
+		m_v3_iexecHub        = IexecHub(_v3_iexecHubAddress);
 	}
 
 	function updateChainId(uint256 _chainid)

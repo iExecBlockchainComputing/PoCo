@@ -13,7 +13,7 @@ var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
 var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDelegate')
 // Libraries
-var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders')
+var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders_v4')
 // Interface
 var IexecInterface          = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`)
 // Delegates
@@ -37,7 +37,7 @@ var GenericFactory          = artifacts.require('GenericFactory')
 DEPLOYMENT.salt = DEPLOYMENT.salt || web3.utils.randomHex(32);
 
 const LIBRARIES = [
-	{ pattern: /__IexecODBLibOrders_____________________/g, library: IexecODBLibOrders },
+	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
 ]
 
 function getSerializedObject(entry)

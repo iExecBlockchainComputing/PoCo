@@ -10,11 +10,11 @@ import "../../libs/SignatureVerifier.sol";
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
-	using IexecODBLibOrders for bytes32;
-	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.WorkerpoolOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.RequestOrder;
+	using IexecODBLibOrders_v4 for bytes32;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrder;
 
 	/***************************************************************************
 	 *                        Escrow methods: internal                         *
@@ -90,7 +90,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function successWork(bytes32 _dealid, bytes32 _taskid)
 		internal
 	{
-		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
+		IexecODBLibCore_v4.Deal storage deal = m_deals[_dealid];
 
 		uint256 requesterstake = deal.app.price
 		                         .add(deal.dataset.price)
@@ -133,7 +133,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function failedWork(bytes32 _dealid, bytes32 _taskid)
 		internal
 	{
-		IexecODBLibCore.Deal storage deal = m_deals[_dealid];
+		IexecODBLibCore_v4.Deal storage deal = m_deals[_dealid];
 
 		uint256 requesterstake = deal.app.price
 		                         .add(deal.dataset.price)
@@ -170,10 +170,10 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 	// should be external
 	function matchOrders(
-		IexecODBLibOrders.AppOrder        memory _apporder,
-		IexecODBLibOrders.DatasetOrder    memory _datasetorder,
-		IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder,
-		IexecODBLibOrders.RequestOrder    memory _requestorder)
+		IexecODBLibOrders_v4.AppOrder        memory _apporder,
+		IexecODBLibOrders_v4.DatasetOrder    memory _datasetorder,
+		IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder,
+		IexecODBLibOrders_v4.RequestOrder    memory _requestorder)
 	public returns (bytes32)
 	{
 		/**
@@ -252,7 +252,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			m_consumed[ids.requestHash] // idx of first subtask
 		));
 
-		IexecODBLibCore.Deal storage deal = m_deals[dealid];
+		IexecODBLibCore_v4.Deal storage deal = m_deals[dealid];
 		deal.app.pointer          = _apporder.app;
 		deal.app.owner            = ids.appOwner;
 		deal.app.price            = _apporder.appprice;
@@ -326,16 +326,16 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function initialize(bytes32 _dealid, uint256 idx)
 	public returns (bytes32)
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_dealid];
+		IexecODBLibCore_v4.Deal memory deal = m_deals[_dealid];
 
 		require(idx >= deal.botFirst                  );
 		require(idx <  deal.botFirst.add(deal.botSize));
 
 		bytes32 taskid  = keccak256(abi.encodePacked(_dealid, idx));
-		IexecODBLibCore.Task storage task = m_tasks[taskid];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.UNSET);
+		IexecODBLibCore_v4.Task storage task = m_tasks[taskid];
+		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.UNSET);
 
-		task.status               = IexecODBLibCore.TaskStatusEnum.ACTIVE;
+		task.status               = IexecODBLibCore_v4.TaskStatusEnum.ACTIVE;
 		task.dealid               = _dealid;
 		task.idx                  = idx;
 		task.timeref              = m_categories[deal.category].workClockTimeRef;
@@ -360,13 +360,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes memory _workerpoolSign)
 	public
 	{
-		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		IexecODBLibCore.Deal         memory  deal         = m_deals[task.dealid];
+		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLibCore_v4.Deal         memory  deal         = m_deals[task.dealid];
 
-		require(task.status               == IexecODBLibCore.TaskStatusEnum.ACTIVE       );
+		require(task.status               == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE       );
 		require(task.contributionDeadline >  now                                         );
-		require(contribution.status       == IexecODBLibCore.ContributionStatusEnum.UNSET);
+		require(contribution.status       == IexecODBLibCore_v4.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(checkSignature(
@@ -393,7 +393,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		));
 
 		// Update contribution entry
-		contribution.status           = IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED;
+		contribution.status           = IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED;
 		contribution.resultHash       = _resultHash;
 		contribution.resultSeal       = _resultSeal;
 		contribution.enclaveChallenge = _enclaveChallenge;
@@ -433,7 +433,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		{
 			// Preliminary checks done in "contribute()"
 
-			IexecODBLibCore.Task storage task = m_tasks[_taskid];
+			IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
 			uint256 winnerCounter = 0;
 			for (uint256 i = 0; i < task.contributors.length; ++i)
 			{
@@ -442,7 +442,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 				(
 					m_contributions[_taskid][w].resultHash == _consensus
 					&&
-					m_contributions[_taskid][w].status == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
+					m_contributions[_taskid][w].status == IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
 				)
 				{
 					winnerCounter = winnerCounter.add(1);
@@ -450,7 +450,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			}
 			// msg.sender is a contributor: no need to check
 			// require(winnerCounter > 0);
-			task.status         = IexecODBLibCore.TaskStatusEnum.REVEALING;
+			task.status         = IexecODBLibCore_v4.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;
 			task.revealDeadline = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
 			task.revealCounter  = 0;
@@ -465,16 +465,16 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 _resultDigest)
 	external // worker
 	{
-		IexecODBLibCore.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore.TaskStatusEnum.REVEALING                       );
+		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		require(task.status             == IexecODBLibCore_v4.TaskStatusEnum.REVEALING                       );
 		require(task.revealDeadline     >  now                                                            );
-		require(contribution.status     == IexecODBLibCore.ContributionStatusEnum.CONTRIBUTED             );
+		require(contribution.status     == IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED             );
 		require(contribution.resultHash == task.consensusValue                                            );
 		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
 		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
 
-		contribution.status = IexecODBLibCore.ContributionStatusEnum.PROVED;
+		contribution.status = IexecODBLibCore_v4.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
 		task.resultDigest   = _resultDigest;
 
@@ -485,8 +485,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 _taskid)
 	external onlyScheduler(_taskid)
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status         == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status         == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline  >  now                                     );
 		require(task.revealDeadline <= now
 		     && task.revealCounter  == 0                                       );
@@ -496,14 +496,14 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			address worker = task.contributors[i];
 			if (m_contributions[_taskid][worker].resultHash == task.consensusValue)
 			{
-				m_contributions[_taskid][worker].status = IexecODBLibCore.ContributionStatusEnum.REJECTED;
+				m_contributions[_taskid][worker].status = IexecODBLibCore_v4.ContributionStatusEnum.REJECTED;
 			}
 		}
 
 		m_totalweight[_taskid]                      = m_totalweight[_taskid].sub(m_groupweight[_taskid][task.consensusValue]);
 		m_groupweight[_taskid][task.consensusValue] = 0;
 
-		task.status         = IexecODBLibCore.TaskStatusEnum.ACTIVE;
+		task.status         = IexecODBLibCore_v4.TaskStatusEnum.ACTIVE;
 		task.consensusValue = 0x0;
 		task.revealDeadline = 0;
 		task.winnerCounter  = 0;
@@ -516,13 +516,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes   calldata _results)
 	external onlyScheduler(_taskid)
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status        == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status        == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline >  now                                     );
 		require(task.revealCounter == task.winnerCounter
 		    || (task.revealCounter >  0  && task.revealDeadline <= now)       );
 
-		task.status  = IexecODBLibCore.TaskStatusEnum.COMPLETED;
+		task.status  = IexecODBLibCore_v4.TaskStatusEnum.COMPLETED;
 		task.results = _results;
 
 		/**
@@ -565,8 +565,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function distributeRewards(bytes32 _taskid)
 	internal
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		IexecODBLibCore.Deal memory  deal = m_deals[task.dealid];
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		IexecODBLibCore_v4.Deal memory  deal = m_deals[task.dealid];
 
 		uint256 i;
 		address worker;
@@ -577,7 +577,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		for (i = 0; i < task.contributors.length; ++i)
 		{
 			worker = task.contributors[i];
-			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
+			if (m_contributions[_taskid][worker].status == IexecODBLibCore_v4.ContributionStatusEnum.PROVED)
 			{
 				totalLogWeight = totalLogWeight.add(m_logweight[_taskid][worker]);
 			}
@@ -593,7 +593,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		for (i = 0; i < task.contributors.length; ++i)
 		{
 			worker = task.contributors[i];
-			if (m_contributions[_taskid][worker].status == IexecODBLibCore.ContributionStatusEnum.PROVED)
+			if (m_contributions[_taskid][worker].status == IexecODBLibCore_v4.ContributionStatusEnum.PROVED)
 			{
 				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
@@ -638,12 +638,12 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 _taskid)
 	public
 	{
-		IexecODBLibCore.Task storage task = m_tasks[_taskid];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.ACTIVE
-		     || task.status == IexecODBLibCore.TaskStatusEnum.REVEALING);
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE
+		     || task.status == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline <= now);
 
-		task.status = IexecODBLibCore.TaskStatusEnum.FAILLED;
+		task.status = IexecODBLibCore_v4.TaskStatusEnum.FAILLED;
 
 		/**
 		 * Stake management

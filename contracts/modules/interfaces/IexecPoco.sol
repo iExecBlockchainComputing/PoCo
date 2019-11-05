@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecODBLibOrders.sol";
+import "../../libs/IexecODBLibOrders_v4.sol";
 
 
 interface IexecPoco
@@ -27,7 +27,7 @@ interface IexecPoco
 	event FaultyContribution  (address indexed worker, bytes32 indexed taskid);
 
 	function verifySignature(address,bytes32,bytes calldata) external view returns (bool);
-	function matchOrders(IexecODBLibOrders.AppOrder calldata,IexecODBLibOrders.DatasetOrder calldata,IexecODBLibOrders.WorkerpoolOrder calldata,IexecODBLibOrders.RequestOrder calldata) external returns (bytes32);
+	function matchOrders(IexecODBLibOrders_v4.AppOrder calldata,IexecODBLibOrders_v4.DatasetOrder calldata,IexecODBLibOrders_v4.WorkerpoolOrder calldata,IexecODBLibOrders_v4.RequestOrder calldata) external returns (bytes32);
 	function initialize(bytes32,uint256) external returns (bytes32);
 	function contribute(bytes32,bytes32,bytes32,address,bytes calldata,bytes calldata) external;
 	function reveal(bytes32,bytes32) external;

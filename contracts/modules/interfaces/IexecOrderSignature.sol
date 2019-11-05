@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecODBLibOrders.sol";
+import "../../libs/IexecODBLibOrders_v4.sol";
 
 
 interface IexecOrderSignature
@@ -11,12 +11,12 @@ interface IexecOrderSignature
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
 	event ClosedRequestOrder   (bytes32 requestHash);
 
-	function signAppOrder         (IexecODBLibOrders.AppOrder        calldata) external returns (bool);
-	function signDatasetOrder     (IexecODBLibOrders.DatasetOrder    calldata) external returns (bool);
-	function signWorkerpoolOrder  (IexecODBLibOrders.WorkerpoolOrder calldata) external returns (bool);
-	function signRequestOrder     (IexecODBLibOrders.RequestOrder    calldata) external returns (bool);
-	function cancelAppOrder       (IexecODBLibOrders.AppOrder        calldata) external returns (bool);
-	function cancelDatasetOrder   (IexecODBLibOrders.DatasetOrder    calldata) external returns (bool);
-	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder calldata) external returns (bool);
-	function cancelRequestOrder   (IexecODBLibOrders.RequestOrder    calldata) external returns (bool);
+	function signAppOrder         (IexecODBLibOrders_v4.AppOrder        calldata) external returns (bool);
+	function signDatasetOrder     (IexecODBLibOrders_v4.DatasetOrder    calldata) external returns (bool);
+	function signWorkerpoolOrder  (IexecODBLibOrders_v4.WorkerpoolOrder calldata) external returns (bool);
+	function signRequestOrder     (IexecODBLibOrders_v4.RequestOrder    calldata) external returns (bool);
+	function cancelAppOrder       (IexecODBLibOrders_v4.AppOrder        calldata) external returns (bool);
+	function cancelDatasetOrder   (IexecODBLibOrders_v4.DatasetOrder    calldata) external returns (bool);
+	function cancelWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder calldata) external returns (bool);
+	function cancelRequestOrder   (IexecODBLibOrders_v4.RequestOrder    calldata) external returns (bool);
 }

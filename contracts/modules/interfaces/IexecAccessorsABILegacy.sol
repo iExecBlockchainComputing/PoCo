@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecODBLibCore.sol";
+import "../../libs/IexecODBLibCore_v4.sol";
 
 
 interface IexecAccessorsABILegacy
@@ -34,7 +34,7 @@ interface IexecAccessorsABILegacy
 
 	function viewTaskABILegacy(bytes32 _taskid)
 	external view returns
-	( IexecODBLibCore.TaskStatusEnum
+	( IexecODBLibCore_v4.TaskStatusEnum
 	, bytes32
 	, uint256
 	, uint256
@@ -50,7 +50,7 @@ interface IexecAccessorsABILegacy
 
 	function viewContributionABILegacy(bytes32 _taskid, address _worker)
 	external view returns
-	( IexecODBLibCore.ContributionStatusEnum
+	( IexecODBLibCore_v4.ContributionStatusEnum
 	, bytes32
 	, bytes32
 	, address
