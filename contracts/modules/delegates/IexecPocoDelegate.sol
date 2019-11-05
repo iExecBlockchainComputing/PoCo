@@ -68,10 +68,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
-	function unlockAndRewardForContribution(bytes32 _dealid, address _worker, uint256 _amount, bytes32 _taskid)
+	function rewardForContribution(address _worker, uint256 _amount, bytes32 _taskid)
 		internal
 	{
-		unlock(_worker, m_deals[_dealid].workerStake);
 		reward(_worker, _amount, _taskid);
 	}
 
@@ -546,12 +545,10 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.contributors.length  == 0                                       );
 		require(deal.trust                == 1                                       ); // TODO, consider sender's score ?
 
-		// need enclave challenge if tag is set
-		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
-
 		bytes32 resultHash = keccak256(abi.encodePacked(            _taskid, _resultDigest));
 		bytes32 resultSeal = keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest));
 
+		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(checkSignature(
 			deal.workerpool.owner,
 			keccak256(abi.encodePacked(
@@ -561,6 +558,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			)).toEthSignedMessageHash(),
 			_workerpoolSign
 		));
+
+		// need enclave challenge if tag is set
+		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
 		require(_enclaveChallenge == address(0) || checkSignature(
@@ -586,9 +586,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		task.results                  = _results;
 		task.contributors.push(msg.sender);
 
-		lockContribution(task.dealid, msg.sender);
 		successWork(task.dealid, _taskid);
-		distributeRewards(_taskid);
+
+		// simple reward, no score consideration
+		uint256 workerReward    = deal.workerpool.price.percentage(uint256(100).sub(deal.schedulerRewardRatio));
+		uint256 schedulerReward = deal.workerpool.price.sub(workerReward);
+		rewardForContribution(msg.sender, workerReward, _taskid);
+		rewardForScheduling(task.dealid, schedulerReward, _taskid);
 
 		emit TaskContribute(_taskid, msg.sender, resultHash);
 		emit TaskConsensus(_taskid, resultHash);
@@ -680,7 +684,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
 
-				unlockAndRewardForContribution(task.dealid, worker, workerReward, _taskid);
+				unlockContribution(task.dealid, worker);
+				rewardForContribution(worker, workerReward, _taskid);
 
 				// Only reward if replication happened
 				if (task.contributors.length > 1)
