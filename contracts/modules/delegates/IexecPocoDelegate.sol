@@ -9,7 +9,7 @@ import "../../libs/SignatureVerifier.sol";
 
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
-	using SafeMathExtended  for uint256;
+	using SafeMathExtended     for uint256;
 	using IexecODBLibOrders_v4 for bytes32;
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrder;
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrder;
@@ -350,7 +350,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		return taskid;
 	}
 
-	// TODO: make external w/ calldata
+	// TODO: making it external causes "stack too deep" error
 	function contribute(
 		bytes32      _taskid,
 		bytes32      _resultHash,
@@ -365,7 +365,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecODBLibCore_v4.Deal         memory  deal         = m_deals[task.dealid];
 
 		require(task.status               == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE       );
-		require(task.contributionDeadline >  now                                         );
+		require(task.contributionDeadline >  now                                            );
 		require(contribution.status       == IexecODBLibCore_v4.ContributionStatusEnum.UNSET);
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
@@ -423,6 +423,187 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		checkConsensus(_taskid, _resultHash);
 	}
 
+	function reveal(
+		bytes32 _taskid,
+		bytes32 _resultDigest)
+	external // worker
+	{
+		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		require(task.status             == IexecODBLibCore_v4.TaskStatusEnum.REVEALING                    );
+		require(task.revealDeadline     >  now                                                            );
+		require(contribution.status     == IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED          );
+		require(contribution.resultHash == task.consensusValue                                            );
+		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
+		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
+
+		contribution.status = IexecODBLibCore_v4.ContributionStatusEnum.PROVED;
+		task.revealCounter  = task.revealCounter.add(1);
+		task.resultDigest   = _resultDigest;
+
+		emit TaskReveal(_taskid, msg.sender, _resultDigest);
+	}
+
+	function reopen(
+		bytes32 _taskid)
+	external onlyScheduler(_taskid)
+	{
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status         == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline  >  now                                        );
+		require(task.revealDeadline <= now
+		     && task.revealCounter  == 0                                          );
+
+		for (uint256 i = 0; i < task.contributors.length; ++i)
+		{
+			address worker = task.contributors[i];
+			if (m_contributions[_taskid][worker].resultHash == task.consensusValue)
+			{
+				m_contributions[_taskid][worker].status = IexecODBLibCore_v4.ContributionStatusEnum.REJECTED;
+			}
+		}
+
+		m_totalweight[_taskid]                      = m_totalweight[_taskid].sub(m_groupweight[_taskid][task.consensusValue]);
+		m_groupweight[_taskid][task.consensusValue] = 0;
+
+		task.status         = IexecODBLibCore_v4.TaskStatusEnum.ACTIVE;
+		task.consensusValue = 0x0;
+		task.revealDeadline = 0;
+		task.winnerCounter  = 0;
+
+		emit TaskReopen(_taskid);
+	}
+
+	function finalize(
+		bytes32          _taskid,
+		bytes   calldata _results)
+	external onlyScheduler(_taskid)
+	{
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status        == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline >  now                                        );
+		require(task.revealCounter == task.winnerCounter
+		    || (task.revealCounter >  0  && task.revealDeadline <= now)          );
+
+		task.status  = IexecODBLibCore_v4.TaskStatusEnum.COMPLETED;
+		task.results = _results;
+
+		/**
+		 * Stake and reward management
+		 */
+		successWork(task.dealid, _taskid);
+		distributeRewards(_taskid);
+
+		/**
+		 * Event
+		 */
+		emit TaskFinalize(_taskid, _results);
+
+		executeCallback(_taskid, _results);
+	}
+
+	function claim(
+		bytes32 _taskid)
+	public
+	{
+		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
+		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE
+		     || task.status == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
+		require(task.finalDeadline <= now);
+
+		task.status = IexecODBLibCore_v4.TaskStatusEnum.FAILLED;
+
+		/**
+		 * Stake management
+		 */
+		failedWork(task.dealid, _taskid);
+		for (uint256 i = 0; i < task.contributors.length; ++i)
+		{
+			address worker = task.contributors[i];
+			unlockContribution(task.dealid, worker);
+		}
+
+		emit TaskClaimed(_taskid);
+	}
+
+	// New
+	// TODO: making it external causes "stack too deep" error
+	function contributeAndFinalize(
+		bytes32      _taskid,
+		bytes32      _resultDigest,
+		bytes memory _results,
+		address      _enclaveChallenge,
+		bytes memory _enclaveSign,
+		bytes memory _workerpoolSign)
+	public
+	{
+		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLibCore_v4.Deal         memory  deal         = m_deals[task.dealid];
+
+		require(task.status               == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE);
+		require(task.contributionDeadline >  now                                     );
+		require(task.contributors.length  == 0                                       );
+		require(deal.trust                == 1                                       ); // TODO, consider sender's score ?
+
+		// need enclave challenge if tag is set
+		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
+
+		bytes32 resultHash = keccak256(abi.encodePacked(            _taskid, _resultDigest));
+		bytes32 resultSeal = keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest));
+
+		require(checkSignature(
+			deal.workerpool.owner,
+			keccak256(abi.encodePacked(
+				msg.sender,
+				_taskid,
+				_enclaveChallenge
+			)).toEthSignedMessageHash(),
+			_workerpoolSign
+		));
+
+		// Check enclave signature
+		require(_enclaveChallenge == address(0) || checkSignature(
+			_enclaveChallenge,
+			keccak256(abi.encodePacked(
+				resultHash,
+				resultSeal
+			)).toEthSignedMessageHash(),
+			_enclaveSign
+		));
+
+		contribution.status           = IexecODBLibCore_v4.ContributionStatusEnum.PROVED;
+		contribution.resultHash       = resultHash;
+		contribution.resultSeal       = resultSeal;
+		contribution.enclaveChallenge = _enclaveChallenge;
+
+		task.status                   = IexecODBLibCore_v4.TaskStatusEnum.COMPLETED;
+		task.consensusValue           = contribution.resultHash;
+		task.revealDeadline           = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
+		task.revealCounter            = 1;
+		task.winnerCounter            = 1;
+		task.resultDigest             = _resultDigest;
+		task.results                  = _results;
+		task.contributors.push(msg.sender);
+
+		lockContribution(task.dealid, msg.sender);
+		successWork(task.dealid, _taskid);
+		distributeRewards(_taskid);
+
+		emit TaskContribute(_taskid, msg.sender, resultHash);
+		emit TaskConsensus(_taskid, resultHash);
+		emit TaskReveal(_taskid, msg.sender, _resultDigest);
+		emit TaskFinalize(_taskid, _results);
+
+		executeCallback(_taskid, _results);
+	}
+
+	/***************************************************************************
+	 *                       Internal Consensus methods                        *
+	 ***************************************************************************/
+	/*
+	 * Consensus detection
+	 */
 	function checkConsensus(
 		bytes32 _taskid,
 		bytes32 _consensus)
@@ -460,108 +641,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		}
 	}
 
-	function reveal(
-		bytes32 _taskid,
-		bytes32 _resultDigest)
-	external // worker
-	{
-		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
-		require(task.status             == IexecODBLibCore_v4.TaskStatusEnum.REVEALING                       );
-		require(task.revealDeadline     >  now                                                            );
-		require(contribution.status     == IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED             );
-		require(contribution.resultHash == task.consensusValue                                            );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
-		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
-
-		contribution.status = IexecODBLibCore_v4.ContributionStatusEnum.PROVED;
-		task.revealCounter  = task.revealCounter.add(1);
-		task.resultDigest   = _resultDigest;
-
-		emit TaskReveal(_taskid, msg.sender, _resultDigest);
-	}
-
-	function reopen(
-		bytes32 _taskid)
-	external onlyScheduler(_taskid)
-	{
-		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
-		require(task.status         == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline  >  now                                     );
-		require(task.revealDeadline <= now
-		     && task.revealCounter  == 0                                       );
-
-		for (uint256 i = 0; i < task.contributors.length; ++i)
-		{
-			address worker = task.contributors[i];
-			if (m_contributions[_taskid][worker].resultHash == task.consensusValue)
-			{
-				m_contributions[_taskid][worker].status = IexecODBLibCore_v4.ContributionStatusEnum.REJECTED;
-			}
-		}
-
-		m_totalweight[_taskid]                      = m_totalweight[_taskid].sub(m_groupweight[_taskid][task.consensusValue]);
-		m_groupweight[_taskid][task.consensusValue] = 0;
-
-		task.status         = IexecODBLibCore_v4.TaskStatusEnum.ACTIVE;
-		task.consensusValue = 0x0;
-		task.revealDeadline = 0;
-		task.winnerCounter  = 0;
-
-		emit TaskReopen(_taskid);
-	}
-
-	function finalize(
-		bytes32          _taskid,
-		bytes   calldata _results)
-	external onlyScheduler(_taskid)
-	{
-		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
-		require(task.status        == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline >  now                                     );
-		require(task.revealCounter == task.winnerCounter
-		    || (task.revealCounter >  0  && task.revealDeadline <= now)       );
-
-		task.status  = IexecODBLibCore_v4.TaskStatusEnum.COMPLETED;
-		task.results = _results;
-
-		/**
-		 * Stake and reward management
-		 */
-		successWork(task.dealid, _taskid);
-		distributeRewards(_taskid);
-
-		/**
-		 * Event
-		 */
-		emit TaskFinalize(_taskid, _results);
-
-		/**
-		 * Callback for smartcontracts using EIP1154
-		 */
-		address callbackTarget = m_deals[task.dealid].callback;
-		if (callbackTarget != address(0))
-		{
-			/**
-			 * Call does not revert if the target smart contract is incompatible or reverts
-			 *
-			 * ATTENTION!
-			 * This call is dangerous and target smart contract can charge the stack.
-			 * Assume invalid state after the call.
-			 * See: https://solidity.readthedocs.io/en/develop/types.html#members-of-addresses
-			 *
-			 * TODO: gas provided?
-			 */
-			require(gasleft() > 100000);
-			bool success;
-			(success,) = callbackTarget.call.gas(100000)(abi.encodeWithSignature(
-				"receiveResult(bytes32,bytes)",
-				_taskid,
-				_results
-			));
-		}
-	}
-
+	/*
+	 * Reward distribution
+	 */
 	function distributeRewards(bytes32 _taskid)
 	internal
 	{
@@ -634,28 +716,33 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		rewardForScheduling(task.dealid, totalReward, _taskid);
 	}
 
-	function claim(
-		bytes32 _taskid)
-	public
+	/**
+	 * Callback for smartcontracts using EIP1154
+	 */
+	function executeCallback(bytes32 _taskid, bytes memory _results)
+	internal
 	{
-		IexecODBLibCore_v4.Task storage task = m_tasks[_taskid];
-		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE
-		     || task.status == IexecODBLibCore_v4.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline <= now);
-
-		task.status = IexecODBLibCore_v4.TaskStatusEnum.FAILLED;
-
-		/**
-		 * Stake management
-		 */
-		failedWork(task.dealid, _taskid);
-		for (uint256 i = 0; i < task.contributors.length; ++i)
+		address target = m_deals[m_tasks[_taskid].dealid].callback;
+		if (target != address(0))
 		{
-			address worker = task.contributors[i];
-			unlockContribution(task.dealid, worker);
+			/**
+			 * Call does not revert if the target smart contract is incompatible or reverts
+			 *
+			 * ATTENTION!
+			 * This call is dangerous and target smart contract can charge the stack.
+			 * Assume invalid state after the call.
+			 * See: https://solidity.readthedocs.io/en/develop/types.html#members-of-addresses
+			 *
+			 * TODO: gas provided?
+			 */
+			require(gasleft() > 100000);
+			bool success;
+			(success,) = target.call.gas(100000)(abi.encodeWithSignature(
+				"receiveResult(bytes32,bytes)",
+				_taskid,
+				_results
+			));
 		}
-
-		emit TaskClaimed(_taskid);
 	}
 
 	/***************************************************************************
