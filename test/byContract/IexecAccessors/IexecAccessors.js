@@ -86,5 +86,19 @@ contract('Accessors', async (accounts) => {
 				assert.equal(Number(await IexecInstance.decimals()), 9);
 			});
 		});
+
+		describe("Registries", async () => {
+			it("AppRegistry", async () => {
+				assert.equal(await IexecInstance.appregistry(), AppRegistryInstance.address);
+			});
+
+			it("DatasetRegistry", async () => {
+				assert.equal(await IexecInstance.datasetregistry(), DatasetRegistryInstance.address);
+			});
+
+			it("AppRegistry", async () => {
+				assert.equal(await IexecInstance.workerpoolregistry(), WorkerpoolRegistryInstance.address);
+			});
+		});
 	});
 });

@@ -81,7 +81,8 @@ contract('Poco', async (accounts) => {
 			9,
 			AppRegistryInstance.address,
 			DatasetRegistryInstance.address,
-			WorkerpoolRegistryInstance.address
+			WorkerpoolRegistryInstance.address,
+			constants.NULL.ADDRESS,
 		));
 	});
 

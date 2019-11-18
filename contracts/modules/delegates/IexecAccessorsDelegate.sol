@@ -1,30 +1,9 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecAccessors.sol";
 
-
-interface IexecAccessors
-{
-	function name() external view returns (string memory);
-	function symbol() external view returns (string memory);
-	function decimals() external view returns (uint8);
-	function totalSupply() external view returns (uint256);
-	function balanceOf(address) external view returns (uint256);
-	function frozenOf(address) external view returns (uint256);
-	function allowance(address,address) external view returns (uint256);
-	function viewAccount(address) external view returns (IexecODBLibCore.Account memory);
-	function token() external view returns (address);
-	function viewDeal(bytes32) external view returns (IexecODBLibCore.Deal memory);
-	function viewConsumed(bytes32) external view returns (uint256);
-	function viewPresigned(bytes32) external view returns (bool);
-	function viewTask(bytes32) external view returns (IexecODBLibCore.Task memory);
-	function viewContribution(bytes32,address) external view returns (IexecODBLibCore.Contribution memory);
-	function viewScore(address) external view returns (uint256);
-	function resultFor(bytes32) external view returns (bytes memory);
-	function viewCategory(uint256) external view returns (IexecODBLibCore.Category memory);
-	function countCategory() external view returns (uint256);
-}
 
 contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 {
@@ -72,9 +51,9 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewAccount(address account)
-	external view returns (IexecODBLibCore.Account memory)
+	external view returns (IexecODBLibCore_v4.Account memory)
 	{
-		return IexecODBLibCore.Account(m_balances[account], m_frozens[account]);
+		return IexecODBLibCore_v4.Account(m_balances[account], m_frozens[account]);
 	}
 
 	function token()
@@ -84,7 +63,7 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewDeal(bytes32 _id)
-	external view returns (IexecODBLibCore.Deal memory deal)
+	external view returns (IexecODBLibCore_v4.Deal memory deal)
 	{
 		return m_deals[_id];
 	}
@@ -102,13 +81,13 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewTask(bytes32 _taskid)
-	external view returns (IexecODBLibCore.Task memory)
+	external view returns (IexecODBLibCore_v4.Task memory)
 	{
 		return m_tasks[_taskid];
 	}
 
 	function viewContribution(bytes32 _taskid, address _worker)
-	external view returns (IexecODBLibCore.Contribution memory)
+	external view returns (IexecODBLibCore_v4.Contribution memory)
 	{
 		return m_contributions[_taskid][_worker];
 	}
@@ -122,13 +101,13 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	function resultFor(bytes32 id)
 	external view returns (bytes memory)
 	{
-		IexecODBLibCore.Task storage task = m_tasks[id];
-		require(task.status == IexecODBLibCore.TaskStatusEnum.COMPLETED);
+		IexecODBLibCore_v4.Task storage task = m_tasks[id];
+		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.COMPLETED);
 		return task.results;
 	}
 
 	function viewCategory(uint256 _catid)
-	external view returns (IexecODBLibCore.Category memory category)
+	external view returns (IexecODBLibCore_v4.Category memory category)
 	{
 		return m_categories[_catid];
 	}
@@ -138,4 +117,24 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	{
 		return m_categories.length;
 	}
+
+
+	function appregistry()
+	external view returns (IRegistry)
+	{
+		return m_appregistry;
+	}
+
+	function datasetregistry()
+	external view returns (IRegistry)
+	{
+		return m_datasetregistry;
+	}
+
+	function workerpoolregistry()
+	external view returns (IRegistry)
+	{
+		return m_workerpoolregistry;
+	}
+
 }

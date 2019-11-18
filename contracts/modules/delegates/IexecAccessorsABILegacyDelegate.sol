@@ -1,74 +1,9 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecAccessorsABILegacy.sol";
 
-
-interface IexecAccessorsABILegacy
-{
-	function viewAccountABILegacy(address _user)
-	external view returns (uint256, uint256);
-
-	function viewDealABILegacy_pt1(bytes32 _id)
-	external view returns
-	( address
-	, address
-	, uint256
-	, address
-	, address
-	, uint256
-	, address
-	, address
-	, uint256
-	);
-
-	function viewDealABILegacy_pt2(bytes32 _id)
-	external view returns
-	( uint256
-	, bytes32
-	, address
-	, address
-	, address
-	, string memory
-	);
-
-	function viewTaskABILegacy(bytes32 _taskid)
-	external view returns
-	( IexecODBLibCore.TaskStatusEnum
-	, bytes32
-	, uint256
-	, uint256
-	, uint256
-	, uint256
-	, uint256
-	, bytes32
-	, uint256
-	, uint256
-	, address[] memory
-	, bytes     memory
-	);
-
-	function viewContributionABILegacy(bytes32 _taskid, address _worker)
-	external view returns
-	( IexecODBLibCore.ContributionStatusEnum
-	, bytes32
-	, bytes32
-	, address
-	);
-
-	function viewCategoryABILegacy(uint256 _catid)
-	external view returns (string memory, string memory, uint256);
-
-	function viewConfigABILegacy(bytes32 _id)
-	external view returns
-	( uint256
-	, uint256
-	, uint256
-	, uint256
-	, uint256
-	, uint256
-	);
-}
 
 contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBase
 {
@@ -85,7 +20,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	, uint256
 	)
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		IexecODBLibCore_v4.Deal memory deal = m_deals[_id];
 		return (
 			deal.app.pointer,
 			deal.app.owner,
@@ -109,7 +44,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	, string memory
 	)
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		IexecODBLibCore_v4.Deal memory deal = m_deals[_id];
 		return (
 			deal.trust,
 			deal.tag,
@@ -130,7 +65,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	, uint256
 	)
 	{
-		IexecODBLibCore.Deal memory deal = m_deals[_id];
+		IexecODBLibCore_v4.Deal memory deal = m_deals[_id];
 		return (
 			deal.category,
 			deal.startTime,
@@ -149,7 +84,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 
 	function viewTaskABILegacy(bytes32 _taskid)
 	external view returns
-	( IexecODBLibCore.TaskStatusEnum
+	( IexecODBLibCore_v4.TaskStatusEnum
 	, bytes32
 	, uint256
 	, uint256
@@ -163,7 +98,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	, bytes     memory
 	)
 	{
-		IexecODBLibCore.Task memory task = m_tasks[_taskid];
+		IexecODBLibCore_v4.Task memory task = m_tasks[_taskid];
 		return (
 			task.status,
 			task.dealid,
@@ -182,13 +117,13 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 
 	function viewContributionABILegacy(bytes32 _taskid, address _worker)
 	external view returns
-	( IexecODBLibCore.ContributionStatusEnum
+	( IexecODBLibCore_v4.ContributionStatusEnum
 	, bytes32
 	, bytes32
 	, address
 	)
 	{
-		IexecODBLibCore.Contribution memory contribution = m_contributions[_taskid][_worker];
+		IexecODBLibCore_v4.Contribution memory contribution = m_contributions[_taskid][_worker];
 		return (
 			contribution.status,
 			contribution.resultHash,
@@ -200,7 +135,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	function viewCategoryABILegacy(uint256 _catid)
 	external view returns (string memory, string memory, uint256)
 	{
-		IexecODBLibCore.Category memory category = m_categories[_catid];
+		IexecODBLibCore_v4.Category memory category = m_categories[_catid];
 		return ( category.name, category.description, category.workClockTimeRef );
 	}
 }

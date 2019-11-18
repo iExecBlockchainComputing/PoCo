@@ -1,39 +1,23 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "./DelegateBase.sol";
+import "../DelegateBase.sol";
+import "../interfaces/IexecOrderSignature.sol";
 
-
-interface IexecOrderSignature
-{
-	event ClosedAppOrder       (bytes32 appHash);
-	event ClosedDatasetOrder   (bytes32 datasetHash);
-	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
-	event ClosedRequestOrder   (bytes32 requestHash);
-
-	function signAppOrder         (IexecODBLibOrders.AppOrder        calldata) external returns (bool);
-	function signDatasetOrder     (IexecODBLibOrders.DatasetOrder    calldata) external returns (bool);
-	function signWorkerpoolOrder  (IexecODBLibOrders.WorkerpoolOrder calldata) external returns (bool);
-	function signRequestOrder     (IexecODBLibOrders.RequestOrder    calldata) external returns (bool);
-	function cancelAppOrder       (IexecODBLibOrders.AppOrder        calldata) external returns (bool);
-	function cancelDatasetOrder   (IexecODBLibOrders.DatasetOrder    calldata) external returns (bool);
-	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder calldata) external returns (bool);
-	function cancelRequestOrder   (IexecODBLibOrders.RequestOrder    calldata) external returns (bool);
-}
 
 contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 {
-	using IexecODBLibOrders for bytes32;
-	using IexecODBLibOrders for IexecODBLibOrders.AppOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.DatasetOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.WorkerpoolOrder;
-	using IexecODBLibOrders for IexecODBLibOrders.RequestOrder;
+	using IexecODBLibOrders_v4 for bytes32;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrder;
 
 	/***************************************************************************
 	 *                            pre-signing tools                            *
 	 ***************************************************************************/
 	// should be external
-	function signAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
+	function signAppOrder(IexecODBLibOrders_v4.AppOrder memory _apporder)
 	public returns (bool)
 	{
 		require(msg.sender == App(_apporder.app).owner());
@@ -42,7 +26,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function signDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
+	function signDatasetOrder(IexecODBLibOrders_v4.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
@@ -51,7 +35,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function signWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
+	function signWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
@@ -60,7 +44,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function signRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
+	function signRequestOrder(IexecODBLibOrders_v4.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
 		require(msg.sender == _requestorder.requester);
@@ -72,7 +56,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	 *                            cancelling tools                             *
 	 ***************************************************************************/
 	// should be external
-	function cancelAppOrder(IexecODBLibOrders.AppOrder memory _apporder)
+	function cancelAppOrder(IexecODBLibOrders_v4.AppOrder memory _apporder)
 	public returns (bool)
 	{
 		bytes32 dapporderHash = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
@@ -83,7 +67,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function cancelDatasetOrder(IexecODBLibOrders.DatasetOrder memory _datasetorder)
+	function cancelDatasetOrder(IexecODBLibOrders_v4.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
 		bytes32 dataorderHash = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
@@ -94,7 +78,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function cancelWorkerpoolOrder(IexecODBLibOrders.WorkerpoolOrder memory _workerpoolorder)
+	function cancelWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
 		bytes32 poolorderHash = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
@@ -105,7 +89,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	}
 
 	// should be external
-	function cancelRequestOrder(IexecODBLibOrders.RequestOrder memory _requestorder)
+	function cancelRequestOrder(IexecODBLibOrders_v4.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
 		bytes32 requestorderHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);

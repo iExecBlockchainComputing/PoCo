@@ -13,7 +13,7 @@ var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
 var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDelegate')
 // Libraries
-var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders')
+var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders_v4')
 // Interface
 var IexecInterface          = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`)
 // Delegates
@@ -23,6 +23,7 @@ var IexecCategoryManager    = artifacts.require('IexecCategoryManagerDelegate')
 var IexecERC20              = artifacts.require('IexecERC20Delegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
+var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
 var IexecOrderSignature     = artifacts.require('IexecOrderSignatureDelegate')
 var IexecPoco               = artifacts.require('IexecPocoDelegate')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
@@ -36,7 +37,7 @@ var GenericFactory          = artifacts.require('GenericFactory')
 DEPLOYMENT.salt = DEPLOYMENT.salt || web3.utils.randomHex(32);
 
 const LIBRARIES = [
-	{ pattern: /__IexecODBLibOrders_____________________/g, library: IexecODBLibOrders },
+	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
 ]
 
 function getSerializedObject(entry)
@@ -165,6 +166,7 @@ module.exports = async function(deployer, network, accounts)
 	{
 		await deployer.deploy(IexecODBLibOrders);
 		await deployer.link(IexecODBLibOrders, IexecPoco);
+		await deployer.link(IexecODBLibOrders, IexecMaintenance);
 		await deployer.link(IexecODBLibOrders, IexecOrderSignature);
 	}
 
@@ -200,6 +202,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecCategoryManager,
 		IexecERC20,
 		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
+		IexecMaintenance,
 		IexecOrderSignature,
 		IexecPoco,
 		IexecRelay,
@@ -252,9 +255,9 @@ module.exports = async function(deployer, network, accounts)
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000'); // TODO
+		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000'); // TODO
+		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000'); // TODO
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -271,7 +274,8 @@ module.exports = async function(deployer, network, accounts)
 		9,
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
-		WorkerpoolRegistryInstance.address
+		WorkerpoolRegistryInstance.address,
+		'0x0000000000000000000000000000000000000000' // TODO
 	);
 
 	for (cat of DEPLOYMENT.categories)
@@ -376,18 +380,18 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain('workerpool', 'iexec.eth');
 		await registerDomain('users',      'iexec.eth');
 
-		await registerAddress('admin',      'iexec.eth',          accounts[0]);
-		await registerAddress('rlc',        'iexec.eth',          RLCInstance.address);
-		await registerAddress('hub',        'iexec.eth',          IexecInterfaceInstance.address);
-		await registerAddress('app',        'registry.iexec.eth', AppRegistryInstance.address);
-		await registerAddress('dataset',    'registry.iexec.eth', DatasetRegistryInstance.address);
-		await registerAddress('workerpool', 'registry.iexec.eth', WorkerpoolRegistryInstance.address);
+		await registerAddress('admin',       'iexec.eth',          accounts[0]);
+		await registerAddress('rlc',         'iexec.eth',          RLCInstance.address);
+		await registerAddress('hub',         'iexec.eth',          IexecInterfaceInstance.address);
+		await registerAddress('apps',        'registry.iexec.eth', AppRegistryInstance.address);
+		await registerAddress('datasets',    'registry.iexec.eth', DatasetRegistryInstance.address);
+		await registerAddress('workerpools', 'registry.iexec.eth', WorkerpoolRegistryInstance.address);
 
 		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
-		await     IexecInterfaceInstance.registerENS(ens.address, 'hub.iexec.eth');
-		await        AppRegistryInstance.registerENS(ens.address, 'app.registry.iexec.eth');
-		await    DatasetRegistryInstance.registerENS(ens.address, 'dataset.registry.iexec.eth');
-		await WorkerpoolRegistryInstance.registerENS(ens.address, 'workerpool.registry.iexec.eth');
+		await     IexecInterfaceInstance.ENSReverseRegister(ens.address, 'hub.iexec.eth');
+		await        AppRegistryInstance.ENSReverseRegister(ens.address, 'apps.registry.iexec.eth');
+		await    DatasetRegistryInstance.ENSReverseRegister(ens.address, 'datasets.registry.iexec.eth');
+		await WorkerpoolRegistryInstance.ENSReverseRegister(ens.address, 'workerpools.registry.iexec.eth');
 	}
 
 	/***************************************************************************

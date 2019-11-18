@@ -3,20 +3,21 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "iexec-solidity/contracts/Libs/SafeMathExtended.sol";
 import "iexec-solidity/contracts/ERC1538/ERC1538Store.sol";
+import "iexec-poco-interface/contracts/IexecHub.sol";
 
-import "./libs/IexecODBLibCore.sol";
-import "./libs/IexecODBLibOrders.sol";
+import "./libs/IexecODBLibCore_v4.sol";
+import "./libs/IexecODBLibOrders_v4.sol";
 import "./registries/App.sol";
 import "./registries/Dataset.sol";
 import "./registries/Workerpool.sol";
-import "./registries/Registry.sol";
+import "./registries/IRegistry.sol";
 
 
 contract Store is ERC1538Store
 {
-	IRegistry public appregistry;
-	IRegistry public datasetregistry;
-	IRegistry public workerpoolregistry;
+	IRegistry internal m_appregistry;
+	IRegistry internal m_datasetregistry;
+	IRegistry internal m_workerpoolregistry;
 
 	// Escrow
 	IERC20  internal m_baseToken;
@@ -39,18 +40,22 @@ contract Store is ERC1538Store
 	uint256 public constant GROUPMEMBER_PURPOSE         = 4;
 	bytes32 public          EIP712DOMAIN_SEPARATOR;
 
-	mapping(bytes32 =>                    IexecODBLibCore.Deal         ) internal m_deals;
+	mapping(bytes32 =>                    IexecODBLibCore_v4.Deal         ) internal m_deals;
 	mapping(bytes32 =>                    uint256                      ) internal m_consumed;
 	mapping(bytes32 =>                    bool                         ) internal m_presigned;
-	mapping(bytes32 =>                    IexecODBLibCore.Task         ) internal m_tasks;
-	mapping(bytes32 => mapping(address => IexecODBLibCore.Contribution)) internal m_contributions;
+	mapping(bytes32 =>                    IexecODBLibCore_v4.Task         ) internal m_tasks;
+	mapping(bytes32 => mapping(address => IexecODBLibCore_v4.Contribution)) internal m_contributions;
 	mapping(address =>                    uint256                      ) internal m_workerScores;
 	mapping(bytes32 => mapping(address => uint256                     )) internal m_logweight;
 	mapping(bytes32 => mapping(bytes32 => uint256                     )) internal m_groupweight;
 	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;
 
 	// Categories
-	IexecODBLibCore.Category[] internal m_categories;
+	IexecODBLibCore_v4.Category[] internal m_categories;
+
+	// Backward compatibility
+	IexecHub internal m_v3_iexecHub;
+	mapping(address => bool) internal m_v3_scoreImported;
 
 	// modifiers
 	modifier onlyScheduler(bytes32 _taskid)
