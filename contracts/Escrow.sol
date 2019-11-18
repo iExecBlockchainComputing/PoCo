@@ -51,16 +51,16 @@ contract Escrow
 	function ()
 	external payable
 	{
-		_deposit(msg.sender, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		_deposit     (msg.sender, msg.value.div(nRLCtoWei));
+		_safeTransfer(msg.sender, msg.value.mod(nRLCtoWei));
 		emit Deposit(msg.sender, msg.value.div(nRLCtoWei));
 	}
 
 	function deposit()
 	external payable returns (bool)
 	{
-		_deposit(msg.sender, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		_deposit     (msg.sender, msg.value.div(nRLCtoWei));
+		_safeTransfer(msg.sender, msg.value.mod(nRLCtoWei));
 		emit Deposit(msg.sender, msg.value.div(nRLCtoWei));
 		return true;
 	}
@@ -68,9 +68,9 @@ contract Escrow
 	function depositFor(address _target)
 	public payable returns (bool)
 	{
-		require(_target != address(0));
-		_deposit(_target, msg.value.div(nRLCtoWei));
-		msg.sender.transfer(msg.value.mod(nRLCtoWei));
+		require      (_target != address(0));
+		_deposit     (_target,    msg.value.div(nRLCtoWei));
+		_safeTransfer(msg.sender, msg.value.mod(nRLCtoWei));
 		emit DepositFor(msg.sender, msg.value.div(nRLCtoWei), _target);
 		return true;
 	}
@@ -83,10 +83,10 @@ contract Escrow
 		for (uint i = 0; i < _amounts.length; ++i)
 		{
 			_deposit(_targets[i], _amounts[i]);
-			emit DepositFor(msg.sender, _amounts[i], _targets[i]);
 			remaining = remaining.sub(_amounts[i].mul(nRLCtoWei));
+			emit DepositFor(msg.sender, _amounts[i], _targets[i]);
 		}
-		msg.sender.transfer(remaining);
+		_safeTransfer(msg.sender, remaining);
 		return true;
 	}
 
@@ -101,9 +101,16 @@ contract Escrow
 	external returns (bool)
 	{
 		m_accounts[msg.sender].stake = m_accounts[msg.sender].stake.sub(_amount);
-		msg.sender.transfer(_amount.mul(nRLCtoWei));
+		_safeTransfer(msg.sender, _amount.mul(nRLCtoWei));
 		emit Withdraw(msg.sender, _amount);
 		return true;
+	}
+
+	function _safeTransfer(address payable to, uint256 value)
+	internal
+	{
+		(bool success, ) = to.call.value(value)('');
+		require(success, 'native-transfer-failled');
 	}
 
 	/**
