@@ -214,24 +214,24 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		// app
 		ids.appHash  = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.appOwner = App(_apporder.app).owner();
-		require(m_presigned[ids.appHash] || checkSignature(ids.appOwner, ids.appHash, _apporder.sign));
+		require(m_presigned[ids.appHash] == ids.appOwner || checkSignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
 		{
 			ids.datasetHash  = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
-			require(m_presigned[ids.datasetHash] || checkSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(m_presigned[ids.datasetHash] == ids.datasetOwner || checkSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
-		require(m_presigned[ids.workerpoolHash] || checkSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(m_presigned[ids.workerpoolHash] == ids.workerpoolOwner || checkSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		require(m_presigned[ids.requestHash] || checkSignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(m_presigned[ids.requestHash] == _requestorder.requester || checkSignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**
 		 * Check availability
