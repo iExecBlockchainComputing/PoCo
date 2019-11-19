@@ -7,29 +7,29 @@ import "iexec-solidity/contracts/ERC1271/IERC1271.sol";
 
 contract SignatureVerifier
 {
-	function addrToKey(address _addr)
+	function _addrToKey(address _addr)
 	internal pure returns (bytes32)
 	{
 		return bytes32(uint256(_addr));
 	}
 
-	function checkIdentity(address _identity, address _candidate, uint256 _purpose)
+	function _checkIdentity(address _identity, address _candidate, uint256 _purpose)
 	internal view returns (bool valid)
 	{
-		return _identity == _candidate || IERC734(_identity).keyHasPurpose(addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
+		return _identity == _candidate || IERC734(_identity).keyHasPurpose(_addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
 	}
 
-	function checkSignature(
+	function _checkSignature(
 		address      _identity,
 		bytes32      _hash,
 		bytes memory _signature)
 	internal view returns (bool)
 	{
-		return isValidSignature(_identity, _hash, _signature) || IERC1271(_identity).isValidSignature(_hash, _signature);
+		return _isValidSignature(_identity, _hash, _signature) || IERC1271(_identity).isValidSignature(_hash, _signature);
 	}
 
 	// Does not revert if signature has invalid format
-	function isValidSignature(address signer, bytes32 hash, bytes memory sign)
+	function _isValidSignature(address signer, bytes32 hash, bytes memory sign)
 	internal pure returns (bool)
 	{
 		bytes32 r;
