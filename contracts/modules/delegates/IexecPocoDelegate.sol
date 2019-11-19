@@ -2,9 +2,9 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Common.sol";
+import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecPoco.sol";
-import "../../libs/SignatureVerifier.sol";
 
 
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
@@ -165,18 +165,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	external view returns (bool)
 	{
 		return _checkPresignatureOrSignature(_identity, _hash, _signature);
-	}
-
-	function _checkPresignature(address _identity, bytes32 _hash)
-	internal view returns (bool)
-	{
-		return _identity != address(0) && _identity == m_presigned[_hash];
-	}
-
-	function _checkPresignatureOrSignature(address _identity, bytes32 _hash, bytes memory _signature)
-	internal view returns (bool)
-	{
-		return _checkPresignature(_identity, _hash) || _checkSignature(_identity, _hash, _signature);
 	}
 
 	/***************************************************************************
