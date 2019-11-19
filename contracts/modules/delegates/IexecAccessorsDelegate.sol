@@ -75,7 +75,7 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewPresigned(bytes32 _id)
-	external view returns (bool presigned)
+	external view returns (address signer)
 	{
 		return m_presigned[_id];
 	}

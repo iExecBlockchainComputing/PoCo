@@ -201,10 +201,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(_workerpoolorder.datasetrestrict   == address(0) || checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
 		require(_workerpoolorder.requesterrestrict == address(0) || checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE));
 
-		require(                                       m_appregistry.isRegistered(_apporder.app));
-		require(_datasetorder.dataset == address(0) || m_datasetregistry.isRegistered(_datasetorder.dataset));
-		require(                                       m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool));
-
 		/**
 		 * Check orders authenticity
 		 */
@@ -214,6 +210,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		// app
 		ids.appHash  = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.appOwner = App(_apporder.app).owner();
+
+		require(m_appregistry.isRegistered(_apporder.app));
+		require(ids.appOwner != address(0)); // There is not valid usecase where owner is 0 (needed for presign security with inherited assets)
 		require(m_presigned[ids.appHash] == ids.appOwner || checkSignature(ids.appOwner, ids.appHash, _apporder.sign));
 
 		// dataset
@@ -221,16 +220,23 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		{
 			ids.datasetHash  = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
+
+			require(m_datasetregistry.isRegistered(_datasetorder.dataset));
+			require(ids.datasetOwner != address(0)); // There is not valid usecase where owner is 0 (needed for presign security with inherited assets)
 			require(m_presigned[ids.datasetHash] == ids.datasetOwner || checkSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
+
+		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool));
+		require(ids.workerpoolOwner != address(0)); // There is not valid usecase where owner is 0 (needed for presign security with inherited assets)
 		require(m_presigned[ids.workerpoolHash] == ids.workerpoolOwner || checkSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
 
 		// request
 		ids.requestHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
+		require(_requestorder.requester != address(0)); // There is not valid usecase where owner is 0 (needed for presign security)
 		require(m_presigned[ids.requestHash] == _requestorder.requester || checkSignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
 
 		/**

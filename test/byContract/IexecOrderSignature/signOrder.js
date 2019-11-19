@@ -200,60 +200,60 @@ contract('OrderSignature', async (accounts) => {
 	 *                             TEST: App sign                             *
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
 		await expectRevert.unspecified(IexecInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
 	});
 
 	it("presign app order #2", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
 		await IexecInstance.signAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecInstance.viewPresigned(apporder_hash), "Error in app order presign");
+		assert.equal(await IexecInstance.viewPresigned(apporder_hash), appProvider, "Error in app order presign");
 	});
 
 	/***************************************************************************
 	 *                             TEST: Dataset sign                             *
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
 		await expectRevert.unspecified(IexecInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
 	});
 
 	it("presign dataset order #2", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
 		await IexecInstance.signDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecInstance.viewPresigned(datasetorder_hash), "Error in dataset order presign");
+		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), datasetProvider, "Error in dataset order presign");
 	});
 
 	/***************************************************************************
 	 *                             TEST: Workerpool sign                             *
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
 		await expectRevert.unspecified(IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
 	});
 
 	it("presign workerpool order #2", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
 		await IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecInstance.viewPresigned(workerpoolorder_hash), "Error in workerpool order presign");
+		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), scheduler, "Error in workerpool order presign");
 	});
 
 	/***************************************************************************
 	 *                           TEST: Request sign                            *
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
 		await expectRevert.unspecified(IexecInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
 	});
 
 	it("presign request order #2", async () => {
-		assert.isFalse(await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
 		await IexecInstance.signRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isTrue (await IexecInstance.viewPresigned(requestorder_hash), "Error in request order presign");
+		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), user, "Error in request order presign");
 	});
 
 	it("Matching presigned orders", async () => {
