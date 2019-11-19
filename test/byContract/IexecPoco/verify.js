@@ -76,7 +76,7 @@ contract('Poco', async (accounts) => {
 		entry = { hash: web3.utils.randomHex(32) };
 		odbtools.signStruct(entry, entry.hash, wallets.addressToPrivate(iexecAdmin));
 
-		assert.isFalse          (await IexecInstance.viewPresigned(entry.hash),                                                                 );
+		assert.equal            (await IexecInstance.viewPresigned(entry.hash),              constants.NULL.ADDRESS                             );
 		assert.isTrue           (await IexecInstance.verifySignature(iexecAdmin,             entry.hash,               entry.sign,             ));
 		await expectRevert.unspecified(IexecInstance.verifySignature(user,                   entry.hash,               entry.sign,             ));
 		await expectRevert.unspecified(IexecInstance.verifySignature(constants.NULL.ADDRESS, entry.hash,               entry.sign,             ));

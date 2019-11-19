@@ -21,7 +21,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	public returns (bool)
 	{
 		require(msg.sender == App(_apporder.app).owner());
-		m_presigned[_apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
+		m_presigned[_apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
 		return true;
 	}
 
@@ -30,7 +30,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	public returns (bool)
 	{
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
-		m_presigned[_datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
+		m_presigned[_datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
 		return true;
 	}
 
@@ -39,7 +39,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	public returns (bool)
 	{
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
-		m_presigned[_workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
+		m_presigned[_workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
 		return true;
 	}
 
@@ -48,7 +48,7 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	public returns (bool)
 	{
 		require(msg.sender == _requestorder.requester);
-		m_presigned[_requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = true;
+		m_presigned[_requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
 		return true;
 	}
 
@@ -59,8 +59,8 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	function cancelAppOrder(IexecODBLibOrders_v4.AppOrder memory _apporder)
 	public returns (bool)
 	{
-		bytes32 dapporderHash = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == App(_apporder.app).owner());
+		bytes32 dapporderHash = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		m_consumed[dapporderHash] = _apporder.volume;
 		emit ClosedAppOrder(dapporderHash);
 		return true;
@@ -70,8 +70,8 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	function cancelDatasetOrder(IexecODBLibOrders_v4.DatasetOrder memory _datasetorder)
 	public returns (bool)
 	{
-		bytes32 dataorderHash = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == Dataset(_datasetorder.dataset).owner());
+		bytes32 dataorderHash = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		m_consumed[dataorderHash] = _datasetorder.volume;
 		emit ClosedDatasetOrder(dataorderHash);
 		return true;
@@ -81,8 +81,8 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	function cancelWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder)
 	public returns (bool)
 	{
-		bytes32 poolorderHash = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
+		bytes32 poolorderHash = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		m_consumed[poolorderHash] = _workerpoolorder.volume;
 		emit ClosedWorkerpoolOrder(poolorderHash);
 		return true;
@@ -92,8 +92,8 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	function cancelRequestOrder(IexecODBLibOrders_v4.RequestOrder memory _requestorder)
 	public returns (bool)
 	{
-		bytes32 requestorderHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		require(msg.sender == _requestorder.requester);
+		bytes32 requestorderHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		m_consumed[requestorderHash] = _requestorder.volume;
 		emit ClosedRequestOrder(requestorderHash);
 		return true;

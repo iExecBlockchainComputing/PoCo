@@ -17,7 +17,7 @@ interface IexecAccessors
 	function token() external view returns (address);
 	function viewDeal(bytes32) external view returns (IexecODBLibCore_v4.Deal memory);
 	function viewConsumed(bytes32) external view returns (uint256);
-	function viewPresigned(bytes32) external view returns (bool);
+	function viewPresigned(bytes32) external view returns (address);
 	function viewTask(bytes32) external view returns (IexecODBLibCore_v4.Task memory);
 	function viewContribution(bytes32,address) external view returns (IexecODBLibCore_v4.Contribution memory);
 	function viewScore(address) external view returns (uint256);

@@ -41,14 +41,14 @@ contract Store is ERC1538Store
 	bytes32 public          EIP712DOMAIN_SEPARATOR;
 
 	mapping(bytes32 =>                    IexecODBLibCore_v4.Deal         ) internal m_deals;
-	mapping(bytes32 =>                    uint256                      ) internal m_consumed;
-	mapping(bytes32 =>                    bool                         ) internal m_presigned;
+	mapping(bytes32 =>                    uint256                         ) internal m_consumed;
+	mapping(bytes32 =>                    address                         ) internal m_presigned;
 	mapping(bytes32 =>                    IexecODBLibCore_v4.Task         ) internal m_tasks;
 	mapping(bytes32 => mapping(address => IexecODBLibCore_v4.Contribution)) internal m_contributions;
-	mapping(address =>                    uint256                      ) internal m_workerScores;
-	mapping(bytes32 => mapping(address => uint256                     )) internal m_logweight;
-	mapping(bytes32 => mapping(bytes32 => uint256                     )) internal m_groupweight;
-	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;
+	mapping(address =>                    uint256                         ) internal m_workerScores;
+	mapping(bytes32 => mapping(address => uint256                        )) internal m_logweight;
+	mapping(bytes32 => mapping(bytes32 => uint256                        )) internal m_groupweight;
+	mapping(bytes32 =>                    uint256                         ) internal m_totalweight;
 
 	// Categories
 	IexecODBLibCore_v4.Category[] internal m_categories;
