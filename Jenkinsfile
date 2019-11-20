@@ -31,7 +31,7 @@ pipeline {
 			steps{
 				sh "echo 'Starting truffle tests'"
 				sh "npm install"
-				sh "npm run autotest"
+				sh "npm run autotest fast"
 				archiveArtifacts artifacts: 'logs/**'
 			}
 		}

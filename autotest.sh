@@ -2,7 +2,7 @@
 
 trap catch INT
 
-GANACHE="./node_modules/.bin/ganache-cli"
+GANACHE="./ganache-custom"
 TRUFFLE="./node_modules/.bin/truffle"
 
 function print_style
@@ -22,7 +22,7 @@ function initialize
 {
 	mkdir -p logs
 	# starting ganache
-	nohup $GANACHE -m "actual surround disorder swim upgrade devote digital misery truly verb slide final" -l 8000000 -i 65535 >> logs/ganache.$date.log 2>&1&
+	nohup $GANACHE >> logs/ganache.$date.log 2>&1&
 	GANACHE_PID=$!
 	print_style 'info' "Started ganache daemon (pid=$GANACHE_PID)\n"
 }
@@ -79,29 +79,43 @@ function runMigrate
 function runTests
 {
 	# running tests
-	for filepath in `find test/ -type f -name "*.js" -print | sort`
-	do
-		filename=$(basename $filepath)
-		logfile="logs/${filename%.*}.$date.log"
-
-		if [ "$CHECKPOINT" \> "$filename" ]; then continue; fi
-
-		printf "Starting test ${filepath%.*} ... "
-		$TRUFFLE test $filepath $PARAMS > $logfile 2>&1
+	if [[ $FAST -ne 0 ]];
+	then
+		logfile="logs/fast.$date.log"
+		printf "Running tests ... "
+		$TRUFFLE test $PARAMS > $logfile 2>&1
 		if [[ $? -ne 0 ]];
 		then
 			print_style 'danger' "failure\n"
-			print_style 'danger' "Full report is available at $logfile\n"
 			catch
 		else
 			print_style 'success' "success\n"
 			# rm -f $logfile
 		fi
-	done
+	else
+		for filepath in `find test/ -type f -name "*.js" -print | sort`
+		do
+			filename=$(basename $filepath)
+			logfile="logs/${filename%.*}.$date.log"
+			if [ "$CHECKPOINT" \> "$filename" ]; then continue; fi
+			printf "Starting test ${filepath%.*} ... "
+			$TRUFFLE test $filepath $PARAMS > $logfile 2>&1
+			if [[ $? -ne 0 ]];
+			then
+				print_style 'danger' "failure\n"
+				print_style 'danger' "Full report is available at $logfile\n"
+				catch
+			else
+				print_style 'success' "success\n"
+				# rm -f $logfile
+			fi
+		done
+	fi
 }
 
 date=$(date --utc +"%Y-%m-%dT%H:%M:%S")
 
+FAST=0
 LAUNCH=1
 COMPILE=1
 DEPLOY=1
@@ -110,16 +124,19 @@ PARAMS=""
 
 while test $# -gt 0; do
 	case $1 in
-		--skip-launch)
+		fast)
+			FAST=1
+			;;
+		skip-launch)
 			LAUNCH=0
 			;;
-		--skip-compile)
+		skip-compile)
 			COMPILE=0
 			;;
-		--skip-deploy)
+		skip-deploy)
 			DEPLOY=0
 			;;
-		--checkpoint)
+		checkpoint)
 			CHECKPOINT=$2
 			shift
 			;;

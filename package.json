@@ -4,12 +4,12 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "build": "./node_modules/.bin/truffle compile",
-    "migrate": "./node_modules/.bin/truffle migrate",
-    "test": "./node_modules/.bin/truffle test",
-    "autotest": "./autotest.sh",
-    "coverage": "./node_modules/.bin/truffle run coverage",
-    "verify": "./node_modules/.bin/truffle run verify"
+    "build": "./node_modules/.bin/truffle compile --",
+    "migrate": "./node_modules/.bin/truffle migrate --",
+    "test": "./node_modules/.bin/truffle test --",
+    "autotest": "./autotest.sh --",
+    "coverage": "./node_modules/.bin/truffle run coverage --",
+    "verify": "./node_modules/.bin/truffle run verify --"
   },
   "repository": {
     "type": "git",
