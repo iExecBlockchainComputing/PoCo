@@ -46,7 +46,7 @@ pipeline {
 			steps{
 				sh "echo 'Starting coverage test'"
 				sh "npm install"
-				sh "npm run coverage || true"
+				sh "npm run coverage"
 				archiveArtifacts artifacts: 'coverage/**'
 			}
 		}
