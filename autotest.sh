@@ -2,7 +2,7 @@
 
 trap catch INT
 
-GANACHE="./ganache-custom"
+GANACHE="./node_modules/.bin/ganache-cli"
 TRUFFLE="./node_modules/.bin/truffle"
 
 function print_style
@@ -22,7 +22,7 @@ function initialize
 {
 	mkdir -p logs
 	# starting ganache
-	nohup $GANACHE >> logs/ganache.$date.log 2>&1&
+	nohup $GANACHE -m "actual surround disorder swim upgrade devote digital misery truly verb slide final" -l 8000000 -i 65535 -h 0.0.0.0 >> logs/ganache.$date.log 2>&1&
 	GANACHE_PID=$!
 	print_style 'info' "Started ganache daemon (pid=$GANACHE_PID)\n"
 }
