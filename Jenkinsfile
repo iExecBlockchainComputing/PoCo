@@ -31,7 +31,7 @@ pipeline {
 			steps{
 				sh "echo 'Starting truffle tests'"
 				sh "npm install"
-				sh "npm run autotest"
+				sh "npm run autotest fast"
 				archiveArtifacts artifacts: 'logs/**'
 			}
 		}
@@ -46,7 +46,7 @@ pipeline {
 			steps{
 				sh "echo 'Starting coverage test'"
 				sh "npm install"
-				sh "npm run coverage || true"
+				sh "npm run coverage"
 				archiveArtifacts artifacts: 'coverage/**'
 			}
 		}
