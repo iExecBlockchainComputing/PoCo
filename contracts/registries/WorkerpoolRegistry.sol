@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import '../factory/CounterfactualFactory.sol';
+import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './Workerpool.sol';
 
