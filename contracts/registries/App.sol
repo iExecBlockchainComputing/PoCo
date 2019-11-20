@@ -34,5 +34,6 @@ contract App is Ownable
 	}
 
 	function transferOwnership(address) public { revert("disabled"); }
+	function renounceOwnership()        public { revert("disabled"); }
 
 }
