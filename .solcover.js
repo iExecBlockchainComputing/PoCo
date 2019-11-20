@@ -21,6 +21,7 @@ module.exports = {
 			{ repo: 'iexec-solidity',       name: 'ERC1538Proxy'          },
 			{ repo: 'iexec-solidity',       name: 'ERC1538UpdateDelegate' },
 			{ repo: 'iexec-solidity',       name: 'ERC1538QueryDelegate'  },
+			{ repo: 'iexec-solidity',       name: 'GenericFactory'        },
 		];
 		for (file of files)
 		{
