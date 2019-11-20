@@ -83,7 +83,7 @@ function runTests
 	then
 		logfile="logs/fast.$date.log"
 		printf "Running tests ... "
-		$TRUFFLE test $PARAMS > $logfile 2>&1
+		$TRUFFLE test $PARAMS 2>&1 | tee $logfile
 		if [[ $? -ne 0 ]];
 		then
 			print_style 'danger' "failure\n"
