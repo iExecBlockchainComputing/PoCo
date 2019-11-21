@@ -201,14 +201,26 @@ contract('OrderSignature', async (accounts) => {
 	 ***************************************************************************/
 	it("presign app order #1", async () => {
 		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
+
 		await expectRevert.unspecified(IexecInstance.signAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+
 		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin,  apporder_hash,              ));
+		assert.isFalse(await IexecInstance.verifyPresignature                     (appProvider, apporder_hash,              ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,  apporder_hash, apporder.sign));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(appProvider, apporder_hash, apporder.sign));
 	});
 
 	it("presign app order #2", async () => {
 		assert.equal(await IexecInstance.viewPresigned(apporder_hash), constants.NULL.ADDRESS, "Error in app order presign");
+
 		await IexecInstance.signAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+
 		assert.equal(await IexecInstance.viewPresigned(apporder_hash), appProvider, "Error in app order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin,  apporder_hash,              ));
+		assert.isTrue (await IexecInstance.verifyPresignature                     (appProvider, apporder_hash,              ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,  apporder_hash, apporder.sign));
+		assert.isTrue (await IexecInstance.verifyPresignatureOrSignature          (appProvider, apporder_hash, apporder.sign));
 	});
 
 	/***************************************************************************
@@ -216,14 +228,26 @@ contract('OrderSignature', async (accounts) => {
 	 ***************************************************************************/
 	it("presign dataset order #1", async () => {
 		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
+
 		await expectRevert.unspecified(IexecInstance.signDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+
 		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin,      datasetorder_hash,                  ));
+		assert.isFalse(await IexecInstance.verifyPresignature                     (datasetProvider, datasetorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,      datasetorder_hash, datasetorder.sign));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(datasetProvider, datasetorder_hash, datasetorder.sign));
 	});
 
 	it("presign dataset order #2", async () => {
 		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), constants.NULL.ADDRESS, "Error in dataset order presign");
+
 		await IexecInstance.signDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+
 		assert.equal(await IexecInstance.viewPresigned(datasetorder_hash), datasetProvider, "Error in dataset order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin,      datasetorder_hash,                  ));
+		assert.isTrue (await IexecInstance.verifyPresignature                     (datasetProvider, datasetorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,      datasetorder_hash, datasetorder.sign));
+		assert.isTrue (await IexecInstance.verifyPresignatureOrSignature          (datasetProvider, datasetorder_hash, datasetorder.sign));
 	});
 
 	/***************************************************************************
@@ -231,14 +255,26 @@ contract('OrderSignature', async (accounts) => {
 	 ***************************************************************************/
 	it("presign workerpool order #1", async () => {
 		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
+
 		await expectRevert.unspecified(IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+
 		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin, workerpoolorder_hash,                  ));
+		assert.isFalse(await IexecInstance.verifyPresignature                     (scheduler,  workerpoolorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin, workerpoolorder_hash, workerpoolorder.sign));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(scheduler,  workerpoolorder_hash, workerpoolorder.sign));
 	});
 
 	it("presign workerpool order #2", async () => {
 		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), constants.NULL.ADDRESS, "Error in workerpool order presign");
+
 		await IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+
 		assert.equal(await IexecInstance.viewPresigned(workerpoolorder_hash), scheduler, "Error in workerpool order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin, workerpoolorder_hash,                  ));
+		assert.isTrue (await IexecInstance.verifyPresignature                     (scheduler,  workerpoolorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin, workerpoolorder_hash, workerpoolorder.sign));
+		assert.isTrue (await IexecInstance.verifyPresignatureOrSignature          (scheduler,  workerpoolorder_hash, workerpoolorder.sign));
 	});
 
 	/***************************************************************************
@@ -246,14 +282,26 @@ contract('OrderSignature', async (accounts) => {
 	 ***************************************************************************/
 	it("presign request order #1", async () => {
 		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
+
 		await expectRevert.unspecified(IexecInstance.signRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+
 		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin, requestorder_hash,                  ));
+		assert.isFalse(await IexecInstance.verifyPresignature                     (user,       requestorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin, requestorder_hash, requestorder.sign));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(user,       requestorder_hash, requestorder.sign));
 	});
 
 	it("presign request order #2", async () => {
 		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), constants.NULL.ADDRESS, "Error in request order presign");
+
 		await IexecInstance.signRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+
 		assert.equal(await IexecInstance.viewPresigned(requestorder_hash), user, "Error in request order presign");
+		assert.isFalse(await IexecInstance.verifyPresignature                     (iexecAdmin, requestorder_hash,                  ));
+		assert.isTrue (await IexecInstance.verifyPresignature                     (user,       requestorder_hash,                  ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin, requestorder_hash, requestorder.sign));
+		assert.isTrue (await IexecInstance.verifyPresignatureOrSignature          (user,       requestorder_hash, requestorder.sign));
 	});
 
 	it("Matching presigned orders", async () => {

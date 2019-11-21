@@ -267,7 +267,6 @@ module.exports = async function(deployer, network, accounts)
 	console.log('WorkerpoolRegistry deployed at address: ' + WorkerpoolRegistryInstance.address);
 
 	await IexecInterfaceInstance.configure(
-		chainid,
 		RLCInstance.address,
 		'Hub RLC',
 		'hRLC',
@@ -276,6 +275,9 @@ module.exports = async function(deployer, network, accounts)
 		DatasetRegistryInstance.address,
 		WorkerpoolRegistryInstance.address,
 		'0x0000000000000000000000000000000000000000' // TODO
+	);
+	await IexecInterfaceInstance.updateChainId(
+		chainid,
 	);
 
 	for (cat of DEPLOYMENT.categories)
