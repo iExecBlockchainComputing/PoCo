@@ -76,14 +76,16 @@ contract('Poco', async (accounts) => {
 		entry = { hash: web3.utils.randomHex(32) };
 		odbtools.signStruct(entry, entry.hash, wallets.addressToPrivate(iexecAdmin));
 
-		assert.equal            (await IexecInstance.viewPresigned(entry.hash),              constants.NULL.ADDRESS                             );
-		assert.isTrue           (await IexecInstance.verifySignature(iexecAdmin,             entry.hash,               entry.sign,             ));
-		await expectRevert.unspecified(IexecInstance.verifySignature(user,                   entry.hash,               entry.sign,             ));
-		await expectRevert.unspecified(IexecInstance.verifySignature(constants.NULL.ADDRESS, entry.hash,               entry.sign,             ));
-		await expectRevert.unspecified(IexecInstance.verifySignature(iexecAdmin,             web3.utils.randomHex(32), entry.sign,             ));
-		await expectRevert.unspecified(IexecInstance.verifySignature(iexecAdmin,             constants.NULL.BYTES32,   entry.sign,             ));
-		await expectRevert.unspecified(IexecInstance.verifySignature(iexecAdmin,             entry.hash,               web3.utils.randomHex(65)));
-		await expectRevert.unspecified(IexecInstance.verifySignature(iexecAdmin,             entry.hash,               constants.NULL.SIGNATURE));
+		assert.equal            (await IexecInstance.viewPresigned                (entry.hash),            constants.NULL.ADDRESS                             );
+		assert.isFalse          (await IexecInstance.verifyPresignature           (iexecAdmin,             entry.hash,                                       ));
+		assert.isTrue           (await IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             entry.hash,               entry.sign,             ));
+		assert.isTrue           (await IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             entry.hash,               entry.sign,             ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(user,                   entry.hash,               entry.sign,             ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(constants.NULL.ADDRESS, entry.hash,               entry.sign,             ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             web3.utils.randomHex(32), entry.sign,             ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             constants.NULL.BYTES32,   entry.sign,             ));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             entry.hash,               web3.utils.randomHex(65)));
+		await expectRevert.unspecified(IexecInstance.verifyPresignatureOrSignature(iexecAdmin,             entry.hash,               constants.NULL.SIGNATURE));
 	});
 
 

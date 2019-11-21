@@ -74,7 +74,6 @@ contract('Poco', async (accounts) => {
 	 ***************************************************************************/
 	it("cannot reconfigure", async () => {
 		await expectRevert.unspecified(IexecInstance.configure(
-			await web3.eth.net.getId(),
 			RLCInstance.address,
 			"Hub RLC",
 			"hRLC",
@@ -83,6 +82,12 @@ contract('Poco', async (accounts) => {
 			DatasetRegistryInstance.address,
 			WorkerpoolRegistryInstance.address,
 			constants.NULL.ADDRESS,
+		));
+	});
+
+	it("updateChainId", async () => {
+		await expectRevert.unspecified(IexecInstance.updateChainId(
+			await web3.eth.net.getId(),
 		));
 	});
 
