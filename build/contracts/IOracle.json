@@ -32,17 +32,17 @@
     "absolutePath": "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol",
     "exportedSymbols": {
       "IOracle": [
-        5826
+        5863
       ],
       "IOracleConsumer": [
-        5818
+        5855
       ]
     },
-    "id": 5827,
+    "id": 5864,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5810,
+        "id": 5847,
         "literals": [
           "solidity",
           "^",
@@ -58,9 +58,9 @@
         "contractKind": "interface",
         "documentation": "@title EIP1154 interface\n@dev see https://eips.ethereum.org/EIPS/eip-1154",
         "fullyImplemented": false,
-        "id": 5818,
+        "id": 5855,
         "linearizedBaseContracts": [
-          5818
+          5855
         ],
         "name": "IOracleConsumer",
         "nodeType": "ContractDefinition",
@@ -68,22 +68,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5817,
+            "id": 5854,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "receiveResult",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5815,
+              "id": 5852,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5812,
+                  "id": 5849,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5817,
+                  "scope": 5854,
                   "src": "165:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -92,7 +92,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5811,
+                    "id": 5848,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "165:7:21",
@@ -106,10 +106,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5814,
+                  "id": 5851,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5817,
+                  "scope": 5854,
                   "src": "174:14:21",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -118,7 +118,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5813,
+                    "id": 5850,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "174:5:21",
@@ -134,19 +134,19 @@
               "src": "164:25:21"
             },
             "returnParameters": {
-              "id": 5816,
+              "id": 5853,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "200:0:21"
             },
-            "scope": 5818,
+            "scope": 5855,
             "src": "142:59:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5827,
+        "scope": 5864,
         "src": "113:90:21"
       },
       {
@@ -155,9 +155,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5826,
+        "id": 5863,
         "linearizedBaseContracts": [
-          5826
+          5863
         ],
         "name": "IOracle",
         "nodeType": "ContractDefinition",
@@ -165,22 +165,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5825,
+            "id": 5862,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "resultFor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5821,
+              "id": 5858,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5820,
+                  "id": 5857,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5825,
+                  "scope": 5862,
                   "src": "245:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -189,7 +189,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5819,
+                    "id": 5856,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "245:7:21",
@@ -205,15 +205,15 @@
               "src": "244:9:21"
             },
             "returnParameters": {
-              "id": 5824,
+              "id": 5861,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5823,
+                  "id": 5860,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5825,
+                  "scope": 5862,
                   "src": "279:12:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -222,7 +222,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5822,
+                    "id": 5859,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "279:5:21",
@@ -237,14 +237,14 @@
               ],
               "src": "278:14:21"
             },
-            "scope": 5826,
+            "scope": 5863,
             "src": "226:67:21",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5827,
+        "scope": 5864,
         "src": "205:90:21"
       }
     ],
@@ -254,17 +254,17 @@
     "absolutePath": "iexec-solidity/contracts/ERC1154_OracleInterface/IERC1154.sol",
     "exportedSymbols": {
       "IOracle": [
-        5826
+        5863
       ],
       "IOracleConsumer": [
-        5818
+        5855
       ]
     },
-    "id": 5827,
+    "id": 5864,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5810,
+        "id": 5847,
         "literals": [
           "solidity",
           "^",
@@ -280,9 +280,9 @@
         "contractKind": "interface",
         "documentation": "@title EIP1154 interface\n@dev see https://eips.ethereum.org/EIPS/eip-1154",
         "fullyImplemented": false,
-        "id": 5818,
+        "id": 5855,
         "linearizedBaseContracts": [
-          5818
+          5855
         ],
         "name": "IOracleConsumer",
         "nodeType": "ContractDefinition",
@@ -290,22 +290,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5817,
+            "id": 5854,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "receiveResult",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5815,
+              "id": 5852,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5812,
+                  "id": 5849,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5817,
+                  "scope": 5854,
                   "src": "165:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -314,7 +314,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5811,
+                    "id": 5848,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "165:7:21",
@@ -328,10 +328,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5814,
+                  "id": 5851,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5817,
+                  "scope": 5854,
                   "src": "174:14:21",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -340,7 +340,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5813,
+                    "id": 5850,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "174:5:21",
@@ -356,19 +356,19 @@
               "src": "164:25:21"
             },
             "returnParameters": {
-              "id": 5816,
+              "id": 5853,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "200:0:21"
             },
-            "scope": 5818,
+            "scope": 5855,
             "src": "142:59:21",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5827,
+        "scope": 5864,
         "src": "113:90:21"
       },
       {
@@ -377,9 +377,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5826,
+        "id": 5863,
         "linearizedBaseContracts": [
-          5826
+          5863
         ],
         "name": "IOracle",
         "nodeType": "ContractDefinition",
@@ -387,22 +387,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5825,
+            "id": 5862,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "resultFor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5821,
+              "id": 5858,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5820,
+                  "id": 5857,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5825,
+                  "scope": 5862,
                   "src": "245:7:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -411,7 +411,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 5819,
+                    "id": 5856,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "245:7:21",
@@ -427,15 +427,15 @@
               "src": "244:9:21"
             },
             "returnParameters": {
-              "id": 5824,
+              "id": 5861,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5823,
+                  "id": 5860,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5825,
+                  "scope": 5862,
                   "src": "279:12:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -444,7 +444,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 5822,
+                    "id": 5859,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "279:5:21",
@@ -459,14 +459,14 @@
               ],
               "src": "278:14:21"
             },
-            "scope": 5826,
+            "scope": 5863,
             "src": "226:67:21",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5827,
+        "scope": 5864,
         "src": "205:90:21"
       }
     ],
@@ -477,8 +477,8 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.13",
-  "updatedAt": "2019-09-02T09:55:23.737Z",
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2019-11-25T09:59:16.369Z",
   "devdoc": {
     "methods": {}
   },
