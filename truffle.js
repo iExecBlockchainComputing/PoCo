@@ -44,9 +44,15 @@ module.exports =
 			gasPrice:   10000000000, //10Gwei
 		},
 		viviani: {
-      provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC_VIVIANI, process.env.VIVIANI_NODE),
-      network_id: '133',
-      gasPrice:   1000000000, //1Gwei
+			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.VIVIANI_NODE),
+			network_id: '133',
+			gasPrice:   1000000000, //1Gwei
+			gas:        6000000,
+		},
+		bellecour: {
+			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.BELLECOUR_NODE),
+			network_id: '134',
+			gasPrice:   '0', //0Gwei, must be a string to avoid being considered as null/undefined
 			gas:        6000000,
 		}
 	},
