@@ -91,10 +91,10 @@ contract('Registries', async (accounts) => {
 					}).encodeABI();
 
 					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                      },
-						{ t: 'address', v: AppRegistryInstance.address },
-						{ t: 'bytes32', v: constants.NULL.BYTES32      },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)  },
+						{ t: 'bytes1',  v: '0xff'                              },
+						{ t: 'address', v: AppRegistryInstance.address         },
+						{ t: 'bytes32', v: web3.utils.padLeft(appProvider, 64) },
+						{ t: 'bytes32', v: web3.utils.keccak256(code)          },
 					).slice(26));
 
 					txMined = await AppRegistryInstance.createApp(
@@ -135,7 +135,7 @@ contract('Registries', async (accounts) => {
 				it("duplicate protection", async () => {
 					await expectRevert.unspecified(
 						AppRegistryInstance.createApp(
-							user,
+							appProvider,
 							"App #"+i,
 							"DOCKER",
 							constants.MULTIADDR_BYTES,
@@ -165,10 +165,10 @@ contract('Registries', async (accounts) => {
 					}).encodeABI();
 
 					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                          },
-						{ t: 'address', v: DatasetRegistryInstance.address },
-						{ t: 'bytes32', v: constants.NULL.BYTES32          },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)      },
+						{ t: 'bytes1',  v: '0xff'                                  },
+						{ t: 'address', v: DatasetRegistryInstance.address         },
+						{ t: 'bytes32', v: web3.utils.padLeft(datasetProvider, 64) },
+						{ t: 'bytes32', v: web3.utils.keccak256(code)              },
 					).slice(26));
 
 					txMined = await DatasetRegistryInstance.createDataset(
@@ -205,7 +205,7 @@ contract('Registries', async (accounts) => {
 				it("duplicate protection", async () => {
 					await expectRevert.unspecified(
 						DatasetRegistryInstance.createDataset(
-							user,
+							datasetProvider,
 							"Dataset #"+i,
 							constants.MULTIADDR_BYTES,
 							web3.utils.keccak256("Content of dataset #"+i),
@@ -233,7 +233,7 @@ contract('Registries', async (accounts) => {
 					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
 						{ t: 'bytes1',  v: '0xff'                             },
 						{ t: 'address', v: WorkerpoolRegistryInstance.address },
-						{ t: 'bytes32', v: constants.NULL.BYTES32             },
+						{ t: 'bytes32', v: web3.utils.padLeft(scheduler, 64)  },
 						{ t: 'bytes32', v: web3.utils.keccak256(code)         },
 					).slice(26));
 
@@ -269,7 +269,7 @@ contract('Registries', async (accounts) => {
 				it("duplicate protection", async () => {
 					await expectRevert.unspecified(
 						WorkerpoolRegistryInstance.createWorkerpool(
-							user,
+							scheduler,
 							"Workerpool #"+i,
 						)
 					);

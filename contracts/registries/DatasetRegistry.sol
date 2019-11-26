@@ -36,7 +36,7 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 					_datasetChecksum
 				)
 			),
-			bytes32(0)
+			bytes32(uint256(_datasetOwner))
 		));
 
 		_mint(_datasetOwner, uint256(address(dataset)));
