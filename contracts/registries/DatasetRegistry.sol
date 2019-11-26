@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import '../factory/CounterfactualFactory.sol';
+import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './Dataset.sol';
 
@@ -36,7 +36,7 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 					_datasetChecksum
 				)
 			),
-			bytes32(0)
+			bytes32(uint256(_datasetOwner))
 		));
 
 		_mint(_datasetOwner, uint256(address(dataset)));

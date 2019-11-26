@@ -30,7 +30,6 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function configure(
-		uint256          _chainid,
 		address          _token,
 		string  calldata _name,
 		string  calldata _symbol,
@@ -42,8 +41,6 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	external
 	{
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
-		_updateDomainSeparator(_chainid);
-
 		m_baseToken          = IERC20(_token);
 		m_name               = _name;
 		m_symbol             = _symbol;
@@ -57,7 +54,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	function updateChainId(uint256 _chainid)
 	external
 	{
-		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
+		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured"); //TODO: remove and using chainId opcode
 		_updateDomainSeparator(_chainid);
 	}
 

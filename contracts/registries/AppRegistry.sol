@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import '../factory/CounterfactualFactory.sol';
+import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './App.sol';
 
@@ -40,7 +40,7 @@ contract AppRegistry is Registry, CounterfactualFactory
 					_appMREnclave
 				)
 			),
-			bytes32(0)
+			bytes32(uint256(_appOwner))
 		));
 
 		_mint(_appOwner, uint256(address(app)));

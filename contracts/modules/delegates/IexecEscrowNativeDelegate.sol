@@ -71,7 +71,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		_safeWithdraw(msg.sender, msg.value.mod(nRLCtoWei));
 	}
 
-	function _safeWithdraw(address payable to, uint256 value)
+	function _safeWithdraw(address to, uint256 value)
 		internal
 	{
 		(bool success, ) = to.call.value(value)('');
