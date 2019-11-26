@@ -32,7 +32,7 @@ contract WorkerpoolRegistry is Registry, CounterfactualFactory
 					_workerpoolDescription
 				)
 			),
-			bytes32(0)
+			bytes32(uint256(_workerpoolOwner))
 		));
 
 		_mint(_workerpoolOwner, uint256(address(workerpool)));

@@ -40,7 +40,7 @@ contract AppRegistry is Registry, CounterfactualFactory
 					_appMREnclave
 				)
 			),
-			bytes32(0)
+			bytes32(uint256(_appOwner))
 		));
 
 		_mint(_appOwner, uint256(address(app)));
