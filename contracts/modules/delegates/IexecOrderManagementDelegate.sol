@@ -21,7 +21,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	 *                         order management tools                          *
 	 ***************************************************************************/
 	function manageAppOrder(IexecODBLibOrders_v4.AppOrderOperation memory _apporderoperation)
-	public returns (bool)
+	public
 	{
 		address owner = App(_apporderoperation.order.app).owner();
 		require(owner == msg.sender || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
@@ -31,22 +31,16 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 		{
 			m_presigned[apporderHash] = owner;
 			emit SignedAppOrder(apporderHash);
-			return true;
 		}
 		else if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[apporderHash] = _apporderoperation.order.volume;
 			emit ClosedAppOrder(apporderHash);
-			return true;
-		}
-		else
-		{
-			revert('invalid-order-operation');
 		}
 	}
 
 	function manageDatasetOrder(IexecODBLibOrders_v4.DatasetOrderOperation memory _datasetorderoperation)
-	public returns (bool)
+	public
 	{
 		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
 		require(owner == msg.sender || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
@@ -56,22 +50,16 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 		{
 			m_presigned[datasetorderHash] = owner;
 			emit SignedDatasetOrder(datasetorderHash);
-			return true;
 		}
 		else if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
 			emit ClosedDatasetOrder(datasetorderHash);
-			return true;
-		}
-		else
-		{
-			revert('invalid-order-operation');
 		}
 	}
 
 	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation memory _workerpoolorderoperation)
-	public returns (bool)
+	public
 	{
 		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
 		require(owner == msg.sender || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
@@ -81,22 +69,16 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 		{
 			m_presigned[workerpoolorderHash] = owner;
 			emit SignedWorkerpoolOrder(workerpoolorderHash);
-			return true;
 		}
 		else if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
 			emit ClosedWorkerpoolOrder(workerpoolorderHash);
-			return true;
-		}
-		else
-		{
-			revert('invalid-order-operation');
 		}
 	}
 
 	function manageRequestOrder(IexecODBLibOrders_v4.RequestOrderOperation memory _requestorderoperation)
-	public returns (bool)
+	public
 	{
 		address owner = _requestorderoperation.order.requester;
 		require(owner == msg.sender || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
@@ -106,17 +88,11 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 		{
 			m_presigned[requestorderHash] = owner;
 			emit SignedRequestOrder(requestorderHash);
-			return true;
 		}
 		else if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[requestorderHash] = _requestorderoperation.order.volume;
 			emit ClosedRequestOrder(requestorderHash);
-			return true;
-		}
-		else
-		{
-			revert('invalid-order-operation');
 		}
 	}
 }
