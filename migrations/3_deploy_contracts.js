@@ -24,7 +24,7 @@ var IexecERC20              = artifacts.require('IexecERC20Delegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
 var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
-var IexecOrderSignature     = artifacts.require('IexecOrderSignatureDelegate')
+var IexecOrderManagement    = artifacts.require('IexecOrderManagementDelegate')
 var IexecPoco               = artifacts.require('IexecPocoDelegate')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
 var ENSIntegration          = artifacts.require('ENSIntegrationDelegate')
@@ -167,7 +167,7 @@ module.exports = async function(deployer, network, accounts)
 		await deployer.deploy(IexecODBLibOrders);
 		await deployer.link(IexecODBLibOrders, IexecPoco);
 		await deployer.link(IexecODBLibOrders, IexecMaintenance);
-		await deployer.link(IexecODBLibOrders, IexecOrderSignature);
+		await deployer.link(IexecODBLibOrders, IexecOrderManagement);
 	}
 
 	/***************************************************************************
@@ -203,7 +203,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecERC20,
 		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
 		IexecMaintenance,
-		IexecOrderSignature,
+		IexecOrderManagement,
 		IexecPoco,
 		IexecRelay,
 		ENSIntegration,

@@ -26,7 +26,7 @@ library IexecODBLibOrders_v4
 	enum OrderOperationEnum
 	{
 		SIGN,
-		CANCEL
+		CLOSE
 	}
 	struct EIP712Domain
 	{

@@ -2,10 +2,10 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
-import "../interfaces/IexecOrderSignature.sol";
+import "../interfaces/IexecOrderManagement.sol";
 
 
-contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
+contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 {
 	using IexecODBLibOrders_v4 for bytes32;
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrder;
@@ -27,19 +27,22 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 		require(owner == msg.sender || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
 
 		bytes32 apporderHash = _apporderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-
 		if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
 		{
 			m_presigned[apporderHash] = owner;
+			emit SignedAppOrder(apporderHash);
 			return true;
 		}
-		else if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		else if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[apporderHash] = _apporderoperation.order.volume;
 			emit ClosedAppOrder(apporderHash);
 			return true;
 		}
-		return false;
+		else
+		{
+			revert('invalid-order-operation');
+		}
 	}
 
 	function manageDatasetOrder(IexecODBLibOrders_v4.DatasetOrderOperation memory _datasetorderoperation)
@@ -49,19 +52,22 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 		require(owner == msg.sender || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
 
 		bytes32 datasetorderHash = _datasetorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-
 		if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
 		{
 			m_presigned[datasetorderHash] = owner;
+			emit SignedDatasetOrder(datasetorderHash);
 			return true;
 		}
-		else if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		else if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
 			emit ClosedDatasetOrder(datasetorderHash);
 			return true;
 		}
-		return false;
+		else
+		{
+			revert('invalid-order-operation');
+		}
 	}
 
 	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation memory _workerpoolorderoperation)
@@ -71,19 +77,22 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 		require(owner == msg.sender || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
 
 		bytes32 workerpoolorderHash = _workerpoolorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-
 		if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
 		{
 			m_presigned[workerpoolorderHash] = owner;
+			emit SignedWorkerpoolOrder(workerpoolorderHash);
 			return true;
 		}
-		else if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		else if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
 			emit ClosedWorkerpoolOrder(workerpoolorderHash);
 			return true;
 		}
-		return false;
+		else
+		{
+			revert('invalid-order-operation');
+		}
 	}
 
 	function manageRequestOrder(IexecODBLibOrders_v4.RequestOrderOperation memory _requestorderoperation)
@@ -93,18 +102,21 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 		require(owner == msg.sender || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
 
 		bytes32 requestorderHash = _requestorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-
 		if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
 		{
 			m_presigned[requestorderHash] = owner;
+			emit SignedRequestOrder(requestorderHash);
 			return true;
 		}
-		else if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		else if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
 		{
 			m_consumed[requestorderHash] = _requestorderoperation.order.volume;
 			emit ClosedRequestOrder(requestorderHash);
 			return true;
 		}
-		return false;
+		else
+		{
+			revert('invalid-order-operation');
+		}
 	}
 }

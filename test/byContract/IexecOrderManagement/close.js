@@ -24,7 +24,7 @@ function extractEvents(txMined, address, name)
 	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
 }
 
-contract('OrderSignature', async (accounts) => {
+contract('OrderManagement', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -202,7 +202,7 @@ contract('OrderSignature', async (accounts) => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = {
 				order: apporder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -216,7 +216,7 @@ contract('OrderSignature', async (accounts) => {
 			const apporderoperation = odbtools.signAppOrderOperation(
 				{
 					order: apporder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(iexecAdmin)
@@ -232,7 +232,7 @@ contract('OrderSignature', async (accounts) => {
 			const apporderoperation = odbtools.signAppOrderOperation(
 				{
 					order: apporder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(appProvider)
@@ -247,7 +247,7 @@ contract('OrderSignature', async (accounts) => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = {
 				order: apporder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -265,7 +265,7 @@ contract('OrderSignature', async (accounts) => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = {
 				order: datasetorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -279,7 +279,7 @@ contract('OrderSignature', async (accounts) => {
 			const datasetorderoperation = odbtools.signDatasetOrderOperation(
 				{
 					order: datasetorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(iexecAdmin)
@@ -295,7 +295,7 @@ contract('OrderSignature', async (accounts) => {
 			const datasetorderoperation = odbtools.signDatasetOrderOperation(
 				{
 					order: datasetorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(datasetProvider)
@@ -310,7 +310,7 @@ contract('OrderSignature', async (accounts) => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = {
 				order: datasetorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -328,7 +328,7 @@ contract('OrderSignature', async (accounts) => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = {
 				order: workerpoolorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -342,7 +342,7 @@ contract('OrderSignature', async (accounts) => {
 			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
 				{
 					order: workerpoolorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(iexecAdmin)
@@ -358,7 +358,7 @@ contract('OrderSignature', async (accounts) => {
 			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
 				{
 					order: workerpoolorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(scheduler)
@@ -373,7 +373,7 @@ contract('OrderSignature', async (accounts) => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = {
 				order: workerpoolorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -391,7 +391,7 @@ contract('OrderSignature', async (accounts) => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = {
 				order: requestorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
@@ -405,7 +405,7 @@ contract('OrderSignature', async (accounts) => {
 			const requestorderoperation = odbtools.signRequestOrderOperation(
 				{
 					order: requestorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(iexecAdmin)
@@ -421,7 +421,7 @@ contract('OrderSignature', async (accounts) => {
 			const requestorderoperation = odbtools.signRequestOrderOperation(
 				{
 					order: requestorder,
-					operation: constants.OrderOperationEnum.CANCEL,
+					operation: constants.OrderOperationEnum.CLOSE,
 					sign: constants.NULL.SIGNATURE
 				},
 				wallets.addressToPrivate(user)
@@ -436,7 +436,7 @@ contract('OrderSignature', async (accounts) => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = {
 				order: requestorder,
-				operation: constants.OrderOperationEnum.CANCEL,
+				operation: constants.OrderOperationEnum.CLOSE,
 				sign: constants.NULL.SIGNATURE
 			};
 
