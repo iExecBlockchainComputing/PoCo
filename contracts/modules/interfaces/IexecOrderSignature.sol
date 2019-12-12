@@ -11,12 +11,8 @@ interface IexecOrderSignature
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
 	event ClosedRequestOrder   (bytes32 requestHash);
 
-	function signAppOrder         (IexecODBLibOrders_v4.AppOrder        calldata) external returns (bool);
-	function signDatasetOrder     (IexecODBLibOrders_v4.DatasetOrder    calldata) external returns (bool);
-	function signWorkerpoolOrder  (IexecODBLibOrders_v4.WorkerpoolOrder calldata) external returns (bool);
-	function signRequestOrder     (IexecODBLibOrders_v4.RequestOrder    calldata) external returns (bool);
-	function cancelAppOrder       (IexecODBLibOrders_v4.AppOrder        calldata) external returns (bool);
-	function cancelDatasetOrder   (IexecODBLibOrders_v4.DatasetOrder    calldata) external returns (bool);
-	function cancelWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder calldata) external returns (bool);
-	function cancelRequestOrder   (IexecODBLibOrders_v4.RequestOrder    calldata) external returns (bool);
+	function manageAppOrder       (IexecODBLibOrders_v4.AppOrderOperation        calldata) external returns (bool);
+	function manageDatasetOrder   (IexecODBLibOrders_v4.DatasetOrderOperation    calldata) external returns (bool);
+	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation calldata) external returns (bool);
+	function manageRequestOrder   (IexecODBLibOrders_v4.RequestOrderOperation    calldata) external returns (bool);
 }

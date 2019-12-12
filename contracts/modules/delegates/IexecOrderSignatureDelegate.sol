@@ -12,91 +12,99 @@ contract IexecOrderSignatureDelegate is IexecOrderSignature, DelegateBase
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrder;
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrder;
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrder;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrderOperation;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrderOperation;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrderOperation;
+	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrderOperation;
 
 	/***************************************************************************
-	 *                            pre-signing tools                            *
+	 *                         order management tools                          *
 	 ***************************************************************************/
-	// should be external
-	function signAppOrder(IexecODBLibOrders_v4.AppOrder memory _apporder)
+	function manageAppOrder(IexecODBLibOrders_v4.AppOrderOperation memory _apporderoperation)
 	public returns (bool)
 	{
-		require(msg.sender == App(_apporder.app).owner());
-		m_presigned[_apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
-		return true;
+		address owner = App(_apporderoperation.order.app).owner();
+		require(owner == msg.sender || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
+
+		bytes32 apporderHash = _apporderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
+
+		if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		{
+			m_presigned[apporderHash] = owner;
+			return true;
+		}
+		else if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		{
+			m_consumed[apporderHash] = _apporderoperation.order.volume;
+			emit ClosedAppOrder(apporderHash);
+			return true;
+		}
+		return false;
 	}
 
-	// should be external
-	function signDatasetOrder(IexecODBLibOrders_v4.DatasetOrder memory _datasetorder)
+	function manageDatasetOrder(IexecODBLibOrders_v4.DatasetOrderOperation memory _datasetorderoperation)
 	public returns (bool)
 	{
-		require(msg.sender == Dataset(_datasetorder.dataset).owner());
-		m_presigned[_datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
-		return true;
+		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
+		require(owner == msg.sender || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
+
+		bytes32 datasetorderHash = _datasetorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
+
+		if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		{
+			m_presigned[datasetorderHash] = owner;
+			return true;
+		}
+		else if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		{
+			m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
+			emit ClosedDatasetOrder(datasetorderHash);
+			return true;
+		}
+		return false;
 	}
 
-	// should be external
-	function signWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder)
+	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation memory _workerpoolorderoperation)
 	public returns (bool)
 	{
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
-		m_presigned[_workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
-		return true;
+		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
+		require(owner == msg.sender || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
+
+		bytes32 workerpoolorderHash = _workerpoolorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
+
+		if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		{
+			m_presigned[workerpoolorderHash] = owner;
+			return true;
+		}
+		else if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		{
+			m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
+			emit ClosedWorkerpoolOrder(workerpoolorderHash);
+			return true;
+		}
+		return false;
 	}
 
-	// should be external
-	function signRequestOrder(IexecODBLibOrders_v4.RequestOrder memory _requestorder)
+	function manageRequestOrder(IexecODBLibOrders_v4.RequestOrderOperation memory _requestorderoperation)
 	public returns (bool)
 	{
-		require(msg.sender == _requestorder.requester);
-		m_presigned[_requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR)] = msg.sender;
-		return true;
-	}
+		address owner = _requestorderoperation.order.requester;
+		require(owner == msg.sender || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
 
-	/***************************************************************************
-	 *                            cancelling tools                             *
-	 ***************************************************************************/
-	// should be external
-	function cancelAppOrder(IexecODBLibOrders_v4.AppOrder memory _apporder)
-	public returns (bool)
-	{
-		require(msg.sender == App(_apporder.app).owner());
-		bytes32 dapporderHash = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		m_consumed[dapporderHash] = _apporder.volume;
-		emit ClosedAppOrder(dapporderHash);
-		return true;
-	}
+		bytes32 requestorderHash = _requestorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 
-	// should be external
-	function cancelDatasetOrder(IexecODBLibOrders_v4.DatasetOrder memory _datasetorder)
-	public returns (bool)
-	{
-		require(msg.sender == Dataset(_datasetorder.dataset).owner());
-		bytes32 dataorderHash = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		m_consumed[dataorderHash] = _datasetorder.volume;
-		emit ClosedDatasetOrder(dataorderHash);
-		return true;
+		if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		{
+			m_presigned[requestorderHash] = owner;
+			return true;
+		}
+		else if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CANCEL)
+		{
+			m_consumed[requestorderHash] = _requestorderoperation.order.volume;
+			emit ClosedRequestOrder(requestorderHash);
+			return true;
+		}
+		return false;
 	}
-
-	// should be external
-	function cancelWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrder memory _workerpoolorder)
-	public returns (bool)
-	{
-		require(msg.sender == Workerpool(_workerpoolorder.workerpool).owner());
-		bytes32 poolorderHash = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		m_consumed[poolorderHash] = _workerpoolorder.volume;
-		emit ClosedWorkerpoolOrder(poolorderHash);
-		return true;
-	}
-
-	// should be external
-	function cancelRequestOrder(IexecODBLibOrders_v4.RequestOrder memory _requestorder)
-	public returns (bool)
-	{
-		require(msg.sender == _requestorder.requester);
-		bytes32 requestorderHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		m_consumed[requestorderHash] = _requestorder.volume;
-		emit ClosedRequestOrder(requestorderHash);
-		return true;
-	}
-
 }

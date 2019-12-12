@@ -60,6 +60,16 @@ contract('OrderSignature', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
+		console.log("             EIP712DOMAIN_TYPEHASH:", odbtools.EIP712DOMAIN_TYPEHASH            );
+		console.log("                 APPORDER_TYPEHASH:", odbtools.APPORDER_TYPEHASH                );
+		console.log("             DATASETORDER_TYPEHASH:", odbtools.DATASETORDER_TYPEHASH            );
+		console.log("          WORKERPOOLORDER_TYPEHASH:", odbtools.WORKERPOOLORDER_TYPEHASH         );
+		console.log("             REQUESTORDER_TYPEHASH:", odbtools.REQUESTORDER_TYPEHASH            );
+		console.log("        APPORDEROPERATION_TYPEHASH:", odbtools.APPORDEROPERATION_TYPEHASH       );
+		console.log("    DATASETORDEROPERATION_TYPEHASH:", odbtools.DATASETORDEROPERATION_TYPEHASH   );
+		console.log(" WORKERPOOLORDEROPERATION_TYPEHASH:", odbtools.WORKERPOOLORDEROPERATION_TYPEHASH);
+		console.log("    REQUESTORDEROPERATION_TYPEHASH:", odbtools.REQUESTORDEROPERATION_TYPEHASH   );
+
 		odbtools.setup({
 			name:              "iExecODB",
 			version:           "3.0-alpha",
@@ -111,8 +121,8 @@ contract('OrderSignature', async (accounts) => {
 		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
 	});
 
-	it("[Genesis] create orders", async () => {
-		apporder = {
+	const generateAppOrder = () => {
+		const apporder = {
 			app:                AppInstance.address,
 			appprice:           3,
 			volume:             1000,
@@ -123,9 +133,14 @@ contract('OrderSignature', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		datasetorder = {
+		const hash = odbtools.AppOrderTypedStructHash(apporder);
+		return { apporder, hash };
+	}
+
+	const generateDatasetOrder = () => {
+		const datasetorder = {
 			dataset:            DatasetInstance.address,
-			datasetprice:       3,
+			datasetprice:       1,
 			volume:             1000,
 			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			apprestrict:        AppInstance.address,
@@ -134,7 +149,12 @@ contract('OrderSignature', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		workerpoolorder = {
+		const hash = odbtools.DatasetOrderTypedStructHash(datasetorder);
+		return { datasetorder, hash };
+	}
+
+	const generateWorkerpoolOrder = () => {
+		const workerpoolorder = {
 			workerpool:        WorkerpoolInstance.address,
 			workerpoolprice:   25,
 			volume:            3,
@@ -147,7 +167,12 @@ contract('OrderSignature', async (accounts) => {
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};
-		requestorder = {
+		const hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		return { workerpoolorder, hash };
+	}
+
+	const generateRequestOrder = () => {
+		const requestorder = {
 			app:                AppInstance.address,
 			appmaxprice:        3,
 			dataset:            DatasetInstance.address,
@@ -165,81 +190,260 @@ contract('OrderSignature', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		apporder_hash        = odbtools.AppOrderTypedStructHash       (apporder       );
-		datasetorder_hash    = odbtools.DatasetOrderTypedStructHash   (datasetorder   );
-		workerpoolorder_hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
-		requestorder_hash    = odbtools.RequestOrderTypedStructHash   (requestorder   );
-
-		txsMined = await Promise.all([
-			IexecInstance.signAppOrder       (apporder,        { from: appProvider,     gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.signDatasetOrder   (datasetorder,    { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.signWorkerpoolOrder(workerpoolorder, { from: scheduler,       gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.signRequestOrder   (requestorder,    { from: user,            gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
-		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		assert.isBelow(txsMined[3].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-	});
+		const hash = odbtools.RequestOrderTypedStructHash(requestorder);
+		return { requestorder, hash };
+	}
 
 	/***************************************************************************
 	 *                            TEST: App cancel                            *
 	 ***************************************************************************/
-	it("presign app order #1", async () => {
-		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		await expectRevert.unspecified(IexecInstance.cancelAppOrder(apporder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-	});
+	describe("cancel apporder", async () => {
+		it("unauthorized sender", async () => {
+			const { apporder, hash } = await generateAppOrder();
+			const apporderoperation = {
+				order: apporder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
 
-	it("presign app order #2", async () => {
-		assert.equal(await IexecInstance.viewConsumed(apporder_hash), 0, "Error in app order presign");
-		await IexecInstance.cancelAppOrder(apporder, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecInstance.viewConsumed(apporder_hash), apporder.volume, "Error in app order presign");
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+			await expectRevert.unspecified(IexecInstance.manageAppOrder(apporderoperation,{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+		});
+
+		it("unauthorized signature", async () => {
+			const { apporder, hash } = await generateAppOrder();
+			const apporderoperation = odbtools.signAppOrderOperation(
+				{
+					order: apporder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(iexecAdmin)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+			await expectRevert.unspecified(IexecInstance.manageAppOrder(apporderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+		});
+
+		it("authorized signature", async () => {
+			const { apporder, hash } = await generateAppOrder();
+			const apporderoperation = odbtools.signAppOrderOperation(
+				{
+					order: apporder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(appProvider)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+			await IexecInstance.manageAppOrder(apporderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), apporder.volume, "Error in app order presign");
+		});
+
+		it("authorized sender", async () => {
+			const { apporder, hash } = await generateAppOrder();
+			const apporderoperation = {
+				order: apporder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in app order presign");
+			await IexecInstance.manageAppOrder(apporderoperation, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), apporder.volume, "Error in app order presign");
+		});
 	});
 
 	/***************************************************************************
 	 *                            TEST: Dataset cancel                            *
 	 ***************************************************************************/
-	it("presign dataset order #1", async () => {
-		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		await expectRevert.unspecified(IexecInstance.cancelDatasetOrder(datasetorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-	});
+	describe("cancel datasetorder", async () => {
+		it("unauthorized sender", async () => {
+			const { datasetorder, hash } = await generateDatasetOrder();
+			const datasetorderoperation = {
+				order: datasetorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
 
-	it("presign dataset order #2", async () => {
-		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), 0, "Error in dataset order presign");
-		await IexecInstance.cancelDatasetOrder(datasetorder, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecInstance.viewConsumed(datasetorder_hash), datasetorder.volume, "Error in dataset order presign");
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+			await expectRevert.unspecified(IexecInstance.manageDatasetOrder(datasetorderoperation,{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+		});
+
+		it("unauthorized signature", async () => {
+			const { datasetorder, hash } = await generateDatasetOrder();
+			const datasetorderoperation = odbtools.signDatasetOrderOperation(
+				{
+					order: datasetorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(iexecAdmin)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+			await expectRevert.unspecified(IexecInstance.manageDatasetOrder(datasetorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+		});
+
+		it("authorized signature", async () => {
+			const { datasetorder, hash } = await generateDatasetOrder();
+			const datasetorderoperation = odbtools.signDatasetOrderOperation(
+				{
+					order: datasetorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(datasetProvider)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), datasetorder.volume, "Error in dataset order presign");
+		});
+
+		it("authorized sender", async () => {
+			const { datasetorder, hash } = await generateDatasetOrder();
+			const datasetorderoperation = {
+				order: datasetorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in dataset order presign");
+			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), datasetorder.volume, "Error in dataset order presign");
+		});
 	});
 
 	/***************************************************************************
 	 *                            TEST: Workerpool cancel                            *
 	 ***************************************************************************/
-	it("presign workerpool order #1", async () => {
-		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		await expectRevert.unspecified(IexecInstance.cancelWorkerpoolOrder(workerpoolorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-	});
+	describe("cancel workerpoolorder", async () => {
+		it("unauthorized sender", async () => {
+			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
+			const workerpoolorderoperation = {
+				order: workerpoolorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
 
-	it("presign workerpool order #2", async () => {
-		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), 0, "Error in workerpool order presign");
-		await IexecInstance.cancelWorkerpoolOrder(workerpoolorder, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecInstance.viewConsumed(workerpoolorder_hash), workerpoolorder.volume, "Error in workerpool order presign");
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+			await expectRevert.unspecified(IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation,{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+		});
+
+		it("unauthorized signature", async () => {
+			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
+			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
+				{
+					order: workerpoolorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(iexecAdmin)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+			await expectRevert.unspecified(IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+		});
+
+		it("authorized signature", async () => {
+			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
+			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
+				{
+					order: workerpoolorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(scheduler)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), workerpoolorder.volume, "Error in workerpool order presign");
+		});
+
+		it("authorized sender", async () => {
+			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
+			const workerpoolorderoperation = {
+				order: workerpoolorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in workerpool order presign");
+			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), workerpoolorder.volume, "Error in workerpool order presign");
+		});
 	});
 
 	/***************************************************************************
 	 *                          TEST: Request cancel                           *
 	 ***************************************************************************/
-	it("presign request order #1", async () => {
-		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		await expectRevert.unspecified(IexecInstance.cancelRequestOrder(requestorder, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
-		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-	});
+	describe("cancel requestorder", async () => {
+		it("unauthorized sender", async () => {
+			const { requestorder, hash } = await generateRequestOrder();
+			const requestorderoperation = {
+				order: requestorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
 
-	it("presign request order #2", async () => {
-		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), 0, "Error in request order presign");
-		await IexecInstance.cancelRequestOrder(requestorder, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.equal(await IexecInstance.viewConsumed(requestorder_hash), requestorder.volume, "Error in request order presign");
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+			await expectRevert.unspecified(IexecInstance.manageRequestOrder(requestorderoperation,{ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+		});
+
+		it("unauthorized signature", async () => {
+			const { requestorder, hash } = await generateRequestOrder();
+			const requestorderoperation = odbtools.signRequestOrderOperation(
+				{
+					order: requestorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(iexecAdmin)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+			await expectRevert.unspecified(IexecInstance.manageRequestOrder(requestorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }));
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+		});
+
+		it("authorized signature", async () => {
+			const { requestorder, hash } = await generateRequestOrder();
+			const requestorderoperation = odbtools.signRequestOrderOperation(
+				{
+					order: requestorder,
+					operation: constants.OrderOperationEnum.CANCEL,
+					sign: constants.NULL.SIGNATURE
+				},
+				wallets.addressToPrivate(user)
+			);
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+			await IexecInstance.manageRequestOrder(requestorderoperation, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), requestorder.volume, "Error in request order presign");
+		});
+
+		it("authorized sender", async () => {
+			const { requestorder, hash } = await generateRequestOrder();
+			const requestorderoperation = {
+				order: requestorder,
+				operation: constants.OrderOperationEnum.CANCEL,
+				sign: constants.NULL.SIGNATURE
+			};
+
+			assert.equal(await IexecInstance.viewConsumed(hash), 0, "Error in request order presign");
+			await IexecInstance.manageRequestOrder(requestorderoperation, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+			assert.equal(await IexecInstance.viewConsumed(hash), requestorder.volume, "Error in request order presign");
+		});
 	});
 
 });
