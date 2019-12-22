@@ -25,7 +25,7 @@ contract RegistryEntry is ENSReverseRegistration
 		_;
 	}
 
-	function ENSReverseRegister(ENSRegistry _ens, string calldata _name)
+	function ENSReverseRegister(address _ens, string calldata _name)
 	external onlyOwner()
 	{
 		_ENSReverseRegister(_ens, _name);

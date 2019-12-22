@@ -11,6 +11,6 @@ contract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, Deleg
 	function ENSReverseRegister(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_ENSReverseRegister(ENSRegistry(_ens), _name);
+		_ENSReverseRegister(_ens, _name);
 	}
 }

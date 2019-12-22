@@ -26,7 +26,7 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}
 
-	function ENSReverseRegister(ENSRegistry _ens, string calldata _name)
+	function ENSReverseRegister(address _ens, string calldata _name)
 	external onlyOwner()
 	{
 		_ENSReverseRegister(_ens, _name);
