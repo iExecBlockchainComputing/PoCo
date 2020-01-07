@@ -25,7 +25,7 @@ contract App is RegistryEntry
 		bytes   memory _appMREnclave)
 	public
 	{
-		super.initialize(msg.sender);
+		_initialize(msg.sender);
 		m_appName      = _appName;
 		m_appType      = _appType;
 		m_appMultiaddr = _appMultiaddr;

@@ -21,7 +21,7 @@ contract Dataset is RegistryEntry
 		bytes32        _datasetChecksum)
 	public
 	{
-		super.initialize(msg.sender);
+		_initialize(msg.sender);
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;

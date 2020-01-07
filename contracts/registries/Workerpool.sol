@@ -26,7 +26,7 @@ contract Workerpool is RegistryEntry
 		string memory _workerpoolDescription)
 	public
 	{
-		super.initialize(msg.sender);
+		_initialize(msg.sender);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable

@@ -11,6 +11,7 @@ import "../tools/ENSReverseRegistration.sol";
 contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownable, CounterfactualFactory
 {
 	address   public master;
+	bytes     public proxyCode;
 	string    public name;
 	string    public symbol;
 	IRegistry public previous;
@@ -18,10 +19,11 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 	constructor(address _master, string memory _name, string memory _symbol, address _previous)
 	public
 	{
-		master   = _master;
-		name     = _name;
-		symbol   = _symbol;
-		previous = IRegistry(_previous);
+		master    = _master;
+		proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
+		name      = _name;
+		symbol    = _symbol;
+		previous  = IRegistry(_previous);
 	}
 
 	/* Factory */
@@ -31,10 +33,7 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 	internal returns (uint256)
 	{
 		// Create entry (proxy)
-		address entry = _create2(
-			type(InitializableUpgradeabilityProxy).creationCode,
-			bytes32(uint256(_owner))
-		);
+		address entry = _create2(proxyCode, keccak256(abi.encodePacked(_args, _owner)));
 		// Initialize entry (casting to address payable is a pain in ^0.5.0)
 		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
 		// Mint corresponding token

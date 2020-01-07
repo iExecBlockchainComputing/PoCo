@@ -69,9 +69,9 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`app #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(App.abi).deploy({
-						data: App.bytecode,
-						arguments:
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						App.abi.find(e => e.name == 'initialize'),
 						[
 							"App #"+i,
 							"DOCKER",
@@ -79,14 +79,12 @@ contract('Registries', async (accounts) => {
 							web3.utils.keccak256("Content of app #"+i),
 							"0x1234",
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                              },
-						{ t: 'address', v: AppRegistryInstance.address         },
-						{ t: 'bytes32', v: web3.utils.padLeft(appProvider, 64) },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)          },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args        },
+						{ t: 'address', v: appProvider },
+					);
+					const predictedAddress = tools.create2(AppRegistryInstance.address, code, salt);
 
 					txMined = await AppRegistryInstance.createApp(
 						appProvider,
@@ -146,21 +144,20 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`dataset #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(Dataset.abi).deploy({
-						data: Dataset.bytecode,
-						arguments: [
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						Dataset.abi.find(e => e.name == 'initialize'),
+						[
 							"Dataset #"+i,
 							constants.MULTIADDR_BYTES,
 							web3.utils.keccak256("Content of dataset #"+i),
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                                  },
-						{ t: 'address', v: DatasetRegistryInstance.address         },
-						{ t: 'bytes32', v: web3.utils.padLeft(datasetProvider, 64) },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)              },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args            },
+						{ t: 'address', v: datasetProvider },
+					);
+					const predictedAddress = tools.create2(DatasetRegistryInstance.address, code, salt);
 
 					txMined = await DatasetRegistryInstance.createDataset(
 						datasetProvider,
@@ -214,19 +211,18 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`workerpool #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(Workerpool.abi).deploy({
-						data: Workerpool.bytecode,
-						arguments: [
-							"Workerpool #"+i
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						Workerpool.abi.find(e => e.name == 'initialize'),
+						[
+							"Workerpool #"+i,
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                             },
-						{ t: 'address', v: WorkerpoolRegistryInstance.address },
-						{ t: 'bytes32', v: web3.utils.padLeft(scheduler, 64)  },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)         },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args      },
+						{ t: 'address', v: scheduler },
+					);
+					const predictedAddress = tools.create2(WorkerpoolRegistryInstance.address, code, salt);
 
 					txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 						scheduler,
