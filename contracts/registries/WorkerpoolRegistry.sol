@@ -10,19 +10,17 @@ contract WorkerpoolRegistry is Registry
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public Registry("iExec Workerpool Registry (v4)", "iExecWorkerpoolV4", _previous)
+	public Registry(
+		address(new Workerpool()),
+		"iExec Workerpool Registry (v4)",
+		"iExecWorkerpoolV4",
+		_previous)
 	{
 	}
 
 	/**
 	 * Pool creation
 	 */
-	function _creationCode()
-	internal pure returns (bytes memory)
-	{
-		return type(Workerpool).creationCode;
-	}
-
 	function createWorkerpool(
 		address          _workerpoolOwner,
 		string  calldata _workerpoolDescription)
@@ -30,8 +28,9 @@ contract WorkerpoolRegistry is Registry
 	{
 		return Workerpool(_mintCreate(
 			_workerpoolOwner,
-			abi.encode(
-					_workerpoolDescription
+			abi.encodeWithSignature(
+				"initialize(string)",
+				_workerpoolDescription
 			)
 		));
 	}

@@ -3,26 +3,23 @@ pragma solidity ^0.5.0;
 import './Registry.sol';
 import './App.sol';
 
-
 contract AppRegistry is Registry
 {
 	/**
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public Registry("iExec Application Registry (v4)", "iExecAppsV4", _previous)
+	public Registry(
+		address(new App()),
+		"iExec Application Registry (v4)",
+		"iExecAppsV4",
+		_previous)
 	{
 	}
 
 	/**
 	 * App creation
 	 */
-	function _creationCode()
-	internal pure returns (bytes memory)
-	{
-		return type(App).creationCode;
-	}
-
 	function createApp(
 		address          _appOwner,
 		string  calldata _appName,
@@ -34,7 +31,8 @@ contract AppRegistry is Registry
 	{
 		return App(_mintCreate(
 			_appOwner,
-			abi.encode(
+			abi.encodeWithSignature(
+				"initialize(string,string,bytes,bytes32,bytes)",
 				_appName,
 				_appType,
 				_appMultiaddr,

@@ -15,12 +15,13 @@ contract Dataset is RegistryEntry
 	/**
 	 * Constructor
 	 */
-	constructor(
+	function initialize(
 		string  memory _datasetName,
 		bytes   memory _datasetMultiaddr,
 		bytes32        _datasetChecksum)
-	public RegistryEntry(msg.sender)
+	public
 	{
+		super.initialize(msg.sender);
 		m_datasetName      = _datasetName;
 		m_datasetMultiaddr = _datasetMultiaddr;
 		m_datasetChecksum  = _datasetChecksum;

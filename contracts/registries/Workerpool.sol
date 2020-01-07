@@ -22,10 +22,11 @@ contract Workerpool is RegistryEntry
 	/**
 	 * Constructor
 	 */
-	constructor(
+	function initialize(
 		string memory _workerpoolDescription)
-	public RegistryEntry(msg.sender)
+	public
 	{
+		super.initialize(msg.sender);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable

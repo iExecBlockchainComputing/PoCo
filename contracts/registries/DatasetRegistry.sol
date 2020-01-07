@@ -10,19 +10,17 @@ contract DatasetRegistry is Registry
 	 * Constructor
 	 */
 	constructor(address _previous)
-	public Registry("iExec Dataset Registry (v4)", "iExecDatasetsV4", _previous)
+	public Registry(
+		address(new Dataset()),
+		"iExec Dataset Registry (v4)",
+		"iExecDatasetsV4",
+		_previous)
 	{
 	}
 
 	/**
 	 * Dataset creation
 	 */
-	function _creationCode()
-	internal pure returns (bytes memory)
-	{
-		return type(Dataset).creationCode;
-	}
-
 	function createDataset(
 		address          _datasetOwner,
 		string  calldata _datasetName,
@@ -32,7 +30,8 @@ contract DatasetRegistry is Registry
 	{
 		return Dataset(_mintCreate(
 			_datasetOwner,
-			abi.encode(
+			abi.encodeWithSignature(
+				"initialize(string,bytes,bytes32)",
 				_datasetName,
 				_datasetMultiaddr,
 				_datasetChecksum

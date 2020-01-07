@@ -8,9 +8,10 @@ contract RegistryEntry is ENSReverseRegistration
 {
 	IRegistry public registry;
 
-	constructor(address _registry)
+	function initialize(address _registry)
 	public
 	{
+		require(address(registry) == address(0), 'already initialized');
 		registry = IRegistry(_registry);
 	}
 

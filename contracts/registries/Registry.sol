@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Enumerable.sol";
+import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
 import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import "./IRegistry.sol";
 import "../tools/ENSReverseRegistration.sol";
@@ -9,45 +10,39 @@ import "../tools/ENSReverseRegistration.sol";
 
 contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownable, CounterfactualFactory
 {
-	IRegistry public previous;
+	address   public master;
 	string    public name;
 	string    public symbol;
+	IRegistry public previous;
 
-	constructor(string memory _name, string memory _symbol, address _previous)
+	constructor(address _master, string memory _name, string memory _symbol, address _previous)
 	public
 	{
-		previous = IRegistry(_previous);
+		master   = _master;
 		name     = _name;
 		symbol   = _symbol;
+		previous = IRegistry(_previous);
 	}
 
 	/* Factory */
-	function _creationCode()
-	internal pure returns (bytes memory);
-
 	function _mintCreate(
 		address      _owner,
 		bytes memory _args)
 	internal returns (uint256)
 	{
-		uint256 tokenid = uint256(_create2(
-			abi.encodePacked(
-				_creationCode(),
-				_args
-			),
+		// Create entry (proxy)
+		address entry = _create2(
+			type(InitializableUpgradeabilityProxy).creationCode,
 			bytes32(uint256(_owner))
-		));
-		_mint(_owner, tokenid);
-		return tokenid;
+		);
+		// Initialize entry (casting to address payable is a pain in ^0.5.0)
+		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
+		// Mint corresponding token
+		_mint(_owner, uint256(entry));
+		return uint256(entry);
 	}
 
 	/* Interface */
-	function creationCode()
-	external pure returns (bytes memory)
-	{
-		return _creationCode();
-	}
-
 	function isRegistered(address _entry)
 	external view returns (bool)
 	{
