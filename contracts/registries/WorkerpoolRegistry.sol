@@ -1,14 +1,11 @@
 pragma solidity ^0.5.0;
 
-import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './Workerpool.sol';
 
 
-contract WorkerpoolRegistry is Registry, CounterfactualFactory
+contract WorkerpoolRegistry is Registry
 {
-	event CreateWorkerpool(address indexed workerpoolOwner, address workerpool);
-
 	/**
 	 * Constructor
 	 */
@@ -20,24 +17,22 @@ contract WorkerpoolRegistry is Registry, CounterfactualFactory
 	/**
 	 * Pool creation
 	 */
+	function _creationCode()
+	internal pure returns (bytes memory)
+	{
+		return type(Workerpool).creationCode;
+	}
+
 	function createWorkerpool(
 		address          _workerpoolOwner,
 		string  calldata _workerpoolDescription)
 	external returns (Workerpool)
 	{
-		Workerpool workerpool = Workerpool(_create2(
-			abi.encodePacked(
-				type(Workerpool).creationCode,
-				abi.encode(
+		return Workerpool(_mintCreate(
+			_workerpoolOwner,
+			abi.encode(
 					_workerpoolDescription
-				)
-			),
-			bytes32(uint256(_workerpoolOwner))
+			)
 		));
-
-		_mint(_workerpoolOwner, uint256(address(workerpool)));
-		emit CreateWorkerpool(_workerpoolOwner, address(workerpool));
-
-		return workerpool;
 	}
 }

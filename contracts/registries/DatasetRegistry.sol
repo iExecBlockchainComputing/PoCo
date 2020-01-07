@@ -1,14 +1,11 @@
 pragma solidity ^0.5.0;
 
-import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './Dataset.sol';
 
 
-contract DatasetRegistry is Registry, CounterfactualFactory
+contract DatasetRegistry is Registry
 {
-	event CreateDataset(address indexed datasetOwner, address dataset);
-
 	/**
 	 * Constructor
 	 */
@@ -20,6 +17,12 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 	/**
 	 * Dataset creation
 	 */
+	function _creationCode()
+	internal pure returns (bytes memory)
+	{
+		return type(Dataset).creationCode;
+	}
+
 	function createDataset(
 		address          _datasetOwner,
 		string  calldata _datasetName,
@@ -27,20 +30,13 @@ contract DatasetRegistry is Registry, CounterfactualFactory
 		bytes32          _datasetChecksum)
 	external returns (Dataset)
 	{
-		Dataset dataset = Dataset(_create2(
-			abi.encodePacked(
-				type(Dataset).creationCode,
-				abi.encode(
-					_datasetName,
-					_datasetMultiaddr,
-					_datasetChecksum
-				)
-			),
-			bytes32(uint256(_datasetOwner))
+		return Dataset(_mintCreate(
+			_datasetOwner,
+			abi.encode(
+				_datasetName,
+				_datasetMultiaddr,
+				_datasetChecksum
+			)
 		));
-
-		_mint(_datasetOwner, uint256(address(dataset)));
-		emit CreateDataset(_datasetOwner, address(dataset));
-		return dataset;
 	}
 }

@@ -1,14 +1,11 @@
 pragma solidity ^0.5.0;
 
-import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import './Registry.sol';
 import './App.sol';
 
 
-contract AppRegistry is Registry, CounterfactualFactory
+contract AppRegistry is Registry
 {
-	event CreateApp(address indexed appOwner, address app);
-
 	/**
 	 * Constructor
 	 */
@@ -20,6 +17,12 @@ contract AppRegistry is Registry, CounterfactualFactory
 	/**
 	 * App creation
 	 */
+	function _creationCode()
+	internal pure returns (bytes memory)
+	{
+		return type(App).creationCode;
+	}
+
 	function createApp(
 		address          _appOwner,
 		string  calldata _appName,
@@ -29,24 +32,16 @@ contract AppRegistry is Registry, CounterfactualFactory
 		bytes   calldata _appMREnclave)
 	external returns (App)
 	{
-		App app = App(_create2(
-			abi.encodePacked(
-				type(App).creationCode,
-				abi.encode(
-					_appName,
-					_appType,
-					_appMultiaddr,
-					_appChecksum,
-					_appMREnclave
-				)
-			),
-			bytes32(uint256(_appOwner))
+		return App(_mintCreate(
+			_appOwner,
+			abi.encode(
+				_appName,
+				_appType,
+				_appMultiaddr,
+				_appChecksum,
+				_appMREnclave
+			)
 		));
-
-		_mint(_appOwner, uint256(address(app)));
-		emit CreateApp(_appOwner, address(app));
-
-		return app;
 	}
 
 }

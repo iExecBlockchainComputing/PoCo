@@ -14,17 +14,13 @@ var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
 
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
-const odbtools  = require('../../../utils/odb-tools');
-const wallets   = require('../../../utils/wallets');
+const tools     = require("../../../utils/tools");
 const enstools  = require('../../../utils/ens-tools');
+const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
+const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('ENSIntegration', async (accounts) => {
 

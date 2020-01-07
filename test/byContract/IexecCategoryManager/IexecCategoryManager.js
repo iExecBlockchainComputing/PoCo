@@ -13,16 +13,13 @@ var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
+const tools     = require("../../../utils/tools");
+const enstools  = require('../../../utils/ens-tools');
 const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
 const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('CategoryManager', async (accounts) => {
 
@@ -91,7 +88,7 @@ contract('CategoryManager', async (accounts) => {
 			});
 
 			it("emits event", async () => {
-				events = extractEvents(txMined, IexecInstance.address, "CreateCategory");
+				events = tools.extractEvents(txMined, IexecInstance.address, "CreateCategory");
 				assert.equal(events[0].args.catid,            5,                       "check catid"           );
 				assert.equal(events[0].args.name,             "Tiny",                  "check name"            );
 				assert.equal(events[0].args.description,      "Small but impractical", "check description"     );

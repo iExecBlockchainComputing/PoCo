@@ -13,16 +13,13 @@ var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
+const tools     = require("../../../utils/tools");
+const enstools  = require('../../../utils/ens-tools');
 const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
 const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('OrderManagement', async (accounts) => {
 
@@ -107,8 +104,8 @@ contract('OrderManagement', async (accounts) => {
 			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance = await App.at(events[0].args.app);
+		events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
+		AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Dataset Creation", async () => {
@@ -120,8 +117,8 @@ contract('OrderManagement', async (accounts) => {
 			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance = await Dataset.at(events[0].args.dataset);
+		events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
+		DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Workerpool Creation", async () => {
@@ -131,8 +128,8 @@ contract('OrderManagement', async (accounts) => {
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+		events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
+		WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	const generateAppOrder = () => {

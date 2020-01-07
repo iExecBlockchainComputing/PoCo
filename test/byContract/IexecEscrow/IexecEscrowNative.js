@@ -13,16 +13,13 @@ var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
+const tools     = require("../../../utils/tools");
+const enstools  = require('../../../utils/ens-tools');
 const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
 const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 if (DEPLOYMENT.asset == "Native")
 contract('EscrowNative', async (accounts) => {
@@ -89,7 +86,7 @@ contract('EscrowNative', async (accounts) => {
 		});
 
 		it("emit events", async () => {
-			events = extractEvents(txMined, IexecInstance.address, "Transfer");
+			events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 			assert.equal(events[0].args.from,  constants.NULL.ADDRESS);
 			assert.equal(events[0].args.to,    accounts[1]);
 			assert.equal(events[0].args.value, 100);
@@ -111,7 +108,7 @@ contract('EscrowNative', async (accounts) => {
 		});
 
 		it("emit events", async () => {
-			events = extractEvents(txMined, IexecInstance.address, "Transfer");
+			events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 			assert.equal(events[0].args.from,  constants.NULL.ADDRESS);
 			assert.equal(events[0].args.to,    accounts[3]);
 			assert.equal(events[0].args.value, 100);
@@ -181,7 +178,7 @@ contract('EscrowNative', async (accounts) => {
 			});
 
 			it("emit events", async () => {
-				events = extractEvents(txMined, IexecInstance.address, "Transfer");
+				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events[0].args.from,  constants.NULL.ADDRESS);
 				assert.equal(events[0].args.to,    accounts[5]);
 				assert.equal(events[0].args.value, 100);
@@ -211,7 +208,7 @@ contract('EscrowNative', async (accounts) => {
 			});
 
 			it("emit events", async () => {
-				events = extractEvents(txMined, IexecInstance.address, "Transfer");
+				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events.length,        2);
 				assert.equal(events[0].args.from,  constants.NULL.ADDRESS);
 				assert.equal(events[0].args.to,    accounts[8]);
@@ -261,7 +258,7 @@ contract('EscrowNative', async (accounts) => {
 			});
 
 			it("emit events", async () => {
-				events = extractEvents(txMined, IexecInstance.address, "Transfer");
+				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events[0].args.from,  accounts[1]);
 				assert.equal(events[0].args.to,    constants.NULL.ADDRESS);
 				assert.equal(events[0].args.value, 100);
@@ -284,7 +281,7 @@ contract('EscrowNative', async (accounts) => {
 			});
 
 			it("emit events", async () => {
-				events = extractEvents(txMined, IexecInstance.address, "Transfer");
+				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
 				assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
 				assert.equal(events[0].args.value, 0,                      "check amount");
