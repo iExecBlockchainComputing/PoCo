@@ -3,14 +3,14 @@ pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
 import "../interfaces/ENSIntegration.sol";
-import "../../tools/ENSReverseRegistration.sol";
+import "../../tools/ens/ReverseRegistration.sol";
 
 
-contract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, DelegateBase
+contract ENSIntegrationDelegate is ENSIntegration, ReverseRegistration, DelegateBase
 {
-	function ENSReverseRegister(address _ens, string calldata _name)
+	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_ENSReverseRegister(_ens, _name);
+		_setName(_ens, _name);
 	}
 }

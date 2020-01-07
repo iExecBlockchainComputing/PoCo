@@ -5,10 +5,10 @@ import "openzeppelin-solidity/contracts/token/ERC721/ERC721Enumerable.sol";
 import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
 import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import "./IRegistry.sol";
-import "../tools/ENSReverseRegistration.sol";
+import "../tools/ens/ReverseRegistration.sol";
 
 
-contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownable, CounterfactualFactory
+contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, CounterfactualFactory
 {
 	address   public master;
 	bytes     public proxyCode;
@@ -48,9 +48,9 @@ contract Registry is IRegistry, ERC721Enumerable, ENSReverseRegistration, Ownabl
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}
 
-	function ENSReverseRegister(address _ens, string calldata _name)
+	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_ENSReverseRegister(_ens, _name);
+		_setName(_ens, _name);
 	}
 }

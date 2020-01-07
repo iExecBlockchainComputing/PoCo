@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./RegistryEntry.sol";
+import "../RegistryEntry.sol";
 
 
 contract Dataset is RegistryEntry

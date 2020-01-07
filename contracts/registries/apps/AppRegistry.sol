@@ -1,7 +1,8 @@
 pragma solidity ^0.5.0;
 
-import './Registry.sol';
+import '../Registry.sol';
 import './App.sol';
+
 
 contract AppRegistry is Registry
 {
