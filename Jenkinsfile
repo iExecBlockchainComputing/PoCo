@@ -110,6 +110,7 @@ pipeline {
 
 	post {
 		always {
+			sh "ls logs"
 			archiveArtifacts artifacts: 'logs/**'
 		}
 	}
