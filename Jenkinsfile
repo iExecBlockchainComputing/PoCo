@@ -28,11 +28,14 @@ pipeline {
 					label "${LABEL}"
 				}
 			}
-			steps{
-				sh "echo 'Starting truffle tests'"
-				sh "npm install"
-				sh "npm run autotest fast"
-				archiveArtifacts artifacts: 'logs/**'
+			steps {
+				try {
+					sh "echo 'Starting truffle tests'"
+					sh "npm install"
+					sh "npm run autotest fast"
+				} catch {
+					archiveArtifacts artifacts: 'logs/**'
+				}
 			}
 		}
 
@@ -43,11 +46,14 @@ pipeline {
 					label "${LABEL}"
 				}
 			}
-			steps{
-				sh "echo 'Starting coverage test'"
-				sh "npm install"
-				sh "npm run coverage"
-				archiveArtifacts artifacts: 'coverage/**'
+			steps {
+				try {
+					sh "echo 'Starting coverage test'"
+					sh "npm install"
+					sh "npm run coverage"
+				} catch {
+					archiveArtifacts artifacts: 'coverage/**'
+				}
 			}
 		}
 
