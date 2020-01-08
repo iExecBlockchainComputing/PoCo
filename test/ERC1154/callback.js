@@ -13,18 +13,15 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var TestClient   = artifacts.require("./TestClient.sol");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../utils/constants");
+const tools     = require("../../utils/tools");
+const enstools  = require('../../utils/ens-tools');
 const odbtools  = require('../../utils/odb-tools');
+const constants = require("../../utils/constants");
 const wallets   = require('../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('ERC1154: callback', async (accounts) => {
 
@@ -102,8 +99,8 @@ contract('ERC1154: callback', async (accounts) => {
 						{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-					AppInstance = await App.at(events[0].args.app);
+					events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
+					AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 				});
 			});
 
@@ -117,8 +114,8 @@ contract('ERC1154: callback', async (accounts) => {
 						{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-					DatasetInstance = await Dataset.at(events[0].args.dataset);
+					events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
+					DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 				});
 			});
 
@@ -130,8 +127,8 @@ contract('ERC1154: callback', async (accounts) => {
 						{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-					WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+					events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
+					WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 				});
 
 				it("change policy", async () => {
@@ -160,9 +157,9 @@ contract('ERC1154: callback', async (accounts) => {
 					case "Native":
 						txMined = await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
 						break;
 
 					case "Token":
@@ -170,15 +167,15 @@ contract('ERC1154: callback', async (accounts) => {
 
 						txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.owner,   iexecAdmin);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.spender, IexecInstance.address);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.value,   10000000);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.from,    iexecAdmin);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.to,      IexecInstance.address);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.value,   10000000);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.owner,   iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.spender, IexecInstance.address);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.from,    iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.to,      IexecInstance.address);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
 						break;
 				}
 
@@ -199,20 +196,20 @@ contract('ERC1154: callback', async (accounts) => {
 				assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 				assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
 			});
 
 			it("balances after", async () => {
@@ -448,17 +445,17 @@ contract('ERC1154: callback', async (accounts) => {
 				assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 				assert.isBelow(txsMined[2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-				deals[1] = extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched")[0].args.dealid;
-				deals[2] = extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched")[0].args.dealid;
-				deals[3] = extractEvents(txsMined[2], IexecInstance.address, "OrdersMatched")[0].args.dealid;
+				deals[1] = tools.extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched")[0].args.dealid;
+				deals[2] = tools.extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched")[0].args.dealid;
+				deals[3] = tools.extractEvents(txsMined[2], IexecInstance.address, "OrdersMatched")[0].args.dealid;
 			});
 		});
 
 		describe("[2] initialization", async () => {
 			it("[TX] initialize", async () => {
-				tasks[1] = extractEvents(await IexecInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
-				tasks[2] = extractEvents(await IexecInstance.initialize(deals[2], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
-				tasks[3] = extractEvents(await IexecInstance.initialize(deals[3], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
+				tasks[1] = tools.extractEvents(await IexecInstance.initialize(deals[1], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
+				tasks[2] = tools.extractEvents(await IexecInstance.initialize(deals[2], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
+				tasks[3] = tools.extractEvents(await IexecInstance.initialize(deals[3], 0, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }), IexecInstance.address, "TaskInitialize")[0].args.taskid;
 			});
 		});
 
@@ -505,7 +502,7 @@ contract('ERC1154: callback', async (accounts) => {
 				it("[TX] no call", async () => {
 					txMined = await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, IexecInstance.address, "TaskFinalize");
+					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
 					assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 				});
@@ -515,7 +512,7 @@ contract('ERC1154: callback', async (accounts) => {
 				it("[TX] doesn't revert", async () => {
 					txMined = await IexecInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, IexecInstance.address, "TaskFinalize");
+					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[2],                          "check taskid");
 					assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 2"), "check consensus (results)");
 				});
@@ -527,7 +524,7 @@ contract('ERC1154: callback', async (accounts) => {
 
 					txMined = await IexecInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, IexecInstance.address, "TaskFinalize");
+					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
 					assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 3"), "check consensus (results)");
 				});

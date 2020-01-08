@@ -11,18 +11,15 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
+const tools     = require("../../../utils/tools");
+const enstools  = require('../../../utils/ens-tools');
 const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
 const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('Poco', async (accounts) => {
 
@@ -121,8 +118,8 @@ contract('Poco', async (accounts) => {
 			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-		AppInstance = await App.at(events[0].args.app);
+		events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
+		AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 
 		txMined = await DatasetRegistryInstance.createDataset(
 			datasetProvider,
@@ -132,8 +129,8 @@ contract('Poco', async (accounts) => {
 			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-		DatasetInstance = await Dataset.at(events[0].args.dataset);
+		events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
+		DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 			scheduler,
@@ -141,8 +138,8 @@ contract('Poco', async (accounts) => {
 			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-		WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+		events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
+		WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 
 		txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
@@ -249,11 +246,11 @@ contract('Poco', async (accounts) => {
 		);
 
 		tasks[1] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 1 });    // uninitialized
-		tasks[2] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[0].args.taskid; // initialized
-		tasks[3] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[1].args.taskid; // contributions
-		tasks[4] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[2].args.taskid; // consensus
-		tasks[5] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[3].args.taskid; // reveal
-		tasks[6] = extractEvents(txMined, IexecInstance.address, "TaskInitialize")[4].args.taskid; // finalized
+		tasks[2] = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize")[0].args.taskid; // initialized
+		tasks[3] = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize")[1].args.taskid; // contributions
+		tasks[4] = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize")[2].args.taskid; // consensus
+		tasks[5] = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize")[3].args.taskid; // reveal
+		tasks[6] = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize")[4].args.taskid; // finalized
 		tasks[7] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 7 });    // uninitialized
 		tasks[8] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 8 });    // uninitialized
 		tasks[9] = web3.utils.soliditySha3({ t: 'bytes32', v: deals[1] }, { t: 'uint256', v: 9 });    // uninitialized
@@ -382,7 +379,7 @@ contract('Poco', async (accounts) => {
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecInstance.address, "TaskClaimed");
+		events = tools.extractEvents(txMined, IexecInstance.address, "TaskClaimed");
 		assert.equal(events[0].args.taskid, tasks[1], "check taskid");
 		assert.equal(events[1].args.taskid, tasks[2], "check taskid");
 		assert.equal(events[2].args.taskid, tasks[3], "check taskid");
@@ -401,7 +398,7 @@ contract('Poco', async (accounts) => {
 			{ from: user, gas: constants.AMOUNT_GAS_PROVIDED }
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-		events = extractEvents(txMined, IexecInstance.address, "TaskClaimed");
+		events = tools.extractEvents(txMined, IexecInstance.address, "TaskClaimed");
 		assert.equal(events[0].args.taskid, tasks[7], "check taskid");
 		assert.equal(events[1].args.taskid, tasks[8], "check taskid");
 		assert.equal(events[2].args.taskid, tasks[9], "check taskid");

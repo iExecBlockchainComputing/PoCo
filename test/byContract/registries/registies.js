@@ -11,24 +11,15 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
+const tools     = require("../../../utils/tools");
+const enstools  = require('../../../utils/ens-tools');
 const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
 const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
-
-function BN2Address(n)
-{
-	const x = web3.utils.toHex(n)
-	return web3.utils.toChecksumAddress('0x' + "0".repeat(42 - x.length) + x.slice(2))
-}
 
 contract('Registries', async (accounts) => {
 
@@ -78,9 +69,9 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`app #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(App.abi).deploy({
-						data: App.bytecode,
-						arguments:
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						App.abi.find(e => e.name == 'initialize'),
 						[
 							"App #"+i,
 							"DOCKER",
@@ -88,14 +79,12 @@ contract('Registries', async (accounts) => {
 							web3.utils.keccak256("Content of app #"+i),
 							"0x1234",
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                              },
-						{ t: 'address', v: AppRegistryInstance.address         },
-						{ t: 'bytes32', v: web3.utils.padLeft(appProvider, 64) },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)          },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args        },
+						{ t: 'address', v: appProvider },
+					);
+					const predictedAddress = tools.create2(AppRegistryInstance.address, code, salt);
 
 					txMined = await AppRegistryInstance.createApp(
 						appProvider,
@@ -108,10 +97,10 @@ contract('Registries', async (accounts) => {
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-					events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-					assert.equal(events[0].args.app,      predictedAddress);
-					assert.equal(events[0].args.appOwner, appProvider);
-
+					events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
+					assert.equal    (events[0].args.from,    constants.NULL.ADDRESS);
+					assert.equal    (events[0].args.to,      appProvider);
+					assert.deepEqual(events[0].args.tokenId, web3.utils.toBN(predictedAddress));
 					AppInstances[i] = await App.at(predictedAddress);
 				});
 
@@ -126,10 +115,10 @@ contract('Registries', async (accounts) => {
 				});
 
 				it("token details", async () => {
-					assert.equal (await AppRegistryInstance.ownerOf(AppInstances[i].address),                appProvider            );
-					assert.equal (await AppRegistryInstance.balanceOf(appProvider),                          i+1                    );
-					assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                                   );
-					assert.equal (BN2Address(await AppRegistryInstance.tokenOfOwnerByIndex(appProvider, i)), AppInstances[i].address);
+					assert.equal (await AppRegistryInstance.ownerOf(AppInstances[i].address),                appProvider                  );
+					assert.equal (await AppRegistryInstance.balanceOf(appProvider),                          i+1                          );
+					assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address)                                         );
+					assert.equal (tools.BN2Address(await AppRegistryInstance.tokenOfOwnerByIndex(appProvider, i)), AppInstances[i].address);
 				});
 
 				it("duplicate protection", async () => {
@@ -155,21 +144,20 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`dataset #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(Dataset.abi).deploy({
-						data: Dataset.bytecode,
-						arguments: [
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						Dataset.abi.find(e => e.name == 'initialize'),
+						[
 							"Dataset #"+i,
 							constants.MULTIADDR_BYTES,
 							web3.utils.keccak256("Content of dataset #"+i),
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                                  },
-						{ t: 'address', v: DatasetRegistryInstance.address         },
-						{ t: 'bytes32', v: web3.utils.padLeft(datasetProvider, 64) },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)              },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args            },
+						{ t: 'address', v: datasetProvider },
+					);
+					const predictedAddress = tools.create2(DatasetRegistryInstance.address, code, salt);
 
 					txMined = await DatasetRegistryInstance.createDataset(
 						datasetProvider,
@@ -180,10 +168,10 @@ contract('Registries', async (accounts) => {
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-					events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-					assert.equal(events[0].args.dataset,      predictedAddress);
-					assert.equal(events[0].args.datasetOwner, datasetProvider);
-
+					events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
+					assert.equal    (events[0].args.from,    constants.NULL.ADDRESS);
+					assert.equal    (events[0].args.to,      datasetProvider);
+					assert.deepEqual(events[0].args.tokenId, web3.utils.toBN(predictedAddress));
 					DatasetInstances[i] = await Dataset.at(predictedAddress);
 				});
 
@@ -196,10 +184,10 @@ contract('Registries', async (accounts) => {
 				});
 
 				it("token details", async () => {
-					assert.equal (await DatasetRegistryInstance.ownerOf(DatasetInstances[i].address),                datasetProvider            );
-					assert.equal (await DatasetRegistryInstance.balanceOf(datasetProvider),                          i+1                        );
-					assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                                       );
-					assert.equal (BN2Address(await DatasetRegistryInstance.tokenOfOwnerByIndex(datasetProvider, i)), DatasetInstances[i].address);
+					assert.equal (await DatasetRegistryInstance.ownerOf(DatasetInstances[i].address),                datasetProvider                  );
+					assert.equal (await DatasetRegistryInstance.balanceOf(datasetProvider),                          i+1                              );
+					assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address)                                             );
+					assert.equal (tools.BN2Address(await DatasetRegistryInstance.tokenOfOwnerByIndex(datasetProvider, i)), DatasetInstances[i].address);
 				});
 
 				it("duplicate protection", async () => {
@@ -223,19 +211,18 @@ contract('Registries', async (accounts) => {
 		Array(8).fill().map((_, i) => {
 			describe(`workerpool #${i}`, async () => {
 				it("creation", async () => {
-					const code = new web3.eth.Contract(Workerpool.abi).deploy({
-						data: Workerpool.bytecode,
-						arguments: [
-							"Workerpool #"+i
+					const code = await AppRegistryInstance.proxyCode();
+					const args = web3.eth.abi.encodeFunctionCall(
+						Workerpool.abi.find(e => e.name == 'initialize'),
+						[
+							"Workerpool #"+i,
 						]
-					}).encodeABI();
-
-					const predictedAddress = web3.utils.toChecksumAddress(web3.utils.soliditySha3(
-						{ t: 'bytes1',  v: '0xff'                             },
-						{ t: 'address', v: WorkerpoolRegistryInstance.address },
-						{ t: 'bytes32', v: web3.utils.padLeft(scheduler, 64)  },
-						{ t: 'bytes32', v: web3.utils.keccak256(code)         },
-					).slice(26));
+					);
+					const salt = web3.utils.soliditySha3(
+						{ t: 'bytes',   v: args      },
+						{ t: 'address', v: scheduler },
+					);
+					const predictedAddress = tools.create2(WorkerpoolRegistryInstance.address, code, salt);
 
 					txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 						scheduler,
@@ -244,10 +231,10 @@ contract('Registries', async (accounts) => {
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-					events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-					assert.equal(events[0].args.workerpool,      predictedAddress);
-					assert.equal(events[0].args.workerpoolOwner, scheduler);
-
+					events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
+					assert.equal    (events[0].args.from,    constants.NULL.ADDRESS);
+					assert.equal    (events[0].args.to,      scheduler);
+					assert.deepEqual(events[0].args.tokenId, web3.utils.toBN(predictedAddress));
 					WorkerpoolInstances[i] = await Workerpool.at(predictedAddress);
 				});
 
@@ -260,10 +247,10 @@ contract('Registries', async (accounts) => {
 				});
 
 				it("token details", async () => {
-					assert.equal (await WorkerpoolRegistryInstance.ownerOf(WorkerpoolInstances[i].address),       scheduler                     );
-					assert.equal (await WorkerpoolRegistryInstance.balanceOf(scheduler),                          i+1                           );
-					assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address)                                 );
-					assert.equal (BN2Address(await WorkerpoolRegistryInstance.tokenOfOwnerByIndex(scheduler, i)), WorkerpoolInstances[i].address);
+					assert.equal (await WorkerpoolRegistryInstance.ownerOf(WorkerpoolInstances[i].address),       scheduler                           );
+					assert.equal (await WorkerpoolRegistryInstance.balanceOf(scheduler),                          i+1                                 );
+					assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address)                                       );
+					assert.equal (tools.BN2Address(await WorkerpoolRegistryInstance.tokenOfOwnerByIndex(scheduler, i)), WorkerpoolInstances[i].address);
 				});
 
 				it("duplicate protection", async () => {

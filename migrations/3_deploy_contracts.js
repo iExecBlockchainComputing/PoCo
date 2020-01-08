@@ -24,7 +24,7 @@ var IexecERC20              = artifacts.require('IexecERC20Delegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
 var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
-var IexecOrderSignature     = artifacts.require('IexecOrderSignatureDelegate')
+var IexecOrderManagement    = artifacts.require('IexecOrderManagementDelegate')
 var IexecPoco               = artifacts.require('IexecPocoDelegate')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
 var ENSIntegration          = artifacts.require('ENSIntegrationDelegate')
@@ -167,7 +167,7 @@ module.exports = async function(deployer, network, accounts)
 		await deployer.deploy(IexecODBLibOrders);
 		await deployer.link(IexecODBLibOrders, IexecPoco);
 		await deployer.link(IexecODBLibOrders, IexecMaintenance);
-		await deployer.link(IexecODBLibOrders, IexecOrderSignature);
+		await deployer.link(IexecODBLibOrders, IexecOrderManagement);
 	}
 
 	/***************************************************************************
@@ -203,7 +203,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecERC20,
 		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
 		IexecMaintenance,
-		IexecOrderSignature,
+		IexecOrderManagement,
 		IexecPoco,
 		IexecRelay,
 		ENSIntegration,
@@ -390,10 +390,10 @@ module.exports = async function(deployer, network, accounts)
 		await registerAddress('workerpools', 'registry.iexec.eth', WorkerpoolRegistryInstance.address);
 
 		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
-		await     IexecInterfaceInstance.ENSReverseRegister(ens.address, 'hub.iexec.eth');
-		await        AppRegistryInstance.ENSReverseRegister(ens.address, 'apps.registry.iexec.eth');
-		await    DatasetRegistryInstance.ENSReverseRegister(ens.address, 'datasets.registry.iexec.eth');
-		await WorkerpoolRegistryInstance.ENSReverseRegister(ens.address, 'workerpools.registry.iexec.eth');
+		await     IexecInterfaceInstance.setName(ens.address, 'hub.iexec.eth');
+		await        AppRegistryInstance.setName(ens.address, 'apps.registry.iexec.eth');
+		await    DatasetRegistryInstance.setName(ens.address, 'datasets.registry.iexec.eth');
+		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.registry.iexec.eth');
 	}
 
 	/***************************************************************************

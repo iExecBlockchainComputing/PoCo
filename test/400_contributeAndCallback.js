@@ -11,18 +11,15 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../utils/constants");
+const tools     = require("../utils/tools");
+const enstools  = require('../utils/ens-tools');
 const odbtools  = require('../utils/odb-tools');
+const constants = require("../utils/constants");
 const wallets   = require('../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('Fullchain', async (accounts) => {
 
@@ -110,8 +107,8 @@ contract('Fullchain', async (accounts) => {
 						{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, AppRegistryInstance.address, "CreateApp");
-					AppInstance = await App.at(events[0].args.app);
+					events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
+					AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 				});
 			});
 
@@ -125,8 +122,8 @@ contract('Fullchain', async (accounts) => {
 						{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset");
-					DatasetInstance = await Dataset.at(events[0].args.dataset);
+					events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
+					DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 				});
 			});
 
@@ -138,8 +135,8 @@ contract('Fullchain', async (accounts) => {
 						{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-					events = extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool");
-					WorkerpoolInstance = await Workerpool.at(events[0].args.workerpool);
+					events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
+					WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 				});
 
 				it("change policy", async () => {
@@ -168,9 +165,9 @@ contract('Fullchain', async (accounts) => {
 					case "Native":
 						txMined = await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
 						break;
 
 					case "Token":
@@ -178,15 +175,15 @@ contract('Fullchain', async (accounts) => {
 
 						txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.owner,   iexecAdmin);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.spender, IexecInstance.address);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.value,   10000000);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.from,    iexecAdmin);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.to,      IexecInstance.address);
-						assert.equal(extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.value,   10000000);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
-						assert.equal(extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.owner,   iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.spender, IexecInstance.address);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Approval")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.from,    iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.to,      IexecInstance.address);
+						assert.equal(tools.extractEvents(txMined, RLCInstance.address,   "Transfer")[0].args.value,   10000000);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.from,    constants.NULL.ADDRESS);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.to,      iexecAdmin);
+						assert.equal(tools.extractEvents(txMined, IexecInstance.address, "Transfer")[0].args.value,   10000000);
 						break;
 				}
 
@@ -207,20 +204,20 @@ contract('Fullchain', async (accounts) => {
 				assert.isBelow(txsMined[5].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 				assert.isBelow(txsMined[6].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
-				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
-				assert.equal(extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[1], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[2], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[3], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[4], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[5], IexecInstance.address, "Transfer")[0].args.value, 1000);
+				assert.equal(tools.extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin);
+				assert.equal(tools.extractEvents(txsMined[6], IexecInstance.address, "Transfer")[0].args.value, 1000);
 			});
 
 			it("balances after", async () => {
@@ -385,11 +382,11 @@ contract('Fullchain', async (accounts) => {
 					{ t: 'uint256', v: 0                                                  },
 				);
 
-				events = extractEvents(txMined, IexecInstance.address, "SchedulerNotice");
+				events = tools.extractEvents(txMined, IexecInstance.address, "SchedulerNotice");
 				assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 				assert.equal(events[0].args.dealid,     dealid                    );
 
-				events = extractEvents(txMined, IexecInstance.address, "OrdersMatched");
+				events = tools.extractEvents(txMined, IexecInstance.address, "OrdersMatched");
 				assert.equal(events[0].args.dealid,         dealid                                                 );
 				assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder       ));
 				assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder   ));
@@ -407,7 +404,7 @@ contract('Fullchain', async (accounts) => {
 
 				taskid = web3.utils.soliditySha3({ t: 'bytes32', v: dealid }, { t: 'uint256', v: 0 });
 
-				events = extractEvents(txMined, IexecInstance.address, "TaskInitialize");
+				events = tools.extractEvents(txMined, IexecInstance.address, "TaskInitialize");
 				assert.equal(events[0].args.taskid,     taskid                    );
 				assert.equal(events[0].args.workerpool, WorkerpoolInstance.address);
 			});
@@ -451,21 +448,21 @@ contract('Fullchain', async (accounts) => {
 				);
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-				events = extractEvents(txMined, IexecInstance.address, "TaskContribute");
+				events = tools.extractEvents(txMined, IexecInstance.address, "TaskContribute");
 				assert.equal(events[0].args.taskid, authorization.taskid);
 				assert.equal(events[0].args.worker, worker.address      );
 				assert.equal(events[0].args.hash,   result.hash         );
 
-				events = extractEvents(txMined, IexecInstance.address, "TaskConsensus");
+				events = tools.extractEvents(txMined, IexecInstance.address, "TaskConsensus");
 				assert.equal(events[0].args.taskid,    taskid        );
 				assert.equal(events[0].args.consensus, consensus.hash);
 
-				events = extractEvents(txMined, IexecInstance.address, "TaskReveal");
+				events = tools.extractEvents(txMined, IexecInstance.address, "TaskReveal");
 				assert.equal(events[0].args.taskid, taskid        );
 				assert.equal(events[0].args.worker, worker.address);
 				assert.equal(events[0].args.digest, result.digest );
 
-				events = extractEvents(txMined, IexecInstance.address, "TaskFinalize");
+				events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 				assert.equal(events[0].args.taskid,  taskid                         );
 				assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult"));
 

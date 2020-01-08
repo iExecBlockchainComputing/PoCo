@@ -8,8 +8,8 @@ module.exports = {
 	},
 	skipFiles: [
 		'tools/Migrations.sol',
-		'tools/TestClient.sol',
-		'tools/TestReceiver.sol',
+		'tools/testing/TestClient.sol',
+		'tools/testing/TestReceiver.sol',
 	],
 	onCompileComplete: () => {
 		files = [

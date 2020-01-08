@@ -26,6 +26,10 @@ define("NULL", {
 });
 
 // ENUM
+define("OrderOperationEnum", {
+	SIGN:  0,
+	CLOSE: 1
+});
 define("TaskStatusEnum", {
 	UNSET:     0,
 	ACTIVE:    1,
