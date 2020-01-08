@@ -1,16 +1,16 @@
-node('master') {
-	stage('Choose Label') {
-		LABEL = 'jenkins-agent-machine-1'
+node("master") {
+	stage("Choose Label") {
+		LABEL = "jenkins-agent-machine-1"
 	}
 }
 
 pipeline {
 
 	environment {
-		registry = 'nexus.iex.ec'
-		dockerImage1sec = ''
-		dockerImage20sec = ''
-		buildWhenTagContains = 'lv'
+		registry = "nexus.iex.ec"
+		dockerImage1sec = ""
+		dockerImage20sec = ""
+		buildWhenTagContains = "lv"
 	}
 
 	agent {
@@ -21,37 +21,45 @@ pipeline {
 
 	stages {
 
-		stage('Truffle tests') {
+		stage("Truffle tests") {
 			agent {
 				docker {
-					image 'node:11'
+					image "node:11"
 					label "${LABEL}"
 				}
 			}
-			steps{
-				sh "echo 'Starting truffle tests'"
-				sh "npm install"
-				sh "npm run autotest fast"
-				archiveArtifacts artifacts: 'logs/**'
+			steps {
+				script {
+					try {
+						sh "npm install"
+						sh "npm run autotest fast"
+					} finally {
+						archiveArtifacts artifacts: "logs/**"
+					}
+				}
 			}
 		}
 
-		stage('Solidity coverage') {
+		stage("Solidity coverage") {
 			agent {
 				docker {
-					image 'node:11'
+					image "node:11"
 					label "${LABEL}"
 				}
 			}
-			steps{
-				sh "echo 'Starting coverage test'"
-				sh "npm install"
-				sh "npm run coverage"
-				archiveArtifacts artifacts: 'coverage/**'
+			steps {
+				script {
+					try {
+						sh "npm install"
+						sh "npm run coverage"
+					} finally {
+						archiveArtifacts artifacts: "coverage/**"
+					}
+				}
 			}
 		}
 
-		stage('Log tag') {
+		stage("Log tag") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				sh "echo ${BRANCH_NAME}"
@@ -59,7 +67,7 @@ pipeline {
 			}
 		}
 
-		stage('Build poco-chain 1sec') {
+		stage("Build poco-chain 1sec") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
@@ -68,18 +76,18 @@ pipeline {
 			}
 		}
 
-		stage('Push poco-chain 1sec') {
+		stage("Push poco-chain 1sec") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					docker.withRegistry( "https://"+registry, 'nexus' ) {
+					docker.withRegistry( "https://"+registry, "nexus" ) {
 						dockerImage1sec.push()
 					}
 				}
 			}
 		}
 
-		stage('Build poco-chain 20sec') {
+		stage("Build poco-chain 20sec") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
@@ -88,11 +96,11 @@ pipeline {
 			}
 		}
 
-		stage('Push poco-chain 20sec') {
+		stage("Push poco-chain 20sec") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					docker.withRegistry( "https://"+registry, 'nexus' ) {
+					docker.withRegistry( "https://"+registry, "nexus" ) {
 						dockerImage20sec.push()
 					}
 				}

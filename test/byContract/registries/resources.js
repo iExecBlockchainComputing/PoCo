@@ -12,7 +12,7 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
 const enstools  = require('../../../utils/ens-tools');
@@ -96,7 +96,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "app#"+i+".apps.iexec.eth";
-					await AppInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+					await AppInstances[i].setName(ENSInstance.address, ensname, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(AppInstances[i].address), ensname);
 				});
 			});
@@ -130,7 +130,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "dataset#"+i+".datasets.iexec.eth";
-					await DatasetInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+					await DatasetInstances[i].setName(ENSInstance.address, ensname, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(DatasetInstances[i].address), ensname);
 				});
 			});
@@ -162,7 +162,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "workerpools#"+i+".workerpools.iexec.eth";
-					await WorkerpoolInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+					await WorkerpoolInstances[i].setName(ENSInstance.address, ensname, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(WorkerpoolInstances[i].address), ensname);
 				});
 			});

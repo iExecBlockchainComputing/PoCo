@@ -12,7 +12,7 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
 const enstools  = require('../../../utils/ens-tools');
@@ -91,13 +91,13 @@ contract('ENSIntegration', async (accounts) => {
 	describe("Reverse register", async () => {
 		describe("unauthorized", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.ENSReverseRegister(ENSInstance.address, "wrong.domain.eth", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner");
+				await expectRevert(IexecInstance.setName(ENSInstance.address, "wrong.domain.eth", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner");
 			});
 		});
 
 		describe("authorized", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.ENSReverseRegister(ENSInstance.address, "test.namespace.eth", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				txMined = await IexecInstance.setName(ENSInstance.address, "test.namespace.eth", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 			});
 
