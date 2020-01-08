@@ -7,9 +7,9 @@ import "iexec-poco-interface/contracts/IexecHub.sol";
 
 import "./libs/IexecODBLibCore_v4.sol";
 import "./libs/IexecODBLibOrders_v4.sol";
-import "./registries/App.sol";
-import "./registries/Dataset.sol";
-import "./registries/Workerpool.sol";
+import "./registries/apps/App.sol";
+import "./registries/datasets/Dataset.sol";
+import "./registries/workerpools/Workerpool.sol";
 import "./registries/IRegistry.sol";
 
 

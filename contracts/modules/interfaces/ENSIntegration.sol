@@ -4,5 +4,5 @@ pragma experimental ABIEncoderV2;
 
 interface ENSIntegration
 {
-	function ENSReverseRegister(address ens, string calldata name) external;
+	function setName(address ens, string calldata name) external;
 }

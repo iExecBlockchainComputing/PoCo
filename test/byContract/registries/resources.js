@@ -14,17 +14,13 @@ var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
-const constants = require("../../../utils/constants");
-const odbtools  = require('../../../utils/odb-tools');
-const wallets   = require('../../../utils/wallets');
+const tools     = require("../../../utils/tools");
 const enstools  = require('../../../utils/ens-tools');
+const odbtools  = require('../../../utils/odb-tools');
+const constants = require("../../../utils/constants");
+const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
-
-function extractEvents(txMined, address, name)
-{
-	return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
-}
 
 contract('Ressources', async (accounts) => {
 
@@ -85,7 +81,7 @@ contract('Ressources', async (accounts) => {
 						"0x1234",
 						{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
-					AppInstances[i] = await App.at(extractEvents(txMined, AppRegistryInstance.address, "CreateApp")[0].args.app);
+					AppInstances[i] = await App.at(tools.BN2Address(tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer")[0].args.tokenId));
 				});
 
 				it("content", async () => {
@@ -100,7 +96,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "app#"+i+".apps.iexec.eth";
-					await AppInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+					await AppInstances[i].setName(ENSInstance.address, ensname, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(AppInstances[i].address), ensname);
 				});
 			});
@@ -121,7 +117,7 @@ contract('Ressources', async (accounts) => {
 						web3.utils.keccak256("Content of dataset #"+i),
 						{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
-					DatasetInstances[i] = await Dataset.at(extractEvents(txMined, DatasetRegistryInstance.address, "CreateDataset")[0].args.dataset);
+					DatasetInstances[i] = await Dataset.at(tools.BN2Address(tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer")[0].args.tokenId));
 				});
 
 				it("content", async () => {
@@ -134,7 +130,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "dataset#"+i+".datasets.iexec.eth";
-					await DatasetInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+					await DatasetInstances[i].setName(ENSInstance.address, ensname, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(DatasetInstances[i].address), ensname);
 				});
 			});
@@ -153,7 +149,7 @@ contract('Ressources', async (accounts) => {
 						"Workerpool #"+i,
 						{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
 					);
-					WorkerpoolInstances[i] = await Workerpool.at(extractEvents(txMined, WorkerpoolRegistryInstance.address, "CreateWorkerpool")[0].args.workerpool);
+					WorkerpoolInstances[i] = await Workerpool.at(tools.BN2Address(tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer")[0].args.tokenId));
 				});
 
 				it("content", async () => {
@@ -166,7 +162,7 @@ contract('Ressources', async (accounts) => {
 
 				it("reverse registration", async () => {
 					ensname = "workerpools#"+i+".workerpools.iexec.eth";
-					await WorkerpoolInstances[i].ENSReverseRegister(ENSInstance.address, ensname, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+					await WorkerpoolInstances[i].setName(ENSInstance.address, ensname, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
 					assert.equal(await enstools.lookup(WorkerpoolInstances[i].address), ensname);
 				});
 			});
@@ -181,7 +177,7 @@ contract('Ressources', async (accounts) => {
 				);
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-				events = extractEvents(txMined, WorkerpoolInstances[1].address, "PolicyUpdate");
+				events = tools.extractEvents(txMined, WorkerpoolInstances[1].address, "PolicyUpdate");
 				assert.equal(events[0].args.oldWorkerStakeRatioPolicy,     30 );
 				assert.equal(events[0].args.newWorkerStakeRatioPolicy,     35 );
 				assert.equal(events[0].args.oldSchedulerRewardRatioPolicy, 1  );

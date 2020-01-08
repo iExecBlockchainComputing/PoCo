@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./RegistryEntry.sol";
+import "../RegistryEntry.sol";
 
 
 contract Workerpool is RegistryEntry
@@ -22,10 +22,11 @@ contract Workerpool is RegistryEntry
 	/**
 	 * Constructor
 	 */
-	constructor(
+	function initialize(
 		string memory _workerpoolDescription)
-	public RegistryEntry(msg.sender)
+	public
 	{
+		_initialize(msg.sender);
 		m_workerpoolDescription      = _workerpoolDescription;
 		m_workerStakeRatioPolicy     = 30; // mutable
 		m_schedulerRewardRatioPolicy = 1;  // mutable

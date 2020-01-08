@@ -1,16 +1,16 @@
 pragma solidity ^0.5.0;
 
-import "../tools/ENSReverseRegistration.sol";
 import "./Registry.sol";
+import "../tools/ens/ReverseRegistration.sol";
 
 
-contract RegistryEntry is ENSReverseRegistration
+contract RegistryEntry is ReverseRegistration
 {
 	IRegistry public registry;
 
-	constructor(address _registry)
-	public
+	function _initialize(address _registry) internal
 	{
+		require(address(registry) == address(0), 'already initialized');
 		registry = IRegistry(_registry);
 	}
 
@@ -25,9 +25,9 @@ contract RegistryEntry is ENSReverseRegistration
 		_;
 	}
 
-	function ENSReverseRegister(address _ens, string calldata _name)
+	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_ENSReverseRegister(_ens, _name);
+		_setName(_ens, _name);
 	}
 }
