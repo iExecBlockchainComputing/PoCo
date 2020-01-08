@@ -29,12 +29,14 @@ pipeline {
 				}
 			}
 			steps {
-				sh "echo 'Starting truffle tests'"
-				sh "npm install"
-				try {
-					sh "npm run autotest fast"
-				} finally {
-					archiveArtifacts artifacts: 'logs/**'
+				script {
+					try {
+						sh "echo 'Starting truffle tests'"
+						sh "npm install"
+						sh "npm run autotest fast"
+					} finally {
+						archiveArtifacts artifacts: 'logs/**'
+					}
 				}
 			}
 		}
@@ -47,12 +49,14 @@ pipeline {
 				}
 			}
 			steps {
-				sh "echo 'Starting coverage test'"
-				sh "npm install"
-				try {
-					sh "npm run coverage"
-				} finally {
-					archiveArtifacts artifacts: 'coverage/**'
+				script {
+					try {
+						sh "echo 'Starting coverage test'"
+						sh "npm install"
+						sh "npm run coverage"
+					} finally {
+						archiveArtifacts artifacts: 'coverage/**'
+					}
 				}
 			}
 		}
