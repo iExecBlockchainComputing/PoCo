@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "iexec-solidity/contracts/ERC734_KeyManager/IERC734.sol";
+import "iexec-solidity/contracts/ERC734/IERC734.sol";
 import "iexec-solidity/contracts/ERC1271/IERC1271.sol";
 import "../DelegateBase.sol";
 

@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "iexec-solidity/contracts/Libs/SafeMathExtended.sol";
 import "iexec-solidity/contracts/ERC1538/ERC1538Store.sol";
 import "iexec-poco-interface/contracts/IexecHub.sol";

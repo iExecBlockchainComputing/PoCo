@@ -13,7 +13,7 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var TestClient   = artifacts.require("./TestClient.sol");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
 const constants = require("../../utils/constants");
 const odbtools  = require('../../utils/odb-tools');
