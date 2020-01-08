@@ -21,6 +21,18 @@ pipeline {
 
 	stages {
 
+		stage('Npm install') {
+			agent {
+				docker {
+					image 'node:11'
+					label "${LABEL}"
+				}
+			}
+			steps {
+				sh "npm install"
+			}
+		}
+
 		stage('Truffle tests') {
 			agent {
 				docker {
@@ -29,15 +41,7 @@ pipeline {
 				}
 			}
 			steps {
-				script {
-					try {
-						sh "echo 'Starting truffle tests'"
-						sh "npm install"
-						sh "npm run autotest fast"
-					} finally {
-						archiveArtifacts artifacts: 'logs/**'
-					}
-				}
+				sh "npm run autotest fast"
 			}
 		}
 
@@ -50,13 +54,7 @@ pipeline {
 			}
 			steps {
 				script {
-					try {
-						sh "echo 'Starting coverage test'"
-						sh "npm install"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: 'coverage/**'
-					}
+					sh "npm run coverage"
 				}
 			}
 		}
@@ -108,5 +106,13 @@ pipeline {
 				}
 			}
 		}
+
+		post {
+			always {
+				archiveArtifacts artifacts: 'logs/**'
+				archiveArtifacts artifacts: 'coverage/**'
+			}
+		}
+
 	}
 }
