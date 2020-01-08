@@ -15,7 +15,7 @@ pipeline {
 
 	agent {
 		node {
-			label "${LABEL}"
+			label '${LABEL}'
 		}
 	}
 
@@ -25,15 +25,14 @@ pipeline {
 			agent {
 				docker {
 					image 'node:11'
-					label "${LABEL}"
+					label '${LABEL}'
 				}
 			}
 			steps {
 				script {
 					try {
-						sh "echo 'Starting truffle tests'"
-						sh "npm install"
-						sh "npm run autotest fast"
+						sh 'npm install'
+						sh 'npm run autotest fast'
 					} finally {
 						archiveArtifacts artifacts: 'logs/**'
 					}
@@ -45,13 +44,12 @@ pipeline {
 			agent {
 				docker {
 					image 'node:11'
-					label "${LABEL}"
+					label '${LABEL}'
 				}
 			}
 			steps {
-				sh "echo 'Starting coverage test'"
-				sh "npm install"
-				sh "npm run coverage"
+				sh 'npm install'
+				sh 'npm run coverage'
 				archiveArtifacts artifacts: 'coverage/**'
 			}
 		}
@@ -59,8 +57,8 @@ pipeline {
 		stage('Log tag') {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
-				sh "echo ${BRANCH_NAME}"
-				sh "echo ${TAG_NAME}"
+				sh 'echo ${BRANCH_NAME}'
+				sh 'echo ${TAG_NAME}'
 			}
 		}
 
@@ -68,7 +66,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage1sec = docker.build registry + "/poco-chain:${TAG_NAME}"
+					dockerImage1sec = docker.build registry + '/poco-chain:${TAG_NAME}'
 				}
 			}
 		}
@@ -77,7 +75,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					docker.withRegistry( "https://"+registry, 'nexus' ) {
+					docker.withRegistry( 'https://'+registry, 'nexus' ) {
 						dockerImage1sec.push()
 					}
 				}
@@ -88,7 +86,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f Dockerfile_20sec .")
+					dockerImage20sec = docker.build (registry + '/poco-chain:${TAG_NAME}-20sec', '-f Dockerfile_20sec .')
 				}
 			}
 		}
@@ -97,7 +95,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					docker.withRegistry( "https://"+registry, 'nexus' ) {
+					docker.withRegistry( 'https://'+registry, 'nexus' ) {
 						dockerImage20sec.push()
 					}
 				}
