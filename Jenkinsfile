@@ -111,7 +111,6 @@ pipeline {
 	post {
 		always {
 			archiveArtifacts artifacts: 'logs/**'
-			archiveArtifacts artifacts: 'coverage/**'
 		}
 	}
 
