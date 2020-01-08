@@ -33,7 +33,7 @@ pipeline {
 					sh "echo 'Starting truffle tests'"
 					sh "npm install"
 					sh "npm run autotest fast"
-				} catch {
+				} finally {
 					archiveArtifacts artifacts: 'logs/**'
 				}
 			}
@@ -51,7 +51,7 @@ pipeline {
 					sh "echo 'Starting coverage test'"
 					sh "npm install"
 					sh "npm run coverage"
-				} catch {
+				} finally {
 					archiveArtifacts artifacts: 'coverage/**'
 				}
 			}
