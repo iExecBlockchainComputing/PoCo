@@ -12,7 +12,7 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
 
-const { BN, expectEvent, expectRevert } = require('openzeppelin-test-helpers');
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const multiaddr = require('multiaddr');
 const constants = require("../../../utils/constants");
 const odbtools  = require('../../../utils/odb-tools');
