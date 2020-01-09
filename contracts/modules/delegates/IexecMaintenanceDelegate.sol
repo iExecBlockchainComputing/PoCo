@@ -48,7 +48,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_appregistry        = IRegistry(_appregistryAddress);
 		m_datasetregistry    = IRegistry(_datasetregistryAddress);
 		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-		m_v3_iexecHub        = IexecHub(_v3_iexecHubAddress);
+		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
 	}
 
 	function updateChainId(uint256 _chainid)

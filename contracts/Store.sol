@@ -54,7 +54,7 @@ contract Store is ERC1538Store
 	IexecODBLibCore_v4.Category[] internal m_categories;
 
 	// Backward compatibility
-	IexecHub internal m_v3_iexecHub;
+	IexecHubInterface internal m_v3_iexecHub;
 	mapping(address => bool) internal m_v3_scoreImported;
 
 	// modifiers
