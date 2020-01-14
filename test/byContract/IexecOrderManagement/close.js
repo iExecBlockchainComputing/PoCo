@@ -67,13 +67,7 @@ contract('OrderManagement', async (accounts) => {
 		console.log(" WORKERPOOLORDEROPERATION_TYPEHASH:", odbtools.WORKERPOOLORDEROPERATION_TYPEHASH);
 		console.log("    REQUESTORDEROPERATION_TYPEHASH:", odbtools.REQUESTORDEROPERATION_TYPEHASH   );
 
-		odbtools.setup({
-			name:              "iExecODB",
-			version:           "3.0-alpha",
-			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecInstance.address,
-		});
-
+		odbtools.setup(await IexecInstance.domain());
 	});
 
 	/***************************************************************************

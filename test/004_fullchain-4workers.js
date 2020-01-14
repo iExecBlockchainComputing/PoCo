@@ -84,12 +84,7 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup({
-			name:              "iExecODB",
-			version:           "3.0-alpha",
-			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecInstance.address,
-		});
+		odbtools.setup(await IexecInstance.domain());
 
 		console.log("EIP712DOMAIN_TYPEHASH:   ", odbtools.EIP712DOMAIN_TYPEHASH   );
 		console.log("APPORDER_TYPEHASH:       ", odbtools.APPORDER_TYPEHASH       );

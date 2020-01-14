@@ -276,9 +276,6 @@ module.exports = async function(deployer, network, accounts)
 		WorkerpoolRegistryInstance.address,
 		'0x0000000000000000000000000000000000000000' // TODO
 	);
-	await IexecInterfaceInstance.updateChainId(
-		chainid,
-	);
 
 	for (cat of DEPLOYMENT.categories)
 	{

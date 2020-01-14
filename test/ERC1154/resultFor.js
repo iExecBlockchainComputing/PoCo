@@ -69,12 +69,7 @@ contract('ERC1154: resultFor', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup({
-			name:              "iExecODB",
-			version:           "3.0-alpha",
-			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecInstance.address,
-		});
+		odbtools.setup(await IexecInstance.domain());
 	});
 
 	describe("→ setup", async () => {
