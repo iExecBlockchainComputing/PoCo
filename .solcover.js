@@ -1,11 +1,13 @@
 const fs = require("fs");
 
 module.exports = {
-	port: 8555,
+	client: require('ganache-cli'),
 	providerOptions: {
+		hardfork: "istanbul",
 		mnemonic: "actual surround disorder swim upgrade devote digital misery truly verb slide final",
 		network_id: 65535
 	},
+	port: 8555,
 	skipFiles: [
 		'tools/Migrations.sol',
 		'tools/testing/TestClient.sol',
