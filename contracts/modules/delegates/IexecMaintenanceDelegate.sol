@@ -55,11 +55,9 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function _chainId()
-	internal pure returns (uint256)
+	internal pure returns (uint256 id)
 	{
-		uint256 id;
 		assembly { id := chainid() }
-		return id;
 	}
 
 	function _domain()

@@ -3,6 +3,7 @@ const fs = require("fs");
 module.exports = {
 	port: 8555,
 	providerOptions: {
+		hardfork: "istanbul",
 		mnemonic: "actual surround disorder swim upgrade devote digital misery truly verb slide final",
 		network_id: 65535
 	},
