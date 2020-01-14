@@ -9,26 +9,6 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
 	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.EIP712Domain;
 
-	// TODO
-	// function _chainId()
-	// internal pure returns (uint256)
-	// {
-	// 	uint256 id;
-	// 	assembly { id := chainid() }
-	// 	return id;
-	// }
-
-	function _updateDomainSeparator(uint256 _chainid)
-	internal
-	{
-		EIP712DOMAIN_SEPARATOR = IexecODBLibOrders_v4.EIP712Domain({
-			name:              "iExecODB"
-		, version:           "3.0-alpha"
-		, chainId:           _chainid
-		, verifyingContract: address(this)
-		}).hash();
-	}
-
 	function configure(
 		address          _token,
 		string  calldata _name,
@@ -41,6 +21,8 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	external
 	{
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
+		EIP712DOMAIN_SEPARATOR = _domain().hash();
+
 		m_baseToken          = IERC20(_token);
 		m_name               = _name;
 		m_symbol             = _symbol;
@@ -48,14 +30,20 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_appregistry        = IRegistry(_appregistryAddress);
 		m_datasetregistry    = IRegistry(_datasetregistryAddress);
 		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-		m_v3_iexecHub        = IexecHub(_v3_iexecHubAddress);
+		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
 	}
 
-	function updateChainId(uint256 _chainid)
+	function domain()
+	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	{
+		return _domain();
+	}
+
+	function updateDomainSeparator()
 	external
 	{
-		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured"); //TODO: remove and using chainId opcode
-		_updateDomainSeparator(_chainid);
+		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "already-configured");
+		EIP712DOMAIN_SEPARATOR = _domain().hash();
 	}
 
 	function importScore(address _worker)
@@ -64,5 +52,22 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
 		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
 		m_v3_scoreImported[_worker] = true;
+	}
+
+	function _chainId()
+	internal pure returns (uint256 id)
+	{
+		assembly { id := chainid() }
+	}
+
+	function _domain()
+	internal view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	{
+		return IexecODBLibOrders_v4.EIP712Domain({
+			name:              "iExecODB"
+		, version:           "3.0-alpha"
+		, chainId:           _chainId()
+		, verifyingContract: address(this)
+		});
 	}
 }

@@ -1,5 +1,5 @@
 // Config
-var DEPLOYMENT = require("../../../config/deployment.json")
+var DEPLOYMENT         = require("../../../config/config.json").chains.default;
 // Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
@@ -70,12 +70,7 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup({
-			name:              "iExecODB",
-			version:           "3.0-alpha",
-			chainId:           await web3.eth.net.getId(),
-			verifyingContract: IexecInstance.address,
-		});
+		odbtools.setup(await IexecInstance.domain());
 	});
 
 	/***************************************************************************

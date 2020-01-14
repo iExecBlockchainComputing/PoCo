@@ -1,6 +1,6 @@
 const assert = require('assert')
 // CONFIG
-const DEPLOYMENT = require('../config/deployment.json')
+const CONFIG = require('../config/config.json')
 // Token
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
 // ENS
@@ -15,7 +15,8 @@ var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDele
 // Libraries
 var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders_v4')
 // Interface
-var IexecInterface          = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`)
+var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
+var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
 // Delegates
 var IexecAccessors          = artifacts.require('IexecAccessorsDelegate')
 var IexecAccessorsABILegacy = artifacts.require('IexecAccessorsABILegacyDelegate')
@@ -34,12 +35,13 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 var GenericFactory          = artifacts.require('GenericFactory')
 
-DEPLOYMENT.salt = DEPLOYMENT.salt || web3.utils.randomHex(32);
-
 const LIBRARIES = [
 	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
 ]
 
+/*****************************************************************************
+ *                                   Tools                                   *
+ *****************************************************************************/
 function getSerializedObject(entry)
 {
 	if (entry.type == 'tuple')
@@ -76,8 +78,8 @@ async function factoryDeployer(contract, options = {})
 		}
 	}
 
-	let argsCode       = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), options.args).slice(2) : ''
-	let deployCode     = coreCode + argsCode
+	let argsCode   = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), options.args).slice(2) : ''
+	let deployCode = coreCode + argsCode
 
 	contract.address = await factory.predictAddress(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
 
@@ -100,6 +102,9 @@ async function factoryDeployer(contract, options = {})
 	}
 }
 
+/*****************************************************************************
+ *                                   Main                                    *
+ *****************************************************************************/
 module.exports = async function(deployer, network, accounts)
 {
 	console.log('# web3 version:', web3.version);
@@ -108,58 +113,43 @@ module.exports = async function(deployer, network, accounts)
 	console.log('Chainid is:', chainid);
 	console.log('Chaintype is:', chaintype);
 
-	if (DEPLOYMENT.asset !== 'Native')
+	/* ------------------------- Existing deployment ------------------------- */
+	DEPLOYMENT = {
+		salt: web3.utils.randomHex(32),
+		...(CONFIG.chains[chainid] || CONFIG.chains.default)
+	};
+
+
+	switch (DEPLOYMENT.asset)
 	{
-		switch (chaintype)
-		{
-			case 'main':
-				RLCInstance = await RLC.at('0x607F4C5BB672230e8672085532f7e901544a7375');
-				owner = '0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53';
-				break;
-
-			case 'kovan':
-				RLCInstance = await RLC.at('0xc57538846ec405ea25deb00e0f9b29a432d53507');
-				owner = '0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E';
-				break;
-
-			case 'rinkeby':
-				RLCInstance = await RLC.at('0xf1e6ad3a7ef0c86c915f0fedf80ed851809bea90');
-				owner = null;
-				break;
-
-			case 'ropsten':
-				RLCInstance = await RLC.at('0x7314dc4d7794b5e7894212ca1556ae8e3de58621');
-				owner = '0x4Bfe09055455Fe06B2fD2f59bA700783CFB3Cc53';
-				break;
-
-			case 'private':
+		case 'Token':
+			if (DEPLOYMENT.token)
+			{
+				RLCInstance = await RLC.at(DEPLOYMENT.token)
+			}
+			else
+			{
 				await deployer.deploy(RLC);
 				RLCInstance = await RLC.deployed();
+
 				console.log(`RLC deployed at address: ${RLCInstance.address}`);
-				owner = await RLCInstance.owner.call()
+				const owner = await RLCInstance.owner.call()
 				console.log(`RLC faucet wallet is ${owner}`);
 				supply = await RLCInstance.balanceOf(owner);
 				console.log(`RLC faucet supply is ${supply}`);
-				break;
+			}
+			break;
 
-			default:
-				console.log(`[ERROR] RLC not configured for chaintype ${chaintype}`);
-				return 1;
-				break;
-		}
-	}
-	else
-	{
-		RLCInstance = { address: '0x0000000000000000000000000000000000000000' };
+		case 'Native':
+			RLCInstance = { address: '0x0000000000000000000000000000000000000000' };
+			break;
 	}
 
-	/***************************************************************************
-	 *                          Deploy & link library                          *
-	 ***************************************************************************/
-	if (DEPLOYMENT.usefactory)
+	/* ------------------------ Deploy & link library ------------------------ */
+	if (DEPLOYMENT.v4.usefactory)
 	{
 		await factoryDeployer(IexecODBLibOrders, {
-			salt: DEPLOYMENT.salt
+			salt: CONFIG.salt
 		});
 	}
 	else
@@ -170,17 +160,15 @@ module.exports = async function(deployer, network, accounts)
 		await deployer.link(IexecODBLibOrders, IexecOrderManagement);
 	}
 
-	/***************************************************************************
-	 *                              Deploy proxy                               *
-	 ***************************************************************************/
-	if (DEPLOYMENT.usefactory)
+	/* ---------------------------- Deploy proxy ----------------------------- */
+	if (DEPLOYMENT.v4.usefactory)
 	{
 		await factoryDeployer(ERC1538Update, {
-			salt: DEPLOYMENT.salt
+			salt: CONFIG.salt
 		});
 		await factoryDeployer(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
-			salt: DEPLOYMENT.salt,
+			salt: CONFIG.salt,
 			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 	}
@@ -192,9 +180,7 @@ module.exports = async function(deployer, network, accounts)
 	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
 	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
 
-	/***************************************************************************
-	 *                             Setup delegate                              *
-	 ***************************************************************************/
+	/* --------------------------- Setup delegate ---------------------------- */
 	contracts = [
 		ERC1538Query,
 		IexecAccessors,
@@ -213,10 +199,10 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (DEPLOYMENT.usefactory)
+		if (DEPLOYMENT.v4.usefactory)
 		{
 			await factoryDeployer(contracts[id], {
-				salt: DEPLOYMENT.salt
+				salt: CONFIG.salt
 			});
 		}
 		else
@@ -230,41 +216,43 @@ module.exports = async function(deployer, network, accounts)
 		);
 	}
 
-	/***************************************************************************
-	 *                             Configure Stack                             *
-	 ***************************************************************************/
-	IexecInterfaceInstance = await IexecInterface.at(ERC1538.address);
+	/* --------------------------- Configure Stack --------------------------- */
+	switch (DEPLOYMENT.asset)
+	{
+		case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);  break;
+		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at(ERC1538.address); break;
+	}
 
-	if (DEPLOYMENT.usefactory)
+	if (DEPLOYMENT.v4.usefactory)
 	{
 		await factoryDeployer(AppRegistry,        {
-			args: [ '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.salt,
+			args: [ DEPLOYMENT.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
+			salt: CONFIG.salt,
 			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 		await factoryDeployer(DatasetRegistry,    {
-			args: [ '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.salt,
+			args: [ DEPLOYMENT.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
+			salt: CONFIG.salt,
 			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 		await factoryDeployer(WorkerpoolRegistry, {
-			args: [ '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.salt,
+			args: [ DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
+			salt: CONFIG.salt,
 			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        '0x0000000000000000000000000000000000000000'); // TODO
-		await deployer.deploy(DatasetRegistry,    '0x0000000000000000000000000000000000000000'); // TODO
-		await deployer.deploy(WorkerpoolRegistry, '0x0000000000000000000000000000000000000000'); // TODO
+		await deployer.deploy(AppRegistry,        DEPLOYMENT.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(DatasetRegistry,    DEPLOYMENT.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(WorkerpoolRegistry, DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-	console.log('AppRegistry        deployed at address: ' + AppRegistryInstance.address);
-	console.log('DatasetRegistry    deployed at address: ' + DatasetRegistryInstance.address);
-	console.log('WorkerpoolRegistry deployed at address: ' + WorkerpoolRegistryInstance.address);
+	console.log(`AppRegistry        deployed at address: ${AppRegistryInstance.address}`);
+	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
+	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,
@@ -274,13 +262,11 @@ module.exports = async function(deployer, network, accounts)
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
 		WorkerpoolRegistryInstance.address,
-		'0x0000000000000000000000000000000000000000' // TODO
-	);
-	await IexecInterfaceInstance.updateChainId(
-		chainid,
+		DEPLOYMENT.v3.Hub || '0x0000000000000000000000000000000000000000'
 	);
 
-	for (cat of DEPLOYMENT.categories)
+	/* ----------------------------- Categories ------------------------------ */
+	for (cat of CONFIG.categories)
 	{
 		console.log(`create category: ${cat.name}`);
 		await IexecInterfaceInstance.createCategory(cat.name, JSON.stringify(cat.description), cat.workClockTimeRef);
@@ -293,9 +279,7 @@ module.exports = async function(deployer, network, accounts)
 		console.log([ 'category', i, ':', ...await IexecInterfaceInstance.viewCategory(i)].join(' '));
 	}
 
-	/***************************************************************************
-	 *                                   ENS                                   *
-	 ***************************************************************************/
+	/* --------------------------------- ENS --------------------------------- */
 	if (chaintype == 'private')
 	{
 		var ens        = null;
@@ -396,9 +380,7 @@ module.exports = async function(deployer, network, accounts)
 		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.registry.iexec.eth');
 	}
 
-	/***************************************************************************
-	 *                          ERC1538 list methods                           *
-	 ***************************************************************************/
+	/* ------------------------ ERC1538 list methods ------------------------- */
 	if (false)
 	{
 		let ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
@@ -409,56 +391,6 @@ module.exports = async function(deployer, network, accounts)
 		{
 			let functionDetails = await ERC1538QueryInstace.functionByIndex(i);
 			console.log(`[${i}] ${functionDetails.delegate} ${functionDetails.signature}`);
-		}
-	}
-
-	/***************************************************************************
-	 *                             Wallets deposit                             *
-	 ***************************************************************************/
-	// Starting deposit for all test wallets
-	// if (chaintype == 'private' || chaintype == 'kovan')
-	if (false)
-	{
-		// -------------------------------- Admin --------------------------------
-		var adminAdress = '0xabcd1339Ec7e762e639f4887E2bFe5EE8023E23E';
-		var nRlcAmount  = 10000000;
-
-		//For admin, put some nRLC in wallet
-		await RLCInstance.transfer(adminAdress, nRlcAmount, { from: owner, gas: 4500000 });
-		RLCInstance.balanceOf(adminAdress).then(balance => console.log('Wallet.balance of ' + adminAdress +' is ' + balance + ' nRLC'));
-
-		//And put directly some other nRLCs in account
-		await RLCInstance.approve(IexecInterfaceInstance.address, nRlcAmount, { from: owner });
-		await IexecInterfaceInstance.depositFor(nRlcAmount, adminAdress, { from: owner, gas: 4500000 });
-		IexecInterfaceInstance.viewAccount(adminAdress).then(balance => console.log('Account.Stack of ' + adminAdress + ' is ' + balance.Stack + ' nRLC'));
-
-		// ------------------------------ Scheduler ------------------------------
-		var schedulerAddress = '0x000a9c787a972F70F0903890E266F41c795C4DcA';
-		var nRlcAmount       = 10000000;
-
-		//For scheduler, put directly some nRLCs in account
-		await RLCInstance.approve(IexecInterfaceInstance.address, nRlcAmount, { from: owner });
-		await IexecInterfaceInstance.depositFor(nRlcAmount, schedulerAddress, { from: owner, gas: 4500000 });
-		await IexecInterfaceInstance.viewAccount(schedulerAddress).then(balance => console.log('Account.Stack of ' + schedulerAddress + ' is ' + balance.stake + ' nRLC'));
-
-		// ------------------------------- Workers -------------------------------
-		var workerAddresses = fs.readFileSync(__dirname + '/accounts.txt').toString().split('\n');
-		var nRlcAmount      = 1000;
-
-		//For workers, put directly some nRLCs in account
-		console.log('Making deposit to ' + workerAddresses.length + ' wallets');
-		await RLCInstance.approve(IexecInterfaceInstance.address, workerAddresses.length * nRlcAmount, { from: owner });
-
-		let batchSize = 30;
-		for (var i = 0; i < workerAddresses.length; i += batchSize)
-		{
-			group = workerAddresses.slice(i, i+batchSize);
-			await IexecInterfaceInstance.depositForArray(
-				Array(group.length).fill(nRlcAmount),
-				group,
-				{ from: owner, gas: 4500000 }
-			);
-			group.forEach(address => IexecInterfaceInstance.viewAccount(address).then(balance => console.log('Account.Stack of ' + address + ' is ' + balance.stake + ' nRLC')));
 		}
 	}
 };
