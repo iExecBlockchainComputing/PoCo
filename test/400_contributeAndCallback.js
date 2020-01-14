@@ -1,5 +1,5 @@
 // Config
-var DEPLOYMENT = require("../config/deployment.json")
+var DEPLOYMENT         = require("../config/config.json").chains.default;
 // Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
