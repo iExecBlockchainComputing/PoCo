@@ -128,12 +128,6 @@ module.exports = async function(deployer, network, accounts)
 			{
 				await deployer.deploy(RLC);
 				RLCInstance = await RLC.deployed();
-
-				console.log(`RLC deployed at address: ${RLCInstance.address}`);
-				const owner = await RLCInstance.owner.call()
-				console.log(`RLC faucet wallet is ${owner}`);
-				supply = await RLCInstance.balanceOf(owner);
-				console.log(`RLC faucet supply is ${supply}`);
 			}
 			break;
 
@@ -255,7 +249,7 @@ module.exports = async function(deployer, network, accounts)
 		RLCInstance.address,
 		'Hub RLC',
 		'hRLC',
-		9,
+		9, // TODO: generic ?
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
 		WorkerpoolRegistryInstance.address,
