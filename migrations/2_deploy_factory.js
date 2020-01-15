@@ -21,13 +21,14 @@ module.exports = async function(deployer, network, accounts)
 		{
 			console.log(`→ Factory is not yet deployed on ${chaintype} (${chainid})`)
 			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: 600000*22*10**9 });
-			await web3.eth.sendSignedTransaction(FACTORY.tx[chainid]);
+			await web3.eth.sendSignedTransaction(FACTORY.tx[1]); // TODO replace 1 with chainid when fixed
 			GenericFactory.address = FACTORY.address;
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)
 		}
 		catch (e)
 		{
-			console.log(`→ Error deploying the factory, using a non standard address`)
+			console.log(`→ Error deploying the factory`)
+			console.log(`→ Using a non standard address`)
 			await deployer.deploy(GenericFactory);
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)
 		}

@@ -114,11 +114,8 @@ module.exports = async function(deployer, network, accounts)
 	console.log('Chaintype is:', chaintype);
 
 	/* ------------------------- Existing deployment ------------------------- */
-	DEPLOYMENT = {
-		salt: web3.utils.randomHex(32),
-		...(CONFIG.chains[chainid] || CONFIG.chains.default)
-	};
-
+	DEPLOYMENT = CONFIG.chains[chainid] || CONFIG.chains.default;
+	DEPLOYMENT.v4.salt = DEPLOYMENT.v4.salt || web3.utils.randomHex(32);
 
 	switch (DEPLOYMENT.asset)
 	{
@@ -149,7 +146,7 @@ module.exports = async function(deployer, network, accounts)
 	if (DEPLOYMENT.v4.usefactory)
 	{
 		await factoryDeployer(IexecODBLibOrders, {
-			salt: CONFIG.salt
+			salt: DEPLOYMENT.v4.salt
 		});
 	}
 	else
@@ -164,11 +161,11 @@ module.exports = async function(deployer, network, accounts)
 	if (DEPLOYMENT.v4.usefactory)
 	{
 		await factoryDeployer(ERC1538Update, {
-			salt: CONFIG.salt
+			salt: DEPLOYMENT.v4.salt
 		});
 		await factoryDeployer(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
-			salt: CONFIG.salt,
+			salt: DEPLOYMENT.v4.salt,
 			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 	}
@@ -202,7 +199,7 @@ module.exports = async function(deployer, network, accounts)
 		if (DEPLOYMENT.v4.usefactory)
 		{
 			await factoryDeployer(contracts[id], {
-				salt: CONFIG.salt
+				salt: DEPLOYMENT.v4.salt
 			});
 		}
 		else
@@ -227,17 +224,17 @@ module.exports = async function(deployer, network, accounts)
 	{
 		await factoryDeployer(AppRegistry,        {
 			args: [ DEPLOYMENT.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
+			salt: DEPLOYMENT.v4.salt,
 			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 		await factoryDeployer(DatasetRegistry,    {
 			args: [ DEPLOYMENT.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
+			salt: DEPLOYMENT.v4.salt,
 			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 		await factoryDeployer(WorkerpoolRegistry, {
 			args: [ DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
+			salt: DEPLOYMENT.v4.salt,
 			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
 		});
 	}
