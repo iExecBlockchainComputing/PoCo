@@ -108,21 +108,21 @@ async function factoryDeployer(contract, options = {})
 module.exports = async function(deployer, network, accounts)
 {
 	console.log('# web3 version:', web3.version);
-	chainid   = await web3.eth.net.getId();
-	chaintype = await web3.eth.net.getNetworkType();
+	const chainid   = await web3.eth.net.getId();
+	const chaintype = await web3.eth.net.getNetworkType();
 	console.log('Chainid is:', chainid);
 	console.log('Chaintype is:', chaintype);
 
 	/* ------------------------- Existing deployment ------------------------- */
-	DEPLOYMENT = CONFIG.chains[chainid] || CONFIG.chains.default;
-	DEPLOYMENT.v4.salt = DEPLOYMENT.v4.salt || web3.utils.randomHex(32);
+	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
+	const factoryOptions    = { salt: deploymentOptions.v4.salt || web3.utils.randomHex(32) };
 
-	switch (DEPLOYMENT.asset)
+	switch (deploymentOptions.asset)
 	{
 		case 'Token':
-			if (DEPLOYMENT.token)
+			if (deploymentOptions.token)
 			{
-				RLCInstance = await RLC.at(DEPLOYMENT.token)
+				RLCInstance = await RLC.at(deploymentOptions.token)
 			}
 			else
 			{
@@ -137,11 +137,9 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ------------------------ Deploy & link library ------------------------ */
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v4.usefactory)
 	{
-		await factoryDeployer(IexecODBLibOrders, {
-			salt: DEPLOYMENT.v4.salt
-		});
+		await factoryDeployer(IexecODBLibOrders, factoryOptions);
 	}
 	else
 	{
@@ -152,15 +150,13 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v4.usefactory)
 	{
-		await factoryDeployer(ERC1538Update, {
-			salt: DEPLOYMENT.v4.salt
-		});
+		await factoryDeployer(ERC1538Update, factoryOptions);
 		await factoryDeployer(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
-			salt: DEPLOYMENT.v4.salt,
-			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 	}
 	else
@@ -178,7 +174,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecERC20,
-		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
+		deploymentOptions.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
 		IexecMaintenance,
 		IexecOrderManagement,
 		IexecPoco,
@@ -190,11 +186,9 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (DEPLOYMENT.v4.usefactory)
+		if (deploymentOptions.v4.usefactory)
 		{
-			await factoryDeployer(contracts[id], {
-				salt: DEPLOYMENT.v4.salt
-			});
+			await factoryDeployer(contracts[id], factoryOptions);
 		}
 		else
 		{
@@ -208,35 +202,35 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* --------------------------- Configure Stack --------------------------- */
-	switch (DEPLOYMENT.asset)
+	switch (deploymentOptions.asset)
 	{
 		case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);  break;
 		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at(ERC1538.address); break;
 	}
 
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v4.usefactory)
 	{
 		await factoryDeployer(AppRegistry,        {
-			args: [ DEPLOYMENT.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.v4.salt,
-			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 		await factoryDeployer(DatasetRegistry,    {
-			args: [ DEPLOYMENT.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.v4.salt,
-			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 		await factoryDeployer(WorkerpoolRegistry, {
-			args: [ DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: DEPLOYMENT.v4.salt,
-			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        DEPLOYMENT.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    DEPLOYMENT.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(AppRegistry,        deploymentOptions.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(DatasetRegistry,    deploymentOptions.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(WorkerpoolRegistry, deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -253,7 +247,7 @@ module.exports = async function(deployer, network, accounts)
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
 		WorkerpoolRegistryInstance.address,
-		DEPLOYMENT.v3.Hub || '0x0000000000000000000000000000000000000000'
+		deploymentOptions.v3.Hub || '0x0000000000000000000000000000000000000000'
 	);
 
 	/* ----------------------------- Categories ------------------------------ */
