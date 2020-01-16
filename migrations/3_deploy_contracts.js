@@ -44,55 +44,42 @@ const LIBRARIES = [
  *****************************************************************************/
 function getSerializedObject(entry)
 {
-	if (entry.type == 'tuple')
-	{
-		return '(' + entry.components.map(getSerializedObject).join(',') + ')';
-	}
-	else
-	{
-		return entry.type;
-	}
+	return (entry.type == 'tuple')
+		? `(${entry.components.map(getSerializedObject).join(',')})`
+		: entry.type;
 }
 
 function getFunctionSignatures(abi)
 {
 	return (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '') + abi
 		.filter(entry => entry.type == 'function')
-		.map(entry => entry.name + '(' + entry.inputs.map(getSerializedObject).join(',') + ');')
+		.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`)
 		.join('');
 }
 
 async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
-	let factory        = await GenericFactory.deployed();
-	let constructorABI = contract._json.abi.find(e => e.type == 'constructor');
-	let coreCode       = contract.bytecode;
+	const factory          = await GenericFactory.deployed();
+	const libraryAddresses = await Promise.all(LIBRARIES.map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
+	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
+	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
+	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args).slice(2) : '';
+	const code             = coreCode + argsCode;
+	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-	for ({ pattern, library } of LIBRARIES)
-	{
-		if (coreCode.search(pattern) != -1)
-		{
-			let { address } = await library.deployed()
-			coreCode = coreCode.replace(pattern, address.slice(2).toLowerCase())
-		}
-	}
-
-	let argsCode   = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), options.args).slice(2) : ''
-	let deployCode = coreCode + argsCode
-
-	contract.address = await factory.predictAddress(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
+	contract.address = await factory.predictAddress(code, salt);
 
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
 		if (options.call)
 		{
-			await factory.createContractAndCallback(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000', options.call);
+			await factory.createContractAndCallback(code, salt, options.call);
 		}
 		else
 		{
-			await factory.createContract(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
+			await factory.createContract(code, salt);
 		}
 		console.log(`[factory] ${contract.contractName} successfully deployed`);
 	}
