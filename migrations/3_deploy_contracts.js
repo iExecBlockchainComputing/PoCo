@@ -61,7 +61,7 @@ async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
 	const factory          = await GenericFactory.deployed();
-	const libraryAddresses = await Promise.all(LIBRARIES.map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
+	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
 	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args).slice(2) : '';
