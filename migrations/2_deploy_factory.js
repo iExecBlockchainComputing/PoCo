@@ -1,4 +1,4 @@
-var GenericFactory = artifacts.require("iexec-solidity/GenericFactory");
+var GenericFactory = artifacts.require("iexec-solidity/GenericFactory2");
 var FACTORY = require("../config/factory.json")
 
 module.exports = async function(deployer, network, accounts)
@@ -20,7 +20,7 @@ module.exports = async function(deployer, network, accounts)
 		try
 		{
 			console.log(`→ Factory is not yet deployed on ${chaintype} (${chainid})`)
-			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: 412556*22*10**9 });
+			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: FACTORY.cost });
 			await web3.eth.sendSignedTransaction(FACTORY.tx[1]); // TODO replace 1 with chainid when fixed
 			GenericFactory.address = FACTORY.address;
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)

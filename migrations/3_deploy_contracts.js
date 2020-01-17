@@ -8,6 +8,8 @@ var ENSRegistry             = artifacts.require('@ensdomains/ens/ENSRegistry')
 var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
 var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
+// Factory
+var GenericFactory2         = artifacts.require('iexec-solidity/GenericFactory2')
 // ERC1538 core & delegates
 var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
@@ -33,7 +35,6 @@ var ENSIntegration          = artifacts.require('ENSIntegrationDelegate')
 var AppRegistry             = artifacts.require('AppRegistry')
 var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
-var GenericFactory          = artifacts.require('GenericFactory')
 
 const LIBRARIES = [
 	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
@@ -60,7 +61,7 @@ function getFunctionSignatures(abi)
 async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
-	const factory          = await GenericFactory.deployed();
+	const factory          = await GenericFactory2.deployed();
 	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
@@ -68,20 +69,17 @@ async function factoryDeployer(contract, options = {})
 	const code             = coreCode + argsCode;
 	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-	contract.address = await factory.predictAddress(code, salt);
+	contract.address = options.call
+		? await factory.predictAddressWithCallback(code, salt, options.call)
+		: await factory.predictAddress(code, salt);
 
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
-		if (options.call)
-		{
-			await factory.createContractAndCallback(code, salt, options.call);
-		}
-		else
-		{
-			await factory.createContract(code, salt);
-		}
-		console.log(`[factory] ${contract.contractName} successfully deployed`);
+		options.call
+			? await factory.createContractAndCallback(code, salt, options.call)
+			: await factory.createContract(code, salt);
+		console.log(`[factory] ${contract.contractName} successfully deployed at ${contract.address}`);
 	}
 	else
 	{
