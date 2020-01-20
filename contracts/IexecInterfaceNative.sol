@@ -15,4 +15,6 @@ import "./modules/interfaces/ENSIntegration.sol";
 
 
 contract IexecInterfaceNative is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowNative, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
-{}
+{
+	constructor() internal {}
+}

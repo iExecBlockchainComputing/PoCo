@@ -17,20 +17,20 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	function ()
 		external payable
 	{
-		_handleDeposit(msg.sender);
+		_deposit(_msgSender());
 	}
 
 	function deposit()
 		external payable returns (bool)
 	{
-		_handleDeposit(msg.sender);
+		_deposit(_msgSender());
 		return true;
 	}
 
 	function depositFor(address target)
 		external payable returns (bool)
 	{
-		_handleDeposit(target);
+		_deposit(target);
 		return true;
 	}
 
@@ -44,15 +44,15 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 			_mint(targets[i], amounts[i]);
 			remaining = remaining.sub(amounts[i].mul(nRLCtoWei));
 		}
-		_safeWithdraw(msg.sender, remaining);
+		_withdraw(_msgSender(), remaining);
 		return true;
 	}
 
 	function withdraw(uint256 amount)
 		external returns (bool)
 	{
-		_burn(msg.sender, amount);
-		_safeWithdraw(msg.sender, amount.mul(nRLCtoWei));
+		_burn(_msgSender(), amount);
+		_withdraw(_msgSender(), amount.mul(nRLCtoWei));
 		return true;
 	}
 
@@ -64,14 +64,14 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		return delta;
 	}
 
-	function _handleDeposit(address target)
+	function _deposit(address target)
 		internal
 	{
 		_mint(target, msg.value.div(nRLCtoWei));
-		_safeWithdraw(msg.sender, msg.value.mod(nRLCtoWei));
+		_withdraw(_msgSender(), msg.value.mod(nRLCtoWei));
 	}
 
-	function _safeWithdraw(address to, uint256 value)
+	function _withdraw(address to, uint256 value)
 		internal
 	{
 		(bool success, ) = to.call.value(value)('');

@@ -57,11 +57,6 @@ contract Store is ERC1538Store
 	IexecHubInterface internal m_v3_iexecHub;
 	mapping(address => bool) internal m_v3_scoreImported;
 
-	// modifiers
-	modifier onlyScheduler(bytes32 _taskid)
-	{
-		require(msg.sender == m_deals[m_tasks[_taskid].dealid].workerpool.owner);
-		_;
-	}
-
+	// Prevent deployment of this contract
+	constructor() internal {}
 }

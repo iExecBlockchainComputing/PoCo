@@ -23,15 +23,15 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	function deposit(uint256 amount)
 		external returns (bool)
 	{
-		_deposit(msg.sender, amount);
-		_mint(msg.sender, amount);
+		_deposit(_msgSender(), amount);
+		_mint(_msgSender(), amount);
 		return true;
 	}
 
 	function depositFor(uint256 amount, address target)
 		external returns (bool)
 	{
-		_deposit(msg.sender, amount);
+		_deposit(_msgSender(), amount);
 		_mint(target, amount);
 		return true;
 	}
@@ -42,7 +42,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 		require(amounts.length == targets.length);
 		for (uint i = 0; i < amounts.length; ++i)
 		{
-			_deposit(msg.sender, amounts[i]);
+			_deposit(_msgSender(), amounts[i]);
 			_mint(targets[i], amounts[i]);
 		}
 		return true;
@@ -51,8 +51,8 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	function withdraw(uint256 amount)
 		external returns (bool)
 	{
-		_burn(msg.sender, amount);
-		_withdraw(msg.sender, amount);
+		_burn(_msgSender(), amount);
+		_withdraw(_msgSender(), amount);
 		return true;
 	}
 

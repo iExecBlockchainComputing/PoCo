@@ -24,7 +24,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public
 	{
 		address owner = App(_apporderoperation.order.app).owner();
-		require(owner == msg.sender || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
+		require(owner == _msgSender() || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
 
 		bytes32 apporderHash = _apporderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
@@ -43,7 +43,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public
 	{
 		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
-		require(owner == msg.sender || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
+		require(owner == _msgSender() || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
 
 		bytes32 datasetorderHash = _datasetorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
@@ -62,7 +62,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public
 	{
 		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
-		require(owner == msg.sender || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
+		require(owner == _msgSender() || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
 
 		bytes32 workerpoolorderHash = _workerpoolorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
@@ -81,7 +81,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public
 	{
 		address owner = _requestorderoperation.order.requester;
-		require(owner == msg.sender || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
+		require(owner == _msgSender() || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
 
 		bytes32 requestorderHash = _requestorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)

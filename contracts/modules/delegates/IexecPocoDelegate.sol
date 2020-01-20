@@ -377,7 +377,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	public
 	{
 		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
 		IexecODBLibCore_v4.Deal         memory  deal         = m_deals[task.dealid];
 
 		require(task.status               == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE       );
@@ -388,7 +388,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(_checkSignature(
 			deal.workerpool.owner,
 			keccak256(abi.encodePacked(
-				msg.sender,
+				_msgSender(),
 				_taskid,
 				_enclaveChallenge
 			)).toEthSignedMessageHash(),
@@ -413,11 +413,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		contribution.resultHash       = _resultHash;
 		contribution.resultSeal       = _resultSeal;
 		contribution.enclaveChallenge = _enclaveChallenge;
-		task.contributors.push(msg.sender);
+		task.contributors.push(_msgSender());
 
-		lockContribution(task.dealid, msg.sender);
+		lockContribution(task.dealid, _msgSender());
 
-		emit TaskContribute(_taskid, msg.sender, _resultHash);
+		emit TaskContribute(_taskid, _msgSender(), _resultHash);
 
 		// Contribution done → updating and checking concensus
 
@@ -427,11 +427,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		 *                          see documentation!                           *
 		 *************************************************************************/
 		// k = 3
-		uint256 weight = m_workerScores[msg.sender].div(3).max(3).sub(1);
+		uint256 weight = m_workerScores[_msgSender()].div(3).max(3).sub(1);
 		uint256 group  = m_groupweight[_taskid][_resultHash];
 		uint256 delta  = group.max(1).mul(weight).sub(group);
 
-		m_logweight  [_taskid][msg.sender ] = weight.log();
+		m_logweight  [_taskid][_msgSender() ] = weight.log();
 		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
 		m_totalweight[_taskid]              = m_totalweight[_taskid].add(delta);
 
@@ -445,19 +445,19 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	external // worker
 	{
 		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
 		require(task.status             == IexecODBLibCore_v4.TaskStatusEnum.REVEALING                    );
 		require(task.revealDeadline     >  now                                                            );
 		require(contribution.status     == IexecODBLibCore_v4.ContributionStatusEnum.CONTRIBUTED          );
 		require(contribution.resultHash == task.consensusValue                                            );
 		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
-		require(contribution.resultSeal == keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest)));
+		require(contribution.resultSeal == keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest)));
 
 		contribution.status = IexecODBLibCore_v4.ContributionStatusEnum.PROVED;
 		task.revealCounter  = task.revealCounter.add(1);
 		task.resultDigest   = _resultDigest;
 
-		emit TaskReveal(_taskid, msg.sender, _resultDigest);
+		emit TaskReveal(_taskid, _msgSender(), _resultDigest);
 	}
 
 	function reopen(
@@ -554,7 +554,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	public
 	{
 		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
-		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][msg.sender];
+		IexecODBLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
 		IexecODBLibCore_v4.Deal         memory  deal         = m_deals[task.dealid];
 
 		require(task.status               == IexecODBLibCore_v4.TaskStatusEnum.ACTIVE);
@@ -563,13 +563,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(deal.trust                == 1                                       ); // TODO, consider sender's score ?
 
 		bytes32 resultHash = keccak256(abi.encodePacked(            _taskid, _resultDigest));
-		bytes32 resultSeal = keccak256(abi.encodePacked(msg.sender, _taskid, _resultDigest));
+		bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(_checkSignature(
 			deal.workerpool.owner,
 			keccak256(abi.encodePacked(
-				msg.sender,
+				_msgSender(),
 				_taskid,
 				_enclaveChallenge
 			)).toEthSignedMessageHash(),
@@ -601,19 +601,19 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		task.winnerCounter            = 1;
 		task.resultDigest             = _resultDigest;
 		task.results                  = _results;
-		task.contributors.push(msg.sender);
+		task.contributors.push(_msgSender());
 
 		successWork(task.dealid, _taskid);
 
 		// simple reward, no score consideration
 		uint256 workerReward    = deal.workerpool.price.percentage(uint256(100).sub(deal.schedulerRewardRatio));
 		uint256 schedulerReward = deal.workerpool.price.sub(workerReward);
-		rewardForContribution(msg.sender, workerReward, _taskid);
+		rewardForContribution(_msgSender(), workerReward, _taskid);
 		rewardForScheduling(task.dealid, schedulerReward, _taskid);
 
-		emit TaskContribute(_taskid, msg.sender, resultHash);
+		emit TaskContribute(_taskid, _msgSender(), resultHash);
 		emit TaskConsensus(_taskid, resultHash);
-		emit TaskReveal(_taskid, msg.sender, _resultDigest);
+		emit TaskReveal(_taskid, _msgSender(), _resultDigest);
 		emit TaskFinalize(_taskid, _results);
 
 		executeCallback(_taskid, _results);
@@ -650,7 +650,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 					winnerCounter = winnerCounter.add(1);
 				}
 			}
-			// msg.sender is a contributor: no need to check
+			// _msgSender() is a contributor: no need to check
 			// require(winnerCounter > 0);
 			task.status         = IexecODBLibCore_v4.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;

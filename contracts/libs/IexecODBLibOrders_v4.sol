@@ -328,10 +328,10 @@ library IexecODBLibOrders_v4
 		));
 	}
 
-	function toEthSignedMessageHash(bytes32 msg_hash)
+	function toEthSignedMessageHash(bytes32 _msgHash)
 	public pure returns (bytes32)
 	{
-		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", msg_hash));
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash));
 	}
 
 	function toEthTypedStructHash(bytes32 _structHash, bytes32 _domainHash)
@@ -340,21 +340,21 @@ library IexecODBLibOrders_v4
 		return keccak256(abi.encodePacked("\x19\x01", _domainHash, _structHash));
 	}
 
-	function recover(bytes32 hash, bytes memory sign)
+	function recover(bytes32 _hash, bytes memory _sign)
 	public pure returns (address)
 	{
 		bytes32 r;
 		bytes32 s;
 		uint8   v;
-		require(sign.length == 65);
+		require(_sign.length == 65);
 		assembly
 		{
-			r :=         mload(add(sign, 0x20))
-			s :=         mload(add(sign, 0x40))
-			v := byte(0, mload(add(sign, 0x60)))
+			r :=         mload(add(_sign, 0x20))
+			s :=         mload(add(_sign, 0x40))
+			v := byte(0, mload(add(_sign, 0x60)))
 		}
 		if (v < 27) v += 27;
 		require(v == 27 || v == 28);
-		return ecrecover(hash, v, r, s);
+		return ecrecover(_hash, v, r, s);
 	}
 }

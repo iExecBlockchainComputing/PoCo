@@ -82,6 +82,9 @@ contract('Poco', async (accounts) => {
 		assert.equal(domain.version,           '3.0-alpha');
 		// assert.equal(domain.chainId, _); // TODO: waiting for ganache fix
 		assert.equal(domain.verifyingContract, IexecInstance.address);
+
+		console.log('>>>>>>    domain.chainId:', domain.chainId);
+		console.log('>>>>>> web.eth.net.getId:', await web3.eth.net.getId());
 	});
 
 	it("updateChainId", async () => {
