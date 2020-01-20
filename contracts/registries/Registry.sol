@@ -1,28 +1,28 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
 import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import "./IRegistry.sol";
 import "../tools/ens/ReverseRegistration.sol";
 
 
-contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, CounterfactualFactory
+contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable, CounterfactualFactory
 {
 	address   public master;
 	bytes     public proxyCode;
-	string    public name;
-	string    public symbol;
 	IRegistry public previous;
 
-	constructor(address _master, string memory _name, string memory _symbol, address _previous)
-	public
+	constructor(
+		address       _master,
+		string memory _name,
+		string memory _symbol,
+		address       _previous)
+	public ERC721Full(_name, _symbol)
 	{
 		master    = _master;
 		proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
-		name      = _name;
-		symbol    = _symbol;
 		previous  = IRegistry(_previous);
 	}
 

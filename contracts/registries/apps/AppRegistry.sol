@@ -42,5 +42,4 @@ contract AppRegistry is Registry
 			)
 		));
 	}
-
 }

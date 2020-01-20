@@ -18,7 +18,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		address          _datasetregistryAddress,
 		address          _workerpoolregistryAddress,
 		address          _v3_iexecHubAddress)
-	external
+	external onlyOwner()
 	{
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
@@ -33,16 +33,10 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
 	}
 
-	function domain()
-	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
-	{
-		return _domain();
-	}
-
 	function updateDomainSeparator()
 	external
 	{
-		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "already-configured");
+		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 	}
 
@@ -52,6 +46,12 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
 		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
 		m_v3_scoreImported[_worker] = true;
+	}
+
+	function domain()
+	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	{
+		return _domain();
 	}
 
 	function _chainId()

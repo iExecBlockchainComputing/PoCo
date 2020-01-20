@@ -8,6 +8,8 @@ contract RegistryEntry is ReverseRegistration
 {
 	IRegistry public registry;
 
+	constructor() internal {}
+
 	function _initialize(address _registry) internal
 	{
 		require(address(registry) == address(0), 'already initialized');

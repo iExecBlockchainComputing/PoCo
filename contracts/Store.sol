@@ -15,6 +15,9 @@ import "./registries/IRegistry.sol";
 
 contract Store is ERC1538Store
 {
+	constructor() internal {}
+
+	// Registries
 	IRegistry internal m_appregistry;
 	IRegistry internal m_datasetregistry;
 	IRegistry internal m_workerpoolregistry;
@@ -56,7 +59,4 @@ contract Store is ERC1538Store
 	// Backward compatibility
 	IexecHubInterface internal m_v3_iexecHub;
 	mapping(address => bool) internal m_v3_scoreImported;
-
-	// Prevent deployment of this contract
-	constructor() internal {}
 }
