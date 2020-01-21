@@ -346,13 +346,30 @@ library IexecODBLibOrders_v4
 		bytes32 r;
 		bytes32 s;
 		uint8   v;
-		require(_sign.length == 65);
-		assembly
+
+		if (_sign.length == 65) // 65bytes: (r,s,v) form
 		{
-			r :=         mload(add(_sign, 0x20))
-			s :=         mload(add(_sign, 0x40))
-			v := byte(0, mload(add(_sign, 0x60)))
+			assembly
+			{
+				r :=         mload(add(_sign, 0x20))
+				s :=         mload(add(_sign, 0x40))
+				v := byte(0, mload(add(_sign, 0x60)))
+			}
 		}
+		else if (_sign.length == 64) // 64bytes: (r,vs) form → see EIP2098
+		{
+			assembly
+			{
+				r :=         mload(add(_sign, 0x20))
+				v := byte(0, mload(add(_sign, 0x40)))
+				s := and(    mload(add(_sign, 0x40)), 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+			}
+		}
+		else
+		{
+			revert();
+		}
+
 		if (v < 27) v += 27;
 		require(v == 27 || v == 28);
 		return ecrecover(_hash, v, r, s);
