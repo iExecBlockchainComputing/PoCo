@@ -54,10 +54,10 @@ contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable, Counte
 		_setName(_ens, _name);
 	}
 
-	function setTokenURI(uint256 tokenId, string calldata uri)
+	function setTokenURI(uint256 _tokenId, string calldata _uri)
 	external
 	{
-		require(_msgSender() == ownerOf(tokenId), "ERC721: access restricted to token owner");
-		_setTokenURI(tokenId, uri);
+		require(_msgSender() == ownerOf(_tokenId), "ERC721: access restricted to token owner");
+		_setTokenURI(_tokenId, _uri);
 	}
 }
