@@ -360,18 +360,18 @@ library IexecODBLibOrders_v4
 		{
 			assembly
 			{
-				r :=         mload(add(_sign, 0x20))
-				v := byte(0, mload(add(_sign, 0x40)))
-				s := and(    mload(add(_sign, 0x40)), 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+				r :=                mload(add(_sign, 0x20))
+				s := and(           mload(add(_sign, 0x40)), 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+				v := shr(7, byte(0, mload(add(_sign, 0x40))))
 			}
 		}
 		else
 		{
-			revert();
+			revert("invalid-signature-format");
 		}
 
 		if (v < 27) v += 27;
-		require(v == 27 || v == 28);
+		require(v == 27 || v == 28, "invalid-signature-v");
 		return ecrecover(_hash, v, r, s);
 	}
 }

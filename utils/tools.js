@@ -1,3 +1,5 @@
+const { ethers } = require('ethers');
+
 module.exports = {
 	extractEvents: function(txMined, address, name)
 	{
@@ -18,5 +20,14 @@ module.exports = {
 			{ t: 'bytes32', v: salt                       },
 			{ t: 'bytes32', v: web3.utils.keccak256(code) },
 		).slice(26));
-	}
+	},
+
+	compactSignature: function(signature)
+	{
+		let split = ethers.utils.splitSignature(signature);
+		let vs    = ethers.utils.arrayify(split.s);
+		if (split.recoveryParam) { vs[0] |= 0x80; }
+		return ethers.utils.hexlify(ethers.utils.concat([ split.r, vs ]));
+	},
+
 };
