@@ -61,6 +61,8 @@ contract('ENSIntegration', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ENSInstance                = await ENSRegistry.deployed();
+
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************

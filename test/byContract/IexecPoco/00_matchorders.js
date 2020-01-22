@@ -11,17 +11,17 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
+const { BN, expectEvent, expectRevert } = require("@openzeppelin/test-helpers");
+const multiaddr = require("multiaddr");
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
+const wallets   = require("../../../utils/wallets");
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
-contract('Poco', async (accounts) => {
+contract("Poco", async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = accounts[0];
@@ -61,7 +61,7 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************
@@ -194,14 +194,12 @@ contract('Poco', async (accounts) => {
 		for (key in datasetextra   ) _datasetorder[key]    = datasetextra[key];
 		for (key in workerpoolextra) _workerpoolorder[key] = workerpoolextra[key];
 		for (key in userextra      ) _requestorder[key]       = userextra[key];
-		odbtools.signAppOrder       (_apporder,        wallets.addressToPrivate(appProvider    ));
-		odbtools.signDatasetOrder   (_datasetorder,    wallets.addressToPrivate(datasetProvider));
-		odbtools.signWorkerpoolOrder(_workerpoolorder, wallets.addressToPrivate(scheduler      ));
-		odbtools.signRequestOrder   (_requestorder,    wallets.addressToPrivate(user           ));
+		odbtools.signAppOrder       (ERC712_domain, _apporder,        wallets.addressToPrivate(appProvider    ));
+		odbtools.signDatasetOrder   (ERC712_domain, _datasetorder,    wallets.addressToPrivate(datasetProvider));
+		odbtools.signWorkerpoolOrder(ERC712_domain, _workerpoolorder, wallets.addressToPrivate(scheduler      ));
+		odbtools.signRequestOrder   (ERC712_domain, _requestorder,    wallets.addressToPrivate(user           ));
 		return IexecInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 	};
-
-
 
 	it("[Match - app-dataset-workerpool-user]", async () => {
 		await matchOrders(
@@ -211,8 +209,8 @@ contract('Poco', async (accounts) => {
 			{},
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
@@ -246,8 +244,8 @@ contract('Poco', async (accounts) => {
 			{ dataset: constants.NULL.ADDRESS },
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
@@ -281,8 +279,8 @@ contract('Poco', async (accounts) => {
 			{ volume: 10 },
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );

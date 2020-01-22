@@ -346,15 +346,32 @@ library IexecODBLibOrders_v4
 		bytes32 r;
 		bytes32 s;
 		uint8   v;
-		require(_sign.length == 65);
-		assembly
+
+		if (_sign.length == 65) // 65bytes: (r,s,v) form
 		{
-			r :=         mload(add(_sign, 0x20))
-			s :=         mload(add(_sign, 0x40))
-			v := byte(0, mload(add(_sign, 0x60)))
+			assembly
+			{
+				r :=         mload(add(_sign, 0x20))
+				s :=         mload(add(_sign, 0x40))
+				v := byte(0, mload(add(_sign, 0x60)))
+			}
 		}
+		else if (_sign.length == 64) // 64bytes: (r,vs) form → see EIP2098
+		{
+			assembly
+			{
+				r :=                mload(add(_sign, 0x20))
+				s := and(           mload(add(_sign, 0x40)), 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+				v := shr(7, byte(0, mload(add(_sign, 0x40))))
+			}
+		}
+		else
+		{
+			revert("invalid-signature-format");
+		}
+
 		if (v < 27) v += 27;
-		require(v == 27 || v == 28);
+		require(v == 27 || v == 28, "invalid-signature-v");
 		return ecrecover(_hash, v, r, s);
 	}
 }

@@ -63,6 +63,8 @@ contract('ERC20', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		TestReceiverInstance       = await TestReceiver.new();
+
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************

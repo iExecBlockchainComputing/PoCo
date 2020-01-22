@@ -70,7 +70,7 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************
@@ -141,6 +141,7 @@ contract('Poco', async (accounts) => {
 
 		// Orders
 		apporder = odbtools.signAppOrder(
+			ERC712_domain,
 			{
 				app:                AppInstance.address,
 				appprice:           3,
@@ -155,6 +156,7 @@ contract('Poco', async (accounts) => {
 			wallets.addressToPrivate(appProvider)
 		);
 		datasetorder = odbtools.signDatasetOrder(
+			ERC712_domain,
 			{
 				dataset:            DatasetInstance.address,
 				datasetprice:       1,
@@ -169,6 +171,7 @@ contract('Poco', async (accounts) => {
 			wallets.addressToPrivate(datasetProvider)
 		);
 		workerpoolorder_offset = odbtools.signWorkerpoolOrder(
+			ERC712_domain,
 			{
 				workerpool:        WorkerpoolInstance.address,
 				workerpoolprice:   15,
@@ -185,6 +188,7 @@ contract('Poco', async (accounts) => {
 			wallets.addressToPrivate(scheduler)
 		);
 		workerpoolorder = odbtools.signWorkerpoolOrder(
+			ERC712_domain,
 			{
 				workerpool:        WorkerpoolInstance.address,
 				workerpoolprice:   25,
@@ -201,6 +205,7 @@ contract('Poco', async (accounts) => {
 			wallets.addressToPrivate(scheduler)
 		);
 		requestorder = odbtools.signRequestOrder(
+			ERC712_domain,
 			{
 				app:                AppInstance.address,
 				appmaxprice:        3,
@@ -230,7 +235,7 @@ contract('Poco', async (accounts) => {
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(requestorder));
+		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 	});
 
 	it("[setup] Initialization", async () => {
