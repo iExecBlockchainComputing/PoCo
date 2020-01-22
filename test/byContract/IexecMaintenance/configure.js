@@ -57,7 +57,7 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************

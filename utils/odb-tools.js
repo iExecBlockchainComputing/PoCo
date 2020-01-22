@@ -78,21 +78,19 @@ const TYPES =
 
 function signStruct(primaryType, message, domain, pk)
 {
-	return {
-		...message,
-		sign: sigUtil.signTypedData(
-			pk,
+	message.sign = sigUtil.signTypedData(
+		pk,
+		{
+			data:
 			{
-				data:
-				{
-					types: TYPES,
-					primaryType,
-					message,
-					domain,
-				}
+				types: TYPES,
+				primaryType,
+				message,
+				domain,
 			}
-		)
-	};
+		}
+	);
+	return message;
 }
 
 function hashStruct(primaryType, message, domain)
@@ -133,6 +131,8 @@ function hashContribution(result)
 }
 
 module.exports = {
+	signStruct:  signStruct,
+	signMessage: signMessage,
 	/* wrappers */
 	hashAppOrder:                 function(domain, struct    ) { return hashStruct("AppOrder",                 struct, domain     ); },
 	hashDatasetOrder:             function(domain, struct    ) { return hashStruct("DatasetOrder",             struct, domain     ); },

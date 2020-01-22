@@ -112,13 +112,7 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
-
-		console.log("EIP712DOMAIN_TYPEHASH:   ", odbtools.EIP712DOMAIN_TYPEHASH   );
-		console.log("APPORDER_TYPEHASH:       ", odbtools.APPORDER_TYPEHASH       );
-		console.log("DATASETORDER_TYPEHASH:   ", odbtools.DATASETORDER_TYPEHASH   );
-		console.log("WORKERPOOLORDER_TYPEHASH:", odbtools.WORKERPOOLORDER_TYPEHASH);
-		console.log("REQUESTORDER_TYPEHASH:   ", odbtools.REQUESTORDER_TYPEHASH   );
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -276,6 +270,7 @@ contract('Fullchain', async (accounts) => {
 			describe("app", async () => {
 				it("sign", async () => {
 					apporder = odbtools.signAppOrder(
+						ERC712_domain,
 						{
 							app:                AppInstance.address,
 							appprice:           3,
@@ -294,7 +289,7 @@ contract('Fullchain', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							appProvider,
-							odbtools.AppOrderTypedStructHash(apporder),
+							odbtools.hashAppOrder(ERC712_domain, apporder),
 							apporder.sign
 						),
 						"Error with the validation of the apporder signature"
@@ -305,6 +300,7 @@ contract('Fullchain', async (accounts) => {
 			describe("dataset", async () => {
 				it("sign", async () => {
 					datasetorder = odbtools.signDatasetOrder(
+						ERC712_domain,
 						{
 							dataset:            DatasetInstance.address,
 							datasetprice:       1,
@@ -323,7 +319,7 @@ contract('Fullchain', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							datasetProvider,
-							odbtools.DatasetOrderTypedStructHash(datasetorder),
+							odbtools.hashDatasetOrder(ERC712_domain, datasetorder),
 							datasetorder.sign
 						),
 						"Error with the validation of the datasetorder signature"
@@ -334,6 +330,7 @@ contract('Fullchain', async (accounts) => {
 			describe("workerpool", async () => {
 				it("sign", async () => {
 					workerpoolorder1 = odbtools.signWorkerpoolOrder(
+						ERC712_domain,
 						{
 							workerpool:        WorkerpoolInstance.address,
 							workerpoolprice:   15,
@@ -350,6 +347,7 @@ contract('Fullchain', async (accounts) => {
 						wallets.addressToPrivate(scheduler)
 					);
 					workerpoolorder2 = odbtools.signWorkerpoolOrder(
+						ERC712_domain,
 						{
 							workerpool:        WorkerpoolInstance.address,
 							workerpoolprice:   25,
@@ -370,7 +368,7 @@ contract('Fullchain', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							scheduler,
-							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder1),
+							odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder1),
 							workerpoolorder1.sign
 						),
 						"Error with the validation of the workerpoolorder signature"
@@ -378,7 +376,7 @@ contract('Fullchain', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							scheduler,
-							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder2),
+							odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder2),
 							workerpoolorder2.sign
 						),
 						"Error with the validation of the workerpoolorder signature"
@@ -389,6 +387,7 @@ contract('Fullchain', async (accounts) => {
 			describe("request", async () => {
 				it("sign", async () => {
 					requestorder = odbtools.signRequestOrder(
+						ERC712_domain,
 						{
 							app:                AppInstance.address,
 							appmaxprice:        3,
@@ -414,7 +413,7 @@ contract('Fullchain', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							user,
-							odbtools.RequestOrderTypedStructHash(requestorder),
+							odbtools.hashRequestOrder(ERC712_domain, requestorder),
 							requestorder.sign
 						),
 						"Error with the validation of the requestorder signature"
@@ -435,12 +434,12 @@ contract('Fullchain', async (accounts) => {
 				gasReceipt.push([ "matchOrders", txsMined[1].receipt.gasUsed ]);
 
 				deal0 = web3.utils.soliditySha3(
-					{ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(requestorder) },
-					{ t: 'uint256', v: 0                                                  },
+					{ t: 'bytes32', v: odbtools.hashRequestOrder(ERC712_domain, requestorder) },
+					{ t: 'uint256', v: 0                                                      },
 				);
 				deal1 = web3.utils.soliditySha3(
-					{ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(requestorder) },
-					{ t: 'uint256', v: 2                                                  },
+					{ t: 'bytes32', v: odbtools.hashRequestOrder(ERC712_domain, requestorder) },
+					{ t: 'uint256', v: 2                                                      },
 				);
 
 				events = tools.extractEvents(txsMined[0], IexecInstance.address, "SchedulerNotice");
@@ -452,20 +451,20 @@ contract('Fullchain', async (accounts) => {
 				assert.equal(events[0].args.dealid,     deal1                     );
 
 				events = tools.extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched");
-				assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder        ));
-				assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder    ));
-				assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder1));
-				assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder    ));
-				assert.equal(events[0].args.volume,         2                                                        );
+				assert.equal(events[0].args.appHash,        odbtools.hashAppOrder       (ERC712_domain, apporder        ));
+				assert.equal(events[0].args.datasetHash,    odbtools.hashDatasetOrder   (ERC712_domain, datasetorder    ));
+				assert.equal(events[0].args.workerpoolHash, odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder1));
+				assert.equal(events[0].args.requestHash,    odbtools.hashRequestOrder   (ERC712_domain, requestorder    ));
+				assert.equal(events[0].args.volume,         2                                                            );
 
 				events = tools.extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched");
-				assert.equal(events[0].args.appHash,        odbtools.AppOrderTypedStructHash       (apporder        ));
-				assert.equal(events[0].args.datasetHash,    odbtools.DatasetOrderTypedStructHash   (datasetorder    ));
-				assert.equal(events[0].args.workerpoolHash, odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder2));
-				assert.equal(events[0].args.requestHash,    odbtools.RequestOrderTypedStructHash   (requestorder    ));
-				assert.equal(events[0].args.volume,         1                                                        );
+				assert.equal(events[0].args.appHash,        odbtools.hashAppOrder       (ERC712_domain, apporder        ));
+				assert.equal(events[0].args.datasetHash,    odbtools.hashDatasetOrder   (ERC712_domain, datasetorder    ));
+				assert.equal(events[0].args.workerpoolHash, odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder2));
+				assert.equal(events[0].args.requestHash,    odbtools.hashRequestOrder   (ERC712_domain, requestorder    ));
+				assert.equal(events[0].args.volume,         1                                                            );
 
-				dealids = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(requestorder));
+				dealids = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 				assert.equal(dealids[0], deal0);
 				assert.equal(dealids[1], deal1);
 			});

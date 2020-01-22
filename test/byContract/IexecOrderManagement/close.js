@@ -57,17 +57,7 @@ contract('OrderManagement', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		console.log("             EIP712DOMAIN_TYPEHASH:", odbtools.EIP712DOMAIN_TYPEHASH            );
-		console.log("                 APPORDER_TYPEHASH:", odbtools.APPORDER_TYPEHASH                );
-		console.log("             DATASETORDER_TYPEHASH:", odbtools.DATASETORDER_TYPEHASH            );
-		console.log("          WORKERPOOLORDER_TYPEHASH:", odbtools.WORKERPOOLORDER_TYPEHASH         );
-		console.log("             REQUESTORDER_TYPEHASH:", odbtools.REQUESTORDER_TYPEHASH            );
-		console.log("        APPORDEROPERATION_TYPEHASH:", odbtools.APPORDEROPERATION_TYPEHASH       );
-		console.log("    DATASETORDEROPERATION_TYPEHASH:", odbtools.DATASETORDEROPERATION_TYPEHASH   );
-		console.log(" WORKERPOOLORDEROPERATION_TYPEHASH:", odbtools.WORKERPOOLORDEROPERATION_TYPEHASH);
-		console.log("    REQUESTORDEROPERATION_TYPEHASH:", odbtools.REQUESTORDEROPERATION_TYPEHASH   );
-
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************
@@ -124,7 +114,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.AppOrderTypedStructHash(apporder);
+		const hash = odbtools.hashAppOrder(ERC712_domain, apporder);
 		return { apporder, hash };
 	}
 
@@ -140,7 +130,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.DatasetOrderTypedStructHash(datasetorder);
+		const hash = odbtools.hashDatasetOrder(ERC712_domain, datasetorder);
 		return { datasetorder, hash };
 	}
 
@@ -158,7 +148,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		const hash = odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder);
 		return { workerpoolorder, hash };
 	}
 
@@ -181,7 +171,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.RequestOrderTypedStructHash(requestorder);
+		const hash = odbtools.hashRequestOrder(ERC712_domain, requestorder);
 		return { requestorder, hash };
 	}
 
@@ -205,6 +195,7 @@ contract('OrderManagement', async (accounts) => {
 		it("unauthorized signature", async () => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = odbtools.signAppOrderOperation(
+				ERC712_domain,
 				{
 					order: apporder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -221,6 +212,7 @@ contract('OrderManagement', async (accounts) => {
 		it("authorized signature", async () => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = odbtools.signAppOrderOperation(
+				ERC712_domain,
 				{
 					order: apporder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -268,6 +260,7 @@ contract('OrderManagement', async (accounts) => {
 		it("unauthorized signature", async () => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = odbtools.signDatasetOrderOperation(
+				ERC712_domain,
 				{
 					order: datasetorder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -284,6 +277,7 @@ contract('OrderManagement', async (accounts) => {
 		it("authorized signature", async () => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = odbtools.signDatasetOrderOperation(
+				ERC712_domain,
 				{
 					order: datasetorder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -331,6 +325,7 @@ contract('OrderManagement', async (accounts) => {
 		it("unauthorized signature", async () => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
+				ERC712_domain,
 				{
 					order: workerpoolorder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -347,6 +342,7 @@ contract('OrderManagement', async (accounts) => {
 		it("authorized signature", async () => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = odbtools.signWorkerpoolOrderOperation(
+				ERC712_domain,
 				{
 					order: workerpoolorder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -394,6 +390,7 @@ contract('OrderManagement', async (accounts) => {
 		it("unauthorized signature", async () => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = odbtools.signRequestOrderOperation(
+				ERC712_domain,
 				{
 					order: requestorder,
 					operation: constants.OrderOperationEnum.CLOSE,
@@ -410,6 +407,7 @@ contract('OrderManagement', async (accounts) => {
 		it("authorized signature", async () => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = odbtools.signRequestOrderOperation(
+				ERC712_domain,
 				{
 					order: requestorder,
 					operation: constants.OrderOperationEnum.CLOSE,

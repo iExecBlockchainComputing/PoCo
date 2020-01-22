@@ -57,7 +57,7 @@ contract('OrderManagement', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************
@@ -139,7 +139,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.AppOrderTypedStructHash(apporder);
+		const hash = odbtools.hashAppOrder(ERC712_domain, apporder);
 		return { apporder, hash };
 	}
 
@@ -155,7 +155,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.DatasetOrderTypedStructHash(datasetorder);
+		const hash = odbtools.hashDatasetOrder(ERC712_domain, datasetorder);
 		return { datasetorder, hash };
 	}
 
@@ -173,7 +173,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		const hash = odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder);
 		return { workerpoolorder, hash };
 	}
 
@@ -196,7 +196,7 @@ contract('OrderManagement', async (accounts) => {
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.RequestOrderTypedStructHash(requestorder);
+		const hash = odbtools.hashRequestOrder(ERC712_domain, requestorder);
 		return { requestorder, hash };
 	}
 

@@ -75,7 +75,7 @@ contract('ERC1154: callback', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 
 		TestClientInstance = await TestClient.new();
 	});
@@ -234,6 +234,7 @@ contract('ERC1154: callback', async (accounts) => {
 			describe("app", async () => {
 				it("sign", async () => {
 					apporder = odbtools.signAppOrder(
+						ERC712_domain,
 						{
 							app:                AppInstance.address,
 							appprice:           3,
@@ -252,7 +253,7 @@ contract('ERC1154: callback', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							appProvider,
-							odbtools.AppOrderTypedStructHash(apporder),
+							odbtools.hashAppOrder(ERC712_domain, apporder),
 							apporder.sign
 						),
 						"Error with the validation of the apporder signature"
@@ -263,6 +264,7 @@ contract('ERC1154: callback', async (accounts) => {
 			describe("dataset", async () => {
 				it("sign", async () => {
 					datasetorder = odbtools.signDatasetOrder(
+						ERC712_domain,
 						{
 							dataset:            DatasetInstance.address,
 							datasetprice:       0,
@@ -281,7 +283,7 @@ contract('ERC1154: callback', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							datasetProvider,
-							odbtools.DatasetOrderTypedStructHash(datasetorder),
+							odbtools.hashDatasetOrder(ERC712_domain, datasetorder),
 							datasetorder.sign
 						),
 						"Error with the validation of the datasetorder signature"
@@ -292,6 +294,7 @@ contract('ERC1154: callback', async (accounts) => {
 			describe("workerpool", async () => {
 				it("sign", async () => {
 					workerpoolorder = odbtools.signWorkerpoolOrder(
+						ERC712_domain,
 						{
 							workerpool:        WorkerpoolInstance.address,
 							workerpoolprice:   25,
@@ -312,7 +315,7 @@ contract('ERC1154: callback', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							scheduler,
-							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
+							odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder),
 							workerpoolorder.sign
 						),
 						"Error with the validation of the.workerpoolorder signature"
@@ -324,6 +327,7 @@ contract('ERC1154: callback', async (accounts) => {
 				describe("no callback", async () => {
 					it("sign", async () => {
 						requestorder1 = odbtools.signRequestOrder(
+							ERC712_domain,
 							{
 								app:                AppInstance.address,
 								appmaxprice:        3,
@@ -349,7 +353,7 @@ contract('ERC1154: callback', async (accounts) => {
 						assert.isTrue(
 							await IexecInstance.verifySignature(
 								user,
-								odbtools.RequestOrderTypedStructHash(requestorder1),
+								odbtools.hashRequestOrder(ERC712_domain, requestorder1),
 								requestorder1.sign
 							),
 							"Error with the validation of the requestorder signature"
@@ -359,6 +363,7 @@ contract('ERC1154: callback', async (accounts) => {
 				describe("invalid callback", async () => {
 					it("sign", async () => {
 						requestorder2 = odbtools.signRequestOrder(
+							ERC712_domain,
 							{
 								app:                AppInstance.address,
 								appmaxprice:        3,
@@ -384,7 +389,7 @@ contract('ERC1154: callback', async (accounts) => {
 						assert.isTrue(
 							await IexecInstance.verifySignature(
 								user,
-								odbtools.RequestOrderTypedStructHash(requestorder2),
+								odbtools.hashRequestOrder(ERC712_domain, requestorder2),
 								requestorder2.sign
 							),
 							"Error with the validation of the requestorder signature"
@@ -394,6 +399,7 @@ contract('ERC1154: callback', async (accounts) => {
 				describe("valid callback", async () => {
 					it("sign", async () => {
 						requestorder3 = odbtools.signRequestOrder(
+							ERC712_domain,
 							{
 								app:                AppInstance.address,
 								appmaxprice:        3,
@@ -419,7 +425,7 @@ contract('ERC1154: callback', async (accounts) => {
 						assert.isTrue(
 							await IexecInstance.verifySignature(
 								user,
-								odbtools.RequestOrderTypedStructHash(requestorder3),
+								odbtools.hashRequestOrder(ERC712_domain, requestorder3),
 								requestorder3.sign
 							),
 							"Error with the validation of the requestorder signature"

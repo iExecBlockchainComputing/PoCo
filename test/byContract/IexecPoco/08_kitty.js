@@ -70,7 +70,7 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	function sendContribution(taskid, worker, results, authorization, enclave)
@@ -189,6 +189,7 @@ contract('Poco', async (accounts) => {
 		describe("orders", async () => {
 			it("app", async () => {
 				apporder = odbtools.signAppOrder(
+					ERC712_domain,
 					{
 						app:                AppInstance.address,
 						appprice:           0,
@@ -206,6 +207,7 @@ contract('Poco', async (accounts) => {
 
 			it("workerpool", async () => {
 				workerpoolorder = odbtools.signWorkerpoolOrder(
+					ERC712_domain,
 					{
 						workerpool:        WorkerpoolInstance.address,
 						workerpoolprice:   100,
@@ -225,6 +227,7 @@ contract('Poco', async (accounts) => {
 
 			it("requester", async () => {
 				requestorder1 = odbtools.signRequestOrder(
+					ERC712_domain,
 					{
 						app:                AppInstance.address,
 						appmaxprice:        0,
@@ -246,6 +249,7 @@ contract('Poco', async (accounts) => {
 					wallets.addressToPrivate(user)
 				);
 				requestorder2 = odbtools.signRequestOrder(
+					ERC712_domain,
 					{
 						app:                AppInstance.address,
 						appmaxprice:        0,

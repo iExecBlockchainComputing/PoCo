@@ -58,6 +58,8 @@ contract('CategoryManager', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	describe("view", async () => {

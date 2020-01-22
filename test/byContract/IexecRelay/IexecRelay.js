@@ -79,7 +79,7 @@ contract('Relay', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		odbtools.setup(await IexecInstance.domain());
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -139,6 +139,7 @@ contract('Relay', async (accounts) => {
 			describe("app", async () => {
 				it("sign", async () => {
 					apporder = odbtools.signAppOrder(
+						ERC712_domain,
 						{
 							app:                AppInstance.address,
 							appprice:           3,
@@ -157,7 +158,7 @@ contract('Relay', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							appProvider,
-							odbtools.AppOrderTypedStructHash(apporder),
+							odbtools.hashAppOrder(ERC712_domain, apporder),
 							apporder.sign
 						),
 						"Error with the validation of the apporder signature"
@@ -168,6 +169,7 @@ contract('Relay', async (accounts) => {
 			describe("dataset", async () => {
 				it("sign", async () => {
 					datasetorder = odbtools.signDatasetOrder(
+						ERC712_domain,
 						{
 							dataset:            DatasetInstance.address,
 							datasetprice:       1,
@@ -186,7 +188,7 @@ contract('Relay', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							datasetProvider,
-							odbtools.DatasetOrderTypedStructHash(datasetorder),
+							odbtools.hashDatasetOrder(ERC712_domain, datasetorder),
 							datasetorder.sign
 						),
 						"Error with the validation of the datasetorder signature"
@@ -197,6 +199,7 @@ contract('Relay', async (accounts) => {
 			describe("workerpool", async () => {
 				it("sign", async () => {
 					workerpoolorder = odbtools.signWorkerpoolOrder(
+						ERC712_domain,
 						{
 							workerpool:        WorkerpoolInstance.address,
 							workerpoolprice:   25,
@@ -217,7 +220,7 @@ contract('Relay', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							scheduler,
-							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
+							odbtools.hashWorkerpoolOrder(ERC712_domain, workerpoolorder),
 							workerpoolorder.sign
 						),
 						"Error with the validation of the.workerpoolorder signature"
@@ -228,6 +231,7 @@ contract('Relay', async (accounts) => {
 			describe("request", async () => {
 				it("sign", async () => {
 					requestorder = odbtools.signRequestOrder(
+						ERC712_domain,
 						{
 							app:                AppInstance.address,
 							appmaxprice:        3,
@@ -253,7 +257,7 @@ contract('Relay', async (accounts) => {
 					assert.isTrue(
 						await IexecInstance.verifySignature(
 							user,
-							odbtools.RequestOrderTypedStructHash(requestorder),
+							odbtools.hashRequestOrder(ERC712_domain, requestorder),
 							requestorder.sign
 						),
 						"Error with the validation of the requestorder signature"
