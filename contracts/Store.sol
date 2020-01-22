@@ -59,4 +59,7 @@ contract Store is ERC1538Store
 	// Backward compatibility
 	IexecHubInterface internal m_v3_iexecHub;
 	mapping(address => bool) internal m_v3_scoreImported;
+
+	// Tee Workflow V2
+	address m_teebroker;
 }

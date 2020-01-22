@@ -33,6 +33,12 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
 	}
 
+	function domain()
+	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	{
+		return _domain();
+	}
+
 	function updateDomainSeparator()
 	external
 	{
@@ -48,10 +54,10 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_v3_scoreImported[_worker] = true;
 	}
 
-	function domain()
-	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	function setTeeBroker(address _teebroker)
+	external onlyOwner()
 	{
-		return _domain();
+		m_teebroker = _teebroker;
 	}
 
 	function _chainId()

@@ -373,7 +373,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32      _resultSeal,
 		address      _enclaveChallenge,
 		bytes memory _enclaveSign,
-		bytes memory _workerpoolSign)
+		bytes memory _authorizationSign)
 	public
 	{
 		IexecODBLibCore_v4.Task         storage task         = m_tasks[_taskid];
@@ -384,19 +384,19 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.contributionDeadline >  now                                            );
 		require(contribution.status       == IexecODBLibCore_v4.ContributionStatusEnum.UNSET);
 
+		// need enclave challenge if tag is set
+		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
+
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(_checkSignature(
-			deal.workerpool.owner,
+			_enclaveChallenge == address(0) ? deal.workerpool.owner : m_teebroker,
 			keccak256(abi.encodePacked(
 				_msgSender(),
 				_taskid,
 				_enclaveChallenge
 			)).toEthSignedMessageHash(),
-			_workerpoolSign
+			_authorizationSign
 		));
-
-		// need enclave challenge if tag is set
-		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
 
 		// Check enclave signature
 		require(_enclaveChallenge == address(0) || _checkSignature(
