@@ -24,8 +24,8 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -61,8 +61,8 @@ contract('Fullchain', async (accounts) => {
 			consensus: "iExec BOT 0",
 			workers :
 			[
-				{ address: worker1, enclave: constants.NULL.ADDRESS, raw: "iExec BOT 0" },
-				{ address: worker2, enclave: constants.NULL.ADDRESS, raw: "iExec BOT 0" },
+				{ address: worker1, useenclave: false, raw: "iExec BOT 0" },
+				{ address: worker2, useenclave: false, raw: "iExec BOT 0" },
 			]
 		},
 		1:
@@ -73,8 +73,8 @@ contract('Fullchain', async (accounts) => {
 			consensus: "iExec BOT 1",
 			workers :
 			[
-				{ address: worker2, enclave: sgxEnclave, raw: "iExec BOT 1" },
-				{ address: worker3, enclave: sgxEnclave, raw: "iExec BOT 1" },
+				{ address: worker2, useenclave: true, raw: "iExec BOT 1" },
+				{ address: worker3, useenclave: true, raw: "iExec BOT 1" },
 			]
 		},
 		2:
@@ -85,11 +85,11 @@ contract('Fullchain', async (accounts) => {
 			consensus: "iExec BOT 2",
 			workers :
 			[
-				{ address: worker1, enclave: constants.NULL.ADDRESS, raw: "iExec BOT 2"       },
-				{ address: worker3, enclave: constants.NULL.ADDRESS, raw: "<timeout reached>" },
-				{ address: worker2, enclave: sgxEnclave,             raw: "iExec BOT 2"       },
-				{ address: worker4, enclave: sgxEnclave,             raw: "iExec BOT 2"       },
-				{ address: worker5, enclave: sgxEnclave,             raw: "iExec BOT 2"       },
+				{ address: worker1, useenclave: false, raw: "iExec BOT 2"       },
+				{ address: worker3, useenclave: false, raw: "<timeout reached>" },
+				{ address: worker2, useenclave: true,  raw: "iExec BOT 2"       },
+				{ address: worker4, useenclave: true,  raw: "iExec BOT 2"       },
+				{ address: worker5, useenclave: true,  raw: "iExec BOT 2"       },
 			]
 		},
 	};
@@ -112,7 +112,8 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		ERC712_domain              = await IexecInstance.domain();
+		await IexecInstance.setTeeBroker(teebroker.address);
+		ERC712_domain = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -499,16 +500,18 @@ contract('Fullchain', async (accounts) => {
 		describe("[3] contribute", async () => {
 			it("authorization signature", async () => {
 				for (i in tasks)
-				for (worker of tasks[i].workers)
+				for (w of tasks[i].workers)
 				{
-					tasks[i].authorizations[worker.address] = await odbtools.signAuthorization(
+					if (w.useenclave) { w.enclaveWallet = web3.eth.accounts.create() }
+
+					tasks[i].authorizations[w.address] = await odbtools.signAuthorization(
 						{
-							worker:  worker.address,
+							worker:  w.address,
 							taskid:  tasks[i].taskid,
-							enclave: worker.enclave,
+							enclave: w.useenclave ? w.enclaveWallet.address : constants.NULL.ADDRESS,
 							sign:    constants.NULL.SIGNATURE,
 						},
-						scheduler
+						w.useenclave ? teebroker : scheduler
 					);
 				}
 			});
@@ -518,16 +521,16 @@ contract('Fullchain', async (accounts) => {
 				{
 					tasks[i].consensus = odbtools.hashResult(tasks[i].taskid, tasks[i].consensus);
 
-					for (worker of tasks[i].workers)
+					for (w of tasks[i].workers)
 					{
-						tasks[i].results[worker.address] = odbtools.sealResult(tasks[i].taskid, worker.raw, worker.address);
-						if (worker.enclave != constants.NULL.ADDRESS) // With SGX
+						tasks[i].results[w.address] = odbtools.sealResult(tasks[i].taskid, w.raw, w.address);
+						if (w.useenclave) // With SGX
 						{
-							await odbtools.signContribution(tasks[i].results[worker.address], worker.enclave);
+							await odbtools.signContribution(tasks[i].results[w.address], w.enclaveWallet);
 						}
 						else // Without SGX
 						{
-							tasks[i].results[worker.address].sign = constants.NULL.SIGNATURE;
+							tasks[i].results[w.address].sign = constants.NULL.SIGNATURE;
 						}
 					}
 				}
@@ -535,16 +538,16 @@ contract('Fullchain', async (accounts) => {
 
 			it("[TX] contribute", async () => {
 				for (i in tasks)
-				for (worker of tasks[i].workers)
+				for (w of tasks[i].workers)
 				{
 					txMined = await IexecInstance.contribute(
-						tasks[i].authorizations[worker.address].taskid,  // task (authorization)
-						tasks[i].results[worker.address].hash,           // common    (result)
-						tasks[i].results[worker.address].seal,           // unique    (result)
-						tasks[i].authorizations[worker.address].enclave, // address   (enclave)
-						tasks[i].results[worker.address].sign,           // signature (enclave)
-						tasks[i].authorizations[worker.address].sign,    // signature (authorization)
-						{ from: worker.address, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+						tasks[i].authorizations[w.address].taskid,  // task (authorization)
+						tasks[i].results[w.address].hash,           // common    (result)
+						tasks[i].results[w.address].seal,           // unique    (result)
+						tasks[i].authorizations[w.address].enclave, // address   (enclave)
+						tasks[i].results[w.address].sign,           // signature (enclave)
+						tasks[i].authorizations[w.address].sign,    // signature (authorization)
+						{ from: w.address, gasLimit: constants.AMOUNT_GAS_PROVIDED }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 					gasReceipt.push([ "contribute", txMined.receipt.gasUsed ]);
@@ -555,20 +558,20 @@ contract('Fullchain', async (accounts) => {
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
 				for (i in tasks)
-				for (worker of tasks[i].workers)
-				if (tasks[i].results[worker.address].hash == tasks[i].consensus.hash)
+				for (w of tasks[i].workers)
+				if (tasks[i].results[w.address].hash == tasks[i].consensus.hash)
 				{
 					txMined = await IexecInstance.reveal(
-						tasks[i].authorizations[worker.address].taskid,
-						tasks[i].results[worker.address].digest,
-						{ from: worker.address }
+						tasks[i].authorizations[w.address].taskid,
+						tasks[i].results[w.address].digest,
+						{ from: w.address }
 					);
 					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
 					events = tools.extractEvents(txMined, IexecInstance.address, "TaskReveal");
-					assert.equal(events[0].args.taskid, tasks[i].authorizations[worker.address].taskid);
-					assert.equal(events[0].args.worker, worker.address                                );
-					assert.equal(events[0].args.digest, tasks[i].results[worker.address].digest       );
+					assert.equal(events[0].args.taskid, tasks[i].authorizations[w.address].taskid);
+					assert.equal(events[0].args.worker, w.address                                );
+					assert.equal(events[0].args.digest, tasks[i].results[w.address].digest       );
 					gasReceipt.push([ "reveal", txMined.receipt.gasUsed ]);
 				}
 			});

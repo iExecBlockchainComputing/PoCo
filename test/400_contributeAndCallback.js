@@ -24,8 +24,8 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -67,7 +67,7 @@ contract('Fullchain', async (accounts) => {
 		console.log("# web3 version:", web3.version);
 
 		trusttarget = 0;
-		worker = { address: worker1, enclave: sgxEnclave, raw: "iExec the wanderer" };
+		worker = { address: worker1, useenclave: true, raw: "iExec the wanderer" };
 		consensus = "iExec the wanderer";
 
 		/**
@@ -79,7 +79,8 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		ERC712_domain              = await IexecInstance.domain();
+		await IexecInstance.setTeeBroker(teebroker.address);
+		ERC712_domain = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -405,14 +406,16 @@ contract('Fullchain', async (accounts) => {
 
 		describe("[3] contributeAndFinalize", async () => {
 			it("authorization signature", async () => {
+				if (worker.useenclave) { worker.enclaveWallet = web3.eth.accounts.create() }
+
 				authorization = await odbtools.signAuthorization(
 					{
 						worker:  worker.address,
 						taskid:  taskid,
-						enclave: worker.enclave,
+						enclave: worker.useenclave ? worker.enclaveWallet.address : constants.NULL.ADDRESS,
 						sign:    constants.NULL.SIGNATURE,
 					},
-					scheduler
+					worker.useenclave ? teebroker : scheduler
 				);
 			});
 
@@ -421,7 +424,7 @@ contract('Fullchain', async (accounts) => {
 				result = odbtools.sealResult(taskid, worker.raw, worker.address);
 				if (worker.enclave != constants.NULL.ADDRESS) // With SGX
 				{
-					await odbtools.signContribution(result, worker.enclave);
+					await odbtools.signContribution(result, worker.enclaveWallet);
 				}
 				else // Without SGX
 				{

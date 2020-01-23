@@ -24,8 +24,8 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -71,7 +71,8 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		ERC712_domain              = await IexecInstance.domain();
+		await IexecInstance.setTeeBroker(teebroker.address);
+		ERC712_domain = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -410,14 +411,17 @@ contract('Fullchain', async (accounts) => {
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
+				enclaveWallet = web3.eth.accounts.create()
 				txMined = await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: taskid, enclave: sgxEnclave }, scheduler),
-					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker1), sgxEnclave),
+					await odbtools.signAuthorization({ worker: worker1, taskid: taskid, enclave: enclaveWallet.address }, teebroker),
+					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker1), enclaveWallet),
 				);
 				gasReceipt.push([ "contribute", txMined.receipt.gasUsed ]);
+
+				enclaveWallet = web3.eth.accounts.create()
 				txMined = await sendContribution(
-					await odbtools.signAuthorization({ worker: worker2, taskid: taskid, enclave: sgxEnclave }, scheduler),
-					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker2), sgxEnclave),
+					await odbtools.signAuthorization({ worker: worker2, taskid: taskid, enclave: enclaveWallet.address }, teebroker),
+					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker2), enclaveWallet),
 				);
 				gasReceipt.push([ "contribute", txMined.receipt.gasUsed ]);
 			});
@@ -455,17 +459,22 @@ contract('Fullchain', async (accounts) => {
 					await odbtools.signAuthorization({ worker: worker1, taskid: taskid, enclave: constants.NULL.ADDRESS }, scheduler),
 					odbtools.sealResult(taskid, "true", worker1)
 				));
+
+				enclaveWallet = web3.eth.accounts.create()
 				txMined = await sendContribution(
-					await odbtools.signAuthorization({ worker: worker3, taskid: taskid, enclave: sgxEnclave }, scheduler),
-					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker3), sgxEnclave),
+					await odbtools.signAuthorization({ worker: worker3, taskid: taskid, enclave: enclaveWallet.address }, teebroker),
+					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker3), enclaveWallet),
 				);
 				gasReceipt.push([ "contribute", txMined.receipt.gasUsed ]);
+
+				enclaveWallet = web3.eth.accounts.create()
 				txMined = await sendContribution(
-					await odbtools.signAuthorization({ worker: worker4, taskid: taskid, enclave: sgxEnclave }, scheduler),
-					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker4), sgxEnclave),
+					await odbtools.signAuthorization({ worker: worker4, taskid: taskid, enclave: enclaveWallet.address }, teebroker),
+					await odbtools.signContribution(odbtools.sealResult(taskid, "true", worker4), enclaveWallet),
 				);
 				gasReceipt.push([ "contribute", txMined.receipt.gasUsed ]);
 			});
+
 			describe("check", async () => {
 				it("balances", async () => {
 					assert.deepEqual(Object.extract(await IexecInstance.viewAccount(datasetProvider), [ 'stake', 'locked' ]).map(bn => Number(bn)), [    0,      0      ], "check balance");
