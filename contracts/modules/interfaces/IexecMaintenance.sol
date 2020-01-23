@@ -10,4 +10,5 @@ interface IexecMaintenance
 	function domain() external view returns (IexecODBLibOrders_v4.EIP712Domain memory);
 	function updateDomainSeparator() external;
 	function importScore(address) external;
+	function setTeeBroker(address) external;
 }

@@ -24,8 +24,8 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Poco', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -70,7 +70,8 @@ contract('Poco', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		ERC712_domain              = await IexecInstance.domain();
+		await IexecInstance.setTeeBroker(teebroker.address);
+		ERC712_domain = await IexecInstance.domain();
 	});
 
 	/***************************************************************************
@@ -264,30 +265,30 @@ contract('Poco', async (accounts) => {
 	it("[2.1][TAG] Contribute - Error (missing sgx)", async () => {
 		__taskid  = tasks[1];
 		__worker  = worker1;
-		__enclave = constants.NULL.ADDRESS;
+		__enclave = { address: constants.NULL.ADDRESS };
 		__raw     = "true";
 
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
-			__enclave
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, scheduler),
+			__enclave.address
 		));
 	});
 
 	it("[2.2][TAG] Contribute - Correct (sgx)", async () => {
 		__taskid  = tasks[2];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
 		txMined = await sendContribution(
 			__taskid,
 			__worker,
-			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler)),
-			__enclave
+			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave)),
+			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker)),
+			__enclave.address
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, IexecInstance.address, "TaskContribute");
@@ -299,33 +300,33 @@ contract('Poco', async (accounts) => {
 	it("[2.3][TAG] Contribute - Error (unset)", async () => {
 		__taskid  = tasks[3];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler),
-			__enclave
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker),
+			__enclave.address
 		));
 	});
 
 	it("[2.4][TAG] Contribute - Error (duplicate)", async () => {
 		__taskid  = tasks[4];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
-		results       = (await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave)),
-		authorization = (await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler));
+		results       = (await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave)),
+		authorization = (await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker));
 		// First ok
 		await sendContribution(
 			__taskid,
 			__worker,
 			results,
 			authorization,
-			__enclave
+			__enclave.address
 		);
 		// Second error
 		await expectRevert.unspecified(sendContribution(
@@ -333,37 +334,37 @@ contract('Poco', async (accounts) => {
 			__worker,
 			results,
 			authorization,
-			__enclave
+			__enclave.address
 		));
 	});
 
 	it("[2.5][TAG] Contribute - Error (authorization)", async () => {
 		__taskid  = tasks[5];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, __worker ), // signature: scheduler → worker
-			__enclave
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, scheduler), // signature: teebroker → scheduler
+			__enclave.address
 		));
 	});
 
 	it("[2.6][TAG] Contribute - Error (enclave signature)", async () => {
 		__taskid  = tasks[6];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
 			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler), // signature: scheduler → worker
-			__enclave
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker),
+			__enclave.address
 		));
 	});
 
@@ -376,15 +377,15 @@ contract('Poco', async (accounts) => {
 	it("[2.7][TAG] Contribute - Late", async () => {
 		__taskid  = tasks[7];
 		__worker  = worker1;
-		__enclave = sgxEnclave;
+		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),             __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave }, scheduler), // signature: scheduler → worker
-			__enclave
+			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
+			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker), // signature: scheduler → worker
+			__enclave.address
 		));
 	});
 

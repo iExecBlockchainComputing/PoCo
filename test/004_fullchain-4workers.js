@@ -24,8 +24,8 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
+	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
 	let scheduler       = accounts[3];
@@ -68,10 +68,10 @@ contract('Fullchain', async (accounts) => {
 
 		trusttarget = 16;
 		workers = [
-			{ address: worker1, enclave: sgxEnclave, raw: "iExec the wanderer" },
-			{ address: worker2, enclave: sgxEnclave, raw: "iExec the wanderer" },
-			{ address: worker3, enclave: sgxEnclave, raw: "iExec the wanderer" },
-			{ address: worker4, enclave: sgxEnclave, raw: "iExec the wanderer" },
+			{ address: worker1, useenclave: true, raw: "iExec the wanderer" },
+			{ address: worker2, useenclave: true, raw: "iExec the wanderer" },
+			{ address: worker3, useenclave: true, raw: "iExec the wanderer" },
+			{ address: worker4, useenclave: true, raw: "iExec the wanderer" },
 		];
 		consensus = "iExec the wanderer";
 
@@ -84,7 +84,8 @@ contract('Fullchain', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		ERC712_domain              = await IexecInstance.domain();
+		await IexecInstance.setTeeBroker(teebroker.address);
+		ERC712_domain = await IexecInstance.domain();
 	});
 
 	describe("→ setup", async () => {
@@ -412,14 +413,16 @@ contract('Fullchain', async (accounts) => {
 			it("authorization signature", async () => {
 				for (w of workers)
 				{
+					if (w.useenclave) { w.enclaveWallet = web3.eth.accounts.create() }
+
 					authorizations[w.address] = await odbtools.signAuthorization(
 						{
 							worker:  w.address,
 							taskid:  taskid,
-							enclave: w.enclave,
+							enclave: w.useenclave ? w.enclaveWallet.address : constants.NULL.ADDRESS,
 							sign:    constants.NULL.SIGNATURE,
 						},
-						scheduler
+						w.useenclave ? teebroker : scheduler
 					);
 				}
 			});
@@ -429,9 +432,9 @@ contract('Fullchain', async (accounts) => {
 				for (w of workers)
 				{
 					results[w.address] = odbtools.sealResult(taskid, w.raw, w.address);
-					if (w.enclave != constants.NULL.ADDRESS) // With SGX
+					if (w.useenclave) // With SGX
 					{
-						await odbtools.signContribution(results[w.address], w.enclave);
+						await odbtools.signContribution(results[w.address], w.enclaveWallet);
 					}
 					else // Without SGX
 					{

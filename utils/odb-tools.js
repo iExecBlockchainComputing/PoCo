@@ -105,10 +105,18 @@ function hashStruct(primaryType, message, domain)
 
 function signMessage(obj, hash, wallet)
 {
-	return web3.eth.sign(hash, wallet).then(sign => {
-		obj.sign = sign;
+	if (wallet.sign)
+	{
+		obj.sign = wallet.sign(hash).signature;
 		return obj;
-	});
+	}
+	else
+	{
+		return web3.eth.sign(hash, wallet).then(sign => {
+			obj.sign = sign;
+			return obj;
+		});
+	}
 }
 
 /* NOT EIP712 compliant */
