@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Poco', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -69,9 +68,11 @@ contract('Poco', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	/***************************************************************************
@@ -236,7 +237,7 @@ contract('Poco', async (accounts) => {
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
+		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 	});
 
 	it("[setup] Initialization", async () => {
@@ -274,61 +275,61 @@ contract('Poco', async (accounts) => {
 		await sendContribution(
 			tasks[3],
 			worker1,
-			odbtools.sealResult(tasks[3], "true", worker1),
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[3], "true", worker1),
+			await odbtools.utils.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 
 		await sendContribution(
 			tasks[4],
 			worker1,
-			odbtools.sealResult(tasks[4], "true", worker1),
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[4], "true", worker1),
+			await odbtools.utils.signAuthorization({ worker: worker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[4],
 			worker2,
-			odbtools.sealResult(tasks[4], "true", worker2),
-			await odbtools.signAuthorization({ worker: worker2, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[4], "true", worker2),
+			await odbtools.utils.signAuthorization({ worker: worker2, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 
 		await sendContribution(
 			tasks[5],
 			worker1,
-			odbtools.sealResult(tasks[5], "true", worker1),
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[5], "true", worker1),
+			await odbtools.utils.signAuthorization({ worker: worker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[5],
 			worker2,
-			odbtools.sealResult(tasks[5], "true", worker2),
-			await odbtools.signAuthorization({ worker: worker2, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[5], "true", worker2),
+			await odbtools.utils.signAuthorization({ worker: worker2, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 
 		await sendContribution(
 			tasks[6],
 			worker1,
-			odbtools.sealResult(tasks[6], "true", worker1),
-			await odbtools.signAuthorization({ worker: worker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[6], "true", worker1),
+			await odbtools.utils.signAuthorization({ worker: worker1, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 		await sendContribution(
 			tasks[6],
 			worker2,
-			odbtools.sealResult(tasks[6], "true", worker2),
-			await odbtools.signAuthorization({ worker: worker2, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, scheduler),
+			odbtools.utils.sealResult(tasks[6], "true", worker2),
+			await odbtools.utils.signAuthorization({ worker: worker2, taskid: tasks[6], enclave: constants.NULL.ADDRESS }, scheduler),
 			constants.NULL.ADDRESS
 		);
 	});
 
 	it("[setup] Reveal", async () => {
-		await IexecInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-		await IexecInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-		await IexecInstance.reveal(tasks[6], odbtools.hashResult(tasks[6], "true").digest, { from: worker2, gas: constants.AMOUNT_GAS_PROVIDED });
+		await IexecInstance.reveal(tasks[5], odbtools.utils.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+		await IexecInstance.reveal(tasks[6], odbtools.utils.hashResult(tasks[6], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+		await IexecInstance.reveal(tasks[6], odbtools.utils.hashResult(tasks[6], "true").digest, { from: worker2, gas: constants.AMOUNT_GAS_PROVIDED });
 	});
 	it("[setup] Finalize", async () => {
 		await IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });

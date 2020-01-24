@@ -26,7 +26,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('ERC1154: callback', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -74,9 +73,11 @@ contract('ERC1154: callback', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 
 		TestClientInstance = await TestClient.new();
 	});
@@ -461,41 +462,37 @@ contract('ERC1154: callback', async (accounts) => {
 			});
 		});
 
-		function sendContribution(authorization, results)
+		async function sendContribution(worker, taskid, result, useenclave = true)
 		{
+			const agent            = new odbtools.MockWorker(worker);
+			const preauth          = await agentScheduler.signPreAuthorization(taskid, worker);
+			const [ auth, secret ] = useenclave ? await agentBroker.signAuthorization(preauth) : [ preauth, null ];
+			const results          = await agent.run(auth, secret, result);
+
 			return IexecInstance.contribute(
-					authorization.taskid,                                   // task (authorization)
-					results.hash,                                           // common    (result)
-					results.seal,                                           // unique    (result)
-					authorization.enclave,                                  // address   (enclave)
-					results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
-					authorization.sign,                                     // signature (authorization)
-					{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
-				);
+				auth.taskid,  // task (authorization)
+				results.hash, // common    (result)
+				results.seal, // unique    (result)
+				auth.enclave, // address   (enclave)
+				results.sign, // signature (enclave)
+				auth.sign,    // signature (authorization)
+				{ from: worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+			);
 		}
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[1], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[1], "true", worker1),
-				);
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[2], "true", worker1),
-				);
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[3], "true", worker1),
-				);
+				await sendContribution(worker1, tasks[1], "true", false);
+				await sendContribution(worker1, tasks[2], "true", false);
+				await sendContribution(worker1, tasks[3], "true", false);
 			});
 		});
 
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
-				await IexecInstance.reveal(tasks[1], odbtools.hashResult(tasks[1], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-				await IexecInstance.reveal(tasks[2], odbtools.hashResult(tasks[2], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-				await IexecInstance.reveal(tasks[3], odbtools.hashResult(tasks[3], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[1], odbtools.utils.hashResult(tasks[1], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[2], odbtools.utils.hashResult(tasks[2], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[3], odbtools.utils.hashResult(tasks[3], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
 			});
 		});
 

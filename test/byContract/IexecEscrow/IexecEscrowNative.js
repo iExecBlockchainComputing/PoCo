@@ -25,7 +25,6 @@ if (DEPLOYMENT.asset == "Native")
 contract('EscrowNative', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -59,9 +58,11 @@ contract('EscrowNative', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	describe("fallback", async () => {

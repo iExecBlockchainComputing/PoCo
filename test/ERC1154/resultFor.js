@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('ERC1154: resultFor', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -68,9 +67,11 @@ contract('ERC1154: resultFor', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	describe("→ setup", async () => {
@@ -361,7 +362,7 @@ contract('ERC1154: resultFor', async (accounts) => {
 			it("[TX] match", async () => {
 				txMined = await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
 				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
-				deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
+				deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 			});
 		});
 
@@ -376,44 +377,37 @@ contract('ERC1154: resultFor', async (accounts) => {
 			});
 		});
 
-		function sendContribution(authorization, results)
+		async function sendContribution(worker, taskid, result, useenclave = true)
 		{
+			const agent            = new odbtools.MockWorker(worker);
+			const preauth          = await agentScheduler.signPreAuthorization(taskid, worker);
+			const [ auth, secret ] = useenclave ? await agentBroker.signAuthorization(preauth) : [ preauth, null ];
+			const results          = await agent.run(auth, secret, result);
+
 			return IexecInstance.contribute(
-					authorization.taskid,                                   // task (authorization)
-					results.hash,                                           // common    (result)
-					results.seal,                                           // unique    (result)
-					authorization.enclave,                                  // address   (enclave)
-					results.sign ? results.sign : constants.NULL.SIGNATURE, // signature (enclave)
-					authorization.sign,                                     // signature (authorization)
-					{ from: authorization.worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
-				);
+				auth.taskid,  // task (authorization)
+				results.hash, // common    (result)
+				results.seal, // unique    (result)
+				auth.enclave, // address   (enclave)
+				results.sign, // signature (enclave)
+				auth.sign,    // signature (authorization)
+				{ from: worker, gasLimit: constants.AMOUNT_GAS_PROVIDED }
+			);
 		}
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[2], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[2], "true", worker1),
-				);
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[3], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[3], "true", worker1),
-				);
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[4], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[4], "true", worker1),
-				);
-				await sendContribution(
-					await odbtools.signAuthorization({ worker: worker1, taskid: tasks[5], enclave: constants.NULL.ADDRESS }, scheduler),
-					odbtools.sealResult(tasks[5], "true", worker1),
-				);
+				await sendContribution(worker1, tasks[2], "true", false);
+				await sendContribution(worker1, tasks[3], "true", false);
+				await sendContribution(worker1, tasks[4], "true", false);
+				await sendContribution(worker1, tasks[5], "true", false);
 			});
 		});
 
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
-				await IexecInstance.reveal(tasks[4], odbtools.hashResult(tasks[4], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
-				await IexecInstance.reveal(tasks[5], odbtools.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[4], odbtools.utils.hashResult(tasks[4], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.reveal(tasks[5], odbtools.utils.hashResult(tasks[5], "true").digest, { from: worker1, gas: constants.AMOUNT_GAS_PROVIDED });
 			});
 		});
 

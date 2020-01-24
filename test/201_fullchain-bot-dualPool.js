@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -55,41 +54,44 @@ contract('Fullchain', async (accounts) => {
 	var tasks  = {
 		0:
 		{
-			taskid: null,
+			taskid:         null,
 			authorizations: {},
-			results: {},
-			consensus: "iExec BOT 0",
+			secrets:        {},
+			results:        {},
+			consensus:      "iExec BOT 0",
 			workers :
 			[
-				{ address: worker1, useenclave: false, raw: "iExec BOT 0" },
-				{ address: worker2, useenclave: false, raw: "iExec BOT 0" },
+				{ address: worker1, agent: new odbtools.MockWorker(worker1), useenclave: false, result: "iExec BOT 0" },
+				{ address: worker2, agent: new odbtools.MockWorker(worker2), useenclave: false, result: "iExec BOT 0" },
 			]
 		},
 		1:
 		{
-			taskid: null,
+			taskid:         null,
 			authorizations: {},
-			results: {},
-			consensus: "iExec BOT 1",
+			secrets:        {},
+			results:        {},
+			consensus:      "iExec BOT 1",
 			workers :
 			[
-				{ address: worker2, useenclave: true, raw: "iExec BOT 1" },
-				{ address: worker3, useenclave: true, raw: "iExec BOT 1" },
+				{ address: worker2, agent: new odbtools.MockWorker(worker2), useenclave: true, result: "iExec BOT 1" },
+				{ address: worker3, agent: new odbtools.MockWorker(worker3), useenclave: true, result: "iExec BOT 1" },
 			]
 		},
 		2:
 		{
-			taskid: null,
+			taskid:         null,
 			authorizations: {},
-			results: {},
-			consensus: "iExec BOT 2",
+			secrets:        {},
+			results:        {},
+			consensus:      "iExec BOT 2",
 			workers :
 			[
-				{ address: worker1, useenclave: false, raw: "iExec BOT 2"       },
-				{ address: worker3, useenclave: false, raw: "<timeout reached>" },
-				{ address: worker2, useenclave: true,  raw: "iExec BOT 2"       },
-				{ address: worker4, useenclave: true,  raw: "iExec BOT 2"       },
-				{ address: worker5, useenclave: true,  raw: "iExec BOT 2"       },
+				{ address: worker1, agent: new odbtools.MockWorker(worker1), useenclave: false, result: "iExec BOT 2"       },
+				{ address: worker3, agent: new odbtools.MockWorker(worker3), useenclave: false, result: "<timeout reached>" },
+				{ address: worker2, agent: new odbtools.MockWorker(worker2), useenclave: true,  result: "iExec BOT 2"       },
+				{ address: worker4, agent: new odbtools.MockWorker(worker4), useenclave: true,  result: "iExec BOT 2"       },
+				{ address: worker5, agent: new odbtools.MockWorker(worker5), useenclave: true,  result: "iExec BOT 2"       },
 			]
 		},
 	};
@@ -111,9 +113,11 @@ contract('Fullchain', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	describe("→ setup", async () => {
@@ -465,7 +469,7 @@ contract('Fullchain', async (accounts) => {
 				assert.equal(events[0].args.requestHash,    odbtools.hashRequestOrder   (ERC712_domain, requestorder    ));
 				assert.equal(events[0].args.volume,         1                                                            );
 
-				dealids = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
+				dealids = await odbtools.utils.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 				assert.equal(dealids[0], deal0);
 				assert.equal(dealids[1], deal1);
 			});
@@ -502,36 +506,20 @@ contract('Fullchain', async (accounts) => {
 				for (i in tasks)
 				for (w of tasks[i].workers)
 				{
-					if (w.useenclave) { w.enclaveWallet = web3.eth.accounts.create() }
-
-					tasks[i].authorizations[w.address] = await odbtools.signAuthorization(
-						{
-							worker:  w.address,
-							taskid:  tasks[i].taskid,
-							enclave: w.useenclave ? w.enclaveWallet.address : constants.NULL.ADDRESS,
-							sign:    constants.NULL.SIGNATURE,
-						},
-						w.useenclave ? teebroker : scheduler
-					);
+					const preauth             = await agentScheduler.signPreAuthorization(tasks[i].taskid, w.address);
+					const [ auth, secret ]    = w.useenclave ? await agentBroker.signAuthorization(preauth) : [ preauth, null ];
+					tasks[i].authorizations[w.address] = auth;
+					tasks[i].secrets[w.address]        = secret;
 				}
 			});
 
 			it("run", async () => {
 				for (i in tasks)
 				{
-					tasks[i].consensus = odbtools.hashResult(tasks[i].taskid, tasks[i].consensus);
-
+					tasks[i].consensus = odbtools.utils.hashConsensus(tasks[i].taskid, tasks[i].consensus);
 					for (w of tasks[i].workers)
 					{
-						tasks[i].results[w.address] = odbtools.sealResult(tasks[i].taskid, w.raw, w.address);
-						if (w.useenclave) // With SGX
-						{
-							await odbtools.signContribution(tasks[i].results[w.address], w.enclaveWallet);
-						}
-						else // Without SGX
-						{
-							tasks[i].results[w.address].sign = constants.NULL.SIGNATURE;
-						}
+						tasks[i].results[w.address] = await w.agent.run(tasks[i].authorizations[w.address], tasks[i].secrets[w.address], w.result);
 					}
 				}
 			});

@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Poco', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -69,9 +68,11 @@ contract('Poco', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	/***************************************************************************
@@ -236,7 +237,7 @@ contract('Poco', async (accounts) => {
 		assert.isBelow(txsMined[0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
+		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.hashRequestOrder(ERC712_domain, requestorder));
 	});
 
 	it("[setup] Initialization", async () => {
@@ -271,8 +272,8 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			odbtools.sealResult(__taskid, __raw, __worker),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, scheduler),
+			odbtools.utils.sealResult(__taskid, __raw, __worker),
+			await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentScheduler.wallet),
 			__enclave.address
 		));
 	});
@@ -286,15 +287,15 @@ contract('Poco', async (accounts) => {
 		txMined = await sendContribution(
 			__taskid,
 			__worker,
-			(await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave)),
-			(await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker)),
+			(await odbtools.utils.signContribution (odbtools.utils.sealResult(__taskid, __raw, __worker),               __enclave)),
+			(await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentBroker.wallet)),
 			__enclave.address
 		);
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, IexecInstance.address, "TaskContribute");
-		assert.equal(events[0].args.taskid, __taskid,                                  "check taskid"    );
-		assert.equal(events[0].args.worker, __worker,                                  "check worker"    );
-		assert.equal(events[0].args.hash,   odbtools.hashResult(__taskid, __raw).hash, "check resultHash");
+		assert.equal(events[0].args.taskid, __taskid,                                        "check taskid"    );
+		assert.equal(events[0].args.worker, __worker,                                        "check worker"    );
+		assert.equal(events[0].args.hash,   odbtools.utils.hashResult(__taskid, __raw).hash, "check resultHash");
 	});
 
 	it("[2.3][TAG] Contribute - Error (unset)", async () => {
@@ -306,8 +307,8 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker),
+			await odbtools.utils.signContribution (odbtools.utils.sealResult(__taskid, __raw, __worker),               __enclave),
+			await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentBroker.wallet),
 			__enclave.address
 		));
 	});
@@ -318,8 +319,8 @@ contract('Poco', async (accounts) => {
 		__enclave = web3.eth.accounts.create();
 		__raw     = "true"
 
-		results       = (await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave)),
-		authorization = (await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker));
+		results       = (await odbtools.utils.signContribution (odbtools.utils.sealResult(__taskid, __raw, __worker),               __enclave)),
+		authorization = (await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentBroker.wallet));
 		// First ok
 		await sendContribution(
 			__taskid,
@@ -347,8 +348,8 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, scheduler), // signature: teebroker → scheduler
+			await odbtools.utils.signContribution (odbtools.utils.sealResult(__taskid, __raw, __worker),               __enclave),
+			await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentScheduler.wallet), // signature: teebroker → scheduler
 			__enclave.address
 		));
 	});
@@ -362,8 +363,8 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			odbtools.sealResult(__taskid, __raw, __worker), // should be signed
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker),
+			odbtools.utils.sealResult(__taskid, __raw, __worker), // should be signed
+			await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentBroker.wallet),
 			__enclave.address
 		));
 	});
@@ -383,8 +384,8 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(sendContribution(
 			__taskid,
 			__worker,
-			await odbtools.signContribution (odbtools.sealResult(__taskid, __raw, __worker),                     __enclave),
-			await odbtools.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, teebroker), // signature: scheduler → worker
+			await odbtools.utils.signContribution (odbtools.utils.sealResult(__taskid, __raw, __worker),               __enclave),
+			await odbtools.utils.signAuthorization({ worker: __worker, taskid: __taskid, enclave: __enclave.address }, agentBroker.wallet), // signature: scheduler → worker
 			__enclave.address
 		));
 	});

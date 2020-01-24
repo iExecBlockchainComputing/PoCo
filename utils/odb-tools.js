@@ -139,6 +139,16 @@ function hashContribution(result)
 	);
 }
 
+function signAuthorization(obj, wallet)
+{
+	return signMessage(obj, hashAuthorization(obj), wallet);
+}
+
+function signContribution(obj, wallet)
+{
+	return signMessage(obj, hashContribution (obj), wallet);
+}
+
 function hashByteResult(taskid, byteresult)
 {
 	return {
@@ -196,9 +206,7 @@ class MockScheduler
 	}
 	async signPreAuthorization(taskid, worker)
 	{
-		const preauth = { taskid, worker, enclave: constants.NULL.ADDRESS };
-		await signMessage(preauth, hashAuthorization(preauth), this.wallet);
-		return preauth;
+		return await signAuthorization({ taskid, worker, enclave: constants.NULL.ADDRESS }, this.wallet);
 	}
 }
 /*****************************************************************************
@@ -225,8 +233,7 @@ class MockBroker
 		if (signer == deal.workerpool.owner)
 		{
 			const enclaveWallet = web3.eth.accounts.create();
-			const auth = { ...preauth, enclave: enclaveWallet.address };
-			await signMessage(auth, hashAuthorization(auth), this.wallet);
+			const auth = await signAuthorization({ ...preauth, enclave: enclaveWallet.address }, this.wallet);
 			return [ auth, enclaveWallet ];
 		}
 		else
@@ -254,7 +261,7 @@ class MockWorker
 		}
 		else // TEE
 		{
-			await signMessage(contribution, hashContribution(contribution), enclaveWallet);
+			await signContribution(contribution, enclaveWallet);
 		}
 		return contribution;
 	}
@@ -275,6 +282,8 @@ module.exports = {
 		signMessage,
 		hashAuthorization,
 		hashContribution,
+		signAuthorization,
+		signContribution,
 		hashByteResult,
 		sealByteResult,
 		hashResult,

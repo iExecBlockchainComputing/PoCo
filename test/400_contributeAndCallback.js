@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Fullchain', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -53,10 +52,11 @@ contract('Fullchain', async (accounts) => {
 	var dealid          = null;
 	var taskid          = null;
 
-	var authorizations = {};
-	var results        = {};
-	var consensus      = null;
-	var workers        = [];
+	var authorization = {};
+	var secret        = {};
+	var result        = {};
+	var consensus     = null;
+	var worker        = [];
 
 	var gasReceipt = [];
 
@@ -67,7 +67,7 @@ contract('Fullchain', async (accounts) => {
 		console.log("# web3 version:", web3.version);
 
 		trusttarget = 0;
-		worker = { address: worker1, useenclave: true, raw: "iExec the wanderer" };
+		worker = { address: worker1, agent: new odbtools.MockWorker(worker1), useenclave: true,  result: "iExec the wanderer" };
 		consensus = "iExec the wanderer";
 
 		/**
@@ -78,9 +78,11 @@ contract('Fullchain', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	describe("→ setup", async () => {
@@ -406,30 +408,14 @@ contract('Fullchain', async (accounts) => {
 
 		describe("[3] contributeAndFinalize", async () => {
 			it("authorization signature", async () => {
-				if (worker.useenclave) { worker.enclaveWallet = web3.eth.accounts.create() }
+				const preauth             = await agentScheduler.signPreAuthorization(taskid, worker.address);
+				[ authorization, secret ] = worker.useenclave ? await agentBroker.signAuthorization(preauth) : [ preauth, null ];
 
-				authorization = await odbtools.signAuthorization(
-					{
-						worker:  worker.address,
-						taskid:  taskid,
-						enclave: worker.useenclave ? worker.enclaveWallet.address : constants.NULL.ADDRESS,
-						sign:    constants.NULL.SIGNATURE,
-					},
-					worker.useenclave ? teebroker : scheduler
-				);
 			});
 
 			it("run", async () => {
-				consensus = odbtools.hashResult(taskid, consensus);
-				result = odbtools.sealResult(taskid, worker.raw, worker.address);
-				if (worker.enclave != constants.NULL.ADDRESS) // With SGX
-				{
-					await odbtools.signContribution(result, worker.enclaveWallet);
-				}
-				else // Without SGX
-				{
-					result.sign = constants.NULL.SIGNATURE;
-				}
+				consensus = odbtools.utils.hashConsensus(taskid, consensus);
+				result = await worker.agent.run(authorization, secret, worker.result);
 			});
 
 			it("[TX] contributeAndFinalize", async () => {

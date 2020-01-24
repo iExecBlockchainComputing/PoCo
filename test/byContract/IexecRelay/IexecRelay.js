@@ -24,7 +24,6 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('Relay', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let teebroker       = web3.eth.accounts.create();
 	let iexecAdmin      = accounts[0];
 	let appProvider     = accounts[1];
 	let datasetProvider = accounts[2];
@@ -50,25 +49,12 @@ contract('Relay', async (accounts) => {
 	var datasetorder    = null;
 	var workerpoolorder = null;
 	var requestorder    = null;
-	var dealid          = null;
-	var taskid          = null;
-
-	var authorizations = {};
-	var results        = {};
-	var consensus      = null;
-	var workers        = [];
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
-
-		workers = [
-			{ address: worker1, useenclave: true,  raw: "iExec the wanderer" },
-			{ address: worker2, useenclave: false, raw: "iExec the wanderer" },
-		];
-		consensus = "iExec the wanderer";
 
 		/**
 		 * Retreive deployed contracts
@@ -78,9 +64,11 @@ contract('Relay', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		await IexecInstance.setTeeBroker(teebroker.address);
-		ERC712_domain = await IexecInstance.domain();
+		agentBroker    = new odbtools.MockBroker(IexecInstance);
+		agentScheduler = new odbtools.MockScheduler(scheduler);
+		await agentBroker.initialize();
 	});
 
 	describe("→ setup", async () => {
