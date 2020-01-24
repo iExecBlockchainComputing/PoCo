@@ -12,12 +12,10 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../utils/tools");
-const enstools  = require('../utils/ens-tools');
-const odbtools  = require('../utils/odb-tools');
+const enstools  = require("../utils/ens-tools");
+const odbtools  = require("../utils/odb-tools");
 const constants = require("../utils/constants");
-const wallets   = require('../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
@@ -65,6 +63,7 @@ contract('Fullchain', async (accounts) => {
 	 ***************************************************************************/
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
+
 		/**
 		 * Retreive deployed contracts
 		 */
@@ -601,7 +600,7 @@ contract('Fullchain', async (accounts) => {
 					assert.equal    (       task.consensusValue,           consensus.hash                                                            );
 					assert.equal    (Number(task.revealCounter),           0                                                                         );
 					assert.equal    (Number(task.winnerCounter),           workers.length                                                            );
-					assert.deepEqual(       task.contributors.map(a => a), workers.map(x => x.agent.address)                                         );
+					assert.deepEqual(       task.contributors.map(a => a), workers.map(w => w.agent.address)                                         );
 				});
 
 				it("balances", async () => {
@@ -650,7 +649,7 @@ contract('Fullchain', async (accounts) => {
 					assert.equal    (       task.consensusValue,           consensus.hash                                                            );
 					assert.equal    (Number(task.revealCounter),           workers.length                                                            );
 					assert.equal    (Number(task.winnerCounter),           workers.length                                                            );
-					assert.deepEqual(       task.contributors.map(a => a), workers.map(x => x.agent.address)                                         );
+					assert.deepEqual(       task.contributors.map(a => a), workers.map(w => w.agent.address)                                         );
 				});
 
 				it("balances", async () => {
@@ -693,7 +692,7 @@ contract('Fullchain', async (accounts) => {
 					assert.equal    (       task.consensusValue,           consensus.hash                                                            );
 					assert.equal    (Number(task.revealCounter),           workers.length                                                            );
 					assert.equal    (Number(task.winnerCounter),           workers.length                                                            );
-					assert.deepEqual(       task.contributors.map(a => a), workers.map(x => x.agent.address)                                         );
+					assert.deepEqual(       task.contributors.map(a => a), workers.map(w => w.agent.address)                                         );
 					assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult")                                           );
 				});
 
