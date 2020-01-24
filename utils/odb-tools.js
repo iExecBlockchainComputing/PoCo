@@ -1,5 +1,6 @@
-const ethUtil = require('ethereumjs-util');
-const sigUtil = require('eth-sig-util')
+const ethUtil   = require('ethereumjs-util');
+const sigUtil   = require('eth-sig-util');
+const constants = require('./constants');
 
 const TYPES =
 {
@@ -138,9 +139,149 @@ function hashContribution(result)
 	);
 }
 
+function hashByteResult(taskid, byteresult)
+{
+	return {
+		digest: byteresult,
+		hash:   web3.utils.soliditySha3({ t: 'bytes32', v: taskid  }, { t: 'bytes32', v: byteresult }),
+	};
+}
+
+function sealByteResult(taskid, byteresult, address)
+{
+	return {
+		digest: byteresult,
+		hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
+		seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
+	};
+}
+
+function hashResult(taskid, result)
+{
+	return hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }));
+}
+
+function sealResult(taskid, result, address)
+{
+	return sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address);
+}
+
+async function requestToDeal(IexecClerk, requestHash)
+{
+	let idx     = 0;
+	let dealids = [];
+	while (true)
+	{
+		let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
+		let deal = await IexecClerk.viewDeal(dealid);
+		if (deal.botSize == 0)
+		{
+			return dealids;
+		}
+		else
+		{
+			dealids.push(dealid);
+			idx += deal.botSize;
+		}
+	}
+}
+/*****************************************************************************
+ *                               MOCK SCHEDULER                              *
+ *****************************************************************************/
+class MockScheduler
+{
+	constructor(wallet)
+	{
+		this.wallet = wallet;
+	}
+	async signPreAuthorization(taskid, worker)
+	{
+		const preauth = { taskid, worker, enclave: constants.NULL.ADDRESS };
+		await signMessage(preauth, hashAuthorization(preauth), this.wallet);
+		return preauth;
+	}
+}
+/*****************************************************************************
+ *                                MOCK BROKER                                *
+ *****************************************************************************/
+class MockBroker
+{
+	constructor(IexecInstance)
+	{
+		this.iexec  = IexecInstance;
+	}
+
+	async initialize()
+	{
+		this.wallet = web3.eth.accounts.create();
+		await this.iexec.setTeeBroker(this.wallet.address);
+	}
+
+	async signAuthorization(preauth)
+	{
+		const task   = await this.iexec.viewTask(preauth.taskid);
+		const deal   = await this.iexec.viewDeal(task.dealid);
+		const signer = web3.eth.accounts.recover(hashAuthorization(preauth), preauth.sign);
+		if (signer == deal.workerpool.owner)
+		{
+			const enclaveWallet = web3.eth.accounts.create();
+			const auth = { ...preauth, enclave: enclaveWallet.address };
+			await signMessage(auth, hashAuthorization(auth), this.wallet);
+			return [ auth, enclaveWallet ];
+		}
+		else
+		{
+			return [ null, null ];
+		}
+	}
+}
+/*****************************************************************************
+ *                                MOCK WORKER                                *
+ *****************************************************************************/
+class MockWorker
+{
+	constructor(wallet)
+	{
+		this.wallet = wallet;
+	}
+
+	async run(auth, enclaveWallet, result)
+	{
+		const contribution = sealResult(auth.taskid, result, this.wallet);
+		if (auth.enclave == constants.NULL.ADDRESS) // Classic
+		{
+			contribution.sign = constants.NULL.SIGNATURE;
+		}
+		else // TEE
+		{
+			await signMessage(contribution, hashContribution(contribution), enclaveWallet);
+		}
+		return contribution;
+	}
+}
+
+/*****************************************************************************
+ *                                  MODULE                                   *
+ *****************************************************************************/
 module.exports = {
-	signStruct:  signStruct,
-	signMessage: signMessage,
+	/* mocks */
+	MockScheduler,
+	MockBroker,
+	MockWorker,
+	/* utils */
+	utils: {
+		signStruct,
+		hashStruct,
+		signMessage,
+		hashAuthorization,
+		hashContribution,
+		hashByteResult,
+		sealByteResult,
+		hashResult,
+		hashConsensus: hashResult,
+		sealResult,
+		requestToDeal,
+	},
 	/* wrappers */
 	hashAppOrder:                 function(domain, struct    ) { return hashStruct("AppOrder",                 struct, domain     ); },
 	hashDatasetOrder:             function(domain, struct    ) { return hashStruct("DatasetOrder",             struct, domain     ); },
@@ -158,45 +299,4 @@ module.exports = {
 	signDatasetOrderOperation:    function(domain, struct, pk) { return signStruct("DatasetOrderOperation",    struct, domain, pk ); },
 	signWorkerpoolOrderOperation: function(domain, struct, pk) { return signStruct("WorkerpoolOrderOperation", struct, domain, pk ); },
 	signRequestOrderOperation:    function(domain, struct, pk) { return signStruct("RequestOrderOperation",    struct, domain, pk ); },
-	signAuthorization:            function(obj,    wallet    ) { return signMessage(obj, hashAuthorization(obj), wallet); },
-	signContribution:             function(obj,    wallet    ) { return signMessage(obj, hashContribution (obj), wallet); },
-
-	hashByteResult: function(taskid, byteresult)
-	{
-		return {
-			digest: byteresult,
-			hash:   web3.utils.soliditySha3({ t: 'bytes32', v: taskid  }, { t: 'bytes32', v: byteresult }),
-		};
-	},
-
-	sealByteResult: function(taskid, byteresult, address)
-	{
-		return {
-			digest: byteresult,
-			hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-			seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-		};
-	},
-	hashResult: function(taskid, result)          { return this.hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result })         ); },
-	sealResult: function(taskid, result, address) { return this.sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address); },
-
-	requestToDeal: async function(IexecClerk, requestHash)
-	{
-		let idx     = 0;
-		let dealids = [];
-		while (true)
-		{
-			let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
-			let deal = await IexecClerk.viewDeal(dealid);
-			if (deal.botSize == 0)
-			{
-				return dealids;
-			}
-			else
-			{
-				dealids.push(dealid);
-				idx += deal.botSize;
-			}
-		}
-	},
 };
