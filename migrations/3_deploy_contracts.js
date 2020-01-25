@@ -9,7 +9,7 @@ var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
 var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
 // Factory
-var GenericFactory2         = artifacts.require('iexec-solidity/GenericFactory2')
+var GenericFactory          = artifacts.require('iexec-solidity/GenericFactory')
 // ERC1538 core & delegates
 var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
@@ -61,7 +61,7 @@ function getFunctionSignatures(abi)
 async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
-	const factory          = await GenericFactory2.deployed();
+	const factory          = await GenericFactory.deployed();
 	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
@@ -70,14 +70,14 @@ async function factoryDeployer(contract, options = {})
 	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 	contract.address = options.call
-		? await factory.predictAddressWithCallback(code, salt, options.call)
+		? await factory.predictAddressWithCall(code, salt, options.call)
 		: await factory.predictAddress(code, salt);
 
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
 		options.call
-			? await factory.createContractAndCallback(code, salt, options.call)
+			? await factory.createContractAndCall(code, salt, options.call)
 			: await factory.createContract(code, salt);
 		console.log(`[factory] ${contract.contractName} successfully deployed at ${contract.address}`);
 	}

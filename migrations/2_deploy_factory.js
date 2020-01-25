@@ -1,5 +1,5 @@
-var GenericFactory = artifacts.require("iexec-solidity/GenericFactory2");
-var FACTORY = require("../config/factory.json")
+var GenericFactory = artifacts.require("iexec-solidity/GenericFactory");
+var FACTORY = require("iexec-solidity/deployment/factory.json")
 
 module.exports = async function(deployer, network, accounts)
 {
