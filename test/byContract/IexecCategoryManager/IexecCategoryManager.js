@@ -24,16 +24,16 @@ Object.extract = (obj, keys) => keys.map(key => obj[key]);
 contract('CategoryManager', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -59,9 +59,18 @@ contract('CategoryManager', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ERC712_domain              = await IexecInstance.domain();
 
-		agentBroker    = new odbtools.MockBroker(IexecInstance);
-		agentScheduler = new odbtools.MockScheduler(scheduler);
-		await agentBroker.initialize();
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	describe("view", async () => {
@@ -78,7 +87,7 @@ contract('CategoryManager', async (accounts) => {
 		describe("unauthorized create", async () => {
 			it("reverts", async () => {
 				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-				await expectRevert.unspecified(IexecInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.createCategory("fake category", "this is an attack", 0xFFFFFFFFFF, { from: user.address }));
 				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 			});
 		});
@@ -87,8 +96,7 @@ contract('CategoryManager', async (accounts) => {
 			it("success", async () => {
 				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 
-				txMined = await IexecInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.createCategory("Tiny", "Small but impractical", 3, { from: iexecAdmin.address });
 			});
 
 			it("emits event", async () => {
