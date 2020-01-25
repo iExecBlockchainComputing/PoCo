@@ -1,6 +1,9 @@
 const ethUtil   = require('ethereumjs-util');
 const sigUtil   = require('eth-sig-util');
 const constants = require('./constants');
+const wallets   = require('./wallets');
+
+
 
 const TYPES =
 {
@@ -80,7 +83,7 @@ const TYPES =
 function signStruct(primaryType, message, domain, pk)
 {
 	message.sign = sigUtil.signTypedData(
-		pk,
+		Buffer.from(pk.substring(2), 'hex'),
 		{
 			data:
 			{
@@ -195,33 +198,55 @@ async function requestToDeal(IexecClerk, requestHash)
 		}
 	}
 }
+
+
+
+
 /*****************************************************************************
- *                               MOCK SCHEDULER                              *
+ *                                 MOCK AGENT                                *
  *****************************************************************************/
-class MockScheduler
+class iExecAgent
 {
-	constructor(wallet)
+	constructor(iexec, account)
 	{
-		this.wallet = wallet;
+		this.iexec  = iexec;
+		this.wallet = account
+		? web3.eth.accounts.privateKeyToAccount(wallets.privateKeys[account.toLowerCase()])
+		: web3.eth.accounts.create();
+		this.address = this.wallet.address;
 	}
-	async signPreAuthorization(taskid, worker)
+	async domain() { return await this.iexec.domain(); }
+	async signMessage                 (obj, hash) { return signMessage(obj, hash, this.wallet); }
+	async signAppOrder                (struct)    { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrder            (struct)    { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrder         (struct)    { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrder            (struct)    { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signAppOrderOperation       (struct)    { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrderOperation   (struct)    { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrderOperation(struct)    { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrderOperation   (struct)    { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+
+	async viewAccount()
 	{
-		return await signAuthorization({ taskid, worker, enclave: constants.NULL.ADDRESS }, this.wallet);
+		return Object.extract(await this.iexec.viewAccount(this.wallet.address), [ 'stake', 'locked' ]).map(bn => Number(bn));
+	}
+	async viewScore()
+	{
+		return Number(await this.iexec.viewScore(this.wallet.address));
 	}
 }
 /*****************************************************************************
  *                                MOCK BROKER                                *
  *****************************************************************************/
-class MockBroker
+class Broker extends iExecAgent
 {
-	constructor(IexecInstance)
+	constructor(iexec)
 	{
-		this.iexec  = IexecInstance;
+		super(iexec);
 	}
 
 	async initialize()
 	{
-		this.wallet = web3.eth.accounts.create();
 		await this.iexec.setTeeBroker(this.wallet.address);
 	}
 
@@ -243,18 +268,33 @@ class MockBroker
 	}
 }
 /*****************************************************************************
+ *                               MOCK SCHEDULER                              *
+ *****************************************************************************/
+class Scheduler extends iExecAgent
+{
+	constructor(iexec, wallet)
+	{
+		super(iexec, wallet);
+	}
+
+	async signPreAuthorization(taskid, worker)
+	{
+		return await signAuthorization({ taskid, worker, enclave: constants.NULL.ADDRESS }, this.wallet);
+	}
+}
+/*****************************************************************************
  *                                MOCK WORKER                                *
  *****************************************************************************/
-class MockWorker
+class Worker extends iExecAgent
 {
-	constructor(wallet)
+	constructor(iexec, wallet)
 	{
-		this.wallet = wallet;
+		super(iexec, wallet);
 	}
 
 	async run(auth, enclaveWallet, result)
 	{
-		const contribution = sealResult(auth.taskid, result, this.wallet);
+		const contribution = sealResult(auth.taskid, result, this.wallet.address);
 		if (auth.enclave == constants.NULL.ADDRESS) // Classic
 		{
 			contribution.sign = constants.NULL.SIGNATURE;
@@ -272,9 +312,10 @@ class MockWorker
  *****************************************************************************/
 module.exports = {
 	/* mocks */
-	MockScheduler,
-	MockBroker,
-	MockWorker,
+	iExecAgent,
+	Scheduler,
+	Broker,
+	Worker,
 	/* utils */
 	utils: {
 		signStruct,
@@ -287,25 +328,16 @@ module.exports = {
 		hashByteResult,
 		sealByteResult,
 		hashResult,
-		hashConsensus: hashResult,
 		sealResult,
+		hashConsensus: hashResult,
+		hashAppOrder:                 function(domain, struct) { return hashStruct("AppOrder",                 struct, domain); },
+		hashDatasetOrder:             function(domain, struct) { return hashStruct("DatasetOrder",             struct, domain); },
+		hashWorkerpoolOrder:          function(domain, struct) { return hashStruct("WorkerpoolOrder",          struct, domain); },
+		hashRequestOrder:             function(domain, struct) { return hashStruct("RequestOrder",             struct, domain); },
+		hashAppOrderOperation:        function(domain, struct) { return hashStruct("AppOrderOperation",        struct, domain); },
+		hashDatasetOrderOperation:    function(domain, struct) { return hashStruct("DatasetOrderOperation",    struct, domain); },
+		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
+		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
 		requestToDeal,
 	},
-	/* wrappers */
-	hashAppOrder:                 function(domain, struct    ) { return hashStruct("AppOrder",                 struct, domain     ); },
-	hashDatasetOrder:             function(domain, struct    ) { return hashStruct("DatasetOrder",             struct, domain     ); },
-	hashWorkerpoolOrder:          function(domain, struct    ) { return hashStruct("WorkerpoolOrder",          struct, domain     ); },
-	hashRequestOrder:             function(domain, struct    ) { return hashStruct("RequestOrder",             struct, domain     ); },
-	hashAppOrderOperation:        function(domain, struct    ) { return hashStruct("AppOrderOperation",        struct, domain     ); },
-	hashDatasetOrderOperation:    function(domain, struct    ) { return hashStruct("DatasetOrderOperation",    struct, domain     ); },
-	hashWorkerpoolOrderOperation: function(domain, struct    ) { return hashStruct("WorkerpoolOrderOperation", struct, domain     ); },
-	hashRequestOrderOperation:    function(domain, struct    ) { return hashStruct("RequestOrderOperation",    struct, domain     ); },
-	signAppOrder:                 function(domain, struct, pk) { return signStruct("AppOrder",                 struct, domain, pk ); },
-	signDatasetOrder:             function(domain, struct, pk) { return signStruct("DatasetOrder",             struct, domain, pk ); },
-	signWorkerpoolOrder:          function(domain, struct, pk) { return signStruct("WorkerpoolOrder",          struct, domain, pk ); },
-	signRequestOrder:             function(domain, struct, pk) { return signStruct("RequestOrder",             struct, domain, pk ); },
-	signAppOrderOperation:        function(domain, struct, pk) { return signStruct("AppOrderOperation",        struct, domain, pk ); },
-	signDatasetOrderOperation:    function(domain, struct, pk) { return signStruct("DatasetOrderOperation",    struct, domain, pk ); },
-	signWorkerpoolOrderOperation: function(domain, struct, pk) { return signStruct("WorkerpoolOrderOperation", struct, domain, pk ); },
-	signRequestOrderOperation:    function(domain, struct, pk) { return signStruct("RequestOrderOperation",    struct, domain, pk ); },
 };

@@ -12,12 +12,10 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
@@ -25,16 +23,16 @@ if (DEPLOYMENT.asset == "Token")
 contract('EscrowToken', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -60,9 +58,18 @@ contract('EscrowToken', async (accounts) => {
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ERC712_domain              = await IexecInstance.domain();
 
-		agentBroker    = new odbtools.MockBroker(IexecInstance);
-		agentScheduler = new odbtools.MockScheduler(scheduler);
-		await agentBroker.initialize();
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	describe("fallback", async () => {
@@ -77,7 +84,7 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.deposit(100, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.deposit(100, { from: accounts[1] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -86,13 +93,12 @@ contract('EscrowToken', async (accounts) => {
 
 		describe("not approved", async () => {
 			it("reverts", async () => {
-				txMined = await RLCInstance.transfer(accounts[1], 100, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.transfer(accounts[1], 100, { from: accounts[0] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.deposit(100, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.deposit(100, { from: accounts[1] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -104,11 +110,9 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				txMined = await RLCInstance.approve(IexecInstance.address, 100, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.approve(IexecInstance.address, 100, { from: accounts[1] });
 
-				txMined = await IexecInstance.deposit(100, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.deposit(100, { from: accounts[1] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
@@ -134,7 +138,7 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.depositFor(100, accounts[3], { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.depositFor(100, accounts[3], { from: accounts[2] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -143,13 +147,12 @@ contract('EscrowToken', async (accounts) => {
 
 		describe("not approved", async () => {
 			it("reverts", async () => {
-				txMined = await RLCInstance.transfer(accounts[2], 100, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.transfer(accounts[2], 100, { from: accounts[0] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.depositFor(100, accounts[3], { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.depositFor(100, accounts[3], { from: accounts[2] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -161,11 +164,9 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				txMined = await RLCInstance.approve(IexecInstance.address, 100, { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.approve(IexecInstance.address, 100, { from: accounts[2] });
 
-				txMined = await IexecInstance.depositFor(100, accounts[3], { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.depositFor(100, accounts[3], { from: accounts[2] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
@@ -196,7 +197,7 @@ contract('EscrowToken', async (accounts) => {
 				await expectRevert.unspecified(IexecInstance.depositForArray(
 					[ 100, 100, 100 ],
 					[ accounts[5], accounts[6], accounts[7] ],
-					{ from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED }
+					{ from: accounts[4] }
 				));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[4]), 0, "wrong rlc balance");
@@ -208,8 +209,7 @@ contract('EscrowToken', async (accounts) => {
 
 		describe("not approved", async () => {
 			it("reverts", async () => {
-				txMined = await RLCInstance.transfer(accounts[4], 300, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.transfer(accounts[4], 300, { from: accounts[0] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[4]), 300, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[5]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -219,7 +219,7 @@ contract('EscrowToken', async (accounts) => {
 				await expectRevert.unspecified(IexecInstance.depositForArray(
 					[ 100, 100, 100 ],
 					[ accounts[5], accounts[6], accounts[7] ],
-					{ from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED }
+					{ from: accounts[4] }
 				));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[4]), 300, "wrong rlc balance");
@@ -238,13 +238,12 @@ contract('EscrowToken', async (accounts) => {
 						assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[6]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 						assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[7]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-						txMined = await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED });
+						await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4] });
 
-						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 						await expectRevert.unspecified(IexecInstance.depositForArray(
 							[ 100, 100, 100 ],
 							[ accounts[5] ],
-							{ from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED }
+							{ from: accounts[4] }
 						));
 
 						assert.equal(await RLCInstance.balanceOf(accounts[4]), 300, "wrong rlc balance");
@@ -261,13 +260,12 @@ contract('EscrowToken', async (accounts) => {
 						assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[6]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 						assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[7]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-						txMined = await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED });
+						await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4] });
 
-						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 						await expectRevert.unspecified(IexecInstance.depositForArray(
 							[ 100 ],
 							[ accounts[5], accounts[6], accounts[7] ],
-							{ from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED }
+							{ from: accounts[4] }
 						));
 
 						assert.equal(await RLCInstance.balanceOf(accounts[4]), 300, "wrong rlc balance");
@@ -285,13 +283,12 @@ contract('EscrowToken', async (accounts) => {
 					assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[6]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 					assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[7]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-					txMined = await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED });
-					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					await RLCInstance.approve(IexecInstance.address, 300, { from: accounts[4] });
 
 					txMined = await IexecInstance.depositForArray(
 						[ 100, 100, 100 ],
 						[ accounts[5], accounts[6], accounts[7] ],
-						{ from: accounts[4], gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: accounts[4] }
 					);
 
 					assert.equal(await RLCInstance.balanceOf(accounts[4]), 0, "wrong rlc balance");
@@ -329,31 +326,30 @@ contract('EscrowToken', async (accounts) => {
 
 	describe("ApproveAndCall", async () => {
 		it("success", async () => {
-			const balanceBefore = await RLCInstance.balanceOf(iexecAdmin);
-			const accountBefore = await IexecInstance.balanceOf(iexecAdmin);
+			const balanceBefore = await RLCInstance.balanceOf(accounts[0]);
+			const accountBefore = await IexecInstance.balanceOf(accounts[0]);
 			const amount        = web3.utils.toBN(1000);
 
-			txMined = await RLCInstance.approveAndCall(IexecInstance.address, amount, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			await RLCInstance.approveAndCall(IexecInstance.address, amount, "0x", { from: accounts[0] });
 
-			assert.equal(await RLCInstance.balanceOf(iexecAdmin),   balanceBefore.sub(amount).toString());
-			assert.equal(await IexecInstance.balanceOf(iexecAdmin), accountBefore.add(amount).toString());
+			assert.equal(await RLCInstance.balanceOf(accounts[0]),   balanceBefore.sub(amount).toString());
+			assert.equal(await IexecInstance.balanceOf(accounts[0]), accountBefore.add(amount).toString());
 		});
 
 		describe("wrong token protection", async () => {
 			it("create dummy token", async () => {
-				DummyToken = await RLC.new({ from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+				DummyToken = await RLC.new({ from: accounts[9] });
 			});
 
 			it("reverts", async () => {
-				const balanceBefore = await RLCInstance.balanceOf(iexecAdmin);
-				const accountBefore = await IexecInstance.balanceOf(iexecAdmin);
+				const balanceBefore = await RLCInstance.balanceOf(accounts[0]);
+				const accountBefore = await IexecInstance.balanceOf(accounts[0]);
 				const amount        = web3.utils.toBN(1000);
 
-				await expectRevert(DummyToken.approveAndCall(IexecInstance.address, amount, "0x", { from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "wrong-token");
+				await expectRevert(DummyToken.approveAndCall(IexecInstance.address, amount, "0x", { from: accounts[9] }), "wrong-token");
 
-				assert.equal(await RLCInstance.balanceOf(iexecAdmin),   balanceBefore.toString());
-				assert.equal(await IexecInstance.balanceOf(iexecAdmin), accountBefore.toString());
+				assert.equal(await RLCInstance.balanceOf(accounts[0]),   balanceBefore.toString());
+				assert.equal(await IexecInstance.balanceOf(accounts[0]), accountBefore.toString());
 			});
 		});
 	});
@@ -364,7 +360,7 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.withdraw(100, { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.withdraw(100, { from: accounts[2] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[2]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -376,7 +372,7 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
 
-				await expectRevert.unspecified(IexecInstance.withdraw(1000, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.withdraw(1000, { from: accounts[1] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[1]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
@@ -388,8 +384,7 @@ contract('EscrowToken', async (accounts) => {
 				assert.equal(await RLCInstance.balanceOf(accounts[3]), 0, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
 
-				txMined = await IexecInstance.withdraw(100, { from: accounts[3], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.withdraw(100, { from: accounts[3] });
 
 				assert.equal(await RLCInstance.balanceOf(accounts[3]), 100, "wrong rlc balance");
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
@@ -413,39 +408,36 @@ contract('EscrowToken', async (accounts) => {
 	describe("recover", async () => {
 		describe("unauthorized access", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.recover({ from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner.");
+				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner.");
 			});
 		});
 
 		describe("no locked funds", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.recover({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.recover({ from: accounts[0] });
 			});
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
-				assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
+				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 0,                      "check amount");
 			});
 		});
 
 		describe("locked funds", async () => {
 			it("locking funds", async () => {
-				txMined = await RLCInstance.transfer(IexecInstance.address, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				await RLCInstance.transfer(IexecInstance.address, 1000, { from: accounts[0] });
 			});
 
 			it("success", async () => {
-				txMined = await IexecInstance.recover({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.recover({ from: accounts[0] });
 			});
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
 				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
-				assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
+				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 1000,                   "check amount");
 			});
 		});
