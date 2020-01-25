@@ -216,14 +216,15 @@ class iExecAgent
 		this.address = this.wallet.address;
 	}
 	async domain() { return await this.iexec.domain(); }
-	async signAppOrder                (struct) { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet.privateKey); }
-	async signDatasetOrder            (struct) { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet.privateKey); }
-	async signWorkerpoolOrder         (struct) { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet.privateKey); }
-	async signRequestOrder            (struct) { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet.privateKey); }
-	async signAppOrderOperation       (struct) { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet.privateKey); }
-	async signDatasetOrderOperation   (struct) { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
-	async signWorkerpoolOrderOperation(struct) { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet.privateKey); }
-	async signRequestOrderOperation   (struct) { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+	async signMessage                 (obj, hash) { return signMessage(obj, hash, this.wallet); }
+	async signAppOrder                (struct)    { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrder            (struct)    { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrder         (struct)    { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrder            (struct)    { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signAppOrderOperation       (struct)    { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrderOperation   (struct)    { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrderOperation(struct)    { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrderOperation   (struct)    { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
 
 	async viewAccount()
 	{
