@@ -7,7 +7,7 @@ import "../interfaces/IexecMaintenance.sol";
 
 contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.EIP712Domain;
+	using IexecLibOrders_v4 for IexecLibOrders_v4.EIP712Domain;
 
 	function configure(
 		address          _token,
@@ -34,7 +34,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function domain()
-	external view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	external view returns (IexecLibOrders_v4.EIP712Domain memory)
 	{
 		return _domain();
 	}
@@ -67,9 +67,9 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function _domain()
-	internal view returns (IexecODBLibOrders_v4.EIP712Domain memory)
+	internal view returns (IexecLibOrders_v4.EIP712Domain memory)
 	{
-		return IexecODBLibOrders_v4.EIP712Domain({
+		return IexecLibOrders_v4.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
 		, chainId:           _chainId()

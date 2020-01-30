@@ -16,7 +16,7 @@ contract IexecCategoryManagerDelegate is IexecCategoryManager, DelegateBase
 		uint256          workClockTimeRef)
 	external onlyOwner returns (uint256)
 	{
-		uint256 catid = m_categories.push(IexecODBLibCore_v4.Category(
+		uint256 catid = m_categories.push(IexecLibCore_v4.Category(
 			name,
 			description,
 			workClockTimeRef

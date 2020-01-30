@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
 
-library IexecODBLibOrders_v4
+library IexecLibOrders_v4
 {
 	// bytes32 public constant             EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 	// bytes32 public constant                 APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");

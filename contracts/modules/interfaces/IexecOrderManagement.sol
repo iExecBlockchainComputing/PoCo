@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecODBLibOrders_v4.sol";
+import "../../libs/IexecLibOrders_v4.sol";
 
 
 interface IexecOrderManagement
@@ -15,8 +15,8 @@ interface IexecOrderManagement
 	event ClosedWorkerpoolOrder(bytes32 workerpoolHash);
 	event ClosedRequestOrder   (bytes32 requestHash);
 
-	function manageAppOrder       (IexecODBLibOrders_v4.AppOrderOperation        calldata) external;
-	function manageDatasetOrder   (IexecODBLibOrders_v4.DatasetOrderOperation    calldata) external;
-	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation calldata) external;
-	function manageRequestOrder   (IexecODBLibOrders_v4.RequestOrderOperation    calldata) external;
+	function manageAppOrder       (IexecLibOrders_v4.AppOrderOperation        calldata) external;
+	function manageDatasetOrder   (IexecLibOrders_v4.DatasetOrderOperation    calldata) external;
+	function manageWorkerpoolOrder(IexecLibOrders_v4.WorkerpoolOrderOperation calldata) external;
+	function manageRequestOrder   (IexecLibOrders_v4.RequestOrderOperation    calldata) external;
 }

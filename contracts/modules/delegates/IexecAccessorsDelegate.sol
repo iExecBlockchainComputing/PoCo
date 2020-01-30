@@ -51,9 +51,9 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewAccount(address account)
-	external view returns (IexecODBLibCore_v4.Account memory)
+	external view returns (IexecLibCore_v4.Account memory)
 	{
-		return IexecODBLibCore_v4.Account(m_balances[account], m_frozens[account]);
+		return IexecLibCore_v4.Account(m_balances[account], m_frozens[account]);
 	}
 
 	function token()
@@ -63,7 +63,7 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewDeal(bytes32 _id)
-	external view returns (IexecODBLibCore_v4.Deal memory deal)
+	external view returns (IexecLibCore_v4.Deal memory deal)
 	{
 		return m_deals[_id];
 	}
@@ -81,13 +81,13 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	}
 
 	function viewTask(bytes32 _taskid)
-	external view returns (IexecODBLibCore_v4.Task memory)
+	external view returns (IexecLibCore_v4.Task memory)
 	{
 		return m_tasks[_taskid];
 	}
 
 	function viewContribution(bytes32 _taskid, address _worker)
-	external view returns (IexecODBLibCore_v4.Contribution memory)
+	external view returns (IexecLibCore_v4.Contribution memory)
 	{
 		return m_contributions[_taskid][_worker];
 	}
@@ -101,13 +101,13 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	function resultFor(bytes32 id)
 	external view returns (bytes memory)
 	{
-		IexecODBLibCore_v4.Task storage task = m_tasks[id];
-		require(task.status == IexecODBLibCore_v4.TaskStatusEnum.COMPLETED);
+		IexecLibCore_v4.Task storage task = m_tasks[id];
+		require(task.status == IexecLibCore_v4.TaskStatusEnum.COMPLETED);
 		return task.results;
 	}
 
 	function viewCategory(uint256 _catid)
-	external view returns (IexecODBLibCore_v4.Category memory category)
+	external view returns (IexecLibCore_v4.Category memory category)
 	{
 		return m_categories[_catid];
 	}

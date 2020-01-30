@@ -15,7 +15,7 @@ var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
 var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDelegate')
 // Libraries
-var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders_v4')
+var IexecLibOrders          = artifacts.require('IexecLibOrders_v4')
 // Interface
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
@@ -37,7 +37,7 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 
 const LIBRARIES = [
-	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
+	{ pattern: /__IexecLibOrders_v4_____________________/g, library: IexecLibOrders },
 ]
 
 /*****************************************************************************
@@ -124,14 +124,14 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v4.usefactory)
 	{
-		await factoryDeployer(IexecODBLibOrders, factoryOptions);
+		await factoryDeployer(IexecLibOrders, factoryOptions);
 	}
 	else
 	{
-		await deployer.deploy(IexecODBLibOrders);
-		await deployer.link(IexecODBLibOrders, IexecPoco);
-		await deployer.link(IexecODBLibOrders, IexecMaintenance);
-		await deployer.link(IexecODBLibOrders, IexecOrderManagement);
+		await deployer.deploy(IexecLibOrders);
+		await deployer.link(IexecLibOrders, IexecPoco);
+		await deployer.link(IexecLibOrders, IexecMaintenance);
+		await deployer.link(IexecLibOrders, IexecOrderManagement);
 	}
 
 	/* ---------------------------- Deploy proxy ----------------------------- */

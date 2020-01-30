@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 
-library IexecODBLibCore_v4
+library IexecLibCore_v4
 {
 	/**
 	* Tools
