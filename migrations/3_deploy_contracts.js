@@ -9,11 +9,11 @@ var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
 var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
 // Factory
-var GenericFactory          = artifacts.require('iexec-solidity/GenericFactory')
+var GenericFactory          = artifacts.require('@iexec/solidity/GenericFactory')
 // ERC1538 core & delegates
-var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
-var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
-var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDelegate')
+var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
+var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
+var ERC1538Query            = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
 // Libraries
 var IexecLibOrders          = artifacts.require('IexecLibOrders_v4')
 // Interface

@@ -1,9 +1,9 @@
 pragma solidity ^0.5.0;
 
+import '@iexec/solidity/contracts/Factory/CounterfactualFactory.sol';
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
-import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
 import "./IRegistry.sol";
 import "../tools/ens/ReverseRegistration.sol";
 
