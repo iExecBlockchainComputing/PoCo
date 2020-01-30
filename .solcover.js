@@ -20,10 +20,10 @@ module.exports = {
 			{ repo: '@ensdomains/ens',      name: 'FIFSRegistrar'         },
 			{ repo: '@ensdomains/ens',      name: 'ReverseRegistrar'      },
 			{ repo: '@ensdomains/resolver', name: 'PublicResolver'        },
-			{ repo: 'iexec-solidity',       name: 'ERC1538Proxy'          },
-			{ repo: 'iexec-solidity',       name: 'ERC1538UpdateDelegate' },
-			{ repo: 'iexec-solidity',       name: 'ERC1538QueryDelegate'  },
-			{ repo: 'iexec-solidity',       name: 'GenericFactory'        },
+			{ repo: '@iexec/solidity',      name: 'ERC1538Proxy'          },
+			{ repo: '@iexec/solidity',      name: 'ERC1538UpdateDelegate' },
+			{ repo: '@iexec/solidity',      name: 'ERC1538QueryDelegate'  },
+			{ repo: '@iexec/solidity',      name: 'GenericFactory'        },
 		];
 		for (file of files)
 		{
