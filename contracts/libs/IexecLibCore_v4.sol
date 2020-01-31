@@ -52,7 +52,6 @@ library IexecLibCore_v4
 
 	/**
 	 * Tasks
-	 // TODO: rename Workorder → Task
 	 */
 	enum TaskStatusEnum
 	{
@@ -77,6 +76,15 @@ library IexecLibCore_v4
 		address[] contributors;
 		bytes32   resultDigest;
 		bytes     results;
+	}
+
+	/**
+	 * Consensus
+	 */
+	struct Consensus
+	{
+		mapping(bytes32 => uint256) group;
+		uint256                     total;
 	}
 
 	/**

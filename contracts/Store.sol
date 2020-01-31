@@ -48,10 +48,9 @@ contract Store is ERC1538Store
 	mapping(bytes32 =>                    uint256                      ) internal m_consumed;      // per order
 	mapping(bytes32 =>                    IexecLibCore_v4.Deal         ) internal m_deals;         // per deal
 	mapping(bytes32 =>                    IexecLibCore_v4.Task         ) internal m_tasks;         // per task
+	mapping(bytes32 =>                    IexecLibCore_v4.Consensus    ) internal m_consensus;     // per task
 	mapping(bytes32 => mapping(address => IexecLibCore_v4.Contribution)) internal m_contributions; // per task-worker
 	mapping(address =>                    uint256                      ) internal m_workerScores;  // per worker
-	mapping(bytes32 => mapping(bytes32 => uint256                     )) internal m_groupweight;   // per task-result
-	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;   // per task
 
 	// Poco - Settings
 	// mapping(address => mapping(address => bool)) internal m_delegate; // TODO: add a signature delegation mechanism
