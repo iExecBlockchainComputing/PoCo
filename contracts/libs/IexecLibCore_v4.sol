@@ -95,6 +95,7 @@ library IexecLibCore_v4
 		bytes32 resultHash;
 		bytes32 resultSeal;
 		address enclaveChallenge;
+		uint256 weight;
 	}
 
 }

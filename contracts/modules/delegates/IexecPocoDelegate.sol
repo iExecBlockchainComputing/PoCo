@@ -431,7 +431,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		uint256 group  = m_groupweight[_taskid][_resultHash];
 		uint256 delta  = group.max(1).mul(weight).sub(group);
 
-		m_logweight  [_taskid][_msgSender() ] = weight.log();
+		contribution.weight                 = weight.log();
 		m_groupweight[_taskid][_resultHash] = m_groupweight[_taskid][_resultHash].add(delta);
 		m_totalweight[_taskid]              = m_totalweight[_taskid].add(delta);
 
@@ -671,18 +671,17 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v4.Task storage task = m_tasks[_taskid];
 		IexecLibCore_v4.Deal memory  deal = m_deals[task.dealid];
 
-		uint256 i;
-		address worker;
-
 		uint256 totalLogWeight = 0;
-		uint256 totalReward = deal.workerpool.price;
+		uint256 totalReward    = deal.workerpool.price;
 
-		for (i = 0; i < task.contributors.length; ++i)
+		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
-			worker = task.contributors[i];
-			if (m_contributions[_taskid][worker].status == IexecLibCore_v4.ContributionStatusEnum.PROVED)
+			address                              worker       = task.contributors[i];
+			IexecLibCore_v4.Contribution storage contribution = m_contributions[_taskid][worker];
+
+			if (contribution.status == IexecLibCore_v4.ContributionStatusEnum.PROVED)
 			{
-				totalLogWeight = totalLogWeight.add(m_logweight[_taskid][worker]);
+				totalLogWeight = totalLogWeight.add(contribution.weight);
 			}
 			else // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
 			{
@@ -693,12 +692,14 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		// compute how much is going to the workers
 		uint256 workersReward = totalReward.percentage(uint256(100).sub(deal.schedulerRewardRatio));
 
-		for (i = 0; i < task.contributors.length; ++i)
+		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
-			worker = task.contributors[i];
-			if (m_contributions[_taskid][worker].status == IexecLibCore_v4.ContributionStatusEnum.PROVED)
+			address                              worker       = task.contributors[i];
+			IexecLibCore_v4.Contribution storage contribution = m_contributions[_taskid][worker];
+
+			if (contribution.status == IexecLibCore_v4.ContributionStatusEnum.PROVED)
 			{
-				uint256 workerReward = workersReward.mulByFraction(m_logweight[_taskid][worker], totalLogWeight);
+				uint256 workerReward = workersReward.mulByFraction(contribution.weight, totalLogWeight);
 				totalReward          = totalReward.sub(workerReward);
 
 				unlockContribution(task.dealid, worker);
@@ -757,13 +758,14 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			 *
 			 * TODO: gas provided?
 			 */
-			require(gasleft() > 100000);
-			bool success;
-			(success,) = target.call.gas(100000)(abi.encodeWithSignature(
+			(bool success, bytes memory returndata) = target.call.gas(m_callbackgas)(abi.encodeWithSignature(
 				"receiveResult(bytes32,bytes)",
 				_taskid,
 				_results
 			));
+			// silent unused variable warning
+			success;
+			returndata;
 		}
 	}
 
