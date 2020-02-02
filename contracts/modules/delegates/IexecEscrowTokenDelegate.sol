@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Common.sol";
@@ -14,7 +14,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
-	function ()
+	receive()
 		external payable
 	{
 		revert("fallback-disabled");

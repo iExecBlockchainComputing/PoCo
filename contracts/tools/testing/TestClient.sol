@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
 

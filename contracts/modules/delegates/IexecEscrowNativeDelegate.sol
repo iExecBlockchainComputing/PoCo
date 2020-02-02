@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Common.sol";
@@ -14,7 +14,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
-	function ()
+	receive()
 		external payable
 	{
 		_deposit(_msgSender());

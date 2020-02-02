@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import '@iexec/solidity/contracts/Factory/CounterfactualFactory.sol';
 import "@openzeppelin/contracts/ownership/Ownable.sol";
@@ -34,7 +34,7 @@ contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable, Counte
 	{
 		// Create entry (proxy)
 		address entry = _create2(proxyCode, keccak256(abi.encodePacked(_args, _owner)));
-		// Initialize entry (casting to address payable is a pain in ^0.5.0)
+		// Initialize entry (casting to address payable is a pain in ^0.6.0)
 		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
 		// Mint corresponding token
 		_mint(_owner, uint256(entry));

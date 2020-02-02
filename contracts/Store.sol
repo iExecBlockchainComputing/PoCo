@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
