@@ -83,11 +83,11 @@ contract('Accessors', async (accounts) => {
 
 		describe("ERC20 metadata", async () => {
 			it("name", async () => {
-				assert.equal(await IexecInstance.name(), "Hub RLC");
+				assert.equal(await IexecInstance.name(), "Staked RLC");
 			});
 
 			it("symbol", async () => {
-				assert.equal(await IexecInstance.symbol(), "hRLC");
+				assert.equal(await IexecInstance.symbol(), "SRLC");
 			});
 
 			it("decimals", async () => {

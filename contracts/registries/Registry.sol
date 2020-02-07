@@ -1,14 +1,14 @@
 pragma solidity ^0.5.0;
 
-import '@iexec/solidity/contracts/Factory/CounterfactualFactory.sol';
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
+import '@openzeppelin/contracts/utils/Create2.sol';
 import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
 import "./IRegistry.sol";
 import "../tools/ens/ReverseRegistration.sol";
 
 
-contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable, CounterfactualFactory
+contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
@@ -33,7 +33,7 @@ contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable, Counte
 	internal returns (uint256)
 	{
 		// Create entry (proxy)
-		address entry = _create2(proxyCode, keccak256(abi.encodePacked(_args, _owner)));
+		address entry = Create2.deploy(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
 		// Initialize entry (casting to address payable is a pain in ^0.5.0)
 		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
 		// Mint corresponding token
