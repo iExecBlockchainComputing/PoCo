@@ -16,11 +16,13 @@ contract IexecCategoryManagerDelegate is IexecCategoryManager, DelegateBase
 		uint256          workClockTimeRef)
 	external override onlyOwner returns (uint256)
 	{
-		uint256 catid = m_categories.push(IexecLibCore_v4.Category(
+		m_categories.push(IexecLibCore_v4.Category(
 			name,
 			description,
 			workClockTimeRef
-		)) - 1;
+		));
+
+		uint256 catid = m_categories.length - 1;
 
 		emit CreateCategory(
 			catid,
