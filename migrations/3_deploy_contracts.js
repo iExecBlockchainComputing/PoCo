@@ -226,8 +226,8 @@ module.exports = async function(deployer, network, accounts)
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,
-		'Hub RLC',
-		'hRLC',
+		'Staked RLC',
+		'SRLC',
 		9, // TODO: generic ?
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,

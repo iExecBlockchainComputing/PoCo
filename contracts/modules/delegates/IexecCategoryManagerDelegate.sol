@@ -14,7 +14,7 @@ contract IexecCategoryManagerDelegate is IexecCategoryManager, DelegateBase
 		string  calldata name,
 		string  calldata description,
 		uint256          workClockTimeRef)
-	external onlyOwner returns (uint256)
+	external override onlyOwner returns (uint256)
 	{
 		uint256 catid = m_categories.push(IexecLibCore_v4.Category(
 			name,

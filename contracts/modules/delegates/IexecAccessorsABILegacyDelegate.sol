@@ -8,7 +8,7 @@ import "../interfaces/IexecAccessorsABILegacy.sol";
 contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBase
 {
 	function viewDealABILegacy_pt1(bytes32 _id)
-	external view returns
+	external override view returns
 	( address
 	, address
 	, uint256
@@ -35,7 +35,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	}
 
 	function viewDealABILegacy_pt2(bytes32 _id)
-	external view returns
+	external override view returns
 	( uint256
 	, bytes32
 	, address
@@ -56,7 +56,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	}
 
 	function viewConfigABILegacy(bytes32 _id)
-	external view returns
+	external override view returns
 	( uint256
 	, uint256
 	, uint256
@@ -77,13 +77,13 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	}
 
 	function viewAccountABILegacy(address account)
-	external view returns (uint256, uint256)
+	external override view returns (uint256, uint256)
 	{
 		return ( m_balances[account], m_frozens[account] );
 	}
 
 	function viewTaskABILegacy(bytes32 _taskid)
-	external view returns
+	external override view returns
 	( IexecLibCore_v4.TaskStatusEnum
 	, bytes32
 	, uint256
@@ -116,7 +116,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	}
 
 	function viewContributionABILegacy(bytes32 _taskid, address _worker)
-	external view returns
+	external override view returns
 	( IexecLibCore_v4.ContributionStatusEnum
 	, bytes32
 	, bytes32
@@ -133,7 +133,7 @@ contract IexecAccessorsABILegacyDelegate is IexecAccessorsABILegacy, DelegateBas
 	}
 
 	function viewCategoryABILegacy(uint256 _catid)
-	external view returns (string memory, string memory, uint256)
+	external override view returns (string memory, string memory, uint256)
 	{
 		IexecLibCore_v4.Category memory category = m_categories[_catid];
 		return ( category.name, category.description, category.workClockTimeRef );

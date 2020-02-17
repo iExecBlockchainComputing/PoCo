@@ -15,6 +15,6 @@ import "./modules/interfaces/IexecTokenSpender.sol";
 import "./modules/interfaces/ENSIntegration.sol";
 
 
-interface IexecInterfaceNativeABILegacy is Store, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowNative, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
+interface IexecInterfaceNativeABILegacy is /*Store,*/ IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowNative, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {
 }

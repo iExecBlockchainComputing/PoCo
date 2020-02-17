@@ -18,7 +18,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		address          _datasetregistryAddress,
 		address          _workerpoolregistryAddress,
 		address          _v3_iexecHubAddress)
-	external onlyOwner()
+	external override onlyOwner()
 	{
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
@@ -34,20 +34,20 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function domain()
-	external view returns (IexecLibOrders_v4.EIP712Domain memory)
+	external override view returns (IexecLibOrders_v4.EIP712Domain memory)
 	{
 		return _domain();
 	}
 
 	function updateDomainSeparator()
-	external
+	external override
 	{
 		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 	}
 
 	function importScore(address _worker)
-	external
+	external override
 	{
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
 		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
@@ -55,7 +55,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function setTeeBroker(address _teebroker)
-	external onlyOwner()
+	external override onlyOwner()
 	{
 		m_teebroker = _teebroker;
 	}

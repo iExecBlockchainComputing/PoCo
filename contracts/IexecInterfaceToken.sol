@@ -14,6 +14,6 @@ import "./modules/interfaces/IexecTokenSpender.sol";
 import "./modules/interfaces/ENSIntegration.sol";
 
 
-interface IexecInterfaceToken is Store, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
+interface IexecInterfaceToken is /*Store,*/ IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {
 }

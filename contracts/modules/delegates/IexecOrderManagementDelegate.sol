@@ -21,7 +21,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	 *                         order management tools                          *
 	 ***************************************************************************/
 	function manageAppOrder(IexecLibOrders_v4.AppOrderOperation memory _apporderoperation)
-	public
+	public override
 	{
 		address owner = App(_apporderoperation.order.app).owner();
 		require(owner == _msgSender() || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
@@ -40,7 +40,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	}
 
 	function manageDatasetOrder(IexecLibOrders_v4.DatasetOrderOperation memory _datasetorderoperation)
-	public
+	public override
 	{
 		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
 		require(owner == _msgSender() || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
@@ -59,7 +59,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	}
 
 	function manageWorkerpoolOrder(IexecLibOrders_v4.WorkerpoolOrderOperation memory _workerpoolorderoperation)
-	public
+	public override
 	{
 		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
 		require(owner == _msgSender() || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
@@ -78,7 +78,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	}
 
 	function manageRequestOrder(IexecLibOrders_v4.RequestOrderOperation memory _requestorderoperation)
-	public
+	public override
 	{
 		address owner = _requestorderoperation.order.requester;
 		require(owner == _msgSender() || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));

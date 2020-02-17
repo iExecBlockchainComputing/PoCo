@@ -17,7 +17,7 @@ contract TestReceiver is IexecTokenSpender
 		uint256        _value,
 		address        _token,
 		bytes calldata _extraData)
-	external returns (bool)
+	external override returns (bool)
 	{
 		if (_value == 0)
 		{

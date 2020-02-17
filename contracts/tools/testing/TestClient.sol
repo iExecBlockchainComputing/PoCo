@@ -14,7 +14,7 @@ contract TestClient is IOracleConsumer
 	{
 	}
 
-	function receiveResult(bytes32 id, bytes calldata result) external
+	function receiveResult(bytes32 id, bytes calldata result) external override
 	{
 		store[id] = result;
 		emit GotResult(id, result);

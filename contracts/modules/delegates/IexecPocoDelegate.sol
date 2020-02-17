@@ -20,7 +20,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	 *                        Escrow methods: internal                         *
 	 ***************************************************************************/
 	function reward(address user, uint256 amount, bytes32 ref)
-		internal /* returns (bool) */
+	internal /* returns (bool) */
 	{
 		_transfer(address(this), user, amount);
 		emit Reward(user, amount, ref);
@@ -28,7 +28,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	}
 
 	function seize(address user, uint256 amount, bytes32 ref)
-		internal /* returns (bool) */
+	internal /* returns (bool) */
 	{
 		m_frozens[user] = m_frozens[user].sub(amount);
 		emit Seize(user, amount, ref);
@@ -36,7 +36,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	}
 
 	function lock(address user, uint256 amount)
-		internal /* returns (bool) */
+	internal /* returns (bool) */
 	{
 		_transfer(user, address(this), amount);
 		m_frozens[user] = m_frozens[user].add(amount);
@@ -45,7 +45,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	}
 
 	function unlock(address user, uint256 amount)
-		internal /* returns (bool) */
+	internal /* returns (bool) */
 	{
 		_transfer(address(this), user, amount);
 		m_frozens[user] = m_frozens[user].sub(amount);
@@ -57,37 +57,37 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	 *                    Escrow overhead for contribution                     *
 	 ***************************************************************************/
 	function lockContribution(bytes32 _dealid, address _worker)
-		internal
+	internal
 	{
 		lock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function unlockContribution(bytes32 _dealid, address _worker)
-		internal
+	internal
 	{
 		unlock(_worker, m_deals[_dealid].workerStake);
 	}
 
 	function rewardForContribution(address _worker, uint256 _amount, bytes32 _taskid)
-		internal
+	internal
 	{
 		reward(_worker, _amount, _taskid);
 	}
 
 	function seizeContribution(bytes32 _dealid, address _worker, bytes32 _taskid)
-		internal
+	internal
 	{
 		seize(_worker, m_deals[_dealid].workerStake, _taskid);
 	}
 
 	function rewardForScheduling(bytes32 _dealid, uint256 _amount, bytes32 _taskid)
-		internal
+	internal
 	{
 		reward(m_deals[_dealid].workerpool.owner, _amount, _taskid);
 	}
 
 	function successWork(bytes32 _dealid, bytes32 _taskid)
-		internal
+	internal
 	{
 		IexecLibCore_v4.Deal storage deal = m_deals[_dealid];
 
@@ -130,7 +130,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	}
 
 	function failedWork(bytes32 _dealid, bytes32 _taskid)
-		internal
+	internal
 	{
 		IexecLibCore_v4.Deal storage deal = m_deals[_dealid];
 
@@ -150,19 +150,19 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	 *                           ODB order signature                           *
 	 ***************************************************************************/
 	function verifySignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external view returns (bool)
+	external override view returns (bool)
 	{
 		return _checkSignature(_identity, _hash, _signature);
 	}
 
 	function verifyPresignature(address _identity, bytes32 _hash)
-	external view returns (bool)
+	external override view returns (bool)
 	{
 		return _checkPresignature(_identity, _hash);
 	}
 
 	function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external view returns (bool)
+	external override view returns (bool)
 	{
 		return _checkPresignatureOrSignature(_identity, _hash, _signature);
 	}
@@ -188,7 +188,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibOrders_v4.DatasetOrder    memory _datasetorder,
 		IexecLibOrders_v4.WorkerpoolOrder memory _workerpoolorder,
 		IexecLibOrders_v4.RequestOrder    memory _requestorder)
-	public returns (bytes32)
+	public override returns (bytes32)
 	{
 		/**
 		 * Check orders compatibility
@@ -340,7 +340,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	 *                            Consensus methods                            *
 	 ***************************************************************************/
 	function initialize(bytes32 _dealid, uint256 idx)
-	public returns (bytes32)
+	public override returns (bytes32)
 	{
 		IexecLibCore_v4.Deal memory deal = m_deals[_dealid];
 
@@ -374,7 +374,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		address      _enclaveChallenge,
 		bytes memory _enclaveSign,
 		bytes memory _authorizationSign)
-	public
+	public override
 	{
 		IexecLibCore_v4.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
@@ -442,7 +442,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function reveal(
 		bytes32 _taskid,
 		bytes32 _resultDigest)
-	external // worker
+	external override // worker
 	{
 		IexecLibCore_v4.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
@@ -462,7 +462,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 	function reopen(
 		bytes32 _taskid)
-	external onlyScheduler(_taskid)
+	external override onlyScheduler(_taskid)
 	{
 		IexecLibCore_v4.Task storage task = m_tasks[_taskid];
 		require(task.status         == IexecLibCore_v4.TaskStatusEnum.REVEALING);
@@ -493,7 +493,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function finalize(
 		bytes32          _taskid,
 		bytes   calldata _results)
-	external onlyScheduler(_taskid)
+	external override onlyScheduler(_taskid)
 	{
 		IexecLibCore_v4.Task storage task = m_tasks[_taskid];
 		require(task.status        == IexecLibCore_v4.TaskStatusEnum.REVEALING);
@@ -520,7 +520,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 	function claim(
 		bytes32 _taskid)
-	public
+	public override
 	{
 		IexecLibCore_v4.Task storage task = m_tasks[_taskid];
 		require(task.status == IexecLibCore_v4.TaskStatusEnum.ACTIVE
@@ -551,7 +551,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		address      _enclaveChallenge,
 		bytes memory _enclaveSign,
 		bytes memory _authorizationSign)
-	public
+	public override
 	{
 		IexecLibCore_v4.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v4.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
@@ -773,7 +773,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function initializeArray(
 		bytes32[] calldata _dealid,
 		uint256[] calldata _idx)
-	external returns (bool)
+	external override returns (bool)
 	{
 		require(_dealid.length == _idx.length);
 		for (uint i = 0; i < _dealid.length; ++i)
@@ -785,7 +785,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 	function claimArray(
 		bytes32[] calldata _taskid)
-	external returns (bool)
+	external override returns (bool)
 	{
 		for (uint i = 0; i < _taskid.length; ++i)
 		{
@@ -797,7 +797,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function initializeAndClaimArray(
 		bytes32[] calldata _dealid,
 		uint256[] calldata _idx)
-	external returns (bool)
+	external override returns (bool)
 	{
 		require(_dealid.length == _idx.length);
 		for (uint i = 0; i < _dealid.length; ++i)

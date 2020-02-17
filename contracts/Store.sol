@@ -13,10 +13,8 @@ import "./registries/workerpools/Workerpool.sol";
 import "./registries/IRegistry.sol";
 
 
-contract Store is ERC1538Store
+abstract contract Store is ERC1538Store
 {
-	constructor() internal {}
-
 	// Registries
 	IRegistry internal m_appregistry;
 	IRegistry internal m_datasetregistry;
