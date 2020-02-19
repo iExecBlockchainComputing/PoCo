@@ -43,7 +43,7 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 
 	/* Interface */
 	function isRegistered(address _entry)
-	external override view returns (bool)
+	external view override returns (bool)
 	{
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}

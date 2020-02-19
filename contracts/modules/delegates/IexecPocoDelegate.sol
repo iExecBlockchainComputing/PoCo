@@ -9,7 +9,7 @@ import "../interfaces/IexecPoco.sol";
 
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
-	using SafeMathExtended     for uint256;
+	using SafeMathExtended  for uint256;
 	using IexecLibOrders_v4 for bytes32;
 	using IexecLibOrders_v4 for IexecLibOrders_v4.AppOrder;
 	using IexecLibOrders_v4 for IexecLibOrders_v4.DatasetOrder;
@@ -150,19 +150,19 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	 *                           ODB order signature                           *
 	 ***************************************************************************/
 	function verifySignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external override view returns (bool)
+	external view override returns (bool)
 	{
 		return _checkSignature(_identity, _hash, _signature);
 	}
 
 	function verifyPresignature(address _identity, bytes32 _hash)
-	external override view returns (bool)
+	external view override returns (bool)
 	{
 		return _checkPresignature(_identity, _hash);
 	}
 
 	function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external override view returns (bool)
+	external view override returns (bool)
 	{
 		return _checkPresignatureOrSignature(_identity, _hash, _signature);
 	}

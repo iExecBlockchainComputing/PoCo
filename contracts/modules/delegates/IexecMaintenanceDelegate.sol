@@ -34,7 +34,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function domain()
-	external override view returns (IexecLibOrders_v4.EIP712Domain memory)
+	external view override returns (IexecLibOrders_v4.EIP712Domain memory)
 	{
 		return _domain();
 	}
