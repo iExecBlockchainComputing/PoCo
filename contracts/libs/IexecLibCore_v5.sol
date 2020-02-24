@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
 
-library IexecLibCore_v4
+library IexecLibCore_v5
 {
 	/**
 	* Tools
@@ -77,6 +77,7 @@ library IexecLibCore_v4
 		address[] contributors;
 		bytes32   resultDigest;
 		bytes     results;
+		uint256   resultsTimestamp;
 	}
 
 	/**

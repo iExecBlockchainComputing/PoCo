@@ -5,8 +5,8 @@ import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
 import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "./libs/IexecLibCore_v4.sol";
-import "./libs/IexecLibOrders_v4.sol";
+import "./libs/IexecLibCore_v5.sol";
+import "./libs/IexecLibOrders_v5.sol";
 import "./registries/apps/App.sol";
 import "./registries/datasets/Dataset.sol";
 import "./registries/workerpools/Workerpool.sol";
@@ -41,18 +41,18 @@ abstract contract Store is ERC1538Store
 	uint256 public constant GROUPMEMBER_PURPOSE         = 4;
 	bytes32 public          EIP712DOMAIN_SEPARATOR;
 
-	mapping(bytes32 =>                    IexecLibCore_v4.Deal         ) internal m_deals;
+	mapping(bytes32 =>                    IexecLibCore_v5.Deal         ) internal m_deals;
 	mapping(bytes32 =>                    uint256                      ) internal m_consumed;
 	mapping(bytes32 =>                    address                      ) internal m_presigned;
-	mapping(bytes32 =>                    IexecLibCore_v4.Task         ) internal m_tasks;
-	mapping(bytes32 => mapping(address => IexecLibCore_v4.Contribution)) internal m_contributions;
+	mapping(bytes32 =>                    IexecLibCore_v5.Task         ) internal m_tasks;
+	mapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions;
 	mapping(address =>                    uint256                      ) internal m_workerScores;
 	mapping(bytes32 => mapping(address => uint256                     )) internal m_logweight;
 	mapping(bytes32 => mapping(bytes32 => uint256                     )) internal m_groupweight;
 	mapping(bytes32 =>                    uint256                      ) internal m_totalweight;
 
 	// Categories
-	IexecLibCore_v4.Category[] internal m_categories;
+	IexecLibCore_v5.Category[] internal m_categories;
 
 	// Backward compatibility
 	IexecHubInterface internal m_v3_iexecHub;

@@ -15,7 +15,7 @@ var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
 var ERC1538Query            = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
 // Libraries
-var IexecLibOrders          = artifacts.require('IexecLibOrders_v4')
+var IexecLibOrders          = artifacts.require('IexecLibOrders_v5')
 // Interface
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
@@ -37,7 +37,7 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 
 const LIBRARIES = [
-	{ pattern: /__IexecLibOrders_v4_____________________/g, library: IexecLibOrders },
+	{ pattern: /__IexecLibOrders_v5_____________________/g, library: IexecLibOrders },
 ]
 
 /*****************************************************************************
@@ -100,7 +100,7 @@ module.exports = async function(deployer, network, accounts)
 
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-	const factoryOptions    = { salt: deploymentOptions.v4.salt || web3.utils.randomHex(32) };
+	const factoryOptions    = { salt: deploymentOptions.v5.salt || web3.utils.randomHex(32) };
 
 	switch (deploymentOptions.asset)
 	{
@@ -122,7 +122,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ------------------------ Deploy & link library ------------------------ */
-	if (deploymentOptions.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
 		await factoryDeployer(IexecLibOrders, factoryOptions);
 	}
@@ -135,7 +135,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
-	if (deploymentOptions.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
 		await factoryDeployer(ERC1538Update, factoryOptions);
 		await factoryDeployer(ERC1538Proxy, {
@@ -171,7 +171,7 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (deploymentOptions.v4.usefactory)
+		if (deploymentOptions.v5.usefactory)
 		{
 			await factoryDeployer(contracts[id], factoryOptions);
 		}
@@ -193,7 +193,7 @@ module.exports = async function(deployer, network, accounts)
 		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at(ERC1538.address); break;
 	}
 
-	if (deploymentOptions.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
 		await factoryDeployer(AppRegistry,        {
 			args: [ deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],

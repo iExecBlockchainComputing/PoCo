@@ -8,7 +8,7 @@ import "../DelegateBase.sol";
 
 contract SignatureVerifier is DelegateBase
 {
-	using IexecLibOrders_v4 for bytes32;
+	using IexecLibOrders_v5 for bytes32;
 
 	function _isContract(address _addr)
 	internal view returns (bool)
