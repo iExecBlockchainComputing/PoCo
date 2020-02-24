@@ -52,10 +52,12 @@ function getSerializedObject(entry)
 
 function getFunctionSignatures(abi)
 {
-	return (abi.some(entry => entry.type == 'receive' || entry.type == 'fallback') ? 'fallback;' : '') + abi
+	return abi
 		.filter(entry => entry.type == 'function')
 		.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`)
-		.join('');
+		.join('')
+	+ (abi.some(entry => entry.type == 'receive' ) ? 'receive;'  : '')
+	+ (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '');
 }
 
 async function factoryDeployer(contract, options = {})
