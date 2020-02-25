@@ -389,7 +389,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Deal         memory  deal         = m_deals[task.dealid];
 
 		require(task.status               == IexecLibCore_v5.TaskStatusEnum.ACTIVE       );
-		require(task.contributionDeadline >  now                                            );
+		require(task.contributionDeadline >  now                                         );
 		require(contribution.status       == IexecLibCore_v5.ContributionStatusEnum.UNSET);
 
 		// need enclave challenge if tag is set
@@ -454,11 +454,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	{
 		IexecLibCore_v5.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
-		require(task.status             == IexecLibCore_v5.TaskStatusEnum.REVEALING                    );
-		require(task.revealDeadline     >  now                                                            );
-		require(contribution.status     == IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED          );
-		require(contribution.resultHash == task.consensusValue                                            );
-		require(contribution.resultHash == keccak256(abi.encodePacked(            _taskid, _resultDigest)));
+		require(task.status             == IexecLibCore_v5.TaskStatusEnum.REVEALING                         );
+		require(task.revealDeadline     >  now                                                              );
+		require(contribution.status     == IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED               );
+		require(contribution.resultHash == task.consensusValue                                              );
+		require(contribution.resultHash == keccak256(abi.encodePacked(              _taskid, _resultDigest)));
 		require(contribution.resultSeal == keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest)));
 
 		contribution.status = IexecLibCore_v5.ContributionStatusEnum.PROVED;
@@ -474,9 +474,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	{
 		IexecLibCore_v5.Task storage task = m_tasks[_taskid];
 		require(task.status         == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-		require(task.finalDeadline  >  now                                        );
+		require(task.finalDeadline  >  now                                     );
 		require(task.revealDeadline <= now
-		     && task.revealCounter  == 0                                          );
+		     && task.revealCounter  == 0                                       );
 
 		for (uint256 i = 0; i < task.contributors.length; ++i)
 		{
@@ -567,11 +567,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Deal         memory  deal         = m_deals[task.dealid];
 
 		require(task.status               == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
-		require(task.contributionDeadline >  now                                     );
-		require(task.contributors.length  == 0                                       );
-		require(deal.trust                == 1                                       ); // TODO, consider sender's score ?
+		require(task.contributionDeadline >  now                                  );
+		require(task.contributors.length  == 0                                    );
+		require(deal.trust                == 1                                    ); // TODO, consider sender's score ?
 
-		bytes32 resultHash = keccak256(abi.encodePacked(            _taskid, _resultDigest));
+		bytes32 resultHash = keccak256(abi.encodePacked(              _taskid, _resultDigest));
 		bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));
 
 		// need enclave challenge if tag is set
