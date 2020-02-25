@@ -31,6 +31,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_datasetregistry    = IRegistry(_datasetregistryAddress);
 		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
 		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
+		m_callbackgas        = 100000;
 	}
 
 	function domain()
@@ -58,6 +59,12 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	external override onlyOwner()
 	{
 		m_teebroker = _teebroker;
+	}
+
+	function setCallbackGas(uint256 _callbackgas)
+	external override onlyOwner()
+	{
+		m_callbackgas = _callbackgas;
 	}
 
 	function _chainId()

@@ -52,7 +52,6 @@ library IexecLibCore_v5
 
 	/**
 	 * Tasks
-	 // TODO: rename Workorder → Task
 	 */
 	enum TaskStatusEnum
 	{
@@ -83,6 +82,15 @@ library IexecLibCore_v5
 	/**
 	 * Consensus
 	 */
+	struct Consensus
+	{
+		mapping(bytes32 => uint256) group;
+		uint256                     total;
+	}
+
+	/**
+	 * Consensus
+	 */
 	enum ContributionStatusEnum
 	{
 		UNSET,
@@ -96,6 +104,7 @@ library IexecLibCore_v5
 		bytes32 resultHash;
 		bytes32 resultSeal;
 		address enclaveChallenge;
+		uint256 weight;
 	}
 
 }

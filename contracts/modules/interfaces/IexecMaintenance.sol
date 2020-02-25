@@ -11,4 +11,5 @@ interface IexecMaintenance
 	function updateDomainSeparator() external;
 	function importScore(address) external;
 	function setTeeBroker(address) external;
+	function setCallbackGas(uint256) external;
 }
