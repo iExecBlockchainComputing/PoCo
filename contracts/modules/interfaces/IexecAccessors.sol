@@ -28,4 +28,14 @@ interface IexecAccessors
 	function appregistry() external view returns (IRegistry);
 	function datasetregistry() external view returns (IRegistry);
 	function workerpoolregistry() external view returns (IRegistry);
+
+	function contribution_deadline_ratio() external view returns (uint256);
+	function reveal_deadline_ratio() external view returns (uint256);
+	function final_deadline_ratio() external view returns (uint256);
+	function workerpool_stake_ratio() external view returns (uint256);
+	function kitty_ratio() external view returns (uint256);
+	function kitty_min() external view returns (uint256);
+	function kitty_address() external view returns (address);
+	function groupmember_purpose() external view returns (uint256);
+	function eip712domain_separator() external view returns (bytes32);
 }

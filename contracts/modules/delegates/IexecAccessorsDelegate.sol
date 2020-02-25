@@ -137,4 +137,48 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 		return m_workerpoolregistry;
 	}
 
+	function contribution_deadline_ratio() external view override returns (uint256)
+	{
+		return CONTRIBUTION_DEADLINE_RATIO;
+	}
+
+	function reveal_deadline_ratio() external view override returns (uint256)
+	{
+		return REVEAL_DEADLINE_RATIO;
+	}
+
+	function final_deadline_ratio() external view override returns (uint256)
+	{
+		return FINAL_DEADLINE_RATIO;
+	}
+
+	function workerpool_stake_ratio() external view override returns (uint256)
+	{
+		return WORKERPOOL_STAKE_RATIO;
+	}
+
+	function kitty_ratio() external view override returns (uint256)
+	{
+		return KITTY_RATIO;
+	}
+
+	function kitty_min() external view override returns (uint256)
+	{
+		return KITTY_MIN;
+	}
+
+	function kitty_address() external view override returns (address)
+	{
+		return KITTY_ADDRESS;
+	}
+
+	function groupmember_purpose() external view override returns (uint256)
+	{
+		return GROUPMEMBER_PURPOSE;
+	}
+
+	function eip712domain_separator() external view override returns (bytes32)
+	{
+		return EIP712DOMAIN_SEPARATOR;
+	}
 }

@@ -31,15 +31,15 @@ abstract contract Store is ERC1538Store
 	mapping (address => mapping (address => uint256)) internal m_allowances;
 
 	// Poco - Constants
-	uint256 public constant CONTRIBUTION_DEADLINE_RATIO = 7;
-	uint256 public constant REVEAL_DEADLINE_RATIO       = 2;
-	uint256 public constant FINAL_DEADLINE_RATIO        = 10;
-	uint256 public constant WORKERPOOL_STAKE_RATIO      = 30;
-	uint256 public constant KITTY_RATIO                 = 10;
-	uint256 public constant KITTY_MIN                   = 1000000000; // TODO: 1RLC ?
-	address public constant KITTY_ADDRESS               = address(uint256(keccak256(bytes("iExecKitty"))) - 1);
-	uint256 public constant GROUPMEMBER_PURPOSE         = 4;
-	bytes32 public          EIP712DOMAIN_SEPARATOR;
+	uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
+	uint256 internal constant REVEAL_DEADLINE_RATIO       = 2;
+	uint256 internal constant FINAL_DEADLINE_RATIO        = 10;
+	uint256 internal constant WORKERPOOL_STAKE_RATIO      = 30;
+	uint256 internal constant KITTY_RATIO                 = 10;
+	uint256 internal constant KITTY_MIN                   = 1000000000; // TODO: 1RLC ?
+	address internal constant KITTY_ADDRESS               = address(uint256(keccak256(bytes("iExecKitty"))) - 1);
+	uint256 internal constant GROUPMEMBER_PURPOSE         = 4;
+	bytes32 internal          EIP712DOMAIN_SEPARATOR;
 
 	// Poco - Storage
 	mapping(bytes32 =>                    address                      ) internal m_presigned;     // per order
