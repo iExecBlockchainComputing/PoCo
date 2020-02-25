@@ -194,19 +194,21 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		 * Check orders compatibility
 		 */
 
-		// check deadlines
-		require(_apporder.expiration        < now);
-		require(_datasetorder.expiration    < now);
-		require(_workerpoolorder.expiration < now);
-		require(_requestorder.expiration    < now);
+		// TODO: order evolution - check deadlines
+		// require(_apporder.expiration        < now);
+		// require(_datasetorder.expiration    < now);
+		// require(_workerpoolorder.expiration < now);
+		// require(_requestorder.expiration    < now);
 
 		// computation environment & allowed enough funds
+		bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
 		require(_requestorder.category           == _workerpoolorder.category       );
 		require(_requestorder.trust              <= _workerpoolorder.trust          );
 		require(_requestorder.appmaxprice        >= _apporder.appprice              );
 		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice      );
 		require(_requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice);
-		require((_apporder.tag | _datasetorder.tag | _requestorder.tag) & ~_workerpoolorder.tag == 0x0);
+		require(tag & ~_workerpoolorder.tag      == 0x0);
+		require((tag ^ _apporder.tag)[31] & 0x01 == 0x0);
 
 		// Check matching and restrictions
 		require(_requestorder.app     == _apporder.app        );
@@ -286,7 +288,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		deal.workerpool.price     = _workerpoolorder.workerpoolprice;
 		deal.trust                = _requestorder.trust.max(1);
 		deal.category             = _requestorder.category;
-		deal.tag                  = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+		deal.tag                  = tag;
 		deal.requester            = _requestorder.requester;
 		deal.beneficiary          = _requestorder.beneficiary;
 		deal.callback             = _requestorder.callback;

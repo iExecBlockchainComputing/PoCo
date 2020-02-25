@@ -5,10 +5,10 @@ pragma experimental ABIEncoderV2;
 library IexecLibOrders_v5
 {
 	bytes32 public constant             EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	bytes32 public constant                 APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,uint256 expiration,bytes32 salt)");
-	bytes32 public constant             DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,uint256 expiration,bytes32 salt)");
-	bytes32 public constant          WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,uint256 expiration,bytes32 salt)");
-	bytes32 public constant             REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,uint256 expiration,bytes32 salt)");
+	bytes32 public constant                 APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"); // TODO: uint256 expiry
+	bytes32 public constant             DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"); // TODO: uint256 expiry
+	bytes32 public constant          WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)"); // TODO: uint256 expiry
+	bytes32 public constant             REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"); // TODO: uint256 expiry
 	bytes32 public constant        APPORDEROPERATION_TYPEHASH = keccak256("AppOrderOperation(AppOrder order,uint256 operation)AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
 	bytes32 public constant    DATASETORDEROPERATION_TYPEHASH = keccak256("DatasetOrderOperation(DatasetOrder order,uint256 operation)DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
 	bytes32 public constant WORKERPOOLORDEROPERATION_TYPEHASH = keccak256("WorkerpoolOrderOperation(WorkerpoolOrder order,uint256 operation)WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
@@ -19,6 +19,7 @@ library IexecLibOrders_v5
 		SIGN,
 		CLOSE
 	}
+
 	struct EIP712Domain
 	{
 		string  name;
@@ -26,6 +27,7 @@ library IexecLibOrders_v5
 		uint256 chainId;
 		address verifyingContract;
 	}
+
 	struct AppOrder
 	{
 		address app;
@@ -35,10 +37,11 @@ library IexecLibOrders_v5
 		address datasetrestrict;
 		address workerpoolrestrict;
 		address requesterrestrict;
-		uint256 expiration;
+		// uint256 expiration; // TODO: order evolution - deadlines
 		bytes32 salt;
 		bytes   sign;
 	}
+
 	struct DatasetOrder
 	{
 		address dataset;
@@ -48,10 +51,11 @@ library IexecLibOrders_v5
 		address apprestrict;
 		address workerpoolrestrict;
 		address requesterrestrict;
-		uint256 expiration;
+		// uint256 expiration; // TODO: order evolution - deadlines
 		bytes32 salt;
 		bytes   sign;
 	}
+
 	struct WorkerpoolOrder
 	{
 		address workerpool;
@@ -63,10 +67,11 @@ library IexecLibOrders_v5
 		address apprestrict;
 		address datasetrestrict;
 		address requesterrestrict;
-		uint256 expiration;
+		// uint256 expiration; // TODO: order evolution - deadlines
 		bytes32 salt;
 		bytes   sign;
 	}
+
 	struct RequestOrder
 	{
 		address app;
@@ -83,28 +88,32 @@ library IexecLibOrders_v5
 		address beneficiary;
 		address callback;
 		string  params;
-		uint256 expiration;
+		// uint256 expiration; // TODO: order evolution - deadlines
 		bytes32 salt;
 		bytes   sign;
 	}
+
 	struct AppOrderOperation
 	{
 		AppOrder           order;
 		OrderOperationEnum operation;
 		bytes              sign;
 	}
+
 	struct DatasetOrderOperation
 	{
 		DatasetOrder       order;
 		OrderOperationEnum operation;
 		bytes              sign;
 	}
+
 	struct WorkerpoolOrderOperation
 	{
 		WorkerpoolOrder    order;
 		OrderOperationEnum operation;
 		bytes              sign;
 	}
+
 	struct RequestOrderOperation
 	{
 		RequestOrder       order;
@@ -147,6 +156,7 @@ library IexecLibOrders_v5
 			mstore(add(_domain, 0x20), temp3)
 		}
 	}
+
 	function hash(AppOrder memory _apporder)
 	public pure returns (bytes32 apphash)
 	{
@@ -173,11 +183,12 @@ library IexecLibOrders_v5
 			// Write typeHash and sub-hashes
 			mstore(sub(_apporder, 0x20), typeHash)
 			// Compute hash
-			apphash := keccak256(sub(_apporder, 0x20), 0x140) // 320 = 32 + 288 = 32 + 9*32
+			apphash := keccak256(sub(_apporder, 0x20), 0x120) // TODO: order evolution - 0x120→0x140
 			// Restore memory
 			mstore(sub(_apporder, 0x20), temp1)
 		}
 	}
+
 	function hash(DatasetOrder memory _datasetorder)
 	public pure returns (bytes32 datasethash)
 	{
@@ -204,11 +215,12 @@ library IexecLibOrders_v5
 			// Write typeHash and sub-hashes
 			mstore(sub(_datasetorder, 0x20), typeHash)
 			// Compute hash
-			datasethash := keccak256(sub(_datasetorder, 0x20), 0x140) // 320 = 32 + 288 = 32 + 9*32
+			datasethash := keccak256(sub(_datasetorder, 0x20), 0x120) // TODO: order evolution - 0x120→0x140
 			// Restore memory
 			mstore(sub(_datasetorder, 0x20), temp1)
 		}
 	}
+
 	function hash(WorkerpoolOrder memory _workerpoolorder)
 	public pure returns (bytes32 workerpoolhash)
 	{
@@ -237,11 +249,12 @@ library IexecLibOrders_v5
 			// Write typeHash and sub-hashes
 			mstore(sub(_workerpoolorder, 0x20), typeHash)
 			// Compute hash
-			workerpoolhash := keccak256(sub(_workerpoolorder, 0x20), 0x180) // 384 = 32 + 352 = 32 + 11 * 32
+			workerpoolhash := keccak256(sub(_workerpoolorder, 0x20), 0x160) // TODO: order evolution - 0x160→0x180
 			// Restore memory
 			mstore(sub(_workerpoolorder, 0x20), temp1)
 		}
 	}
+
 	function hash(RequestOrder memory _requestorder)
 	public pure returns (bytes32 requesthash)
 	{
@@ -280,12 +293,13 @@ library IexecLibOrders_v5
 			mstore(sub(_requestorder, 0x020), typeHash)
 			mstore(add(_requestorder, 0x1A0), paramsHash)
 			// Compute hash
-			requesthash := keccak256(sub(_requestorder, 0x20), 0x220) // 544 = 32 + 512 = 32 * 16 * 32
+			requesthash := keccak256(sub(_requestorder, 0x20), 0x200) // TODO: order evolution - 0x200→0x220
 			// Restore memory
 			mstore(sub(_requestorder, 0x020), temp1)
 			mstore(add(_requestorder, 0x1A0), temp2)
 		}
 	}
+
 	function hash(AppOrderOperation memory _apporderoperation)
 	public pure returns (bytes32)
 	{
@@ -295,6 +309,7 @@ library IexecLibOrders_v5
 			_apporderoperation.operation
 		));
 	}
+
 	function hash(DatasetOrderOperation memory _datasetorderoperation)
 	public pure returns (bytes32)
 	{
@@ -304,6 +319,7 @@ library IexecLibOrders_v5
 			_datasetorderoperation.operation
 		));
 	}
+
 	function hash(WorkerpoolOrderOperation memory _workerpoolorderoperation)
 	public pure returns (bytes32)
 	{
@@ -313,6 +329,7 @@ library IexecLibOrders_v5
 			_workerpoolorderoperation.operation
 		));
 	}
+
 	function hash(RequestOrderOperation memory _requestorderoperation)
 	public pure returns (bytes32)
 	{
