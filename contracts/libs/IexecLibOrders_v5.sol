@@ -95,30 +95,30 @@ library IexecLibOrders_v5
 
 	struct AppOrderOperation
 	{
-		AppOrder           order;
-		OrderOperationEnum operation;
-		bytes              sign;
+		AppOrder        order;
+		uint8           operation;
+		bytes           sign;
 	}
 
 	struct DatasetOrderOperation
 	{
-		DatasetOrder       order;
-		OrderOperationEnum operation;
-		bytes              sign;
+		DatasetOrder    order;
+		uint8           operation;
+		bytes           sign;
 	}
 
 	struct WorkerpoolOrderOperation
 	{
-		WorkerpoolOrder    order;
-		OrderOperationEnum operation;
-		bytes              sign;
+		WorkerpoolOrder order;
+		uint8           operation;
+		bytes           sign;
 	}
 
 	struct RequestOrderOperation
 	{
-		RequestOrder       order;
-		OrderOperationEnum operation;
-		bytes              sign;
+		RequestOrder    order;
+		uint8           operation;
+		bytes           sign;
 	}
 
 	function hash(EIP712Domain memory _domain)

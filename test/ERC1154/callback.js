@@ -444,17 +444,17 @@ contract('ERC1154: callback', async (accounts) => {
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
-				await sendContribution(worker1, tasks[1], "true", false);
-				await sendContribution(worker1, tasks[2], "true", false);
-				await sendContribution(worker1, tasks[3], "true", false);
+				await sendContribution(worker1, tasks[1], "aResult 1", false);
+				await sendContribution(worker1, tasks[2], "aResult 2", false);
+				await sendContribution(worker1, tasks[3], "aResult 3", false);
 			});
 		});
 
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
-				await IexecInstance.reveal(tasks[1], odbtools.utils.hashResult(tasks[1], "true").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[2], odbtools.utils.hashResult(tasks[2], "true").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[3], odbtools.utils.hashResult(tasks[3], "true").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[1], odbtools.utils.hashResult(tasks[1], "aResult 1").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[2], odbtools.utils.hashResult(tasks[2], "aResult 2").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[3], odbtools.utils.hashResult(tasks[3], "aResult 3").digest, { from: worker1.address });
 			});
 		});
 

@@ -277,7 +277,7 @@ contract('Poco', async (accounts) => {
 		});
 
 		it("kitty balance", async () => {
-			kitty_address = await IexecInstance.KITTY_ADDRESS();
+			kitty_address = await IexecInstance.kitty_address();
 			kitty_content = await IexecInstance.frozenOf(kitty_address);
 			assert.equal(kitty_content, 30);
 		});
@@ -323,7 +323,7 @@ contract('Poco', async (accounts) => {
 		});
 
 		it("kitty balance", async () => {
-			kitty_address = await IexecInstance.KITTY_ADDRESS();
+			kitty_address = await IexecInstance.kitty_address();
 			assert.equal(await IexecInstance.frozenOf(kitty_address), 0);
 		});
 

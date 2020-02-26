@@ -512,7 +512,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.finalDeadline >  now                                                                         );
 		require(task.revealCounter == task.winnerCounter || (task.revealCounter > 0 && task.revealDeadline <= now));
 
-		require(deal.callback == address(0) || keccak256(_results) == task.consensusValue);
+		require(deal.callback == address(0) || keccak256(_results) == task.resultDigest);
 
 		task.status  = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 		task.results = _results;
