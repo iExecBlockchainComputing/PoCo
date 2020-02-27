@@ -1,7 +1,6 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./Store.sol";
 import "./modules/interfaces/IexecAccessors.sol";
 import "./modules/interfaces/IexecAccessorsABILegacy.sol";
 import "./modules/interfaces/IexecCategoryManager.sol";
@@ -15,6 +14,6 @@ import "./modules/interfaces/IexecTokenSpender.sol";
 import "./modules/interfaces/ENSIntegration.sol";
 
 
-interface IexecInterfaceTokenABILegacy is /*Store,*/ IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
+interface IexecInterfaceTokenABILegacy is IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {
 }

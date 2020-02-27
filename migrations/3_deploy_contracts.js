@@ -353,7 +353,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ------------------------ ERC1538 list methods ------------------------- */
-	if (false)
+	if (true)
 	{
 		let ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
 		let functionCount = await ERC1538QueryInstace.totalFunctions();
