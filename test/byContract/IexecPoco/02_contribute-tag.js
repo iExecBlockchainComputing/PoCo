@@ -149,7 +149,7 @@ contract('Poco', async (accounts) => {
 			app:                AppInstance.address,
 			appprice:           3,
 			volume:             1000,
-			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+			tag:                "0x0000000000000000000000000000000000000000000000000000000000000001",
 			datasetrestrict:    constants.NULL.ADDRESS,
 			workerpoolrestrict: constants.NULL.ADDRESS,
 			requesterrestrict:  constants.NULL.ADDRESS,

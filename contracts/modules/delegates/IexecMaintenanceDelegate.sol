@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
@@ -7,7 +7,7 @@ import "../interfaces/IexecMaintenance.sol";
 
 contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
-	using IexecLibOrders_v4 for IexecLibOrders_v4.EIP712Domain;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 
 	function configure(
 		address          _token,
@@ -18,7 +18,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		address          _datasetregistryAddress,
 		address          _workerpoolregistryAddress,
 		address          _v3_iexecHubAddress)
-	external onlyOwner()
+	external override onlyOwner()
 	{
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
@@ -31,23 +31,24 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		m_datasetregistry    = IRegistry(_datasetregistryAddress);
 		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
 		m_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);
+		m_callbackgas        = 100000;
 	}
 
 	function domain()
-	external view returns (IexecLibOrders_v4.EIP712Domain memory)
+	external view override returns (IexecLibOrders_v5.EIP712Domain memory)
 	{
 		return _domain();
 	}
 
 	function updateDomainSeparator()
-	external
+	external override
 	{
 		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 	}
 
 	function importScore(address _worker)
-	external
+	external override
 	{
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
 		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
@@ -55,9 +56,15 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function setTeeBroker(address _teebroker)
-	external onlyOwner()
+	external override onlyOwner()
 	{
 		m_teebroker = _teebroker;
+	}
+
+	function setCallbackGas(uint256 _callbackgas)
+	external override onlyOwner()
+	{
+		m_callbackgas = _callbackgas;
 	}
 
 	function _chainId()
@@ -67,9 +74,9 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	}
 
 	function _domain()
-	internal view returns (IexecLibOrders_v4.EIP712Domain memory)
+	internal view returns (IexecLibOrders_v5.EIP712Domain memory)
 	{
-		return IexecLibOrders_v4.EIP712Domain({
+		return IexecLibOrders_v5.EIP712Domain({
 			name:              "iExecODB"
 		, version:           "3.0-alpha"
 		, chainId:           _chainId()

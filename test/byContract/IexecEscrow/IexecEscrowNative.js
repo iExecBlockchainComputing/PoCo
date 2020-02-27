@@ -278,7 +278,7 @@ contract('EscrowNative', async (accounts) => {
 	describe("recover", async () => {
 		describe("unauthorized access", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.recover({ from: user }), "Ownable: caller is not the owner.");
+				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner.");
 			});
 		});
 
@@ -289,7 +289,7 @@ contract('EscrowNative', async (accounts) => {
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
-				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
+				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter");
 				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 0,                      "check amount");
 			});

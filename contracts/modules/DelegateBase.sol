@@ -1,9 +1,9 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import "../Store.sol";
 
 
-contract DelegateBase is Store
+abstract contract DelegateBase is Store
 {
 	constructor()
 	internal

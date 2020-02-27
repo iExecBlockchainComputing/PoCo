@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import '../Registry.sol';
 import './Workerpool.sol';
@@ -12,8 +12,8 @@ contract WorkerpoolRegistry is Registry
 	constructor(address _previous)
 	public Registry(
 		address(new Workerpool()),
-		"iExec Workerpool Registry (v4)",
-		"iExecWorkerpoolV4",
+		"iExec Workerpool Registry (V5)",
+		"iExecWorkerpoolV5",
 		_previous)
 	{
 	}

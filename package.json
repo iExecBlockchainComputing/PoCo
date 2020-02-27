@@ -4,12 +4,12 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "build": "./node_modules/.bin/truffle compile --",
-    "migrate": "./node_modules/.bin/truffle migrate --",
-    "test": "./node_modules/.bin/truffle test --",
+    "build": "truffle compile --",
+    "migrate": "truffle migrate --",
+    "test": "truffle test --",
     "autotest": "./autotest.sh --",
-    "coverage": "./node_modules/.bin/truffle run coverage --",
-    "verify": "./node_modules/.bin/truffle run verify --"
+    "coverage": "truffle run coverage --",
+    "verify": "truffle run verify --"
   },
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
     "@ensdomains/ens": "0.4.4",
     "@ensdomains/resolver": "0.2.4",
     "@iexec/interface": "3.0.35-8",
-    "@iexec/solidity": "0.0.24",
-    "@openzeppelin/contracts": "2.5.0",
+    "@iexec/solidity": "0.1.0-beta.4",
+    "@openzeppelin/contracts": "3.0.0-beta.0",
     "rlc-faucet-contract": "1.0.9"
   },
   "devDependencies": {
@@ -39,12 +39,12 @@
     "chai": "4.2.0",
     "eth-sig-util": "2.5.2",
     "ethereumjs-util": "6.2.0",
-    "ethers": "4.0.44",
+    "ethers": "4.0.45",
     "ganache-cli": "6.9.1",
     "husky": "4.2.3",
     "multiaddr": "7.3.1",
     "solidity-coverage": "0.7.2",
-    "truffle": "5.1.4",
+    "truffle": "^5.1.14",
     "truffle-security": "1.7.1"
   }
 }

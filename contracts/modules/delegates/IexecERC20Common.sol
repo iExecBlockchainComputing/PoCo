@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
@@ -12,7 +12,7 @@ contract IexecERC20Common is DelegateBase
 	event Approval(address indexed owner, address indexed spender, uint256 value);
 
 	function _transfer(address sender, address recipient, uint256 amount)
-		internal
+	internal
 	{
 			require(sender != address(0), "ERC20: transfer from the zero address");
 			require(recipient != address(0), "ERC20: transfer to the zero address");
@@ -23,7 +23,7 @@ contract IexecERC20Common is DelegateBase
 	}
 
 	function _mint(address account, uint256 amount)
-		internal
+	internal
 	{
 			require(account != address(0), "ERC20: mint to the zero address");
 
@@ -33,7 +33,7 @@ contract IexecERC20Common is DelegateBase
 	}
 
 	function _burn(address account, uint256 value)
-		internal
+	internal
 	{
 			require(account != address(0), "ERC20: burn from the zero address");
 
@@ -43,7 +43,7 @@ contract IexecERC20Common is DelegateBase
 	}
 
 	function _approve(address owner, address spender, uint256 value)
-		internal
+	internal
 	{
 			require(owner != address(0), "ERC20: approve from the zero address");
 			require(spender != address(0), "ERC20: approve to the zero address");

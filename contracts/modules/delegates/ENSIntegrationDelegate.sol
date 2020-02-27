@@ -1,16 +1,16 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
 import "../DelegateBase.sol";
 import "../interfaces/ENSIntegration.sol";
-import "../../tools/ens/ReverseRegistration.sol";
 
 
-contract ENSIntegrationDelegate is ENSIntegration, ReverseRegistration, DelegateBase
+contract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, DelegateBase
 {
 	function setName(address _ens, string calldata _name)
-	external onlyOwner()
+	external override onlyOwner()
 	{
-		_setName(_ens, _name);
+		_setName(ENS(_ens), _name);
 	}
 }

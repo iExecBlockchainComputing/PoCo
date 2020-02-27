@@ -419,7 +419,7 @@ contract('EscrowToken', async (accounts) => {
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
-				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
+				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter");
 				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 0,                      "check amount");
 			});
@@ -436,7 +436,7 @@ contract('EscrowToken', async (accounts) => {
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
-				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
+				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter");
 				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 1000,                   "check amount");
 			});

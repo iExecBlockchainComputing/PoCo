@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import '../Registry.sol';
 import './App.sol';
@@ -12,8 +12,8 @@ contract AppRegistry is Registry
 	constructor(address _previous)
 	public Registry(
 		address(new App()),
-		"iExec Application Registry (v4)",
-		"iExecAppsV4",
+		"iExec Application Registry (V5)",
+		"iExecAppsV5",
 		_previous)
 	{
 	}

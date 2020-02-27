@@ -1,14 +1,14 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
+import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
+import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
-import '@openzeppelin/contracts/utils/Create2.sol';
-import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
+import "@openzeppelin/contracts/utils/Create2.sol";
 import "./IRegistry.sol";
-import "../tools/ens/ReverseRegistration.sol";
 
 
-contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable
+contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
@@ -43,7 +43,7 @@ contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable
 
 	/* Interface */
 	function isRegistered(address _entry)
-	external view returns (bool)
+	external view override returns (bool)
 	{
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}
@@ -51,7 +51,7 @@ contract Registry is IRegistry, ERC721Full, ReverseRegistration, Ownable
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_setName(_ens, _name);
+		_setName(ENS(_ens), _name);
 	}
 
 	function setTokenURI(uint256 _tokenId, string calldata _uri)

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import '../Registry.sol';
 import './Dataset.sol';
@@ -12,8 +12,8 @@ contract DatasetRegistry is Registry
 	constructor(address _previous)
 	public Registry(
 		address(new Dataset()),
-		"iExec Dataset Registry (v4)",
-		"iExecDatasetsV4",
+		"iExec Dataset Registry (V5)",
+		"iExecDatasetsV5",
 		_previous)
 	{
 	}
