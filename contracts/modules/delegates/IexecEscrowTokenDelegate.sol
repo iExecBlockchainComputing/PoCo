@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Common.sol";
@@ -14,50 +14,50 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
-	function ()
-		external payable
+	receive()
+	external override payable
 	{
 		revert("fallback-disabled");
 	}
 
 	function deposit(uint256 amount)
-		external returns (bool)
+	external override returns (bool)
 	{
-		_deposit(msg.sender, amount);
-		_mint(msg.sender, amount);
+		_deposit(_msgSender(), amount);
+		_mint(_msgSender(), amount);
 		return true;
 	}
 
 	function depositFor(uint256 amount, address target)
-		external returns (bool)
+	external override returns (bool)
 	{
-		_deposit(msg.sender, amount);
+		_deposit(_msgSender(), amount);
 		_mint(target, amount);
 		return true;
 	}
 
 	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
-		external returns (bool)
+	external override returns (bool)
 	{
 		require(amounts.length == targets.length);
 		for (uint i = 0; i < amounts.length; ++i)
 		{
-			_deposit(msg.sender, amounts[i]);
+			_deposit(_msgSender(), amounts[i]);
 			_mint(targets[i], amounts[i]);
 		}
 		return true;
 	}
 
 	function withdraw(uint256 amount)
-		external returns (bool)
+	external override returns (bool)
 	{
-		_burn(msg.sender, amount);
-		_withdraw(msg.sender, amount);
+		_burn(_msgSender(), amount);
+		_withdraw(_msgSender(), amount);
 		return true;
 	}
 
 	function recover()
-		external onlyOwner returns (uint256)
+	external override onlyOwner returns (uint256)
 	{
 		uint256 delta = m_baseToken.balanceOf(address(this)).sub(m_totalSupply);
 		_mint(owner(), delta);
@@ -66,7 +66,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 
 	// Token Spender (endpoint for approveAndCallback calls to the proxy)
 	function receiveApproval(address sender, uint256 amount, address token, bytes calldata)
-		external returns (bool)
+	external override returns (bool)
 	{
 		require(token == address(m_baseToken), 'wrong-token');
 		_deposit(sender, amount);
@@ -75,13 +75,13 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	}
 
 	function _deposit(address from, uint256 amount)
-		internal
+	internal
 	{
 		require(m_baseToken.transferFrom(from, address(this), amount));
 	}
 
 	function _withdraw(address to, uint256 amount)
-		internal
+	internal
 	{
 		m_baseToken.transfer(to, amount);
 	}

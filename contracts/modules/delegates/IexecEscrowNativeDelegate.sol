@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Common.sol";
@@ -14,28 +14,28 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	/***************************************************************************
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
-	function ()
-		external payable
+	receive()
+	external override payable
 	{
-		_handleDeposit(msg.sender);
+		_deposit(_msgSender());
 	}
 
 	function deposit()
-		external payable returns (bool)
+	external override payable returns (bool)
 	{
-		_handleDeposit(msg.sender);
+		_deposit(_msgSender());
 		return true;
 	}
 
 	function depositFor(address target)
-		external payable returns (bool)
+	external override payable returns (bool)
 	{
-		_handleDeposit(target);
+		_deposit(target);
 		return true;
 	}
 
 	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
-		external payable returns (bool)
+	external override payable returns (bool)
 	{
 		require(amounts.length == targets.length);
 		uint256 remaining = msg.value;
@@ -44,34 +44,34 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 			_mint(targets[i], amounts[i]);
 			remaining = remaining.sub(amounts[i].mul(nRLCtoWei));
 		}
-		_safeWithdraw(msg.sender, remaining);
+		_withdraw(_msgSender(), remaining);
 		return true;
 	}
 
 	function withdraw(uint256 amount)
-		external returns (bool)
+	external override returns (bool)
 	{
-		_burn(msg.sender, amount);
-		_safeWithdraw(msg.sender, amount.mul(nRLCtoWei));
+		_burn(_msgSender(), amount);
+		_withdraw(_msgSender(), amount.mul(nRLCtoWei));
 		return true;
 	}
 
 	function recover()
-		external onlyOwner returns (uint256)
+	external override onlyOwner returns (uint256)
 	{
 		uint256 delta = address(this).balance.div(nRLCtoWei).sub(m_totalSupply);
 		_mint(owner(), delta);
 		return delta;
 	}
 
-	function _handleDeposit(address target)
+	function _deposit(address target)
 		internal
 	{
 		_mint(target, msg.value.div(nRLCtoWei));
-		_safeWithdraw(msg.sender, msg.value.mod(nRLCtoWei));
+		_withdraw(_msgSender(), msg.value.mod(nRLCtoWei));
 	}
 
-	function _safeWithdraw(address to, uint256 value)
+	function _withdraw(address to, uint256 value)
 		internal
 	{
 		(bool success, ) = to.call.value(value)('');

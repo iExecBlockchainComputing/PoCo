@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import "../../modules/interfaces/IexecTokenSpender.sol";
 
@@ -17,7 +17,7 @@ contract TestReceiver is IexecTokenSpender
 		uint256        _value,
 		address        _token,
 		bytes calldata _extraData)
-	external returns (bool)
+	external override returns (bool)
 	{
 		if (_value == 0)
 		{

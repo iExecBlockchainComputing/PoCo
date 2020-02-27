@@ -12,12 +12,10 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
@@ -25,17 +23,16 @@ if (DEPLOYMENT.asset == "Native")
 contract('EscrowNative', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -59,6 +56,20 @@ contract('EscrowNative', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
+
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	describe("fallback", async () => {
@@ -78,8 +89,7 @@ contract('EscrowNative', async (accounts) => {
 			assert.equal(await web3.eth.getBalance(IexecInstance.address), 100 * 10 ** 9);
 			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-			txMined = await IexecInstance.deposit({ from: accounts[1], value: 100 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			txMined = await IexecInstance.deposit({ from: accounts[1], value: 100 * 10 ** 9 });
 
 			assert.equal(await web3.eth.getBalance(IexecInstance.address), 200 * 10 ** 9);
 			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
@@ -99,8 +109,7 @@ contract('EscrowNative', async (accounts) => {
 			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[3]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 
-			txMined = await IexecInstance.depositFor(accounts[3], { from: accounts[2], value: 100 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
-			assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+			txMined = await IexecInstance.depositFor(accounts[3], { from: accounts[2], value: 100 * 10 ** 9 });
 
 			assert.equal(await web3.eth.getBalance(IexecInstance.address), 300 * 10 ** 9);
 			assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [   0, 0 ], "check balance");
@@ -127,7 +136,7 @@ contract('EscrowNative', async (accounts) => {
 					await expectRevert.unspecified(IexecInstance.depositForArray(
 						[ 100, 100, ],
 						[ accounts[5] ],
-						{ from: accounts[4], value: 200 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: accounts[4], value: 200 * 10 ** 9 }
 					));
 
 					assert.equal(await web3.eth.getBalance(IexecInstance.address), 300 * 10 ** 9);
@@ -147,7 +156,7 @@ contract('EscrowNative', async (accounts) => {
 					await expectRevert.unspecified(IexecInstance.depositForArray(
 						[ 100 ],
 						[ accounts[5], accounts[6] ],
-						{ from: accounts[4], value: 200 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: accounts[4], value: 200 * 10 ** 9 }
 					));
 
 					assert.equal(await web3.eth.getBalance(IexecInstance.address), 300 * 10 ** 9);
@@ -168,7 +177,7 @@ contract('EscrowNative', async (accounts) => {
 				txMined = await IexecInstance.depositForArray(
 					[ 100, 100 ],
 					[ accounts[5], accounts[6] ],
-					{ from: accounts[4], value: 200 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }
+					{ from: accounts[4], value: 200 * 10 ** 9 }
 				);
 
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 500 * 10 ** 9);
@@ -198,7 +207,7 @@ contract('EscrowNative', async (accounts) => {
 				txMined = await IexecInstance.depositForArray(
 					[ 100, 100 ],
 					[ accounts[8], accounts[9] ],
-					{ from: accounts[7], value: 250 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED }
+					{ from: accounts[7], value: 250 * 10 ** 9 }
 				);
 
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
@@ -226,7 +235,7 @@ contract('EscrowNative', async (accounts) => {
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
 
-				await expectRevert.unspecified(IexecInstance.withdraw(100, { from: accounts[2], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.withdraw(100, { from: accounts[2] }));
 
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[2]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
@@ -238,7 +247,7 @@ contract('EscrowNative', async (accounts) => {
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[0]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
 
-				await expectRevert.unspecified(IexecInstance.withdraw(1000, { from: accounts[0], gas: constants.AMOUNT_GAS_PROVIDED }));
+				await expectRevert.unspecified(IexecInstance.withdraw(1000, { from: accounts[0] }));
 
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[0]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
@@ -250,8 +259,7 @@ contract('EscrowNative', async (accounts) => {
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 100, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 700 * 10 ** 9);
 
-				txMined = await IexecInstance.withdraw(100, { from: accounts[1], gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.withdraw(100, { from: accounts[1] });
 
 				assert.deepEqual(Object.extract(await IexecInstance.viewAccount(accounts[1]), [ 'stake', 'locked' ]).map(bn => Number(bn)), [ 0, 0 ], "check balance");
 				assert.equal(await web3.eth.getBalance(IexecInstance.address), 600 * 10 ** 9);
@@ -270,20 +278,19 @@ contract('EscrowNative', async (accounts) => {
 	describe("recover", async () => {
 		describe("unauthorized access", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.recover({ from: user, gas: constants.AMOUNT_GAS_PROVIDED }), "Ownable: caller is not the owner.");
+				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner.");
 			});
 		});
 
 		describe("no locked funds", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.recover({ from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.recover({ from: accounts[0] });
 			});
 
 			it("emit events", async () => {
 				events = tools.extractEvents(txMined, IexecInstance.address, "Transfer");
-				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter" );
-				assert.equal(events[0].args.to,    iexecAdmin,             "check owner");
+				assert.equal(events[0].args.from,  constants.NULL.ADDRESS, "check minter");
+				assert.equal(events[0].args.to,    accounts[0],            "check owner");
 				assert.equal(events[0].args.value, 0,                      "check amount");
 			});
 		});

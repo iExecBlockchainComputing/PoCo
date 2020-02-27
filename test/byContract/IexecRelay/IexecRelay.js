@@ -12,29 +12,26 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
 contract('Relay', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -50,25 +47,12 @@ contract('Relay', async (accounts) => {
 	var datasetorder    = null;
 	var workerpoolorder = null;
 	var requestorder    = null;
-	var dealid          = null;
-	var taskid          = null;
-
-	var authorizations = {};
-	var results        = {};
-	var consensus      = null;
-	var workers        = [];
 
 	/***************************************************************************
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
 		console.log("# web3 version:", web3.version);
-
-		workers = [
-			{ address: worker1, enclave: sgxEnclave,             raw: "iExec the wanderer" },
-			{ address: worker2, enclave: constants.NULL.ADDRESS, raw: "iExec the wanderer" },
-		];
-		consensus = "iExec the wanderer";
 
 		/**
 		 * Retreive deployed contracts
@@ -78,8 +62,20 @@ contract('Relay', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		odbtools.setup(await IexecInstance.domain());
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	describe("→ setup", async () => {
@@ -87,15 +83,14 @@ contract('Relay', async (accounts) => {
 			describe("app", async () => {
 				it("create", async () => {
 					txMined = await AppRegistryInstance.createApp(
-						appProvider,
+						appProvider.address,
 						"R Clifford Attractors",
 						"DOCKER",
 						constants.MULTIADDR_BYTES,
 						constants.NULL.BYTES32,
 						"0x",
-						{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: appProvider.address }
 					);
-					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 					events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
 					AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 				});
@@ -104,13 +99,12 @@ contract('Relay', async (accounts) => {
 			describe("dataset", async () => {
 				it("create", async () => {
 					txMined = await DatasetRegistryInstance.createDataset(
-						datasetProvider,
+						datasetProvider.address,
 						"Pi",
 						constants.MULTIADDR_BYTES,
 						constants.NULL.BYTES32,
-						{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: datasetProvider.address }
 					);
-					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 					events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
 					DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 				});
@@ -119,18 +113,16 @@ contract('Relay', async (accounts) => {
 			describe("workerpool", async () => {
 				it("create", async () => {
 					txMined = await WorkerpoolRegistryInstance.createWorkerpool(
-						scheduler,
+						scheduler.address,
 						"A test workerpool",
-						{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+						{ from: scheduler.address }
 					);
-					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 					events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
 					WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 				});
 
 				it("change policy", async () => {
-					txMined = await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-					assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+					await WorkerpoolInstance.changePolicy(/* worker stake ratio */ 35, /* scheduler reward ratio */ 5, { from: scheduler.address });
 				});
 			});
 		});
@@ -138,126 +130,105 @@ contract('Relay', async (accounts) => {
 		describe("orders", async () => {
 			describe("app", async () => {
 				it("sign", async () => {
-					apporder = odbtools.signAppOrder(
-						{
-							app:                AppInstance.address,
-							appprice:           3,
-							volume:             1000,
-							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-							datasetrestrict:    constants.NULL.ADDRESS,
-							workerpoolrestrict: constants.NULL.ADDRESS,
-							requesterrestrict:  constants.NULL.ADDRESS,
-							salt:               web3.utils.randomHex(32),
-							sign:               constants.NULL.SIGNATURE,
-						},
-						wallets.addressToPrivate(appProvider)
-					);
+					apporder = await appProvider.signAppOrder({
+						app:                AppInstance.address,
+						appprice:           3,
+						volume:             1000,
+						tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+						datasetrestrict:    constants.NULL.ADDRESS,
+						workerpoolrestrict: constants.NULL.ADDRESS,
+						requesterrestrict:  constants.NULL.ADDRESS,
+						salt:               web3.utils.randomHex(32),
+						sign:               constants.NULL.SIGNATURE,
+					});
 				});
+
 				it("verify", async () => {
-					assert.isTrue(
-						await IexecInstance.verifySignature(
-							appProvider,
-							odbtools.AppOrderTypedStructHash(apporder),
-							apporder.sign
-						),
-						"Error with the validation of the apporder signature"
-					);
+					assert.isTrue(await IexecInstance.verifySignature(
+						appProvider.address,
+						odbtools.utils.hashAppOrder(ERC712_domain, apporder),
+						apporder.sign
+					));
 				});
 			});
 
 			describe("dataset", async () => {
 				it("sign", async () => {
-					datasetorder = odbtools.signDatasetOrder(
-						{
-							dataset:            DatasetInstance.address,
-							datasetprice:       1,
-							volume:             1000,
-							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-							apprestrict:        constants.NULL.ADDRESS,
-							workerpoolrestrict: constants.NULL.ADDRESS,
-							requesterrestrict:  constants.NULL.ADDRESS,
-							salt:               web3.utils.randomHex(32),
-							sign:               constants.NULL.SIGNATURE,
-						},
-						wallets.addressToPrivate(datasetProvider)
-					);
+					datasetorder = await datasetProvider.signDatasetOrder({
+						dataset:            DatasetInstance.address,
+						datasetprice:       1,
+						volume:             1000,
+						tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+						apprestrict:        constants.NULL.ADDRESS,
+						workerpoolrestrict: constants.NULL.ADDRESS,
+						requesterrestrict:  constants.NULL.ADDRESS,
+						salt:               web3.utils.randomHex(32),
+						sign:               constants.NULL.SIGNATURE,
+					});
 				});
+
 				it("verify", async () => {
-					assert.isTrue(
-						await IexecInstance.verifySignature(
-							datasetProvider,
-							odbtools.DatasetOrderTypedStructHash(datasetorder),
-							datasetorder.sign
-						),
-						"Error with the validation of the datasetorder signature"
-					);
+					assert.isTrue(await IexecInstance.verifySignature(
+						datasetProvider.address,
+						odbtools.utils.hashDatasetOrder(ERC712_domain, datasetorder),
+						datasetorder.sign
+					));
 				});
 			});
 
 			describe("workerpool", async () => {
 				it("sign", async () => {
-					workerpoolorder = odbtools.signWorkerpoolOrder(
-						{
-							workerpool:        WorkerpoolInstance.address,
-							workerpoolprice:   25,
-							volume:            3,
-							category:          4,
-							trust:             0,
-							tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
-							apprestrict:       constants.NULL.ADDRESS,
-							datasetrestrict:   constants.NULL.ADDRESS,
-							requesterrestrict: constants.NULL.ADDRESS,
-							salt:              web3.utils.randomHex(32),
-							sign:              constants.NULL.SIGNATURE,
-						},
-						wallets.addressToPrivate(scheduler)
-					);
+					workerpoolorder = await scheduler.signWorkerpoolOrder({
+						workerpool:        WorkerpoolInstance.address,
+						workerpoolprice:   25,
+						volume:            3,
+						category:          4,
+						trust:             0,
+						tag:               "0x0000000000000000000000000000000000000000000000000000000000000000",
+						apprestrict:       constants.NULL.ADDRESS,
+						datasetrestrict:   constants.NULL.ADDRESS,
+						requesterrestrict: constants.NULL.ADDRESS,
+						salt:              web3.utils.randomHex(32),
+						sign:              constants.NULL.SIGNATURE,
+					});
 				});
+
 				it("verify", async () => {
-					assert.isTrue(
-						await IexecInstance.verifySignature(
-							scheduler,
-							odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder),
-							workerpoolorder.sign
-						),
-						"Error with the validation of the.workerpoolorder signature"
-					);
+					assert.isTrue(await IexecInstance.verifySignature(
+						scheduler.address,
+						odbtools.utils.hashWorkerpoolOrder(ERC712_domain, workerpoolorder),
+						workerpoolorder.sign
+					));
 				});
 			});
 
 			describe("request", async () => {
 				it("sign", async () => {
-					requestorder = odbtools.signRequestOrder(
-						{
-							app:                AppInstance.address,
-							appmaxprice:        3,
-							dataset:            DatasetInstance.address,
-							datasetmaxprice:    1,
-							workerpool:         constants.NULL.ADDRESS,
-							workerpoolmaxprice: 25,
-							volume:             1, // CHANGE FOR BOT
-							category:           4,
-							trust:              0,
-							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
-							requester:          user,
-							beneficiary:        user,
-							callback:           constants.NULL.ADDRESS,
-							params:             "<parameters>",
-							salt:               web3.utils.randomHex(32),
-							sign:               constants.NULL.SIGNATURE,
-						},
-						wallets.addressToPrivate(user)
-					);
+					requestorder = await user.signRequestOrder({
+						app:                AppInstance.address,
+						appmaxprice:        3,
+						dataset:            DatasetInstance.address,
+						datasetmaxprice:    1,
+						workerpool:         constants.NULL.ADDRESS,
+						workerpoolmaxprice: 25,
+						volume:             1, // CHANGE FOR BOT
+						category:           4,
+						trust:              0,
+						tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+						requester:          user.address,
+						beneficiary:        user.address,
+						callback:           constants.NULL.ADDRESS,
+						params:             "<parameters>",
+						salt:               web3.utils.randomHex(32),
+						sign:               constants.NULL.SIGNATURE,
+					});
 				});
 				it("verify", async () => {
-					assert.isTrue(
-						await IexecInstance.verifySignature(
-							user,
-							odbtools.RequestOrderTypedStructHash(requestorder),
-							requestorder.sign
-						),
-						"Error with the validation of the requestorder signature"
-					);
+					assert.isTrue(await IexecInstance.verifySignature(
+						user.address,
+						odbtools.utils.hashRequestOrder(ERC712_domain, requestorder),
+						requestorder.sign
+					));
 				});
 			});
 		});
@@ -266,8 +237,7 @@ contract('Relay', async (accounts) => {
 	describe("braodcasting", async () => {
 		describe("broadcastAppOrder", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.broadcastAppOrder(apporder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.broadcastAppOrder(apporder, { from: user.address });
 			});
 
 			it("emit events", async () => {
@@ -287,8 +257,7 @@ contract('Relay', async (accounts) => {
 
 		describe("broadcastDatasetOrder", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.broadcastDatasetOrder(datasetorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.broadcastDatasetOrder(datasetorder, { from: user.address });
 			});
 
 			it("emit events", async () => {
@@ -308,8 +277,7 @@ contract('Relay', async (accounts) => {
 
 		describe("broadcastWorkerpoolOrder", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.broadcastWorkerpoolOrder(workerpoolorder, { from: user.address });
 			});
 
 			it("emit events", async () => {
@@ -332,8 +300,7 @@ contract('Relay', async (accounts) => {
 
 		describe("broadcastRequestOrder", async () => {
 			it("success", async () => {
-				txMined = await IexecInstance.broadcastRequestOrder(requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
-				assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+				txMined = await IexecInstance.broadcastRequestOrder(requestorder, { from: user.address });
 			});
 
 			it("emit events", async () => {

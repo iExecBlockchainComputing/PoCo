@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
@@ -7,92 +7,108 @@ import "../interfaces/IexecOrderManagement.sol";
 
 contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 {
-	using IexecODBLibOrders_v4 for bytes32;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrder;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrder;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrder;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrder;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.AppOrderOperation;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.DatasetOrderOperation;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.WorkerpoolOrderOperation;
-	using IexecODBLibOrders_v4 for IexecODBLibOrders_v4.RequestOrderOperation;
+	using IexecLibOrders_v5 for bytes32;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrderOperation;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrderOperation;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrderOperation;
+	using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrderOperation;
 
 	/***************************************************************************
 	 *                         order management tools                          *
 	 ***************************************************************************/
-	function manageAppOrder(IexecODBLibOrders_v4.AppOrderOperation memory _apporderoperation)
-	public
+	function manageAppOrder(IexecLibOrders_v5.AppOrderOperation memory _apporderoperation)
+	public override
 	{
 		address owner = App(_apporderoperation.order.app).owner();
-		require(owner == msg.sender || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
+		require(owner == _msgSender() || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
 
 		bytes32 apporderHash = _apporderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		if (_apporderoperation.operation == 0)
 		{
 			m_presigned[apporderHash] = owner;
 			emit SignedAppOrder(apporderHash);
 		}
-		else if (_apporderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
+		else if (_apporderoperation.operation == 1)
 		{
 			m_consumed[apporderHash] = _apporderoperation.order.volume;
 			emit ClosedAppOrder(apporderHash);
 		}
+		else
+		{
+			revert();
+		}
 	}
 
-	function manageDatasetOrder(IexecODBLibOrders_v4.DatasetOrderOperation memory _datasetorderoperation)
-	public
+	function manageDatasetOrder(IexecLibOrders_v5.DatasetOrderOperation memory _datasetorderoperation)
+	public override
 	{
 		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
-		require(owner == msg.sender || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
+		require(owner == _msgSender() || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
 
 		bytes32 datasetorderHash = _datasetorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		if (_datasetorderoperation.operation == 0)
 		{
 			m_presigned[datasetorderHash] = owner;
 			emit SignedDatasetOrder(datasetorderHash);
 		}
-		else if (_datasetorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
+		else if (_datasetorderoperation.operation == 1)
 		{
 			m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
 			emit ClosedDatasetOrder(datasetorderHash);
 		}
+		else
+		{
+			revert();
+		}
 	}
 
-	function manageWorkerpoolOrder(IexecODBLibOrders_v4.WorkerpoolOrderOperation memory _workerpoolorderoperation)
-	public
+	function manageWorkerpoolOrder(IexecLibOrders_v5.WorkerpoolOrderOperation memory _workerpoolorderoperation)
+	public override
 	{
 		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
-		require(owner == msg.sender || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
+		require(owner == _msgSender() || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
 
 		bytes32 workerpoolorderHash = _workerpoolorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		if (_workerpoolorderoperation.operation == 0)
 		{
 			m_presigned[workerpoolorderHash] = owner;
 			emit SignedWorkerpoolOrder(workerpoolorderHash);
 		}
-		else if (_workerpoolorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
+		else if (_workerpoolorderoperation.operation == 1)
 		{
 			m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
 			emit ClosedWorkerpoolOrder(workerpoolorderHash);
 		}
+		else
+		{
+			revert();
+		}
 	}
 
-	function manageRequestOrder(IexecODBLibOrders_v4.RequestOrderOperation memory _requestorderoperation)
-	public
+	function manageRequestOrder(IexecLibOrders_v5.RequestOrderOperation memory _requestorderoperation)
+	public override
 	{
 		address owner = _requestorderoperation.order.requester;
-		require(owner == msg.sender || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
+		require(owner == _msgSender() || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
 
 		bytes32 requestorderHash = _requestorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.SIGN)
+		if (_requestorderoperation.operation == 0)
 		{
 			m_presigned[requestorderHash] = owner;
 			emit SignedRequestOrder(requestorderHash);
 		}
-		else if (_requestorderoperation.operation == IexecODBLibOrders_v4.OrderOperationEnum.CLOSE)
+		else if (_requestorderoperation.operation == 1)
 		{
 			m_consumed[requestorderHash] = _requestorderoperation.order.volume;
 			emit ClosedRequestOrder(requestorderHash);
+		}
+		else
+		{
+			revert();
 		}
 	}
 }

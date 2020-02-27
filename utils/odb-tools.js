@@ -1,309 +1,343 @@
-const ethUtil = require("ethereumjs-util");
+const ethUtil   = require('ethereumjs-util');
+const sigUtil   = require('eth-sig-util');
+const constants = require('./constants');
+const wallets   = require('./wallets');
 
-module.exports = {
 
-	           EIP712DOMAIN_SEPARATOR: null,
-	            EIP712DOMAIN_TYPEHASH: web3.utils.keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-	                APPORDER_TYPEHASH: web3.utils.keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
-	            DATASETORDER_TYPEHASH: web3.utils.keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
-	         WORKERPOOLORDER_TYPEHASH: web3.utils.keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)"),
-	            REQUESTORDER_TYPEHASH: web3.utils.keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
-	       APPORDEROPERATION_TYPEHASH: web3.utils.keccak256("AppOrderOperation(AppOrder order,uint256 operation)AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
-	   DATASETORDEROPERATION_TYPEHASH: web3.utils.keccak256("DatasetOrderOperation(DatasetOrder order,uint256 operation)DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)"),
-	WORKERPOOLORDEROPERATION_TYPEHASH: web3.utils.keccak256("WorkerpoolOrderOperation(WorkerpoolOrder order,uint256 operation)WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)"),
-	   REQUESTORDEROPERATION_TYPEHASH: web3.utils.keccak256("RequestOrderOperation(RequestOrder order,uint256 operation)RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)"),
 
-	setup: function(domain)
-	{
-		console.log("# iExec domain:", JSON.stringify(domain));
-		this.EIP712DOMAIN_SEPARATOR = this.DomainStructHash(domain);
-		console.log("EIP712DOMAIN_SEPARATOR:  ", this.EIP712DOMAIN_SEPARATOR);
-	},
+const TYPES =
+{
+	EIP712Domain: [
+		{ name: "name",              type: "string"  },
+		{ name: "version",           type: "string"  },
+		{ name: "chainId",           type: "uint256" },
+		{ name: "verifyingContract", type: "address" },
+	],
+	AppOrder: [
+		{ type: "address", name: "app"                },
+		{ type: "uint256", name: "appprice"           },
+		{ type: "uint256", name: "volume"             },
+		{ type: "bytes32", name: "tag"                },
+		{ type: "address", name: "datasetrestrict"    },
+		{ type: "address", name: "workerpoolrestrict" },
+		{ type: "address", name: "requesterrestrict"  },
+		{ type: "bytes32", name: "salt"               },
+	],
+	DatasetOrder: [
+		{ type: "address", name: "dataset"            },
+		{ type: "uint256", name: "datasetprice"       },
+		{ type: "uint256", name: "volume"             },
+		{ type: "bytes32", name: "tag"                },
+		{ type: "address", name: "apprestrict"        },
+		{ type: "address", name: "workerpoolrestrict" },
+		{ type: "address", name: "requesterrestrict"  },
+		{ type: "bytes32", name: "salt"               },
+	],
+	WorkerpoolOrder: [
+		{ type: "address", name:"workerpool"          },
+		{ type: "uint256", name:"workerpoolprice"     },
+		{ type: "uint256", name:"volume"              },
+		{ type: "bytes32", name:"tag"                 },
+		{ type: "uint256", name:"category"            },
+		{ type: "uint256", name:"trust"               },
+		{ type: "address", name:"apprestrict"         },
+		{ type: "address", name:"datasetrestrict"     },
+		{ type: "address", name:"requesterrestrict"   },
+		{ type: "bytes32", name:"salt"                },
+	],
+	RequestOrder: [
+		{ type: "address", name: "app"                },
+		{ type: "uint256", name: "appmaxprice"        },
+		{ type: "address", name: "dataset"            },
+		{ type: "uint256", name: "datasetmaxprice"    },
+		{ type: "address", name: "workerpool"         },
+		{ type: "uint256", name: "workerpoolmaxprice" },
+		{ type: "address", name: "requester"          },
+		{ type: "uint256", name: "volume"             },
+		{ type: "bytes32", name: "tag"                },
+		{ type: "uint256", name: "category"           },
+		{ type: "uint256", name: "trust"              },
+		{ type: "address", name: "beneficiary"        },
+		{ type: "address", name: "callback"           },
+		{ type: "string",  name: "params"             },
+		{ type: "bytes32", name: "salt"               },
+	],
+	AppOrderOperation: [
+		{ type: "AppOrder",        name: "order"     },
+		{ type: "uint256",         name: "operation" },
+	],
+	DatasetOrderOperation: [
+		{ type: "DatasetOrder",    name: "order"     },
+		{ type: "uint256",         name: "operation" },
+	],
+	WorkerpoolOrderOperation: [
+		{ type: "WorkerpoolOrder", name: "order"     },
+		{ type: "uint256",         name: "operation" },
+	],
+	RequestOrderOperation: [
+		{ type: "RequestOrder",    name: "order"     },
+		{ type: "uint256",         name: "operation" },
+	],
+}
 
-	/* EIP712 compliant structure hashes */
-	DomainStructHash: function(domain)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"bytes32",
-			"bytes32",
-			"uint256",
-			"address",
-		],[
-			this.EIP712DOMAIN_TYPEHASH,
-			web3.utils.keccak256(domain.name   ),
-			web3.utils.keccak256(domain.version),
-			domain.chainId,
-			domain.verifyingContract,
-		]));
-	},
-	AppOrderStructHash: function(apporder)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"address",
-			"uint256",
-			"uint256",
-			"uint256",
-			"address",
-			"address",
-			"address",
-			"bytes32",
-		],[
-			this.APPORDER_TYPEHASH,
-			apporder.app,
-			apporder.appprice,
-			apporder.volume,
-			apporder.tag,
-			apporder.datasetrestrict,
-			apporder.workerpoolrestrict,
-			apporder.requesterrestrict,
-			apporder.salt,
-		]));
-	},
-	DatasetOrderStructHash: function(datasetorder)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"address",
-			"uint256",
-			"uint256",
-			"uint256",
-			"address",
-			"address",
-			"address",
-			"bytes32",
-		],[
-			this.DATASETORDER_TYPEHASH,
-			datasetorder.dataset,
-			datasetorder.datasetprice,
-			datasetorder.volume,
-			datasetorder.tag,
-			datasetorder.apprestrict,
-			datasetorder.workerpoolrestrict,
-			datasetorder.requesterrestrict,
-			datasetorder.salt,
-		]));
-	},
-	WorkerpoolOrderStructHash: function(workerpoolorder)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"address",
-			"uint256",
-			"uint256",
-			"uint256",
-			"uint256",
-			"uint256",
-			"address",
-			"address",
-			"address",
-			"bytes32",
-		],[
-			this.WORKERPOOLORDER_TYPEHASH,
-			workerpoolorder.workerpool,
-			workerpoolorder.workerpoolprice,
-			workerpoolorder.volume,
-			workerpoolorder.tag,
-			workerpoolorder.category,
-			workerpoolorder.trust,
-			workerpoolorder.apprestrict,
-			workerpoolorder.datasetrestrict,
-			workerpoolorder.requesterrestrict,
-			workerpoolorder.salt,
-		]));
-	},
-	RequestOrderStructHash: function(requestorder)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"address",
-			"uint256",
-			"address",
-			"uint256",
-			"address",
-			"uint256",
-			"address",
-			"uint256",
-			"uint256",
-			"uint256",
-			"uint256",
-			"address",
-			"address",
-			"bytes32",
-			"bytes32",
-		],[
-			this.REQUESTORDER_TYPEHASH,
-			requestorder.app,
-			requestorder.appmaxprice,
-			requestorder.dataset,
-			requestorder.datasetmaxprice,
-			requestorder.workerpool,
-			requestorder.workerpoolmaxprice,
-			requestorder.requester,
-			requestorder.volume,
-			requestorder.tag,
-			requestorder.category,
-			requestorder.trust,
-			requestorder.beneficiary,
-			requestorder.callback,
-			web3.utils.keccak256(requestorder.params),
-			requestorder.salt,
-		]));
-	},
-	AppOrderOperationStructHash: function(apporderoperation)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"bytes32",
-			"uint256",
-		],[
-			this.APPORDEROPERATION_TYPEHASH,
-			this.AppOrderStructHash(apporderoperation.order),
-			apporderoperation.operation,
-		]));
-	},
-	DatasetOrderOperationStructHash: function(datasetorderoperation)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"bytes32",
-			"uint256",
-		],[
-			this.DATASETORDEROPERATION_TYPEHASH,
-			this.DatasetOrderStructHash(datasetorderoperation.order),
-			datasetorderoperation.operation,
-		]));
-	},
-	WorkerpoolOrderOperationStructHash: function(workerpoolorderoperation)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"bytes32",
-			"uint256",
-		],[
-			this.WORKERPOOLORDEROPERATION_TYPEHASH,
-			this.WorkerpoolOrderStructHash(workerpoolorderoperation.order),
-			workerpoolorderoperation.operation,
-		]));
-	},
-	RequestOrderOperationStructHash: function(requestorderoperation)
-	{
-		return web3.utils.keccak256(web3.eth.abi.encodeParameters([
-			"bytes32",
-			"bytes32",
-			"uint256",
-		],[
-			this.REQUESTORDEROPERATION_TYPEHASH,
-			this.RequestOrderStructHash(requestorderoperation.order),
-			requestorderoperation.operation,
-		]));
-	},
-	typedStructHash: function(hash)
-	{
-		return web3.utils.soliditySha3(
-			{ t: 'bytes',   v: "0x1901"                    },
-			{ t: 'bytes32', v: this.EIP712DOMAIN_SEPARATOR },
-			{ t: 'bytes32', v: hash                        },
-		)
-	},
-
-	AppOrderTypedStructHash:                 function (order) { return this.typedStructHash(this.AppOrderStructHash                (order)); },
-	DatasetOrderTypedStructHash:             function (order) { return this.typedStructHash(this.DatasetOrderStructHash            (order)); },
-	WorkerpoolOrderTypedStructHash:          function (order) { return this.typedStructHash(this.WorkerpoolOrderStructHash         (order)); },
-	RequestOrderTypedStructHash:             function (order) { return this.typedStructHash(this.RequestOrderStructHash            (order)); },
-	AppOrderOperationTypedStructHash:        function (order) { return this.typedStructHash(this.AppOrderOperationStructHash       (order)); },
-	DatasetOrderOperationTypedStructHash:    function (order) { return this.typedStructHash(this.DatasetOrderOperationStructHash   (order)); },
-	WorkerpoolOrderOperationTypedStructHash: function (order) { return this.typedStructHash(this.WorkerpoolOrderOperationStructHash(order)); },
-	RequestOrderOperationTypedStructHash:    function (order) { return this.typedStructHash(this.RequestOrderOperationStructHash   (order)); },
-
-	/* NOT EIP712 compliant */
-	authorizationHash: function(authorization)
-	{
-		return web3.utils.soliditySha3(
-			{ t: 'address', v: authorization.worker  },
-			{ t: 'bytes32', v: authorization.taskid  },
-			{ t: 'address', v: authorization.enclave },
-		);
-	},
-	/* NOT EIP712 compliant */
-	contributionHash: function(result)
-	{
-		return web3.utils.soliditySha3(
-			{ t: 'bytes32', v: result.hash },
-			{ t: 'bytes32', v: result.seal },
-		);
-	},
-
-	/* signature schemes */
-	signStruct: function(struct, hash, key)
-	{
-		sig = ethUtil.ecsign(Buffer.from(hash.substr(2), 'hex'), key);
-		struct.sign = '0x' +
-		[ ethUtil.bufferToHex(sig.r).substr(2)
-		, ethUtil.bufferToHex(sig.s).substr(2)
-		, ethUtil.bufferToHex(sig.v).substr(2)
-		].join('');
-		return struct;
-	},
-
-	signMessage: function(obj, hash, wallet)
-	{
-		return web3.eth.sign(hash, wallet).then(function(signature) {
-			obj.sign = signature;
-			return obj
-		});
-	},
-
-	/* wrappers */
-	signAppOrder:                 function(apporder,                 key    ) { return this.signStruct (apporder,                 this.AppOrderTypedStructHash                (apporder),                 key    ); },
-	signDatasetOrder:             function(datasetorder,             key    ) { return this.signStruct (datasetorder,             this.DatasetOrderTypedStructHash            (datasetorder),             key    ); },
-	signWorkerpoolOrder:          function(workerpoolorder,          key    ) { return this.signStruct (workerpoolorder,          this.WorkerpoolOrderTypedStructHash         (workerpoolorder),          key    ); },
-	signRequestOrder:             function(requestorder,             key    ) { return this.signStruct (requestorder,             this.RequestOrderTypedStructHash            (requestorder),             key    ); },
-	signAppOrderOperation:        function(apporderoperation,        key    ) { return this.signStruct (apporderoperation,        this.AppOrderOperationTypedStructHash       (apporderoperation),        key    ); },
-	signDatasetOrderOperation:    function(datasetorderoperation,    key    ) { return this.signStruct (datasetorderoperation,    this.DatasetOrderOperationTypedStructHash   (datasetorderoperation),    key    ); },
-	signWorkerpoolOrderOperation: function(workerpoolorderoperation, key    ) { return this.signStruct (workerpoolorderoperation, this.WorkerpoolOrderOperationTypedStructHash(workerpoolorderoperation), key    ); },
-	signRequestOrderOperation:    function(requestorderoperation,    key    ) { return this.signStruct (requestorderoperation,    this.RequestOrderOperationTypedStructHash   (requestorderoperation),    key    ); },
-	signAuthorization:            function(authorization,            address) { return this.signMessage(authorization,            this.authorizationHash                      (authorization),            address); },
-	signContribution:             function(contribution,             address) { return this.signMessage(contribution,             this.contributionHash                       (contribution ),            address); },
-
-	hashByteResult: function(taskid, byteresult)
-	{
-		return {
-			digest: byteresult,
-			hash:   web3.utils.soliditySha3({ t: 'bytes32', v: taskid  }, { t: 'bytes32', v: byteresult }),
-		};
-	},
-
-	sealByteResult: function(taskid, byteresult, address)
-	{
-		return {
-			digest: byteresult,
-			hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-			seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-		};
-	},
-	hashResult: function(taskid, result)          { return this.hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result })         ); },
-	sealResult: function(taskid, result, address) { return this.sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address); },
-
-	requestToDeal: async function(IexecClerk, requestHash)
-	{
-		let idx     = 0;
-		let dealids = [];
-		while (true)
+function signStruct(primaryType, message, domain, pk)
+{
+	message.sign = sigUtil.signTypedData(
+		Buffer.from(pk.substring(2), 'hex'),
 		{
-			let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
-			let deal = await IexecClerk.viewDeal(dealid);
-			if (deal.botSize == 0)
+			data:
 			{
-				return dealids;
-			}
-			else
-			{
-				dealids.push(dealid);
-				idx += deal.botSize;
+				types: TYPES,
+				primaryType,
+				message,
+				domain,
 			}
 		}
+	);
+	return message;
+}
+
+function hashStruct(primaryType, message, domain)
+{
+	return ethUtil.bufferToHex(sigUtil.TypedDataUtils.sign({
+		types: TYPES,
+		primaryType,
+		message,
+		domain,
+	}));
+}
+
+function signMessage(obj, hash, wallet)
+{
+	if (wallet.sign)
+	{
+		obj.sign = wallet.sign(hash).signature;
+		return obj;
+	}
+	else
+	{
+		return web3.eth.sign(hash, wallet).then(sign => {
+			obj.sign = sign;
+			return obj;
+		});
+	}
+}
+
+/* NOT EIP712 compliant */
+function hashAuthorization(authorization)
+{
+	return web3.utils.soliditySha3(
+		{ t: 'address', v: authorization.worker  },
+		{ t: 'bytes32', v: authorization.taskid  },
+		{ t: 'address', v: authorization.enclave },
+	);
+}
+
+/* NOT EIP712 compliant */
+function hashContribution(result)
+{
+	return web3.utils.soliditySha3(
+		{ t: 'bytes32', v: result.hash },
+		{ t: 'bytes32', v: result.seal },
+	);
+}
+
+function signAuthorization(obj, wallet)
+{
+	return signMessage(obj, hashAuthorization(obj), wallet);
+}
+
+function signContribution(obj, wallet)
+{
+	return signMessage(obj, hashContribution (obj), wallet);
+}
+
+function hashByteResult(taskid, byteresult)
+{
+	return {
+		digest: byteresult,
+		hash:   web3.utils.soliditySha3({ t: 'bytes32', v: taskid  }, { t: 'bytes32', v: byteresult }),
+	};
+}
+
+function sealByteResult(taskid, byteresult, address)
+{
+	return {
+		digest: byteresult,
+		hash:   web3.utils.soliditySha3(                              { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
+		seal:   web3.utils.soliditySha3({ t: 'address', v: address }, { t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
+	};
+}
+
+function hashResult(taskid, result)
+{
+	return hashByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }));
+}
+
+function sealResult(taskid, result, address)
+{
+	return sealByteResult(taskid, web3.utils.soliditySha3({t: 'string', v: result }), address);
+}
+
+async function requestToDeal(IexecClerk, requestHash)
+{
+	let idx     = 0;
+	let dealids = [];
+	while (true)
+	{
+		let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
+		let deal = await IexecClerk.viewDeal(dealid);
+		if (deal.botSize == 0)
+		{
+			return dealids;
+		}
+		else
+		{
+			dealids.push(dealid);
+			idx += deal.botSize;
+		}
+	}
+}
+
+
+
+
+/*****************************************************************************
+ *                                 MOCK AGENT                                *
+ *****************************************************************************/
+class iExecAgent
+{
+	constructor(iexec, account)
+	{
+		this.iexec  = iexec;
+		this.wallet = account
+		? web3.eth.accounts.privateKeyToAccount(wallets.privateKeys[account.toLowerCase()])
+		: web3.eth.accounts.create();
+		this.address = this.wallet.address;
+	}
+	async domain() { return await this.iexec.domain(); }
+	async signMessage                 (obj, hash) { return signMessage(obj, hash, this.wallet); }
+	async signAppOrder                (struct)    { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrder            (struct)    { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrder         (struct)    { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrder            (struct)    { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet.privateKey); }
+	async signAppOrderOperation       (struct)    { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet.privateKey); }
+	async signDatasetOrderOperation   (struct)    { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+	async signWorkerpoolOrderOperation(struct)    { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet.privateKey); }
+	async signRequestOrderOperation   (struct)    { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+
+	async viewAccount()
+	{
+		return Object.extract(await this.iexec.viewAccount(this.wallet.address), [ 'stake', 'locked' ]).map(bn => Number(bn));
+	}
+	async viewScore()
+	{
+		return Number(await this.iexec.viewScore(this.wallet.address));
+	}
+}
+/*****************************************************************************
+ *                                MOCK BROKER                                *
+ *****************************************************************************/
+class Broker extends iExecAgent
+{
+	constructor(iexec)
+	{
+		super(iexec);
 	}
 
+	async initialize()
+	{
+		await this.iexec.setTeeBroker(this.wallet.address);
+	}
+
+	async signAuthorization(preauth)
+	{
+		const task   = await this.iexec.viewTask(preauth.taskid);
+		const deal   = await this.iexec.viewDeal(task.dealid);
+		const signer = web3.eth.accounts.recover(hashAuthorization(preauth), preauth.sign);
+		if (signer == deal.workerpool.owner)
+		{
+			const enclaveWallet = web3.eth.accounts.create();
+			const auth = await signAuthorization({ ...preauth, enclave: enclaveWallet.address }, this.wallet);
+			return [ auth, enclaveWallet ];
+		}
+		else
+		{
+			return [ null, null ];
+		}
+	}
+}
+/*****************************************************************************
+ *                               MOCK SCHEDULER                              *
+ *****************************************************************************/
+class Scheduler extends iExecAgent
+{
+	constructor(iexec, wallet)
+	{
+		super(iexec, wallet);
+	}
+
+	async signPreAuthorization(taskid, worker)
+	{
+		return await signAuthorization({ taskid, worker, enclave: constants.NULL.ADDRESS }, this.wallet);
+	}
+}
+/*****************************************************************************
+ *                                MOCK WORKER                                *
+ *****************************************************************************/
+class Worker extends iExecAgent
+{
+	constructor(iexec, wallet)
+	{
+		super(iexec, wallet);
+	}
+
+	async run(auth, enclaveWallet, result)
+	{
+		const contribution = sealResult(auth.taskid, result, this.wallet.address);
+		if (auth.enclave == constants.NULL.ADDRESS) // Classic
+		{
+			contribution.sign = constants.NULL.SIGNATURE;
+		}
+		else // TEE
+		{
+			await signContribution(contribution, enclaveWallet);
+		}
+		return contribution;
+	}
+}
+
+/*****************************************************************************
+ *                                  MODULE                                   *
+ *****************************************************************************/
+module.exports = {
+	/* mocks */
+	iExecAgent,
+	Scheduler,
+	Broker,
+	Worker,
+	/* utils */
+	utils: {
+		signStruct,
+		hashStruct,
+		signMessage,
+		hashAuthorization,
+		hashContribution,
+		signAuthorization,
+		signContribution,
+		hashByteResult,
+		sealByteResult,
+		hashResult,
+		sealResult,
+		hashConsensus: hashResult,
+		hashAppOrder:                 function(domain, struct) { return hashStruct("AppOrder",                 struct, domain); },
+		hashDatasetOrder:             function(domain, struct) { return hashStruct("DatasetOrder",             struct, domain); },
+		hashWorkerpoolOrder:          function(domain, struct) { return hashStruct("WorkerpoolOrder",          struct, domain); },
+		hashRequestOrder:             function(domain, struct) { return hashStruct("RequestOrder",             struct, domain); },
+		hashAppOrderOperation:        function(domain, struct) { return hashStruct("AppOrderOperation",        struct, domain); },
+		hashDatasetOrderOperation:    function(domain, struct) { return hashStruct("DatasetOrderOperation",    struct, domain); },
+		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
+		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
+		requestToDeal,
+	},
 };

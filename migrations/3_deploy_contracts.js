@@ -8,12 +8,14 @@ var ENSRegistry             = artifacts.require('@ensdomains/ens/ENSRegistry')
 var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
 var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
+// Factory
+var GenericFactory          = artifacts.require('@iexec/solidity/GenericFactory')
 // ERC1538 core & delegates
-var ERC1538Proxy            = artifacts.require('iexec-solidity/ERC1538Proxy')
-var ERC1538Update           = artifacts.require('iexec-solidity/ERC1538UpdateDelegate')
-var ERC1538Query            = artifacts.require('iexec-solidity/ERC1538QueryDelegate')
+var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
+var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
+var ERC1538Query            = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
 // Libraries
-var IexecODBLibOrders       = artifacts.require('IexecODBLibOrders_v4')
+var IexecLibOrders          = artifacts.require('IexecLibOrders_v5')
 // Interface
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
@@ -33,10 +35,9 @@ var ENSIntegration          = artifacts.require('ENSIntegrationDelegate')
 var AppRegistry             = artifacts.require('AppRegistry')
 var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
-var GenericFactory          = artifacts.require('GenericFactory')
 
 const LIBRARIES = [
-	{ pattern: /__IexecODBLibOrders_v4__________________/g, library: IexecODBLibOrders },
+	{ pattern: /__IexecLibOrders_v5_____________________/g, library: IexecLibOrders },
 ]
 
 /*****************************************************************************
@@ -44,57 +45,43 @@ const LIBRARIES = [
  *****************************************************************************/
 function getSerializedObject(entry)
 {
-	if (entry.type == 'tuple')
-	{
-		return '(' + entry.components.map(getSerializedObject).join(',') + ')';
-	}
-	else
-	{
-		return entry.type;
-	}
+	return (entry.type == 'tuple')
+		? `(${entry.components.map(getSerializedObject).join(',')})`
+		: entry.type;
 }
 
 function getFunctionSignatures(abi)
 {
-	return (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '') + abi
+	return abi
 		.filter(entry => entry.type == 'function')
-		.map(entry => entry.name + '(' + entry.inputs.map(getSerializedObject).join(',') + ');')
-		.join('');
+		.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`)
+		.join('')
+	+ (abi.some(entry => entry.type == 'receive' ) ? 'receive;'  : '')
+	+ (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '');
 }
 
 async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
-	let factory        = await GenericFactory.deployed();
-	let constructorABI = contract._json.abi.find(e => e.type == 'constructor');
-	let coreCode       = contract.bytecode;
+	const factory          = await GenericFactory.deployed();
+	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
+	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
+	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
+	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args).slice(2) : '';
+	const code             = coreCode + argsCode;
+	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-	for ({ pattern, library } of LIBRARIES)
-	{
-		if (coreCode.search(pattern) != -1)
-		{
-			let { address } = await library.deployed()
-			coreCode = coreCode.replace(pattern, address.slice(2).toLowerCase())
-		}
-	}
-
-	let argsCode   = constructorABI ? web3.eth.abi.encodeParameters(contract._json.abi.filter(e => e.type == 'constructor')[0].inputs.map(e => e.type), options.args).slice(2) : ''
-	let deployCode = coreCode + argsCode
-
-	contract.address = await factory.predictAddress(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
+	contract.address = options.call
+		? await factory.predictAddressWithCall(code, salt, options.call)
+		: await factory.predictAddress(code, salt);
 
 	if (await web3.eth.getCode(contract.address) == '0x')
 	{
 		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
-		if (options.call)
-		{
-			await factory.createContractAndCallback(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000', options.call);
-		}
-		else
-		{
-			await factory.createContract(deployCode, options.salt || '0x0000000000000000000000000000000000000000000000000000000000000000');
-		}
-		console.log(`[factory] ${contract.contractName} successfully deployed`);
+		options.call
+			? await factory.createContractAndCall(code, salt, options.call)
+			: await factory.createContract(code, salt);
+		console.log(`[factory] ${contract.contractName} successfully deployed at ${contract.address}`);
 	}
 	else
 	{
@@ -108,35 +95,26 @@ async function factoryDeployer(contract, options = {})
 module.exports = async function(deployer, network, accounts)
 {
 	console.log('# web3 version:', web3.version);
-	chainid   = await web3.eth.net.getId();
-	chaintype = await web3.eth.net.getNetworkType();
+	const chainid   = await web3.eth.net.getId();
+	const chaintype = await web3.eth.net.getNetworkType();
 	console.log('Chainid is:', chainid);
 	console.log('Chaintype is:', chaintype);
 
 	/* ------------------------- Existing deployment ------------------------- */
-	DEPLOYMENT = {
-		salt: web3.utils.randomHex(32),
-		...(CONFIG.chains[chainid] || CONFIG.chains.default)
-	};
+	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
+	const factoryOptions    = { salt: deploymentOptions.v5.salt || web3.utils.randomHex(32) };
 
-
-	switch (DEPLOYMENT.asset)
+	switch (deploymentOptions.asset)
 	{
 		case 'Token':
-			if (DEPLOYMENT.token)
+			if (deploymentOptions.token)
 			{
-				RLCInstance = await RLC.at(DEPLOYMENT.token)
+				RLCInstance = await RLC.at(deploymentOptions.token)
 			}
 			else
 			{
 				await deployer.deploy(RLC);
 				RLCInstance = await RLC.deployed();
-
-				console.log(`RLC deployed at address: ${RLCInstance.address}`);
-				const owner = await RLCInstance.owner.call()
-				console.log(`RLC faucet wallet is ${owner}`);
-				supply = await RLCInstance.balanceOf(owner);
-				console.log(`RLC faucet supply is ${supply}`);
 			}
 			break;
 
@@ -146,30 +124,26 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ------------------------ Deploy & link library ------------------------ */
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(IexecODBLibOrders, {
-			salt: CONFIG.salt
-		});
+		await factoryDeployer(IexecLibOrders, factoryOptions);
 	}
 	else
 	{
-		await deployer.deploy(IexecODBLibOrders);
-		await deployer.link(IexecODBLibOrders, IexecPoco);
-		await deployer.link(IexecODBLibOrders, IexecMaintenance);
-		await deployer.link(IexecODBLibOrders, IexecOrderManagement);
+		await deployer.deploy(IexecLibOrders);
+		await deployer.link(IexecLibOrders, IexecPoco);
+		await deployer.link(IexecLibOrders, IexecMaintenance);
+		await deployer.link(IexecLibOrders, IexecOrderManagement);
 	}
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(ERC1538Update, {
-			salt: CONFIG.salt
-		});
+		await factoryDeployer(ERC1538Update, factoryOptions);
 		await factoryDeployer(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
-			salt: CONFIG.salt,
-			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 	}
 	else
@@ -187,7 +161,7 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecERC20,
-		DEPLOYMENT.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
+		deploymentOptions.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
 		IexecMaintenance,
 		IexecOrderManagement,
 		IexecPoco,
@@ -199,11 +173,9 @@ module.exports = async function(deployer, network, accounts)
 	for (id in contracts)
 	{
 		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (DEPLOYMENT.v4.usefactory)
+		if (deploymentOptions.v5.usefactory)
 		{
-			await factoryDeployer(contracts[id], {
-				salt: CONFIG.salt
-			});
+			await factoryDeployer(contracts[id], factoryOptions);
 		}
 		else
 		{
@@ -217,35 +189,35 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* --------------------------- Configure Stack --------------------------- */
-	switch (DEPLOYMENT.asset)
+	switch (deploymentOptions.asset)
 	{
 		case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);  break;
 		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at(ERC1538.address); break;
 	}
 
-	if (DEPLOYMENT.v4.usefactory)
+	if (deploymentOptions.v5.usefactory)
 	{
 		await factoryDeployer(AppRegistry,        {
-			args: [ DEPLOYMENT.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
-			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 		await factoryDeployer(DatasetRegistry,    {
-			args: [ DEPLOYMENT.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
-			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 		await factoryDeployer(WorkerpoolRegistry, {
-			args: [ DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
-			salt: CONFIG.salt,
-			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ])
+			args: [ deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
+			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
 		});
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        DEPLOYMENT.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    DEPLOYMENT.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, DEPLOYMENT.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(AppRegistry,        deploymentOptions.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(DatasetRegistry,    deploymentOptions.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
+		await deployer.deploy(WorkerpoolRegistry, deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -256,13 +228,13 @@ module.exports = async function(deployer, network, accounts)
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,
-		'Hub RLC',
-		'hRLC',
-		9,
+		'Staked RLC',
+		'SRLC',
+		9, // TODO: generic ?
 		AppRegistryInstance.address,
 		DatasetRegistryInstance.address,
 		WorkerpoolRegistryInstance.address,
-		DEPLOYMENT.v3.Hub || '0x0000000000000000000000000000000000000000'
+		deploymentOptions.v3.Hub || '0x0000000000000000000000000000000000000000'
 	);
 
 	/* ----------------------------- Categories ------------------------------ */
@@ -381,7 +353,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* ------------------------ ERC1538 list methods ------------------------- */
-	if (false)
+	if (true)
 	{
 		let ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
 		let functionCount = await ERC1538QueryInstace.totalFunctions();

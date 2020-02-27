@@ -1,5 +1,5 @@
-var GenericFactory = artifacts.require("iexec-solidity/GenericFactory");
-var FACTORY = require("../config/factory.json")
+var GenericFactory = artifacts.require("@iexec/solidity/GenericFactory");
+var FACTORY = require("@iexec/solidity/deployment/factory.json")
 
 module.exports = async function(deployer, network, accounts)
 {
@@ -20,14 +20,15 @@ module.exports = async function(deployer, network, accounts)
 		try
 		{
 			console.log(`→ Factory is not yet deployed on ${chaintype} (${chainid})`)
-			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: 600000*22*10**9 });
+			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: FACTORY.cost });
 			await web3.eth.sendSignedTransaction(FACTORY.tx[chainid]);
 			GenericFactory.address = FACTORY.address;
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)
 		}
 		catch (e)
 		{
-			console.log(`→ Error deploying the factory, using a non standard address`)
+			console.log(`→ Error deploying the factory`)
+			console.log(`→ Using a non standard address`)
 			await deployer.deploy(GenericFactory);
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)
 		}

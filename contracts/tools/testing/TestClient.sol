@@ -1,6 +1,6 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
-import "iexec-solidity/contracts/ERC1154/IERC1154.sol";
+import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
 
 
 contract TestClient is IOracleConsumer
@@ -14,7 +14,7 @@ contract TestClient is IOracleConsumer
 	{
 	}
 
-	function receiveResult(bytes32 id, bytes calldata result) external
+	function receiveResult(bytes32 id, bytes calldata result) external override
 	{
 		store[id] = result;
 		emit GotResult(id, result);

@@ -11,30 +11,27 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
+const { BN, expectEvent, expectRevert } = require("@openzeppelin/test-helpers");
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
-contract('Poco', async (accounts) => {
+contract("Poco", async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -60,8 +57,20 @@ contract('Poco', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		odbtools.setup(await IexecInstance.domain());
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	/***************************************************************************
@@ -71,21 +80,21 @@ contract('Poco', async (accounts) => {
 		switch (DEPLOYMENT.asset)
 		{
 			case "Native":
-				await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.deposit({ from: iexecAdmin.address, value: 10000000 * 10 ** 9 });
 				break;
 
 			case "Token":
-				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin.address });
 				break;
 		}
 		await Promise.all([
-			IexecInstance.transfer(scheduler, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker1,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker2,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker3,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker4,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker5,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(user,      1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
 		]);
 	});
 
@@ -94,49 +103,45 @@ contract('Poco', async (accounts) => {
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
 		txMined = await AppRegistryInstance.createApp(
-			appProvider,
+			appProvider.address,
 			"R Clifford Attractors",
 			"DOCKER",
 			constants.MULTIADDR_BYTES,
 			constants.NULL.BYTES32,
 			"0x",
-			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: appProvider.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
 		AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Dataset Creation", async () => {
 		txMined = await DatasetRegistryInstance.createDataset(
-			datasetProvider,
+			datasetProvider.address,
 			"Pi",
 			constants.MULTIADDR_BYTES,
 			constants.NULL.BYTES32,
-			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: datasetProvider.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
 		DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Workerpool Creation", async () => {
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
-			scheduler,
+			scheduler.address,
 			"A test workerpool",
-			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: scheduler.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
 		WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Workerpool configuration", async () => {
-		txMined = await WorkerpoolInstance.changePolicy(35, 5, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
+		await WorkerpoolInstance.changePolicy(35, 5, { from: scheduler.address });
 	});
 
-	matchOrders = (appextra, datasetextra, workerpoolextra, userextra) => {
+	matchOrders = async (appextra, datasetextra, workerpoolextra, userextra) => {
 		_apporder = {
 			app:                AppInstance.address,
 			appprice:           3,
@@ -183,8 +188,8 @@ contract('Poco', async (accounts) => {
 			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:           4,
 			trust:              1000,
-			requester:          user,
-			beneficiary:        user,
+			requester:          user.address,
+			beneficiary:        user.address,
 			callback:           constants.NULL.ADDRESS,
 			params:             "<parameters>",
 			salt:               web3.utils.randomHex(32),
@@ -193,15 +198,13 @@ contract('Poco', async (accounts) => {
 		for (key in appextra       ) _apporder[key]        = appextra[key];
 		for (key in datasetextra   ) _datasetorder[key]    = datasetextra[key];
 		for (key in workerpoolextra) _workerpoolorder[key] = workerpoolextra[key];
-		for (key in userextra      ) _requestorder[key]       = userextra[key];
-		odbtools.signAppOrder       (_apporder,        wallets.addressToPrivate(appProvider    ));
-		odbtools.signDatasetOrder   (_datasetorder,    wallets.addressToPrivate(datasetProvider));
-		odbtools.signWorkerpoolOrder(_workerpoolorder, wallets.addressToPrivate(scheduler      ));
-		odbtools.signRequestOrder   (_requestorder,    wallets.addressToPrivate(user           ));
-		return IexecInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder, { from: user, gasLimit: constants.AMOUNT_GAS_PROVIDED });
+		for (key in userextra      ) _requestorder[key]    = userextra[key];
+		await appProvider.signAppOrder(_apporder);
+		await datasetProvider.signDatasetOrder(_datasetorder);
+		await scheduler.signWorkerpoolOrder(_workerpoolorder);
+		await user.signRequestOrder(_requestorder);
+		return IexecInstance.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder, { from: user.address });
 	};
-
-
 
 	it("[Match - app-dataset-workerpool-user]", async () => {
 		await matchOrders(
@@ -211,24 +214,24 @@ contract('Poco', async (accounts) => {
 			{},
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
-		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (       deal.app.owner,             appProvider.address       );
 		assert.equal  (Number(deal.app.price),            3                         );
 		assert.equal  (       deal.dataset.pointer,       DatasetInstance.address   );
-		assert.equal  (       deal.dataset.owner,         datasetProvider           );
+		assert.equal  (       deal.dataset.owner,         datasetProvider.address   );
 		assert.equal  (Number(deal.dataset.price),        1                         );
 		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
-		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (       deal.workerpool.owner,      scheduler.address         );
 		assert.equal  (Number(deal.workerpool.price),     25                        );
 		assert.equal  (Number(deal.trust),                1000                      );
 		assert.equal  (Number(deal.category),             4                         );
 		assert.equal  (Number(deal.tag),                  0x0                       );
-		assert.equal  (       deal.requester,             user                      );
-		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.requester,             user.address              );
+		assert.equal  (       deal.beneficiary,           user.address              );
 		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
 		assert.equal  (       deal.params,                "<parameters>"            );
 		assert.isAbove(Number(deal.startTime),            0                         );
@@ -246,24 +249,24 @@ contract('Poco', async (accounts) => {
 			{ dataset: constants.NULL.ADDRESS },
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
-		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (       deal.app.owner,             appProvider.address       );
 		assert.equal  (Number(deal.app.price),            3                         );
 		assert.equal  (       deal.dataset.pointer,       constants.NULL.ADDRESS    );
 		assert.equal  (       deal.dataset.owner,         constants.NULL.ADDRESS    );
 		assert.equal  (Number(deal.dataset.price),        0                         );
 		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
-		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (       deal.workerpool.owner,      scheduler.address         );
 		assert.equal  (Number(deal.workerpool.price),     25                        );
 		assert.equal  (Number(deal.trust),                1000                      );
 		assert.equal  (Number(deal.category),             4                         );
 		assert.equal  (Number(deal.tag),                  0x0                       );
-		assert.equal  (       deal.requester,             user                      );
-		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.requester,             user.address              );
+		assert.equal  (       deal.beneficiary,           user.address              );
 		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
 		assert.equal  (       deal.params,                "<parameters>"            );
 		assert.isAbove(Number(deal.startTime),            0                         );
@@ -281,24 +284,24 @@ contract('Poco', async (accounts) => {
 			{ volume: 10 },
 		);
 
-		deals = await odbtools.requestToDeal(IexecInstance, odbtools.RequestOrderTypedStructHash(_requestorder));
-		assert.equal(deals[0], web3.utils.soliditySha3({ t: 'bytes32', v: odbtools.RequestOrderTypedStructHash(_requestorder) }, { t: 'uint256', v: 0 }), "check dealid");
+		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder));
+		assert.equal(deals[0], web3.utils.soliditySha3({ t: "bytes32", v: odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder) }, { t: "uint256", v: 0 }), "check dealid");
 
 		deal = await IexecInstance.viewDeal(deals[0]);
 		assert.equal  (       deal.app.pointer,           AppInstance.address       );
-		assert.equal  (       deal.app.owner,             appProvider               );
+		assert.equal  (       deal.app.owner,             appProvider.address       );
 		assert.equal  (Number(deal.app.price),            3                         );
 		assert.equal  (       deal.dataset.pointer,       DatasetInstance.address   );
-		assert.equal  (       deal.dataset.owner,         datasetProvider           );
+		assert.equal  (       deal.dataset.owner,         datasetProvider.address   );
 		assert.equal  (Number(deal.dataset.price),        1                         );
 		assert.equal  (       deal.workerpool.pointer,    WorkerpoolInstance.address);
-		assert.equal  (       deal.workerpool.owner,      scheduler                 );
+		assert.equal  (       deal.workerpool.owner,      scheduler.address         );
 		assert.equal  (Number(deal.workerpool.price),     25                        );
 		assert.equal  (Number(deal.trust),                1000                      );
 		assert.equal  (Number(deal.category),             4                         );
 		assert.equal  (Number(deal.tag),                  0x0                       );
-		assert.equal  (       deal.requester,             user                      );
-		assert.equal  (       deal.beneficiary,           user                      );
+		assert.equal  (       deal.requester,             user.address              );
+		assert.equal  (       deal.beneficiary,           user.address              );
 		assert.equal  (       deal.callback,              constants.NULL.ADDRESS    );
 		assert.equal  (       deal.params,                "<parameters>"            );
 		assert.isAbove(Number(deal.startTime),            0                         );
@@ -394,7 +397,7 @@ contract('Poco', async (accounts) => {
 			{},
 			{},
 			{},
-			{ app: user },
+			{ app: user.address },
 		));
 	});
 
@@ -403,7 +406,7 @@ contract('Poco', async (accounts) => {
 			{},
 			{},
 			{},
-			{ dataset: user},
+			{ dataset: user.address },
 		));
 	});
 
@@ -412,13 +415,13 @@ contract('Poco', async (accounts) => {
 			{},
 			{},
 			{},
-			{ workerpool: user },
+			{ workerpool: user.address },
 		));
 	});
 
 	it("[Match - Error - app-datasetrestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
-			{ datasetrestrict: user },
+			{ datasetrestrict: user.address },
 			{},
 			{},
 			{},
@@ -435,7 +438,7 @@ contract('Poco', async (accounts) => {
 
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
-			{ workerpoolrestrict: user },
+			{ workerpoolrestrict: user.address },
 			{},
 			{},
 			{},
@@ -452,7 +455,7 @@ contract('Poco', async (accounts) => {
 
 	it("[Match - Error - app-requesterrestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
-			{ requesterrestrict: iexecAdmin },
+			{ requesterrestrict: iexecAdmin.address },
 			{},
 			{},
 			{},
@@ -460,7 +463,7 @@ contract('Poco', async (accounts) => {
 	});
 	it("[Match - Ok - app-requesterrestrict]", async () => {
 		await matchOrders(
-			{ requesterrestrict: user },
+			{ requesterrestrict: user.address },
 			{},
 			{},
 			{},
@@ -470,7 +473,7 @@ contract('Poco', async (accounts) => {
 	it("[Match - Error - dataset-apprestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
 			{},
-			{ apprestrict: user },
+			{ apprestrict: user.address },
 			{},
 			{},
 		));
@@ -487,7 +490,7 @@ contract('Poco', async (accounts) => {
 	it("[Match - Error - app-workerpoolrestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
 			{},
-			{ workerpoolrestrict: user },
+			{ workerpoolrestrict: user.address },
 			{},
 			{},
 		));
@@ -504,7 +507,7 @@ contract('Poco', async (accounts) => {
 	it("[Match - Error - app-requesterrestrict]", async () => {
 		await expectRevert.unspecified(matchOrders(
 			{},
-			{ requesterrestrict: iexecAdmin },
+			{ requesterrestrict: iexecAdmin.address },
 			{},
 			{},
 		));
@@ -512,7 +515,7 @@ contract('Poco', async (accounts) => {
 	it("[Match - Ok - app-requesterrestrict]", async () => {
 		await matchOrders(
 			{},
-			{ requesterrestrict: user },
+			{ requesterrestrict: user.address },
 			{},
 			{},
 		);
@@ -522,7 +525,7 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
-			{ apprestrict: user },
+			{ apprestrict: user.address },
 			{},
 		));
 	});
@@ -539,7 +542,7 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
-			{ datasetrestrict: user },
+			{ datasetrestrict: user.address },
 			{},
 		));
 	});
@@ -556,7 +559,7 @@ contract('Poco', async (accounts) => {
 		await expectRevert.unspecified(matchOrders(
 			{},
 			{},
-			{ requesterrestrict: iexecAdmin },
+			{ requesterrestrict: iexecAdmin.address },
 			{},
 		));
 	});
@@ -564,7 +567,7 @@ contract('Poco', async (accounts) => {
 		await matchOrders(
 			{},
 			{},
-			{ requesterrestrict: user },
+			{ requesterrestrict: user.address },
 			{},
 		);
 	});

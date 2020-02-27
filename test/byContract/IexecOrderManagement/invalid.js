@@ -12,29 +12,26 @@ var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
 contract('OrderManagement', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
-	let iexecAdmin      = accounts[0];
-	let sgxEnclave      = accounts[0];
-	let appProvider     = accounts[1];
-	let datasetProvider = accounts[2];
-	let scheduler       = accounts[3];
-	let worker1         = accounts[4];
-	let worker2         = accounts[5];
-	let worker3         = accounts[6];
-	let worker4         = accounts[7];
-	let worker5         = accounts[8];
-	let user            = accounts[9];
+	let iexecAdmin      = null;
+	let appProvider     = null;
+	let datasetProvider = null;
+	let scheduler       = null;
+	let worker1         = null;
+	let worker2         = null;
+	let worker3         = null;
+	let worker4         = null;
+	let worker5         = null;
+	let user            = null;
 
 	var RLCInstance                = null;
 	var IexecInstance              = null;
@@ -56,8 +53,20 @@ contract('OrderManagement', async (accounts) => {
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+		ERC712_domain              = await IexecInstance.domain();
 
-		odbtools.setup(await IexecInstance.domain());
+		broker          = new odbtools.Broker    (IexecInstance);
+		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
+		appProvider     = new odbtools.iExecAgent(IexecInstance, accounts[1]);
+		datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
+		scheduler       = new odbtools.Scheduler (IexecInstance, accounts[3]);
+		worker1         = new odbtools.Worker    (IexecInstance, accounts[4]);
+		worker2         = new odbtools.Worker    (IexecInstance, accounts[5]);
+		worker3         = new odbtools.Worker    (IexecInstance, accounts[6]);
+		worker4         = new odbtools.Worker    (IexecInstance, accounts[7]);
+		worker5         = new odbtools.Worker    (IexecInstance, accounts[8]);
+		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
+		await broker.initialize();
 	});
 
 	/***************************************************************************
@@ -67,21 +76,21 @@ contract('OrderManagement', async (accounts) => {
 		switch (DEPLOYMENT.asset)
 		{
 			case "Native":
-				await IexecInstance.deposit({ from: iexecAdmin, value: 10000000 * 10 ** 9, gas: constants.AMOUNT_GAS_PROVIDED });
+				await IexecInstance.deposit({ from: iexecAdmin.address, value: 10000000 * 10 ** 9 });
 				break;
 
 			case "Token":
-				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED });
+				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin.address });
 				break;
 		}
 		await Promise.all([
-			IexecInstance.transfer(scheduler, 1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker1,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker2,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker3,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker4,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(worker5,   1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.transfer(user,      1000, { from: iexecAdmin, gas: constants.AMOUNT_GAS_PROVIDED }),
+			IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
+			IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
 		]);
 	});
 
@@ -90,39 +99,36 @@ contract('OrderManagement', async (accounts) => {
 	 ***************************************************************************/
 	it("[Genesis] App Creation", async () => {
 		txMined = await AppRegistryInstance.createApp(
-			appProvider,
+			appProvider.address,
 			"R Clifford Attractors",
 			"DOCKER",
 			constants.MULTIADDR_BYTES,
 			constants.NULL.BYTES32,
 			"0x",
-			{ from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: appProvider.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, AppRegistryInstance.address, "Transfer");
 		AppInstance = await App.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Dataset Creation", async () => {
 		txMined = await DatasetRegistryInstance.createDataset(
-			datasetProvider,
+			datasetProvider.address,
 			"Pi",
 			constants.MULTIADDR_BYTES,
 			constants.NULL.BYTES32,
-			{ from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: datasetProvider.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, DatasetRegistryInstance.address, "Transfer");
 		DatasetInstance = await Dataset.at(tools.BN2Address(events[0].args.tokenId));
 	});
 
 	it("[Genesis] Workerpool Creation", async () => {
 		txMined = await WorkerpoolRegistryInstance.createWorkerpool(
-			scheduler,
+			scheduler.address,
 			"A test workerpool",
-			{ from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }
+			{ from: scheduler.address }
 		);
-		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, WorkerpoolRegistryInstance.address, "Transfer");
 		WorkerpoolInstance = await Workerpool.at(tools.BN2Address(events[0].args.tokenId));
 	});
@@ -135,11 +141,11 @@ contract('OrderManagement', async (accounts) => {
 			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			datasetrestrict:    DatasetInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
-			requesterrestrict:  user,
+			requesterrestrict:  user.address,
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.AppOrderTypedStructHash(apporder);
+		const hash = odbtools.utils.hashAppOrder(ERC712_domain, apporder);
 		return { apporder, hash };
 	}
 
@@ -151,11 +157,11 @@ contract('OrderManagement', async (accounts) => {
 			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			apprestrict:        AppInstance.address,
 			workerpoolrestrict: WorkerpoolInstance.address,
-			requesterrestrict:  user,
+			requesterrestrict:  user.address,
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.DatasetOrderTypedStructHash(datasetorder);
+		const hash = odbtools.utils.hashDatasetOrder(ERC712_domain, datasetorder);
 		return { datasetorder, hash };
 	}
 
@@ -169,11 +175,11 @@ contract('OrderManagement', async (accounts) => {
 			trust:             1000,
 			apprestrict:       AppInstance.address,
 			datasetrestrict:   DatasetInstance.address,
-			requesterrestrict: user,
+			requesterrestrict: user.address,
 			salt:              web3.utils.randomHex(32),
 			sign:              constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.WorkerpoolOrderTypedStructHash(workerpoolorder);
+		const hash = odbtools.utils.hashWorkerpoolOrder(ERC712_domain, workerpoolorder);
 		return { workerpoolorder, hash };
 	}
 
@@ -189,14 +195,14 @@ contract('OrderManagement', async (accounts) => {
 			tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
 			category:           4,
 			trust:              1000,
-			requester:          user,
-			beneficiary:        user,
+			requester:          user.address,
+			beneficiary:        user.address,
 			callback:           constants.NULL.ADDRESS,
 			params:             "app params",
 			salt:               web3.utils.randomHex(32),
 			sign:               constants.NULL.SIGNATURE
 		};
-		const hash = odbtools.RequestOrderTypedStructHash(requestorder);
+		const hash = odbtools.utils.hashRequestOrder(ERC712_domain, requestorder);
 		return { requestorder, hash };
 	}
 
@@ -207,34 +213,34 @@ contract('OrderManagement', async (accounts) => {
 		it("valid operation - sign", async () => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = {
-				order: apporder,
+				order:     apporder,
 				operation: constants.OrderOperationEnum.SIGN,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageAppOrder(apporderoperation, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageAppOrder(apporderoperation, { from: appProvider.address });
 		});
 
 		it("invalid operation", async () => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = {
-				order: apporder,
+				order:     apporder,
 				operation: constants.OrderOperationEnum.CLOSE,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageAppOrder(apporderoperation, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageAppOrder(apporderoperation, { from: appProvider.address });
 		});
 
 		it("invalid operation", async () => {
 			const { apporder, hash } = await generateAppOrder();
 			const apporderoperation = {
-				order: apporder,
+				order:     apporder,
 				operation: 0xFF,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await expectRevert.unspecified(IexecInstance.manageAppOrder(apporderoperation, { from: appProvider, gas: constants.AMOUNT_GAS_PROVIDED }));
+			await expectRevert.unspecified(IexecInstance.manageAppOrder(apporderoperation, { from: appProvider.address }));
 		});
 	});
 
@@ -245,34 +251,34 @@ contract('OrderManagement', async (accounts) => {
 		it("valid operation - sign", async () => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = {
-				order: datasetorder,
+				order:     datasetorder,
 				operation: constants.OrderOperationEnum.SIGN,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider.address });
 		});
 
 		it("invalid operation", async () => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = {
-				order: datasetorder,
+				order:     datasetorder,
 				operation: constants.OrderOperationEnum.CLOSE,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider.address });
 		});
 
 		it("invalid operation", async () => {
 			const { datasetorder, hash } = await generateDatasetOrder();
 			const datasetorderoperation = {
-				order: datasetorder,
+				order:     datasetorder,
 				operation: 0xFF,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await expectRevert.unspecified(IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider, gas: constants.AMOUNT_GAS_PROVIDED }));
+			await expectRevert.unspecified(IexecInstance.manageDatasetOrder(datasetorderoperation, { from: datasetProvider.address }));
 		});
 	});
 
@@ -283,34 +289,34 @@ contract('OrderManagement', async (accounts) => {
 		it("valid operation - sign", async () => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = {
-				order: workerpoolorder,
+				order:     workerpoolorder,
 				operation: constants.OrderOperationEnum.SIGN,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler.address });
 		});
 
 		it("invalid operation", async () => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = {
-				order: workerpoolorder,
+				order:     workerpoolorder,
 				operation: constants.OrderOperationEnum.CLOSE,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler.address });
 		});
 
 		it("invalid operation", async () => {
 			const { workerpoolorder, hash } = await generateWorkerpoolOrder();
 			const workerpoolorderoperation = {
-				order: workerpoolorder,
+				order:     workerpoolorder,
 				operation: 0xFF,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await expectRevert.unspecified(IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler, gas: constants.AMOUNT_GAS_PROVIDED }));
+			await expectRevert.unspecified(IexecInstance.manageWorkerpoolOrder(workerpoolorderoperation, { from: scheduler.address }));
 		});
 	});
 
@@ -321,34 +327,34 @@ contract('OrderManagement', async (accounts) => {
 		it("valid operation - sign", async () => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = {
-				order: requestorder,
+				order:     requestorder,
 				operation: constants.OrderOperationEnum.SIGN,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageRequestOrder(requestorderoperation, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageRequestOrder(requestorderoperation, { from: user.address });
 		});
 
 		it("invalid operation", async () => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = {
-				order: requestorder,
+				order:     requestorder,
 				operation: constants.OrderOperationEnum.CLOSE,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await IexecInstance.manageRequestOrder(requestorderoperation, { from: user, gas: constants.AMOUNT_GAS_PROVIDED });
+			await IexecInstance.manageRequestOrder(requestorderoperation, { from: user.address });
 		});
 
 		it("invalid operation", async () => {
 			const { requestorder, hash } = await generateRequestOrder();
 			const requestorderoperation = {
-				order: requestorder,
+				order:     requestorder,
 				operation: 0xFF,
-				sign: constants.NULL.SIGNATURE
+				sign:      constants.NULL.SIGNATURE
 			};
 
-			await expectRevert.unspecified(IexecInstance.manageRequestOrder(requestorderoperation, { from: user, gas: constants.AMOUNT_GAS_PROVIDED }));
+			await expectRevert.unspecified(IexecInstance.manageRequestOrder(requestorderoperation, { from: user.address }));
 		});
 	});
 

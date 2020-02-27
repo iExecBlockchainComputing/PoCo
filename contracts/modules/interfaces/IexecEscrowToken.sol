@@ -1,10 +1,10 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 
 interface IexecEscrowToken
 {
-	function () external payable;
+	receive() external payable;
 	function deposit(uint256) external returns (bool);
 	function depositFor(uint256,address) external returns (bool);
 	function depositForArray(uint256[] calldata,address[] calldata) external returns (bool);

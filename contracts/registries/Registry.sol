@@ -1,28 +1,28 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
+import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
+import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Enumerable.sol";
-import 'zos-lib/contracts/upgradeability/InitializableUpgradeabilityProxy.sol';
-import 'iexec-solidity/contracts/Factory/CounterfactualFactory.sol';
+import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
 import "./IRegistry.sol";
-import "../tools/ens/ReverseRegistration.sol";
 
 
-contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, CounterfactualFactory
+contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
-	string    public name;
-	string    public symbol;
 	IRegistry public previous;
 
-	constructor(address _master, string memory _name, string memory _symbol, address _previous)
-	public
+	constructor(
+		address       _master,
+		string memory _name,
+		string memory _symbol,
+		address       _previous)
+	public ERC721Full(_name, _symbol)
 	{
 		master    = _master;
 		proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
-		name      = _name;
-		symbol    = _symbol;
 		previous  = IRegistry(_previous);
 	}
 
@@ -33,7 +33,7 @@ contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, 
 	internal returns (uint256)
 	{
 		// Create entry (proxy)
-		address entry = _create2(proxyCode, keccak256(abi.encodePacked(_args, _owner)));
+		address entry = Create2.deploy(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
 		// Initialize entry (casting to address payable is a pain in ^0.5.0)
 		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
 		// Mint corresponding token
@@ -43,7 +43,7 @@ contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, 
 
 	/* Interface */
 	function isRegistered(address _entry)
-	external view returns (bool)
+	external view override returns (bool)
 	{
 		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}
@@ -51,6 +51,13 @@ contract Registry is IRegistry, ERC721Enumerable, ReverseRegistration, Ownable, 
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_setName(_ens, _name);
+		_setName(ENS(_ens), _name);
+	}
+
+	function setTokenURI(uint256 _tokenId, string calldata _uri)
+	external
+	{
+		require(_msgSender() == ownerOf(_tokenId), "ERC721: access restricted to token owner");
+		_setTokenURI(_tokenId, _uri);
 	}
 }

@@ -1,7 +1,7 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 
-library IexecODBLibCore_v4
+library IexecLibCore_v5
 {
 	/**
 	* Tools
@@ -52,7 +52,6 @@ library IexecODBLibCore_v4
 
 	/**
 	 * Tasks
-	 // TODO: rename Workorder → Task
 	 */
 	enum TaskStatusEnum
 	{
@@ -77,6 +76,16 @@ library IexecODBLibCore_v4
 		address[] contributors;
 		bytes32   resultDigest;
 		bytes     results;
+		uint256   resultsTimestamp;
+	}
+
+	/**
+	 * Consensus
+	 */
+	struct Consensus
+	{
+		mapping(bytes32 => uint256) group;
+		uint256                     total;
 	}
 
 	/**
@@ -95,6 +104,7 @@ library IexecODBLibCore_v4
 		bytes32 resultHash;
 		bytes32 resultSeal;
 		address enclaveChallenge;
+		uint256 weight;
 	}
 
 }

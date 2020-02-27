@@ -14,12 +14,10 @@ var Workerpool         = artifacts.require("Workerpool");
 var TestReceiver       = artifacts.require("TestReceiver");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const multiaddr = require('multiaddr');
 const tools     = require("../../../utils/tools");
-const enstools  = require('../../../utils/ens-tools');
-const odbtools  = require('../../../utils/odb-tools');
+const enstools  = require("../../../utils/ens-tools");
+const odbtools  = require("../../../utils/odb-tools");
 const constants = require("../../../utils/constants");
-const wallets   = require('../../../utils/wallets');
 
 const { expect } = require('chai');
 const {
@@ -63,6 +61,8 @@ contract('ERC20', async (accounts) => {
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		TestReceiverInstance       = await TestReceiver.new();
+
+		ERC712_domain              = await IexecInstance.domain();
 	});
 
 	/***************************************************************************

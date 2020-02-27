@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "../DelegateBase.sol";
@@ -14,13 +14,15 @@ contract IexecCategoryManagerDelegate is IexecCategoryManager, DelegateBase
 		string  calldata name,
 		string  calldata description,
 		uint256          workClockTimeRef)
-	external onlyOwner returns (uint256)
+	external override onlyOwner returns (uint256)
 	{
-		uint256 catid = m_categories.push(IexecODBLibCore_v4.Category(
+		m_categories.push(IexecLibCore_v5.Category(
 			name,
 			description,
 			workClockTimeRef
-		)) - 1;
+		));
+
+		uint256 catid = m_categories.length - 1;
 
 		emit CreateCategory(
 			catid,

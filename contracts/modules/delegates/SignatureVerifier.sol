@@ -1,14 +1,14 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "iexec-solidity/contracts/ERC734/IERC734.sol";
-import "iexec-solidity/contracts/ERC1271/IERC1271.sol";
+import "@iexec/solidity/contracts/ERC734/IERC734.sol";
+import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
 import "../DelegateBase.sol";
 
 
 contract SignatureVerifier is DelegateBase
 {
-	using IexecODBLibOrders_v4 for bytes32;
+	using IexecLibOrders_v5 for bytes32;
 
 	function _isContract(address _addr)
 	internal view returns (bool)

@@ -51,13 +51,17 @@ module.exports =
 		viviani: {
 			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.VIVIANI_NODE),
 			network_id: '133',
-			gasPrice:   1000000000, //1Gwei
-			gas:        6000000,
+			gasPrice:   "0", //1Gwei
+		},
+		bellecour: {
+			provider: () => new HDWalletProvider(process.env.DEPLOYER_MNEMONIC, process.env.BELLECOUR_NODE),
+			network_id: '134',
+			gasPrice:   "0", //1Gwei
 		}
 	},
 	compilers: {
 		solc: {
-			version: "0.5.16",
+			version: "0.6.3",
 			settings: {
 				optimizer: {
 					enabled: true,
