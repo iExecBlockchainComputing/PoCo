@@ -767,13 +767,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		{
 			/**
 			 * Call does not revert if the target smart contract is incompatible or reverts
-			 *
-			 * ATTENTION!
-			 * This call is dangerous and target smart contract can charge the stack.
-			 * Assume invalid state after the call.
-			 * See: https://solidity.readthedocs.io/en/develop/types.html#members-of-addresses
-			 *
-			 * TODO: gas provided?
+			 * gasleft check is necessary as the target.call.gas() only gives a maximum. See EIP-150
 			 */
 			(bool success, bytes memory returndata) = target.call.gas(m_callbackgas)(abi.encodeWithSelector(
 				bytes4(keccak256(bytes("receiveResult(bytes32,bytes)"))), // TODO: add hability to overload selector
@@ -783,6 +777,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			// silent unused variable warning
 			success;
 			returndata;
+			// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
+			assert(gasleft() > m_callbackgas / 63); // no need for safemath here
 		}
 	}
 
