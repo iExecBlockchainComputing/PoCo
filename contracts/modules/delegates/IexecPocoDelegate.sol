@@ -768,32 +768,17 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		{
 			/**
 			 * Call does not revert if the target smart contract is incompatible or reverts
-			 * gasleft check is necessary as the target.call.gas() only gives a maximum. See EIP-150
+			 * Solidity 0.6.0 update. Check hit history for 0.5.0 implementation.
 			 */
 			try IOracleConsumer(target).receiveResult.gas(m_callbackgas)(_taskid, _results)
 			{
-				// Do nothing
+				// Callback success, do nothing
 			}
 			catch (bytes memory /*lowLevelData*/)
 			{
+				// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
 				assert(gasleft() > m_callbackgas / 63); // no need for safemath here
 			}
-
-			/**
-			 * OLD solidity 0.5.0 implementation.
-			 */
-			/*
-			(bool success, bytes memory returndata) = target.call.gas(m_callbackgas)(abi.encodeWithSelector(
-				bytes4(keccak256(bytes("receiveResult(bytes32,bytes)"))),
-				_taskid,
-				_results
-			));
-			// silent unused variable warning
-			success;
-			returndata;
-			// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
-			assert(gasleft() > m_callbackgas / 63); // no need for safemath here
-			*/
 		}
 	}
 
