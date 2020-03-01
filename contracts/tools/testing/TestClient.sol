@@ -7,7 +7,8 @@ contract TestClient is IOracleConsumer
 {
 	event GotResult(bytes32 indexed id, bytes result);
 
-	mapping(bytes32 => bytes) public store;
+	mapping(bytes32 => uint256) public gstore;
+	mapping(bytes32 => bytes  ) public store;
 
 	constructor()
 	public
@@ -16,7 +17,8 @@ contract TestClient is IOracleConsumer
 
 	function receiveResult(bytes32 id, bytes calldata result) external override
 	{
-		store[id] = result;
+		gstore[id] = gasleft();
+		store[id]  = result;
 		emit GotResult(id, result);
 	}
 

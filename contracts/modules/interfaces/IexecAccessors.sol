@@ -1,10 +1,11 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
 import "../../libs/IexecLibCore_v5.sol";
 import "../../registries/IRegistry.sol";
 
-interface IexecAccessors
+interface IexecAccessors is IOracle
 {
 	function name() external view returns (string memory);
 	function symbol() external view returns (string memory);
@@ -21,13 +22,15 @@ interface IexecAccessors
 	function viewTask(bytes32) external view returns (IexecLibCore_v5.Task memory);
 	function viewContribution(bytes32,address) external view returns (IexecLibCore_v5.Contribution memory);
 	function viewScore(address) external view returns (uint256);
-	function resultFor(bytes32) external view returns (bytes memory);
+	// function resultFor(bytes32) external view returns (bytes memory); // Already part of IOracle
 	function viewCategory(uint256) external view returns (IexecLibCore_v5.Category memory);
 	function countCategory() external view returns (uint256);
 
 	function appregistry() external view returns (IRegistry);
 	function datasetregistry() external view returns (IRegistry);
 	function workerpoolregistry() external view returns (IRegistry);
+	function teebroker() external view returns (address);
+	function callbackgas() external view returns (uint256);
 
 	function contribution_deadline_ratio() external view returns (uint256);
 	function reveal_deadline_ratio() external view returns (uint256);

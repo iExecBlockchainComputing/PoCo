@@ -1,6 +1,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
 import "./IexecERC20Common.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
@@ -769,8 +770,21 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			 * Call does not revert if the target smart contract is incompatible or reverts
 			 * gasleft check is necessary as the target.call.gas() only gives a maximum. See EIP-150
 			 */
+			try IOracleConsumer(target).receiveResult.gas(m_callbackgas)(_taskid, _results)
+			{
+				// Do nothing
+			}
+			catch (bytes memory /*lowLevelData*/)
+			{
+				assert(gasleft() > m_callbackgas / 63); // no need for safemath here
+			}
+
+			/**
+			 * OLD solidity 0.5.0 implementation.
+			 */
+			/*
 			(bool success, bytes memory returndata) = target.call.gas(m_callbackgas)(abi.encodeWithSelector(
-				bytes4(keccak256(bytes("receiveResult(bytes32,bytes)"))), // TODO: add hability to overload selector
+				bytes4(keccak256(bytes("receiveResult(bytes32,bytes)"))),
 				_taskid,
 				_results
 			));
@@ -779,6 +793,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			returndata;
 			// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
 			assert(gasleft() > m_callbackgas / 63); // no need for safemath here
+			*/
 		}
 	}
 
