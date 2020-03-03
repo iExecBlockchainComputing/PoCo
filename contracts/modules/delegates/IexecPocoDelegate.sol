@@ -770,7 +770,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			 * Call does not revert if the target smart contract is incompatible or reverts
 			 * Solidity 0.6.0 update. Check hit history for 0.5.0 implementation.
 			 */
-			try IOracleConsumer(target).receiveResult.gas(m_callbackgas)(_taskid, _results)
+			try IOracleConsumer(target).receiveResult{gas: m_callbackgas}(_taskid, _results)
 			{
 				// Callback success, do nothing
 			}
