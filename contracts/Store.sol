@@ -12,6 +12,14 @@ import "./registries/datasets/Dataset.sol";
 import "./registries/workerpools/Workerpool.sol";
 import "./registries/IRegistry.sol";
 
+/****************************************************************************
+ * WARNING: Be carefull when editing this file.                             *
+ *                                                                          *
+ * If you want add new variables for expanded features, add them at the     *
+ * end, or (better?) create a Store_v2 that inherits from this Store.       *
+ *                                                                          *
+ * If in doubt, read about ERC1538 memory store.                            *
+ ****************************************************************************/
 
 abstract contract Store is ERC1538Store
 {
@@ -51,7 +59,6 @@ abstract contract Store is ERC1538Store
 	mapping(address =>                    uint256                      ) internal m_workerScores;  // per worker
 
 	// Poco - Settings
-	// mapping(address => mapping(address => bool)) internal m_delegate; // TODO: add a signature delegation mechanism
 	address internal m_teebroker;
 	uint256 internal m_callbackgas;
 
