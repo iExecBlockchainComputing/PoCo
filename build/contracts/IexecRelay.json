@@ -583,14 +583,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        7365
+        7381
       ]
     },
-    "id": 7366,
+    "id": 7382,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7326,
+        "id": 7342,
         "literals": [
           "solidity",
           "^",
@@ -601,7 +601,7 @@
         "src": "0:23:31"
       },
       {
-        "id": 7327,
+        "id": 7343,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -612,9 +612,9 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 7328,
+        "id": 7344,
         "nodeType": "ImportDirective",
-        "scope": 7366,
+        "scope": 7382,
         "sourceUnit": 843,
         "src": "59:42:31",
         "symbolAliases": [],
@@ -627,9 +627,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7365,
+        "id": 7381,
         "linearizedBaseContracts": [
-          7365
+          7381
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -637,21 +637,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7332,
+            "id": 7348,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7331,
+              "id": 7347,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7330,
+                  "id": 7346,
                   "indexed": false,
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7332,
+                  "scope": 7348,
                   "src": "159:42:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -661,7 +661,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7329,
+                    "id": 7345,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 460,
@@ -682,21 +682,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7336,
+            "id": 7352,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7335,
+              "id": 7351,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7334,
+                  "id": 7350,
                   "indexed": false,
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7336,
+                  "scope": 7352,
                   "src": "243:46:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -706,7 +706,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7333,
+                    "id": 7349,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 479,
@@ -727,21 +727,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7340,
+            "id": 7356,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7339,
+              "id": 7355,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7338,
+                  "id": 7354,
                   "indexed": false,
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7340,
+                  "scope": 7356,
                   "src": "327:49:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -751,7 +751,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7337,
+                    "id": 7353,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 502,
@@ -772,21 +772,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7344,
+            "id": 7360,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7343,
+              "id": 7359,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7342,
+                  "id": 7358,
                   "indexed": false,
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7344,
+                  "scope": 7360,
                   "src": "411:46:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -796,7 +796,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7341,
+                    "id": 7357,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 535,
@@ -818,7 +818,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "c52e9de1",
-            "id": 7349,
+            "id": 7365,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -826,16 +826,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7347,
+              "id": 7363,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7346,
+                  "id": 7362,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7349,
+                  "scope": 7365,
                   "src": "499:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -845,7 +845,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7345,
+                    "id": 7361,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 460,
@@ -862,12 +862,12 @@
               "src": "498:44:31"
             },
             "returnParameters": {
-              "id": 7348,
+              "id": 7364,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "551:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "465:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -877,7 +877,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c4692de",
-            "id": 7354,
+            "id": 7370,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -885,16 +885,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7352,
+              "id": 7368,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7351,
+                  "id": 7367,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7354,
+                  "scope": 7370,
                   "src": "588:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -904,7 +904,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7350,
+                    "id": 7366,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 479,
@@ -921,12 +921,12 @@
               "src": "587:44:31"
             },
             "returnParameters": {
-              "id": 7353,
+              "id": 7369,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "640:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "554:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -936,7 +936,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "947f5178",
-            "id": 7359,
+            "id": 7375,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -944,16 +944,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7357,
+              "id": 7373,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7356,
+                  "id": 7372,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7359,
+                  "scope": 7375,
                   "src": "677:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -963,7 +963,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7355,
+                    "id": 7371,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 502,
@@ -980,12 +980,12 @@
               "src": "676:44:31"
             },
             "returnParameters": {
-              "id": 7358,
+              "id": 7374,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "729:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "643:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -995,7 +995,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4693d172",
-            "id": 7364,
+            "id": 7380,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1003,16 +1003,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7362,
+              "id": 7378,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7361,
+                  "id": 7377,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7364,
+                  "scope": 7380,
                   "src": "766:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1022,7 +1022,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7360,
+                    "id": 7376,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 535,
@@ -1039,19 +1039,19 @@
               "src": "765:44:31"
             },
             "returnParameters": {
-              "id": 7363,
+              "id": 7379,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "818:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "732:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7366,
+        "scope": 7382,
         "src": "104:717:31"
       }
     ],
@@ -1061,14 +1061,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        7365
+        7381
       ]
     },
-    "id": 7366,
+    "id": 7382,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7326,
+        "id": 7342,
         "literals": [
           "solidity",
           "^",
@@ -1079,7 +1079,7 @@
         "src": "0:23:31"
       },
       {
-        "id": 7327,
+        "id": 7343,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -1090,9 +1090,9 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 7328,
+        "id": 7344,
         "nodeType": "ImportDirective",
-        "scope": 7366,
+        "scope": 7382,
         "sourceUnit": 843,
         "src": "59:42:31",
         "symbolAliases": [],
@@ -1105,9 +1105,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7365,
+        "id": 7381,
         "linearizedBaseContracts": [
-          7365
+          7381
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -1115,21 +1115,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7332,
+            "id": 7348,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7331,
+              "id": 7347,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7330,
+                  "id": 7346,
                   "indexed": false,
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7332,
+                  "scope": 7348,
                   "src": "159:42:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1139,7 +1139,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7329,
+                    "id": 7345,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 460,
@@ -1160,21 +1160,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7336,
+            "id": 7352,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7335,
+              "id": 7351,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7334,
+                  "id": 7350,
                   "indexed": false,
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7336,
+                  "scope": 7352,
                   "src": "243:46:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1184,7 +1184,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7333,
+                    "id": 7349,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 479,
@@ -1205,21 +1205,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7340,
+            "id": 7356,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7339,
+              "id": 7355,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7338,
+                  "id": 7354,
                   "indexed": false,
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7340,
+                  "scope": 7356,
                   "src": "327:49:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1229,7 +1229,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7337,
+                    "id": 7353,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 502,
@@ -1250,21 +1250,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7344,
+            "id": 7360,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7343,
+              "id": 7359,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7342,
+                  "id": 7358,
                   "indexed": false,
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7344,
+                  "scope": 7360,
                   "src": "411:46:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1274,7 +1274,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7341,
+                    "id": 7357,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 535,
@@ -1296,7 +1296,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "c52e9de1",
-            "id": 7349,
+            "id": 7365,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1304,16 +1304,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7347,
+              "id": 7363,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7346,
+                  "id": 7362,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7349,
+                  "scope": 7365,
                   "src": "499:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1323,7 +1323,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7345,
+                    "id": 7361,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 460,
@@ -1340,12 +1340,12 @@
               "src": "498:44:31"
             },
             "returnParameters": {
-              "id": 7348,
+              "id": 7364,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "551:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "465:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1355,7 +1355,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c4692de",
-            "id": 7354,
+            "id": 7370,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1363,16 +1363,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7352,
+              "id": 7368,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7351,
+                  "id": 7367,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7354,
+                  "scope": 7370,
                   "src": "588:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1382,7 +1382,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7350,
+                    "id": 7366,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 479,
@@ -1399,12 +1399,12 @@
               "src": "587:44:31"
             },
             "returnParameters": {
-              "id": 7353,
+              "id": 7369,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "640:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "554:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1414,7 +1414,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "947f5178",
-            "id": 7359,
+            "id": 7375,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1422,16 +1422,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7357,
+              "id": 7373,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7356,
+                  "id": 7372,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7359,
+                  "scope": 7375,
                   "src": "677:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1441,7 +1441,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7355,
+                    "id": 7371,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 502,
@@ -1458,12 +1458,12 @@
               "src": "676:44:31"
             },
             "returnParameters": {
-              "id": 7358,
+              "id": 7374,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "729:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "643:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1473,7 +1473,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4693d172",
-            "id": 7364,
+            "id": 7380,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1481,16 +1481,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7362,
+              "id": 7378,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7361,
+                  "id": 7377,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7364,
+                  "scope": 7380,
                   "src": "766:42:31",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1500,7 +1500,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7360,
+                    "id": 7376,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 535,
@@ -1517,19 +1517,19 @@
               "src": "765:44:31"
             },
             "returnParameters": {
-              "id": 7363,
+              "id": 7379,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "818:0:31"
             },
-            "scope": 7365,
+            "scope": 7381,
             "src": "732:87:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7366,
+        "scope": 7382,
         "src": "104:717:31"
       }
     ],
@@ -1541,7 +1541,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-06T15:34:29.452Z",
+  "updatedAt": "2020-03-09T19:01:54.366Z",
   "devdoc": {
     "methods": {}
   },
