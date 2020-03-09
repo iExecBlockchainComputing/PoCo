@@ -73,6 +73,14 @@ contract('Registries', async (accounts) => {
 		await broker.initialize();
 	});
 
+	describe("Registry", async () => {
+		it("cannot reinitialize", async () => {
+			await expectRevert.unspecified(AppRegistryInstance.initialize(constants.NULL.ADDRESS));
+			await expectRevert.unspecified(DatasetRegistryInstance.initialize(constants.NULL.ADDRESS));
+			await expectRevert.unspecified(WorkerpoolRegistryInstance.initialize(constants.NULL.ADDRESS));
+		});
+	});
+
 	/***************************************************************************
 	 *                   TEST: App creation (by appProvider)                   *
 	 ***************************************************************************/

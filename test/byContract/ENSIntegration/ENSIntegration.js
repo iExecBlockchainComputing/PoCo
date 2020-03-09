@@ -83,19 +83,19 @@ contract('ENSIntegration', async (accounts) => {
 				await enstools.lookup(RLCInstance.address);
 				assert(false);
 			} catch(e) {}
-			assert.equal(await enstools.lookup(IexecInstance.address             ), "hub.iexec.eth"                );
-			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "apps.registry.iexec.eth"       );
-			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "datasets.registry.iexec.eth"   );
-			assert.equal(await enstools.lookup(WorkerpoolRegistryInstance.address), "workerpools.registry.iexec.eth");
+			assert.equal(await enstools.lookup(IexecInstance.address             ), "core.v5.iexec.eth"       );
+			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "apps.v5.iexec.eth"       );
+			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "datasets.v5.iexec.eth"   );
+			assert.equal(await enstools.lookup(WorkerpoolRegistryInstance.address), "workerpools.v5.iexec.eth");
 		})
 		it("resolve", async () => {
 			if (DEPLOYMENT.asset == "Token") {
-				assert.equal(await enstools.resolve("rlc.iexec.eth"               ), RLCInstance.address               );
+				assert.equal(await enstools.resolve("rlc.iexec.eth"         ), RLCInstance.address               );
 			}
-			assert.equal(await enstools.resolve("hub.iexec.eth"                 ), IexecInstance.address             );
-			assert.equal(await enstools.resolve("apps.registry.iexec.eth"       ), AppRegistryInstance.address       );
-			assert.equal(await enstools.resolve("datasets.registry.iexec.eth"   ), DatasetRegistryInstance.address   );
-			assert.equal(await enstools.resolve("workerpools.registry.iexec.eth"), WorkerpoolRegistryInstance.address);
+			assert.equal(await enstools.resolve("core.v5.iexec.eth"       ), IexecInstance.address             );
+			assert.equal(await enstools.resolve("apps.v5.iexec.eth"       ), AppRegistryInstance.address       );
+			assert.equal(await enstools.resolve("datasets.v5.iexec.eth"   ), DatasetRegistryInstance.address   );
+			assert.equal(await enstools.resolve("workerpools.v5.iexec.eth"), WorkerpoolRegistryInstance.address);
 		});
 	});
 

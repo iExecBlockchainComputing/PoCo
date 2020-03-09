@@ -9,12 +9,11 @@ contract WorkerpoolRegistry is Registry
 	/**
 	 * Constructor
 	 */
-	constructor(address _previous)
+	constructor()
 	public Registry(
 		address(new Workerpool()),
 		"iExec Workerpool Registry (V5)",
-		"iExecWorkerpoolV5",
-		_previous)
+		"iExecWorkerpoolV5")
 	{
 	}
 

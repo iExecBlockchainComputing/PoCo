@@ -13,17 +13,21 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 	address   public master;
 	bytes     public proxyCode;
 	IRegistry public previous;
+	bool      public initialized;
 
-	constructor(
-		address       _master,
-		string memory _name,
-		string memory _symbol,
-		address       _previous)
+	constructor(address _master, string memory _name, string memory _symbol)
 	public ERC721Full(_name, _symbol)
 	{
 		master    = _master;
 		proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
-		previous  = IRegistry(_previous);
+	}
+
+	function initialize(address _previous)
+	external onlyOwner()
+	{
+		require(!initialized);
+		initialized = true;
+		previous    = IRegistry(_previous);
 	}
 
 	/* Factory */
