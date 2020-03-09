@@ -1,0 +1,395 @@
+{
+  "contractName": "ERC1538Store",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.3+commit.8dda9521\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":\"ERC1538Store\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x44b11aaa6674934d52123433767a922098a5cf7631c3bfd7f36b37d9e024957c\",\"urls\":[\"bzz-raw://fcfa97f3c120eb27cfa91fdaadd5293f0c1ff29949a8038c7199daca93f285a3\",\"dweb:/ipfs/QmVUCt3s29iBgeUJ2ZFAbMHV81mS6xn4KBMkMmUjfzq55h\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x039ba4cb83f1b30a3c575283aebeab66035aa4a3d5c88e73a67dbfba3691ac23\",\"urls\":[\"bzz-raw://7e319b9647837e7b286b01ef90e1b2dc62aea6d17acc11145c822193b6454db1\",\"dweb:/ipfs/QmW5vUEeePdJfj3abT8XHcZKideyCpSuDnz65Vfp6yu62P\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x5e9de7b882d5be666b749636f2ce4d61616374a0f0432fdcf6d8add12e56456e\",\"urls\":[\"bzz-raw://56fa3efd4168fdc48dae27d3dbeae79a1f9ffd3e5ec5033eea1e99af569aaa1c\",\"dweb:/ipfs/QmcXF44uSnvASAt4nEU6KHoVjMcbZzrLB79dHFXPhZjSFh\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xe97e81034c2a35d459cafa619d038c94420e8c183876b07f8b50032d6425f2d4\",\"urls\":[\"bzz-raw://9e8ffecc0bedc8eaa3457b2ab27731b2427ee457b83270eab7920e4e70fe0d40\",\"dweb:/ipfs/QmQxtzLk9Ffgv9ZguwxkUCE31Wd2NmcuUPDDqGXaoM4Qsv\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b6102fc806100796000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780638f32d59b1461007f578063f2fde38b1461009b575b600080fd5b6100596100c1565b005b610063610164565b604080516001600160a01b039092168252519081900360200190f35b610087610173565b604080519115158252519081900360200190f35b610059600480360360208110156100b157600080fd5b50356001600160a01b0316610197565b6100c9610173565b61011a576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b600080546001600160a01b03166101886101fc565b6001600160a01b031614905090565b61019f610173565b6101f0576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6101f981610200565b50565b3390565b6001600160a01b0381166102455760405162461bcd60e51b81526004018080602001828103825260268152602001806102a16026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220c644fa35f3dd32efac01e2514b4de3bfff0220cfe4f562cf007c2ace88c2b77e64736f6c63430006030033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780638f32d59b1461007f578063f2fde38b1461009b575b600080fd5b6100596100c1565b005b610063610164565b604080516001600160a01b039092168252519081900360200190f35b610087610173565b604080519115158252519081900360200190f35b610059600480360360208110156100b157600080fd5b50356001600160a01b0316610197565b6100c9610173565b61011a576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b600080546001600160a01b03166101886101fc565b6001600160a01b031614905090565b61019f610173565b6101f0576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6101f981610200565b50565b3390565b6001600160a01b0381166102455760405162461bcd60e51b81526004018080602001828103825260268152602001806102a16026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220c644fa35f3dd32efac01e2514b4de3bfff0220cfe4f562cf007c2ace88c2b77e64736f6c63430006030033",
+  "sourceMap": "150:163:54:-:0;;;698:17:65;718:12;-1:-1:-1;;;;;718:10:65;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:65;-1:-1:-1;;;;;740:18:65;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:65;773:43;;740:6;;773:43;664:159;150:163:54;;735:104:60;822:10;735:104;:::o;150:163:54:-;;;;;;;",
+  "deployedSourceMap": "150:163:54:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;150:163:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;1684:145:65;;;:::i;:::-;;899:77;;;:::i;:::-;;;;-1:-1:-1;;;;;899:77:65;;;;;;;;;;;;;;1250:92;;;:::i;:::-;;;;;;;;;;;;;;;;;;1978:115;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1978:115:65;-1:-1:-1;;;;;1978:115:65;;:::i;1684:145::-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:65;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1790:1:::1;1774:6:::0;;1753:40:::1;::::0;-1:-1:-1;;;;;1774:6:65;;::::1;::::0;1753:40:::1;::::0;1790:1;;1753:40:::1;1820:1;1803:19:::0;;-1:-1:-1;;;;;;1803:19:65::1;::::0;;1684:145::o;899:77::-;937:7;963:6;-1:-1:-1;;;;;963:6:65;899:77;:::o;1250:92::-;1290:4;1329:6;;-1:-1:-1;;;;;1329:6:65;1313:12;:10;:12::i;:::-;-1:-1:-1;;;;;1313:22:65;;1306:29;;1250:92;:::o;1978:115::-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:65;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2058:28:::1;2077:8;2058:18;:28::i;:::-;1978:115:::0;:::o;735:104:60:-;822:10;735:104;:::o;2194:233:65:-;-1:-1:-1;;;;;2275:22:65;;2267:73;;;;-1:-1:-1;;;2267:73:65;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2376:6;;;2355:38;;-1:-1:-1;;;;;2355:38:65;;;;2376:6;;;2355:38;;;2403:6;:17;;-1:-1:-1;;;;;;2403:17:65;-1:-1:-1;;;;;2403:17:65;;;;;;;;;;2194:233::o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"@openzeppelin/contracts/ownership/Ownable.sol\";\nimport \"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\";\n\ncontract ERC1538Store is Ownable\n{\n\tusing LibMap2_bytes4_address_bytes for LibMap2_bytes4_address_bytes.map;\n\n\tLibMap2_bytes4_address_bytes.map internal m_funcs;\n}\n",
+  "sourcePath": "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol",
+  "ast": {
+    "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol",
+    "exportedSymbols": {
+      "ERC1538Store": [
+        9626
+      ]
+    },
+    "id": 9627,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9616,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:54"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "id": 9617,
+        "nodeType": "ImportDirective",
+        "scope": 9627,
+        "sourceUnit": 10629,
+        "src": "25:55:54",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol",
+        "file": "solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol",
+        "id": 9618,
+        "nodeType": "ImportDirective",
+        "scope": 9627,
+        "sourceUnit": 12680,
+        "src": "81:67:54",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9619,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 10628,
+              "src": "175:7:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$10628",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 9620,
+            "nodeType": "InheritanceSpecifier",
+            "src": "175:7:54"
+          }
+        ],
+        "contractDependencies": [
+          10184,
+          10628
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 9626,
+        "linearizedBaseContracts": [
+          9626,
+          10628,
+          10184
+        ],
+        "name": "ERC1538Store",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "id": 9623,
+            "libraryName": {
+              "contractScope": null,
+              "id": 9621,
+              "name": "LibMap2_bytes4_address_bytes",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12679,
+              "src": "192:28:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_LibMap2_bytes4_address_bytes_$12679",
+                "typeString": "library LibMap2_bytes4_address_bytes"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "186:72:54",
+            "typeName": {
+              "contractScope": null,
+              "id": 9622,
+              "name": "LibMap2_bytes4_address_bytes.map",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12420,
+              "src": "225:32:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_map_$12420_storage_ptr",
+                "typeString": "struct LibMap2_bytes4_address_bytes.map"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 9625,
+            "name": "m_funcs",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 9626,
+            "src": "261:49:54",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_struct$_map_$12420_storage",
+              "typeString": "struct LibMap2_bytes4_address_bytes.map"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9624,
+              "name": "LibMap2_bytes4_address_bytes.map",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12420,
+              "src": "261:32:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_map_$12420_storage_ptr",
+                "typeString": "struct LibMap2_bytes4_address_bytes.map"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 9627,
+        "src": "150:163:54"
+      }
+    ],
+    "src": "0:314:54"
+  },
+  "legacyAST": {
+    "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol",
+    "exportedSymbols": {
+      "ERC1538Store": [
+        9626
+      ]
+    },
+    "id": 9627,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9616,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:54"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "id": 9617,
+        "nodeType": "ImportDirective",
+        "scope": 9627,
+        "sourceUnit": 10629,
+        "src": "25:55:54",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol",
+        "file": "solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol",
+        "id": 9618,
+        "nodeType": "ImportDirective",
+        "scope": 9627,
+        "sourceUnit": 12680,
+        "src": "81:67:54",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9619,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 10628,
+              "src": "175:7:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$10628",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 9620,
+            "nodeType": "InheritanceSpecifier",
+            "src": "175:7:54"
+          }
+        ],
+        "contractDependencies": [
+          10184,
+          10628
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 9626,
+        "linearizedBaseContracts": [
+          9626,
+          10628,
+          10184
+        ],
+        "name": "ERC1538Store",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "id": 9623,
+            "libraryName": {
+              "contractScope": null,
+              "id": 9621,
+              "name": "LibMap2_bytes4_address_bytes",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12679,
+              "src": "192:28:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_LibMap2_bytes4_address_bytes_$12679",
+                "typeString": "library LibMap2_bytes4_address_bytes"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "186:72:54",
+            "typeName": {
+              "contractScope": null,
+              "id": 9622,
+              "name": "LibMap2_bytes4_address_bytes.map",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12420,
+              "src": "225:32:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_map_$12420_storage_ptr",
+                "typeString": "struct LibMap2_bytes4_address_bytes.map"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 9625,
+            "name": "m_funcs",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 9626,
+            "src": "261:49:54",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_struct$_map_$12420_storage",
+              "typeString": "struct LibMap2_bytes4_address_bytes.map"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9624,
+              "name": "LibMap2_bytes4_address_bytes.map",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12420,
+              "src": "261:32:54",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_map_$12420_storage_ptr",
+                "typeString": "struct LibMap2_bytes4_address_bytes.map"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 9627,
+        "src": "150:163:54"
+      }
+    ],
+    "src": "0:314:54"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.3+commit.8dda9521.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-03T23:51:48.492Z",
+  "devdoc": {
+    "methods": {
+      "isOwner()": {
+        "details": "Returns true if the caller is the current owner."
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
