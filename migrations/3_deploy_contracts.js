@@ -252,7 +252,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* --------------------------------- ENS --------------------------------- */
-	if (chaintype == 'private')
+	if (chainid > 64) // skip for mainnet and testnet
 	{
 		var ens        = null;
 		var resolver   = null;
@@ -332,24 +332,21 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain('eth');
 		await registerDomain('iexec', 'eth');
 
-		await registerDomain('registry',   'iexec.eth');
-		await registerDomain('apps',       'iexec.eth');
-		await registerDomain('datasets',   'iexec.eth');
-		await registerDomain('workerpool', 'iexec.eth');
-		await registerDomain('users',      'iexec.eth');
+		await registerDomain('v5',           'iexec.eth');
+		await registerDomain('users',        'iexec.eth');
 
-		await registerAddress('admin',       'iexec.eth',          accounts[0]);
-		await registerAddress('rlc',         'iexec.eth',          RLCInstance.address);
-		await registerAddress('hub',         'iexec.eth',          IexecInterfaceInstance.address);
-		await registerAddress('apps',        'registry.iexec.eth', AppRegistryInstance.address);
-		await registerAddress('datasets',    'registry.iexec.eth', DatasetRegistryInstance.address);
-		await registerAddress('workerpools', 'registry.iexec.eth', WorkerpoolRegistryInstance.address);
+		await registerAddress('admin',       'iexec.eth', accounts[0]);
+		await registerAddress('rlc',         'iexec.eth', RLCInstance.address);
+		await registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address);
+		await registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address);
+		await registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address);
+		await registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address);
 
 		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
-		await     IexecInterfaceInstance.setName(ens.address, 'hub.iexec.eth');
-		await        AppRegistryInstance.setName(ens.address, 'apps.registry.iexec.eth');
-		await    DatasetRegistryInstance.setName(ens.address, 'datasets.registry.iexec.eth');
-		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.registry.iexec.eth');
+		await     IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth');
+		await        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth');
+		await    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth');
+		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth');
 	}
 
 	/* ------------------------ ERC1538 list methods ------------------------- */
