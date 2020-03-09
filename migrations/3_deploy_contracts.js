@@ -67,7 +67,7 @@ async function factoryDeployer(contract, options = {})
 	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
-	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args).slice(2) : '';
+	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
 	const code             = coreCode + argsCode;
 	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -197,21 +197,9 @@ module.exports = async function(deployer, network, accounts)
 
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        {
-			args: [ deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
-		await factoryDeployer(DatasetRegistry,    {
-			args: [ deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
-		await factoryDeployer(WorkerpoolRegistry, {
-			args: [ deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
+		await factoryDeployer(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
+		await factoryDeployer(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
+		await factoryDeployer(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
 	}
 	else
 	{
@@ -225,6 +213,10 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`AppRegistry        deployed at address: ${AppRegistryInstance.address}`);
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
+
+	await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000'),
+	await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000'),
+	await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,

@@ -9,12 +9,11 @@ contract AppRegistry is Registry
 	/**
 	 * Constructor
 	 */
-	constructor(address _previous)
+	constructor()
 	public Registry(
 		address(new App()),
 		"iExec Application Registry (V5)",
-		"iExecAppsV5",
-		_previous)
+		"iExecAppsV5")
 	{
 	}
 
