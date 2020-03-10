@@ -9,12 +9,11 @@ contract DatasetRegistry is Registry
 	/**
 	 * Constructor
 	 */
-	constructor(address _previous)
+	constructor()
 	public Registry(
 		address(new Dataset()),
 		"iExec Dataset Registry (V5)",
-		"iExecDatasetsV5",
-		_previous)
+		"iExecDatasetsV5")
 	{
 	}
 

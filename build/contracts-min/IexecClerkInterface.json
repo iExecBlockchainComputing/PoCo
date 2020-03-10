@@ -1,0 +1,2337 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IexecODBLibOrders.AppOrder",
+          "name": "apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastAppOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IexecODBLibOrders.DatasetOrder",
+          "name": "datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastDatasetOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IexecODBLibOrders.RequestOrder",
+          "name": "requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastRequestOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IexecODBLibOrders.WorkerpoolOrder",
+          "name": "workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "BroadcastWorkerpoolOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "appHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedAppOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "datasetHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedDatasetOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "requestHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedRequestOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "workerpoolHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ClosedWorkerpoolOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        }
+      ],
+      "name": "DepositFor",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Lock",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "appHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "datasetHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "workerpoolHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "requestHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "volume",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrdersMatched",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Reward",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "workerpool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "SchedulerNotice",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Seize",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Unlock",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "viewAccount",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "stake",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "locked",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IexecODBLibCore.Account",
+          "name": "account",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_target",
+          "type": "address"
+        }
+      ],
+      "name": "depositFor",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_targets",
+          "type": "address[]"
+        }
+      ],
+      "name": "depositForArray",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.AppOrder",
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastAppOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.DatasetOrder",
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastDatasetOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.WorkerpoolOrder",
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastWorkerpoolOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.RequestOrder",
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "broadcastRequestOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WORKERPOOL_STAKE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_MIN",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "GROUPMEMBER_PURPOSE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "EIP712DOMAIN_SEPARATOR",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "iexechub",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewRequestDeals",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "requestdeals",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecODBLibCore.Resource",
+              "name": "app",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecODBLibCore.Resource",
+              "name": "dataset",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecODBLibCore.Resource",
+              "name": "workerpool",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "botFirst",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "botSize",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerStake",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "schedulerRewardRatio",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IexecODBLibCore.Deal",
+          "name": "deal",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewConsumed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "consumed",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewPresigned",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "presigned",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_identity",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_hash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifySignature",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.AppOrder",
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signAppOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.DatasetOrder",
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signDatasetOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.WorkerpoolOrder",
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signWorkerpoolOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.RequestOrder",
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "signRequestOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.AppOrder",
+          "name": "_apporder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelAppOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.DatasetOrder",
+          "name": "_datasetorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelDatasetOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.WorkerpoolOrder",
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelWorkerpoolOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.RequestOrder",
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelRequestOrder",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.AppOrder",
+          "name": "_apporder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.DatasetOrder",
+          "name": "_datasetorder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.WorkerpoolOrder",
+          "name": "_workerpoolorder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecODBLibOrders.RequestOrder",
+          "name": "_requestorder",
+          "type": "tuple"
+        }
+      ],
+      "name": "matchOrders",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDealABILegacy_pt1",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDealABILegacy_pt2",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewConfigABILegacy",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "viewAccountABILegacy",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "networks": {}
+}

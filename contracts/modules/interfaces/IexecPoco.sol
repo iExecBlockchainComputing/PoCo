@@ -6,7 +6,6 @@ import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco
 {
-	event Withdraw(address owner, uint256 amount);
 	event Reward  (address owner, uint256 amount, bytes32 ref);
 	event Seize   (address owner, uint256 amount, bytes32 ref);
 	event Lock    (address owner, uint256 amount);

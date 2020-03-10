@@ -67,7 +67,7 @@ async function factoryDeployer(contract, options = {})
 	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
-	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args).slice(2) : '';
+	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
 	const code             = coreCode + argsCode;
 	const salt             = options.salt  || '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -197,21 +197,9 @@ module.exports = async function(deployer, network, accounts)
 
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        {
-			args: [ deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
-		await factoryDeployer(DatasetRegistry,    {
-			args: [ deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
-		await factoryDeployer(WorkerpoolRegistry, {
-			args: [ deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000' ],
-			call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
+		await factoryDeployer(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
+		await factoryDeployer(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
+		await factoryDeployer(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
 	}
 	else
 	{
@@ -225,6 +213,10 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`AppRegistry        deployed at address: ${AppRegistryInstance.address}`);
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
+
+	await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000'),
+	await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000'),
+	await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,
@@ -252,7 +244,7 @@ module.exports = async function(deployer, network, accounts)
 	}
 
 	/* --------------------------------- ENS --------------------------------- */
-	if (chaintype == 'private')
+	if (chainid > 64) // skip for mainnet and testnet
 	{
 		var ens        = null;
 		var resolver   = null;
@@ -332,24 +324,21 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain('eth');
 		await registerDomain('iexec', 'eth');
 
-		await registerDomain('registry',   'iexec.eth');
-		await registerDomain('apps',       'iexec.eth');
-		await registerDomain('datasets',   'iexec.eth');
-		await registerDomain('workerpool', 'iexec.eth');
-		await registerDomain('users',      'iexec.eth');
+		await registerDomain('v5',           'iexec.eth');
+		await registerDomain('users',        'iexec.eth');
 
-		await registerAddress('admin',       'iexec.eth',          accounts[0]);
-		await registerAddress('rlc',         'iexec.eth',          RLCInstance.address);
-		await registerAddress('hub',         'iexec.eth',          IexecInterfaceInstance.address);
-		await registerAddress('apps',        'registry.iexec.eth', AppRegistryInstance.address);
-		await registerAddress('datasets',    'registry.iexec.eth', DatasetRegistryInstance.address);
-		await registerAddress('workerpools', 'registry.iexec.eth', WorkerpoolRegistryInstance.address);
+		await registerAddress('admin',       'iexec.eth', accounts[0]);
+		await registerAddress('rlc',         'iexec.eth', RLCInstance.address);
+		await registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address);
+		await registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address);
+		await registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address);
+		await registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address);
 
 		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
-		await     IexecInterfaceInstance.setName(ens.address, 'hub.iexec.eth');
-		await        AppRegistryInstance.setName(ens.address, 'apps.registry.iexec.eth');
-		await    DatasetRegistryInstance.setName(ens.address, 'datasets.registry.iexec.eth');
-		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.registry.iexec.eth');
+		await     IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth');
+		await        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth');
+		await    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth');
+		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth');
 	}
 
 	/* ------------------------ ERC1538 list methods ------------------------- */

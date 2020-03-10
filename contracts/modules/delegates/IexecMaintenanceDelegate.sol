@@ -7,6 +7,7 @@ import "../interfaces/IexecMaintenance.sol";
 
 contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
+	using SafeMathExtended  for uint256;
 	using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 
 	function configure(
@@ -51,7 +52,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	external override
 	{
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
-		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
+		m_workerScores[_worker] = m_workerScores[_worker].max(m_v3_iexecHub.viewScore(_worker));
 		m_v3_scoreImported[_worker] = true;
 	}
 

@@ -398,7 +398,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(_checkSignature(
-			_enclaveChallenge == address(0) ? deal.workerpool.owner : m_teebroker,
+			( _enclaveChallenge != address(0) && m_teebroker != address(0) ) ? m_teebroker : deal.workerpool.owner,
 			keccak256(abi.encodePacked(
 				_msgSender(),
 				_taskid,
@@ -586,7 +586,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		// Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
 		require(_checkSignature(
-			_enclaveChallenge == address(0) ? deal.workerpool.owner : m_teebroker,
+			( _enclaveChallenge != address(0) && m_teebroker != address(0) ) ? m_teebroker : deal.workerpool.owner,
 			keccak256(abi.encodePacked(
 				_msgSender(),
 				_taskid,
