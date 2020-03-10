@@ -10,6 +10,8 @@ contract SignatureVerifier is DelegateBase
 {
 	using IexecLibOrders_v5 for bytes32;
 
+	bytes4 constant internal MAGICVALUE = 0x20c13b0b;
+
 	function _isContract(address _addr)
 	internal view returns (bool)
 	{
@@ -35,7 +37,7 @@ contract SignatureVerifier is DelegateBase
 	{
 		if (_isContract(_identity))
 		{
-			return IERC1271(_identity).isValidSignature(_hash, _signature);
+			return IERC1271(_identity).isValidSignature(_hash, _signature) == MAGICVALUE;
 		}
 		else
 		{
