@@ -51,7 +51,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	external override
 	{
 		require(!m_v3_scoreImported[_worker], "score-already-imported");
-		m_workerScores[_worker] = m_v3_iexecHub.viewScore(_worker);
+		m_workerScores[_worker] = m_workerScores[_worker].max(m_v3_iexecHub.viewScore(_worker));
 		m_v3_scoreImported[_worker] = true;
 	}
 
