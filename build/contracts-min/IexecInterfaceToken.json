@@ -497,6 +497,25 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": false,
           "internalType": "address",
           "name": "owner",
@@ -1842,7 +1861,7 @@
               "type": "tuple"
             },
             {
-              "internalType": "uint8",
+              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
               "name": "operation",
               "type": "uint8"
             },
@@ -1919,7 +1938,7 @@
               "type": "tuple"
             },
             {
-              "internalType": "uint8",
+              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
               "name": "operation",
               "type": "uint8"
             },
@@ -2031,7 +2050,7 @@
               "type": "tuple"
             },
             {
-              "internalType": "uint8",
+              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
               "name": "operation",
               "type": "uint8"
             },
@@ -2118,7 +2137,7 @@
               "type": "tuple"
             },
             {
-              "internalType": "uint8",
+              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
               "name": "operation",
               "type": "uint8"
             },
@@ -2419,6 +2438,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -2462,6 +2494,13 @@
           "type": "uint256"
         }
       ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -2674,6 +2713,19 @@
           "type": "bool"
         }
       ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
