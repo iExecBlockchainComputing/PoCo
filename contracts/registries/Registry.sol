@@ -38,7 +38,8 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 	{
 		// Create entry (proxy)
 		address entry = Create2.deploy(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
-		InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
+		// Initialize entry (casting to address payable is a pain in ^0.5.0)
+		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
 		// Mint corresponding token
 		_mint(_owner, uint256(entry));
 		return uint256(entry);
