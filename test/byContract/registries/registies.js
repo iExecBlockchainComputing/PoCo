@@ -105,6 +105,17 @@ contract('Registries', async (accounts) => {
 					);
 					const predictedAddress = tools.create2(AppRegistryInstance.address, code, salt);
 
+					assert.equal(await AppRegistryInstance.predictApp(
+							appProvider.address,
+							"App #"+i,
+							"DOCKER",
+							constants.MULTIADDR_BYTES,
+							web3.utils.keccak256("Content of app #"+i),
+							"0x1234"
+						),
+						predictedAddress
+					);
+
 					txMined = await AppRegistryInstance.createApp(
 						appProvider.address,
 						"App #"+i,
@@ -177,6 +188,15 @@ contract('Registries', async (accounts) => {
 					);
 					const predictedAddress = tools.create2(DatasetRegistryInstance.address, code, salt);
 
+					assert.equal(await DatasetRegistryInstance.predictDataset(
+							datasetProvider.address,
+							"Dataset #"+i,
+							constants.MULTIADDR_BYTES,
+							web3.utils.keccak256("Content of dataset #"+i)
+						),
+						predictedAddress
+					);
+
 					txMined = await DatasetRegistryInstance.createDataset(
 						datasetProvider.address,
 						"Dataset #"+i,
@@ -240,6 +260,13 @@ contract('Registries', async (accounts) => {
 						{ t: 'address', v: scheduler.address },
 					);
 					const predictedAddress = tools.create2(WorkerpoolRegistryInstance.address, code, salt);
+
+					assert.equal(await WorkerpoolRegistryInstance.predictWorkerpool(
+							scheduler.address,
+							"Workerpool #"+i
+						),
+						predictedAddress
+					);
 
 					txMined = await WorkerpoolRegistryInstance.createWorkerpool(
 						scheduler.address,
