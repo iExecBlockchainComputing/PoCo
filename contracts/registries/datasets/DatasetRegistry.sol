@@ -20,6 +20,20 @@ contract DatasetRegistry is Registry
 	/**
 	 * Dataset creation
 	 */
+	function encodeInitializer(
+		string  memory _datasetName,
+		bytes   memory _datasetMultiaddr,
+		bytes32        _datasetChecksum)
+	internal pure returns (bytes memory)
+	{
+		return abi.encodeWithSignature(
+			"initialize(string,bytes,bytes32)",
+			_datasetName,
+			_datasetMultiaddr,
+			_datasetChecksum
+		);
+	}
+
 	function createDataset(
 		address          _datasetOwner,
 		string  calldata _datasetName,
@@ -27,14 +41,16 @@ contract DatasetRegistry is Registry
 		bytes32          _datasetChecksum)
 	external returns (Dataset)
 	{
-		return Dataset(_mintCreate(
-			_datasetOwner,
-			abi.encodeWithSignature(
-				"initialize(string,bytes,bytes32)",
-				_datasetName,
-				_datasetMultiaddr,
-				_datasetChecksum
-			)
-		));
+		return Dataset(_mintCreate(_datasetOwner, encodeInitializer(_datasetName, _datasetMultiaddr, _datasetChecksum)));
+	}
+
+	function predictDataset(
+		address          _datasetOwner,
+		string  calldata _datasetName,
+		bytes   calldata _datasetMultiaddr,
+		bytes32          _datasetChecksum)
+	external view returns (Dataset)
+	{
+		return Dataset(_mintPredict(_datasetOwner, encodeInitializer(_datasetName, _datasetMultiaddr, _datasetChecksum)));
 	}
 }

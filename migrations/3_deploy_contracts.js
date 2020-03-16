@@ -27,6 +27,7 @@ var IexecERC20              = artifacts.require('IexecERC20Delegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
 var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
+var IexecMaintenanceExtra   = artifacts.require('IexecMaintenanceExtraDelegate')
 var IexecOrderManagement    = artifacts.require('IexecOrderManagementDelegate')
 var IexecPoco               = artifacts.require('IexecPocoDelegate')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
@@ -167,7 +168,8 @@ module.exports = async function(deployer, network, accounts)
 		IexecPoco,
 		IexecRelay,
 		ENSIntegration,
-	];
+		chainid != 1 && IexecMaintenanceExtra,
+	].filter(Boolean);
 
 	console.log('Linking smart contracts to proxy');
 	for (id in contracts)
@@ -214,9 +216,9 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
 
-	await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000'),
-	await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000'),
-	await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
+	await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000');
+	await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000');
+	await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
 
 	await IexecInterfaceInstance.configure(
 		RLCInstance.address,

@@ -612,6 +612,30 @@
       ],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_workerpoolOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_workerpoolDescription",
+          "type": "string"
+        }
+      ],
+      "name": "predictWorkerpool",
+      "outputs": [
+        {
+          "internalType": "contract Workerpool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
   "networks": {

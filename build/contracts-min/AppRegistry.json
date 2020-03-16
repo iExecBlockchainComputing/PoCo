@@ -632,6 +632,50 @@
       ],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_appOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_appName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_appType",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_appMultiaddr",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_appChecksum",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_appMREnclave",
+          "type": "bytes"
+        }
+      ],
+      "name": "predictApp",
+      "outputs": [
+        {
+          "internalType": "contract App",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
   "networks": {

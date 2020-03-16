@@ -45,6 +45,15 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 		return uint256(entry);
 	}
 
+	function _mintPredict(
+		address      _owner,
+		bytes memory _args)
+	internal view returns (uint256)
+	{
+		address entry = Create2.computeAddress(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
+		return uint256(entry);
+	}
+
 	/* Interface */
 	function isRegistered(address _entry)
 	external view override returns (bool)
