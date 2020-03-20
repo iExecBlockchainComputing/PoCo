@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 
 import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
 import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "./IRegistry.sol";
@@ -12,14 +12,16 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
+	bytes32   public proxyCodeHash;
 	IRegistry public previous;
 	bool      public initialized;
 
 	constructor(address _master, string memory _name, string memory _symbol)
 	public ERC721Full(_name, _symbol)
 	{
-		master    = _master;
-		proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
+		master        = _master;
+		proxyCode     = type(InitializableUpgradeabilityProxy).creationCode;
+		proxyCodeHash = keccak256(proxyCode);
 	}
 
 	function initialize(address _previous)
@@ -50,7 +52,7 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 		bytes memory _args)
 	internal view returns (uint256)
 	{
-		address entry = Create2.computeAddress(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
+		address entry = Create2.computeAddress(keccak256(abi.encodePacked(_args, _owner)), proxyCodeHash);
 		return uint256(entry);
 	}
 
