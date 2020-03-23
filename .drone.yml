@@ -1,12 +1,12 @@
 pipeline:
   dockerhub_legacy:
     image: plugins/docker
-    repo: iexechub/poco-chain
+    repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
+    environment:
+      DEV_NODE: http://localhost:8545
+      MNEMONIC: actual surround disorder swim upgrade devote digital misery truly verb slide final
     tags:
-      - latest
-      - ${DRONE_TAG##lv}
-      - legacy-latest
-      - legacy-${DRONE_COMMIT_SHA:0:7}
+      - v5-token-ws
     when:
-      ref: [refs/tags/lv*]
+      branch: [poco-chain-update]

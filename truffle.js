@@ -1,6 +1,7 @@
 var HDWalletProvider = require("@truffle/hdwallet-provider");
 
-var useEnv = process.env.MNEMONIC && process.env.DEV_NODE;
+var useEnv = !!process.env.MNEMONIC && !!process.env.DEV_NODE;
+console.log('useEnv', useEnv);
 
 module.exports =
 {
