@@ -132,7 +132,7 @@
     },
     "default": {
       "_comment": "asset should be Token or Native",
-      "asset": "Native",
+      "asset": "Token",
       "token": null,
       "v3": {
         "Hub": null,
@@ -141,7 +141,8 @@
         "WorkerpoolRegistry": null
       },
       "v5": {
-        "usefactory": true
+        "usefactory": true,
+        "salt": "0xbe1a000000000000000000000000000000000000000000000000000000000000"
       }
     }
   }

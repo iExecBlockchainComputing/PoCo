@@ -14,9 +14,8 @@ module.exports =
 		},
 		development:
 		{
-			host:       "localhost",
-			port:       8545,
-			network_id: "*",         // Match any network id,
+			provider: () => new HDWalletProvider('actual surround disorder swim upgrade devote digital misery truly verb slide final', 'http://localhost:8545'),
+			network_id: "65535",
 			gasPrice:   22000000000, //22Gwei
 		},
 		mainnet:
