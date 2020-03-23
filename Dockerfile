@@ -10,6 +10,9 @@ RUN apt install -y python2.7 python-pip #prevents /parity/migrate.sh > node-gyp 
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
 
+ARG DEV_NODE
+ARG MNEMONIC
+
 RUN bash /iexec-poco/parity/migrate.sh
 
 ENTRYPOINT ["/bin/parity"]

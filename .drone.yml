@@ -3,9 +3,9 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    environment:
-      DEV_NODE: http://localhost:8545
-      MNEMONIC: actual surround disorder swim upgrade devote digital misery truly verb slide final
+    build_args:
+      - DEV_NODE: http://localhost:8545
+      - MNEMONIC: actual surround disorder swim upgrade devote digital misery truly verb slide final
     tags:
       - v5-token-ws
     when:
