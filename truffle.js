@@ -1,5 +1,7 @@
 var HDWalletProvider = require("@truffle/hdwallet-provider");
 
+var useEnv = process.env.MNEMONIC && process.env.DEV_NODE;
+
 module.exports =
 {
 	plugins: [ "truffle-security", "solidity-coverage" ],
@@ -14,8 +16,10 @@ module.exports =
 		},
 		development:
 		{
-			provider: () => new HDWalletProvider('actual surround disorder swim upgrade devote digital misery truly verb slide final', 'http://localhost:8545'),
-			network_id: "65535",
+			provider: 	useEnv ? () => new HDWalletProvider(process.env.MNEMONIC, process.env.DEV_NODE) : undefined,
+			host:       useEnv ? undefined : "localhost",
+			port:       useEnv ? undefined : 8545,
+			network_id: "*",
 			gasPrice:   22000000000, //22Gwei
 		},
 		mainnet:
