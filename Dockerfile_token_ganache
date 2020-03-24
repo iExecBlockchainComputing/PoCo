@@ -1,4 +1,4 @@
-FROM trufflesuite/ganache-cli:latest
+FROM trufflesuite/ganache-cli:latest as build
 
 USER root
 
@@ -11,6 +11,10 @@ ARG MNEMONIC
 
 RUN mkdir /ganachedb
 RUN bash /iexec-poco/ganache/migrate.sh
+
+FROM trufflesuite/ganache-cli:latest as runtime
+
+COPY --from=build "/ganachedb" "/ganachedb"
 
 ENTRYPOINT ["node", "/app/ganache-core.docker.cli.js"]
 CMD ["-l", "8000000", "-i", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]
