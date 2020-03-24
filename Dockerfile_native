@@ -9,7 +9,7 @@ RUN apt install -y python2.7 python-pip #prevents /parity/migrate.sh > node-gyp 
 
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
-RUN mv /iexec-poco/config/config_token.json /iexec-poco/config/config.json
+RUN mv /iexec-poco/config/config_native.json /iexec-poco/config/config.json
 
 ARG DEV_NODE
 ARG MNEMONIC
