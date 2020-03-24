@@ -10,7 +10,7 @@ pipeline:
     tags:
       - v5-token-parity
     when:
-      branch: [poco-chain-update]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
 
   docker_native_parity:
     image: plugins/docker
@@ -23,7 +23,7 @@ pipeline:
     tags:
       - v5-native-parity
     when:
-      branch: [poco-chain-update]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
 
   docker_token_ganache:
     image: plugins/docker
@@ -35,7 +35,7 @@ pipeline:
     tags:
       - v5-token
     when:
-      branch: [poco-chain-update]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
 
   docker_native_ganache:
     image: plugins/docker
@@ -47,7 +47,7 @@ pipeline:
     tags:
       - v5-native
     when:
-      branch: [poco-chain-update]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
 
   docker_token_1s_ganache:
     image: plugins/docker
@@ -57,4 +57,4 @@ pipeline:
     tags:
       - v5-token-1s
     when:
-      branch: [poco-chain-update]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
