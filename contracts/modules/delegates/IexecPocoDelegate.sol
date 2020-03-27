@@ -204,6 +204,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		// computation environment & allowed enough funds
 		bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
 		require(_requestorder.category           == _workerpoolorder.category       );
+		require(_requestorder.category            < m_categories.length             );
 		require(_requestorder.trust              <= _workerpoolorder.trust          );
 		require(_requestorder.appmaxprice        >= _apporder.appprice              );
 		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice      );
