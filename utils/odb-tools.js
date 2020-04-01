@@ -1,17 +1,16 @@
 const ethUtil   = require('ethereumjs-util');
 const sigUtil   = require('eth-sig-util');
 const constants = require('./constants');
-const wallets   = require('./wallets');
 
 
 
 const TYPES =
 {
 	EIP712Domain: [
-		{ name: "name",              type: "string"  },
-		{ name: "version",           type: "string"  },
-		{ name: "chainId",           type: "uint256" },
-		{ name: "verifyingContract", type: "address" },
+		{ type: "string",  name: "name"               },
+		{ type: "string",  name: "version"            },
+		{ type: "uint256", name: "chainId"            },
+		{ type: "address", name: "verifyingContract"  },
 	],
 	AppOrder: [
 		{ type: "address", name: "app"                },
@@ -80,21 +79,73 @@ const TYPES =
 	],
 }
 
-function signStruct(primaryType, message, domain, pk)
+function eth_sign(hash, wallet)
 {
-	message.sign = sigUtil.signTypedData(
-		Buffer.from(pk.substring(2), 'hex'),
+	return new Promise((resolve, reject) => {
+		if (wallet.sign)
 		{
-			data:
-			{
-				types: TYPES,
-				primaryType,
-				message,
-				domain,
-			}
+			resolve(wallet.sign(hash).signature)
 		}
-	);
-	return message;
+		else
+		{
+			web3.eth.sign(hash, wallet.address).then(resolve).catch(reject);
+		}
+	});
+}
+
+function eth_signTypedData(primaryType, message, domain, wallet)
+{
+	return new Promise((resolve, reject) => {
+		const data = {
+			types: TYPES,
+			primaryType,
+			domain:
+			{
+				name:              domain.name,
+				version:           domain.version,
+				chainId:           domain.chainId,
+				verifyingContract: domain.verifyingContract,
+			},
+			message,
+		};
+		if (wallet.privateKey)
+		{
+			resolve(sigUtil.signTypedData(Buffer.from(wallet.privateKey.substring(2), 'hex'), { data }));
+		}
+		else
+		{
+			web3.currentProvider.send({
+				method: "eth_signTypedData",
+				params: [ wallet.address, data ],
+				from: wallet.address,
+			}, (err, result) => {
+				if (!err)
+				{
+					resolve(result.result);
+				}
+				else
+				{
+					reject(err);
+				}
+			});
+		}
+	});
+}
+
+function signMessage(obj, hash, wallet)
+{
+	return eth_sign(hash, wallet).then(sign => {
+		obj.sign = sign;
+		return obj;
+	});
+}
+
+function signStruct(primaryType, message, domain, wallet)
+{
+	return eth_signTypedData(primaryType, message, domain, wallet).then(sign => {
+		message.sign = sign;
+		return message;
+	});
 }
 
 function hashStruct(primaryType, message, domain)
@@ -105,22 +156,6 @@ function hashStruct(primaryType, message, domain)
 		message,
 		domain,
 	}));
-}
-
-function signMessage(obj, hash, wallet)
-{
-	if (wallet.sign)
-	{
-		obj.sign = wallet.sign(hash).signature;
-		return obj;
-	}
-	else
-	{
-		return web3.eth.sign(hash, wallet).then(sign => {
-			obj.sign = sign;
-			return obj;
-		});
-	}
 }
 
 /* NOT EIP712 compliant */
@@ -211,20 +246,20 @@ class iExecAgent
 	{
 		this.iexec  = iexec;
 		this.wallet = account
-		? web3.eth.accounts.privateKeyToAccount(wallets.privateKeys[account.toLowerCase()])
+		? { address: account }
 		: web3.eth.accounts.create();
 		this.address = this.wallet.address;
 	}
 	async domain() { return await this.iexec.domain(); }
 	async signMessage                 (obj, hash) { return signMessage(obj, hash, this.wallet); }
-	async signAppOrder                (struct)    { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet.privateKey); }
-	async signDatasetOrder            (struct)    { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet.privateKey); }
-	async signWorkerpoolOrder         (struct)    { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet.privateKey); }
-	async signRequestOrder            (struct)    { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet.privateKey); }
-	async signAppOrderOperation       (struct)    { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet.privateKey); }
-	async signDatasetOrderOperation   (struct)    { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
-	async signWorkerpoolOrderOperation(struct)    { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet.privateKey); }
-	async signRequestOrderOperation   (struct)    { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet.privateKey); }
+	async signAppOrder                (struct)    { return signStruct("AppOrder",                 struct, await this.domain(), this.wallet); }
+	async signDatasetOrder            (struct)    { return signStruct("DatasetOrder",             struct, await this.domain(), this.wallet); }
+	async signWorkerpoolOrder         (struct)    { return signStruct("WorkerpoolOrder",          struct, await this.domain(), this.wallet); }
+	async signRequestOrder            (struct)    { return signStruct("RequestOrder",             struct, await this.domain(), this.wallet); }
+	async signAppOrderOperation       (struct)    { return signStruct("AppOrderOperation",        struct, await this.domain(), this.wallet); }
+	async signDatasetOrderOperation   (struct)    { return signStruct("DatasetOrderOperation",    struct, await this.domain(), this.wallet); }
+	async signWorkerpoolOrderOperation(struct)    { return signStruct("WorkerpoolOrderOperation", struct, await this.domain(), this.wallet); }
+	async signRequestOrderOperation   (struct)    { return signStruct("RequestOrderOperation",    struct, await this.domain(), this.wallet); }
 
 	async viewAccount()
 	{
