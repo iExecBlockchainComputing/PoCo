@@ -44,8 +44,8 @@ abstract contract Store is ERC1538Store
 	uint256 internal constant FINAL_DEADLINE_RATIO        = 10;
 	uint256 internal constant WORKERPOOL_STAKE_RATIO      = 30;
 	uint256 internal constant KITTY_RATIO                 = 10;
-	uint256 internal constant KITTY_MIN                   = 1000000000; // TODO: 1RLC ?
-	address internal constant KITTY_ADDRESS               = address(uint256(keccak256(bytes("iExecKitty"))) - 1);
+	uint256 internal constant KITTY_MIN                   = 1000000000; // ADJUSTEMENT VARIABLE
+	address internal constant KITTY_ADDRESS               = 0x99c2268479b93fDe36232351229815DF80837e23; // address(uint256(keccak256(bytes("iExecKitty"))) - 1);
 	uint256 internal constant GROUPMEMBER_PURPOSE         = 4;
 	bytes32 internal          EIP712DOMAIN_SEPARATOR;
 
