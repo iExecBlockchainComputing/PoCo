@@ -137,26 +137,9 @@ module.exports = async function(deployer, network, accounts)
 		await deployer.link(IexecLibOrders, IexecOrderManagement);
 	}
 
-	/* ---------------------------- Deploy proxy ----------------------------- */
-	if (deploymentOptions.v5.usefactory)
-	{
-		await factoryDeployer(ERC1538Update, factoryOptions);
-		await factoryDeployer(ERC1538Proxy, {
-			args: [ (await ERC1538Update.deployed()).address ],
-			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
-		});
-	}
-	else
-	{
-		await deployer.deploy(ERC1538Update);
-		await deployer.deploy(ERC1538Proxy, (await ERC1538Update.deployed()).address);
-	}
-	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
-	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
-
-	/* --------------------------- Setup delegate ---------------------------- */
+	/* ---------------------------- Modules list ----------------------------- */
 	contracts = [
+		ERC1538Update,
 		ERC1538Query,
 		IexecAccessors,
 		IexecAccessorsABILegacy,
@@ -169,26 +152,37 @@ module.exports = async function(deployer, network, accounts)
 		IexecRelay,
 		ENSIntegration,
 		chainid != 1 && IexecMaintenanceExtra,
-	].filter(Boolean);
+	]
+	.filter(Boolean);
 
-	console.log('Linking smart contracts to proxy');
-	for (id in contracts)
+	/* --------------------------- Deploy modules ---------------------------- */
+	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer(module, factoryOptions) : deployer.deploy(module)));
+
+	/* ---------------------------- Deploy proxy ----------------------------- */
+	if (deploymentOptions.v5.usefactory)
 	{
-		console.log(`[${id}] ERC1538 link: ${contracts[id].contractName}`);
-		if (deploymentOptions.v5.usefactory)
-		{
-			await factoryDeployer(contracts[id], factoryOptions);
-		}
-		else
-		{
-			await deployer.deploy(contracts[id]);
-		}
-		await ERC1538.updateContract(
-			(await contracts[id].deployed()).address,
-			getFunctionSignatures(contracts[id].abi),
-			'Linking ' + contracts[id].contractName
-		);
+		await factoryDeployer(ERC1538Proxy, {
+			args: [ (await ERC1538Update.deployed()).address ],
+			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+			...factoryOptions
+		});
 	}
+	else
+	{
+		await deployer.deploy(ERC1538Proxy, (await ERC1538Update.deployed()).address);
+	}
+	ERC1538 = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
+	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
+
+	/* --------------------------- Setup modules ---------------------------- */
+	await Promise.all(contracts.filter(module => module != ERC1538Update).map(async module => {
+		console.log(`ERC1538 link: ${module.contractName}`);
+		return ERC1538.updateContract(
+			(await module.deployed()).address,
+			getFunctionSignatures(module.abi),
+			'Linking ' + module.contractName
+		);
+	}));
 
 	/* --------------------------- Configure Stack --------------------------- */
 	switch (deploymentOptions.asset)
@@ -199,15 +193,19 @@ module.exports = async function(deployer, network, accounts)
 
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
-		await factoryDeployer(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
-		await factoryDeployer(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions });
+		await Promise.all([
+			factoryDeployer(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
+			factoryDeployer(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
+			factoryDeployer(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
+		]);
 	}
 	else
 	{
-		await deployer.deploy(AppRegistry,        deploymentOptions.v3.AppRegistry        || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(DatasetRegistry,    deploymentOptions.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000');
-		await deployer.deploy(WorkerpoolRegistry, deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
+		await Promise.all([
+			deployer.deploy(AppRegistry,        deploymentOptions.v3.AppRegistry        || '0x0000000000000000000000000000000000000000'),
+			deployer.deploy(DatasetRegistry,    deploymentOptions.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000'),
+			deployer.deploy(WorkerpoolRegistry, deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
+		]);
 	}
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
@@ -216,34 +214,35 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
 
-	await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000');
-	await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000');
-	await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000');
-
-	await IexecInterfaceInstance.configure(
-		RLCInstance.address,
-		'Staked RLC',
-		'SRLC',
-		9, // TODO: generic ?
-		AppRegistryInstance.address,
-		DatasetRegistryInstance.address,
-		WorkerpoolRegistryInstance.address,
-		deploymentOptions.v3.Hub || '0x0000000000000000000000000000000000000000'
-	);
+	await Promise.all([
+		AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000'),
+		DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000'),
+		WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
+		IexecInterfaceInstance.configure(
+			RLCInstance.address,
+			'Staked RLC',
+			'SRLC',
+			9, // TODO: generic ?
+			AppRegistryInstance.address,
+			DatasetRegistryInstance.address,
+			WorkerpoolRegistryInstance.address,
+			deploymentOptions.v3.Hub || '0x0000000000000000000000000000000000000000'
+		),
+	]);
 
 	/* ----------------------------- Categories ------------------------------ */
-	for (cat of CONFIG.categories)
-	{
-		console.log(`create category: ${cat.name}`);
-		await IexecInterfaceInstance.createCategory(cat.name, JSON.stringify(cat.description), cat.workClockTimeRef);
-	}
+	await Promise.all(CONFIG.categories.map(category => {
+		console.log(`create category: ${category.name}`);
+		return IexecInterfaceInstance.createCategory(category.name, JSON.stringify(category.description), category.workClockTimeRef);
+	}))
 
 	var catCount = await IexecInterfaceInstance.countCategory();
-	console.log(`countCategory is now: ${catCount.toNumber()}`);
-	for(var i = 0; i < await IexecInterfaceInstance.countCategory(); ++i)
-	{
-		console.log([ 'category', i, ':', ...await IexecInterfaceInstance.viewCategory(i)].join(' '));
-	}
+
+	console.log(`countCategory is now: ${catCount}`);
+	(await Promise.all(
+		Array(catCount.toNumber()).fill().map((_, i) => IexecInterfaceInstance.viewCategory(i))
+	))
+	.forEach((category, i) => console.log([ 'category', i, ':', ...category ].join(' ')));
 
 	/* --------------------------------- ENS --------------------------------- */
 	if (chainid > 64) // skip for mainnet and testnet
@@ -325,22 +324,22 @@ module.exports = async function(deployer, network, accounts)
 		await setReverseRegistrar();
 		await registerDomain('eth');
 		await registerDomain('iexec', 'eth');
+		await registerDomain('v5',    'iexec.eth');
+		await registerDomain('users', 'iexec.eth');
 
-		await registerDomain('v5',           'iexec.eth');
-		await registerDomain('users',        'iexec.eth');
-
-		await registerAddress('admin',       'iexec.eth', accounts[0]);
-		await registerAddress('rlc',         'iexec.eth', RLCInstance.address);
-		await registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address);
-		await registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address);
-		await registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address);
-		await registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address);
-
-		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
-		await     IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth');
-		await        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth');
-		await    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth');
-		await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth');
+		await Promise.all([
+			registerAddress('admin',       'iexec.eth', accounts[0]),
+			registerAddress('rlc',         'iexec.eth', RLCInstance.address),
+			registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address),
+			registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address),
+			registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address),
+			registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address),
+			reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] }),
+			    IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth'),
+			       AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth'),
+			   DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth'),
+			WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth'),
+		]);
 	}
 
 	/* ------------------------ ERC1538 list methods ------------------------- */
@@ -350,10 +349,9 @@ module.exports = async function(deployer, network, accounts)
 		let functionCount = await ERC1538QueryInstace.totalFunctions();
 
 		console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
-		for (let i = 0; i < functionCount; ++i)
-		{
-			let functionDetails = await ERC1538QueryInstace.functionByIndex(i);
-			console.log(`[${i}] ${functionDetails.delegate} ${functionDetails.signature}`);
-		}
+		(await Promise.all(
+			Array(functionCount.toNumber()).fill().map((_, i) => ERC1538QueryInstace.functionByIndex(i))
+		))
+		.forEach((details, i) => console.log(`[${i}] ${details.delegate} ${details.signature}`));
 	}
 };
