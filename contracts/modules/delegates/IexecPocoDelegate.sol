@@ -116,7 +116,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		/**
 		 * Retrieve part of the kitty
-		 * TODO: remove / keep ?
 		 */
 		uint256 kitty = m_frozens[KITTY_ADDRESS];
 		if (kitty > 0)
@@ -195,15 +194,10 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		 * Check orders compatibility
 		 */
 
-		// TODO: order evolution - check deadlines
-		// require(_apporder.expiration        < now);
-		// require(_datasetorder.expiration    < now);
-		// require(_workerpoolorder.expiration < now);
-		// require(_requestorder.expiration    < now);
-
 		// computation environment & allowed enough funds
 		bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
 		require(_requestorder.category           == _workerpoolorder.category       );
+		require(_requestorder.category            < m_categories.length             );
 		require(_requestorder.trust              <= _workerpoolorder.trust          );
 		require(_requestorder.appmaxprice        >= _apporder.appprice              );
 		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice      );
@@ -375,7 +369,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		return taskid;
 	}
 
-	// TODO: making it external causes "stack too deep" error
+	// TODO / COMPILER ERROR: making it external causes "stack too deep" error
 	function contribute(
 		bytes32      _taskid,
 		bytes32      _resultHash,
@@ -556,8 +550,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		emit TaskClaimed(_taskid);
 	}
 
-	// New
-	// TODO: making it external causes "stack too deep" error
+	// TODO / COMPILER ERROR: making it external causes "stack too deep" error
 	function contributeAndFinalize(
 		bytes32      _taskid,
 		bytes32      _resultDigest,
@@ -574,7 +567,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.status               == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
 		require(task.contributionDeadline >  now                                  );
 		require(task.contributors.length  == 0                                    );
-		require(deal.trust                == 1                                    ); // TODO, consider sender's score ?
+		require(deal.trust                == 1                                    ); // TODO / FUTURE FEATURE: consider sender's score ?
 
 		bytes32 resultHash = keccak256(abi.encodePacked(              _taskid, _resultDigest));
 		bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));

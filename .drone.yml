@@ -1,12 +1,60 @@
 pipeline:
-  dockerhub_legacy:
+  docker_token_parity:
     image: plugins/docker
-    repo: iexechub/poco-chain
+    repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile
+    build_args:
+      - DEV_NODE=http://localhost:8545
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     tags:
-      - latest
-      - ${DRONE_TAG##lv}
-      - legacy-latest
-      - legacy-${DRONE_COMMIT_SHA:0:7}
+      - v5-token-parity
     when:
-      ref: [refs/tags/lv*]
+      ref: [refs/tags/v5*, refs/tags/lv5*]
+
+  docker_native_parity:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile_native
+    build_args:
+      - DEV_NODE=http://localhost:8545
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+    tags:
+      - v5-native-parity
+    when:
+      ref: [refs/tags/v5*, refs/tags/lv5*]
+
+  docker_token_ganache:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile_token_ganache
+    build_args:
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+    tags:
+      - v5-token
+    when:
+      ref: [refs/tags/v5*, refs/tags/lv5*]
+
+  docker_native_ganache:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile_native_ganache
+    build_args:
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+    tags:
+      - v5-native
+    when:
+      ref: [refs/tags/v5*, refs/tags/lv5*]
+
+  docker_token_1s_ganache:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: Dockerfile_token_1s_ganache
+    tags:
+      - v5-token-1s
+    when:
+      ref: [refs/tags/v5*, refs/tags/lv5*]

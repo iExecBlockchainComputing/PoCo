@@ -21,7 +21,7 @@ module.exports = async function(deployer, network, accounts)
 		{
 			console.log(`→ Factory is not yet deployed on ${chaintype} (${chainid})`)
 			await web3.eth.sendTransaction({ from: accounts[0], to: FACTORY.deployer, value: FACTORY.cost });
-			await web3.eth.sendSignedTransaction(FACTORY.tx[chainid]);
+			await web3.eth.sendSignedTransaction(FACTORY.tx);
 			GenericFactory.address = FACTORY.address;
 			console.log(`→ Factory deployed at address: ${(await GenericFactory.deployed()).address}`)
 		}

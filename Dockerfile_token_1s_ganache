@@ -1,0 +1,3 @@
+FROM iexechub/poco-chaintest:v5-token
+
+CMD ["--blockTime", "1", "-l", "8000000", "-i", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]

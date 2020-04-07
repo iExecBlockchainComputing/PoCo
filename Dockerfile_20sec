@@ -1,14 +1,15 @@
-FROM parity/parity:v2.3.2
+FROM parity/parity:stable
 
 USER root
 
 RUN apt update && apt install -y curl git ca-certificates
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-RUN bash -i -c "nvm install node"
+RUN bash -i -c "nvm install 10"
 RUN apt install -y python2.7 python-pip #prevents /parity/migrate.sh > node-gyp rebuild > Can't find Python executable "python"
 
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
+RUN mv /iexec-poco/config/config_token.json /iexec-poco/config/config.json
 
 RUN bash /iexec-poco/parity_20sec/migrate_20sec.sh
 
