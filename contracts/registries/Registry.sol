@@ -3,12 +3,12 @@ pragma solidity ^0.6.0;
 import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
 import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "./IRegistry.sol";
 
 
-contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
+contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
@@ -17,7 +17,7 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 	bool      public initialized;
 
 	constructor(address _master, string memory _name, string memory _symbol)
-	public ERC721Full(_name, _symbol)
+	public ERC721(_name, _symbol)
 	{
 		master        = _master;
 		proxyCode     = type(InitializableUpgradeabilityProxy).creationCode;
@@ -39,7 +39,7 @@ contract Registry is IRegistry, ERC721Full, ENSReverseRegistration, Ownable
 	internal returns (uint256)
 	{
 		// Create entry (proxy)
-		address entry = Create2.deploy(keccak256(abi.encodePacked(_args, _owner)), proxyCode);
+		address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
 		// Initialize entry (casting to address payable is a pain in ^0.5.0)
 		InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
 		// Mint corresponding token
