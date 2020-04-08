@@ -1,5 +1,5 @@
 
-[![Build Status](https://drone.iex.ec//api/badges/iExecBlockchainComputing/PoCo/status.svg)](https://drone.iex.ec/iExecBlockchainComputing/PoCo)
+[![Build Status](https://drone.iex.ec/api/badges/iExecBlockchainComputing/PoCo-dev/status.svg)](https://drone.iex.ec/iExecBlockchainComputing/PoCo-dev)
 
 
 # Introduction
