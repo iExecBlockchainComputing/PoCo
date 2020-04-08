@@ -639,14 +639,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 _consensus)
 	internal
 	{
+		IexecLibCore_v5.Task      storage task      = m_tasks[_taskid];
 		IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
 
-		uint256 trust = m_deals[m_tasks[_taskid].dealid].trust;
+		uint256 trust = m_deals[task.dealid].trust;
 		if (consensus.group[_consensus].mul(trust) > consensus.total.mul(trust.sub(1)))
 		{
 			// Preliminary checks done in "contribute()"
-
-			IexecLibCore_v5.Task storage task = m_tasks[_taskid];
 			uint256 winnerCounter = 0;
 			for (uint256 i = 0; i < task.contributors.length; ++i)
 			{
