@@ -53,12 +53,17 @@ function getSerializedObject(entry)
 
 function getFunctionSignatures(abi)
 {
-	return abi
-		.filter(entry => entry.type == 'function')
-		.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`)
-		.join('')
-	+ (abi.some(entry => entry.type == 'receive' ) ? 'receive;'  : '')
-	+ (abi.some(entry => entry.type == 'fallback') ? 'fallback;' : '');
+	return [
+		...abi
+			.filter(entry => entry.type == 'receive')
+			.map(entry => 'receive;'),
+		...abi
+			.filter(entry => entry.type == 'fallback')
+			.map(entry => 'fallback;'),
+		...abi
+			.filter(entry => entry.type == 'function')
+			.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`),
+	].filter(Boolean).join('')
 }
 
 async function factoryDeployer(contract, options = {})
