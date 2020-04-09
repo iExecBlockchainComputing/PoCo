@@ -65,14 +65,14 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	}
 
 	function _deposit(address target)
-		internal
+	internal
 	{
 		_mint(target, msg.value.div(nRLCtoWei));
 		_withdraw(_msgSender(), msg.value.mod(nRLCtoWei));
 	}
 
 	function _withdraw(address to, uint256 value)
-		internal
+	internal
 	{
 		(bool success, ) = to.call.value(value)('');
 		require(success, 'native-transfer-failled');
