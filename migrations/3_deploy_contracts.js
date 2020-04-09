@@ -38,8 +38,11 @@ var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 
 const LIBRARIES = [
-	{ pattern: /__IexecLibOrders_v5_____________________/g, library: IexecLibOrders },
-]
+	IexecLibOrders,
+].map(contract => ({
+	pattern: new RegExp(`__${contract.contractName}${'_'.repeat(38-contract.contractName.length)}`, 'g'),
+	library: contract,
+}))
 
 /*****************************************************************************
  *                                   Tools                                   *
@@ -63,14 +66,14 @@ function getFunctionSignatures(abi)
 		...abi
 			.filter(entry => entry.type == 'function')
 			.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`),
-	].filter(Boolean).join('')
+	].filter(Boolean).join('');
 }
 
 async function factoryDeployer(contract, options = {})
 {
 	console.log(`[factoryDeployer] ${contract.contractName}`);
 	const factory          = await GenericFactory.deployed();
-	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed()})));
+	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed() })));
 	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
 	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
@@ -115,7 +118,7 @@ module.exports = async function(deployer, network, accounts)
 		case 'Token':
 			if (deploymentOptions.token)
 			{
-				RLCInstance = await RLC.at(deploymentOptions.token)
+				RLCInstance = await RLC.at(deploymentOptions.token);
 			}
 			else
 			{
@@ -150,7 +153,8 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecERC20,
-		deploymentOptions.asset == 'Native' ? IexecEscrowNative : IexecEscrowToken,
+		deploymentOptions.asset == 'Native' && IexecEscrowNative,
+		deploymentOptions.asset == 'Token'  && IexecEscrowToken,
 		IexecMaintenance,
 		IexecOrderManagement,
 		IexecPoco,
@@ -239,7 +243,7 @@ module.exports = async function(deployer, network, accounts)
 	await Promise.all(CONFIG.categories.map(category => {
 		console.log(`create category: ${category.name}`);
 		return IexecInterfaceInstance.createCategory(category.name, JSON.stringify(category.description), category.workClockTimeRef);
-	}))
+	}));
 
 	var catCount = await IexecInterfaceInstance.countCategory();
 
@@ -254,11 +258,11 @@ module.exports = async function(deployer, network, accounts)
 	{
 		var ens        = null;
 		var resolver   = null;
-		var registrars = {}
+		var registrars = {};
 
 		function labelhash(label)
 		{
-			return web3.utils.keccak256(label.toLowerCase())
+			return web3.utils.keccak256(label.toLowerCase());
 		}
 
 		function compose(labelHash, rootHash)
@@ -293,7 +297,7 @@ module.exports = async function(deployer, network, accounts)
 		async function setReverseRegistrar()
 		{
 			await deployer.deploy(ReverseRegistrar, ens.address, resolver.address);
-			reverseregistrar = await ReverseRegistrar.deployed()
+			reverseregistrar = await ReverseRegistrar.deployed();
 
 			await registrars[''].register(labelhash('reverse'), accounts[0], { from: accounts[0] });
 			await ens.setSubnodeOwner(namehash('reverse'), labelhash('addr'), reverseregistrar.address);
@@ -301,7 +305,7 @@ module.exports = async function(deployer, network, accounts)
 
 		async function registerDomain(label, domain='')
 		{
-			const name      = domain ? `${label}.${domain}` : `${label}`
+			const name      = domain ? `${label}.${domain}` : `${label}`;
 			const labelHash = labelhash(label);
 			const nameHash  = namehash(name);
 			// deploy domain registrar
@@ -315,7 +319,7 @@ module.exports = async function(deployer, network, accounts)
 
 		async function registerAddress(label, domain, address)
 		{
-			const name      = `${label}.${domain}`
+			const name      = `${label}.${domain}`;
 			const labelHash = labelhash(label);
 			const nameHash  = namehash(name);
 			// register as subdomain
@@ -350,8 +354,8 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------ ERC1538 list methods ------------------------- */
 	if (true)
 	{
-		let ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
-		let functionCount = await ERC1538QueryInstace.totalFunctions();
+		const ERC1538QueryInstace = await ERC1538Query.at(IexecInterfaceInstance.address);
+		const functionCount = await ERC1538QueryInstace.totalFunctions();
 
 		console.log(`The deployed ERC1538Proxy supports ${functionCount} functions:`);
 		(await Promise.all(
