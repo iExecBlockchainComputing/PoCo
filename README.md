@@ -85,7 +85,7 @@ The automatic testing command uses a `ganache-cli` blockchain instance to run th
 ganache-cli <any additional arguments>
 ```
 or run any other blockchain client.
-2. [Optional] If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
+2. **[Optional]** If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
 3. Run the tests using:
 ```
 npm run test
