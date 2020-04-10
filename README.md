@@ -78,36 +78,15 @@ npm run coverage
 
 The automatic testing command uses a `ganache-cli` blockchain instance to run the tests. You can also use your own blockchain endpoint to run these tests.
 
-### Testing on a custom blockchain - ganache
+### Testing on a custom blockchain
 
-1. Start ganache using:
+1. Start your blockchain. You can either use ganache with the following command:
 ```
 ganache-cli <any additional arguments>
 ```
-2. Run the tests using:
-```
-npm run test
-```
-or
-```
-truffle test
-```
-
-### Testing on a custom blockchain - geth
-
-1. Pull the the following docker image
-```
-docker pull iexechub/iexec-geth-local
-```
-2. Start container
-```
-docker run -d --name iexec-geth-local --entrypoint=./startupGeth.sh -p 8545:8545 iexechub/iexec-geth-local
-```
-3. wait to see : LOCAL_GETH_WELL_INITIALIZED : in the logs
-```
-docker logs -f iexec-geth-local
-```
-4. Run the tests using:
+or run any other blockchain client.
+2. [Optional] If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
+3. Run the tests using:
 ```
 npm run test
 ```
