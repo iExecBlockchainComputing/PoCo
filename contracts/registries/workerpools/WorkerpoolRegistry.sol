@@ -26,7 +26,7 @@ contract WorkerpoolRegistry is Registry
 	{
 		return abi.encodeWithSignature(
 			'initialize(string)'
-		, _workerpoolDescription
+		,	_workerpoolDescription
 		);
 	}
 
