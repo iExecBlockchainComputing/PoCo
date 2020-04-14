@@ -102,7 +102,7 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	external view override returns (bytes memory)
 	{
 		IexecLibCore_v5.Task storage task = m_tasks[id];
-		require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED);
+		require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, 'task-pending');
 		return task.results;
 	}
 

@@ -21,7 +21,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		address          _v3_iexecHubAddress)
 	external override onlyOwner()
 	{
-		require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
+		require(EIP712DOMAIN_SEPARATOR == bytes32(0), 'already-configured');
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 
 		m_baseToken          = IERC20(_token);
@@ -44,14 +44,14 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	function updateDomainSeparator()
 	external override
 	{
-		require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
+		require(EIP712DOMAIN_SEPARATOR != bytes32(0), 'not-configured');
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 	}
 
 	function importScore(address _worker)
 	external override
 	{
-		require(!m_v3_scoreImported[_worker], "score-already-imported");
+		require(!m_v3_scoreImported[_worker], 'score-already-imported');
 		m_workerScores[_worker] = m_workerScores[_worker].max(m_v3_iexecHub.viewScore(_worker));
 		m_v3_scoreImported[_worker] = true;
 	}
@@ -78,10 +78,10 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	internal view returns (IexecLibOrders_v5.EIP712Domain memory)
 	{
 		return IexecLibOrders_v5.EIP712Domain({
-			name:              "iExecODB"
-		, version:           "3.0-alpha"
-		, chainId:           _chainId()
-		, verifyingContract: address(this)
+			name:              'iExecODB'
+		,	version:           '5.0.0'
+		,	chainId:           _chainId()
+		,	verifyingContract: address(this)
 		});
 	}
 }

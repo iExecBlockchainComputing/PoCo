@@ -12,8 +12,8 @@ contract WorkerpoolRegistry is Registry
 	constructor()
 	public Registry(
 		address(new Workerpool()),
-		"iExec Workerpool Registry (V5)",
-		"iExecWorkerpoolV5")
+		'iExec Workerpool Registry (V5)',
+		'iExecWorkerpoolV5')
 	{
 	}
 
@@ -25,8 +25,8 @@ contract WorkerpoolRegistry is Registry
 	internal pure returns (bytes memory)
 	{
 		return abi.encodeWithSignature(
-			"initialize(string)",
-			_workerpoolDescription
+			'initialize(string)'
+		,	_workerpoolDescription
 		);
 	}
 

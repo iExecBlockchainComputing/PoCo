@@ -8,6 +8,18 @@ import "../DelegateBase.sol";
 import "../interfaces/IexecPoco.sol";
 
 
+struct Matching
+{
+	bytes32 appHash;
+	address appOwner;
+	bytes32 datasetHash;
+	address datasetOwner;
+	bytes32 workerpoolHash;
+	address workerpoolOwner;
+	bytes32 requestHash;
+	bool    hasDataset;
+}
+
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
@@ -170,18 +182,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	/***************************************************************************
 	 *                           ODB order matching                            *
 	 ***************************************************************************/
-	struct Identities
-	{
-		bytes32 appHash;
-		address appOwner;
-		bytes32 datasetHash;
-		address datasetOwner;
-		bytes32 workerpoolHash;
-		address workerpoolOwner;
-		bytes32 requestHash;
-		bool    hasDataset;
-	}
-
 	// should be external
 	function matchOrders(
 		IexecLibOrders_v5.AppOrder        memory _apporder,
@@ -196,41 +196,41 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		// computation environment & allowed enough funds
 		bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
-		require(_requestorder.category           == _workerpoolorder.category       );
-		require(_requestorder.category            < m_categories.length             );
-		require(_requestorder.trust              <= _workerpoolorder.trust          );
-		require(_requestorder.appmaxprice        >= _apporder.appprice              );
-		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice      );
-		require(_requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice);
-		require(tag & ~_workerpoolorder.tag      == 0x0);
-		require((tag ^ _apporder.tag)[31] & 0x01 == 0x0);
+		require(_requestorder.category           == _workerpoolorder.category,        'iExecV5-matchOrders-0x00');
+		require(_requestorder.category            < m_categories.length,              'iExecV5-matchOrders-0x01');
+		require(_requestorder.trust              <= _workerpoolorder.trust,           'iExecV5-matchOrders-0x02');
+		require(_requestorder.appmaxprice        >= _apporder.appprice,               'iExecV5-matchOrders-0x03');
+		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice,       'iExecV5-matchOrders-0x04');
+		require(_requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice, 'iExecV5-matchOrders-0x05');
+		require(tag & ~_workerpoolorder.tag      == 0x0,                              'iExecV5-matchOrders-0x06');
+		require((tag ^ _apporder.tag)[31] & 0x01 == 0x0,                              'iExecV5-matchOrders-0x07');
 
 		// Check matching and restrictions
-		require(_requestorder.app     == _apporder.app        );
-		require(_requestorder.dataset == _datasetorder.dataset);
-		require(_requestorder.workerpool           == address(0) || _checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE)); // requestorder.workerpool is a restriction
-		require(_apporder.datasetrestrict          == address(0) || _checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
-		require(_apporder.workerpoolrestrict       == address(0) || _checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE));
-		require(_apporder.requesterrestrict        == address(0) || _checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     GROUPMEMBER_PURPOSE));
-		require(_datasetorder.apprestrict          == address(0) || _checkIdentity(_datasetorder.apprestrict,          _apporder.app,               GROUPMEMBER_PURPOSE));
-		require(_datasetorder.workerpoolrestrict   == address(0) || _checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE));
-		require(_datasetorder.requesterrestrict    == address(0) || _checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     GROUPMEMBER_PURPOSE));
-		require(_workerpoolorder.apprestrict       == address(0) || _checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               GROUPMEMBER_PURPOSE));
-		require(_workerpoolorder.datasetrestrict   == address(0) || _checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE));
-		require(_workerpoolorder.requesterrestrict == address(0) || _checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE));
+		require(_requestorder.app     == _apporder.app,                                                                                                                   'iExecV5-matchOrders-0x10');
+		require(_requestorder.dataset == _datasetorder.dataset,                                                                                                           'iExecV5-matchOrders-0x11');
+		require(_requestorder.workerpool           == address(0) || _checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x12'); // requestorder.workerpool is a restriction
+		require(_apporder.datasetrestrict          == address(0) || _checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x13');
+		require(_apporder.workerpoolrestrict       == address(0) || _checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x14');
+		require(_apporder.requesterrestrict        == address(0) || _checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x15');
+		require(_datasetorder.apprestrict          == address(0) || _checkIdentity(_datasetorder.apprestrict,          _apporder.app,               GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x16');
+		require(_datasetorder.workerpoolrestrict   == address(0) || _checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x17');
+		require(_datasetorder.requesterrestrict    == address(0) || _checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x18');
+		require(_workerpoolorder.apprestrict       == address(0) || _checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x19');
+		require(_workerpoolorder.datasetrestrict   == address(0) || _checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x1a');
+		require(_workerpoolorder.requesterrestrict == address(0) || _checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x1b');
 
 		/**
 		 * Check orders authenticity
 		 */
-		Identities memory ids;
+		Matching memory ids;
 		ids.hasDataset = _datasetorder.dataset != address(0);
 
 		// app
 		ids.appHash  = _apporder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.appOwner = App(_apporder.app).owner();
 
-		require(m_appregistry.isRegistered(_apporder.app));
-		require(_checkPresignatureOrSignature(ids.appOwner, ids.appHash, _apporder.sign));
+		require(m_appregistry.isRegistered(_apporder.app),                                'iExecV5-matchOrders-0x20');
+		require(_checkPresignatureOrSignature(ids.appOwner, ids.appHash, _apporder.sign), 'iExecV5-matchOrders-0x21');
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
@@ -238,20 +238,20 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			ids.datasetHash  = _datasetorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 			ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
 
-			require(m_datasetregistry.isRegistered(_datasetorder.dataset));
-			require(_checkPresignatureOrSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign));
+			require(m_datasetregistry.isRegistered(_datasetorder.dataset),                                'iExecV5-matchOrders-0x30');
+			require(_checkPresignatureOrSignature(ids.datasetOwner, ids.datasetHash, _datasetorder.sign), 'iExecV5-matchOrders-0x31');
 		}
 
 		// workerpool
 		ids.workerpoolHash  = _workerpoolorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
 
-		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool));
-		require(_checkPresignatureOrSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign));
+		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),                                'iExecV5-matchOrders-0x40');
+		require(_checkPresignatureOrSignature(ids.workerpoolOwner, ids.workerpoolHash, _workerpoolorder.sign), 'iExecV5-matchOrders-0x41');
 
 		// request
 		ids.requestHash = _requestorder.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
-		require(_checkPresignatureOrSignature(_requestorder.requester, ids.requestHash, _requestorder.sign));
+		require(_checkPresignatureOrSignature(_requestorder.requester, ids.requestHash, _requestorder.sign), 'iExecV5-matchOrders-0x50');
 
 		/**
 		 * Check availability
@@ -261,7 +261,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		volume = ids.hasDataset ? volume.min(_datasetorder.volume.sub   (m_consumed[ids.datasetHash   ])) : volume;
 		volume =                  volume.min(_workerpoolorder.volume.sub(m_consumed[ids.workerpoolHash]));
 		volume =                  volume.min(_requestorder.volume.sub   (m_consumed[ids.requestHash   ]));
-		require(volume > 0);
+		require(volume > 0, 'iExecV5-matchOrders-0x60');
 
 		/**
 		 * Record
@@ -535,7 +535,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		     || task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline <= now);
 
-		task.status = IexecLibCore_v5.TaskStatusEnum.FAILLED;
+		task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
 
 		/**
 		 * Stake management
@@ -643,6 +643,12 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
 
 		uint256 trust = m_deals[task.dealid].trust;
+		/*************************************************************************
+		 *                          Consensus detection                          *
+		 *                                                                       *
+		 *                          see documentation:                           *
+		 *          ./ audit/docs/iExec_PoCo_and_trustmanagement_v1.pdf          *
+		 *************************************************************************/
 		if (consensus.group[_consensus].mul(trust) > consensus.total.mul(trust.sub(1)))
 		{
 			// Preliminary checks done in "contribute()"
@@ -661,7 +667,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 				}
 			}
 			// _msgSender() is a contributor: no need to check
-			// require(winnerCounter > 0);
 			task.status         = IexecLibCore_v5.TaskStatusEnum.REVEALING;
 			task.consensusValue = _consensus;
 			task.revealDeadline = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
@@ -762,7 +767,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			 * Call does not revert if the target smart contract is incompatible or reverts
 			 * Solidity 0.6.0 update. Check hit history for 0.5.0 implementation.
 			 */
-			try IOracleConsumer(target).receiveResult.gas(m_callbackgas)(_taskid, _results)
+			try IOracleConsumer(target).receiveResult{gas: m_callbackgas}(_taskid, _results)
 			{
 				// Callback success, do nothing
 			}

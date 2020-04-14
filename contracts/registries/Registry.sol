@@ -41,7 +41,7 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 		// Create entry (proxy)
 		address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
 		// Initialize entry (casting to address payable is a pain in ^0.5.0)
-		InitializableUpgradeabilityProxy(address(uint160(entry))).initialize(master, _args);
+		InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
 		// Mint corresponding token
 		_mint(_owner, uint256(entry));
 		return uint256(entry);
@@ -72,7 +72,7 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 	function setTokenURI(uint256 _tokenId, string calldata _uri)
 	external
 	{
-		require(_msgSender() == ownerOf(_tokenId), "ERC721: access restricted to token owner");
+		require(_msgSender() == ownerOf(_tokenId), 'ERC721: access restricted to token owner');
 		_setTokenURI(_tokenId, _uri);
 	}
 }

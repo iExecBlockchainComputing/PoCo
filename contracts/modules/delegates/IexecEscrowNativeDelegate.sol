@@ -37,7 +37,7 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
 	external override payable returns (bool)
 	{
-		require(amounts.length == targets.length);
+		require(amounts.length == targets.length, 'invalid-array-length');
 		uint256 remaining = msg.value;
 		for (uint i = 0; i < amounts.length; ++i)
 		{
@@ -65,16 +65,16 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	}
 
 	function _deposit(address target)
-		internal
+	internal
 	{
 		_mint(target, msg.value.div(nRLCtoWei));
 		_withdraw(_msgSender(), msg.value.mod(nRLCtoWei));
 	}
 
 	function _withdraw(address to, uint256 value)
-		internal
+	internal
 	{
-		(bool success, ) = to.call.value(value)('');
-		require(success, 'native-transfer-failled');
+		(bool success, ) = to.call{value: value}('');
+		require(success, 'native-transfer-failed');
 	}
 }

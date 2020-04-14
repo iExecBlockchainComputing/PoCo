@@ -30,12 +30,12 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## Configure a deployment
 
-Starting from version 5, the PoCo uses a modular design based on ERC1538. The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a create2 factory for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC1538](https://github.com/ethereum/EIPs/issues/1538). The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
 
-The configuration file is located in `/config/config.json`.
+The configuration file is located in `./config/config.json`.
 
 It contains:
-- A list of categories created during the deployment process (can be expanded by the administrator);
+- A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
 - For each chainid, a quick configuration:
 	- **"asset":** can be "Token" or "Native", select which escrow to use.
 	- **"token":** the address of the token to use. If asset is set to token, and no token address is provided, a mock will be deployed on the fly.
@@ -44,16 +44,17 @@ It contains:
 
 If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the recommanded process is to:
 
-1. Create a new node under "chains" with your chainid;
+0. Edit the `./config/config.json` file as follows:
+1. Create a new entry under "chains" with your chainid;
 2. Set the asset type depending on your blockchain;
-3. If you are using `"asset": "token"`, provide the address of the token you want to use;
+3. If you are using `"asset": "Token"`, provide the address of the token you want to use;
 4. Unless you know what you are doing, leave all `"v3"` ressources to `Null`;
 5. Use the factory with the same salt as the other blockchains, and use the same wallet as previous deployments to have the same deployment address on this new blockchain.
 
 
 ## Build
 
-The PoCo smart contracts are in the `contracts` folder. Json artefacts, containing the contracts bytecode and ABI can be found in the `build` folder. In case you need to regenerate them, you can use the following command:
+The PoCo smart contracts are in the `./contracts` folder. Json artefacts, containing the contracts bytecode and ABI can be found in the `./build` folder. In case you need to regenerate them, you can use the following command:
 ```
 npm install
 npm run build
@@ -63,7 +64,7 @@ npm run build
 
 ### Automatic testing
 
-The PoCo smart contracts come with a test suite in the `test` folder. You can startup a sandbox blockchain and run the tests using the following command:
+The PoCo smart contracts come with a test suite in the `./test` folder. You can startup a sandbox blockchain and run the tests using the following command:
 
 ```
 npm install
@@ -77,13 +78,15 @@ npm run coverage
 
 The automatic testing command uses a `ganache-cli` blockchain instance to run the tests. You can also use your own blockchain endpoint to run these tests.
 
-### Testing on a custom blockchain - ganache
+### Testing on a custom blockchain
 
-1. Start ganache using:
+1. Start your blockchain. You can either use ganache with the following command:
 ```
 ganache-cli <any additional arguments>
 ```
-2. Run the tests using:
+or run any other blockchain client.
+2. **[Optional]** If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
+3. Run the tests using:
 ```
 npm run test
 ```
@@ -92,38 +95,15 @@ or
 truffle test
 ```
 
-### Testing on a custom blockchain - geth
+## Deploy
 
-1. Pull the the following docker image
-```
-docker pull iexechub/iexec-geth-local
-```
-2. Start container
-```
-docker run -d --name iexec-geth-local --entrypoint=./startupGeth.sh -p 8545:8545 iexechub/iexec-geth-local
-```
-3. wait to see in logs the word : LOCAL_GETH_WELL_INITIALIZED : in the logs
-```
-docker logs -f iexec-geth-local
-```
-4. Run the tests using:
-```
-npm run test
-```
-or
-```
-truffle test
-```
-
-## Migrate
-
-You can migrate the smart contracts according to the [3_deploy_contracts.js](./migrations/3_deploy_contracts.js) content. This will automatically save the addresses of the deployed artefacts to the `/build` folder.
+You can deploy the smart contracts according to the [3_deploy_contracts.js](./migrations/3_deploy_contracts.js) content. This will automatically save the addresses of the deployed artefacts to the `./build` folder.
 
 To do so:
 
 1. Make sure you followed the "Configure a deployment" section;
 2. Enter your targeted blockchain parameters in `truffle.js` configuration file;
-3. Run the migration using:
+3. Run the deployment using:
 ```
 npm run migrate -- --network <your network name>
 ```
