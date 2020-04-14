@@ -35,7 +35,7 @@ define("TaskStatusEnum", {
 	ACTIVE:    1,
 	REVEALING: 2,
 	COMPLETED: 3,
-	FAILLED:   4
+	FAILED:    4
 });
 define("ContributionStatusEnum", {
 	UNSET       : 0,

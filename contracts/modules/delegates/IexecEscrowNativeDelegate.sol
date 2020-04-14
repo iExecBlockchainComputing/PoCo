@@ -75,6 +75,6 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	internal
 	{
 		(bool success, ) = to.call.value(value)('');
-		require(success, 'native-transfer-failled');
+		require(success, 'native-transfer-failed');
 	}
 }
