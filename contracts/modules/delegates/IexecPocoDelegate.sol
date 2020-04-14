@@ -8,6 +8,18 @@ import "../DelegateBase.sol";
 import "../interfaces/IexecPoco.sol";
 
 
+struct Matching
+{
+	bytes32 appHash;
+	address appOwner;
+	bytes32 datasetHash;
+	address datasetOwner;
+	bytes32 workerpoolHash;
+	address workerpoolOwner;
+	bytes32 requestHash;
+	bool    hasDataset;
+}
+
 contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
@@ -170,18 +182,6 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	/***************************************************************************
 	 *                           ODB order matching                            *
 	 ***************************************************************************/
-	struct Identities
-	{
-		bytes32 appHash;
-		address appOwner;
-		bytes32 datasetHash;
-		address datasetOwner;
-		bytes32 workerpoolHash;
-		address workerpoolOwner;
-		bytes32 requestHash;
-		bool    hasDataset;
-	}
-
 	// should be external
 	function matchOrders(
 		IexecLibOrders_v5.AppOrder        memory _apporder,
@@ -222,7 +222,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		/**
 		 * Check orders authenticity
 		 */
-		Identities memory ids;
+		Matching memory ids;
 		ids.hasDataset = _datasetorder.dataset != address(0);
 
 		// app
@@ -643,6 +643,12 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
 
 		uint256 trust = m_deals[task.dealid].trust;
+		/*************************************************************************
+		 *                          Consensus detection                          *
+		 *                                                                       *
+		 *                          see documentation:                           *
+		 *          ./ audit/docs/iExec_PoCo_and_trustmanagement_v1.pdf          *
+		 *************************************************************************/
 		if (consensus.group[_consensus].mul(trust) > consensus.total.mul(trust.sub(1)))
 		{
 			// Preliminary checks done in "contribute()"
