@@ -16,7 +16,7 @@ module.exports =
 		},
 		development:
 		{
-			provider: 	useEnv ? () => new HDWalletProvider(process.env.MNEMONIC, process.env.DEV_NODE) : undefined,
+			provider:   useEnv ? () => new HDWalletProvider(process.env.MNEMONIC, process.env.DEV_NODE) : undefined,
 			host:       useEnv ? undefined : "localhost",
 			port:       useEnv ? undefined : 8545,
 			network_id: "*",
@@ -64,7 +64,7 @@ module.exports =
 	},
 	compilers: {
 		solc: {
-			version: "0.6.5",
+			version: "0.6.6",
 			settings: {
 				optimizer: {
 					enabled: true,

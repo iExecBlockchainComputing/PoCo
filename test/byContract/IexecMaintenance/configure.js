@@ -88,7 +88,7 @@ contract('Poco', async (accounts) => {
 	it("domain", async () => {
 		domain = await IexecInstance.domain();
 		assert.equal(domain.name,              'iExecODB');
-		assert.equal(domain.version,           '3.0-alpha');
+		assert.equal(domain.version,           '5.0.0');
 		// assert.equal(domain.chainId, _); // TODO: waiting for ganache fix
 		assert.equal(domain.verifyingContract, IexecInstance.address);
 

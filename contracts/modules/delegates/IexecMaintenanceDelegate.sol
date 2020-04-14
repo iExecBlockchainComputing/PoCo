@@ -79,9 +79,9 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 	{
 		return IexecLibOrders_v5.EIP712Domain({
 			name:              "iExecODB"
-		, version:           "3.0-alpha"
-		, chainId:           _chainId()
-		, verifyingContract: address(this)
+		,	version:           "5.0.0"
+		,	chainId:           _chainId()
+		,	verifyingContract: address(this)
 		});
 	}
 }

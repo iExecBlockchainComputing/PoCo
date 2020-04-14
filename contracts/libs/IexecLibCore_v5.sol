@@ -59,7 +59,7 @@ library IexecLibCore_v5
 		ACTIVE,    // Marketed → constributions are open
 		REVEALING, // Starting consensus reveal
 		COMPLETED, // Concensus achieved
-		FAILLED    // Failled consensus
+		FAILED     // Failed consensus
 	}
 	struct Task
 	{

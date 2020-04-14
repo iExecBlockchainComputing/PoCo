@@ -535,7 +535,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		     || task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline <= now);
 
-		task.status = IexecLibCore_v5.TaskStatusEnum.FAILLED;
+		task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
 
 		/**
 		 * Stake management

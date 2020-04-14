@@ -4,12 +4,12 @@
   "description": "",
   "main": "truffle.js",
   "scripts": {
-    "build": "truffle compile --",
-    "migrate": "truffle migrate --",
-    "test": "truffle test --",
-    "autotest": "./autotest.sh --",
-    "coverage": "truffle run coverage --",
-    "verify": "truffle run verify --"
+    "build": "truffle compile",
+    "migrate": "truffle migrate",
+    "test": "truffle test",
+    "autotest": "./autotest.sh",
+    "coverage": "truffle run coverage",
+    "verify": "truffle run verify"
   },
   "repository": {
     "type": "git",
@@ -41,9 +41,9 @@
     "ethereumjs-util": "6.2.0",
     "ethers": "4.0.46",
     "ganache-cli": "6.9.1",
-    "husky": "4.2.3",
-    "solidity-coverage": "0.7.3",
-    "truffle": "5.1.20",
+    "husky": "4.2.5",
+    "solidity-coverage": "0.7.4",
+    "truffle": "5.1.21",
     "truffle-security": "1.7.1"
   }
 }
