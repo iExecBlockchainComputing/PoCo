@@ -24,7 +24,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public override
 	{
 		address owner = App(_apporderoperation.order.app).owner();
-		require(owner == _msgSender() || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign));
+		require(owner == _msgSender() || owner == _apporderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_apporderoperation.sign), 'invalid-sender-or-signature');
 
 		bytes32 apporderHash = _apporderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
@@ -43,7 +43,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public override
 	{
 		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
-		require(owner == _msgSender() || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign));
+		require(owner == _msgSender() || owner == _datasetorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_datasetorderoperation.sign), 'invalid-sender-or-signature');
 
 		bytes32 datasetorderHash = _datasetorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
@@ -62,7 +62,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public override
 	{
 		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
-		require(owner == _msgSender() || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign));
+		require(owner == _msgSender() || owner == _workerpoolorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_workerpoolorderoperation.sign), 'invalid-sender-or-signature');
 
 		bytes32 workerpoolorderHash = _workerpoolorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
@@ -81,7 +81,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase
 	public override
 	{
 		address owner = _requestorderoperation.order.requester;
-		require(owner == _msgSender() || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign));
+		require(owner == _msgSender() || owner == _requestorderoperation.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR).recover(_requestorderoperation.sign), 'invalid-sender-or-signature');
 
 		bytes32 requestorderHash = _requestorderoperation.order.hash().toEthTypedStructHash(EIP712DOMAIN_SEPARATOR);
 		if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)

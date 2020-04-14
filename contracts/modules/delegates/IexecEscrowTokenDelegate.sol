@@ -17,7 +17,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	receive()
 	external override payable
 	{
-		revert("fallback-disabled");
+		revert('fallback-disabled');
 	}
 
 	function deposit(uint256 amount)
@@ -39,7 +39,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	function depositForArray(uint256[] calldata amounts, address[] calldata targets)
 	external override returns (bool)
 	{
-		require(amounts.length == targets.length);
+		require(amounts.length == targets.length, 'invalid-array-length');
 		for (uint i = 0; i < amounts.length; ++i)
 		{
 			_deposit(_msgSender(), amounts[i]);
@@ -77,7 +77,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	function _deposit(address from, uint256 amount)
 	internal
 	{
-		require(m_baseToken.transferFrom(from, address(this), amount));
+		require(m_baseToken.transferFrom(from, address(this), amount), 'failled-transferFrom');
 	}
 
 	function _withdraw(address to, uint256 amount)

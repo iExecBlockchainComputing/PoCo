@@ -12,8 +12,8 @@ contract AppRegistry is Registry
 	constructor()
 	public Registry(
 		address(new App()),
-		"iExec Application Registry (V5)",
-		"iExecAppsV5")
+		'iExec Application Registry (V5)',
+		'iExecAppsV5')
 	{
 	}
 
@@ -29,12 +29,12 @@ contract AppRegistry is Registry
 	internal pure returns (bytes memory)
 	{
 		return abi.encodeWithSignature(
-			"initialize(string,string,bytes,bytes32,bytes)",
-			_appName,
-			_appType,
-			_appMultiaddr,
-			_appChecksum,
-			_appMREnclave
+			'initialize(string,string,bytes,bytes32,bytes)'
+		,	_appName
+		,	_appType
+		,	_appMultiaddr
+		,	_appChecksum
+		,	_appMREnclave
 		);
 	}
 
