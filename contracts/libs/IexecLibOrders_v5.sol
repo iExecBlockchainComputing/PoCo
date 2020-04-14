@@ -4,15 +4,15 @@ pragma experimental ABIEncoderV2;
 
 library IexecLibOrders_v5
 {
-	// bytes32 public constant             EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-	// bytes32 public constant                 APPORDER_TYPEHASH = keccak256("AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant             DATASETORDER_TYPEHASH = keccak256("DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant          WORKERPOOLORDER_TYPEHASH = keccak256("WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant             REQUESTORDER_TYPEHASH = keccak256("RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
-	// bytes32 public constant        APPORDEROPERATION_TYPEHASH = keccak256("AppOrderOperation(AppOrder order,uint256 operation)AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant    DATASETORDEROPERATION_TYPEHASH = keccak256("DatasetOrderOperation(DatasetOrder order,uint256 operation)DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant WORKERPOOLORDEROPERATION_TYPEHASH = keccak256("WorkerpoolOrderOperation(WorkerpoolOrder order,uint256 operation)WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)");
-	// bytes32 public constant    REQUESTORDEROPERATION_TYPEHASH = keccak256("RequestOrderOperation(RequestOrder order,uint256 operation)RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)");
+	// bytes32 public constant             EIP712DOMAIN_TYPEHASH = keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
+	// bytes32 public constant                 APPORDER_TYPEHASH = keccak256('AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant             DATASETORDER_TYPEHASH = keccak256('DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant          WORKERPOOLORDER_TYPEHASH = keccak256('WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant             REQUESTORDER_TYPEHASH = keccak256('RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)');
+	// bytes32 public constant        APPORDEROPERATION_TYPEHASH = keccak256('AppOrderOperation(AppOrder order,uint256 operation)AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant    DATASETORDEROPERATION_TYPEHASH = keccak256('DatasetOrderOperation(DatasetOrder order,uint256 operation)DatasetOrder(address dataset,uint256 datasetprice,uint256 volume,bytes32 tag,address apprestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant WORKERPOOLORDEROPERATION_TYPEHASH = keccak256('WorkerpoolOrderOperation(WorkerpoolOrder order,uint256 operation)WorkerpoolOrder(address workerpool,uint256 workerpoolprice,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address apprestrict,address datasetrestrict,address requesterrestrict,bytes32 salt)');
+	// bytes32 public constant    REQUESTORDEROPERATION_TYPEHASH = keccak256('RequestOrderOperation(RequestOrder order,uint256 operation)RequestOrder(address app,uint256 appmaxprice,address dataset,uint256 datasetmaxprice,address workerpool,uint256 workerpoolmaxprice,address requester,uint256 volume,bytes32 tag,uint256 category,uint256 trust,address beneficiary,address callback,string params,bytes32 salt)');
 	bytes32 public constant             EIP712DOMAIN_TYPEHASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 	bytes32 public constant                 APPORDER_TYPEHASH = 0x60815a0eeec47dddf1615fe53b31d016c31444e01b9d796db365443a6445d008;
 	bytes32 public constant             DATASETORDER_TYPEHASH = 0x6cfc932a5a3d22c4359295b9f433edff52b60703fa47690a04a83e40933dd47c;
@@ -273,13 +273,13 @@ library IexecLibOrders_v5
 	function toEthSignedMessageHash(bytes32 _msgHash)
 	public pure returns (bytes32)
 	{
-		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash));
+		return keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', _msgHash));
 	}
 
 	function toEthTypedStructHash(bytes32 _structHash, bytes32 _domainHash)
 	public pure returns (bytes32 typedStructHash)
 	{
-		return keccak256(abi.encodePacked("\x19\x01", _domainHash, _structHash));
+		return keccak256(abi.encodePacked('\x19\x01', _domainHash, _structHash));
 	}
 
 	function recover(bytes32 _hash, bytes memory _sign)
@@ -309,11 +309,11 @@ library IexecLibOrders_v5
 		}
 		else
 		{
-			revert("invalid-signature-format");
+			revert('invalid-signature-format');
 		}
 
 		if (v < 27) v += 27;
-		require(v == 27 || v == 28, "invalid-signature-v");
+		require(v == 27 || v == 28, 'invalid-signature-v');
 		return ecrecover(_hash, v, r, s);
 	}
 }

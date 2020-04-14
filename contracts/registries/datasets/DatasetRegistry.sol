@@ -12,8 +12,8 @@ contract DatasetRegistry is Registry
 	constructor()
 	public Registry(
 		address(new Dataset()),
-		"iExec Dataset Registry (V5)",
-		"iExecDatasetsV5")
+		'iExec Dataset Registry (V5)',
+		'iExecDatasetsV5')
 	{
 	}
 
@@ -27,10 +27,10 @@ contract DatasetRegistry is Registry
 	internal pure returns (bytes memory)
 	{
 		return abi.encodeWithSignature(
-			"initialize(string,bytes,bytes32)",
-			_datasetName,
-			_datasetMultiaddr,
-			_datasetChecksum
+			'initialize(string,bytes,bytes32)'
+		,	_datasetName
+		,	_datasetMultiaddr
+		,	_datasetChecksum
 		);
 	}
 
