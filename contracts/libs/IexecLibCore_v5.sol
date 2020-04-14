@@ -58,7 +58,7 @@ library IexecLibCore_v5
 		UNSET,     // Work order not yet initialized (invalid address)
 		ACTIVE,    // Marketed → constributions are open
 		REVEALING, // Starting consensus reveal
-		COMPLETED, // Concensus achieved
+		COMPLETED, // Consensus achieved
 		FAILED     // Failed consensus
 	}
 	struct Task

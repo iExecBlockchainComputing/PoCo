@@ -422,7 +422,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		emit TaskContribute(_taskid, _msgSender(), _resultHash);
 
-		// Contribution done → updating and checking concensus
+		// Contribution done → updating and checking consensus
 
 		/*************************************************************************
 		 *                           SCORE POLICY 1/3                            *
