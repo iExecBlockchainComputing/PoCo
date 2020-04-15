@@ -211,11 +211,12 @@ module.exports = async function(deployer, network, accounts)
 	else
 	{
 		await Promise.all([
-			deployer.deploy(AppRegistry,        deploymentOptions.v3.AppRegistry        || '0x0000000000000000000000000000000000000000'),
-			deployer.deploy(DatasetRegistry,    deploymentOptions.v3.DatasetRegistry    || '0x0000000000000000000000000000000000000000'),
-			deployer.deploy(WorkerpoolRegistry, deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
+			deployer.deploy(AppRegistry),
+			deployer.deploy(DatasetRegistry),
+			deployer.deploy(WorkerpoolRegistry),
 		]);
 	}
+
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
