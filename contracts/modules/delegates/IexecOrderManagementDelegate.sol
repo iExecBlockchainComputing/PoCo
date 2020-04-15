@@ -23,12 +23,10 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 	function manageAppOrder(IexecLibOrders_v5.AppOrderOperation memory _apporderoperation)
 	public override
 	{
-		address      owner          = App(_apporderoperation.order.app).owner();
-		bytes memory apporderStruct = _toEthTypedStruct(_apporderoperation.order.hash(), EIP712DOMAIN_SEPARATOR);
-		bytes32      apporderHash   = keccak256(apporderStruct);
+		address owner = App(_apporderoperation.order.app).owner();
+		require(owner == _msgSender() || _checkSignature(owner, _toEthTypedStruct(_apporderoperation.hash(), EIP712DOMAIN_SEPARATOR), _apporderoperation.sign), 'invalid-sender-or-signature');
 
-		require(owner == _msgSender() || _checkSignature(owner, apporderStruct, _apporderoperation.sign), 'invalid-sender-or-signature');
-
+		bytes32 apporderHash = keccak256(_toEthTypedStruct(_apporderoperation.order.hash(), EIP712DOMAIN_SEPARATOR));
 		if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
 		{
 			m_presigned[apporderHash] = owner;
@@ -44,12 +42,10 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 	function manageDatasetOrder(IexecLibOrders_v5.DatasetOrderOperation memory _datasetorderoperation)
 	public override
 	{
-		address      owner              = Dataset(_datasetorderoperation.order.dataset).owner();
-		bytes memory datasetorderStruct = _toEthTypedStruct(_datasetorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR);
-		bytes32      datasetorderHash   = keccak256(datasetorderStruct);
+		address owner = Dataset(_datasetorderoperation.order.dataset).owner();
+		require(owner == _msgSender() || _checkSignature(owner, _toEthTypedStruct(_datasetorderoperation.hash(), EIP712DOMAIN_SEPARATOR), _datasetorderoperation.sign), 'invalid-sender-or-signature');
 
-		require(owner == _msgSender() || _checkSignature(owner, datasetorderStruct, _datasetorderoperation.sign), 'invalid-sender-or-signature');
-
+		bytes32 datasetorderHash = keccak256(_toEthTypedStruct(_datasetorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR));
 		if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
 		{
 			m_presigned[datasetorderHash] = owner;
@@ -65,12 +61,10 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 	function manageWorkerpoolOrder(IexecLibOrders_v5.WorkerpoolOrderOperation memory _workerpoolorderoperation)
 	public override
 	{
-		address      owner                 = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
-		bytes memory workerpoolorderStruct = _toEthTypedStruct(_workerpoolorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR);
-		bytes32      workerpoolorderHash   = keccak256(workerpoolorderStruct);
+		address owner = Workerpool(_workerpoolorderoperation.order.workerpool).owner();
+		require(owner == _msgSender() || _checkSignature(owner, _toEthTypedStruct(_workerpoolorderoperation.hash(), EIP712DOMAIN_SEPARATOR), _workerpoolorderoperation.sign), 'invalid-sender-or-signature');
 
-		require(owner == _msgSender() || _checkSignature(owner, workerpoolorderStruct, _workerpoolorderoperation.sign), 'invalid-sender-or-signature');
-
+		bytes32 workerpoolorderHash = keccak256(_toEthTypedStruct(_workerpoolorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR));
 		if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
 		{
 			m_presigned[workerpoolorderHash] = owner;
@@ -86,12 +80,10 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 	function manageRequestOrder(IexecLibOrders_v5.RequestOrderOperation memory _requestorderoperation)
 	public override
 	{
-		address      owner              = _requestorderoperation.order.requester;
-		bytes memory requestorderStruct = _toEthTypedStruct(_requestorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR);
-		bytes32      requestorderHash   = keccak256(requestorderStruct);
+		address owner = _requestorderoperation.order.requester;
+		require(owner == _msgSender() || _checkSignature(owner, _toEthTypedStruct(_requestorderoperation.hash(), EIP712DOMAIN_SEPARATOR), _requestorderoperation.sign), 'invalid-sender-or-signature');
 
-		require(owner == _msgSender() || _checkSignature(owner, requestorderStruct, _requestorderoperation.sign), 'invalid-sender-or-signature');
-
+		bytes32 requestorderHash = keccak256(_toEthTypedStruct(_requestorderoperation.order.hash(), EIP712DOMAIN_SEPARATOR));
 		if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN)
 		{
 			m_presigned[requestorderHash] = owner;
