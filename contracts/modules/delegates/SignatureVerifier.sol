@@ -10,8 +10,6 @@ contract SignatureVerifier is DelegateBase
 {
 	using IexecLibOrders_v5 for bytes32;
 
-	bytes4 constant internal MAGICVALUE = 0x20c13b0b;
-
 	function _isContract(address _addr)
 	internal view returns (bool)
 	{
@@ -32,12 +30,13 @@ contract SignatureVerifier is DelegateBase
 		return _identity == _candidate || IERC734(_identity).keyHasPurpose(_addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
 	}
 
+	// Future feature: refactor to provide _hash's predicate and add ERC1271 support
 	function _checkSignature(address _identity, bytes32 _hash, bytes memory _signature)
 	internal view returns (bool)
 	{
 		if (_isContract(_identity))
 		{
-			return IERC1271(_identity).isValidSignature(_hash, _signature) == MAGICVALUE;
+			return IERC1654(_identity).isValidSignature(_hash, _signature) == IERC1654(0).isValidSignature.selector;
 		}
 		else
 		{
