@@ -5,8 +5,8 @@ import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProx
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./IRegistry.sol";
-
 
 contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 {
@@ -44,6 +44,8 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 		InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
 		// Mint corresponding token
 		_mint(_owner, uint256(entry));
+		// register uri
+		_setTokenURI(uint256(entry), Strings.fromUint256(uint256(entry)));
 		return uint256(entry);
 	}
 
@@ -69,10 +71,9 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 		_setName(ENS(_ens), _name);
 	}
 
-	function setTokenURI(uint256 _tokenId, string calldata _uri)
-	external
+	function setBaseURI(string calldata _baseURI)
+	external onlyOwner()
 	{
-		require(_msgSender() == ownerOf(_tokenId), 'ERC721: access restricted to token owner');
-		_setTokenURI(_tokenId, _uri);
+		_setBaseURI(_baseURI);
 	}
 }

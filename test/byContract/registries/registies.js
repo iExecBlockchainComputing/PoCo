@@ -79,6 +79,11 @@ contract('Registries', async (accounts) => {
 			await expectRevert.unspecified(DatasetRegistryInstance.initialize(constants.NULL.ADDRESS));
 			await expectRevert.unspecified(WorkerpoolRegistryInstance.initialize(constants.NULL.ADDRESS));
 		});
+		it("baseURI", async () => {
+			// assert.equal(await AppRegistryInstance.baseURI(),        `https://NFTs.iex.ec/${chainid}/app/`);
+			// assert.equal(await DatasetRegistryInstance.baseURI(),    `https://NFTs.iex.ec/${chainid}/dataset/`);
+			// assert.equal(await WorkerpoolRegistryInstance.baseURI(), `https://NFTs.iex.ec/${chainid}/workerpool/`);
+		});
 	});
 
 	/***************************************************************************
@@ -148,6 +153,7 @@ contract('Registries', async (accounts) => {
 					assert.equal (await AppRegistryInstance.balanceOf(appProvider.address), i+1);
 					assert.isTrue(await AppRegistryInstance.isRegistered(AppInstances[i].address));
 					assert.equal (tools.BN2Address(await AppRegistryInstance.tokenOfOwnerByIndex(appProvider.address, i)), AppInstances[i].address);
+					assert.equal (await AppRegistryInstance.tokenURI(AppInstances[i].address), (await AppRegistryInstance.baseURI()) + web3.utils.toBN(AppInstances[i].address) );
 				});
 
 				it("duplicate protection", async () => {
@@ -225,6 +231,7 @@ contract('Registries', async (accounts) => {
 					assert.equal (await DatasetRegistryInstance.balanceOf(datasetProvider.address), i+1);
 					assert.isTrue(await DatasetRegistryInstance.isRegistered(DatasetInstances[i].address));
 					assert.equal (tools.BN2Address(await DatasetRegistryInstance.tokenOfOwnerByIndex(datasetProvider.address, i)), DatasetInstances[i].address);
+					assert.equal (await DatasetRegistryInstance.tokenURI(DatasetInstances[i].address), (await DatasetRegistryInstance.baseURI()) + web3.utils.toBN(DatasetInstances[i].address) );
 				});
 
 				it("duplicate protection", async () => {
@@ -294,6 +301,7 @@ contract('Registries', async (accounts) => {
 					assert.equal (await WorkerpoolRegistryInstance.balanceOf(scheduler.address), i+1);
 					assert.isTrue(await WorkerpoolRegistryInstance.isRegistered(WorkerpoolInstances[i].address));
 					assert.equal (tools.BN2Address(await WorkerpoolRegistryInstance.tokenOfOwnerByIndex(scheduler.address, i)), WorkerpoolInstances[i].address);
+					assert.equal (await WorkerpoolRegistryInstance.tokenURI(WorkerpoolInstances[i].address), (await WorkerpoolRegistryInstance.baseURI()) + web3.utils.toBN(WorkerpoolInstances[i].address) );
 				});
 
 				it("duplicate protection", async () => {
