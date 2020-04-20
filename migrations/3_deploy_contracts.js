@@ -228,9 +228,9 @@ module.exports = async function(deployer, network, accounts)
 		AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || '0x0000000000000000000000000000000000000000'),
 		DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || '0x0000000000000000000000000000000000000000'),
 		WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || '0x0000000000000000000000000000000000000000'),
-		AppRegistryInstance.setBaseURI(`https://NFTs.iex.ec/app/${chainid}/`),
-		DatasetRegistryInstance.setBaseURI(`https://NFTs.iex.ec/dataset/${chainid}/`),
-		WorkerpoolRegistryInstance.setBaseURI(`https://NFTs.iex.ec/workerpool/${chainid}/`),
+		AppRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainid}/`),
+		DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`),
+		WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
 		IexecInterfaceInstance.configure(
 			RLCInstance.address,
 			'Staked RLC',
