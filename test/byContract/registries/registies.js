@@ -80,9 +80,10 @@ contract('Registries', async (accounts) => {
 			await expectRevert.unspecified(WorkerpoolRegistryInstance.initialize(constants.NULL.ADDRESS));
 		});
 		it("baseURI", async () => {
-			// assert.equal(await AppRegistryInstance.baseURI(),        `https://NFTs.iex.ec/${chainid}/app/`);
-			// assert.equal(await DatasetRegistryInstance.baseURI(),    `https://NFTs.iex.ec/${chainid}/dataset/`);
-			// assert.equal(await WorkerpoolRegistryInstance.baseURI(), `https://NFTs.iex.ec/${chainid}/workerpool/`);
+			const chainid = await web3.eth.net.getId();
+			assert.equal(await AppRegistryInstance.baseURI(),        `https://nfts-metadata.iex.ec/app/${chainid}/`);
+			assert.equal(await DatasetRegistryInstance.baseURI(),    `https://nfts-metadata.iex.ec/dataset/${chainid}/`);
+			assert.equal(await WorkerpoolRegistryInstance.baseURI(), `https://nfts-metadata.iex.ec/workerpool/${chainid}/`);
 		});
 	});
 

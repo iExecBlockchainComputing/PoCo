@@ -31,7 +31,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install"
+						sh "npm install --no-progress"
 						sh "npm run autotest fast"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
@@ -50,7 +50,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install"
+						sh "npm install --no-progress"
 						sh "npm run coverage"
 					} finally {
 						archiveArtifacts artifacts: "coverage/**"

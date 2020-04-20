@@ -8,7 +8,8 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./IRegistry.sol";
 
-contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
+
+abstract contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 {
 	address   public master;
 	bytes     public proxyCode;
@@ -33,9 +34,7 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 	}
 
 	/* Factory */
-	function _mintCreate(
-		address      _owner,
-		bytes memory _args)
+	function _mintCreate(address _owner, bytes memory _args)
 	internal returns (uint256)
 	{
 		// Create entry (proxy)
@@ -49,22 +48,14 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 		return uint256(entry);
 	}
 
-	function _mintPredict(
-		address      _owner,
-		bytes memory _args)
+	function _mintPredict(address _owner, bytes memory _args)
 	internal view returns (uint256)
 	{
 		address entry = Create2.computeAddress(keccak256(abi.encodePacked(_args, _owner)), proxyCodeHash);
 		return uint256(entry);
 	}
 
-	/* Interface */
-	function isRegistered(address _entry)
-	external view override returns (bool)
-	{
-		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
-	}
-
+	/* Administration */
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
@@ -75,5 +66,12 @@ contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 	external onlyOwner()
 	{
 		_setBaseURI(_baseURI);
+	}
+
+	/* Interface */
+	function isRegistered(address _entry)
+	external view override returns (bool)
+	{
+		return _exists(uint256(_entry)) || (address(previous) != address(0) && previous.isRegistered(_entry));
 	}
 }
