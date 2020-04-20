@@ -123,72 +123,6 @@
           "components": [
             {
               "internalType": "address",
-              "name": "app",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "appprice",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "volume",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "tag",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "datasetrestrict",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "workerpoolrestrict",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "requesterrestrict",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "salt",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "bytes",
-              "name": "sign",
-              "type": "bytes"
-            }
-          ],
-          "internalType": "struct IexecLibOrders_v5.AppOrder",
-          "name": "_apporder",
-          "type": "tuple"
-        }
-      ],
-      "name": "hash",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "apphash",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "address",
               "name": "dataset",
               "type": "address"
             },
@@ -243,6 +177,124 @@
         {
           "internalType": "bytes32",
           "name": "datasethash",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "app",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "appmaxprice",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "dataset",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "datasetmaxprice",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "workerpool",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "workerpoolmaxprice",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "requester",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "volume",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "tag",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "category",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "trust",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "beneficiary",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "callback",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "params",
+                  "type": "string"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "salt",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "sign",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct IexecLibOrders_v5.RequestOrder",
+              "name": "order",
+              "type": "tuple"
+            },
+            {
+              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
+              "name": "operation",
+              "type": "IexecLibOrders_v5.OrderOperationEnum"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.RequestOrderOperation",
+          "name": "_requestorderoperation",
+          "type": "tuple"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
           "type": "bytes32"
         }
       ],
@@ -554,96 +606,44 @@
         {
           "components": [
             {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "app",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "appmaxprice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "dataset",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "datasetmaxprice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "workerpool",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "workerpoolmaxprice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "requester",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "volume",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bytes32",
-                  "name": "tag",
-                  "type": "bytes32"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "category",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "trust",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "beneficiary",
-                  "type": "address"
-                },
-                {
-                  "internalType": "address",
-                  "name": "callback",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "params",
-                  "type": "string"
-                },
-                {
-                  "internalType": "bytes32",
-                  "name": "salt",
-                  "type": "bytes32"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "sign",
-                  "type": "bytes"
-                }
-              ],
-              "internalType": "struct IexecLibOrders_v5.RequestOrder",
-              "name": "order",
-              "type": "tuple"
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
             },
             {
-              "internalType": "enum IexecLibOrders_v5.OrderOperationEnum",
-              "name": "operation",
-              "type": "IexecLibOrders_v5.OrderOperationEnum"
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
             },
             {
               "internalType": "bytes",
@@ -651,8 +651,8 @@
               "type": "bytes"
             }
           ],
-          "internalType": "struct IexecLibOrders_v5.RequestOrderOperation",
-          "name": "_requestorderoperation",
+          "internalType": "struct IexecLibOrders_v5.AppOrder",
+          "name": "_apporder",
           "type": "tuple"
         }
       ],
@@ -660,7 +660,7 @@
       "outputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "apphash",
           "type": "bytes32"
         }
       ],
@@ -843,80 +843,7 @@
       ],
       "stateMutability": "pure",
       "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "_msgHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "toEthSignedMessageHash",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "_structHash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "_domainHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "toEthTypedStructHash",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "typedStructHash",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "_hash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_sign",
-          "type": "bytes"
-        }
-      ],
-      "name": "recover",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
     }
   ],
-  "networks": {
-    "5": {
-      "events": {},
-      "links": {},
-      "address": "0xb49360f86De566AB989634495953ac7CFF2e09DB"
-    }
-  }
+  "networks": {}
 }

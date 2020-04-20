@@ -459,7 +459,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"SignedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"SignedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"SignedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"SignedWorkerpoolOrder\",\"type\":\"event\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":\"IexecOrderManagement\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0x99eb0211d9852cc647539aba533f617e5f8609571d56b7fc46d19e3c1789f0a5\",\"urls\":[\"bzz-raw://8c30c0795190c845d8c06da7244bc16491a56ba3735b6f8489269b9a9bc2ba2d\",\"dweb:/ipfs/Qmaw8XAyWhqTLSvE4P1EsVmaaKCFX6pgnRyPBs2BHw5VwK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":{\"keccak256\":\"0x8b79ac33287ff55c3fc7ca8b61f422dd59979901dda99d64320bc8f858bced56\",\"urls\":[\"bzz-raw://c705f5671692eb90d26a55897271389fc5ecb1baa883aa48a1a46077524d6ff4\",\"dweb:/ipfs/QmPfxZRG4gdgRUbFHBFf4EBCDTwHP5pHg5H3mcmrbQD4Hi\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"SignedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"SignedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"SignedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"SignedWorkerpoolOrder\",\"type\":\"event\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":\"IexecOrderManagement\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":{\"keccak256\":\"0x8b79ac33287ff55c3fc7ca8b61f422dd59979901dda99d64320bc8f858bced56\",\"urls\":[\"bzz-raw://c705f5671692eb90d26a55897271389fc5ecb1baa883aa48a1a46077524d6ff4\",\"dweb:/ipfs/QmPfxZRG4gdgRUbFHBFf4EBCDTwHP5pHg5H3mcmrbQD4Hi\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
@@ -470,14 +470,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol",
     "exportedSymbols": {
       "IexecOrderManagement": [
-        7192
+        7465
       ]
     },
-    "id": 7193,
+    "id": 7466,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7137,
+        "id": 7410,
         "literals": [
           "solidity",
           "^",
@@ -488,7 +488,7 @@
         "src": "0:23:32"
       },
       {
-        "id": 7138,
+        "id": 7411,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -499,10 +499,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 7139,
+        "id": 7412,
         "nodeType": "ImportDirective",
-        "scope": 7193,
-        "sourceUnit": 855,
+        "scope": 7466,
+        "sourceUnit": 816,
         "src": "59:42:32",
         "symbolAliases": [],
         "unitAlias": ""
@@ -514,9 +514,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7192,
+        "id": 7465,
         "linearizedBaseContracts": [
-          7192
+          7465
         ],
         "name": "IexecOrderManagement",
         "nodeType": "ContractDefinition",
@@ -524,21 +524,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7143,
+            "id": 7416,
             "name": "SignedAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7142,
+              "id": 7415,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7141,
+                  "id": 7414,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "appHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7143,
+                  "scope": 7416,
                   "src": "166:15:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -547,7 +548,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7140,
+                    "id": 7413,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "166:7:32",
@@ -567,21 +568,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7147,
+            "id": 7420,
             "name": "SignedDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7146,
+              "id": 7419,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7145,
+                  "id": 7418,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "datasetHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7147,
+                  "scope": 7420,
                   "src": "213:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -590,7 +592,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7144,
+                    "id": 7417,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "213:7:32",
@@ -610,21 +612,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7151,
+            "id": 7424,
             "name": "SignedWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7150,
+              "id": 7423,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7149,
+                  "id": 7422,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "workerpoolHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7151,
+                  "scope": 7424,
                   "src": "264:22:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -633,7 +636,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7148,
+                    "id": 7421,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "264:7:32",
@@ -653,21 +656,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7155,
+            "id": 7428,
             "name": "SignedRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7154,
+              "id": 7427,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7153,
+                  "id": 7426,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "requestHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7155,
+                  "scope": 7428,
                   "src": "318:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -676,7 +680,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7152,
+                    "id": 7425,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "318:7:32",
@@ -696,21 +700,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7159,
+            "id": 7432,
             "name": "ClosedAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7158,
+              "id": 7431,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7157,
+                  "id": 7430,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "appHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7159,
+                  "scope": 7432,
                   "src": "369:15:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -719,7 +724,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7156,
+                    "id": 7429,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "369:7:32",
@@ -739,21 +744,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7163,
+            "id": 7436,
             "name": "ClosedDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7162,
+              "id": 7435,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7161,
+                  "id": 7434,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "datasetHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7163,
+                  "scope": 7436,
                   "src": "416:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -762,7 +768,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7160,
+                    "id": 7433,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "416:7:32",
@@ -782,21 +788,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7167,
+            "id": 7440,
             "name": "ClosedWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7166,
+              "id": 7439,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7165,
+                  "id": 7438,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "workerpoolHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7167,
+                  "scope": 7440,
                   "src": "467:22:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -805,7 +812,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7164,
+                    "id": 7437,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "467:7:32",
@@ -825,21 +832,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7171,
+            "id": 7444,
             "name": "ClosedRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7170,
+              "id": 7443,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7169,
+                  "id": 7442,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "requestHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7171,
+                  "scope": 7444,
                   "src": "521:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -848,7 +856,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7168,
+                    "id": 7441,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "521:7:32",
@@ -869,7 +877,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "b2b07e66",
-            "id": 7176,
+            "id": 7449,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -877,32 +885,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7174,
+              "id": 7447,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7173,
+                  "id": 7446,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7176,
+                  "scope": 7449,
                   "src": "576:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrderOperation_$554_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrderOperation_$523_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7172,
+                    "id": 7445,
                     "name": "IexecLibOrders_v5.AppOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 554,
+                    "referencedDeclaration": 523,
                     "src": "576:35:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrderOperation_$554_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrderOperation_$523_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrderOperation"
                     }
                   },
@@ -913,12 +922,12 @@
               "src": "575:53:32"
             },
             "returnParameters": {
-              "id": 7175,
+              "id": 7448,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "637:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "545:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -928,7 +937,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4b747106",
-            "id": 7181,
+            "id": 7454,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -936,32 +945,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7179,
+              "id": 7452,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7178,
+                  "id": 7451,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7181,
+                  "scope": 7454,
                   "src": "671:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrderOperation_$561_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrderOperation_$530_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7177,
+                    "id": 7450,
                     "name": "IexecLibOrders_v5.DatasetOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 561,
+                    "referencedDeclaration": 530,
                     "src": "671:39:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrderOperation_$561_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrderOperation_$530_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrderOperation"
                     }
                   },
@@ -972,12 +982,12 @@
               "src": "670:53:32"
             },
             "returnParameters": {
-              "id": 7180,
+              "id": 7453,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "732:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "640:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -987,7 +997,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "7e34a077",
-            "id": 7186,
+            "id": 7459,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -995,32 +1005,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7184,
+              "id": 7457,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7183,
+                  "id": 7456,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7186,
+                  "scope": 7459,
                   "src": "766:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$568_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$537_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7182,
+                    "id": 7455,
                     "name": "IexecLibOrders_v5.WorkerpoolOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 568,
+                    "referencedDeclaration": 537,
                     "src": "766:42:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$568_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$537_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrderOperation"
                     }
                   },
@@ -1031,12 +1042,12 @@
               "src": "765:53:32"
             },
             "returnParameters": {
-              "id": 7185,
+              "id": 7458,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "827:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "735:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1046,7 +1057,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "8dd971d5",
-            "id": 7191,
+            "id": 7464,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1054,32 +1065,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7189,
+              "id": 7462,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7188,
+                  "id": 7461,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7191,
+                  "scope": 7464,
                   "src": "861:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrderOperation_$575_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrderOperation_$544_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7187,
+                    "id": 7460,
                     "name": "IexecLibOrders_v5.RequestOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 575,
+                    "referencedDeclaration": 544,
                     "src": "861:39:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrderOperation_$575_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrderOperation_$544_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrderOperation"
                     }
                   },
@@ -1090,19 +1102,19 @@
               "src": "860:53:32"
             },
             "returnParameters": {
-              "id": 7190,
+              "id": 7463,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "922:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "830:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7193,
+        "scope": 7466,
         "src": "104:821:32"
       }
     ],
@@ -1112,14 +1124,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol",
     "exportedSymbols": {
       "IexecOrderManagement": [
-        7192
+        7465
       ]
     },
-    "id": 7193,
+    "id": 7466,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7137,
+        "id": 7410,
         "literals": [
           "solidity",
           "^",
@@ -1130,7 +1142,7 @@
         "src": "0:23:32"
       },
       {
-        "id": 7138,
+        "id": 7411,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -1141,10 +1153,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 7139,
+        "id": 7412,
         "nodeType": "ImportDirective",
-        "scope": 7193,
-        "sourceUnit": 855,
+        "scope": 7466,
+        "sourceUnit": 816,
         "src": "59:42:32",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1156,9 +1168,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7192,
+        "id": 7465,
         "linearizedBaseContracts": [
-          7192
+          7465
         ],
         "name": "IexecOrderManagement",
         "nodeType": "ContractDefinition",
@@ -1166,21 +1178,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7143,
+            "id": 7416,
             "name": "SignedAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7142,
+              "id": 7415,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7141,
+                  "id": 7414,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "appHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7143,
+                  "scope": 7416,
                   "src": "166:15:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1189,7 +1202,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7140,
+                    "id": 7413,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "166:7:32",
@@ -1209,21 +1222,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7147,
+            "id": 7420,
             "name": "SignedDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7146,
+              "id": 7419,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7145,
+                  "id": 7418,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "datasetHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7147,
+                  "scope": 7420,
                   "src": "213:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1232,7 +1246,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7144,
+                    "id": 7417,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "213:7:32",
@@ -1252,21 +1266,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7151,
+            "id": 7424,
             "name": "SignedWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7150,
+              "id": 7423,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7149,
+                  "id": 7422,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "workerpoolHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7151,
+                  "scope": 7424,
                   "src": "264:22:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1275,7 +1290,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7148,
+                    "id": 7421,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "264:7:32",
@@ -1295,21 +1310,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7155,
+            "id": 7428,
             "name": "SignedRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7154,
+              "id": 7427,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7153,
+                  "id": 7426,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "requestHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7155,
+                  "scope": 7428,
                   "src": "318:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1318,7 +1334,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7152,
+                    "id": 7425,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "318:7:32",
@@ -1338,21 +1354,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7159,
+            "id": 7432,
             "name": "ClosedAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7158,
+              "id": 7431,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7157,
+                  "id": 7430,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "appHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7159,
+                  "scope": 7432,
                   "src": "369:15:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1361,7 +1378,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7156,
+                    "id": 7429,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "369:7:32",
@@ -1381,21 +1398,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7163,
+            "id": 7436,
             "name": "ClosedDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7162,
+              "id": 7435,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7161,
+                  "id": 7434,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "datasetHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7163,
+                  "scope": 7436,
                   "src": "416:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1404,7 +1422,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7160,
+                    "id": 7433,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "416:7:32",
@@ -1424,21 +1442,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7167,
+            "id": 7440,
             "name": "ClosedWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7166,
+              "id": 7439,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7165,
+                  "id": 7438,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "workerpoolHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7167,
+                  "scope": 7440,
                   "src": "467:22:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1447,7 +1466,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7164,
+                    "id": 7437,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "467:7:32",
@@ -1467,21 +1486,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 7171,
+            "id": 7444,
             "name": "ClosedRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 7170,
+              "id": 7443,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7169,
+                  "id": 7442,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "requestHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7171,
+                  "scope": 7444,
                   "src": "521:19:32",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1490,7 +1510,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 7168,
+                    "id": 7441,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "521:7:32",
@@ -1511,7 +1531,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "b2b07e66",
-            "id": 7176,
+            "id": 7449,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1519,32 +1539,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7174,
+              "id": 7447,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7173,
+                  "id": 7446,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7176,
+                  "scope": 7449,
                   "src": "576:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrderOperation_$554_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrderOperation_$523_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7172,
+                    "id": 7445,
                     "name": "IexecLibOrders_v5.AppOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 554,
+                    "referencedDeclaration": 523,
                     "src": "576:35:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrderOperation_$554_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrderOperation_$523_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrderOperation"
                     }
                   },
@@ -1555,12 +1576,12 @@
               "src": "575:53:32"
             },
             "returnParameters": {
-              "id": 7175,
+              "id": 7448,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "637:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "545:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1570,7 +1591,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4b747106",
-            "id": 7181,
+            "id": 7454,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1578,32 +1599,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7179,
+              "id": 7452,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7178,
+                  "id": 7451,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7181,
+                  "scope": 7454,
                   "src": "671:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrderOperation_$561_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrderOperation_$530_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7177,
+                    "id": 7450,
                     "name": "IexecLibOrders_v5.DatasetOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 561,
+                    "referencedDeclaration": 530,
                     "src": "671:39:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrderOperation_$561_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrderOperation_$530_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrderOperation"
                     }
                   },
@@ -1614,12 +1636,12 @@
               "src": "670:53:32"
             },
             "returnParameters": {
-              "id": 7180,
+              "id": 7453,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "732:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "640:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1629,7 +1651,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "7e34a077",
-            "id": 7186,
+            "id": 7459,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1637,32 +1659,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7184,
+              "id": 7457,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7183,
+                  "id": 7456,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7186,
+                  "scope": 7459,
                   "src": "766:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$568_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$537_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7182,
+                    "id": 7455,
                     "name": "IexecLibOrders_v5.WorkerpoolOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 568,
+                    "referencedDeclaration": 537,
                     "src": "766:42:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$568_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrderOperation_$537_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrderOperation"
                     }
                   },
@@ -1673,12 +1696,12 @@
               "src": "765:53:32"
             },
             "returnParameters": {
-              "id": 7185,
+              "id": 7458,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "827:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "735:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1688,7 +1711,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "8dd971d5",
-            "id": 7191,
+            "id": 7464,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1696,32 +1719,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7189,
+              "id": 7462,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7188,
+                  "id": 7461,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7191,
+                  "scope": 7464,
                   "src": "861:51:32",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrderOperation_$575_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrderOperation_$544_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrderOperation"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7187,
+                    "id": 7460,
                     "name": "IexecLibOrders_v5.RequestOrderOperation",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 575,
+                    "referencedDeclaration": 544,
                     "src": "861:39:32",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrderOperation_$575_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrderOperation_$544_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrderOperation"
                     }
                   },
@@ -1732,19 +1756,19 @@
               "src": "860:53:32"
             },
             "returnParameters": {
-              "id": 7190,
+              "id": 7463,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "922:0:32"
             },
-            "scope": 7192,
+            "scope": 7465,
             "src": "830:93:32",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7193,
+        "scope": 7466,
         "src": "104:821:32"
       }
     ],
@@ -1752,11 +1776,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-19T23:24:36.554Z",
+  "updatedAt": "2020-04-20T12:11:00.608Z",
   "devdoc": {
     "methods": {}
   },

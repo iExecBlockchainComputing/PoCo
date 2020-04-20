@@ -3,22 +3,22 @@
     {
       "inputs": [
         {
-          "internalType": "bytes32",
-          "name": "_data",
-          "type": "bytes32"
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         },
         {
           "internalType": "bytes",
-          "name": "_signature",
+          "name": "signature",
           "type": "bytes"
         }
       ],
       "name": "isValidSignature",
       "outputs": [
         {
-          "internalType": "bool",
-          "name": "isValid",
-          "type": "bool"
+          "internalType": "bytes4",
+          "name": "magicValue",
+          "type": "bytes4"
         }
       ],
       "stateMutability": "view",

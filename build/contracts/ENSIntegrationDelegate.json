@@ -72,25 +72,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ens\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol\":\"ENSIntegrationDelegate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0x7bbf276b23ecadd8d659a4bb7b411d15a393e4bf8952678e42947d427492386b\",\"urls\":[\"bzz-raw://e8757e94d31c232492f6753319c7a8f57813b367b87d431a9d9dab6c46962016\",\"dweb:/ipfs/Qmd1dmpshYgesDsxcHCoPry1Z3xK15F3cL7G1kGysV3nuY\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x12808f4e02f3e484ba81cae24cdccc2caa2e857833f0348f2dda7b4a8a562e03\",\"urls\":[\"bzz-raw://f598c591febda5345278c2d17c302785d52ef0733402e4dc0493d98c792e147d\",\"dweb:/ipfs/QmSSft2jmmejNnNH2wJXdqfSVt9q3c7q63jZqmju9EAehC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0x99eb0211d9852cc647539aba533f617e5f8609571d56b7fc46d19e3c1789f0a5\",\"urls\":[\"bzz-raw://8c30c0795190c845d8c06da7244bc16491a56ba3735b6f8489269b9a9bc2ba2d\",\"dweb:/ipfs/Qmaw8XAyWhqTLSvE4P1EsVmaaKCFX6pgnRyPBs2BHw5VwK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0xda6924684c181d2ba5bb85291871acd9c15e5d6263b35e4c908bbd56c168497a\",\"urls\":[\"bzz-raw://c4abfbbacf4e439fc3e07a99a8f42740d43ad5987a93dbd2da97b2785621ad63\",\"dweb:/ipfs/Qmd5ae5s4QXrtq2z8aBtWwSunqysWb5PjoVnMeQbqeSTQW\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol\":{\"keccak256\":\"0x429a4204f5fa2be177c2153f3d35a4aa891d212ab7c9c13ba479a71a8a7f2105\",\"urls\":[\"bzz-raw://697518826bb205ec85006f3d2fa3492cff50437aaec5c695155c25c6a03ed039\",\"dweb:/ipfs/QmXcrxetWnZo4ygT6A4HsT5kXG86nE7Qc4bwjURRGNkDKo\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":{\"keccak256\":\"0x4d3842f83e941c6077de8874963a9625dd51b4cac9c3260f527dad7ff1b24fa3\",\"urls\":[\"bzz-raw://997afda63d45675604f06b171964a28de8d4697b888968a9d8a352f261d8b453\",\"dweb:/ipfs/QmVYiZHDXc4T7Nc1XrfzMXL6N5m6tUken1c7xXSVqyHGmu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0x4030e24005a8fa6835f839a2e6ec3088bfc408d315f853b1994f549d976af530\",\"urls\":[\"bzz-raw://5777c6515f1f4be8767e41eca8f76391b0d574db25933b3333d5150c214884d4\",\"dweb:/ipfs/QmRH1XV48J3yZwV6GmufMiGnhPUr8MJAu9uzDiipvxZwAK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x13846e13b9a53dec12db1afd1e6ef8fb6b3a34577c59bab7b84db5c0fe227c6e\",\"urls\":[\"bzz-raw://ed869339a2fa5d4dda5f917d5b7970d845d1cdc1c02c7edb0f84ef1cda4d7646\",\"dweb:/ipfs/QmVYwkKDyxs9vT9S3HUHaQZ798NF3gYZ1QMg69CGedssgd\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xdcbcec72a08dc49e64965d2587b74d8b88cee6bdeecd6337016b7da774478c36\",\"urls\":[\"bzz-raw://b560b4b9736acd02b7cde1925ce1374a4bc87de0d04ba944b0a7f4056b75383f\",\"dweb:/ipfs/QmWewRjMTXUgAHTRMWZ3DHRdYdUkKWjFT7C6kNjLh4T2wL\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x708ae901e214e044a5c922748462157b9be162b3620aa56d7c0e7258f66aee1d\",\"urls\":[\"bzz-raw://c287ed9989e5f16114553a30f4ba3794be657f90598f101f7b92ce5859f46978\",\"dweb:/ipfs/QmeFeDCzfhhBTaY9NE9wREmrBRETvn4k3mo2FejqskVMtg\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0xb40602104a74d4d8a682fad2cfa274d417821c55c71460a5248d6a8686be6bac\",\"urls\":[\"bzz-raw://7c3c7170a531f8c9ec76f4f69a9e875e92eec38dd52218434950d03c3f2657e7\",\"dweb:/ipfs/QmXpnZ2pCXFznTdfuoNH1fszjcRNn8Dyo2Q9stGEzbKVqL\"]},\"@openzeppelin/contracts/token/ERC721/ERC721Enumerable.sol\":{\"keccak256\":\"0xc547c79e93885c12382ce5418c778cf35530fe2dec58ec7589b88f80fd403441\",\"urls\":[\"bzz-raw://ca00c24d18261a841d86908e05b28488682ffc275cc8e705cd43ecc5066a95d1\",\"dweb:/ipfs/QmetjXHEufQ86honw7zFAp1F5pxr33gxkhtpZRy6H9445u\"]},\"@openzeppelin/contracts/token/ERC721/ERC721Full.sol\":{\"keccak256\":\"0x53b5f24782d9b652d7a6c474f59775b728aeae6182c8226e3127a1b1ebc0094e\",\"urls\":[\"bzz-raw://f4131d6e2be088c1d6f534d72a650b12257a6bcbcff94c2c9438cbb872c1caff\",\"dweb:/ipfs/QmTcc8eNuneJ1ZhpwAfYREjN4DjGyuMyh5Wzh826BCzd9T\"]},\"@openzeppelin/contracts/token/ERC721/ERC721Metadata.sol\":{\"keccak256\":\"0x2defd44fdf8a96177fcdf5d931491c961350a1f214fbe0635dacda19a14244ae\",\"urls\":[\"bzz-raw://831c0ec8e07c10e11203b208bb4801177e7fb6ac709ffc6087b1334ee4fca7c4\",\"dweb:/ipfs/QmPrS7sznPR1riiDWYNUvz1Hqqe3cKfhSQKUDzdnoNgZff\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x34726f200d88943561936daf5297552636b58b57ecd3eca6494d678d93d03252\",\"urls\":[\"bzz-raw://dee47bb5e1ef4b3b8ffd3edd9d1d774249c546d4ae890c46605dd9eda73ff7eb\",\"dweb:/ipfs/QmRKJyJDbjbaf8LLnw1jcpZ47VbU2c9gYT2xZSp19m55aM\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x8e5e5ba56ec398e1f5dd1b3c92b604f5d7509adedd67cb64ec99b6032603aaf1\",\"urls\":[\"bzz-raw://dedc4142af588d22fce563a0c94b11d2ef72e8960488175d1e285dfead8866eb\",\"dweb:/ipfs/Qmbaka9k33fbw1iirt4aYZtJvmFUjq23feuwreTEG7djqU\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0x4f3a00edb976e97943fe0a620ea2948955a75eff2a9231c202d50d1e062d8da5\",\"urls\":[\"bzz-raw://4d83aa87b7c75f666d57a0e5b779a19c00b453b14ee4ed88cfda6d056fdcf14c\",\"dweb:/ipfs/QmXpWwQVFo66hsrAZmHxoxNzwEwBDgNWvaUYqY4TJV38vk\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x5993cce579ec664f9dcf6254c511b906222ac5bdaea90ee19c9d018dc02cd221\",\"urls\":[\"bzz-raw://44f185e70782fabf2bb877f6f358b3af729c04904b8146d665a507b7ec602d69\",\"dweb:/ipfs/QmTuqsSxKhBUY1kbRUbzQMM3rBZKLaTTrVfmCKn77gWFsv\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206106c6833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b03909116906000805160206106c6833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b61059a8061012c6000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80633121db1c14610051578063715018a6146100665780638da5cb5b1461006e578063f2fde38b1461008c575b600080fd5b61006461005f3660046103ce565b61009f565b005b610064610122565b6100766101a1565b6040516100839190610464565b60405180910390f35b61006461009a36600461038f565b6101b0565b6100a76101f1565b6000546001600160a01b039081169116146100dd5760405162461bcd60e51b81526004016100d49061051a565b60405180910390fd5b61011d8383838080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152506101f592505050565b505050565b61012a6101f1565b6000546001600160a01b039081169116146101575760405162461bcd60e51b81526004016100d49061051a565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101b86101f1565b6000546001600160a01b039081169116146101e55760405162461bcd60e51b81526004016100d49061051a565b6101ee8161030e565b50565b3390565b6040516302571be360e01b81526001600160a01b038316906302571be390610241907f91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e290600401610478565b60206040518083038186803b15801561025957600080fd5b505afa15801561026d573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061029191906103b2565b6001600160a01b031663c47f0027826040518263ffffffff1660e01b81526004016102bc9190610481565b602060405180830381600087803b1580156102d657600080fd5b505af11580156102ea573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011d919061044c565b6001600160a01b0381166103345760405162461bcd60e51b81526004016100d4906104d4565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000602082840312156103a0578081fd5b81356103ab8161054f565b9392505050565b6000602082840312156103c3578081fd5b81516103ab8161054f565b6000806000604084860312156103e2578182fd5b83356103ed8161054f565b9250602084013567ffffffffffffffff80821115610409578384fd5b81860187601f82011261041a578485fd5b803592508183111561042a578485fd5b87602084830101111561043b578485fd5b949760209095019650909450505050565b60006020828403121561045d578081fd5b5051919050565b6001600160a01b0391909116815260200190565b90815260200190565b6000602080835283518082850152825b818110156104ad57858101830151858201604001528201610491565b818111156104be5783604083870101525b50601f01601f1916929092016040019392505050565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6001600160a01b03811681146101ee57600080fdfea2646970667358221220c36d9576faee4d37c6fb17067057a0494f5828551375a6dc3e02856cf234eaf064736f6c634300060400338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80633121db1c14610051578063715018a6146100665780638da5cb5b1461006e578063f2fde38b1461008c575b600080fd5b61006461005f3660046103ce565b61009f565b005b610064610122565b6100766101a1565b6040516100839190610464565b60405180910390f35b61006461009a36600461038f565b6101b0565b6100a76101f1565b6000546001600160a01b039081169116146100dd5760405162461bcd60e51b81526004016100d49061051a565b60405180910390fd5b61011d8383838080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152506101f592505050565b505050565b61012a6101f1565b6000546001600160a01b039081169116146101575760405162461bcd60e51b81526004016100d49061051a565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101b86101f1565b6000546001600160a01b039081169116146101e55760405162461bcd60e51b81526004016100d49061051a565b6101ee8161030e565b50565b3390565b6040516302571be360e01b81526001600160a01b038316906302571be390610241907f91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e290600401610478565b60206040518083038186803b15801561025957600080fd5b505afa15801561026d573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061029191906103b2565b6001600160a01b031663c47f0027826040518263ffffffff1660e01b81526004016102bc9190610481565b602060405180830381600087803b1580156102d657600080fd5b505af11580156102ea573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011d919061044c565b6001600160a01b0381166103345760405162461bcd60e51b81526004016100d4906104d4565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000602082840312156103a0578081fd5b81356103ab8161054f565b9392505050565b6000602082840312156103c3578081fd5b81516103ab8161054f565b6000806000604084860312156103e2578182fd5b83356103ed8161054f565b9250602084013567ffffffffffffffff80821115610409578384fd5b81860187601f82011261041a578485fd5b803592508183111561042a578485fd5b87602084830101111561043b578485fd5b949760209095019650909450505050565b60006020828403121561045d578081fd5b5051919050565b6001600160a01b0391909116815260200190565b90815260200190565b6000602080835283518082850152825b818110156104ad57858101830151858201604001528201610491565b818111156104be5783604083870101525b50601f01601f1916929092016040019392505050565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6001600160a01b03811681146101ee57600080fdfea2646970667358221220c36d9576faee4d37c6fb17067057a0494f5828551375a6dc3e02856cf234eaf064736f6c63430006040033",
-  "sourceMap": "206:213:8:-:0;;;832:17:64;852:12;-1:-1:-1;;;;;852:10:64;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:64;-1:-1:-1;;;;;874:18:64;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:64;-1:-1:-1;;;;;;;;;;;907:43:64;874:6;;907:43;-1:-1:-1;122:19:7;-1:-1:-1;;;;;122:17:7;:19;:::i;:::-;206:213:8;;735:104:63;822:10;735:104;:::o;1656:145:64:-;1247:12;-1:-1:-1;;;;;1247:10:64;:12;:::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:64;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:64;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:64;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1725:40:64;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:64::1;::::0;;1656:145::o;346:407:-1:-;537:2;551:47;;;522:18;;;864:19;266:34;904:14;;;246:55;320:12;;;508:245;;206:213:8;;;;;;",
-  "deployedSourceMap": "206:213:8:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;206:213:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;297:120:8;;;;;;;;;:::i;:::-;;1656:145:64;;;:::i;1033:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;1950:115;;;;;;;;;:::i;297:120:8:-;1247:12:64;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:64;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:64;;;;;;;;;;;;;;;;;387:26:8::1;400:4;407:5;;387:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16:::0;::::1;74:27:::0;;;;-1:-1;387:8:8::1;::::0;-1:-1:-1;;;387:26:8:i:1;:::-;297:120:::0;;;:::o;1656:145:64:-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:64;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:64;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:64;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:64::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;-1:-1:-1;;;;;1097:6:64;1033:77;:::o;1950:115::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:64;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:64;;;;;;;;;2030:28:::1;2049:8;2030:18;:28::i;:::-;1950:115:::0;:::o;735:104:63:-;822:10;735:104;:::o;533:127:54:-;613:28;;-1:-1:-1;;;613:28:54;;-1:-1:-1;;;;;613:9:54;;;;;:28;;463:66;;613:28;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;613:28:54;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;613:28:54;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;613:28:54;;;;;;;;;-1:-1:-1;;;;;595:55:54;;651:4;595:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;595:61:54;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;595:61:54;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;595:61:54;;;;;;;;2166:233:64;-1:-1:-1;;;;;2247:22:64;;2239:73;;;;-1:-1:-1;;;2239:73:64;;;;;;;;;2348:6;;;2327:38;;-1:-1:-1;;;;;2327:38:64;;;;2348:6;;;2327:38;;;2375:6;:17;;-1:-1:-1;;;;;;2375:17:64;-1:-1:-1;;;;;2375:17:64;;;;;;;;;;2166:233::o;784:241:-1:-;;888:2;876:9;867:7;863:23;859:32;856:2;;;-1:-1;;894:12;856:2;85:6;72:20;97:33;124:5;97:33;;;946:63;850:175;-1:-1;;;850:175;1032:263;;1147:2;1135:9;1126:7;1122:23;1118:32;1115:2;;;-1:-1;;1153:12;1115:2;226:6;220:13;238:33;265:5;238:33;;1302:492;;;;1443:2;1431:9;1422:7;1418:23;1414:32;1411:2;;;-1:-1;;1449:12;1411:2;85:6;72:20;97:33;124:5;97:33;;;1501:63;-1:-1;1629:2;1614:18;;1601:32;1653:18;1642:30;;;1639:2;;;-1:-1;;1675:12;1639:2;1761:6;1750:9;1746:22;554:3;547:4;539:6;535:17;531:27;521:2;;-1:-1;;562:12;521:2;605:6;592:20;582:30;;1653:18;624:6;621:30;618:2;;;-1:-1;;654:12;618:2;749:3;1629:2;729:17;690:6;715:32;;712:41;709:2;;;-1:-1;;756:12;709:2;1405:389;;1629:2;686:17;;;;-1:-1;1703:75;;-1:-1;;;;1405:389;1801:263;;1916:2;1904:9;1895:7;1891:23;1887:32;1884:2;;;-1:-1;;1922:12;1884:2;-1:-1;361:13;;1878:186;-1:-1;1878:186;3390:213;-1:-1;;;;;5506:54;;;;2142:37;;3508:2;3493:18;;3479:124;3610:213;2262:37;;;3728:2;3713:18;;3699:124;3830:301;;3968:2;;3989:17;3982:47;2456:5;5054:12;5211:6;3968:2;3957:9;3953:18;5199:19;-1:-1;5645:101;5659:6;5656:1;5653:13;5645:101;;;5726:11;;;;;5720:18;5707:11;;;5239:14;5707:11;5700:39;5674:10;;5645:101;;;5761:6;5758:1;5755:13;5752:2;;;-1:-1;5239:14;5817:6;3957:9;5808:16;;5801:27;5752:2;-1:-1;5933:7;5917:14;-1:-1;;5913:28;2614:39;;;;5239:14;2614:39;;3939:192;-1:-1;;;3939:192;4138:407;4329:2;4343:47;;;2890:2;4314:18;;;5199:19;2926:34;5239:14;;;2906:55;-1:-1;;;2981:12;;;2974:30;3023:12;;;4300:245;4552:407;4743:2;4757:47;;;4728:18;;;5199:19;3310:34;5239:14;;;3290:55;3364:12;;;4714:245;5954:117;-1:-1;;;;;5506:54;;6013:35;;6003:2;;6062:1;;6052:12",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ens\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol\":\"ENSIntegrationDelegate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0x9e49d21b9e009a5b6e7a800ba71973a7e4ff96d5e806d67abaf9c2e8b6652532\",\"urls\":[\"bzz-raw://680a708e1a537b0ca413ac8342ea5e55c2c02ff5dd6d752d085739122955f1c6\",\"dweb:/ipfs/QmUcYhmJSrsNRsvo3W4ZB6DH6YFJHLvg6uLmropgGLTRhh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0x465d3c959887af4a95487e7b0d8e7e579561ee1c5706957836e0b44698bad697\",\"urls\":[\"bzz-raw://61bc27189149a15383a3e4ff3ff4e10f395065949087eb77834e5f5effaea1d8\",\"dweb:/ipfs/QmesUKUoQ5dSRPKjnb2PYNgYPvBHoKvDvhehr9PPa3uawT\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol\":{\"keccak256\":\"0x429a4204f5fa2be177c2153f3d35a4aa891d212ab7c9c13ba479a71a8a7f2105\",\"urls\":[\"bzz-raw://697518826bb205ec85006f3d2fa3492cff50437aaec5c695155c25c6a03ed039\",\"dweb:/ipfs/QmXcrxetWnZo4ygT6A4HsT5kXG86nE7Qc4bwjURRGNkDKo\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":{\"keccak256\":\"0x4d3842f83e941c6077de8874963a9625dd51b4cac9c3260f527dad7ff1b24fa3\",\"urls\":[\"bzz-raw://997afda63d45675604f06b171964a28de8d4697b888968a9d8a352f261d8b453\",\"dweb:/ipfs/QmVYiZHDXc4T7Nc1XrfzMXL6N5m6tUken1c7xXSVqyHGmu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0x0699a487f0fa91ae957a4a51188d73a70ab17cf999f7ee007b553829ea4c561d\",\"urls\":[\"bzz-raw://c63c0e3f0f8600758aeab3ddb6030ca37a4fda497317948cc38989e1410ea1e8\",\"dweb:/ipfs/QmQFVj9tFEbKpqTzH9YHQoUpM79EvRZFR2fTDeiiiyVViC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0x98aa1380fd49a255d6cbea58558ea76bff35c59b218671fde8842907b44e7390\",\"urls\":[\"bzz-raw://613eaff66d4c270ddd87448c06267b6e043ef8c8223cb39d8767bc9daa9cb1ec\",\"dweb:/ipfs/Qmcg56orudv25ghmnZCxN37HwNKCXmTTDxj5cyoYYnvHTg\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x708ae901e214e044a5c922748462157b9be162b3620aa56d7c0e7258f66aee1d\",\"urls\":[\"bzz-raw://c287ed9989e5f16114553a30f4ba3794be657f90598f101f7b92ce5859f46978\",\"dweb:/ipfs/QmeFeDCzfhhBTaY9NE9wREmrBRETvn4k3mo2FejqskVMtg\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x6cd80ccf035f3e77640b0447c06eb66f4e57658cf1d1dada3a7b48346ae4f549\",\"urls\":[\"bzz-raw://738ad925fdb37701cfea66d4ed4fca4074bf145d0b6b6c45cfd96b2845bff4df\",\"dweb:/ipfs/QmYuZLGiKTG4EDu67qcpotzSd4Nc5jAkYFjG2GsRF85KSR\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x34726f200d88943561936daf5297552636b58b57ecd3eca6494d678d93d03252\",\"urls\":[\"bzz-raw://dee47bb5e1ef4b3b8ffd3edd9d1d774249c546d4ae890c46605dd9eda73ff7eb\",\"dweb:/ipfs/QmRKJyJDbjbaf8LLnw1jcpZ47VbU2c9gYT2xZSp19m55aM\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x8e5e5ba56ec398e1f5dd1b3c92b604f5d7509adedd67cb64ec99b6032603aaf1\",\"urls\":[\"bzz-raw://dedc4142af588d22fce563a0c94b11d2ef72e8960488175d1e285dfead8866eb\",\"dweb:/ipfs/Qmbaka9k33fbw1iirt4aYZtJvmFUjq23feuwreTEG7djqU\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x66d1ed2a353be8d2492833a185c53a8f1de8d8fa575a201e9825cf334d79659a\",\"urls\":[\"bzz-raw://a2e9b79e9cf5b398cd29b30df860a6521eefadd9882a346c423afbee5aee606e\",\"dweb:/ipfs/QmUq7gfqR5x1DaMpRKkWwmLMGLPzqUQhqhFEJ2vcgvFraH\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0xaf17cd6e2d9f484546d48a0e9e7e279e4e90436c16df7fc3b562e58594f268d7\",\"urls\":[\"bzz-raw://7559f5728423b275e0cbb3e787d2c79115ad09e146abfedf10fb50e507fbf1a5\",\"dweb:/ipfs/QmX4jFGeYtL3QSfoS1HNQpytnjKvq7fHszAjvn42AVGHSn\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0xb94a03de3c8602a90c917ec7537b962dcf2cce2f2bd5f266e6ad790b45c10b97\",\"urls\":[\"bzz-raw://9291ee41737c8e8f37e6cae30dc2bf7145a99985b29e02120d57190369273562\",\"dweb:/ipfs/QmeFJtn4SVTGRKRsh2cCxa2gisLvNbQf5KvgHeUaF1Pzbv\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0x476e7a0d57c1c7411656bb6e62ed3800ecdede111bd85584a05faae980b18f36\",\"urls\":[\"bzz-raw://1c7658452dd9f6583c9abf81080bcd4e4eab0f1a572432abf82ccc75d61207bf\",\"dweb:/ipfs/QmUrwAsCNTJ8noNdvUKfbigmoHWmGcZJVU6yF29mrELRUM\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206106bd833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b03909116906000805160206106bd833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6105918061012c6000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80633121db1c14610051578063715018a6146100665780638da5cb5b1461006e578063f2fde38b1461008c575b600080fd5b61006461005f3660046103c2565b61009f565b005b610064610122565b6100766101a1565b6040516100839190610458565b60405180910390f35b61006461009a366004610383565b6101b0565b6100a7610266565b6000546001600160a01b039081169116146100dd5760405162461bcd60e51b81526004016100d49061050e565b60405180910390fd5b61011d8383838080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525061026a92505050565b505050565b61012a610266565b6000546001600160a01b039081169116146101575760405162461bcd60e51b81526004016100d49061050e565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101b8610266565b6000546001600160a01b039081169116146101e55760405162461bcd60e51b81526004016100d49061050e565b6001600160a01b03811661020b5760405162461bcd60e51b81526004016100d4906104c8565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6040516302571be360e01b81526001600160a01b038316906302571be3906102b6907f91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e29060040161046c565b60206040518083038186803b1580156102ce57600080fd5b505afa1580156102e2573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061030691906103a6565b6001600160a01b031663c47f0027826040518263ffffffff1660e01b81526004016103319190610475565b602060405180830381600087803b15801561034b57600080fd5b505af115801561035f573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011d9190610440565b600060208284031215610394578081fd5b813561039f81610543565b9392505050565b6000602082840312156103b7578081fd5b815161039f81610543565b6000806000604084860312156103d6578182fd5b83356103e181610543565b9250602084013567ffffffffffffffff808211156103fd578384fd5b81860187601f82011261040e578485fd5b803592508183111561041e578485fd5b87602084830101111561042f578485fd5b949760209095019650909450505050565b600060208284031215610451578081fd5b5051919050565b6001600160a01b0391909116815260200190565b90815260200190565b6000602080835283518082850152825b818110156104a157858101830151858201604001528201610485565b818111156104b25783604083870101525b50601f01601f1916929092016040019392505050565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6001600160a01b038116811461055857600080fd5b5056fea2646970667358221220f8a3dff51835b02aa6116ee5a9d91568e3639e2365968503c61cc2f3baa11e1364736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80633121db1c14610051578063715018a6146100665780638da5cb5b1461006e578063f2fde38b1461008c575b600080fd5b61006461005f3660046103c2565b61009f565b005b610064610122565b6100766101a1565b6040516100839190610458565b60405180910390f35b61006461009a366004610383565b6101b0565b6100a7610266565b6000546001600160a01b039081169116146100dd5760405162461bcd60e51b81526004016100d49061050e565b60405180910390fd5b61011d8383838080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525061026a92505050565b505050565b61012a610266565b6000546001600160a01b039081169116146101575760405162461bcd60e51b81526004016100d49061050e565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101b8610266565b6000546001600160a01b039081169116146101e55760405162461bcd60e51b81526004016100d49061050e565b6001600160a01b03811661020b5760405162461bcd60e51b81526004016100d4906104c8565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6040516302571be360e01b81526001600160a01b038316906302571be3906102b6907f91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e29060040161046c565b60206040518083038186803b1580156102ce57600080fd5b505afa1580156102e2573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061030691906103a6565b6001600160a01b031663c47f0027826040518263ffffffff1660e01b81526004016103319190610475565b602060405180830381600087803b15801561034b57600080fd5b505af115801561035f573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011d9190610440565b600060208284031215610394578081fd5b813561039f81610543565b9392505050565b6000602082840312156103b7578081fd5b815161039f81610543565b6000806000604084860312156103d6578182fd5b83356103e181610543565b9250602084013567ffffffffffffffff808211156103fd578384fd5b81860187601f82011261040e578485fd5b803592508183111561041e578485fd5b87602084830101111561042f578485fd5b949760209095019650909450505050565b600060208284031215610451578081fd5b5051919050565b6001600160a01b0391909116815260200190565b90815260200190565b6000602080835283518082850152825b818110156104a157858101830151858201604001528201610485565b818111156104b25783604083870101525b50601f01601f1916929092016040019392505050565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6001600160a01b038116811461055857600080fd5b5056fea2646970667358221220f8a3dff51835b02aa6116ee5a9d91568e3639e2365968503c61cc2f3baa11e1364736f6c63430006060033",
+  "sourceMap": "206:213:8:-:0;;;832:17:66;852:12;-1:-1:-1;;;;;852:10:66;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:66;-1:-1:-1;;;;;874:18:66;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:66;-1:-1:-1;;;;;;;;;;;907:43:66;874:6;;907:43;-1:-1:-1;124:19:57;-1:-1:-1;;;;;124:17:57;:19;:::i;:::-;206:213:8;;735:104:65;822:10;735:104;:::o;1656:145:66:-;1247:12;-1:-1:-1;;;;;1247:10:66;:12;:::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1725:40:66;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;346:407:-1:-;537:2;551:47;;;522:18;;;864:19;266:34;904:14;;;246:55;320:12;;;508:245;;206:213:8;;;;;;",
+  "deployedSourceMap": "206:213:8:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;206:213:8;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;297:120:8;;;;;;;;;:::i;:::-;;1656:145:66;;;:::i;1033:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;1950:240;;;;;;;;;:::i;297:120:8:-;1247:12:66;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;387:26:8::1;400:4;407:5;;387:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16:::0;::::1;74:27:::0;;;;-1:-1;387:8:8::1;::::0;-1:-1:-1;;;387:26:8:i:1;:::-;297:120:::0;;;:::o;1656:145:66:-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;-1:-1:-1;;;;;1097:6:66;1033:77;:::o;1950:240::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;-1:-1:-1;;;;;2038:22:66;::::1;2030:73;;;;-1:-1:-1::0;;;2030:73:66::1;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;-1:-1:-1;;;;;2118:38:66;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;-1:-1:-1;;;;;;2166:17:66::1;-1:-1:-1::0;;;;;2166:17:66;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:65:-;822:10;735:104;:::o;533:127:54:-;613:28;;-1:-1:-1;;;613:28:54;;-1:-1:-1;;;;;613:9:54;;;;;:28;;463:66;;613:28;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;613:28:54;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;613:28:54;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;613:28:54;;;;;;;;;-1:-1:-1;;;;;595:55:54;;651:4;595:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;595:61:54;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;595:61:54;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;595:61:54;;;;;;;;784:241:-1;;888:2;876:9;867:7;863:23;859:32;856:2;;;-1:-1;;894:12;856:2;85:6;72:20;97:33;124:5;97:33;;;946:63;850:175;-1:-1;;;850:175;1032:263;;1147:2;1135:9;1126:7;1122:23;1118:32;1115:2;;;-1:-1;;1153:12;1115:2;226:6;220:13;238:33;265:5;238:33;;1302:492;;;;1443:2;1431:9;1422:7;1418:23;1414:32;1411:2;;;-1:-1;;1449:12;1411:2;85:6;72:20;97:33;124:5;97:33;;;1501:63;-1:-1;1629:2;1614:18;;1601:32;1653:18;1642:30;;;1639:2;;;-1:-1;;1675:12;1639:2;1761:6;1750:9;1746:22;554:3;547:4;539:6;535:17;531:27;521:2;;-1:-1;;562:12;521:2;605:6;592:20;582:30;;1653:18;624:6;621:30;618:2;;;-1:-1;;654:12;618:2;749:3;1629:2;729:17;690:6;715:32;;712:41;709:2;;;-1:-1;;756:12;709:2;1405:389;;1629:2;686:17;;;;-1:-1;1703:75;;-1:-1;;;;1405:389;1801:263;;1916:2;1904:9;1895:7;1891:23;1887:32;1884:2;;;-1:-1;;1922:12;1884:2;-1:-1;361:13;;1878:186;-1:-1;1878:186;3390:213;-1:-1;;;;;5506:54;;;;2142:37;;3508:2;3493:18;;3479:124;3610:213;2262:37;;;3728:2;3713:18;;3699:124;3830:301;;3968:2;;3989:17;3982:47;2456:5;5054:12;5211:6;3968:2;3957:9;3953:18;5199:19;-1:-1;5645:101;5659:6;5656:1;5653:13;5645:101;;;5726:11;;;;;5720:18;5707:11;;;5239:14;5707:11;5700:39;5674:10;;5645:101;;;5761:6;5758:1;5755:13;5752:2;;;-1:-1;5239:14;5817:6;3957:9;5808:16;;5801:27;5752:2;-1:-1;5933:7;5917:14;-1:-1;;5913:28;2614:39;;;;5239:14;2614:39;;3939:192;-1:-1;;;3939:192;4138:407;4329:2;4343:47;;;2890:2;4314:18;;;5199:19;2926:34;5239:14;;;2906:55;-1:-1;;;2981:12;;;2974:30;3023:12;;;4300:245;4552:407;4743:2;4757:47;;;4728:18;;;5199:19;3310:34;5239:14;;;3290:55;3364:12;;;4714:245;5954:117;-1:-1;;;;;5506:54;;6013:35;;6003:2;;6062:1;;6052:12;6003:2;5997:74;",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\";\nimport \"../DelegateBase.sol\";\nimport \"../interfaces/ENSIntegration.sol\";\n\n\ncontract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, DelegateBase\n{\n\tfunction setName(address _ens, string calldata _name)\n\texternal override onlyOwner()\n\t{\n\t\t_setName(ENS(_ens), _name);\n\t}\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol",
     "exportedSymbols": {
       "ENSIntegrationDelegate": [
-        918
+        875
       ]
     },
-    "id": 919,
+    "id": 876,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 889,
+        "id": 846,
         "literals": [
           "solidity",
           "^",
@@ -101,7 +101,7 @@
         "src": "0:23:8"
       },
       {
-        "id": 890,
+        "id": 847,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -112,10 +112,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
         "file": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
-        "id": 891,
+        "id": 848,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 9867,
+        "scope": 876,
+        "sourceUnit": 10142,
         "src": "59:71:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -123,10 +123,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
         "file": "../DelegateBase.sol",
-        "id": 892,
+        "id": 849,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 888,
+        "scope": 876,
+        "sourceUnit": 845,
         "src": "131:29:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -134,10 +134,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol",
         "file": "../interfaces/ENSIntegration.sol",
-        "id": 893,
+        "id": 850,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 6545,
+        "scope": 876,
+        "sourceUnit": 6818,
         "src": "161:42:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -149,17 +149,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 894,
+              "id": 851,
               "name": "ENSIntegration",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6544,
+              "referencedDeclaration": 6817,
               "src": "241:14:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSIntegration_$6544",
+                "typeIdentifier": "t_contract$_ENSIntegration_$6817",
                 "typeString": "contract ENSIntegration"
               }
             },
-            "id": 895,
+            "id": 852,
             "nodeType": "InheritanceSpecifier",
             "src": "241:14:8"
           },
@@ -167,17 +167,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 896,
+              "id": 853,
               "name": "ENSReverseRegistration",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9866,
+              "referencedDeclaration": 10141,
               "src": "257:22:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSReverseRegistration_$9866",
+                "typeIdentifier": "t_contract$_ENSReverseRegistration_$10141",
                 "typeString": "contract ENSReverseRegistration"
               }
             },
-            "id": 897,
+            "id": 854,
             "nodeType": "InheritanceSpecifier",
             "src": "257:22:8"
           },
@@ -185,53 +185,55 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 898,
+              "id": 855,
               "name": "DelegateBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 887,
+              "referencedDeclaration": 844,
               "src": "281:12:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DelegateBase_$887",
+                "typeIdentifier": "t_contract$_DelegateBase_$844",
                 "typeString": "contract DelegateBase"
               }
             },
-            "id": 899,
+            "id": 856,
             "nodeType": "InheritanceSpecifier",
             "src": "281:12:8"
           }
         ],
         "contractDependencies": [
-          281,
-          887,
-          6544,
-          9866,
-          9913,
-          10471,
-          10591
+          268,
+          844,
+          6817,
+          10141,
+          10185,
+          10197,
+          10767,
+          10876
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 918,
+        "id": 875,
         "linearizedBaseContracts": [
-          918,
-          887,
-          281,
-          9913,
-          10591,
-          10471,
-          9866,
-          6544
+          875,
+          844,
+          10185,
+          268,
+          10197,
+          10876,
+          10767,
+          10141,
+          6817
         ],
         "name": "ENSIntegrationDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "baseFunctions": [
-              6543
+              6816
             ],
             "body": {
-              "id": 916,
+              "id": 873,
               "nodeType": "Block",
               "src": "383:34:8",
               "statements": [
@@ -244,11 +246,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 911,
+                            "id": 868,
                             "name": "_ens",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 901,
+                            "referencedDeclaration": 858,
                             "src": "400:4:8",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -263,18 +265,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 910,
+                          "id": 867,
                           "name": "ENS",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8558,
+                          "referencedDeclaration": 8833,
                           "src": "396:3:8",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_ENS_$8558_$",
+                            "typeIdentifier": "t_type$_t_contract$_ENS_$8833_$",
                             "typeString": "type(contract ENS)"
                           }
                         },
-                        "id": 912,
+                        "id": 869,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -285,17 +287,17 @@
                         "src": "396:9:8",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ENS_$8558",
+                          "typeIdentifier": "t_contract$_ENS_$8833",
                           "typeString": "contract ENS"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 913,
+                        "id": 870,
                         "name": "_name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 903,
+                        "referencedDeclaration": 860,
                         "src": "407:5:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -306,7 +308,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ENS_$8558",
+                          "typeIdentifier": "t_contract$_ENS_$8833",
                           "typeString": "contract ENS"
                         },
                         {
@@ -314,18 +316,18 @@
                           "typeString": "string calldata"
                         }
                       ],
-                      "id": 909,
+                      "id": 866,
                       "name": "_setName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9865,
+                      "referencedDeclaration": 10140,
                       "src": "387:8:8",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ENS_$8558_$_t_string_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ENS_$8833_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (contract ENS,string memory)"
                       }
                     },
-                    "id": 914,
+                    "id": 871,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -340,7 +342,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 915,
+                  "id": 872,
                   "nodeType": "ExpressionStatement",
                   "src": "387:26:8"
                 }
@@ -348,20 +350,20 @@
             },
             "documentation": null,
             "functionSelector": "3121db1c",
-            "id": 917,
+            "id": 874,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 907,
+                "id": 864,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 906,
+                  "id": 863,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10529,
+                  "referencedDeclaration": 10825,
                   "src": "370:9:8",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -375,22 +377,23 @@
             "name": "setName",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 905,
+              "id": 862,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "361:8:8"
             },
             "parameters": {
-              "id": 904,
+              "id": 861,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 901,
+                  "id": 858,
+                  "mutability": "mutable",
                   "name": "_ens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 917,
+                  "scope": 874,
                   "src": "314:12:8",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -399,7 +402,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 900,
+                    "id": 857,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "314:7:8",
@@ -414,11 +417,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 903,
+                  "id": 860,
+                  "mutability": "mutable",
                   "name": "_name",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 917,
+                  "scope": 874,
                   "src": "328:21:8",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -427,7 +431,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 902,
+                    "id": 859,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "328:6:8",
@@ -443,19 +447,19 @@
               "src": "313:37:8"
             },
             "returnParameters": {
-              "id": 908,
+              "id": 865,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "383:0:8"
             },
-            "scope": 918,
+            "scope": 875,
             "src": "297:120:8",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 919,
+        "scope": 876,
         "src": "206:213:8"
       }
     ],
@@ -465,14 +469,14 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/ENSIntegrationDelegate.sol",
     "exportedSymbols": {
       "ENSIntegrationDelegate": [
-        918
+        875
       ]
     },
-    "id": 919,
+    "id": 876,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 889,
+        "id": 846,
         "literals": [
           "solidity",
           "^",
@@ -483,7 +487,7 @@
         "src": "0:23:8"
       },
       {
-        "id": 890,
+        "id": 847,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -494,10 +498,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
         "file": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
-        "id": 891,
+        "id": 848,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 9867,
+        "scope": 876,
+        "sourceUnit": 10142,
         "src": "59:71:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -505,10 +509,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
         "file": "../DelegateBase.sol",
-        "id": 892,
+        "id": 849,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 888,
+        "scope": 876,
+        "sourceUnit": 845,
         "src": "131:29:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -516,10 +520,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol",
         "file": "../interfaces/ENSIntegration.sol",
-        "id": 893,
+        "id": 850,
         "nodeType": "ImportDirective",
-        "scope": 919,
-        "sourceUnit": 6545,
+        "scope": 876,
+        "sourceUnit": 6818,
         "src": "161:42:8",
         "symbolAliases": [],
         "unitAlias": ""
@@ -531,17 +535,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 894,
+              "id": 851,
               "name": "ENSIntegration",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6544,
+              "referencedDeclaration": 6817,
               "src": "241:14:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSIntegration_$6544",
+                "typeIdentifier": "t_contract$_ENSIntegration_$6817",
                 "typeString": "contract ENSIntegration"
               }
             },
-            "id": 895,
+            "id": 852,
             "nodeType": "InheritanceSpecifier",
             "src": "241:14:8"
           },
@@ -549,17 +553,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 896,
+              "id": 853,
               "name": "ENSReverseRegistration",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9866,
+              "referencedDeclaration": 10141,
               "src": "257:22:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSReverseRegistration_$9866",
+                "typeIdentifier": "t_contract$_ENSReverseRegistration_$10141",
                 "typeString": "contract ENSReverseRegistration"
               }
             },
-            "id": 897,
+            "id": 854,
             "nodeType": "InheritanceSpecifier",
             "src": "257:22:8"
           },
@@ -567,53 +571,55 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 898,
+              "id": 855,
               "name": "DelegateBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 887,
+              "referencedDeclaration": 844,
               "src": "281:12:8",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_DelegateBase_$887",
+                "typeIdentifier": "t_contract$_DelegateBase_$844",
                 "typeString": "contract DelegateBase"
               }
             },
-            "id": 899,
+            "id": 856,
             "nodeType": "InheritanceSpecifier",
             "src": "281:12:8"
           }
         ],
         "contractDependencies": [
-          281,
-          887,
-          6544,
-          9866,
-          9913,
-          10471,
-          10591
+          268,
+          844,
+          6817,
+          10141,
+          10185,
+          10197,
+          10767,
+          10876
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 918,
+        "id": 875,
         "linearizedBaseContracts": [
-          918,
-          887,
-          281,
-          9913,
-          10591,
-          10471,
-          9866,
-          6544
+          875,
+          844,
+          10185,
+          268,
+          10197,
+          10876,
+          10767,
+          10141,
+          6817
         ],
         "name": "ENSIntegrationDelegate",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "baseFunctions": [
-              6543
+              6816
             ],
             "body": {
-              "id": 916,
+              "id": 873,
               "nodeType": "Block",
               "src": "383:34:8",
               "statements": [
@@ -626,11 +632,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 911,
+                            "id": 868,
                             "name": "_ens",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 901,
+                            "referencedDeclaration": 858,
                             "src": "400:4:8",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -645,18 +651,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 910,
+                          "id": 867,
                           "name": "ENS",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8558,
+                          "referencedDeclaration": 8833,
                           "src": "396:3:8",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_ENS_$8558_$",
+                            "typeIdentifier": "t_type$_t_contract$_ENS_$8833_$",
                             "typeString": "type(contract ENS)"
                           }
                         },
-                        "id": 912,
+                        "id": 869,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -667,17 +673,17 @@
                         "src": "396:9:8",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ENS_$8558",
+                          "typeIdentifier": "t_contract$_ENS_$8833",
                           "typeString": "contract ENS"
                         }
                       },
                       {
                         "argumentTypes": null,
-                        "id": 913,
+                        "id": 870,
                         "name": "_name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 903,
+                        "referencedDeclaration": 860,
                         "src": "407:5:8",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -688,7 +694,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_contract$_ENS_$8558",
+                          "typeIdentifier": "t_contract$_ENS_$8833",
                           "typeString": "contract ENS"
                         },
                         {
@@ -696,18 +702,18 @@
                           "typeString": "string calldata"
                         }
                       ],
-                      "id": 909,
+                      "id": 866,
                       "name": "_setName",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9865,
+                      "referencedDeclaration": 10140,
                       "src": "387:8:8",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ENS_$8558_$_t_string_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_ENS_$8833_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (contract ENS,string memory)"
                       }
                     },
-                    "id": 914,
+                    "id": 871,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -722,7 +728,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 915,
+                  "id": 872,
                   "nodeType": "ExpressionStatement",
                   "src": "387:26:8"
                 }
@@ -730,20 +736,20 @@
             },
             "documentation": null,
             "functionSelector": "3121db1c",
-            "id": 917,
+            "id": 874,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 907,
+                "id": 864,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 906,
+                  "id": 863,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10529,
+                  "referencedDeclaration": 10825,
                   "src": "370:9:8",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -757,22 +763,23 @@
             "name": "setName",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 905,
+              "id": 862,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "361:8:8"
             },
             "parameters": {
-              "id": 904,
+              "id": 861,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 901,
+                  "id": 858,
+                  "mutability": "mutable",
                   "name": "_ens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 917,
+                  "scope": 874,
                   "src": "314:12:8",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -781,7 +788,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 900,
+                    "id": 857,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "314:7:8",
@@ -796,11 +803,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 903,
+                  "id": 860,
+                  "mutability": "mutable",
                   "name": "_name",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 917,
+                  "scope": 874,
                   "src": "328:21:8",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -809,7 +817,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 902,
+                    "id": 859,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "328:6:8",
@@ -825,19 +833,19 @@
               "src": "313:37:8"
             },
             "returnParameters": {
-              "id": 908,
+              "id": 865,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "383:0:8"
             },
-            "scope": 918,
+            "scope": 875,
             "src": "297:120:8",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 919,
+        "scope": 876,
         "src": "206:213:8"
       }
     ],
@@ -845,37 +853,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
-  "networks": {
-    "5": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x0b4b1c6E7E176C4F44bA1A08143e09666f569a9F"
-    }
-  },
+  "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-19T23:24:36.438Z",
+  "updatedAt": "2020-04-20T12:11:00.521Z",
   "devdoc": {
     "methods": {
       "owner()": {
