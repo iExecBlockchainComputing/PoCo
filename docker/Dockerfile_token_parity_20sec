@@ -11,7 +11,7 @@ RUN mkdir /iexec-poco
 COPY . /iexec-poco
 RUN mv /iexec-poco/config/config_token.json /iexec-poco/config/config.json
 
-RUN bash /iexec-poco/parity_20sec/migrate_20sec.sh
+RUN bash /iexec-poco/parity/20sec/migrate.sh
 
 ENTRYPOINT ["/bin/parity"]
-CMD ["--chain", "/iexec-poco/parity_20sec/spec_20sec.json", "--config", "/iexec-poco/parity_20sec/authority.toml", "--force-sealing", "-d", "/iexec-poco/parity_20sec/data", "--geth"]
+CMD ["--chain", "/iexec-poco/parity/20sec/spec.json", "--config", "/iexec-poco/parity/20sec/authority.toml", "--force-sealing", "-d", "/iexec-poco/parity/20sec/data", "--geth"]
