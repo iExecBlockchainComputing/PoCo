@@ -54,9 +54,9 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/SignatureVerifier.sol\":\"SignatureVerifier\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0x9e49d21b9e009a5b6e7a800ba71973a7e4ff96d5e806d67abaf9c2e8b6652532\",\"urls\":[\"bzz-raw://680a708e1a537b0ca413ac8342ea5e55c2c02ff5dd6d752d085739122955f1c6\",\"dweb:/ipfs/QmUcYhmJSrsNRsvo3W4ZB6DH6YFJHLvg6uLmropgGLTRhh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0x465d3c959887af4a95487e7b0d8e7e579561ee1c5706957836e0b44698bad697\",\"urls\":[\"bzz-raw://61bc27189149a15383a3e4ff3ff4e10f395065949087eb77834e5f5effaea1d8\",\"dweb:/ipfs/QmesUKUoQ5dSRPKjnb2PYNgYPvBHoKvDvhehr9PPa3uawT\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/SignatureVerifier.sol\":{\"keccak256\":\"0x07290b9fa344722d1d6c488b60c01e9c5f797d197f90b5e46417ecc51d06e454\",\"urls\":[\"bzz-raw://e8243a0a4f80b271facddb70049160baf68478da417e4d2de46f6449dc6b13a3\",\"dweb:/ipfs/QmSgFHuYiDP7nBa6Vot1xP4Vtqzy36Ntkkv9ugHw2SbnW2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0x0699a487f0fa91ae957a4a51188d73a70ab17cf999f7ee007b553829ea4c561d\",\"urls\":[\"bzz-raw://c63c0e3f0f8600758aeab3ddb6030ca37a4fda497317948cc38989e1410ea1e8\",\"dweb:/ipfs/QmQFVj9tFEbKpqTzH9YHQoUpM79EvRZFR2fTDeiiiyVViC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1271/IERC1271.sol\":{\"keccak256\":\"0x5aacf5aa4d2f95e60146bc396f5ca94df0f224c1361bef93488e587bcefad1b3\",\"urls\":[\"bzz-raw://bcd2ab979ce9ebba488df57671a2e7cf8b169ba55a58503930bbf876ece99639\",\"dweb:/ipfs/QmYTS8gpAAWBPQ2Eazw9Ro74PmQGFwjaa3T6uAn5XCktQG\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/ERC1654/IERC1654.sol\":{\"keccak256\":\"0x7898850b7046bdfa2abccfe5c1dfc431cbb95c2814e5074cabeb462a32486fa6\",\"urls\":[\"bzz-raw://24fd636386fcd52ce7d0037806c56dd1227dffb8cb28fd29cd7eb39153176dd4\",\"dweb:/ipfs/QmNvwBKUJa8AaMKYmxrny2wRSENgiztbvRHPrbYR5yjKZK\"]},\"@iexec/solidity/contracts/ERC734/IERC734.sol\":{\"keccak256\":\"0x8c90e6571af80f3ccb1e04469cef3a5ac6d7ee02f61c8643bdceb5b8a141da62\",\"urls\":[\"bzz-raw://2402fc97239c6fd515910d4a6c367cabd24abcdc1c54c3090e64cdbaa9deb948\",\"dweb:/ipfs/Qma7jLg9bqkT8QeftRHgftGMZvSjqmsSoQZmWLhnwc2shy\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0x98aa1380fd49a255d6cbea58558ea76bff35c59b218671fde8842907b44e7390\",\"urls\":[\"bzz-raw://613eaff66d4c270ddd87448c06267b6e043ef8c8223cb39d8767bc9daa9cb1ec\",\"dweb:/ipfs/Qmcg56orudv25ghmnZCxN37HwNKCXmTTDxj5cyoYYnvHTg\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x708ae901e214e044a5c922748462157b9be162b3620aa56d7c0e7258f66aee1d\",\"urls\":[\"bzz-raw://c287ed9989e5f16114553a30f4ba3794be657f90598f101f7b92ce5859f46978\",\"dweb:/ipfs/QmeFeDCzfhhBTaY9NE9wREmrBRETvn4k3mo2FejqskVMtg\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x6cd80ccf035f3e77640b0447c06eb66f4e57658cf1d1dada3a7b48346ae4f549\",\"urls\":[\"bzz-raw://738ad925fdb37701cfea66d4ed4fca4074bf145d0b6b6c45cfd96b2845bff4df\",\"dweb:/ipfs/QmYuZLGiKTG4EDu67qcpotzSd4Nc5jAkYFjG2GsRF85KSR\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x34726f200d88943561936daf5297552636b58b57ecd3eca6494d678d93d03252\",\"urls\":[\"bzz-raw://dee47bb5e1ef4b3b8ffd3edd9d1d774249c546d4ae890c46605dd9eda73ff7eb\",\"dweb:/ipfs/QmRKJyJDbjbaf8LLnw1jcpZ47VbU2c9gYT2xZSp19m55aM\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x8e5e5ba56ec398e1f5dd1b3c92b604f5d7509adedd67cb64ec99b6032603aaf1\",\"urls\":[\"bzz-raw://dedc4142af588d22fce563a0c94b11d2ef72e8960488175d1e285dfead8866eb\",\"dweb:/ipfs/Qmbaka9k33fbw1iirt4aYZtJvmFUjq23feuwreTEG7djqU\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x66d1ed2a353be8d2492833a185c53a8f1de8d8fa575a201e9825cf334d79659a\",\"urls\":[\"bzz-raw://a2e9b79e9cf5b398cd29b30df860a6521eefadd9882a346c423afbee5aee606e\",\"dweb:/ipfs/QmUq7gfqR5x1DaMpRKkWwmLMGLPzqUQhqhFEJ2vcgvFraH\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0xaf17cd6e2d9f484546d48a0e9e7e279e4e90436c16df7fc3b562e58594f268d7\",\"urls\":[\"bzz-raw://7559f5728423b275e0cbb3e787d2c79115ad09e146abfedf10fb50e507fbf1a5\",\"dweb:/ipfs/QmX4jFGeYtL3QSfoS1HNQpytnjKvq7fHszAjvn42AVGHSn\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0xb94a03de3c8602a90c917ec7537b962dcf2cce2f2bd5f266e6ad790b45c10b97\",\"urls\":[\"bzz-raw://9291ee41737c8e8f37e6cae30dc2bf7145a99985b29e02120d57190369273562\",\"dweb:/ipfs/QmeFJtn4SVTGRKRsh2cCxa2gisLvNbQf5KvgHeUaF1Pzbv\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0x476e7a0d57c1c7411656bb6e62ed3800ecdede111bd85584a05faae980b18f36\",\"urls\":[\"bzz-raw://1c7658452dd9f6583c9abf81080bcd4e4eab0f1a572432abf82ccc75d61207bf\",\"dweb:/ipfs/QmUrwAsCNTJ8noNdvUKfbigmoHWmGcZJVU6yF29mrELRUM\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206103f1833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b03909116906000805160206103f1833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6102c58061012c6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006e575b600080fd5b61004e610081565b005b610058610109565b6040516100659190610200565b60405180910390f35b61004e61007c3660046101d2565b610118565b6100896101ce565b6000546001600160a01b039081169116146100bf5760405162461bcd60e51b81526004016100b69061025a565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101206101ce565b6000546001600160a01b0390811691161461014d5760405162461bcd60e51b81526004016100b69061025a565b6001600160a01b0381166101735760405162461bcd60e51b81526004016100b690610214565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6000602082840312156101e3578081fd5b81356001600160a01b03811681146101f9578182fd5b9392505050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea26469706673582212207ff44722090b4796a414ebc8a5fda7fa39b5318589b9450f674765334d3cf79664736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006e575b600080fd5b61004e610081565b005b610058610109565b6040516100659190610200565b60405180910390f35b61004e61007c3660046101d2565b610118565b6100896101ce565b6000546001600160a01b039081169116146100bf5760405162461bcd60e51b81526004016100b69061025a565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101206101ce565b6000546001600160a01b0390811691161461014d5760405162461bcd60e51b81526004016100b69061025a565b6001600160a01b0381166101735760405162461bcd60e51b81526004016100b690610214565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6000602082840312156101e3578081fd5b81356001600160a01b03811681146101f9578182fd5b9392505050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea26469706673582212207ff44722090b4796a414ebc8a5fda7fa39b5318589b9450f674765334d3cf79664736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/SignatureVerifier.sol\":\"SignatureVerifier\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0x9e49d21b9e009a5b6e7a800ba71973a7e4ff96d5e806d67abaf9c2e8b6652532\",\"urls\":[\"bzz-raw://680a708e1a537b0ca413ac8342ea5e55c2c02ff5dd6d752d085739122955f1c6\",\"dweb:/ipfs/QmUcYhmJSrsNRsvo3W4ZB6DH6YFJHLvg6uLmropgGLTRhh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0x465d3c959887af4a95487e7b0d8e7e579561ee1c5706957836e0b44698bad697\",\"urls\":[\"bzz-raw://61bc27189149a15383a3e4ff3ff4e10f395065949087eb77834e5f5effaea1d8\",\"dweb:/ipfs/QmesUKUoQ5dSRPKjnb2PYNgYPvBHoKvDvhehr9PPa3uawT\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/SignatureVerifier.sol\":{\"keccak256\":\"0x07290b9fa344722d1d6c488b60c01e9c5f797d197f90b5e46417ecc51d06e454\",\"urls\":[\"bzz-raw://e8243a0a4f80b271facddb70049160baf68478da417e4d2de46f6449dc6b13a3\",\"dweb:/ipfs/QmSgFHuYiDP7nBa6Vot1xP4Vtqzy36Ntkkv9ugHw2SbnW2\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0xdf594884fc674966628ebbb2b88bc470c89881fdad988812c815bf371ce8b387\",\"urls\":[\"bzz-raw://2386446324af596f08c0a09a2a9047a1d24187ae19c6d07ad727dfa72ff597c9\",\"dweb:/ipfs/QmYmN8jTjiLmcEKXxFPCouubca8AU92agFt4zMeNpkiLey\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1271/IERC1271.sol\":{\"keccak256\":\"0x5aacf5aa4d2f95e60146bc396f5ca94df0f224c1361bef93488e587bcefad1b3\",\"urls\":[\"bzz-raw://bcd2ab979ce9ebba488df57671a2e7cf8b169ba55a58503930bbf876ece99639\",\"dweb:/ipfs/QmYTS8gpAAWBPQ2Eazw9Ro74PmQGFwjaa3T6uAn5XCktQG\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/ERC1654/IERC1654.sol\":{\"keccak256\":\"0x7898850b7046bdfa2abccfe5c1dfc431cbb95c2814e5074cabeb462a32486fa6\",\"urls\":[\"bzz-raw://24fd636386fcd52ce7d0037806c56dd1227dffb8cb28fd29cd7eb39153176dd4\",\"dweb:/ipfs/QmNvwBKUJa8AaMKYmxrny2wRSENgiztbvRHPrbYR5yjKZK\"]},\"@iexec/solidity/contracts/ERC734/IERC734.sol\":{\"keccak256\":\"0x8c90e6571af80f3ccb1e04469cef3a5ac6d7ee02f61c8643bdceb5b8a141da62\",\"urls\":[\"bzz-raw://2402fc97239c6fd515910d4a6c367cabd24abcdc1c54c3090e64cdbaa9deb948\",\"dweb:/ipfs/Qma7jLg9bqkT8QeftRHgftGMZvSjqmsSoQZmWLhnwc2shy\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0x98aa1380fd49a255d6cbea58558ea76bff35c59b218671fde8842907b44e7390\",\"urls\":[\"bzz-raw://613eaff66d4c270ddd87448c06267b6e043ef8c8223cb39d8767bc9daa9cb1ec\",\"dweb:/ipfs/Qmcg56orudv25ghmnZCxN37HwNKCXmTTDxj5cyoYYnvHTg\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x67a43d3926e72576c96ebf0e6360c979a8cc04f25e4b0ca40c221547d8903ba4\",\"urls\":[\"bzz-raw://77c6f48115c491411f0e27f6b70e2e524b1b57c66e74bd7f1974a31a448e2540\",\"dweb:/ipfs/QmPZCizouS9PVJ1dVf8zqTjHyEo5cSa1ZmPCQpk52TgrmV\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x734b5bedb78074a59bca6aff9e5a1801c9c7e9c5314daf32e14857161fb36932\",\"urls\":[\"bzz-raw://4574e71185f6693eb5cdf7a5126fba97caf0ec0366b08290dd361af44b3414d3\",\"dweb:/ipfs/QmTPBh1R3EU973H7h6D1kQ1XBA1oX2QdSHZACyytWUYKsn\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x66d1ed2a353be8d2492833a185c53a8f1de8d8fa575a201e9825cf334d79659a\",\"urls\":[\"bzz-raw://a2e9b79e9cf5b398cd29b30df860a6521eefadd9882a346c423afbee5aee606e\",\"dweb:/ipfs/QmUq7gfqR5x1DaMpRKkWwmLMGLPzqUQhqhFEJ2vcgvFraH\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0xfd5cf8319cb84ca04ea407d6fba686d53ad7f5d2bf476f41678f5a751d12a7ea\",\"urls\":[\"bzz-raw://45b75b553c4a9053429609b1c3db481f1728ca00448f01acc4065249bbf87adc\",\"dweb:/ipfs/QmRZH6QM32mJn1GZCAPXUQtBz65H4kk6DsGQbGNo4ZNPy9\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0x7f6401708b61f575b497aa7c8118ca9d70348643c83c26e70d9b643edf1a95c1\",\"urls\":[\"bzz-raw://b020d65f592c1715bc3d5799ad835cd975ef7d314f340f27603fb99ad86a0427\",\"dweb:/ipfs/QmQoGZmzE5aDTMGJM4BW77eraerfTSV9Rs8wykpQ42i1in\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xd1d78b1c8534fbcf8fdc8fbfec9133df142ef8cae9ae820929dfe6d80d2c790a\",\"urls\":[\"bzz-raw://193a827fbe83fa83c4cabb172dc438dd45c50253858a1f2bf56e8f9a2d548386\",\"dweb:/ipfs/QmbWBHwHv7CyHSZY6jxnaDiHWGEEyVb8LeGdRpWXUjaiBr\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206103f1833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b03909116906000805160206103f1833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6102c58061012c6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006e575b600080fd5b61004e610081565b005b610058610109565b6040516100659190610200565b60405180910390f35b61004e61007c3660046101d2565b610118565b6100896101ce565b6000546001600160a01b039081169116146100bf5760405162461bcd60e51b81526004016100b69061025a565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101206101ce565b6000546001600160a01b0390811691161461014d5760405162461bcd60e51b81526004016100b69061025a565b6001600160a01b0381166101735760405162461bcd60e51b81526004016100b690610214565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6000602082840312156101e3578081fd5b81356001600160a01b03811681146101f9578182fd5b9392505050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea2646970667358221220bdfe8726f3652f15f0c458d0c5375ef1d4ec19576e79b558a014461d50e0492364736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006e575b600080fd5b61004e610081565b005b610058610109565b6040516100659190610200565b60405180910390f35b61004e61007c3660046101d2565b610118565b6100896101ce565b6000546001600160a01b039081169116146100bf5760405162461bcd60e51b81526004016100b69061025a565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b6101206101ce565b6000546001600160a01b0390811691161461014d5760405162461bcd60e51b81526004016100b69061025a565b6001600160a01b0381166101735760405162461bcd60e51b81526004016100b690610214565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b6000602082840312156101e3578081fd5b81356001600160a01b03811681146101f9578182fd5b9392505050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea2646970667358221220bdfe8726f3652f15f0c458d0c5375ef1d4ec19576e79b558a014461d50e0492364736f6c63430006060033",
   "sourceMap": "260:4281:21:-:0;;;832:17:66;852:12;-1:-1:-1;;;;;852:10:66;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:66;-1:-1:-1;;;;;874:18:66;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:66;-1:-1:-1;;;;;;;;;;;907:43:66;874:6;;907:43;-1:-1:-1;124:19:57;-1:-1:-1;;;;;124:17:57;:19;:::i;:::-;260:4281:21;;735:104:65;822:10;735:104;:::o;1656:145:66:-;1247:12;-1:-1:-1;;;;;1247:10:66;:12;:::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1725:40:66;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;346:407:-1:-;537:2;551:47;;;522:18;;;864:19;266:34;904:14;;;246:55;320:12;;;508:245;;260:4281:21;;;;;;",
   "deployedSourceMap": "260:4281:21:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;260:4281:21;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;1656:145:66;;;:::i;:::-;;1033:77;;;:::i;:::-;;;;;;;;;;;;;;;;1950:240;;;;;;;;;:::i;1656:145::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;-1:-1:-1;;;;;1097:6:66;1033:77;:::o;1950:240::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;-1:-1:-1;;;;;2038:22:66;::::1;2030:73;;;;-1:-1:-1::0;;;2030:73:66::1;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;-1:-1:-1;;;;;2118:38:66;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;-1:-1:-1;;;;;;2166:17:66::1;-1:-1:-1::0;;;;;2166:17:66;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:65:-;822:10;735:104;:::o;142:241:-1:-;;246:2;234:9;225:7;221:23;217:32;214:2;;;-1:-1;;252:12;214:2;72:20;;-1:-1;;;;;2615:54;;2740:35;;2730:2;;-1:-1;;2779:12;2730:2;304:63;208:175;-1:-1;;;208:175;1235:213;-1:-1;;;;;2615:54;;;;461:37;;1353:2;1338:18;;1324:124;1455:407;1646:2;1660:47;;;735:2;1631:18;;;2387:19;771:34;2427:14;;;751:55;-1:-1;;;826:12;;;819:30;868:12;;;1617:245;1869:407;2060:2;2074:47;;;2045:18;;;2387:19;1155:34;2427:14;;;1135:55;1209:12;;;2031:245",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"@iexec/solidity/contracts/ERC734/IERC734.sol\";\nimport \"@iexec/solidity/contracts/ERC1271/IERC1271.sol\";\nimport \"@iexec/solidity/contracts/ERC1654/IERC1654.sol\";\nimport \"../DelegateBase.sol\";\n\n\ncontract SignatureVerifier is DelegateBase\n{\n\t/**\n\t * Prepare message/structure predicat used for signing\n\t */\n\tfunction _toEthSignedMessage(bytes32 _msgHash)\n\tinternal pure returns (bytes memory)\n\t{\n\t\treturn abi.encodePacked('\\x19Ethereum Signed Message:\\n32', _msgHash);\n\t}\n\n\tfunction _toEthTypedStruct(bytes32 _structHash, bytes32 _domainHash)\n\tinternal pure returns (bytes memory)\n\t{\n\t\treturn abi.encodePacked('\\x19\\x01', _domainHash, _structHash);\n\t}\n\n\t/**\n\t * recover EOA signature (support both 65 bytes traditional and 64 bytes format EIP2098 format)\n\t */\n\tfunction _recover(bytes32 _hash, bytes memory _sign)\n\tinternal pure returns (address)\n\t{\n\t\tbytes32 r;\n\t\tbytes32 s;\n\t\tuint8   v;\n\n\t\tif (_sign.length == 65) // 65bytes: (r,s,v) form\n\t\t{\n\t\t\tassembly\n\t\t\t{\n\t\t\t\tr :=         mload(add(_sign, 0x20))\n\t\t\t\ts :=         mload(add(_sign, 0x40))\n\t\t\t\tv := byte(0, mload(add(_sign, 0x60)))\n\t\t\t}\n\t\t}\n\t\telse if (_sign.length == 64) // 64bytes: (r,vs) form → see EIP2098\n\t\t{\n\t\t\tassembly\n\t\t\t{\n\t\t\t\tr :=                mload(add(_sign, 0x20))\n\t\t\t\ts := and(           mload(add(_sign, 0x40)), 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)\n\t\t\t\tv := shr(7, byte(0, mload(add(_sign, 0x40))))\n\t\t\t}\n\t\t}\n\t\telse\n\t\t{\n\t\t\trevert('invalid-signature-format');\n\t\t}\n\n\t\tif (v < 27) v += 27;\n\t\trequire(v == 27 || v == 28, 'invalid-signature-v');\n\t\treturn ecrecover(_hash, v, r, s);\n\t}\n\n\t/**\n\t * Check if contract exist, otherwize assumed to be EOA\n\t */\n\tfunction _isContract(address account)\n\tinternal view returns (bool)\n\t{\n\t\t// According to EIP-1052, 0x0 is the value returned for not-yet created accounts\n\t\t// and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned\n\t\t// for accounts without code, i.e. `keccak256('')`\n\t\tbytes32 codehash;\n\t\tbytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;\n\t\t// solhint-disable-next-line no-inline-assembly\n\t\tassembly { codehash := extcodehash(account) }\n\t\treturn (codehash != accountHash && codehash != 0x0);\n\t}\n\n\t/**\n\t * Address to bytes32 casting to ERC734\n\t */\n\tfunction _addrToKey(address _addr)\n\tinternal pure returns (bytes32)\n\t{\n\t\treturn bytes32(uint256(_addr));\n\t}\n\n\t/**\n\t * Identity verification\n\t */\n\tfunction _checkIdentity(address _identity, address _candidate, uint256 _purpose)\n\tinternal view returns (bool valid)\n\t{\n\t\treturn _identity == _candidate || IERC734(_identity).keyHasPurpose(_addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract\n\t}\n\n\tfunction _checkPresignature(address _identity, bytes32 _hash)\n\tinternal view returns (bool)\n\t{\n\t\treturn _identity != address(0) && _identity == m_presigned[_hash];\n\t}\n\n\tfunction _checkSignature(address _identity, bytes32 _hash, bytes memory _signature)\n\tinternal view returns (bool)\n\t{\n\t\tif (_isContract(_identity))\n\t\t{\n\t\t\ttry IERC1654(_identity).isValidSignature(_hash, _signature) returns (bytes4 value)\n\t\t\t{\n\t\t\t\treturn value == IERC1654(0).isValidSignature.selector;\n\t\t\t} catch (bytes memory /*lowLevelData*/) {}\n\n\t\t\treturn false;\n\t\t}\n\t\telse\n\t\t{\n\t\t\treturn _recover(_hash, _signature) == _identity;\n\t\t}\n\t}\n\n\tfunction _checkSignature(address _identity, bytes memory _predicat, bytes memory _signature)\n\tinternal view returns (bool)\n\t{\n\t\tif (_isContract(_identity))\n\t\t{\n\t\t\ttry IERC1271(_identity).isValidSignature(_predicat, _signature) returns (bytes4 value)\n\t\t\t{\n\t\t\t\treturn value == IERC1271(0).isValidSignature.selector;\n\t\t\t}\n\t\t\tcatch (bytes memory /*lowLevelData*/) {}\n\n\t\t\ttry IERC1654(_identity).isValidSignature(keccak256(_predicat), _signature) returns (bytes4 value)\n\t\t\t{\n\t\t\t\treturn value == IERC1654(0).isValidSignature.selector;\n\t\t\t}\n\t\t\tcatch (bytes memory /*lowLevelData*/) {}\n\n\t\t\treturn false;\n\t\t}\n\t\telse\n\t\t{\n\t\t\treturn _recover(keccak256(_predicat), _signature) == _identity;\n\t\t}\n\t}\n\n\tfunction _checkPresignatureOrSignature(address _identity, bytes32 _hash, bytes memory _signature)\n\tinternal view returns (bool)\n\t{\n\t\treturn _checkPresignature(_identity, _hash) || _checkSignature(_identity, _hash, _signature);\n\t}\n\n\tfunction _checkPresignatureOrSignature(address _identity, bytes memory _predicat, bytes memory _signature)\n\tinternal view returns (bool)\n\t{\n\t\treturn _checkPresignature(_identity, keccak256(_predicat)) || _checkSignature(_identity, _predicat, _signature);\n\t}\n}\n",
@@ -97,7 +97,7 @@
         "id": 6426,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10352,
+        "sourceUnit": 10337,
         "src": "59:54:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -108,7 +108,7 @@
         "id": 6427,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10173,
+        "sourceUnit": 10158,
         "src": "114:56:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -119,7 +119,7 @@
         "id": 6428,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10210,
+        "sourceUnit": 10195,
         "src": "171:56:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -160,10 +160,10 @@
         "contractDependencies": [
           268,
           844,
-          10185,
-          10197,
-          10767,
-          10876
+          10170,
+          10182,
+          10752,
+          10861
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -172,11 +172,11 @@
         "linearizedBaseContracts": [
           6806,
           844,
-          10185,
+          10170,
           268,
-          10197,
-          10876,
-          10767
+          10182,
+          10861,
+          10752
         ],
         "name": "SignatureVerifier",
         "nodeType": "ContractDefinition",
@@ -2695,10 +2695,10 @@
                             "name": "IERC734",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10351,
+                            "referencedDeclaration": 10336,
                             "src": "2633:7:21",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IERC734_$10351_$",
+                              "typeIdentifier": "t_type$_t_contract$_IERC734_$10336_$",
                               "typeString": "type(contract IERC734)"
                             }
                           },
@@ -2713,7 +2713,7 @@
                           "src": "2633:18:21",
                           "tryCall": false,
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_IERC734_$10351",
+                            "typeIdentifier": "t_contract$_IERC734_$10336",
                             "typeString": "contract IERC734"
                           }
                         },
@@ -2724,7 +2724,7 @@
                         "lValueRequested": false,
                         "memberName": "keyHasPurpose",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10302,
+                        "referencedDeclaration": 10287,
                         "src": "2633:32:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint256_$returns$_t_bool_$",
@@ -3471,10 +3471,10 @@
                                             "name": "IERC1654",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10209,
+                                            "referencedDeclaration": 10194,
                                             "src": "3184:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                               "typeString": "type(contract IERC1654)"
                                             }
                                           },
@@ -3489,7 +3489,7 @@
                                           "src": "3184:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                            "typeIdentifier": "t_contract$_IERC1654_$10194",
                                             "typeString": "contract IERC1654"
                                           }
                                         },
@@ -3500,7 +3500,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10208,
+                                        "referencedDeclaration": 10193,
                                         "src": "3184:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -3691,10 +3691,10 @@
                                 "name": "IERC1654",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10209,
+                                "referencedDeclaration": 10194,
                                 "src": "3080:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                   "typeString": "type(contract IERC1654)"
                                 }
                               },
@@ -3709,7 +3709,7 @@
                               "src": "3080:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                "typeIdentifier": "t_contract$_IERC1654_$10194",
                                 "typeString": "contract IERC1654"
                               }
                             },
@@ -3720,7 +3720,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10208,
+                            "referencedDeclaration": 10193,
                             "src": "3080:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -4202,10 +4202,10 @@
                                             "name": "IERC1271",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10172,
+                                            "referencedDeclaration": 10157,
                                             "src": "3638:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1271_$10172_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1271_$10157_$",
                                               "typeString": "type(contract IERC1271)"
                                             }
                                           },
@@ -4220,7 +4220,7 @@
                                           "src": "3638:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1271_$10172",
+                                            "typeIdentifier": "t_contract$_IERC1271_$10157",
                                             "typeString": "contract IERC1271"
                                           }
                                         },
@@ -4231,7 +4231,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10171,
+                                        "referencedDeclaration": 10156,
                                         "src": "3638:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes_memory_ptr_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -4422,10 +4422,10 @@
                                 "name": "IERC1271",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10172,
+                                "referencedDeclaration": 10157,
                                 "src": "3530:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1271_$10172_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1271_$10157_$",
                                   "typeString": "type(contract IERC1271)"
                                 }
                               },
@@ -4440,7 +4440,7 @@
                               "src": "3530:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1271_$10172",
+                                "typeIdentifier": "t_contract$_IERC1271_$10157",
                                 "typeString": "contract IERC1271"
                               }
                             },
@@ -4451,7 +4451,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10171,
+                            "referencedDeclaration": 10156,
                             "src": "3530:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes_memory_ptr_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -4549,10 +4549,10 @@
                                             "name": "IERC1654",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10209,
+                                            "referencedDeclaration": 10194,
                                             "src": "3853:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                               "typeString": "type(contract IERC1654)"
                                             }
                                           },
@@ -4567,7 +4567,7 @@
                                           "src": "3853:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                            "typeIdentifier": "t_contract$_IERC1654_$10194",
                                             "typeString": "contract IERC1654"
                                           }
                                         },
@@ -4578,7 +4578,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10208,
+                                        "referencedDeclaration": 10193,
                                         "src": "3853:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -4806,10 +4806,10 @@
                                 "name": "IERC1654",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10209,
+                                "referencedDeclaration": 10194,
                                 "src": "3734:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                   "typeString": "type(contract IERC1654)"
                                 }
                               },
@@ -4824,7 +4824,7 @@
                               "src": "3734:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                "typeIdentifier": "t_contract$_IERC1654_$10194",
                                 "typeString": "contract IERC1654"
                               }
                             },
@@ -4835,7 +4835,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10208,
+                            "referencedDeclaration": 10193,
                             "src": "3734:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -5767,7 +5767,7 @@
         "id": 6426,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10352,
+        "sourceUnit": 10337,
         "src": "59:54:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5778,7 +5778,7 @@
         "id": 6427,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10173,
+        "sourceUnit": 10158,
         "src": "114:56:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5789,7 +5789,7 @@
         "id": 6428,
         "nodeType": "ImportDirective",
         "scope": 6807,
-        "sourceUnit": 10210,
+        "sourceUnit": 10195,
         "src": "171:56:21",
         "symbolAliases": [],
         "unitAlias": ""
@@ -5830,10 +5830,10 @@
         "contractDependencies": [
           268,
           844,
-          10185,
-          10197,
-          10767,
-          10876
+          10170,
+          10182,
+          10752,
+          10861
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -5842,11 +5842,11 @@
         "linearizedBaseContracts": [
           6806,
           844,
-          10185,
+          10170,
           268,
-          10197,
-          10876,
-          10767
+          10182,
+          10861,
+          10752
         ],
         "name": "SignatureVerifier",
         "nodeType": "ContractDefinition",
@@ -8365,10 +8365,10 @@
                             "name": "IERC734",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10351,
+                            "referencedDeclaration": 10336,
                             "src": "2633:7:21",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IERC734_$10351_$",
+                              "typeIdentifier": "t_type$_t_contract$_IERC734_$10336_$",
                               "typeString": "type(contract IERC734)"
                             }
                           },
@@ -8383,7 +8383,7 @@
                           "src": "2633:18:21",
                           "tryCall": false,
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_IERC734_$10351",
+                            "typeIdentifier": "t_contract$_IERC734_$10336",
                             "typeString": "contract IERC734"
                           }
                         },
@@ -8394,7 +8394,7 @@
                         "lValueRequested": false,
                         "memberName": "keyHasPurpose",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10302,
+                        "referencedDeclaration": 10287,
                         "src": "2633:32:21",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint256_$returns$_t_bool_$",
@@ -9141,10 +9141,10 @@
                                             "name": "IERC1654",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10209,
+                                            "referencedDeclaration": 10194,
                                             "src": "3184:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                               "typeString": "type(contract IERC1654)"
                                             }
                                           },
@@ -9159,7 +9159,7 @@
                                           "src": "3184:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                            "typeIdentifier": "t_contract$_IERC1654_$10194",
                                             "typeString": "contract IERC1654"
                                           }
                                         },
@@ -9170,7 +9170,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10208,
+                                        "referencedDeclaration": 10193,
                                         "src": "3184:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -9361,10 +9361,10 @@
                                 "name": "IERC1654",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10209,
+                                "referencedDeclaration": 10194,
                                 "src": "3080:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                   "typeString": "type(contract IERC1654)"
                                 }
                               },
@@ -9379,7 +9379,7 @@
                               "src": "3080:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                "typeIdentifier": "t_contract$_IERC1654_$10194",
                                 "typeString": "contract IERC1654"
                               }
                             },
@@ -9390,7 +9390,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10208,
+                            "referencedDeclaration": 10193,
                             "src": "3080:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -9872,10 +9872,10 @@
                                             "name": "IERC1271",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10172,
+                                            "referencedDeclaration": 10157,
                                             "src": "3638:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1271_$10172_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1271_$10157_$",
                                               "typeString": "type(contract IERC1271)"
                                             }
                                           },
@@ -9890,7 +9890,7 @@
                                           "src": "3638:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1271_$10172",
+                                            "typeIdentifier": "t_contract$_IERC1271_$10157",
                                             "typeString": "contract IERC1271"
                                           }
                                         },
@@ -9901,7 +9901,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10171,
+                                        "referencedDeclaration": 10156,
                                         "src": "3638:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes_memory_ptr_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -10092,10 +10092,10 @@
                                 "name": "IERC1271",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10172,
+                                "referencedDeclaration": 10157,
                                 "src": "3530:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1271_$10172_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1271_$10157_$",
                                   "typeString": "type(contract IERC1271)"
                                 }
                               },
@@ -10110,7 +10110,7 @@
                               "src": "3530:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1271_$10172",
+                                "typeIdentifier": "t_contract$_IERC1271_$10157",
                                 "typeString": "contract IERC1271"
                               }
                             },
@@ -10121,7 +10121,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10171,
+                            "referencedDeclaration": 10156,
                             "src": "3530:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes_memory_ptr_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -10219,10 +10219,10 @@
                                             "name": "IERC1654",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 10209,
+                                            "referencedDeclaration": 10194,
                                             "src": "3853:8:21",
                                             "typeDescriptions": {
-                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                              "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                               "typeString": "type(contract IERC1654)"
                                             }
                                           },
@@ -10237,7 +10237,7 @@
                                           "src": "3853:11:21",
                                           "tryCall": false,
                                           "typeDescriptions": {
-                                            "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                            "typeIdentifier": "t_contract$_IERC1654_$10194",
                                             "typeString": "contract IERC1654"
                                           }
                                         },
@@ -10248,7 +10248,7 @@
                                         "lValueRequested": false,
                                         "memberName": "isValidSignature",
                                         "nodeType": "MemberAccess",
-                                        "referencedDeclaration": 10208,
+                                        "referencedDeclaration": 10193,
                                         "src": "3853:28:21",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -10476,10 +10476,10 @@
                                 "name": "IERC1654",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 10209,
+                                "referencedDeclaration": 10194,
                                 "src": "3734:8:21",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10209_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC1654_$10194_$",
                                   "typeString": "type(contract IERC1654)"
                                 }
                               },
@@ -10494,7 +10494,7 @@
                               "src": "3734:19:21",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IERC1654_$10209",
+                                "typeIdentifier": "t_contract$_IERC1654_$10194",
                                 "typeString": "contract IERC1654"
                               }
                             },
@@ -10505,7 +10505,7 @@
                             "lValueRequested": false,
                             "memberName": "isValidSignature",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 10208,
+                            "referencedDeclaration": 10193,
                             "src": "3734:36:21",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
@@ -11407,7 +11407,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-20T12:11:00.597Z",
+  "updatedAt": "2020-04-21T07:39:58.890Z",
   "devdoc": {
     "methods": {
       "owner()": {

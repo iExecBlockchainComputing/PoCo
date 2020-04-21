@@ -41,9 +41,9 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_logic\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"details\":\"Extends BaseUpgradeabilityProxy with an initializer for initializing implementation and init data.\",\"methods\":{\"initialize(address,bytes)\":{\"details\":\"Contract initializer.\",\"params\":{\"_data\":\"Data to send as msg.data to the implementation to initialize the proxied contract. It should include the signature and the parameters of the function to be called, as described in https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding. This parameter is optional, if no data is given the initialization call to proxied contract will be skipped.\",\"_logic\":\"Address of the initial implementation.\"}}},\"title\":\"InitializableUpgradeabilityProxy\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":\"InitializableUpgradeabilityProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x8e5e5ba56ec398e1f5dd1b3c92b604f5d7509adedd67cb64ec99b6032603aaf1\",\"urls\":[\"bzz-raw://dedc4142af588d22fce563a0c94b11d2ef72e8960488175d1e285dfead8866eb\",\"dweb:/ipfs/Qmbaka9k33fbw1iirt4aYZtJvmFUjq23feuwreTEG7djqU\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506103ad806100206000396000f3fe6080604052600436106100225760003560e01c8063d1f578941461003957610031565b366100315761002f6100ef565b005b61002f6100ef565b61002f6004803603604081101561004f57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007a57600080fd5b82018360208201111561008c57600080fd5b803590602001918460018302840111640100000000831117156100ae57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610109945050505050565b6100f7610107565b61010761010261022c565b610251565b565b600061011361022c565b6001600160a01b03161461012657600080fd5b60405180602361031a82396040519081900360230190207f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c314905061016757fe5b61017082610275565b805115610228576000826001600160a01b0316826040518082805190602001908083835b602083106101b35780518252601f199092019160209182019101610194565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d8060008114610213576040519150601f19603f3d011682016040523d82523d6000602084013e610218565b606091505b505090508061022657600080fd5b505b5050565b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c35490565b3660008037600080366000845af43d6000803e808015610270573d6000f35b3d6000fd5b61027e816102dd565b6102b95760405162461bcd60e51b815260040180806020018281038252603b81526020018061033d603b913960400191505060405180910390fd5b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c355565b6000813f7fc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a47081811480159061031157508115155b94935050505056fe6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e43616e6e6f742073657420612070726f787920696d706c656d656e746174696f6e20746f2061206e6f6e2d636f6e74726163742061646472657373a2646970667358221220aba26a9b820bc0864305fc4079425084b46cf2b0366ff1738101bb17f58c20e964736f6c63430006060033",
-  "deployedBytecode": "0x6080604052600436106100225760003560e01c8063d1f578941461003957610031565b366100315761002f6100ef565b005b61002f6100ef565b61002f6004803603604081101561004f57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007a57600080fd5b82018360208201111561008c57600080fd5b803590602001918460018302840111640100000000831117156100ae57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610109945050505050565b6100f7610107565b61010761010261022c565b610251565b565b600061011361022c565b6001600160a01b03161461012657600080fd5b60405180602361031a82396040519081900360230190207f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c314905061016757fe5b61017082610275565b805115610228576000826001600160a01b0316826040518082805190602001908083835b602083106101b35780518252601f199092019160209182019101610194565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d8060008114610213576040519150601f19603f3d011682016040523d82523d6000602084013e610218565b606091505b505090508061022657600080fd5b505b5050565b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c35490565b3660008037600080366000845af43d6000803e808015610270573d6000f35b3d6000fd5b61027e816102dd565b6102b95760405162461bcd60e51b815260040180806020018281038252603b81526020018061033d603b913960400191505060405180910390fd5b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c355565b6000813f7fc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a47081811480159061031157508115155b94935050505056fe6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e43616e6e6f742073657420612070726f787920696d706c656d656e746174696f6e20746f2061206e6f6e2d636f6e74726163742061646472657373a2646970667358221220aba26a9b820bc0864305fc4079425084b46cf2b0366ff1738101bb17f58c20e964736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_logic\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"details\":\"Extends BaseUpgradeabilityProxy with an initializer for initializing implementation and init data.\",\"methods\":{\"initialize(address,bytes)\":{\"details\":\"Contract initializer.\",\"params\":{\"_data\":\"Data to send as msg.data to the implementation to initialize the proxied contract. It should include the signature and the parameters of the function to be called, as described in https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding. This parameter is optional, if no data is given the initialization call to proxied contract will be skipped.\",\"_logic\":\"Address of the initial implementation.\"}}},\"title\":\"InitializableUpgradeabilityProxy\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":\"InitializableUpgradeabilityProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506103ad806100206000396000f3fe6080604052600436106100225760003560e01c8063d1f578941461003957610031565b366100315761002f6100ef565b005b61002f6100ef565b61002f6004803603604081101561004f57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007a57600080fd5b82018360208201111561008c57600080fd5b803590602001918460018302840111640100000000831117156100ae57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610109945050505050565b6100f7610107565b61010761010261022c565b610251565b565b600061011361022c565b6001600160a01b03161461012657600080fd5b60405180602361031a82396040519081900360230190207f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c314905061016757fe5b61017082610275565b805115610228576000826001600160a01b0316826040518082805190602001908083835b602083106101b35780518252601f199092019160209182019101610194565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d8060008114610213576040519150601f19603f3d011682016040523d82523d6000602084013e610218565b606091505b505090508061022657600080fd5b505b5050565b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c35490565b3660008037600080366000845af43d6000803e808015610270573d6000f35b3d6000fd5b61027e816102dd565b6102b95760405162461bcd60e51b815260040180806020018281038252603b81526020018061033d603b913960400191505060405180910390fd5b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c355565b6000813f7fc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a47081811480159061031157508115155b94935050505056fe6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e43616e6e6f742073657420612070726f787920696d706c656d656e746174696f6e20746f2061206e6f6e2d636f6e74726163742061646472657373a2646970667358221220f4af5f38b16e1ce890fd14497bea12d47bed23b9e542d8461f60b0d5a7952a1e64736f6c63430006060033",
+  "deployedBytecode": "0x6080604052600436106100225760003560e01c8063d1f578941461003957610031565b366100315761002f6100ef565b005b61002f6100ef565b61002f6004803603604081101561004f57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007a57600080fd5b82018360208201111561008c57600080fd5b803590602001918460018302840111640100000000831117156100ae57600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610109945050505050565b6100f7610107565b61010761010261022c565b610251565b565b600061011361022c565b6001600160a01b03161461012657600080fd5b60405180602361031a82396040519081900360230190207f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c314905061016757fe5b61017082610275565b805115610228576000826001600160a01b0316826040518082805190602001908083835b602083106101b35780518252601f199092019160209182019101610194565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d8060008114610213576040519150601f19603f3d011682016040523d82523d6000602084013e610218565b606091505b505090508061022657600080fd5b505b5050565b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c35490565b3660008037600080366000845af43d6000803e808015610270573d6000f35b3d6000fd5b61027e816102dd565b6102b95760405162461bcd60e51b815260040180806020018281038252603b81526020018061033d603b913960400191505060405180910390fd5b7f7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c355565b6000813f7fc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a47081811480159061031157508115155b94935050505056fe6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e43616e6e6f742073657420612070726f787920696d706c656d656e746174696f6e20746f2061206e6f6e2d636f6e74726163742061646472657373a2646970667358221220f4af5f38b16e1ce890fd14497bea12d47bed23b9e542d8461f60b0d5a7952a1e64736f6c63430006060033",
   "sourceMap": "227:945:63:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;227:945:63;;;;;;;",
   "deployedSourceMap": "227:945:63:-:0;;;;;;;;;;;;;;;;;;;;;;;459:11:64;:9;:11::i;:::-;227:945:63;;596:11:64;:9;:11::i;822:348:63:-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;822:348:63;;-1:-1:-1;;;;;822:348:63;;;;;;;;;;;;;27:11:-1;11:28;;8:2;;;52:1;49;42:12;8:2;822:348:63;;41:9:-1;34:4;18:14;14:25;11:40;8:2;;;64:1;61;54:12;8:2;822:348:63;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;822:348:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;822:348:63;;-1:-1:-1;822:348:63;;-1:-1:-1;;;;;822:348:63:i;2133:90:64:-;2169:15;:13;:15::i;:::-;2190:28;2200:17;:15;:17::i;:::-;2190:9;:28::i;:::-;2133:90::o;822:348:63:-;936:1;907:17;:15;:17::i;:::-;-1:-1:-1;;;;;907:31:63;;899:40;;12:1:-1;9;2:12;899:40:63;975:48;;;;;;;;;;;;;;;;;790:66:62;952:71:63;;-1:-1:-1;945:79:63;;;;1030:26;1049:6;1030:18;:26::i;:::-;1065:12;;:16;1062:104;;1092:12;1109:6;-1:-1:-1;;;;;1109:19:63;1129:5;1109:26;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;36:153;;176:10;;164:23;;-1:-1;;139:12;;;;98:2;89:12;;;;114;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;1109:26:63;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;19;14:27;;;;67:4;61:11;56:16;;134:4;130:9;123:4;105:16;101:27;97:43;94:1;90:51;84:4;77:65;157:16;154:1;147:27;211:16;208:1;201:4;198:1;194:12;179:49;5:228;;14:27;32:4;27:9;;5:228;;1091:44:63;;;1151:7;1143:16;;12:1:-1;9;2:12;1143:16:63;1062:104;;822:348;;:::o;975:165:62:-;790:66;1119:11;;1103:33::o;1039:743:64:-;1341:14;1338:1;1335;1322:34;1537:1;1534;1518:14;1515:1;1499:14;1492:5;1479:60;1601:16;1598:1;1595;1580:38;1633:6;1688:38;;;;1753:16;1750:1;1743:27;1688:38;1707:16;1704:1;1697:27;1554:285:62;1632:37;1651:17;1632:18;:37::i;:::-;1624:109;;;;-1:-1:-1;;;1624:109:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;790:66;1798:31;1790:45::o;685:610:76:-;745:4;1206:20;;1051:66;1245:23;;;;;;:42;;-1:-1:-1;1272:15:76;;;1245:42;1237:51;685:610;-1:-1:-1;;;;685:610:76:o",
   "source": "pragma solidity ^0.6.0;\n\nimport './BaseUpgradeabilityProxy.sol';\n\n/**\n * @title InitializableUpgradeabilityProxy\n * @dev Extends BaseUpgradeabilityProxy with an initializer for initializing\n * implementation and init data.\n */\ncontract InitializableUpgradeabilityProxy is BaseUpgradeabilityProxy {\n  /**\n   * @dev Contract initializer.\n   * @param _logic Address of the initial implementation.\n   * @param _data Data to send as msg.data to the implementation to initialize the proxied contract.\n   * It should include the signature and the parameters of the function to be called, as described in\n   * https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.\n   * This parameter is optional, if no data is given the initialization call to proxied contract will be skipped.\n   */\n  function initialize(address _logic, bytes memory _data) public payable {\n    require(_implementation() == address(0));\n    assert(IMPLEMENTATION_SLOT == keccak256(\"org.zeppelinos.proxy.implementation\"));\n    _setImplementation(_logic);\n    if(_data.length > 0) {\n      (bool success,) = _logic.delegatecall(_data);\n      require(success);\n    }\n  }\n}\n",
@@ -52,14 +52,14 @@
     "absolutePath": "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol",
     "exportedSymbols": {
       "InitializableUpgradeabilityProxy": [
-        10688
+        10673
       ]
     },
-    "id": 10689,
+    "id": 10674,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10635,
+        "id": 10620,
         "literals": [
           "solidity",
           "^",
@@ -72,10 +72,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol",
         "file": "./BaseUpgradeabilityProxy.sol",
-        "id": 10636,
+        "id": 10621,
         "nodeType": "ImportDirective",
-        "scope": 10689,
-        "sourceUnit": 10634,
+        "scope": 10674,
+        "sourceUnit": 10619,
         "src": "25:39:63",
         "symbolAliases": [],
         "unitAlias": ""
@@ -87,45 +87,45 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10638,
+              "id": 10623,
               "name": "BaseUpgradeabilityProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10633,
+              "referencedDeclaration": 10618,
               "src": "272:23:63",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseUpgradeabilityProxy_$10633",
+                "typeIdentifier": "t_contract$_BaseUpgradeabilityProxy_$10618",
                 "typeString": "contract BaseUpgradeabilityProxy"
               }
             },
-            "id": 10639,
+            "id": 10624,
             "nodeType": "InheritanceSpecifier",
             "src": "272:23:63"
           }
         ],
         "contractDependencies": [
-          10633,
-          10740
+          10618,
+          10725
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10637,
+          "id": 10622,
           "nodeType": "StructuredDocumentation",
           "src": "66:160:63",
           "text": "@title InitializableUpgradeabilityProxy\n@dev Extends BaseUpgradeabilityProxy with an initializer for initializing\nimplementation and init data."
         },
         "fullyImplemented": true,
-        "id": 10688,
+        "id": 10673,
         "linearizedBaseContracts": [
-          10688,
-          10633,
-          10740
+          10673,
+          10618,
+          10725
         ],
         "name": "InitializableUpgradeabilityProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10686,
+              "id": 10671,
               "nodeType": "Block",
               "src": "893:277:63",
               "statements": [
@@ -139,7 +139,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 10654,
+                        "id": 10639,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -149,20 +149,20 @@
                           "arguments": [],
                           "expression": {
                             "argumentTypes": [],
-                            "id": 10648,
+                            "id": 10633,
                             "name": "_implementation",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [
-                              10597
+                              10582
                             ],
-                            "referencedDeclaration": 10597,
+                            "referencedDeclaration": 10582,
                             "src": "907:15:63",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
                               "typeString": "function () view returns (address)"
                             }
                           },
-                          "id": 10649,
+                          "id": 10634,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -185,7 +185,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 10652,
+                              "id": 10637,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -208,7 +208,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 10651,
+                            "id": 10636,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -220,7 +220,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 10650,
+                              "id": 10635,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "928:7:63",
@@ -230,7 +230,7 @@
                               }
                             }
                           },
-                          "id": 10653,
+                          "id": 10638,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -259,7 +259,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10647,
+                      "id": 10632,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -273,7 +273,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 10655,
+                    "id": 10640,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -288,7 +288,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10656,
+                  "id": 10641,
                   "nodeType": "ExpressionStatement",
                   "src": "899:40:63"
                 },
@@ -302,18 +302,18 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 10662,
+                        "id": 10647,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 10658,
+                          "id": 10643,
                           "name": "IMPLEMENTATION_SLOT",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10584,
+                          "referencedDeclaration": 10569,
                           "src": "952:19:63",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -328,7 +328,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e",
-                              "id": 10660,
+                              "id": 10645,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -351,7 +351,7 @@
                                 "typeString": "literal_string \"org.zeppelinos.proxy.implementation\""
                               }
                             ],
-                            "id": 10659,
+                            "id": 10644,
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -362,7 +362,7 @@
                               "typeString": "function (bytes memory) pure returns (bytes32)"
                             }
                           },
-                          "id": 10661,
+                          "id": 10646,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -391,7 +391,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10657,
+                      "id": 10642,
                       "name": "assert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -402,7 +402,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 10663,
+                    "id": 10648,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -417,7 +417,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10664,
+                  "id": 10649,
                   "nodeType": "ExpressionStatement",
                   "src": "945:79:63"
                 },
@@ -427,11 +427,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10666,
+                        "id": 10651,
                         "name": "_logic",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10642,
+                        "referencedDeclaration": 10627,
                         "src": "1049:6:63",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -446,18 +446,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10665,
+                      "id": 10650,
                       "name": "_setImplementation",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10632,
+                      "referencedDeclaration": 10617,
                       "src": "1030:18:63",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 10667,
+                    "id": 10652,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -472,7 +472,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10668,
+                  "id": 10653,
                   "nodeType": "ExpressionStatement",
                   "src": "1030:26:63"
                 },
@@ -483,7 +483,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 10672,
+                    "id": 10657,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -492,18 +492,18 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10669,
+                        "id": 10654,
                         "name": "_data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10644,
+                        "referencedDeclaration": 10629,
                         "src": "1065:5:63",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_memory_ptr",
                           "typeString": "bytes memory"
                         }
                       },
-                      "id": 10670,
+                      "id": 10655,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -522,7 +522,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 10671,
+                      "id": 10656,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -544,28 +544,28 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 10685,
+                  "id": 10670,
                   "nodeType": "IfStatement",
                   "src": "1062:104:63",
                   "trueBody": {
-                    "id": 10684,
+                    "id": 10669,
                     "nodeType": "Block",
                     "src": "1083:83:63",
                     "statements": [
                       {
                         "assignments": [
-                          10674,
+                          10659,
                           null
                         ],
                         "declarations": [
                           {
                             "constant": false,
-                            "id": 10674,
+                            "id": 10659,
                             "mutability": "mutable",
                             "name": "success",
                             "nodeType": "VariableDeclaration",
                             "overrides": null,
-                            "scope": 10684,
+                            "scope": 10669,
                             "src": "1092:12:63",
                             "stateVariable": false,
                             "storageLocation": "default",
@@ -574,7 +574,7 @@
                               "typeString": "bool"
                             },
                             "typeName": {
-                              "id": 10673,
+                              "id": 10658,
                               "name": "bool",
                               "nodeType": "ElementaryTypeName",
                               "src": "1092:4:63",
@@ -588,17 +588,17 @@
                           },
                           null
                         ],
-                        "id": 10679,
+                        "id": 10664,
                         "initialValue": {
                           "argumentTypes": null,
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10677,
+                              "id": 10662,
                               "name": "_data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10644,
+                              "referencedDeclaration": 10629,
                               "src": "1129:5:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes_memory_ptr",
@@ -615,18 +615,18 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 10675,
+                              "id": 10660,
                               "name": "_logic",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10642,
+                              "referencedDeclaration": 10627,
                               "src": "1109:6:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               }
                             },
-                            "id": 10676,
+                            "id": 10661,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -640,7 +640,7 @@
                               "typeString": "function (bytes memory) returns (bool,bytes memory)"
                             }
                           },
-                          "id": 10678,
+                          "id": 10663,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -664,11 +664,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10681,
+                              "id": 10666,
                               "name": "success",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10674,
+                              "referencedDeclaration": 10659,
                               "src": "1151:7:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bool",
@@ -683,7 +683,7 @@
                                 "typeString": "bool"
                               }
                             ],
-                            "id": 10680,
+                            "id": 10665,
                             "name": "require",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [
@@ -697,7 +697,7 @@
                               "typeString": "function (bool) pure"
                             }
                           },
-                          "id": 10682,
+                          "id": 10667,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -712,7 +712,7 @@
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10683,
+                        "id": 10668,
                         "nodeType": "ExpressionStatement",
                         "src": "1143:16:63"
                       }
@@ -722,13 +722,13 @@
               ]
             },
             "documentation": {
-              "id": 10640,
+              "id": 10625,
               "nodeType": "StructuredDocumentation",
               "src": "300:519:63",
               "text": "@dev Contract initializer.\n@param _logic Address of the initial implementation.\n@param _data Data to send as msg.data to the implementation to initialize the proxied contract.\nIt should include the signature and the parameters of the function to be called, as described in\nhttps://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.\nThis parameter is optional, if no data is given the initialization call to proxied contract will be skipped."
             },
             "functionSelector": "d1f57894",
-            "id": 10687,
+            "id": 10672,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -736,17 +736,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10645,
+              "id": 10630,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10642,
+                  "id": 10627,
                   "mutability": "mutable",
                   "name": "_logic",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10687,
+                  "scope": 10672,
                   "src": "842:14:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -755,7 +755,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10641,
+                    "id": 10626,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "842:7:63",
@@ -770,12 +770,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 10644,
+                  "id": 10629,
                   "mutability": "mutable",
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10687,
+                  "scope": 10672,
                   "src": "858:18:63",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -784,7 +784,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 10643,
+                    "id": 10628,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "858:5:63",
@@ -800,19 +800,19 @@
               "src": "841:36:63"
             },
             "returnParameters": {
-              "id": 10646,
+              "id": 10631,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "893:0:63"
             },
-            "scope": 10688,
+            "scope": 10673,
             "src": "822:348:63",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10689,
+        "scope": 10674,
         "src": "227:945:63"
       }
     ],
@@ -822,14 +822,14 @@
     "absolutePath": "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol",
     "exportedSymbols": {
       "InitializableUpgradeabilityProxy": [
-        10688
+        10673
       ]
     },
-    "id": 10689,
+    "id": 10674,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10635,
+        "id": 10620,
         "literals": [
           "solidity",
           "^",
@@ -842,10 +842,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol",
         "file": "./BaseUpgradeabilityProxy.sol",
-        "id": 10636,
+        "id": 10621,
         "nodeType": "ImportDirective",
-        "scope": 10689,
-        "sourceUnit": 10634,
+        "scope": 10674,
+        "sourceUnit": 10619,
         "src": "25:39:63",
         "symbolAliases": [],
         "unitAlias": ""
@@ -857,45 +857,45 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10638,
+              "id": 10623,
               "name": "BaseUpgradeabilityProxy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10633,
+              "referencedDeclaration": 10618,
               "src": "272:23:63",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseUpgradeabilityProxy_$10633",
+                "typeIdentifier": "t_contract$_BaseUpgradeabilityProxy_$10618",
                 "typeString": "contract BaseUpgradeabilityProxy"
               }
             },
-            "id": 10639,
+            "id": 10624,
             "nodeType": "InheritanceSpecifier",
             "src": "272:23:63"
           }
         ],
         "contractDependencies": [
-          10633,
-          10740
+          10618,
+          10725
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10637,
+          "id": 10622,
           "nodeType": "StructuredDocumentation",
           "src": "66:160:63",
           "text": "@title InitializableUpgradeabilityProxy\n@dev Extends BaseUpgradeabilityProxy with an initializer for initializing\nimplementation and init data."
         },
         "fullyImplemented": true,
-        "id": 10688,
+        "id": 10673,
         "linearizedBaseContracts": [
-          10688,
-          10633,
-          10740
+          10673,
+          10618,
+          10725
         ],
         "name": "InitializableUpgradeabilityProxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10686,
+              "id": 10671,
               "nodeType": "Block",
               "src": "893:277:63",
               "statements": [
@@ -909,7 +909,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 10654,
+                        "id": 10639,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -919,20 +919,20 @@
                           "arguments": [],
                           "expression": {
                             "argumentTypes": [],
-                            "id": 10648,
+                            "id": 10633,
                             "name": "_implementation",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [
-                              10597
+                              10582
                             ],
-                            "referencedDeclaration": 10597,
+                            "referencedDeclaration": 10582,
                             "src": "907:15:63",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
                               "typeString": "function () view returns (address)"
                             }
                           },
-                          "id": 10649,
+                          "id": 10634,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -955,7 +955,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 10652,
+                              "id": 10637,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -978,7 +978,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 10651,
+                            "id": 10636,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -990,7 +990,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 10650,
+                              "id": 10635,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "928:7:63",
@@ -1000,7 +1000,7 @@
                               }
                             }
                           },
-                          "id": 10653,
+                          "id": 10638,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1029,7 +1029,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10647,
+                      "id": 10632,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1043,7 +1043,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 10655,
+                    "id": 10640,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1058,7 +1058,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10656,
+                  "id": 10641,
                   "nodeType": "ExpressionStatement",
                   "src": "899:40:63"
                 },
@@ -1072,18 +1072,18 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 10662,
+                        "id": 10647,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 10658,
+                          "id": 10643,
                           "name": "IMPLEMENTATION_SLOT",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10584,
+                          "referencedDeclaration": 10569,
                           "src": "952:19:63",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -1098,7 +1098,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "6f72672e7a657070656c696e6f732e70726f78792e696d706c656d656e746174696f6e",
-                              "id": 10660,
+                              "id": 10645,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1121,7 +1121,7 @@
                                 "typeString": "literal_string \"org.zeppelinos.proxy.implementation\""
                               }
                             ],
-                            "id": 10659,
+                            "id": 10644,
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1132,7 +1132,7 @@
                               "typeString": "function (bytes memory) pure returns (bytes32)"
                             }
                           },
-                          "id": 10661,
+                          "id": 10646,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1161,7 +1161,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10657,
+                      "id": 10642,
                       "name": "assert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1172,7 +1172,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 10663,
+                    "id": 10648,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1187,7 +1187,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10664,
+                  "id": 10649,
                   "nodeType": "ExpressionStatement",
                   "src": "945:79:63"
                 },
@@ -1197,11 +1197,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10666,
+                        "id": 10651,
                         "name": "_logic",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10642,
+                        "referencedDeclaration": 10627,
                         "src": "1049:6:63",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1216,18 +1216,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10665,
+                      "id": 10650,
                       "name": "_setImplementation",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10632,
+                      "referencedDeclaration": 10617,
                       "src": "1030:18:63",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 10667,
+                    "id": 10652,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1242,7 +1242,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10668,
+                  "id": 10653,
                   "nodeType": "ExpressionStatement",
                   "src": "1030:26:63"
                 },
@@ -1253,7 +1253,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 10672,
+                    "id": 10657,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1262,18 +1262,18 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10669,
+                        "id": 10654,
                         "name": "_data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10644,
+                        "referencedDeclaration": 10629,
                         "src": "1065:5:63",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_memory_ptr",
                           "typeString": "bytes memory"
                         }
                       },
-                      "id": 10670,
+                      "id": 10655,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1292,7 +1292,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 10671,
+                      "id": 10656,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1314,28 +1314,28 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 10685,
+                  "id": 10670,
                   "nodeType": "IfStatement",
                   "src": "1062:104:63",
                   "trueBody": {
-                    "id": 10684,
+                    "id": 10669,
                     "nodeType": "Block",
                     "src": "1083:83:63",
                     "statements": [
                       {
                         "assignments": [
-                          10674,
+                          10659,
                           null
                         ],
                         "declarations": [
                           {
                             "constant": false,
-                            "id": 10674,
+                            "id": 10659,
                             "mutability": "mutable",
                             "name": "success",
                             "nodeType": "VariableDeclaration",
                             "overrides": null,
-                            "scope": 10684,
+                            "scope": 10669,
                             "src": "1092:12:63",
                             "stateVariable": false,
                             "storageLocation": "default",
@@ -1344,7 +1344,7 @@
                               "typeString": "bool"
                             },
                             "typeName": {
-                              "id": 10673,
+                              "id": 10658,
                               "name": "bool",
                               "nodeType": "ElementaryTypeName",
                               "src": "1092:4:63",
@@ -1358,17 +1358,17 @@
                           },
                           null
                         ],
-                        "id": 10679,
+                        "id": 10664,
                         "initialValue": {
                           "argumentTypes": null,
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10677,
+                              "id": 10662,
                               "name": "_data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10644,
+                              "referencedDeclaration": 10629,
                               "src": "1129:5:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes_memory_ptr",
@@ -1385,18 +1385,18 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 10675,
+                              "id": 10660,
                               "name": "_logic",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10642,
+                              "referencedDeclaration": 10627,
                               "src": "1109:6:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
                                 "typeString": "address"
                               }
                             },
-                            "id": 10676,
+                            "id": 10661,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1410,7 +1410,7 @@
                               "typeString": "function (bytes memory) returns (bool,bytes memory)"
                             }
                           },
-                          "id": 10678,
+                          "id": 10663,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1434,11 +1434,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10681,
+                              "id": 10666,
                               "name": "success",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10674,
+                              "referencedDeclaration": 10659,
                               "src": "1151:7:63",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bool",
@@ -1453,7 +1453,7 @@
                                 "typeString": "bool"
                               }
                             ],
-                            "id": 10680,
+                            "id": 10665,
                             "name": "require",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [
@@ -1467,7 +1467,7 @@
                               "typeString": "function (bool) pure"
                             }
                           },
-                          "id": 10682,
+                          "id": 10667,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1482,7 +1482,7 @@
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10683,
+                        "id": 10668,
                         "nodeType": "ExpressionStatement",
                         "src": "1143:16:63"
                       }
@@ -1492,13 +1492,13 @@
               ]
             },
             "documentation": {
-              "id": 10640,
+              "id": 10625,
               "nodeType": "StructuredDocumentation",
               "src": "300:519:63",
               "text": "@dev Contract initializer.\n@param _logic Address of the initial implementation.\n@param _data Data to send as msg.data to the implementation to initialize the proxied contract.\nIt should include the signature and the parameters of the function to be called, as described in\nhttps://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.\nThis parameter is optional, if no data is given the initialization call to proxied contract will be skipped."
             },
             "functionSelector": "d1f57894",
-            "id": 10687,
+            "id": 10672,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1506,17 +1506,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10645,
+              "id": 10630,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10642,
+                  "id": 10627,
                   "mutability": "mutable",
                   "name": "_logic",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10687,
+                  "scope": 10672,
                   "src": "842:14:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1525,7 +1525,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10641,
+                    "id": 10626,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "842:7:63",
@@ -1540,12 +1540,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 10644,
+                  "id": 10629,
                   "mutability": "mutable",
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10687,
+                  "scope": 10672,
                   "src": "858:18:63",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1554,7 +1554,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 10643,
+                    "id": 10628,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "858:5:63",
@@ -1570,19 +1570,19 @@
               "src": "841:36:63"
             },
             "returnParameters": {
-              "id": 10646,
+              "id": 10631,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "893:0:63"
             },
-            "scope": 10688,
+            "scope": 10673,
             "src": "822:348:63",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10689,
+        "scope": 10674,
         "src": "227:945:63"
       }
     ],
@@ -1594,7 +1594,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-20T12:11:00.638Z",
+  "updatedAt": "2020-04-21T07:39:58.962Z",
   "devdoc": {
     "details": "Extends BaseUpgradeabilityProxy with an initializer for initializing implementation and init data.",
     "methods": {
