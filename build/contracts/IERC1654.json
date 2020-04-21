@@ -29,6 +29,7 @@
   "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"isValidSignature\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"magicValue\",\"type\":\"bytes4\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/ERC1654/IERC1654.sol\":\"IERC1654\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/ERC1654/IERC1654.sol\":{\"keccak256\":\"0x7898850b7046bdfa2abccfe5c1dfc431cbb95c2814e5074cabeb462a32486fa6\",\"urls\":[\"bzz-raw://24fd636386fcd52ce7d0037806c56dd1227dffb8cb28fd29cd7eb39153176dd4\",\"dweb:/ipfs/QmNvwBKUJa8AaMKYmxrny2wRSENgiztbvRHPrbYR5yjKZK\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\n\ninterface IERC1654\n{\n\tfunction isValidSignature(bytes32 hash, bytes calldata signature) external view returns (bytes4 magicValue);\n}\n",
@@ -352,8 +353,8 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-21T07:39:58.958Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-04-21T18:10:34.959Z",
   "devdoc": {
     "methods": {}
   },

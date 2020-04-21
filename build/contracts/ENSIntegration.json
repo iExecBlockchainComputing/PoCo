@@ -23,6 +23,7 @@
   "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"ens\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":\"ENSIntegration\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":{\"keccak256\":\"0x4d3842f83e941c6077de8874963a9625dd51b4cac9c3260f527dad7ff1b24fa3\",\"urls\":[\"bzz-raw://997afda63d45675604f06b171964a28de8d4697b888968a9d8a352f261d8b453\",\"dweb:/ipfs/QmVYiZHDXc4T7Nc1XrfzMXL6N5m6tUken1c7xXSVqyHGmu\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\ninterface ENSIntegration\n{\n\tfunction setName(address ens, string calldata name) external;\n}\n",
@@ -308,8 +309,8 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-21T07:39:58.894Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-04-21T18:10:34.930Z",
   "devdoc": {
     "methods": {}
   },

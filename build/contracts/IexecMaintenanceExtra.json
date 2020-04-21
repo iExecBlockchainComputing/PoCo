@@ -28,6 +28,7 @@
   "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"changeRegistries\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":\"IexecMaintenanceExtra\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":{\"keccak256\":\"0xb0904f5a3faba779c8d7849270c7df306ab82af7ecbeab83c2c842926a8b20f2\",\"urls\":[\"bzz-raw://4e035856f9a48b97f4a215d8b3aa4dd025157763ed246c8e6c807d567291dce3\",\"dweb:/ipfs/QmeAabUZYi9KqBZHMrhdbGrZdkVFqN7AYYc5M1fxYusSTV\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\ninterface IexecMaintenanceExtra\n{\n\tfunction changeRegistries(address,address,address) external;\n}\n",
@@ -373,8 +374,8 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-21T07:39:58.900Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-04-21T18:10:34.934Z",
   "devdoc": {
     "methods": {}
   },

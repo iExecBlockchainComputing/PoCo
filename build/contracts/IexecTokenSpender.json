@@ -39,6 +39,7 @@
   "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"receiveApproval\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol\":\"IexecTokenSpender\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol\":{\"keccak256\":\"0x6161676b6468833be22f161bf2d2cc2dac98031cb64e32d871460f1a9e6c857a\",\"urls\":[\"bzz-raw://e03f4fef57f8540a6ede21ebdb3877bd87afe6a08344903852c5fbbfa4939453\",\"dweb:/ipfs/QmTmonyzpeaQNAyLW9cGti9MrHoJtXTRoM25rgbtnVFtep\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\ninterface IexecTokenSpender\n{\n\tfunction receiveApproval(address,uint256,address,bytes calldata) external returns (bool);\n}\n",
@@ -496,8 +497,8 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.23",
-  "updatedAt": "2020-04-21T07:39:58.906Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-04-21T18:10:34.937Z",
   "devdoc": {
     "methods": {}
   },
