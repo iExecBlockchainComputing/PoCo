@@ -108,6 +108,7 @@ module.exports = async function(deployer, network, accounts)
 	const chaintype = await web3.eth.net.getNetworkType();
 	console.log('Chainid is:', chainid);
 	console.log('Chaintype is:', chaintype);
+	console.log('Deployer is:', accounts[0]);
 
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
