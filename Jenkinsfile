@@ -71,7 +71,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage1sec = docker.build registry + "/poco-chain:${TAG_NAME}"
+					dockerImage1sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f docker/Dockerfile_1sec .")
 				}
 			}
 		}
@@ -91,7 +91,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f Dockerfile_20sec .")
+					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f docker/Dockerfile_20sec .")
 				}
 			}
 		}

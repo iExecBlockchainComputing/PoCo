@@ -3,7 +3,7 @@ nohup /bin/parity --chain /iexec-poco/parity/spec.json --config /iexec-poco/pari
 sleep 4
 cd /iexec-poco && \
   sed -i '/ethereumjs-util/d' package.json && \
-  bash -i -c "npm i" && \
+  bash -i -c "npm i --no-progress" && \
   bash -i -c "./node_modules/.bin/truffle migrate" && \
   rm -R contracts && \
   rm -R build
