@@ -5,7 +5,6 @@ import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProx
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 import "./IRegistry.sol";
 
 
@@ -43,8 +42,6 @@ abstract contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 		InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
 		// Mint corresponding token
 		_mint(_owner, uint256(entry));
-		// register uri
-		_setTokenURI(uint256(entry), Strings.fromUint256(uint256(entry)));
 		return uint256(entry);
 	}
 
