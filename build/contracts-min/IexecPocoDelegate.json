@@ -1007,6 +1007,402 @@
     }
   ],
   "networks": {
+    "1": {
+      "events": {
+        "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "AccurateContribution",
+          "type": "event"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        "0xf868788948d55240774fdbad06555105ef20bbc70d1b7eccda982b65e11e79bb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "FaultyContribution",
+          "type": "event"
+        },
+        "0x625fed9875dada8643f2418b838ae0bc78d9a148a18eee4ee1979ff0f3f5d427": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Lock",
+          "type": "event"
+        },
+        "0xd811b592ed0899225773e8933d8df64bd0b62761a9d7aad4ed5b22735f4610a4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "dealid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "appHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "datasetHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "workerpoolHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "requestHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "name": "OrdersMatched",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0xc2aca55aa696938c7e95842e8939ca0fbb2120a3eeb8948cdcee2b70da566672": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "ref",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Reward",
+          "type": "event"
+        },
+        "0x692ad61076dceddd0f1a861f737553dd61fc8501cf4190d29c4e90af6607f765": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "dealid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "SchedulerNotice",
+          "type": "event"
+        },
+        "0x1bccc549c38561cd5b57f0db11ceb8dde1b0b6ee05ab5e155b51c7c5ba64becb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "ref",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Seize",
+          "type": "event"
+        },
+        "0xcbc308b5f91040d2659a5201858344b0b583cd2f9e18e8470c2fa052c5b21ff8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskClaimed",
+          "type": "event"
+        },
+        "0xf6d49bf3e05d33a4bc497d3c793fb5756388bb96b947cf51bb60aaecb0e022e3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "consensus",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskConsensus",
+          "type": "event"
+        },
+        "0x3fdb8d7797562d49a81078dbf7fa1771958ea452f8b13d1148383bd9506aecfb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "hash",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskContribute",
+          "type": "event"
+        },
+        "0x78ce8a8bc0fcb704e8ba3b3dbb36aa88002df8038128b4af2f27ef65db665044": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes",
+              "name": "results",
+              "type": "bytes"
+            }
+          ],
+          "name": "TaskFinalize",
+          "type": "event"
+        },
+        "0x252992fb0468d68d6a5784ec03214f0d0a362083f2d7ebd157af43b017a22e06": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            }
+          ],
+          "name": "TaskInitialize",
+          "type": "event"
+        },
+        "0x3afe0f24796ce653c6ab1f3e7aba5ce564eece5e82aee724aff28253e829f07b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReopen",
+          "type": "event"
+        },
+        "0x4b1763d473ac8fa80b4432ba90047e1b92444d8fabc55e6a002d9b1a316d7959": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "taskid",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "worker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "digest",
+              "type": "bytes32"
+            }
+          ],
+          "name": "TaskReveal",
+          "type": "event"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        },
+        "0x6381d9813cabeb57471b5a7e05078e64845ccdb563146a6911d536f24ce960f1": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Unlock",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x4237d65B3Db031bC2E605fB45A3b4A83a378a378"
+    },
     "3": {
       "events": {
         "0x9703f4589802246c80b822e63697180da799e363cd1b6fd9465a5e5574d53492": {
