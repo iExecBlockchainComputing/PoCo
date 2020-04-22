@@ -3,7 +3,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: Dockerfile
+    dockerfile: docker/Dockerfile_token_parity_1sec
     build_args:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
@@ -16,7 +16,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: Dockerfile_native
+    dockerfile: docker/Dockerfile_native_parity_1sec
     build_args:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
@@ -29,7 +29,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: Dockerfile_token_ganache
+    dockerfile: docker/Dockerfile_token_ganache
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     tags:
@@ -41,7 +41,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: Dockerfile_native_ganache
+    dockerfile: docker/Dockerfile_native_ganache
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     tags:
@@ -53,7 +53,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: Dockerfile_token_1s_ganache
+    dockerfile: docker/Dockerfile_token_ganache_1s
     tags:
       - v5-token-1s
     when:

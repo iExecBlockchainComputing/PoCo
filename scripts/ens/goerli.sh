@@ -71,10 +71,10 @@ $CMD lookup workerpools.v5.iexec.eth
 # setup workerpools.v3.iexec.eth 0xdAD30AAb14F569830bFd26EdF72df876dc30D20c
 #
 # setup v5.iexec.eth # subnode only
-# setup core.v5.iexec.eth        0x639bb3229618FE7C110541e558AaB9DE5cc71A81
-# setup apps.v5.iexec.eth        0x52684B017A48DED2d7c68b55FB1c321C894d3154
-# setup datasets.v5.iexec.eth    0x33229bd4dbF5406b90e5F6A368D04eA1fEaDD498
-# setup workerpools.v5.iexec.eth 0x9711B2E71882e3a4879DB34cd6964f3Fb839e3A7
+# setup core.v5.iexec.eth        0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f
+# setup apps.v5.iexec.eth        0xB1C52075b276f87b1834919167312221d50c9D16
+# setup datasets.v5.iexec.eth    0x799DAa22654128d0C64d5b79eac9283008158730
+# setup workerpools.v5.iexec.eth 0xC76A18c78B7e530A165c5683CB1aB134E21938B4
 
 # Reset old subdomains
 # reset hub.iexec.eth
