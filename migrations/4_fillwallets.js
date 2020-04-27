@@ -3,11 +3,12 @@ const assert   = require('assert')
 const CONFIG   = require('../config/config.json')
 const ACCOUNTS = require('../config/accounts.json')
 // Token
-var RLC                 = artifacts.require('rlc-faucet-contract/RLC')
+var RLC                  = artifacts.require('rlc-faucet-contract/RLC')
 // ERC1538 core & delegates
-var ERC1538Proxy        = artifacts.require('@iexec/solidity/ERC1538Proxy')
+var ERC1538Proxy         = artifacts.require('@iexec/solidity/ERC1538Proxy')
 // Interface
-var IexecInterfaceToken = artifacts.require('IexecInterfaceToken')
+var IexecInterfaceNative = artifacts.require('IexecInterfaceNative')
+var IexecInterfaceToken  = artifacts.require('IexecInterfaceToken')
 
 /*****************************************************************************
  *                                   Main                                    *
