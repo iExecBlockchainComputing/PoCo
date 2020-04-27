@@ -42,7 +42,7 @@ module.exports = async function(deployer, network, accounts)
 				break;
 
 			case 'Native':
-				await IexecInterfaceInstance.deposit({ value: totalAmount })
+				await IexecInterfaceInstance.deposit({ value: totalAmount * 10**9 }) // wei → nrlc
 				break;
 		}
 
