@@ -32,13 +32,12 @@ module.exports = async function(deployer, network, accounts)
 
 	if (chainid > 64) // skip for mainnet and testnet
 	{
-		const totalAmount = 1000000000; // 1RLC
+		const totalAmount = ACCOUNTS.reduce((acc, {amount})=> acc + amount, 0); // 1RLC
 
 		switch (deploymentOptions.asset)
 		{
 			case 'Token':
-				RLCInstance = await RLC.deployed();
-				await RLCInstance.approveAndCall(IexecInterfaceInstance.address, totalAmount, "0x");
+				await (await RLC.deployed()).approveAndCall(IexecInterfaceInstance.address, totalAmount, "0x");
 				break;
 
 			case 'Native':
@@ -47,6 +46,9 @@ module.exports = async function(deployer, network, accounts)
 		}
 
 		// all transfers
-		await Promise.all(ACCOUNTS.map(({address, amount}) => IexecInterfaceInstance.transfer(address, amount)))
+		await Promise.all(ACCOUNTS.map( async ({address, amount}) => {
+			await IexecInterfaceInstance.transfer(address, amount);
+			console.log(`${address} received ${amount}`);
+		}))
 	}
 };

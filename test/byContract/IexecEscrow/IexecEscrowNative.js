@@ -73,11 +73,6 @@ contract('EscrowNative', async (accounts) => {
 		user            = new odbtools.iExecAgent(IexecInstance, accounts[9]);
 		await broker.initialize();
 
-		// Cleanup form migration
-		for (account of accounts)
-		{
-			await IexecInstance.withdraw(await IexecInstance.balanceOf(account), { from: account });
-		}
 		migrationBalance = Number(await web3.eth.getBalance(IexecInstance.address));
 	});
 
