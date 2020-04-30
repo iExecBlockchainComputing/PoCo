@@ -3,7 +3,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_token_parity_1sec
+    dockerfile: testchains/Dockerfile_token_parity_no_seal
     build_args:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
@@ -16,7 +16,7 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_native_parity_1sec
+    dockerfile: testchains/Dockerfile_native_parity_no_seal
     build_args:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
