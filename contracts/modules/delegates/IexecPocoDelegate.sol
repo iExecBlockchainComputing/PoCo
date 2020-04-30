@@ -770,19 +770,27 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		address target = m_deals[m_tasks[_taskid].dealid].callback;
 		if (target != address(0))
 		{
-			/**
-			 * Call does not revert if the target smart contract is incompatible or reverts
-			 * Solidity 0.6.0 update. Check hit history for 0.5.0 implementation.
-			 */
-			try IOracleConsumer(target).receiveResult{gas: m_callbackgas}(_taskid, _results)
-			{
-				// Callback success, do nothing
-			}
-			catch (bytes memory /*lowLevelData*/)
-			{
-				// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
-				assert(gasleft() > m_callbackgas / 63); // no need for safemath here
-			}
+			// Solidity 0.6.0 reverts if target is not a smartcontracts
+			// /**
+			//  * Call does not revert if the target smart contract is incompatible or reverts
+			//  * Solidity 0.6.0 update. Check hit history for 0.5.0 implementation.
+			//  */
+			// try IOracleConsumer(target).receiveResult{gas: m_callbackgas}(_taskid, _results)
+			// {
+			// 	// Callback success, do nothing
+			// }
+			// catch (bytes memory /*lowLevelData*/)
+			// {
+			// 	// Check gas: https://ronan.eth.link/blog/ethereum-gas-dangers/
+			// 	assert(gasleft() > m_callbackgas / 63); // no need for safemath here
+			// }
+
+			// Pre solidity 0.6.0 version
+			(bool success, bytes memory returndata) = target.call{gas: m_callbackgas}(abi.encodeWithSignature("receiveResult(bytes32,bytes)", _taskid, _results));
+			assert(gasleft() > m_callbackgas / 63);
+			// silent unused variable warning
+			success;
+			returndata;
 		}
 	}
 
