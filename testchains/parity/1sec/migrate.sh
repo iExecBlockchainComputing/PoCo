@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-nohup /bin/parity --chain /iexec-poco/sidechains/parity/20sec/spec.json --config /iexec-poco/sidechains/parity/20sec/authority.toml --force-sealing -d /iexec-poco/sidechains/parity/20sec/data --geth > deployed.txt 2>&1 &
+nohup /bin/parity --chain /iexec-poco/testchains/parity/1sec/spec.json --config /iexec-poco/testchains/parity/1sec/authority.toml -d /iexec-poco/testchains/parity/1sec/data --geth > deployed.txt 2>&1 &
 sleep 4
 cd /iexec-poco && \
   sed -i '/ethereumjs-util/d' package.json && \

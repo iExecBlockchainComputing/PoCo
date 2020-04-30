@@ -10,7 +10,7 @@ RUN mv /iexec-poco/config/config_native.json /iexec-poco/config/config.json
 ARG MNEMONIC
 
 RUN mkdir /ganachedb
-RUN bash /iexec-poco/sidechains/ganache/migrate.sh
+RUN bash /iexec-poco/testchains/ganache/migrate.sh
 
 FROM trufflesuite/ganache-cli:latest as runtime
 
