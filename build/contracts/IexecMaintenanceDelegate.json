@@ -31,8 +31,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -135,8 +134,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -185,16 +183,16 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_symbol\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"_decimal\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"_appregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_datasetregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_workerpoolregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_v3_iexecHubAddress\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"domain\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"chainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"verifyingContract\",\"type\":\"address\"}],\"internalType\":\"struct IexecLibOrders_v5.EIP712Domain\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"importScore\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_callbackgas\",\"type\":\"uint256\"}],\"name\":\"setCallbackGas\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_teebroker\",\"type\":\"address\"}],\"name\":\"setTeeBroker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateDomainSeparator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/IexecMaintenanceDelegate.sol\":\"IexecMaintenanceDelegate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0x9e49d21b9e009a5b6e7a800ba71973a7e4ff96d5e806d67abaf9c2e8b6652532\",\"urls\":[\"bzz-raw://680a708e1a537b0ca413ac8342ea5e55c2c02ff5dd6d752d085739122955f1c6\",\"dweb:/ipfs/QmUcYhmJSrsNRsvo3W4ZB6DH6YFJHLvg6uLmropgGLTRhh\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0x465d3c959887af4a95487e7b0d8e7e579561ee1c5706957836e0b44698bad697\",\"urls\":[\"bzz-raw://61bc27189149a15383a3e4ff3ff4e10f395065949087eb77834e5f5effaea1d8\",\"dweb:/ipfs/QmesUKUoQ5dSRPKjnb2PYNgYPvBHoKvDvhehr9PPa3uawT\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/IexecMaintenanceDelegate.sol\":{\"keccak256\":\"0x72f22470654c93edbd35733dc51bf5e8feb6be77e83cc1730890fbe8a2614c05\",\"urls\":[\"bzz-raw://04e23178400d83b1e8c69e0fda7e22973d528bec8a5edd68c7319b3306a8e625\",\"dweb:/ipfs/Qmcm8UBAhxeKAemgPh6RkmwrBj1urbtUtPrqT8ci13ynaT\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol\":{\"keccak256\":\"0x219583e5a9316693fa4a2f6dc4c113de25745e259c3d8c61fb4fe8dba2dafd11\",\"urls\":[\"bzz-raw://00836ee789959c575edc2a0bdaf740d00d8de9baa3b554395135b8322620d7da\",\"dweb:/ipfs/QmV5NtqTdtMUxhcymtc99VsHDS3Thtu8P4fEFR9QbKK6dK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0xdf594884fc674966628ebbb2b88bc470c89881fdad988812c815bf371ce8b387\",\"urls\":[\"bzz-raw://2386446324af596f08c0a09a2a9047a1d24187ae19c6d07ad727dfa72ff597c9\",\"dweb:/ipfs/QmYmN8jTjiLmcEKXxFPCouubca8AU92agFt4zMeNpkiLey\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0x98aa1380fd49a255d6cbea58558ea76bff35c59b218671fde8842907b44e7390\",\"urls\":[\"bzz-raw://613eaff66d4c270ddd87448c06267b6e043ef8c8223cb39d8767bc9daa9cb1ec\",\"dweb:/ipfs/Qmcg56orudv25ghmnZCxN37HwNKCXmTTDxj5cyoYYnvHTg\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x67a43d3926e72576c96ebf0e6360c979a8cc04f25e4b0ca40c221547d8903ba4\",\"urls\":[\"bzz-raw://77c6f48115c491411f0e27f6b70e2e524b1b57c66e74bd7f1974a31a448e2540\",\"dweb:/ipfs/QmPZCizouS9PVJ1dVf8zqTjHyEo5cSa1ZmPCQpk52TgrmV\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x734b5bedb78074a59bca6aff9e5a1801c9c7e9c5314daf32e14857161fb36932\",\"urls\":[\"bzz-raw://4574e71185f6693eb5cdf7a5126fba97caf0ec0366b08290dd361af44b3414d3\",\"dweb:/ipfs/QmTPBh1R3EU973H7h6D1kQ1XBA1oX2QdSHZACyytWUYKsn\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x66d1ed2a353be8d2492833a185c53a8f1de8d8fa575a201e9825cf334d79659a\",\"urls\":[\"bzz-raw://a2e9b79e9cf5b398cd29b30df860a6521eefadd9882a346c423afbee5aee606e\",\"dweb:/ipfs/QmUq7gfqR5x1DaMpRKkWwmLMGLPzqUQhqhFEJ2vcgvFraH\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0xfd5cf8319cb84ca04ea407d6fba686d53ad7f5d2bf476f41678f5a751d12a7ea\",\"urls\":[\"bzz-raw://45b75b553c4a9053429609b1c3db481f1728ca00448f01acc4065249bbf87adc\",\"dweb:/ipfs/QmRZH6QM32mJn1GZCAPXUQtBz65H4kk6DsGQbGNo4ZNPy9\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0x7f6401708b61f575b497aa7c8118ca9d70348643c83c26e70d9b643edf1a95c1\",\"urls\":[\"bzz-raw://b020d65f592c1715bc3d5799ad835cd975ef7d314f340f27603fb99ad86a0427\",\"dweb:/ipfs/QmQoGZmzE5aDTMGJM4BW77eraerfTSV9Rs8wykpQ42i1in\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xd1d78b1c8534fbcf8fdc8fbfec9133df142ef8cae9ae820929dfe6d80d2c790a\",\"urls\":[\"bzz-raw://193a827fbe83fa83c4cabb172dc438dd45c50253858a1f2bf56e8f9a2d548386\",\"dweb:/ipfs/QmbWBHwHv7CyHSZY6jxnaDiHWGEEyVb8LeGdRpWXUjaiBr\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b038316908117825560405192935091600080516020610c91833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b0390911690600080516020610c91833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b610b658061012c6000396000f3fe608060405234801561001057600080fd5b50600436106100935760003560e01c8063a9b20cee11610066578063a9b20cee146100db578063aefb52b4146100ee578063b552181714610101578063c2fb26a614610114578063f2fde38b1461012957610093565b806301d09a3c14610098578063715018a6146100ad57806389ccfe89146100b55780638da5cb5b146100bd575b600080fd5b6100ab6100a6366004610940565b61013c565b005b6100ab61017f565b6100ab6101fe565b6100c56102b0565b6040516100d291906109a3565b60405180910390f35b6100ab6100e936600461082f565b6102c0565b6100ab6100fc36600461082f565b6103d2565b6100ab61010f36600461084a565b610429565b61011c6105b3565b6040516100d29190610ab6565b6100ab61013736600461082f565b6105c8565b61014461067e565b6000546001600160a01b0390811691161461017a5760405162461bcd60e51b815260040161017190610a29565b60405180910390fd5b601955565b61018761067e565b6000546001600160a01b039081169116146101b45760405162461bcd60e51b815260040161017190610a29565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60105461021d5760405162461bcd60e51b815260040161017190610a8e565b610225610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d9161025b9190600401610ab6565b60206040518083038186803b15801561027357600080fd5b505af4158015610287573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102ab9190610928565b601055565b6000546001600160a01b03165b90565b6001600160a01b0381166000908152601c602052604090205460ff16156102f95760405162461bcd60e51b815260040161017190610a5e565b601b54604051636d9185a960e11b81526103a0916001600160a01b03169063db230b529061032b9085906004016109a3565b60206040518083038186803b15801561034357600080fd5b505afa158015610357573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061037b9190610928565b6001600160a01b0383166000908152601760205260409020549063ffffffff6106e916565b6001600160a01b03909116600090815260176020908152604080832093909355601c905220805460ff19166001179055565b6103da61067e565b6000546001600160a01b039081169116146104075760405162461bcd60e51b815260040161017190610a29565b601880546001600160a01b0319166001600160a01b0392909216919091179055565b61043161067e565b6000546001600160a01b0390811691161461045e5760405162461bcd60e51b815260040161017190610a29565b6010541561047e5760405162461bcd60e51b8152600401610171906109fd565b610486610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d916104bc9190600401610ab6565b60206040518083038186803b1580156104d457600080fd5b505af41580156104e8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061050c9190610928565b601055600880546001600160a01b0319166001600160a01b038c1617905561053660098a8a610708565b50610543600a8888610708565b50600b805460ff191660ff9690961695909517909455600580546001600160a01b03199081166001600160a01b039586161790915560068054821693851693909317909255600780548316918416919091179055601b8054909116919092161790555050620186a0601955505050565b6105bb610786565b6105c3610682565b905090565b6105d061067e565b6000546001600160a01b039081169116146105fd5760405162461bcd60e51b815260040161017190610a29565b6001600160a01b0381166106235760405162461bcd60e51b8152600401610171906109b7565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b61068a610786565b6040805160c0810182526008608082019081526734a2bc32b1a7a22160c11b60a083015281528151808301835260058152640352e302e360dc1b6020828101919091528201529081016106db610704565b815230602090910152905090565b6000818310156106f957816106fb565b825b90505b92915050565b4690565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107495782800160ff19823516178555610776565b82800160010185558215610776579182015b8281111561077657823582559160200191906001019061075b565b506107829291506107b7565b5090565b604051806080016040528060608152602001606081526020016000815260200160006001600160a01b031681525090565b6102bd91905b8082111561078257600081556001016107bd565b80356001600160a01b03811681146106fe57600080fd5b60008083601f8401126107f9578182fd5b50813567ffffffffffffffff811115610810578182fd5b60208301915083602082850101111561082857600080fd5b9250929050565b600060208284031215610840578081fd5b6106fb83836107d1565b6000806000806000806000806000806101008b8d031215610869578586fd5b8a3561087481610b17565b995060208b013567ffffffffffffffff80821115610890578788fd5b61089c8e838f016107e8565b909b50995060408d01359150808211156108b4578788fd5b506108c18d828e016107e8565b90985096505060608b013560ff811681146108da578586fd5b945060808b01356108ea81610b17565b93506108f98c60a08d016107d1565b92506109088c60c08d016107d1565b91506109178c60e08d016107d1565b90509295989b9194979a5092959850565b600060208284031215610939578081fd5b5051919050565b600060208284031215610951578081fd5b5035919050565b60008151808452815b8181101561097d57602081850181015186830182015201610961565b8181111561098e5782602083870101525b50601f01601f19169290920160200192915050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b602080825260129082015271185b1c9958591e4b58dbdb999a59dd5c995960721b604082015260600190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6020808252601690820152751cd8dbdc994b585b1c9958591e4b5a5b5c1bdc9d195960521b604082015260600190565b6020808252600e908201526d1b9bdd0b58dbdb999a59dd5c995960921b604082015260600190565b600060208252825160806020840152610ad260a0840182610958565b6020850151848203601f190160408601529150610aef8183610958565b6040860151606086015260018060a01b03606087015116608086015280935050505092915050565b6001600160a01b0381168114610b2c57600080fd5b5056fea2646970667358221220f8192a2370c0438a757067d26a4e7d6fab67f93fead5c7fca6b85e800aa2584464736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100935760003560e01c8063a9b20cee11610066578063a9b20cee146100db578063aefb52b4146100ee578063b552181714610101578063c2fb26a614610114578063f2fde38b1461012957610093565b806301d09a3c14610098578063715018a6146100ad57806389ccfe89146100b55780638da5cb5b146100bd575b600080fd5b6100ab6100a6366004610940565b61013c565b005b6100ab61017f565b6100ab6101fe565b6100c56102b0565b6040516100d291906109a3565b60405180910390f35b6100ab6100e936600461082f565b6102c0565b6100ab6100fc36600461082f565b6103d2565b6100ab61010f36600461084a565b610429565b61011c6105b3565b6040516100d29190610ab6565b6100ab61013736600461082f565b6105c8565b61014461067e565b6000546001600160a01b0390811691161461017a5760405162461bcd60e51b815260040161017190610a29565b60405180910390fd5b601955565b61018761067e565b6000546001600160a01b039081169116146101b45760405162461bcd60e51b815260040161017190610a29565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60105461021d5760405162461bcd60e51b815260040161017190610a8e565b610225610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d9161025b9190600401610ab6565b60206040518083038186803b15801561027357600080fd5b505af4158015610287573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102ab9190610928565b601055565b6000546001600160a01b03165b90565b6001600160a01b0381166000908152601c602052604090205460ff16156102f95760405162461bcd60e51b815260040161017190610a5e565b601b54604051636d9185a960e11b81526103a0916001600160a01b03169063db230b529061032b9085906004016109a3565b60206040518083038186803b15801561034357600080fd5b505afa158015610357573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061037b9190610928565b6001600160a01b0383166000908152601760205260409020549063ffffffff6106e916565b6001600160a01b03909116600090815260176020908152604080832093909355601c905220805460ff19166001179055565b6103da61067e565b6000546001600160a01b039081169116146104075760405162461bcd60e51b815260040161017190610a29565b601880546001600160a01b0319166001600160a01b0392909216919091179055565b61043161067e565b6000546001600160a01b0390811691161461045e5760405162461bcd60e51b815260040161017190610a29565b6010541561047e5760405162461bcd60e51b8152600401610171906109fd565b610486610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d916104bc9190600401610ab6565b60206040518083038186803b1580156104d457600080fd5b505af41580156104e8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061050c9190610928565b601055600880546001600160a01b0319166001600160a01b038c1617905561053660098a8a610708565b50610543600a8888610708565b50600b805460ff191660ff9690961695909517909455600580546001600160a01b03199081166001600160a01b039586161790915560068054821693851693909317909255600780548316918416919091179055601b8054909116919092161790555050620186a0601955505050565b6105bb610786565b6105c3610682565b905090565b6105d061067e565b6000546001600160a01b039081169116146105fd5760405162461bcd60e51b815260040161017190610a29565b6001600160a01b0381166106235760405162461bcd60e51b8152600401610171906109b7565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b61068a610786565b6040805160c0810182526008608082019081526734a2bc32b1a7a22160c11b60a083015281528151808301835260058152640352e302e360dc1b6020828101919091528201529081016106db610704565b815230602090910152905090565b6000818310156106f957816106fb565b825b90505b92915050565b4690565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107495782800160ff19823516178555610776565b82800160010185558215610776579182015b8281111561077657823582559160200191906001019061075b565b506107829291506107b7565b5090565b604051806080016040528060608152602001606081526020016000815260200160006001600160a01b031681525090565b6102bd91905b8082111561078257600081556001016107bd565b80356001600160a01b03811681146106fe57600080fd5b60008083601f8401126107f9578182fd5b50813567ffffffffffffffff811115610810578182fd5b60208301915083602082850101111561082857600080fd5b9250929050565b600060208284031215610840578081fd5b6106fb83836107d1565b6000806000806000806000806000806101008b8d031215610869578586fd5b8a3561087481610b17565b995060208b013567ffffffffffffffff80821115610890578788fd5b61089c8e838f016107e8565b909b50995060408d01359150808211156108b4578788fd5b506108c18d828e016107e8565b90985096505060608b013560ff811681146108da578586fd5b945060808b01356108ea81610b17565b93506108f98c60a08d016107d1565b92506109088c60c08d016107d1565b91506109178c60e08d016107d1565b90509295989b9194979a5092959850565b600060208284031215610939578081fd5b5051919050565b600060208284031215610951578081fd5b5035919050565b60008151808452815b8181101561097d57602081850181015186830182015201610961565b8181111561098e5782602083870101525b50601f01601f19169290920160200192915050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b602080825260129082015271185b1c9958591e4b58dbdb999a59dd5c995960721b604082015260600190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6020808252601690820152751cd8dbdc994b585b1c9958591e4b5a5b5c1bdc9d195960521b604082015260600190565b6020808252600e908201526d1b9bdd0b58dbdb999a59dd5c995960921b604082015260600190565b600060208252825160806020840152610ad260a0840182610958565b6020850151848203601f190160408601529150610aef8183610958565b6040860151606086015260018060a01b03606087015116608086015280935050505092915050565b6001600160a01b0381168114610b2c57600080fd5b5056fea2646970667358221220f8192a2370c0438a757067d26a4e7d6fab67f93fead5c7fca6b85e800aa2584464736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_symbol\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"_decimal\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"_appregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_datasetregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_workerpoolregistryAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_v3_iexecHubAddress\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"domain\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"chainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"verifyingContract\",\"type\":\"address\"}],\"internalType\":\"struct IexecLibOrders_v5.EIP712Domain\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"importScore\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_callbackgas\",\"type\":\"uint256\"}],\"name\":\"setCallbackGas\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_teebroker\",\"type\":\"address\"}],\"name\":\"setTeeBroker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateDomainSeparator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/delegates/IexecMaintenanceDelegate.sol\":\"IexecMaintenanceDelegate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/Store.sol\":{\"keccak256\":\"0x9e49d21b9e009a5b6e7a800ba71973a7e4ff96d5e806d67abaf9c2e8b6652532\",\"urls\":[\"bzz-raw://680a708e1a537b0ca413ac8342ea5e55c2c02ff5dd6d752d085739122955f1c6\",\"dweb:/ipfs/QmUcYhmJSrsNRsvo3W4ZB6DH6YFJHLvg6uLmropgGLTRhh\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/DelegateBase.sol\":{\"keccak256\":\"0x465d3c959887af4a95487e7b0d8e7e579561ee1c5706957836e0b44698bad697\",\"urls\":[\"bzz-raw://61bc27189149a15383a3e4ff3ff4e10f395065949087eb77834e5f5effaea1d8\",\"dweb:/ipfs/QmesUKUoQ5dSRPKjnb2PYNgYPvBHoKvDvhehr9PPa3uawT\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/delegates/IexecMaintenanceDelegate.sol\":{\"keccak256\":\"0x72f22470654c93edbd35733dc51bf5e8feb6be77e83cc1730890fbe8a2614c05\",\"urls\":[\"bzz-raw://04e23178400d83b1e8c69e0fda7e22973d528bec8a5edd68c7319b3306a8e625\",\"dweb:/ipfs/Qmcm8UBAhxeKAemgPh6RkmwrBj1urbtUtPrqT8ci13ynaT\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenance.sol\":{\"keccak256\":\"0x219583e5a9316693fa4a2f6dc4c113de25745e259c3d8c61fb4fe8dba2dafd11\",\"urls\":[\"bzz-raw://00836ee789959c575edc2a0bdaf740d00d8de9baa3b554395135b8322620d7da\",\"dweb:/ipfs/QmV5NtqTdtMUxhcymtc99VsHDS3Thtu8P4fEFR9QbKK6dK\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/Registry.sol\":{\"keccak256\":\"0xdf594884fc674966628ebbb2b88bc470c89881fdad988812c815bf371ce8b387\",\"urls\":[\"bzz-raw://2386446324af596f08c0a09a2a9047a1d24187ae19c6d07ad727dfa72ff597c9\",\"dweb:/ipfs/QmYmN8jTjiLmcEKXxFPCouubca8AU92agFt4zMeNpkiLey\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5b8b64b19a7f26bdeda8dce637b65c16388adfdc6a77e02455c74722908ed8b\",\"urls\":[\"bzz-raw://a25ccdaeff6f497a58b6b5fda0f82a53243e51be2f59a8ebd4f3f294a95c9f03\",\"dweb:/ipfs/QmWNqwVbTmdVjYYuEaG32HR8P2fDWbTD6YDGX2B623976a\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x2fda8eaa946a91bec7b6a6e8b6e39d59dfbf02da48a3390924ccddf6c878765e\",\"urls\":[\"bzz-raw://3f0be3037a792a5feaa5c82185e8c1098f3ceeca14c8f7c733b3a79262da9680\",\"dweb:/ipfs/QmdStYN91aJSXz52YeYRczjaxmEpYoFHZjRd2Rktzu1SEN\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0x343c0cb970203c54630853190b6535f7170e9e3d32371fb30950c0b73140fb47\",\"urls\":[\"bzz-raw://7ffd18cda40275e7de235d1aa1166410a8e377ef9f1872fa50f58b1053391e03\",\"dweb:/ipfs/QmUkg99KkPyi5DKZNSbyCm9Lw2GMPQW2r7jJkywg4SSqnF\"]},\"/home/amxx/Work/iExec/code/PoCo/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0xba54886c81794791a38e974d2b24f0789ad21b2a55a0b65abb63596b4e19d888\",\"urls\":[\"bzz-raw://cc6da6f555b9618d54b5a952ebed60fdd469f26dd938adb3d29fe3c1564465f5\",\"dweb:/ipfs/QmbAKdBrNrjF8YGgWL7LtLhRUH2nwpgD1KBiNE6Xd7Cn4q\"]},\"@ensdomains/ens/contracts/ENS.sol\":{\"keccak256\":\"0x10b88673d8c180cd62523be4fec7607c65594eb4f0c561fa0fbc0784422b4871\",\"urls\":[\"bzz-raw://b3de1882a4a1a1b13c27ee6dc04cc58c34ac392c80cad507de2cdfa8c02712fe\",\"dweb:/ipfs/QmeKcaBF8QdJjXiqFrPJkAtK3et5kUL8XJrnHjwhAThRMT\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xf3f46b28b19d9132ae78c2a43263c06a73cb042ce25175b732e0c1a41c5bbe5a\",\"urls\":[\"bzz-raw://7ca85a78f3f3eafbef6d72c5cd0c35e5b827c797af786cd170659499a0a2c3be\",\"dweb:/ipfs/QmbHZ8zFsiE1PRh7FKt1pt5jR8F6B8HiZ32Mgc8Py3qCUu\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0x98aa1380fd49a255d6cbea58558ea76bff35c59b218671fde8842907b44e7390\",\"urls\":[\"bzz-raw://613eaff66d4c270ddd87448c06267b6e043ef8c8223cb39d8767bc9daa9cb1ec\",\"dweb:/ipfs/Qmcg56orudv25ghmnZCxN37HwNKCXmTTDxj5cyoYYnvHTg\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x67a43d3926e72576c96ebf0e6360c979a8cc04f25e4b0ca40c221547d8903ba4\",\"urls\":[\"bzz-raw://77c6f48115c491411f0e27f6b70e2e524b1b57c66e74bd7f1974a31a448e2540\",\"dweb:/ipfs/QmPZCizouS9PVJ1dVf8zqTjHyEo5cSa1ZmPCQpk52TgrmV\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x734b5bedb78074a59bca6aff9e5a1801c9c7e9c5314daf32e14857161fb36932\",\"urls\":[\"bzz-raw://4574e71185f6693eb5cdf7a5126fba97caf0ec0366b08290dd361af44b3414d3\",\"dweb:/ipfs/QmTPBh1R3EU973H7h6D1kQ1XBA1oX2QdSHZACyytWUYKsn\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0xf81dbd00ad4a1e4795df72759e33872c2599ea6c060be5898ed5d6fcd8ee9a11\",\"urls\":[\"bzz-raw://44dfcc25314c5ed29bc069c4746f87d98bb30a8dbc1a9bdeb797c2a530b9b9c5\",\"dweb:/ipfs/QmbRc5bKDobjE6zamLUy6Sh5HKd6XtNAsfBJzgZuQB3jpv\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xa17f4147965ceccd9f2017b14fcf8ef142346ec69c7e0424fd5c99f5ffeed8fa\",\"urls\":[\"bzz-raw://25315aea456015e8a2bc2b5badde793d1ae16d67d09df50ecb90a2af13674b92\",\"dweb:/ipfs/QmTujwcp5f1LioDNdRMfsXs2MsCWu2UeijhEg4VnDbzZmk\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x0c25ff00a747f1df6cb5e5c103adb98334df7e9561b0d46079454131c139bff9\",\"urls\":[\"bzz-raw://9417ce94829309329fa0f0dc50089696bc55f9f675c4b2ffcb31f960fe706250\",\"dweb:/ipfs/QmdckiAmnW2uhXK2V2enu7bEbqiMR6hzMD1ytGH43pKLhE\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x66d1ed2a353be8d2492833a185c53a8f1de8d8fa575a201e9825cf334d79659a\",\"urls\":[\"bzz-raw://a2e9b79e9cf5b398cd29b30df860a6521eefadd9882a346c423afbee5aee606e\",\"dweb:/ipfs/QmUq7gfqR5x1DaMpRKkWwmLMGLPzqUQhqhFEJ2vcgvFraH\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0xfd5cf8319cb84ca04ea407d6fba686d53ad7f5d2bf476f41678f5a751d12a7ea\",\"urls\":[\"bzz-raw://45b75b553c4a9053429609b1c3db481f1728ca00448f01acc4065249bbf87adc\",\"dweb:/ipfs/QmRZH6QM32mJn1GZCAPXUQtBz65H4kk6DsGQbGNo4ZNPy9\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0x7f6401708b61f575b497aa7c8118ca9d70348643c83c26e70d9b643edf1a95c1\",\"urls\":[\"bzz-raw://b020d65f592c1715bc3d5799ad835cd975ef7d314f340f27603fb99ad86a0427\",\"dweb:/ipfs/QmQoGZmzE5aDTMGJM4BW77eraerfTSV9Rs8wykpQ42i1in\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0xd1d78b1c8534fbcf8fdc8fbfec9133df142ef8cae9ae820929dfe6d80d2c790a\",\"urls\":[\"bzz-raw://193a827fbe83fa83c4cabb172dc438dd45c50253858a1f2bf56e8f9a2d548386\",\"dweb:/ipfs/QmbWBHwHv7CyHSZY6jxnaDiHWGEEyVb8LeGdRpWXUjaiBr\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006516565b600080546001600160a01b0319166001600160a01b038316908117825560405192935091600080516020610c91833981519152908290a3506100606001600160e01b0361006916565b61011d565b3390565b61007a6001600160e01b0361006516565b6000546001600160a01b039081169116146100b05760405162461bcd60e51b81526004016100a7906100e8565b60405180910390fd5b600080546040516001600160a01b0390911690600080516020610c91833981519152908390a3600080546001600160a01b0319169055565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b610b658061012c6000396000f3fe608060405234801561001057600080fd5b50600436106100935760003560e01c8063a9b20cee11610066578063a9b20cee146100db578063aefb52b4146100ee578063b552181714610101578063c2fb26a614610114578063f2fde38b1461012957610093565b806301d09a3c14610098578063715018a6146100ad57806389ccfe89146100b55780638da5cb5b146100bd575b600080fd5b6100ab6100a6366004610940565b61013c565b005b6100ab61017f565b6100ab6101fe565b6100c56102b0565b6040516100d291906109a3565b60405180910390f35b6100ab6100e936600461082f565b6102c0565b6100ab6100fc36600461082f565b6103d2565b6100ab61010f36600461084a565b610429565b61011c6105b3565b6040516100d29190610ab6565b6100ab61013736600461082f565b6105c8565b61014461067e565b6000546001600160a01b0390811691161461017a5760405162461bcd60e51b815260040161017190610a29565b60405180910390fd5b601955565b61018761067e565b6000546001600160a01b039081169116146101b45760405162461bcd60e51b815260040161017190610a29565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60105461021d5760405162461bcd60e51b815260040161017190610a8e565b610225610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d9161025b9190600401610ab6565b60206040518083038186803b15801561027357600080fd5b505af4158015610287573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102ab9190610928565b601055565b6000546001600160a01b03165b90565b6001600160a01b0381166000908152601c602052604090205460ff16156102f95760405162461bcd60e51b815260040161017190610a5e565b601b54604051636d9185a960e11b81526103a0916001600160a01b03169063db230b529061032b9085906004016109a3565b60206040518083038186803b15801561034357600080fd5b505afa158015610357573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061037b9190610928565b6001600160a01b0383166000908152601760205260409020549063ffffffff6106e916565b6001600160a01b03909116600090815260176020908152604080832093909355601c905220805460ff19166001179055565b6103da61067e565b6000546001600160a01b039081169116146104075760405162461bcd60e51b815260040161017190610a29565b601880546001600160a01b0319166001600160a01b0392909216919091179055565b61043161067e565b6000546001600160a01b0390811691161461045e5760405162461bcd60e51b815260040161017190610a29565b6010541561047e5760405162461bcd60e51b8152600401610171906109fd565b610486610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d916104bc9190600401610ab6565b60206040518083038186803b1580156104d457600080fd5b505af41580156104e8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061050c9190610928565b601055600880546001600160a01b0319166001600160a01b038c1617905561053660098a8a610708565b50610543600a8888610708565b50600b805460ff191660ff9690961695909517909455600580546001600160a01b03199081166001600160a01b039586161790915560068054821693851693909317909255600780548316918416919091179055601b8054909116919092161790555050620186a0601955505050565b6105bb610786565b6105c3610682565b905090565b6105d061067e565b6000546001600160a01b039081169116146105fd5760405162461bcd60e51b815260040161017190610a29565b6001600160a01b0381166106235760405162461bcd60e51b8152600401610171906109b7565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b61068a610786565b6040805160c0810182526008608082019081526734a2bc32b1a7a22160c11b60a083015281528151808301835260058152640352e302e360dc1b6020828101919091528201529081016106db610704565b815230602090910152905090565b6000818310156106f957816106fb565b825b90505b92915050565b4690565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107495782800160ff19823516178555610776565b82800160010185558215610776579182015b8281111561077657823582559160200191906001019061075b565b506107829291506107b7565b5090565b604051806080016040528060608152602001606081526020016000815260200160006001600160a01b031681525090565b6102bd91905b8082111561078257600081556001016107bd565b80356001600160a01b03811681146106fe57600080fd5b60008083601f8401126107f9578182fd5b50813567ffffffffffffffff811115610810578182fd5b60208301915083602082850101111561082857600080fd5b9250929050565b600060208284031215610840578081fd5b6106fb83836107d1565b6000806000806000806000806000806101008b8d031215610869578586fd5b8a3561087481610b17565b995060208b013567ffffffffffffffff80821115610890578788fd5b61089c8e838f016107e8565b909b50995060408d01359150808211156108b4578788fd5b506108c18d828e016107e8565b90985096505060608b013560ff811681146108da578586fd5b945060808b01356108ea81610b17565b93506108f98c60a08d016107d1565b92506109088c60c08d016107d1565b91506109178c60e08d016107d1565b90509295989b9194979a5092959850565b600060208284031215610939578081fd5b5051919050565b600060208284031215610951578081fd5b5035919050565b60008151808452815b8181101561097d57602081850181015186830182015201610961565b8181111561098e5782602083870101525b50601f01601f19169290920160200192915050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b602080825260129082015271185b1c9958591e4b58dbdb999a59dd5c995960721b604082015260600190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6020808252601690820152751cd8dbdc994b585b1c9958591e4b5a5b5c1bdc9d195960521b604082015260600190565b6020808252600e908201526d1b9bdd0b58dbdb999a59dd5c995960921b604082015260600190565b600060208252825160806020840152610ad260a0840182610958565b6020850151848203601f190160408601529150610aef8183610958565b6040860151606086015260018060a01b03606087015116608086015280935050505092915050565b6001600160a01b0381168114610b2c57600080fd5b5056fea26469706673582212201bcfa2e639f6bb80930122ed2155a627d692a91ed08548583cc6c34ebc590dbd64736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100935760003560e01c8063a9b20cee11610066578063a9b20cee146100db578063aefb52b4146100ee578063b552181714610101578063c2fb26a614610114578063f2fde38b1461012957610093565b806301d09a3c14610098578063715018a6146100ad57806389ccfe89146100b55780638da5cb5b146100bd575b600080fd5b6100ab6100a6366004610940565b61013c565b005b6100ab61017f565b6100ab6101fe565b6100c56102b0565b6040516100d291906109a3565b60405180910390f35b6100ab6100e936600461082f565b6102c0565b6100ab6100fc36600461082f565b6103d2565b6100ab61010f36600461084a565b610429565b61011c6105b3565b6040516100d29190610ab6565b6100ab61013736600461082f565b6105c8565b61014461067e565b6000546001600160a01b0390811691161461017a5760405162461bcd60e51b815260040161017190610a29565b60405180910390fd5b601955565b61018761067e565b6000546001600160a01b039081169116146101b45760405162461bcd60e51b815260040161017190610a29565b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b60105461021d5760405162461bcd60e51b815260040161017190610a8e565b610225610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d9161025b9190600401610ab6565b60206040518083038186803b15801561027357600080fd5b505af4158015610287573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102ab9190610928565b601055565b6000546001600160a01b03165b90565b6001600160a01b0381166000908152601c602052604090205460ff16156102f95760405162461bcd60e51b815260040161017190610a5e565b601b54604051636d9185a960e11b81526103a0916001600160a01b03169063db230b529061032b9085906004016109a3565b60206040518083038186803b15801561034357600080fd5b505afa158015610357573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061037b9190610928565b6001600160a01b0383166000908152601760205260409020549063ffffffff6106e916565b6001600160a01b03909116600090815260176020908152604080832093909355601c905220805460ff19166001179055565b6103da61067e565b6000546001600160a01b039081169116146104075760405162461bcd60e51b815260040161017190610a29565b601880546001600160a01b0319166001600160a01b0392909216919091179055565b61043161067e565b6000546001600160a01b0390811691161461045e5760405162461bcd60e51b815260040161017190610a29565b6010541561047e5760405162461bcd60e51b8152600401610171906109fd565b610486610682565b6040516374147c4d60e01b815273__IexecLibOrders_v5_____________________916374147c4d916104bc9190600401610ab6565b60206040518083038186803b1580156104d457600080fd5b505af41580156104e8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061050c9190610928565b601055600880546001600160a01b0319166001600160a01b038c1617905561053660098a8a610708565b50610543600a8888610708565b50600b805460ff191660ff9690961695909517909455600580546001600160a01b03199081166001600160a01b039586161790915560068054821693851693909317909255600780548316918416919091179055601b8054909116919092161790555050620186a0601955505050565b6105bb610786565b6105c3610682565b905090565b6105d061067e565b6000546001600160a01b039081169116146105fd5760405162461bcd60e51b815260040161017190610a29565b6001600160a01b0381166106235760405162461bcd60e51b8152600401610171906109b7565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b61068a610786565b6040805160c0810182526008608082019081526734a2bc32b1a7a22160c11b60a083015281528151808301835260058152640352e302e360dc1b6020828101919091528201529081016106db610704565b815230602090910152905090565b6000818310156106f957816106fb565b825b90505b92915050565b4690565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107495782800160ff19823516178555610776565b82800160010185558215610776579182015b8281111561077657823582559160200191906001019061075b565b506107829291506107b7565b5090565b604051806080016040528060608152602001606081526020016000815260200160006001600160a01b031681525090565b6102bd91905b8082111561078257600081556001016107bd565b80356001600160a01b03811681146106fe57600080fd5b60008083601f8401126107f9578182fd5b50813567ffffffffffffffff811115610810578182fd5b60208301915083602082850101111561082857600080fd5b9250929050565b600060208284031215610840578081fd5b6106fb83836107d1565b6000806000806000806000806000806101008b8d031215610869578586fd5b8a3561087481610b17565b995060208b013567ffffffffffffffff80821115610890578788fd5b61089c8e838f016107e8565b909b50995060408d01359150808211156108b4578788fd5b506108c18d828e016107e8565b90985096505060608b013560ff811681146108da578586fd5b945060808b01356108ea81610b17565b93506108f98c60a08d016107d1565b92506109088c60c08d016107d1565b91506109178c60e08d016107d1565b90509295989b9194979a5092959850565b600060208284031215610939578081fd5b5051919050565b600060208284031215610951578081fd5b5035919050565b60008151808452815b8181101561097d57602081850181015186830182015201610961565b8181111561098e5782602083870101525b50601f01601f19169290920160200192915050565b6001600160a01b0391909116815260200190565b60208082526026908201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160408201526564647265737360d01b606082015260800190565b602080825260129082015271185b1c9958591e4b58dbdb999a59dd5c995960721b604082015260600190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6020808252601690820152751cd8dbdc994b585b1c9958591e4b5a5b5c1bdc9d195960521b604082015260600190565b6020808252600e908201526d1b9bdd0b58dbdb999a59dd5c995960921b604082015260600190565b600060208252825160806020840152610ad260a0840182610958565b6020850151848203601f190160408601529150610aef8183610958565b6040860151606086015260018060a01b03606087015116608086015280935050505092915050565b6001600160a01b0381168114610b2c57600080fd5b5056fea26469706673582212201bcfa2e639f6bb80930122ed2155a627d692a91ed08548583cc6c34ebc590dbd64736f6c63430006060033",
   "immutableReferences": {},
   "sourceMap": "136:2194:16:-:0;;;832:17:66;852:12;-1:-1:-1;;;;;852:10:66;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:66;-1:-1:-1;;;;;874:18:66;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:66;-1:-1:-1;;;;;;;;;;;907:43:66;874:6;;907:43;-1:-1:-1;124:19:57;-1:-1:-1;;;;;124:17:57;:19;:::i;:::-;136:2194:16;;735:104:65;822:10;735:104;:::o;1656:145:66:-;1247:12;-1:-1:-1;;;;;1247:10:66;:12;:::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1725:40:66;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;346:407:-1:-;537:2;551:47;;;522:18;;;864:19;266:34;904:14;;;246:55;320:12;;;508:245;;136:2194:16;;;;;;",
   "deployedSourceMap": "136:2194:16:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;136:2194:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;1846:114:16;;;;;;;;;:::i;:::-;;1656:145:66;;;:::i;1304:169:16:-;;;:::i;1033:77:66:-;;;:::i;:::-;;;;;;;;;;;;;;;;1476:258:16;;;;;;;;;:::i;1737:106::-;;;;;;;;;:::i;307:876::-;;;;;;;;;:::i;1186:115::-;;;:::i;:::-;;;;;;;;1950:240:66;;;;;;;;;:::i;1846:114:16:-;1247:12:66;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;;;;;;;;;1928:13:16::1;:28:::0;1846:114::o;1656:145:66:-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:66;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:66::1;::::0;;1656:145::o;1304:169:16:-;1369:22;;1361:63;;;;-1:-1:-1;;;1361:63:16;;;;;;;;;1453:9;:7;:9::i;:::-;:16;;-1:-1:-1;;;1453:16:16;;:14;;;;:16;;:14;:16;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;1453:16:16;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1453:16:16;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;1453:16:16;;;;;;;;;1428:22;:41;1304:169::o;1033:77:66:-;1071:7;1097:6;-1:-1:-1;;;;;1097:6:66;1033:77;;:::o;1476:258:16:-;-1:-1:-1;;;;;1547:27:16;;;;;;:18;:27;;;;;;;;1546:28;1538:63;;;;-1:-1:-1;;;1538:63:16;;;;;;;;;1659:13;;:32;;-1:-1:-1;;;1659:32:16;;1631:61;;-1:-1:-1;;;;;1659:13:16;;:23;;:32;;1683:7;;1659:32;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;1659:32:16;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1659:32:16;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;1659:32:16;;;;;;;;;-1:-1:-1;;;;;1631:23:16;;;;;;:14;:23;;;;;;;:61;:27;:61;:::i;:::-;-1:-1:-1;;;;;1605:23:16;;;;;;;:14;:23;;;;;;;;:87;;;;1696:18;:27;;;:34;;-1:-1:-1;;1696:34:16;1726:4;1696:34;;;1476:258::o;1737:106::-;1247:12:66;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;1815:11:16::1;:24:::0;;-1:-1:-1;;;;;;1815:24:16::1;-1:-1:-1::0;;;;;1815:24:16;;;::::1;::::0;;;::::1;::::0;;1737:106::o;307:876::-;1247:12:66;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;652:22:16::1;::::0;:36;644:67:::1;;;;-1:-1:-1::0;;;644:67:16::1;;;;;;;;;740:9;:7;:9::i;:::-;:16;::::0;-1:-1:-1;;;740:16:16;;:14:::1;::::0;::::1;::::0;:16:::1;::::0;:14;:16:::1;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24::::0;17:12:::1;2:2;740:16:16;;;;8:9:-1;5:2;;;45:16;42:1;39::::0;24:38:::1;77:16;74:1;67:27;5:2;740:16:16;;;;;;;101:4:-1;97:9;90:4;84;80:15;76:31;69:5;65:43;126:6;120:4;113:20;0:138;740:16:16;;;;;;;;;715:22;:41:::0;761:11:::1;:37:::0;;-1:-1:-1;;;;;;761:37:16::1;-1:-1:-1::0;;;;;761:37:16;::::1;;::::0;;802:28:::1;:6;825:5:::0;;802:28:::1;:::i;:::-;-1:-1:-1::0;834:30:16::1;:8;857:7:::0;;834:30:::1;:::i;:::-;-1:-1:-1::0;868:10:16::1;:31:::0;;-1:-1:-1;;868:31:16::1;;::::0;;;::::1;::::0;;;::::1;::::0;;;903:13:::1;:53:::0;;-1:-1:-1;;;;;;903:53:16;;::::1;-1:-1:-1::0;;;;;903:53:16;;::::1;;::::0;;;-1:-1:-1;960:57:16;;;::::1;::::0;;::::1;::::0;;;::::1;::::0;;;1021:20:::1;:60:::0;;;::::1;::::0;;::::1;::::0;;;::::1;::::0;;1085:13:::1;:61:::0;;;;::::1;::::0;;;::::1;;::::0;;-1:-1:-1;;1173:6:16::1;1150:13;:29:::0;-1:-1:-1;;;307:876:16:o;1186:115::-;1237:37;;:::i;:::-;1288:9;:7;:9::i;:::-;1281:16;;1186:115;:::o;1950:240:66:-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:66;;;:22;;;1229:67;;;;-1:-1:-1;;;1229:67:66;;;;;;;;;-1:-1:-1;;;;;2038:22:66;::::1;2030:73;;;;-1:-1:-1::0;;;2030:73:66::1;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;-1:-1:-1;;;;;2118:38:66;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;-1:-1:-1;;;;;;2166:17:66::1;-1:-1:-1::0;;;;;2166:17:66;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:65:-;822:10;735:104;:::o;2058:270:16:-;2101:37;;:::i;:::-;2152:172;;;;;;;;;;;;;;;-1:-1:-1;;;2152:172:16;;;;;;;;;;;;;;;;-1:-1:-1;;;2152:172:16;;;;;;;;;;;;-1:-1:-1;;2272:10:16;:8;:10::i;:::-;2152:172;;2314:4;2152:172;;;;;2145:179;-1:-1:-1;2058:270:16;:::o;1715:97:61:-;1773:7;1799:1;1794;:6;;:14;;1807:1;1794:14;;;1803:1;1794:14;1787:21;;1715:97;;;;;:::o;1963:92:16:-;2041:9;;2033:19::o;136:2194::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;136:2194:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;136:2194:16;;;-1:-1:-1;136:2194:16;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;136:2194:16;;;;;:::o;:::-;;;;;;;;;;;;;;;;;;5:130:-1;72:20;;-1:-1;;;;;12566:54;;13240:35;;13230:2;;13289:1;;13279:12;298:337;;;413:3;406:4;398:6;394:17;390:27;380:2;;-1:-1;;421:12;380:2;-1:-1;451:20;;491:18;480:30;;477:2;;;-1:-1;;513:12;477:2;557:4;549:6;545:17;533:29;;608:3;557:4;588:17;549:6;574:32;;571:41;568:2;;;625:1;;615:12;568:2;373:262;;;;;;1054:241;;1158:2;1146:9;1137:7;1133:23;1129:32;1126:2;;;-1:-1;;1164:12;1126:2;1226:53;1271:7;1247:22;1226:53;;1302:1369;;;;;;;;;;;1563:3;1551:9;1542:7;1538:23;1534:33;1531:2;;;-1:-1;;1570:12;1531:2;85:6;72:20;97:33;124:5;97:33;;;1622:63;-1:-1;1750:2;1735:18;;1722:32;1774:18;1763:30;;;1760:2;;;-1:-1;;1796:12;1760:2;1834:65;1891:7;1882:6;1871:9;1867:22;1834:65;;;1824:75;;-1:-1;1824:75;-1:-1;1964:2;1949:18;;1936:32;;-1:-1;1977:30;;;1974:2;;;-1:-1;;2010:12;1974:2;;2048:65;2105:7;2096:6;2085:9;2081:22;2048:65;;;2038:75;;-1:-1;2038:75;-1:-1;;2150:2;2187:22;;986:20;12782:4;12771:16;;13610:33;;13600:2;;-1:-1;;13647:12;13600:2;2158:61;-1:-1;2256:3;2296:22;;72:20;97:33;72:20;97:33;;;2265:63;-1:-1;2384:53;2429:7;2365:3;2405:22;;2384:53;;;2374:63;;2493:53;2538:7;2474:3;2518:9;2514:22;2493:53;;;2483:63;;2602:53;2647:7;2583:3;2627:9;2623:22;2602:53;;;2592:63;;1525:1146;;;;;;;;;;;;;;2678:263;;2793:2;2781:9;2772:7;2768:23;2764:32;2761:2;;;-1:-1;;2799:12;2761:2;-1:-1;220:13;;2755:186;-1:-1;2755:186;2948:241;;3052:2;3040:9;3031:7;3027:23;3023:32;3020:2;;;-1:-1;;3058:12;3020:2;-1:-1;710:20;;3014:175;-1:-1;3014:175;3814:327;;3949:5;11782:12;11929:6;11924:3;11917:19;-1:-1;12872:101;12886:6;12883:1;12880:13;12872:101;;;11966:4;12953:11;;;;;12947:18;12934:11;;;;;12927:39;12901:10;12872:101;;;12988:6;12985:1;12982:13;12979:2;;;-1:-1;11966:4;13044:6;11961:3;13035:16;;13028:27;12979:2;-1:-1;13160:7;13144:14;-1:-1;;13140:28;4097:39;;;;11966:4;4097:39;;3896:245;-1:-1;;3896:245;8620:213;-1:-1;;;;;12566:54;;;;3527:37;;8738:2;8723:18;;8709:124;8840:407;9031:2;9045:47;;;4723:2;9016:18;;;11917:19;4759:34;11957:14;;;4739:55;-1:-1;;;4814:12;;;4807:30;4856:12;;;9002:245;9254:407;9445:2;9459:47;;;5107:2;9430:18;;;11917:19;-1:-1;;;11957:14;;;5123:41;5183:12;;;9416:245;9668:407;9859:2;9873:47;;;9844:18;;;11917:19;5470:34;11957:14;;;5450:55;5524:12;;;9830:245;10082:407;10273:2;10287:47;;;5775:2;10258:18;;;11917:19;-1:-1;;;11957:14;;;5791:45;5855:12;;;10244:245;10496:407;10687:2;10701:47;;;6106:2;10672:18;;;11917:19;-1:-1;;;11957:14;;;6122:37;6178:12;;;10658:245;10910:377;;11086:2;11107:17;11100:47;6520:16;6514:23;6448:4;11086:2;11075:9;11071:18;6550:38;6603:73;6439:14;11075:9;6439:14;6657:12;6603:73;;;11086:2;6753:16;;6747:23;6806:14;;;-1:-1;;6806:14;6790;;;6783:38;6747:23;-1:-1;6836:73;6810:4;6747:23;6836:73;;;6790:14;6990:5;6986:16;6980:23;7057:14;11075:9;7057:14;8453:37;12577:42;;;;;7057:14;7157:5;7153:16;7147:23;12566:54;6448:4;11075:9;7224:14;3527:37;11153:124;;;;;;11057:230;;;;;13181:117;-1:-1;;;;;12566:54;;13240:35;;13230:2;;13289:1;;13279:12;13230:2;13224:74;",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"../DelegateBase.sol\";\nimport \"../interfaces/IexecMaintenance.sol\";\n\n\ncontract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase\n{\n\tusing SafeMathExtended  for uint256;\n\tusing IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;\n\n\tfunction configure(\n\t\taddress          _token,\n\t\tstring  calldata _name,\n\t\tstring  calldata _symbol,\n\t\tuint8            _decimal,\n\t\taddress          _appregistryAddress,\n\t\taddress          _datasetregistryAddress,\n\t\taddress          _workerpoolregistryAddress,\n\t\taddress          _v3_iexecHubAddress)\n\texternal override onlyOwner()\n\t{\n\t\trequire(EIP712DOMAIN_SEPARATOR == bytes32(0), 'already-configured');\n\t\tEIP712DOMAIN_SEPARATOR = _domain().hash();\n\n\t\tm_baseToken          = IERC20(_token);\n\t\tm_name               = _name;\n\t\tm_symbol             = _symbol;\n\t\tm_decimals           = _decimal;\n\t\tm_appregistry        = IRegistry(_appregistryAddress);\n\t\tm_datasetregistry    = IRegistry(_datasetregistryAddress);\n\t\tm_workerpoolregistry = IRegistry(_workerpoolregistryAddress);\n\t\tm_v3_iexecHub        = IexecHubInterface(_v3_iexecHubAddress);\n\t\tm_callbackgas        = 100000;\n\t}\n\n\tfunction domain()\n\texternal view override returns (IexecLibOrders_v5.EIP712Domain memory)\n\t{\n\t\treturn _domain();\n\t}\n\n\tfunction updateDomainSeparator()\n\texternal override\n\t{\n\t\trequire(EIP712DOMAIN_SEPARATOR != bytes32(0), 'not-configured');\n\t\tEIP712DOMAIN_SEPARATOR = _domain().hash();\n\t}\n\n\tfunction importScore(address _worker)\n\texternal override\n\t{\n\t\trequire(!m_v3_scoreImported[_worker], 'score-already-imported');\n\t\tm_workerScores[_worker] = m_workerScores[_worker].max(m_v3_iexecHub.viewScore(_worker));\n\t\tm_v3_scoreImported[_worker] = true;\n\t}\n\n\tfunction setTeeBroker(address _teebroker)\n\texternal override onlyOwner()\n\t{\n\t\tm_teebroker = _teebroker;\n\t}\n\n\tfunction setCallbackGas(uint256 _callbackgas)\n\texternal override onlyOwner()\n\t{\n\t\tm_callbackgas = _callbackgas;\n\t}\n\n\tfunction _chainId()\n\tinternal pure returns (uint256 id)\n\t{\n\t\tassembly { id := chainid() }\n\t}\n\n\tfunction _domain()\n\tinternal view returns (IexecLibOrders_v5.EIP712Domain memory)\n\t{\n\t\treturn IexecLibOrders_v5.EIP712Domain({\n\t\t\tname:              'iExecODB'\n\t\t,\tversion:           '5.0.0'\n\t\t,\tchainId:           _chainId()\n\t\t,\tverifyingContract: address(this)\n\t\t});\n\t}\n}\n",
-  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
   "ast": {
-    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
     "exportedSymbols": {
       "IexecMaintenanceDelegate": [
         2727
@@ -224,7 +222,7 @@
         "src": "24:33:16"
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/DelegateBase.sol",
         "file": "../DelegateBase.sol",
         "id": 2511,
         "nodeType": "ImportDirective",
@@ -235,12 +233,12 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenance.sol",
         "file": "../interfaces/IexecMaintenance.sol",
         "id": 2512,
         "nodeType": "ImportDirective",
         "scope": 2728,
-        "sourceUnit": 7396,
+        "sourceUnit": 7399,
         "src": "89:44:16",
         "symbolAliases": [],
         "unitAlias": ""
@@ -255,10 +253,10 @@
               "id": 2513,
               "name": "IexecMaintenance",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7395,
+              "referencedDeclaration": 7398,
               "src": "173:16:16",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecMaintenance_$7395",
+                "typeIdentifier": "t_contract$_IexecMaintenance_$7398",
                 "typeString": "contract IexecMaintenance"
               }
             },
@@ -288,11 +286,11 @@
         "contractDependencies": [
           268,
           844,
-          7395,
-          10170,
-          10182,
-          10752,
-          10861
+          7398,
+          10173,
+          10185,
+          10755,
+          10864
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -301,12 +299,12 @@
         "linearizedBaseContracts": [
           2727,
           844,
-          10170,
+          10173,
           268,
-          10182,
-          10861,
-          10752,
-          7395
+          10185,
+          10864,
+          10755,
+          7398
         ],
         "name": "IexecMaintenanceDelegate",
         "nodeType": "ContractDefinition",
@@ -318,10 +316,10 @@
               "id": 2517,
               "name": "SafeMathExtended",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10554,
+              "referencedDeclaration": 10557,
               "src": "213:16:16",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMathExtended_$10554",
+                "typeIdentifier": "t_contract$_SafeMathExtended_$10557",
                 "typeString": "library SafeMathExtended"
               }
             },
@@ -369,7 +367,7 @@
           },
           {
             "baseFunctions": [
-              7371
+              7374
             ],
             "body": {
               "id": 2607,
@@ -656,7 +654,7 @@
                       "referencedDeclaration": 176,
                       "src": "761:11:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11203",
+                        "typeIdentifier": "t_contract$_IERC20_$11206",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -690,10 +688,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11203,
+                        "referencedDeclaration": 11206,
                         "src": "784:6:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11203_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11206_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -708,13 +706,13 @@
                       "src": "784:14:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11203",
+                        "typeIdentifier": "t_contract$_IERC20_$11206",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "761:37:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$11203",
+                      "typeIdentifier": "t_contract$_IERC20_$11206",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -877,7 +875,7 @@
                       "referencedDeclaration": 170,
                       "src": "903:13:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -911,10 +909,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "926:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -929,13 +927,13 @@
                       "src": "926:30:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "903:53:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -960,7 +958,7 @@
                       "referencedDeclaration": 172,
                       "src": "960:17:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -994,10 +992,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "983:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -1012,13 +1010,13 @@
                       "src": "983:34:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "960:57:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -1043,7 +1041,7 @@
                       "referencedDeclaration": 174,
                       "src": "1021:20:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -1077,10 +1075,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "1044:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -1095,13 +1093,13 @@
                       "src": "1044:37:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "1021:60:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -1126,7 +1124,7 @@
                       "referencedDeclaration": 263,
                       "src": "1085:13:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                        "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                         "typeString": "contract IexecHubInterface"
                       }
                     },
@@ -1160,10 +1158,10 @@
                         "name": "IexecHubInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9510,
+                        "referencedDeclaration": 9513,
                         "src": "1108:17:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IexecHubInterface_$9510_$",
+                          "typeIdentifier": "t_type$_t_contract$_IexecHubInterface_$9513_$",
                           "typeString": "type(contract IexecHubInterface)"
                         }
                       },
@@ -1178,13 +1176,13 @@
                       "src": "1108:38:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                        "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                         "typeString": "contract IexecHubInterface"
                       }
                     },
                     "src": "1085:61:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                      "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                       "typeString": "contract IexecHubInterface"
                     }
                   },
@@ -1260,7 +1258,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "627:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1529,7 +1527,7 @@
           },
           {
             "baseFunctions": [
-              7376
+              7379
             ],
             "body": {
               "id": 2617,
@@ -1640,7 +1638,7 @@
           },
           {
             "baseFunctions": [
-              7379
+              7382
             ],
             "body": {
               "id": 2639,
@@ -1946,7 +1944,7 @@
           },
           {
             "baseFunctions": [
-              7384
+              7387
             ],
             "body": {
               "id": 2674,
@@ -2162,7 +2160,7 @@
                               "referencedDeclaration": 263,
                               "src": "1659:13:16",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                                "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                                 "typeString": "contract IexecHubInterface"
                               }
                             },
@@ -2173,7 +2171,7 @@
                             "lValueRequested": false,
                             "memberName": "viewScore",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 9357,
+                            "referencedDeclaration": 9360,
                             "src": "1659:23:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -2250,7 +2248,7 @@
                         "lValueRequested": false,
                         "memberName": "max",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10487,
+                        "referencedDeclaration": 10490,
                         "src": "1631:27:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -2426,7 +2424,7 @@
           },
           {
             "baseFunctions": [
-              7389
+              7392
             ],
             "body": {
               "id": 2687,
@@ -2496,7 +2494,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "1798:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2565,7 +2563,7 @@
           },
           {
             "baseFunctions": [
-              7394
+              7397
             ],
             "body": {
               "id": 2700,
@@ -2635,7 +2633,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "1911:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3083,7 +3081,7 @@
     "src": "0:2331:16"
   },
   "legacyAST": {
-    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/delegates/IexecMaintenanceDelegate.sol",
     "exportedSymbols": {
       "IexecMaintenanceDelegate": [
         2727
@@ -3113,7 +3111,7 @@
         "src": "24:33:16"
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/DelegateBase.sol",
         "file": "../DelegateBase.sol",
         "id": 2511,
         "nodeType": "ImportDirective",
@@ -3124,12 +3122,12 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenance.sol",
         "file": "../interfaces/IexecMaintenance.sol",
         "id": 2512,
         "nodeType": "ImportDirective",
         "scope": 2728,
-        "sourceUnit": 7396,
+        "sourceUnit": 7399,
         "src": "89:44:16",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3144,10 +3142,10 @@
               "id": 2513,
               "name": "IexecMaintenance",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7395,
+              "referencedDeclaration": 7398,
               "src": "173:16:16",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecMaintenance_$7395",
+                "typeIdentifier": "t_contract$_IexecMaintenance_$7398",
                 "typeString": "contract IexecMaintenance"
               }
             },
@@ -3177,11 +3175,11 @@
         "contractDependencies": [
           268,
           844,
-          7395,
-          10170,
-          10182,
-          10752,
-          10861
+          7398,
+          10173,
+          10185,
+          10755,
+          10864
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -3190,12 +3188,12 @@
         "linearizedBaseContracts": [
           2727,
           844,
-          10170,
+          10173,
           268,
-          10182,
-          10861,
-          10752,
-          7395
+          10185,
+          10864,
+          10755,
+          7398
         ],
         "name": "IexecMaintenanceDelegate",
         "nodeType": "ContractDefinition",
@@ -3207,10 +3205,10 @@
               "id": 2517,
               "name": "SafeMathExtended",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10554,
+              "referencedDeclaration": 10557,
               "src": "213:16:16",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMathExtended_$10554",
+                "typeIdentifier": "t_contract$_SafeMathExtended_$10557",
                 "typeString": "library SafeMathExtended"
               }
             },
@@ -3258,7 +3256,7 @@
           },
           {
             "baseFunctions": [
-              7371
+              7374
             ],
             "body": {
               "id": 2607,
@@ -3545,7 +3543,7 @@
                       "referencedDeclaration": 176,
                       "src": "761:11:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11203",
+                        "typeIdentifier": "t_contract$_IERC20_$11206",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -3579,10 +3577,10 @@
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11203,
+                        "referencedDeclaration": 11206,
                         "src": "784:6:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11203_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11206_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
@@ -3597,13 +3595,13 @@
                       "src": "784:14:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11203",
+                        "typeIdentifier": "t_contract$_IERC20_$11206",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "761:37:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$11203",
+                      "typeIdentifier": "t_contract$_IERC20_$11206",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -3766,7 +3764,7 @@
                       "referencedDeclaration": 170,
                       "src": "903:13:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -3800,10 +3798,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "926:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -3818,13 +3816,13 @@
                       "src": "926:30:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "903:53:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -3849,7 +3847,7 @@
                       "referencedDeclaration": 172,
                       "src": "960:17:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -3883,10 +3881,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "983:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -3901,13 +3899,13 @@
                       "src": "983:34:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "960:57:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -3932,7 +3930,7 @@
                       "referencedDeclaration": 174,
                       "src": "1021:20:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
@@ -3966,10 +3964,10 @@
                         "name": "IRegistry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7780,
+                        "referencedDeclaration": 7783,
                         "src": "1044:9:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7780_$",
+                          "typeIdentifier": "t_type$_t_contract$_IRegistry_$7783_$",
                           "typeString": "type(contract IRegistry)"
                         }
                       },
@@ -3984,13 +3982,13 @@
                       "src": "1044:37:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IRegistry_$7780",
+                        "typeIdentifier": "t_contract$_IRegistry_$7783",
                         "typeString": "contract IRegistry"
                       }
                     },
                     "src": "1021:60:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IRegistry_$7780",
+                      "typeIdentifier": "t_contract$_IRegistry_$7783",
                       "typeString": "contract IRegistry"
                     }
                   },
@@ -4015,7 +4013,7 @@
                       "referencedDeclaration": 263,
                       "src": "1085:13:16",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                        "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                         "typeString": "contract IexecHubInterface"
                       }
                     },
@@ -4049,10 +4047,10 @@
                         "name": "IexecHubInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9510,
+                        "referencedDeclaration": 9513,
                         "src": "1108:17:16",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IexecHubInterface_$9510_$",
+                          "typeIdentifier": "t_type$_t_contract$_IexecHubInterface_$9513_$",
                           "typeString": "type(contract IexecHubInterface)"
                         }
                       },
@@ -4067,13 +4065,13 @@
                       "src": "1108:38:16",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                        "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                         "typeString": "contract IexecHubInterface"
                       }
                     },
                     "src": "1085:61:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                      "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                       "typeString": "contract IexecHubInterface"
                     }
                   },
@@ -4149,7 +4147,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "627:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -4418,7 +4416,7 @@
           },
           {
             "baseFunctions": [
-              7376
+              7379
             ],
             "body": {
               "id": 2617,
@@ -4529,7 +4527,7 @@
           },
           {
             "baseFunctions": [
-              7379
+              7382
             ],
             "body": {
               "id": 2639,
@@ -4835,7 +4833,7 @@
           },
           {
             "baseFunctions": [
-              7384
+              7387
             ],
             "body": {
               "id": 2674,
@@ -5051,7 +5049,7 @@
                               "referencedDeclaration": 263,
                               "src": "1659:13:16",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IexecHubInterface_$9510",
+                                "typeIdentifier": "t_contract$_IexecHubInterface_$9513",
                                 "typeString": "contract IexecHubInterface"
                               }
                             },
@@ -5062,7 +5060,7 @@
                             "lValueRequested": false,
                             "memberName": "viewScore",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 9357,
+                            "referencedDeclaration": 9360,
                             "src": "1659:23:16",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -5139,7 +5137,7 @@
                         "lValueRequested": false,
                         "memberName": "max",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10487,
+                        "referencedDeclaration": 10490,
                         "src": "1631:27:16",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5315,7 +5313,7 @@
           },
           {
             "baseFunctions": [
-              7389
+              7392
             ],
             "body": {
               "id": 2687,
@@ -5385,7 +5383,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "1798:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5454,7 +5452,7 @@
           },
           {
             "baseFunctions": [
-              7394
+              7397
             ],
             "body": {
               "id": 2700,
@@ -5524,7 +5522,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 10810,
+                  "referencedDeclaration": 10813,
                   "src": "1911:9:16",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6103,8 +6101,7 @@
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-04-21T19:16:56.086Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-04-30T13:17:58.507Z",
   "devdoc": {
     "methods": {
       "owner()": {
