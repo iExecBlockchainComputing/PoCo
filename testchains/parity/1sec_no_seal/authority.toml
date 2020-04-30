@@ -1,9 +1,9 @@
 [parity]
-chain = "/iexec-poco/parity/chain.json"
+chain = "/iexec-poco/testchains/parity/1sec/chain.json"
 
 [account]
 unlock = ["0xc08c3def622af1476f2db0e3cc8ccaead07be3bb"]
-password = ["/iexec-poco/parity/password"]
+password = ["/iexec-poco/testchains/parity/1sec/password"]
 
 [rpc]
 interface = "0.0.0.0"
@@ -14,7 +14,7 @@ apis = ["web3", "eth", "net", "pubsub", "parity_pubsub", "parity", "traces", "rp
 [mining]
 reseal_on_txs = "none"
 engine_signer = "0xc08c3def622af1476f2db0e3cc8ccaead07be3bb"
-force_sealing = true
+force_sealing = false
 
 [websockets]
 disable = false

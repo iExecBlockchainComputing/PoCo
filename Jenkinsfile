@@ -8,8 +8,8 @@ pipeline {
 
 	environment {
 		registry = "nexus.iex.ec"
-		dockerImage1sec = ""
-		dockerImage20sec = ""
+		tokenDockerImage = ""
+		nativeDockerImage = ""
 		buildWhenTagContains = "lv"
 	}
 
@@ -67,41 +67,41 @@ pipeline {
 			}
 		}
 
-		stage("Build poco-chain 1sec") {
+		stage("Build poco-chain token") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage1sec = docker.build registry + "/poco-chain:${TAG_NAME}"
+					tokenDockerImage = docker.build (registry + "/poco-chain:token-${TAG_NAME}", "-f testchains/Dockerfile_token_parity_1sec .")
 				}
 			}
 		}
 
-		stage("Push poco-chain 1sec") {
+		stage("Push poco-chain token") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
 					docker.withRegistry( "https://"+registry, "nexus" ) {
-						dockerImage1sec.push()
+						tokenDockerImage.push()
 					}
 				}
 			}
 		}
 
-		stage("Build poco-chain 20sec") {
+		stage("Build poco-chain native") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					dockerImage20sec = docker.build (registry + "/poco-chain:${TAG_NAME}-20sec", "-f Dockerfile_20sec .")
+					nativeDockerImage = docker.build (registry + "/poco-chain:native-${TAG_NAME}", "-f testchains/Dockerfile_native_parity_1sec .")
 				}
 			}
 		}
 
-		stage("Push poco-chain 20sec") {
+		stage("Push poco-chain native") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
 					docker.withRegistry( "https://"+registry, "nexus" ) {
-						dockerImage20sec.push()
+						nativeDockerImage.push()
 					}
 				}
 			}
