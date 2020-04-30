@@ -394,6 +394,37 @@ contract('ERC1154: callback', async (accounts) => {
 						));
 					});
 				});
+
+				describe("callback EOA", async () => {
+					it("sign", async () => {
+						requestorder4 = await user.signRequestOrder({
+							app:                AppInstance.address,
+							appmaxprice:        3,
+							dataset:            DatasetInstance.address,
+							datasetmaxprice:    0,
+							workerpool:         constants.NULL.ADDRESS,
+							workerpoolmaxprice: 25,
+							volume:             1,
+							tag:                "0x0000000000000000000000000000000000000000000000000000000000000000",
+							category:           4,
+							trust:              0,
+							requester:          user.address,
+							beneficiary:        user.address,
+							callback:           "0x0000000000000000000000000000000000000001",
+							params:             "<parameters>",
+							salt:               web3.utils.randomHex(32),
+							sign:               constants.NULL.SIGNATURE,
+						});
+					});
+
+					it("verify", async () => {
+						assert.isTrue(await IexecInstance.verifySignature(
+							user.address,
+							odbtools.utils.hashRequestOrder(ERC712_domain, requestorder4),
+							requestorder4.sign
+						));
+					});
+				});
 			});
 		});
 
@@ -403,11 +434,13 @@ contract('ERC1154: callback', async (accounts) => {
 					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder1, { from: user.address }),
 					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder2, { from: user.address }),
 					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder3, { from: user.address }),
+					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder4, { from: user.address }),
 				]);
 
 				deals[1] = tools.extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched")[0].args.dealid;
 				deals[2] = tools.extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched")[0].args.dealid;
 				deals[3] = tools.extractEvents(txsMined[2], IexecInstance.address, "OrdersMatched")[0].args.dealid;
+				deals[4] = tools.extractEvents(txsMined[3], IexecInstance.address, "OrdersMatched")[0].args.dealid;
 			});
 		});
 
@@ -417,11 +450,13 @@ contract('ERC1154: callback', async (accounts) => {
 					IexecInstance.initialize(deals[1], 0, { from: scheduler.address }),
 					IexecInstance.initialize(deals[2], 0, { from: scheduler.address }),
 					IexecInstance.initialize(deals[3], 0, { from: scheduler.address }),
+					IexecInstance.initialize(deals[4], 0, { from: scheduler.address }),
 				]);
 
 				tasks[1] = tools.extractEvents(txsMined[0], IexecInstance.address, "TaskInitialize")[0].args.taskid;
 				tasks[2] = tools.extractEvents(txsMined[1], IexecInstance.address, "TaskInitialize")[0].args.taskid;
 				tasks[3] = tools.extractEvents(txsMined[2], IexecInstance.address, "TaskInitialize")[0].args.taskid;
+				tasks[4] = tools.extractEvents(txsMined[3], IexecInstance.address, "TaskInitialize")[0].args.taskid;
 			});
 		});
 
@@ -447,6 +482,7 @@ contract('ERC1154: callback', async (accounts) => {
 				await sendContribution(worker1, tasks[1], "aResult 1", false);
 				await sendContribution(worker1, tasks[2], "aResult 2", false);
 				await sendContribution(worker1, tasks[3], "aResult 3", false);
+				await sendContribution(worker1, tasks[4], "aResult 4", false);
 			});
 		});
 
@@ -455,6 +491,7 @@ contract('ERC1154: callback', async (accounts) => {
 				await IexecInstance.reveal(tasks[1], odbtools.utils.hashResult(tasks[1], "aResult 1").digest, { from: worker1.address });
 				await IexecInstance.reveal(tasks[2], odbtools.utils.hashResult(tasks[2], "aResult 2").digest, { from: worker1.address });
 				await IexecInstance.reveal(tasks[3], odbtools.utils.hashResult(tasks[3], "aResult 3").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[4], odbtools.utils.hashResult(tasks[4], "aResult 4").digest, { from: worker1.address });
 			});
 		});
 
@@ -494,6 +531,16 @@ contract('ERC1154: callback', async (accounts) => {
 					assert.equal(await TestClientInstance.store(tasks[3]), web3.utils.utf8ToHex("aResult 3"), "Error in test client: dataset not stored");
 					// fails under coverage because of additional cost for instrumentation
 					// assert.equal(await TestClientInstance.gstore(tasks[3]), await IexecInstance.callbackgas()-343);
+				});
+			});
+
+			describe("callback EOA", async () => {
+				it("[TX] doesn't revert", async () => {
+					txMined = await IexecInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler.address });
+
+					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
+					assert.equal(events[0].args.taskid,  tasks[4],                          "check taskid");
+					assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 4"), "check consensus (results)");
 				});
 			});
 		});
