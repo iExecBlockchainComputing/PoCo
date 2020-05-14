@@ -10,7 +10,7 @@ pipeline {
 		registry = "nexus.iex.ec"
 		tokenDockerImage = ""
 		nativeDockerImage = ""
-		buildWhenTagContains = "lv"
+		buildWhenTagContains = "v"
 	}
 
 	agent {
