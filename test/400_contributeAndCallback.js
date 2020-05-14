@@ -392,10 +392,11 @@ contract('Fullchain', async (accounts) => {
 			});
 
 			it("[TX] contributeAndFinalize", async () => {
-				txMined = await IexecInstance.contributeAndFinalize(
+			txMined = await IexecInstance.contributeAndFinalize(
 					authorization.taskid,            // task      (authorization)
 					result.digest,                   // digest    (result)
 					web3.utils.utf8ToHex("aResult"), // data      (result)
+					"0x",                            // data      (callback)
 					authorization.enclave,           // address   (enclave)
 					result.sign,                     // signature (enclave)
 					authorization.sign,              // signature (authorization)
@@ -439,6 +440,7 @@ contract('Fullchain', async (accounts) => {
 			assert.equal    (Number(task.winnerCounter),           1                                                                         );
 			assert.deepEqual(       task.contributors.map(a => a), [ worker.agent.address ]                                                  );
 			assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult")                                           );
+			assert.equal    (       task.resultsCallback,          "0x"                                                                      );
 		});
 
 		it("balances", async () => {

@@ -313,7 +313,7 @@ contract('Poco', async (accounts) => {
 		await IexecInstance.reveal(tasks[6], odbtools.utils.hashResult(tasks[6], "true").digest, { from: worker2.address });
 	});
 	it("[setup] Finalize", async () => {
-		await IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler.address });
+		await IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), "0x", { from: scheduler.address });
 	});
 
 

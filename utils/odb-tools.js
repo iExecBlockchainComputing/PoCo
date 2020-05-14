@@ -327,9 +327,13 @@ class Worker extends iExecAgent
 		super(iexec, wallet);
 	}
 
-	async run(auth, enclaveWallet, result)
+	async run(auth, enclaveWallet, result, callback)
 	{
-		const contribution = sealResult(auth.taskid, result, this.wallet.address);
+		const contribution = sealByteResult(
+			auth.taskid,
+			callback ? web3.utils.soliditySha3({t: 'bytes', v: callback }) : web3.utils.soliditySha3({t: 'string', v: result }),
+			this.wallet.address
+		);
 		if (auth.enclave == constants.NULL.ADDRESS) // Classic
 		{
 			contribution.sign = constants.NULL.SIGNATURE;

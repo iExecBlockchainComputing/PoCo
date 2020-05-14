@@ -460,11 +460,11 @@ contract('ERC1154: callback', async (accounts) => {
 			});
 		});
 
-		async function sendContribution(worker, taskid, result, useenclave = true)
+		async function sendContribution(worker, taskid, result, useenclave = true, callback)
 		{
 			const preauth          = await scheduler.signPreAuthorization(taskid, worker.address);
 			const [ auth, secret ] = useenclave ? await broker.signAuthorization(preauth) : [ preauth, null ];
-			const results          = await worker.run(auth, secret, result);
+			const results          = await worker.run(auth, secret, result, callback);
 
 			return IexecInstance.contribute(
 				auth.taskid,  // task (authorization)
@@ -479,26 +479,42 @@ contract('ERC1154: callback', async (accounts) => {
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
-				await sendContribution(worker1, tasks[1], "aResult 1", false);
-				await sendContribution(worker1, tasks[2], "aResult 2", false);
-				await sendContribution(worker1, tasks[3], "aResult 3", false);
-				await sendContribution(worker1, tasks[4], "aResult 4", false);
+				await sendContribution(worker1, tasks[1], "aResult 1", false, web3.utils.utf8ToHex("callback-1"));
+				await sendContribution(worker1, tasks[2], "aResult 2", false, web3.utils.utf8ToHex("callback-2"));
+				await sendContribution(worker1, tasks[3], "aResult 3", false, web3.utils.utf8ToHex("callback-3"));
+				await sendContribution(worker1, tasks[4], "aResult 4", false, web3.utils.utf8ToHex("callback-4"));
 			});
 		});
 
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
-				await IexecInstance.reveal(tasks[1], odbtools.utils.hashResult(tasks[1], "aResult 1").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[2], odbtools.utils.hashResult(tasks[2], "aResult 2").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[3], odbtools.utils.hashResult(tasks[3], "aResult 3").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[4], odbtools.utils.hashResult(tasks[4], "aResult 4").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[1], odbtools.utils.hashByteResult(tasks[1], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-1") })).digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[2], odbtools.utils.hashByteResult(tasks[2], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-2") })).digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[3], odbtools.utils.hashByteResult(tasks[3], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-3") })).digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[4], odbtools.utils.hashByteResult(tasks[4], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-4") })).digest, { from: worker1.address });
 			});
 		});
 
 		describe("[5] finalization", async () => {
+			describe("bad callback", async () => {
+				it("[TX] no call", async () => {
+					await expectRevert.unspecified(IexecInstance.finalize(
+						tasks[1],
+						web3.utils.utf8ToHex("aResult 1"),
+						web3.utils.utf8ToHex("wrong-callback"),
+						{ from: scheduler.address }
+					));
+				});
+			});
+
 			describe("no callback", async () => {
 				it("[TX] no call", async () => {
-					txMined = await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: scheduler.address });
+					txMined = await IexecInstance.finalize(
+						tasks[1],
+						web3.utils.utf8ToHex("aResult 1"),
+						web3.utils.utf8ToHex("callback-1"),
+						{ from: scheduler.address }
+					);
 
 					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
@@ -508,7 +524,12 @@ contract('ERC1154: callback', async (accounts) => {
 
 			describe("invalid callback", async () => {
 				it("[TX] doesn't revert", async () => {
-					txMined = await IexecInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler.address });
+					txMined = await IexecInstance.finalize(
+						tasks[2],
+						web3.utils.utf8ToHex("aResult 2"),
+						web3.utils.utf8ToHex("callback-2"),
+						{ from: scheduler.address }
+					);
 
 					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[2],                          "check taskid");
@@ -520,7 +541,12 @@ contract('ERC1154: callback', async (accounts) => {
 				it("[TX] call", async () => {
 					assert.equal(await TestClientInstance.store(tasks[3]), null, "Error in test client: store empty");
 
-					txMined = await IexecInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: scheduler.address });
+					txMined = await IexecInstance.finalize(
+						tasks[3],
+						web3.utils.utf8ToHex("aResult 3"),
+						web3.utils.utf8ToHex("callback-3"),
+						{ from: scheduler.address }
+					);
 
 					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
@@ -528,7 +554,7 @@ contract('ERC1154: callback', async (accounts) => {
 				});
 
 				it("check", async () => {
-					assert.equal(await TestClientInstance.store(tasks[3]), web3.utils.utf8ToHex("aResult 3"), "Error in test client: dataset not stored");
+					assert.equal(await TestClientInstance.store(tasks[3]), web3.utils.utf8ToHex("callback-3"), "Error in test client: dataset not stored");
 					// fails under coverage because of additional cost for instrumentation
 					// assert.equal(await TestClientInstance.gstore(tasks[3]), await IexecInstance.callbackgas()-343);
 				});
@@ -536,7 +562,12 @@ contract('ERC1154: callback', async (accounts) => {
 
 			describe("callback EOA", async () => {
 				it("[TX] doesn't revert", async () => {
-					txMined = await IexecInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler.address });
+					txMined = await IexecInstance.finalize(
+						tasks[4],
+						web3.utils.utf8ToHex("aResult 4"),
+						web3.utils.utf8ToHex("callback-4"),
+						{ from: scheduler.address }
+					);
 
 					events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 					assert.equal(events[0].args.taskid,  tasks[4],                          "check taskid");
