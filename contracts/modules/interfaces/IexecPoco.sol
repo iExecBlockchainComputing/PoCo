@@ -33,9 +33,9 @@ interface IexecPoco
 	function contribute(bytes32,bytes32,bytes32,address,bytes calldata,bytes calldata) external;
 	function reveal(bytes32,bytes32) external;
 	function reopen(bytes32) external;
-	function finalize(bytes32,bytes calldata) external;
+	function finalize(bytes32,bytes calldata,bytes calldata) external; // Expansion - result separation
 	function claim(bytes32) external;
-	function contributeAndFinalize(bytes32,bytes32,bytes calldata,address,bytes calldata,bytes calldata) external;
+	function contributeAndFinalize(bytes32,bytes32,bytes calldata,bytes calldata,address,bytes calldata,bytes calldata) external; // Expansion - result separation
 	function initializeArray(bytes32[] calldata,uint256[] calldata) external returns (bool);
 	function claimArray(bytes32[] calldata) external returns (bool);
 	function initializeAndClaimArray(bytes32[] calldata,uint256[] calldata) external returns (bool);

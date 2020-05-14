@@ -147,7 +147,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function failedWork(bytes32 _dealid, bytes32 _taskid)
 	internal
 	{
-		IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
+		IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
 		uint256 requesterstake = deal.app.price
 		                         .add(deal.dataset.price)
@@ -504,7 +504,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 	function finalize(
 		bytes32          _taskid,
-		bytes   calldata _results)
+		bytes   calldata _results,
+		bytes   calldata _resultsCallback) // Expansion - result separation
 	external override onlyScheduler(_taskid)
 	{
 		IexecLibCore_v5.Task storage task = m_tasks[_taskid];
@@ -514,10 +515,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.finalDeadline >  now                                                                         );
 		require(task.revealCounter == task.winnerCounter || (task.revealCounter > 0 && task.revealDeadline <= now));
 
-		require(deal.callback == address(0) || keccak256(_results) == task.resultDigest);
+		require(deal.callback == address(0) || keccak256(_resultsCallback) == task.resultDigest);
 
-		task.status  = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
-		task.results = _results;
+		task.status          = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
+		task.results         = _results;
+		task.resultsCallback = _resultsCallback; // Expansion - result separation
 
 		/**
 		 * Stake and reward management
@@ -562,6 +564,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32      _taskid,
 		bytes32      _resultDigest,
 		bytes memory _results,
+		bytes memory _resultsCallback, // Expansion - result separation
 		address      _enclaveChallenge,
 		bytes memory _enclaveSign,
 		bytes memory _authorizationSign)
@@ -579,7 +582,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 resultHash = keccak256(abi.encodePacked(              _taskid, _resultDigest));
 		bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));
 
-		require(deal.callback == address(0) || keccak256(_results) == _resultDigest);
+		require(deal.callback == address(0) || keccak256(_resultsCallback) == _resultDigest);
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
@@ -617,15 +620,11 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		task.winnerCounter            = 1;
 		task.resultDigest             = _resultDigest;
 		task.results                  = _results;
+		task.resultsCallback          = _resultsCallback; // Expansion - result separation
 		task.contributors.push(_msgSender());
 
 		successWork(task.dealid, _taskid);
-
-		// simple reward, no score consideration
-		uint256 workerReward    = deal.workerpool.price.percentage(uint256(100).sub(deal.schedulerRewardRatio));
-		uint256 schedulerReward = deal.workerpool.price.sub(workerReward);
-		rewardForContribution(_msgSender(), workerReward, _taskid);
-		rewardForScheduling(task.dealid, schedulerReward, _taskid);
+		distributeRewardsFast(_taskid);
 
 		emit TaskContribute(_taskid, _msgSender(), resultHash);
 		emit TaskConsensus(_taskid, resultHash);
@@ -647,7 +646,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	internal
 	{
 		IexecLibCore_v5.Task      storage task      = m_tasks[_taskid];
-		IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
+		IexecLibCore_v5.Consensus memory  consensus = m_consensus[_taskid];
 
 		uint256 trust = m_deals[task.dealid].trust;
 		/*************************************************************************
@@ -690,8 +689,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function distributeRewards(bytes32 _taskid)
 	internal
 	{
-		IexecLibCore_v5.Task storage task = m_tasks[_taskid];
-		IexecLibCore_v5.Deal memory  deal = m_deals[task.dealid];
+		IexecLibCore_v5.Task memory task = m_tasks[_taskid];
+		IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
 		uint256 totalLogWeight = 0;
 		uint256 totalReward    = deal.workerpool.price;
@@ -759,6 +758,22 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		}
 		// totalReward now contains the scheduler share
 		rewardForScheduling(task.dealid, totalReward, _taskid);
+	}
+
+	/*
+	 * Reward distribution for contributeAndFinalize
+	 */
+	function distributeRewardsFast(bytes32 _taskid)
+	internal
+	{
+		IexecLibCore_v5.Task memory task = m_tasks[_taskid];
+		IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
+
+		// simple reward, no score consideration
+		uint256 workerReward    = deal.workerpool.price.percentage(uint256(100).sub(deal.schedulerRewardRatio));
+		uint256 schedulerReward = deal.workerpool.price.sub(workerReward);
+		rewardForContribution(_msgSender(), workerReward, _taskid);
+		rewardForScheduling(task.dealid, schedulerReward, _taskid);
 	}
 
 	/**
