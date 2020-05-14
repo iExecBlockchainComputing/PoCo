@@ -515,7 +515,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		require(task.finalDeadline >  now                                                                         );
 		require(task.revealCounter == task.winnerCounter || (task.revealCounter > 0 && task.revealDeadline <= now));
 
-		require(deal.callback == address(0) || keccak256(_resultsCallback) == task.resultDigest);
+		require((deal.callback == address(0) && _resultsCallback.length == 0) || keccak256(_resultsCallback) == task.resultDigest);
 
 		task.status          = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 		task.results         = _results;
@@ -532,7 +532,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		 */
 		emit TaskFinalize(_taskid, _results);
 
-		executeCallback(_taskid, _results);
+		executeCallback(_taskid, _resultsCallback);
 	}
 
 	function claim(
@@ -582,7 +582,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes32 resultHash = keccak256(abi.encodePacked(              _taskid, _resultDigest));
 		bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));
 
-		require(deal.callback == address(0) || keccak256(_resultsCallback) == _resultDigest);
+		require((deal.callback == address(0) && _resultsCallback.length == 0) || keccak256(_resultsCallback) == task.resultDigest);
 
 		// need enclave challenge if tag is set
 		require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
@@ -631,7 +631,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		emit TaskReveal(_taskid, _msgSender(), _resultDigest);
 		emit TaskFinalize(_taskid, _results);
 
-		executeCallback(_taskid, _results);
+		executeCallback(_taskid, _resultsCallback);
 	}
 
 	/***************************************************************************
@@ -646,7 +646,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	internal
 	{
 		IexecLibCore_v5.Task      storage task      = m_tasks[_taskid];
-		IexecLibCore_v5.Consensus memory  consensus = m_consensus[_taskid];
+		IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
 
 		uint256 trust = m_deals[task.dealid].trust;
 		/*************************************************************************
@@ -779,7 +779,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	/**
 	 * Callback for smartcontracts using EIP1154
 	 */
-	function executeCallback(bytes32 _taskid, bytes memory _results)
+	function executeCallback(bytes32 _taskid, bytes memory _resultsCallback)
 	internal
 	{
 		address target = m_deals[m_tasks[_taskid].dealid].callback;
@@ -801,7 +801,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 			// }
 
 			// Pre solidity 0.6.0 version
-			(bool success, bytes memory returndata) = target.call{gas: m_callbackgas}(abi.encodeWithSignature("receiveResult(bytes32,bytes)", _taskid, _results));
+			(bool success, bytes memory returndata) = target.call{gas: m_callbackgas}(abi.encodeWithSignature("receiveResult(bytes32,bytes)", _taskid, _resultsCallback));
 			assert(gasleft() > m_callbackgas / 63);
 			// silent unused variable warning
 			success;
