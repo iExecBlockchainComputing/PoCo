@@ -56,7 +56,7 @@ abstract contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_setName(ENS(_ens), _name);
+		_setName(IENS(_ens), _name);
 	}
 
 	function setBaseURI(string calldata _baseURI)

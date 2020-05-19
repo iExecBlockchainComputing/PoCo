@@ -11,6 +11,6 @@ contract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, Deleg
 	function setName(address _ens, string calldata _name)
 	external override onlyOwner()
 	{
-		_setName(ENS(_ens), _name);
+		_setName(IENS(_ens), _name);
 	}
 }
