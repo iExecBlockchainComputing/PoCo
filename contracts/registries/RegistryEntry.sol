@@ -28,6 +28,6 @@ abstract contract RegistryEntry is ENSReverseRegistration
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
-		_setName(ENS(_ens), _name);
+		_setName(IENS(_ens), _name);
 	}
 }
