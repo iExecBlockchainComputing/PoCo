@@ -24,7 +24,7 @@ pipeline {
 		stage("Truffle tests") {
 			agent {
 				docker {
-					image "node:11"
+					image "node:10"
 					label "${LABEL}"
 				}
 			}
@@ -43,7 +43,7 @@ pipeline {
 		stage("Solidity coverage") {
 			agent {
 				docker {
-					image "node:11"
+					image "node:10"
 					label "${LABEL}"
 				}
 			}
