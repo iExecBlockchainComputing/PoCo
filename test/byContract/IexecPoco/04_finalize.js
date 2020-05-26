@@ -338,14 +338,14 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[4.1] Finalize - Correct (full)", async () => {
-		txMined = await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), { from: scheduler.address });
+		txMined = await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("aResult 1"), "0x", { from: scheduler.address });
 		events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[1],                          "check taskid");
 		assert.equal(events[0].args.results, web3.utils.utf8ToHex("aResult 1"), "check consensus (results)");
 	});
 
 	it("[4.2] Finalize - Error (partial - soon)", async () => {
-		await expectRevert.unspecified(IexecInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), { from: scheduler.address }));
+		await expectRevert.unspecified(IexecInstance.finalize(tasks[2], web3.utils.utf8ToHex("aResult 2"), "0x", { from: scheduler.address }));
 	});
 
 	it("clock fast forward", async () => {
@@ -355,7 +355,7 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[4.3] Finalize - Correct (partial - wait)", async () => {
-		txMined = await IexecInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), { from: scheduler.address });
+		txMined = await IexecInstance.finalize(tasks[3], web3.utils.utf8ToHex("aResult 3"), "0x", { from: scheduler.address });
 		assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
 		assert.equal(events[0].args.taskid,  tasks[3],                          "check taskid");
@@ -363,15 +363,15 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[4.4] Finalize - Error (no contribution)", async () => {
-		await expectRevert.unspecified(IexecInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), { from: scheduler.address }));
+		await expectRevert.unspecified(IexecInstance.finalize(tasks[4], web3.utils.utf8ToHex("aResult 4"), "0x", { from: scheduler.address }));
 	});
 
 	it("[4.5] Finalize - Error (no consensus)", async () => {
-		await expectRevert.unspecified(IexecInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler.address }));
+		await expectRevert.unspecified(IexecInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), "0x", { from: scheduler.address }));
 	});
 
 	it("[4.6] Finalize - Error (no reveal)", async () => {
-		await expectRevert.unspecified(IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), { from: scheduler.address }));
+		await expectRevert.unspecified(IexecInstance.finalize(tasks[6], web3.utils.utf8ToHex("aResult 6"), "0x", { from: scheduler.address }));
 	});
 
 	it("clock fast forward", async () => {
@@ -381,6 +381,6 @@ contract('Poco', async (accounts) => {
 	});
 
 	it("[4.7] Finalize - Error (late)", async () => {
-		await expectRevert.unspecified(IexecInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), { from: scheduler.address }));
+		await expectRevert.unspecified(IexecInstance.finalize(tasks[7], web3.utils.utf8ToHex("aResult 7"), "0x", { from: scheduler.address }));
 	});
 });

@@ -319,7 +319,7 @@ contract('Poco', async (accounts) => {
 		});
 
 		it("[8.5b] finalize", async () => {
-			await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("result"), { from: scheduler.address });
+			await IexecInstance.finalize(tasks[1], web3.utils.utf8ToHex("result"), "0x", { from: scheduler.address });
 		});
 
 		it("kitty balance", async () => {

@@ -542,6 +542,7 @@ contract('Fullchain', async (accounts) => {
 					txMined = await IexecInstance.finalize(
 						tasks[0].taskid,
 						web3.utils.utf8ToHex("aResult 1"),
+						"0x",
 						{ from: scheduler.address }
 					);
 					gasReceipt.push([ "finalize", txMined.receipt.gasUsed ]);
@@ -566,6 +567,7 @@ contract('Fullchain', async (accounts) => {
 						assert.equal    (Number(task.winnerCounter),           2                                                                         );
 						assert.deepEqual(       task.contributors.map(a => a), tasks[0].workers.map(w => w.agent.address)                                );
 						assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 1")                                         );
+						assert.equal    (       task.resultsCallback,          "0x"                                                                      );
 					});
 
 					it("balances", async () => {
@@ -595,6 +597,7 @@ contract('Fullchain', async (accounts) => {
 					txMined = await IexecInstance.finalize(
 						tasks[1].taskid,
 						web3.utils.utf8ToHex("aResult 2"),
+						"0x",
 						{ from: scheduler.address }
 					);
 					gasReceipt.push([ "finalize", txMined.receipt.gasUsed ]);
@@ -619,6 +622,7 @@ contract('Fullchain', async (accounts) => {
 						assert.equal    (Number(task.winnerCounter),           2                                                                         );
 						assert.deepEqual(       task.contributors.map(a => a), tasks[1].workers.map(w => w.agent.address)                                );
 						assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 2")                                         );
+						assert.equal    (       task.resultsCallback,          "0x"                                                                      );
 					});
 
 					it("balances", async () => {
@@ -648,6 +652,7 @@ contract('Fullchain', async (accounts) => {
 					txMined = await IexecInstance.finalize(
 						tasks[2].taskid,
 						web3.utils.utf8ToHex("aResult 3"),
+						"0x",
 						{ from: scheduler.address }
 					);
 					gasReceipt.push([ "finalize", txMined.receipt.gasUsed ]);
@@ -672,6 +677,7 @@ contract('Fullchain', async (accounts) => {
 						assert.equal    (Number(task.winnerCounter),           4                                                                         );
 						assert.deepEqual(       task.contributors.map(a => a), tasks[2].workers.map(w => w.agent.address)                                );
 						assert.equal    (       task.results,                  web3.utils.utf8ToHex("aResult 3")                                         );
+						assert.equal    (       task.resultsCallback,          "0x"                                                                      );
 					});
 
 					it("balances", async () => {

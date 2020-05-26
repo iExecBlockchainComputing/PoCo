@@ -103,7 +103,7 @@ contract IexecAccessorsDelegate is IexecAccessors, DelegateBase
 	{
 		IexecLibCore_v5.Task storage task = m_tasks[id];
 		require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, 'task-pending');
-		return task.results;
+		return task.resultsCallback; // Expansion - result separation
 	}
 
 	function viewCategory(uint256 _catid)

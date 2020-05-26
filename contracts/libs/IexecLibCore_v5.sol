@@ -77,6 +77,7 @@ library IexecLibCore_v5
 		bytes32   resultDigest;
 		bytes     results;
 		uint256   resultsTimestamp;
+		bytes     resultsCallback; // Expansion - result separation
 	}
 
 	/**

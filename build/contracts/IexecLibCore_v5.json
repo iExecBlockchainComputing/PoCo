@@ -1,22 +1,22 @@
 {
   "contractName": "IexecLibCore_v5",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol\":\"IexecLibCore_v5\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x2ab8fa750e4d0832afc0b04686e46f020bfe115e5be29b2301f41f97509e2a6f\",\"urls\":[\"bzz-raw://750c1e0aebc8cfd8197561d412d6ae77558362845c3195ac59651139e21bbc7f\",\"dweb:/ipfs/QmPimAbBDdB2Yuw5PuWVQ9qa3BUz4Psrav2Y75Vh3Hmmrr\"]}},\"version\":1}",
-  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065bb1be15d72a97cf4f5901ae2aa6e313250ec9a74f3e61c4ef5c675c3e35e0064736f6c63430006060033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122065bb1be15d72a97cf4f5901ae2aa6e313250ec9a74f3e61c4ef5c675c3e35e0064736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol\":\"IexecLibCore_v5\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x90494b8c9cd400a553d995b3c0fff84d89fc7145038d81049b60528ecb81671d\",\"urls\":[\"bzz-raw://2290367f0e6d8aef161ec549b464014a8473004d1558b08a74c9b20c00433316\",\"dweb:/ipfs/QmXFWuvbj4XVz31C2Rs9D6W95eiZG8C1qR3u4pxE5MctsH\"]}},\"version\":1}",
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122077f9e87b4b6a9b7294c4b1ff84ff6a55e4006bb7e3d92f3c36da0ff6a9e8434564736f6c63430006060033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122077f9e87b4b6a9b7294c4b1ff84ff6a55e4006bb7e3d92f3c36da0ff6a9e8434564736f6c63430006060033",
   "immutableReferences": {},
-  "sourceMap": "26:1735:5:-:0;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
-  "deployedSourceMap": "26:1735:5:-:0;;;;;;12:1:-1;9;2:12",
-  "source": "pragma solidity ^0.6.0;\n\n\nlibrary IexecLibCore_v5\n{\n\t/**\n\t* Tools\n\t*/\n\tstruct Account\n\t{\n\t\tuint256 stake;\n\t\tuint256 locked;\n\t}\n\tstruct Category\n\t{\n\t\tstring  name;\n\t\tstring  description;\n\t\tuint256 workClockTimeRef;\n\t}\n\n\t/**\n\t * Clerk - Deals\n\t */\n\tstruct Resource\n\t{\n\t\taddress pointer;\n\t\taddress owner;\n\t\tuint256 price;\n\t}\n\tstruct Deal\n\t{\n\t\t// Ressources\n\t\tResource app;\n\t\tResource dataset;\n\t\tResource workerpool;\n\t\tuint256 trust;\n\t\tuint256 category;\n\t\tbytes32 tag;\n\t\t// execution details\n\t\taddress requester;\n\t\taddress beneficiary;\n\t\taddress callback;\n\t\tstring  params;\n\t\t// execution settings\n\t\tuint256 startTime;\n\t\tuint256 botFirst;\n\t\tuint256 botSize;\n\t\t// consistency\n\t\tuint256 workerStake;\n\t\tuint256 schedulerRewardRatio;\n\t}\n\n\t/**\n\t * Tasks\n\t */\n\tenum TaskStatusEnum\n\t{\n\t\tUNSET,     // Work order not yet initialized (invalid address)\n\t\tACTIVE,    // Marketed → constributions are open\n\t\tREVEALING, // Starting consensus reveal\n\t\tCOMPLETED, // Consensus achieved\n\t\tFAILED     // Failed consensus\n\t}\n\tstruct Task\n\t{\n\t\tTaskStatusEnum status;\n\t\tbytes32   dealid;\n\t\tuint256   idx;\n\t\tuint256   timeref;\n\t\tuint256   contributionDeadline;\n\t\tuint256   revealDeadline;\n\t\tuint256   finalDeadline;\n\t\tbytes32   consensusValue;\n\t\tuint256   revealCounter;\n\t\tuint256   winnerCounter;\n\t\taddress[] contributors;\n\t\tbytes32   resultDigest;\n\t\tbytes     results;\n\t\tuint256   resultsTimestamp;\n\t}\n\n\t/**\n\t * Consensus\n\t */\n\tstruct Consensus\n\t{\n\t\tmapping(bytes32 => uint256) group;\n\t\tuint256                     total;\n\t}\n\n\t/**\n\t * Consensus\n\t */\n\tenum ContributionStatusEnum\n\t{\n\t\tUNSET,\n\t\tCONTRIBUTED,\n\t\tPROVED,\n\t\tREJECTED\n\t}\n\tstruct Contribution\n\t{\n\t\tContributionStatusEnum status;\n\t\tbytes32 resultHash;\n\t\tbytes32 resultSeal;\n\t\taddress enclaveChallenge;\n\t\tuint256 weight;\n\t}\n\n}\n",
+  "sourceMap": "26:1797:5:-:0;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
+  "deployedSourceMap": "26:1797:5:-:0;;;;;;12:1:-1;9;2:12",
+  "source": "pragma solidity ^0.6.0;\n\n\nlibrary IexecLibCore_v5\n{\n\t/**\n\t* Tools\n\t*/\n\tstruct Account\n\t{\n\t\tuint256 stake;\n\t\tuint256 locked;\n\t}\n\tstruct Category\n\t{\n\t\tstring  name;\n\t\tstring  description;\n\t\tuint256 workClockTimeRef;\n\t}\n\n\t/**\n\t * Clerk - Deals\n\t */\n\tstruct Resource\n\t{\n\t\taddress pointer;\n\t\taddress owner;\n\t\tuint256 price;\n\t}\n\tstruct Deal\n\t{\n\t\t// Ressources\n\t\tResource app;\n\t\tResource dataset;\n\t\tResource workerpool;\n\t\tuint256 trust;\n\t\tuint256 category;\n\t\tbytes32 tag;\n\t\t// execution details\n\t\taddress requester;\n\t\taddress beneficiary;\n\t\taddress callback;\n\t\tstring  params;\n\t\t// execution settings\n\t\tuint256 startTime;\n\t\tuint256 botFirst;\n\t\tuint256 botSize;\n\t\t// consistency\n\t\tuint256 workerStake;\n\t\tuint256 schedulerRewardRatio;\n\t}\n\n\t/**\n\t * Tasks\n\t */\n\tenum TaskStatusEnum\n\t{\n\t\tUNSET,     // Work order not yet initialized (invalid address)\n\t\tACTIVE,    // Marketed → constributions are open\n\t\tREVEALING, // Starting consensus reveal\n\t\tCOMPLETED, // Consensus achieved\n\t\tFAILED     // Failed consensus\n\t}\n\tstruct Task\n\t{\n\t\tTaskStatusEnum status;\n\t\tbytes32   dealid;\n\t\tuint256   idx;\n\t\tuint256   timeref;\n\t\tuint256   contributionDeadline;\n\t\tuint256   revealDeadline;\n\t\tuint256   finalDeadline;\n\t\tbytes32   consensusValue;\n\t\tuint256   revealCounter;\n\t\tuint256   winnerCounter;\n\t\taddress[] contributors;\n\t\tbytes32   resultDigest;\n\t\tbytes     results;\n\t\tuint256   resultsTimestamp;\n\t\tbytes     resultsCallback; // Expansion - result separation\n\t}\n\n\t/**\n\t * Consensus\n\t */\n\tstruct Consensus\n\t{\n\t\tmapping(bytes32 => uint256) group;\n\t\tuint256                     total;\n\t}\n\n\t/**\n\t * Consensus\n\t */\n\tenum ContributionStatusEnum\n\t{\n\t\tUNSET,\n\t\tCONTRIBUTED,\n\t\tPROVED,\n\t\tREJECTED\n\t}\n\tstruct Contribution\n\t{\n\t\tContributionStatusEnum status;\n\t\tbytes32 resultHash;\n\t\tbytes32 resultSeal;\n\t\taddress enclaveChallenge;\n\t\tuint256 weight;\n\t}\n\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol",
     "exportedSymbols": {
       "IexecLibCore_v5": [
-        380
+        382
       ]
     },
-    "id": 381,
+    "id": 383,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -37,9 +37,9 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 380,
+        "id": 382,
         "linearizedBaseContracts": [
-          380
+          382
         ],
         "name": "IexecLibCore_v5",
         "nodeType": "ContractDefinition",
@@ -107,7 +107,7 @@
             ],
             "name": "Account",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "71:55:5",
             "visibility": "public"
           },
@@ -202,7 +202,7 @@
             ],
             "name": "Category",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "128:88:5",
             "visibility": "public"
           },
@@ -299,7 +299,7 @@
             ],
             "name": "Resource",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "247:74:5",
             "visibility": "public"
           },
@@ -739,7 +739,7 @@
             ],
             "name": "Deal",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "323:405:5",
             "visibility": "public"
           },
@@ -784,7 +784,7 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Task",
-            "id": 356,
+            "id": 358,
             "members": [
               {
                 "constant": false,
@@ -793,7 +793,7 @@
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1023:21:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -823,7 +823,7 @@
                 "name": "dealid",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1048:16:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -851,7 +851,7 @@
                 "name": "idx",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1068:13:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -879,7 +879,7 @@
                 "name": "timeref",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1085:17:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -907,7 +907,7 @@
                 "name": "contributionDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1106:30:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -935,7 +935,7 @@
                 "name": "revealDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1140:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -963,7 +963,7 @@
                 "name": "finalDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1168:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -991,7 +991,7 @@
                 "name": "consensusValue",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1195:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1019,7 +1019,7 @@
                 "name": "revealCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1223:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1047,7 +1047,7 @@
                 "name": "winnerCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1250:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1075,7 +1075,7 @@
                 "name": "contributors",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1277:22:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1114,7 +1114,7 @@
                 "name": "resultDigest",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1303:22:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1142,7 +1142,7 @@
                 "name": "results",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1329:17:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1170,7 +1170,7 @@
                 "name": "resultsTimestamp",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1350:26:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1190,27 +1190,55 @@
                 },
                 "value": null,
                 "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 357,
+                "mutability": "mutable",
+                "name": "resultsCallback",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 358,
+                "src": "1380:25:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                },
+                "typeName": {
+                  "id": 356,
+                  "name": "bytes",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1380:5:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_storage_ptr",
+                    "typeString": "bytes"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
               }
             ],
             "name": "Task",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1006:374:5",
+            "scope": 382,
+            "src": "1006:436:5",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Consensus",
-            "id": 363,
+            "id": 365,
             "members": [
               {
                 "constant": false,
-                "id": 360,
+                "id": 362,
                 "mutability": "mutable",
                 "name": "group",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 363,
-                "src": "1429:33:5",
+                "scope": 365,
+                "src": "1491:33:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1218,28 +1246,28 @@
                   "typeString": "mapping(bytes32 => uint256)"
                 },
                 "typeName": {
-                  "id": 359,
+                  "id": 361,
                   "keyType": {
-                    "id": 357,
+                    "id": 359,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1437:7:5",
+                    "src": "1499:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1429:27:5",
+                  "src": "1491:27:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_bytes32_$_t_uint256_$",
                     "typeString": "mapping(bytes32 => uint256)"
                   },
                   "valueType": {
-                    "id": 358,
+                    "id": 360,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1448:7:5",
+                    "src": "1510:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1251,13 +1279,13 @@
               },
               {
                 "constant": false,
-                "id": 362,
+                "id": 364,
                 "mutability": "mutable",
                 "name": "total",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 363,
-                "src": "1466:33:5",
+                "scope": 365,
+                "src": "1528:33:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1265,10 +1293,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 361,
+                  "id": 363,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1466:7:5",
+                  "src": "1528:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1280,100 +1308,72 @@
             ],
             "name": "Consensus",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1407:96:5",
+            "scope": 382,
+            "src": "1469:96:5",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.ContributionStatusEnum",
-            "id": 368,
+            "id": 370,
             "members": [
               {
-                "id": 364,
+                "id": 366,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
-                "src": "1563:5:5"
-              },
-              {
-                "id": 365,
-                "name": "CONTRIBUTED",
-                "nodeType": "EnumValue",
-                "src": "1572:11:5"
-              },
-              {
-                "id": 366,
-                "name": "PROVED",
-                "nodeType": "EnumValue",
-                "src": "1587:6:5"
+                "src": "1625:5:5"
               },
               {
                 "id": 367,
+                "name": "CONTRIBUTED",
+                "nodeType": "EnumValue",
+                "src": "1634:11:5"
+              },
+              {
+                "id": 368,
+                "name": "PROVED",
+                "nodeType": "EnumValue",
+                "src": "1649:6:5"
+              },
+              {
+                "id": 369,
                 "name": "REJECTED",
                 "nodeType": "EnumValue",
-                "src": "1597:8:5"
+                "src": "1659:8:5"
               }
             ],
             "name": "ContributionStatusEnum",
             "nodeType": "EnumDefinition",
-            "src": "1530:78:5"
+            "src": "1592:78:5"
           },
           {
             "canonicalName": "IexecLibCore_v5.Contribution",
-            "id": 379,
+            "id": 381,
             "members": [
-              {
-                "constant": false,
-                "id": 370,
-                "mutability": "mutable",
-                "name": "status",
-                "nodeType": "VariableDeclaration",
-                "overrides": null,
-                "scope": 379,
-                "src": "1635:29:5",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$368",
-                  "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
-                },
-                "typeName": {
-                  "contractScope": null,
-                  "id": 369,
-                  "name": "ContributionStatusEnum",
-                  "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 368,
-                  "src": "1635:22:5",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$368",
-                    "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
-                  }
-                },
-                "value": null,
-                "visibility": "internal"
-              },
               {
                 "constant": false,
                 "id": 372,
                 "mutability": "mutable",
-                "name": "resultHash",
+                "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1668:18:5",
+                "scope": 381,
+                "src": "1697:29:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_bytes32",
-                  "typeString": "bytes32"
+                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$370",
+                  "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                 },
                 "typeName": {
+                  "contractScope": null,
                   "id": 371,
-                  "name": "bytes32",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "1668:7:5",
+                  "name": "ContributionStatusEnum",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 370,
+                  "src": "1697:22:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
+                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$370",
+                    "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                   }
                 },
                 "value": null,
@@ -1383,11 +1383,11 @@
                 "constant": false,
                 "id": 374,
                 "mutability": "mutable",
-                "name": "resultSeal",
+                "name": "resultHash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1690:18:5",
+                "scope": 381,
+                "src": "1730:18:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1398,7 +1398,7 @@
                   "id": 373,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1690:7:5",
+                  "src": "1730:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -1411,11 +1411,39 @@
                 "constant": false,
                 "id": 376,
                 "mutability": "mutable",
+                "name": "resultSeal",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 381,
+                "src": "1752:18:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 375,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1752:7:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 378,
+                "mutability": "mutable",
                 "name": "enclaveChallenge",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1712:24:5",
+                "scope": 381,
+                "src": "1774:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1423,10 +1451,10 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 375,
+                  "id": 377,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1712:7:5",
+                  "src": "1774:7:5",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -1438,13 +1466,13 @@
               },
               {
                 "constant": false,
-                "id": 378,
+                "id": 380,
                 "mutability": "mutable",
                 "name": "weight",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1740:14:5",
+                "scope": 381,
+                "src": "1802:14:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1452,10 +1480,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 377,
+                  "id": 379,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1740:7:5",
+                  "src": "1802:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1467,25 +1495,25 @@
             ],
             "name": "Contribution",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1610:148:5",
+            "scope": 382,
+            "src": "1672:148:5",
             "visibility": "public"
           }
         ],
-        "scope": 381,
-        "src": "26:1735:5"
+        "scope": 383,
+        "src": "26:1797:5"
       }
     ],
-    "src": "0:1762:5"
+    "src": "0:1824:5"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/libs/IexecLibCore_v5.sol",
     "exportedSymbols": {
       "IexecLibCore_v5": [
-        380
+        382
       ]
     },
-    "id": 381,
+    "id": 383,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -1506,9 +1534,9 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 380,
+        "id": 382,
         "linearizedBaseContracts": [
-          380
+          382
         ],
         "name": "IexecLibCore_v5",
         "nodeType": "ContractDefinition",
@@ -1576,7 +1604,7 @@
             ],
             "name": "Account",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "71:55:5",
             "visibility": "public"
           },
@@ -1671,7 +1699,7 @@
             ],
             "name": "Category",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "128:88:5",
             "visibility": "public"
           },
@@ -1768,7 +1796,7 @@
             ],
             "name": "Resource",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "247:74:5",
             "visibility": "public"
           },
@@ -2208,7 +2236,7 @@
             ],
             "name": "Deal",
             "nodeType": "StructDefinition",
-            "scope": 380,
+            "scope": 382,
             "src": "323:405:5",
             "visibility": "public"
           },
@@ -2253,7 +2281,7 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Task",
-            "id": 356,
+            "id": 358,
             "members": [
               {
                 "constant": false,
@@ -2262,7 +2290,7 @@
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1023:21:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2292,7 +2320,7 @@
                 "name": "dealid",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1048:16:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2320,7 +2348,7 @@
                 "name": "idx",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1068:13:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2348,7 +2376,7 @@
                 "name": "timeref",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1085:17:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2376,7 +2404,7 @@
                 "name": "contributionDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1106:30:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2404,7 +2432,7 @@
                 "name": "revealDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1140:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2432,7 +2460,7 @@
                 "name": "finalDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1168:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2460,7 +2488,7 @@
                 "name": "consensusValue",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1195:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2488,7 +2516,7 @@
                 "name": "revealCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1223:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2516,7 +2544,7 @@
                 "name": "winnerCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1250:23:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2544,7 +2572,7 @@
                 "name": "contributors",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1277:22:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2583,7 +2611,7 @@
                 "name": "resultDigest",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1303:22:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2611,7 +2639,7 @@
                 "name": "results",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1329:17:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2639,7 +2667,7 @@
                 "name": "resultsTimestamp",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 356,
+                "scope": 358,
                 "src": "1350:26:5",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2659,27 +2687,55 @@
                 },
                 "value": null,
                 "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 357,
+                "mutability": "mutable",
+                "name": "resultsCallback",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 358,
+                "src": "1380:25:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                },
+                "typeName": {
+                  "id": 356,
+                  "name": "bytes",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1380:5:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_storage_ptr",
+                    "typeString": "bytes"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
               }
             ],
             "name": "Task",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1006:374:5",
+            "scope": 382,
+            "src": "1006:436:5",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Consensus",
-            "id": 363,
+            "id": 365,
             "members": [
               {
                 "constant": false,
-                "id": 360,
+                "id": 362,
                 "mutability": "mutable",
                 "name": "group",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 363,
-                "src": "1429:33:5",
+                "scope": 365,
+                "src": "1491:33:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2687,28 +2743,28 @@
                   "typeString": "mapping(bytes32 => uint256)"
                 },
                 "typeName": {
-                  "id": 359,
+                  "id": 361,
                   "keyType": {
-                    "id": 357,
+                    "id": 359,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1437:7:5",
+                    "src": "1499:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
                   "nodeType": "Mapping",
-                  "src": "1429:27:5",
+                  "src": "1491:27:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_mapping$_t_bytes32_$_t_uint256_$",
                     "typeString": "mapping(bytes32 => uint256)"
                   },
                   "valueType": {
-                    "id": 358,
+                    "id": 360,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1448:7:5",
+                    "src": "1510:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2720,13 +2776,13 @@
               },
               {
                 "constant": false,
-                "id": 362,
+                "id": 364,
                 "mutability": "mutable",
                 "name": "total",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 363,
-                "src": "1466:33:5",
+                "scope": 365,
+                "src": "1528:33:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2734,10 +2790,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 361,
+                  "id": 363,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1466:7:5",
+                  "src": "1528:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -2749,100 +2805,72 @@
             ],
             "name": "Consensus",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1407:96:5",
+            "scope": 382,
+            "src": "1469:96:5",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.ContributionStatusEnum",
-            "id": 368,
+            "id": 370,
             "members": [
               {
-                "id": 364,
+                "id": 366,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
-                "src": "1563:5:5"
-              },
-              {
-                "id": 365,
-                "name": "CONTRIBUTED",
-                "nodeType": "EnumValue",
-                "src": "1572:11:5"
-              },
-              {
-                "id": 366,
-                "name": "PROVED",
-                "nodeType": "EnumValue",
-                "src": "1587:6:5"
+                "src": "1625:5:5"
               },
               {
                 "id": 367,
+                "name": "CONTRIBUTED",
+                "nodeType": "EnumValue",
+                "src": "1634:11:5"
+              },
+              {
+                "id": 368,
+                "name": "PROVED",
+                "nodeType": "EnumValue",
+                "src": "1649:6:5"
+              },
+              {
+                "id": 369,
                 "name": "REJECTED",
                 "nodeType": "EnumValue",
-                "src": "1597:8:5"
+                "src": "1659:8:5"
               }
             ],
             "name": "ContributionStatusEnum",
             "nodeType": "EnumDefinition",
-            "src": "1530:78:5"
+            "src": "1592:78:5"
           },
           {
             "canonicalName": "IexecLibCore_v5.Contribution",
-            "id": 379,
+            "id": 381,
             "members": [
-              {
-                "constant": false,
-                "id": 370,
-                "mutability": "mutable",
-                "name": "status",
-                "nodeType": "VariableDeclaration",
-                "overrides": null,
-                "scope": 379,
-                "src": "1635:29:5",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$368",
-                  "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
-                },
-                "typeName": {
-                  "contractScope": null,
-                  "id": 369,
-                  "name": "ContributionStatusEnum",
-                  "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 368,
-                  "src": "1635:22:5",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$368",
-                    "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
-                  }
-                },
-                "value": null,
-                "visibility": "internal"
-              },
               {
                 "constant": false,
                 "id": 372,
                 "mutability": "mutable",
-                "name": "resultHash",
+                "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1668:18:5",
+                "scope": 381,
+                "src": "1697:29:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_bytes32",
-                  "typeString": "bytes32"
+                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$370",
+                  "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                 },
                 "typeName": {
+                  "contractScope": null,
                   "id": 371,
-                  "name": "bytes32",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "1668:7:5",
+                  "name": "ContributionStatusEnum",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 370,
+                  "src": "1697:22:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes32",
-                    "typeString": "bytes32"
+                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$370",
+                    "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                   }
                 },
                 "value": null,
@@ -2852,11 +2880,11 @@
                 "constant": false,
                 "id": 374,
                 "mutability": "mutable",
-                "name": "resultSeal",
+                "name": "resultHash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1690:18:5",
+                "scope": 381,
+                "src": "1730:18:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2867,7 +2895,7 @@
                   "id": 373,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1690:7:5",
+                  "src": "1730:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -2880,11 +2908,39 @@
                 "constant": false,
                 "id": 376,
                 "mutability": "mutable",
+                "name": "resultSeal",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 381,
+                "src": "1752:18:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 375,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1752:7:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 378,
+                "mutability": "mutable",
                 "name": "enclaveChallenge",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1712:24:5",
+                "scope": 381,
+                "src": "1774:24:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2892,10 +2948,10 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 375,
+                  "id": 377,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1712:7:5",
+                  "src": "1774:7:5",
                   "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
@@ -2907,13 +2963,13 @@
               },
               {
                 "constant": false,
-                "id": 378,
+                "id": 380,
                 "mutability": "mutable",
                 "name": "weight",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 379,
-                "src": "1740:14:5",
+                "scope": 381,
+                "src": "1802:14:5",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -2921,10 +2977,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 377,
+                  "id": 379,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "1740:7:5",
+                  "src": "1802:7:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -2936,16 +2992,16 @@
             ],
             "name": "Contribution",
             "nodeType": "StructDefinition",
-            "scope": 380,
-            "src": "1610:148:5",
+            "scope": 382,
+            "src": "1672:148:5",
             "visibility": "public"
           }
         ],
-        "scope": 381,
-        "src": "26:1735:5"
+        "scope": 383,
+        "src": "26:1797:5"
       }
     ],
-    "src": "0:1762:5"
+    "src": "0:1824:5"
   },
   "compiler": {
     "name": "solc",
@@ -2953,7 +3009,7 @@
   },
   "networks": {},
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-04-30T13:17:58.447Z",
+  "updatedAt": "2020-05-18T12:56:29.329Z",
   "devdoc": {
     "methods": {}
   },

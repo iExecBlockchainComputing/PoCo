@@ -346,11 +346,11 @@ contract('ERC1154: resultFor', async (accounts) => {
 			});
 		});
 
-		async function sendContribution(worker, taskid, result, useenclave = true)
+		async function sendContribution(worker, taskid, result, useenclave = true, callback)
 		{
 			const preauth          = await scheduler.signPreAuthorization(taskid, worker.address);
 			const [ auth, secret ] = useenclave ? await broker.signAuthorization(preauth) : [ preauth, null ];
-			const results          = await worker.run(auth, secret, result);
+			const results          = await worker.run(auth, secret, result, callback);
 
 			return IexecInstance.contribute(
 				auth.taskid,  // task (authorization)
@@ -365,23 +365,23 @@ contract('ERC1154: resultFor', async (accounts) => {
 
 		describe("[3] contribute", async () => {
 			it("[TX] contribute", async () => {
-				await sendContribution(worker1, tasks[2], "true", false);
-				await sendContribution(worker1, tasks[3], "true", false);
-				await sendContribution(worker1, tasks[4], "true", false);
-				await sendContribution(worker1, tasks[5], "true", false);
+				await sendContribution(worker1, tasks[2], "true", false, web3.utils.utf8ToHex("callback-2"));
+				await sendContribution(worker1, tasks[3], "true", false, web3.utils.utf8ToHex("callback-3"));
+				await sendContribution(worker1, tasks[4], "true", false, web3.utils.utf8ToHex("callback-4"));
+				await sendContribution(worker1, tasks[5], "true", false, web3.utils.utf8ToHex("callback-5"));
 			});
 		});
 
 		describe("[4] reveal", async () => {
 			it("[TX] reveal", async () => {
-				await IexecInstance.reveal(tasks[4], odbtools.utils.hashResult(tasks[4], "true").digest, { from: worker1.address });
-				await IexecInstance.reveal(tasks[5], odbtools.utils.hashResult(tasks[5], "true").digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[4], odbtools.utils.hashByteResult(tasks[4], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-4") })).digest, { from: worker1.address });
+				await IexecInstance.reveal(tasks[5], odbtools.utils.hashByteResult(tasks[5], web3.utils.soliditySha3({t: 'bytes', v: web3.utils.utf8ToHex("callback-5") })).digest, { from: worker1.address });
 			});
 		});
 
 		describe("[5] finalization", async () => {
 			it("[TX] finalize", async () => {
-				await IexecInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), { from: scheduler.address });
+				await IexecInstance.finalize(tasks[5], web3.utils.utf8ToHex("aResult 5"), web3.utils.utf8ToHex("callback-5"), { from: scheduler.address });
 			});
 		});
 	});
@@ -414,7 +414,7 @@ contract('ERC1154: resultFor', async (accounts) => {
 		});
 		describe("finalized", async () => {
 			it("valid", async () => {
-				assert.equal(await IexecInstance.resultFor(tasks[5]), web3.utils.utf8ToHex("aResult 5"), "resultFor returned incorrect value");
+				assert.equal(await IexecInstance.resultFor(tasks[5]), web3.utils.utf8ToHex("callback-5"), "resultFor returned incorrect value");
 			});
 		});
 	});

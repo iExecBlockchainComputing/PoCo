@@ -608,7 +608,12 @@ contract('Fullchain', async (accounts) => {
 
 		describe("[5] finalization", async () => {
 			it("[TX] finalize", async () => {
-				txMined = await IexecInstance.finalize(taskid, web3.utils.utf8ToHex("aResult"), { from: scheduler.address });
+				txMined = await IexecInstance.finalize(
+					taskid,
+					web3.utils.utf8ToHex("aResult"),
+					"0x",
+					{ from: scheduler.address }
+				);
 				gasReceipt.push([ "finalize", txMined.receipt.gasUsed ]);
 
 				events = tools.extractEvents(txMined, IexecInstance.address, "TaskFinalize");
