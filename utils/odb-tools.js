@@ -1,4 +1,3 @@
-const ethUtil   = require('ethereumjs-util');
 const sigUtil   = require('eth-sig-util');
 const constants = require('./constants');
 
@@ -150,12 +149,12 @@ function signStruct(primaryType, message, domain, wallet)
 
 function hashStruct(primaryType, message, domain)
 {
-	return ethUtil.bufferToHex(sigUtil.TypedDataUtils.sign({
+	return '0x' + sigUtil.TypedDataUtils.sign({
 		types: TYPES,
 		primaryType,
 		message,
 		domain,
-	}));
+	}).toString('hex');
 }
 
 /* NOT EIP712 compliant */
