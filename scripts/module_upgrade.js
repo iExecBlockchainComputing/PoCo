@@ -13,13 +13,13 @@ const LIBRARIES = [
 ]
 
 const MODULES = [
-	// { module: artifacts.require('IexecEscrowTokenSwapDelegate'), methods: ['depositEth', 'withdrawEth'] },
-	// { module: artifacts.require('IexecEscrowTokenSwapDelegate') },
-	{ module: artifacts.require('IexecPocoDelegate') },
+	{ module: artifacts.require('IexecAccessorsDelegate'), methods: [ 'viewTask', 'resultFor'             ] }, // result separation update
+	{ module: artifacts.require('IexecPocoDelegate'),      methods: [ 'finalize', 'contributeAndFinalize' ] }, // result separation update
 ]
 
 const FUNCTIONS = [
-	// { func: 'swap();', address: '0x0000000000000000000000000000000000000000' },
+	{ func: 'finalize(bytes32,bytes);',                                          address: '0x0000000000000000000000000000000000000000' }, // result separation update
+	{ func: 'contributeAndFinalize(bytes32,bytes32,bytes,address,bytes,bytes);', address: '0x0000000000000000000000000000000000000000' }, // result separation update
 ]
 
 /*****************************************************************************
