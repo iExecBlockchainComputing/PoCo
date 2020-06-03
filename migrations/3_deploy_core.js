@@ -6,7 +6,7 @@ var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
 // Factory
 var GenericFactory          = artifacts.require('@iexec/solidity/GenericFactory')
 // ERC1538 core & delegates
-var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
+var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy.0.6.4') // using fix bytecode
 var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
 var ERC1538Query            = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
 // Libraries
@@ -89,7 +89,7 @@ async function factoryDeployer(contract, options = {})
 	}
 	else
 	{
-		console.log(`[factory] ${contract.contractName} already deployed`);
+		console.log(`[factory] ${contract.contractName} already deployed at ${contract.address}`);
 	}
 }
 
