@@ -89,7 +89,7 @@ async function factoryDeployer(contract, options = {})
 	}
 	else
 	{
-		console.log(`[factory] ${contract.contractName} already deployed`);
+		console.log(`[factory] ${contract.contractName} already deployed at ${contract.address}`);
 	}
 }
 

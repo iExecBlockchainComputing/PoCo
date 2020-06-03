@@ -27,7 +27,7 @@
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo-dev.git#readme",
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
-    "@iexec/solidity": "0.1.0-beta.16",
+    "@iexec/solidity": "0.1.0-legacy",
     "@openzeppelin/contracts": "3.0.1",
     "rlc-faucet-contract": "1.0.9"
   },
@@ -43,6 +43,6 @@
     "husky": "4.2.5",
     "solidity-coverage": "0.7.5",
     "truffle": "5.1.27",
-    "truffle-security": "1.7.1"
+    "truffle-plugin-verify": "0.3.11"
   }
 }
