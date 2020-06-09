@@ -25,26 +25,26 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"changeRegistries\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":\"IexecMaintenanceExtra\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":{\"keccak256\":\"0xb0904f5a3faba779c8d7849270c7df306ab82af7ecbeab83c2c842926a8b20f2\",\"urls\":[\"bzz-raw://4e035856f9a48b97f4a215d8b3aa4dd025157763ed246c8e6c807d567291dce3\",\"dweb:/ipfs/QmeAabUZYi9KqBZHMrhdbGrZdkVFqN7AYYc5M1fxYusSTV\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"changeRegistries\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":\"IexecMaintenanceExtra\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol\":{\"keccak256\":\"0xb0904f5a3faba779c8d7849270c7df306ab82af7ecbeab83c2c842926a8b20f2\",\"urls\":[\"bzz-raw://4e035856f9a48b97f4a215d8b3aa4dd025157763ed246c8e6c807d567291dce3\",\"dweb:/ipfs/QmeAabUZYi9KqBZHMrhdbGrZdkVFqN7AYYc5M1fxYusSTV\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\ninterface IexecMaintenanceExtra\n{\n\tfunction changeRegistries(address,address,address) external;\n}\n",
-  "sourcePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
+  "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
   "ast": {
-    "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
     "exportedSymbols": {
       "IexecMaintenanceExtra": [
-        7411
+        7469
       ]
     },
-    "id": 7412,
+    "id": 7470,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7400,
+        "id": 7458,
         "literals": [
           "solidity",
           "^",
@@ -55,7 +55,7 @@
         "src": "0:23:31"
       },
       {
-        "id": 7401,
+        "id": 7459,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -70,9 +70,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7411,
+        "id": 7469,
         "linearizedBaseContracts": [
-          7411
+          7469
         ],
         "name": "IexecMaintenanceExtra",
         "nodeType": "ContractDefinition",
@@ -81,7 +81,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "0e7c4033",
-            "id": 7410,
+            "id": 7468,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -89,17 +89,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7408,
+              "id": 7466,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7403,
+                  "id": 7461,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "121:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -108,7 +108,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7402,
+                    "id": 7460,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "121:7:31",
@@ -123,12 +123,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7405,
+                  "id": 7463,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "129:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -137,7 +137,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7404,
+                    "id": 7462,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "129:7:31",
@@ -152,12 +152,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7407,
+                  "id": 7465,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "137:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -166,7 +166,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7406,
+                    "id": 7464,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "137:7:31",
@@ -183,36 +183,36 @@
               "src": "120:25:31"
             },
             "returnParameters": {
-              "id": 7409,
+              "id": 7467,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "154:0:31"
             },
-            "scope": 7411,
+            "scope": 7469,
             "src": "95:60:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7412,
+        "scope": 7470,
         "src": "60:97:31"
       }
     ],
     "src": "0:158:31"
   },
   "legacyAST": {
-    "absolutePath": "/home/amxx/Work/iExec/code/PoCo/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
+    "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenanceExtra.sol",
     "exportedSymbols": {
       "IexecMaintenanceExtra": [
-        7411
+        7469
       ]
     },
-    "id": 7412,
+    "id": 7470,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7400,
+        "id": 7458,
         "literals": [
           "solidity",
           "^",
@@ -223,7 +223,7 @@
         "src": "0:23:31"
       },
       {
-        "id": 7401,
+        "id": 7459,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -238,9 +238,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 7411,
+        "id": 7469,
         "linearizedBaseContracts": [
-          7411
+          7469
         ],
         "name": "IexecMaintenanceExtra",
         "nodeType": "ContractDefinition",
@@ -249,7 +249,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "0e7c4033",
-            "id": 7410,
+            "id": 7468,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -257,17 +257,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7408,
+              "id": 7466,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7403,
+                  "id": 7461,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "121:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -276,7 +276,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7402,
+                    "id": 7460,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "121:7:31",
@@ -291,12 +291,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7405,
+                  "id": 7463,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "129:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -305,7 +305,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7404,
+                    "id": 7462,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "129:7:31",
@@ -320,12 +320,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7407,
+                  "id": 7465,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7410,
+                  "scope": 7468,
                   "src": "137:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -334,7 +334,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 7406,
+                    "id": 7464,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "137:7:31",
@@ -351,19 +351,19 @@
               "src": "120:25:31"
             },
             "returnParameters": {
-              "id": 7409,
+              "id": 7467,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "154:0:31"
             },
-            "scope": 7411,
+            "scope": 7469,
             "src": "95:60:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7412,
+        "scope": 7470,
         "src": "60:97:31"
       }
     ],
@@ -374,8 +374,8 @@
     "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.1.0",
-  "updatedAt": "2020-04-30T13:17:58.626Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-06-09T12:03:26.639Z",
   "devdoc": {
     "methods": {}
   },

@@ -62,12 +62,14 @@ module.exports =
 		viviani: {
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.VIVIANI_NODE),
 			network_id: '133',
-			gasPrice:   "0", // 0 Gwei
+			gasPrice:   '0', // 0 Gwei
+			gas:        '6700000',
 		},
 		bellecour: {
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.BELLECOUR_NODE),
 			network_id: '134',
-			gasPrice:   "0", // 0 Gwei
+			gasPrice:   '0', // 0 Gwei
+			gas:        '6700000',
 		}
 	},
 	compilers: {
