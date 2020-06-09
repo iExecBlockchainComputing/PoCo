@@ -30,7 +30,7 @@ module.exports = async function(deployer, network, accounts)
 		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at((await ERC1538Proxy.deployed()).address); break;
 	}
 
-	if (chainid > 64) // skip for mainnet and testnet
+	if (chainid > 1000) // skip for mainnet and testnet
 	{
 		const totalAmount = ACCOUNTS.reduce((acc, {amount})=> acc + amount, 0); // 1RLC
 

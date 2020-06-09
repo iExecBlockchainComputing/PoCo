@@ -49,7 +49,7 @@ module.exports = async function(deployer, network, accounts)
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
 	/* ----------------------------- Deploy ENS ------------------------------ */
-	if (chainid > 64) // skip for mainnet and testnet use
+	if (chainid > 1000) // skip for mainnet and testnet use
 	{
 		var ens        = null;
 		var resolver   = null;
