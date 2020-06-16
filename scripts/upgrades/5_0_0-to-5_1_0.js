@@ -8,17 +8,17 @@ var ERC1538Update  = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
  *                               Configuration                               *
  *****************************************************************************/
 const LIBRARIES = [
-	// artifacts.require('IexecLibOrders_v5'),
+	artifacts.require('IexecLibOrders_v5'),
 ]
 
 const MODULES = [
-	// { module: artifacts.require('IexecAccessorsDelegate'), methods: [ 'viewTask', 'resultFor'             ] }, // result separation update
-	// { module: artifacts.require('IexecPocoDelegate'),      methods: [ 'finalize', 'contributeAndFinalize' ] }, // result separation update
+	{ module: artifacts.require('IexecAccessorsDelegate'), methods: [ 'viewTask', 'resultFor'             ] }, // result separation update
+	{ module: artifacts.require('IexecPocoDelegate'),      methods: [ 'finalize', 'contributeAndFinalize' ] }, // result separation update
 ]
 
 const FUNCTIONS = [
-	// { func: 'finalize(bytes32,bytes);',                                          address: '0x0000000000000000000000000000000000000000' }, // result separation update
-	// { func: 'contributeAndFinalize(bytes32,bytes32,bytes,address,bytes,bytes);', address: '0x0000000000000000000000000000000000000000' }, // result separation update
+	{ func: 'finalize(bytes32,bytes);',                                          address: '0x0000000000000000000000000000000000000000' }, // result separation update
+	{ func: 'contributeAndFinalize(bytes32,bytes32,bytes,address,bytes,bytes);', address: '0x0000000000000000000000000000000000000000' }, // result separation update
 ]
 
 /*****************************************************************************
