@@ -28,102 +28,8 @@ contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, Iex
 	}
 
 	/***************************************************************************
-	 *                        Swapping methods - Public                        *
+	 *                         Uniswap path - Internal                         *
 	 ***************************************************************************/
-	receive()
-	external override payable
-	{
-		_deposit(_msgSender(), msg.value, 0);
-	}
-
-	function depositEth()
-	external override payable
-	{
-		_deposit(_msgSender(), msg.value, 0);
-	}
-
-	function safeDepositEth(uint256 minimum)
-	external override payable
-	{
-		_deposit(_msgSender(), msg.value, minimum);
-	}
-
-	function depositEthFor(address target)
-	external override payable
-	{
-		_deposit(target, msg.value, 0);
-	}
-
-	function safeDepositEthFor(uint256 minimum, address target)
-	external override payable
-	{
-		_deposit(target, msg.value, minimum);
-	}
-
-	function withdrawEth(uint256 amount)
-	external override
-	{
-		_withdraw(_msgSender(), amount, 0);
-	}
-
-	function safeWithdrawEth(uint256 amount, uint256 minimum)
-	external override
-	{
-		_withdraw(_msgSender(), amount, minimum);
-	}
-
-	function estimateDepositEthSent(uint256 eth)
-	external view override returns (uint256 token)
-	{
-		return router.getAmountsOut(eth, _eth2token())[1];
-	}
-
-	function estimateDepositTokenWanted(uint256 token)
-	external view override returns (uint256 eth)
-	{
-		return router.getAmountsIn(token, _eth2token())[0];
-	}
-
-	function estimateWithdrawTokenSent(uint256 token)
-	external view override returns (uint256 eth)
-	{
-		return router.getAmountsOut(token, _token2eth())[1];
-	}
-
-	function estimateWithdrawEthWanted(uint256 eth)
-	external view override returns (uint256 token)
-	{
-		return router.getAmountsIn(eth, _token2eth())[0];
-	}
-
-	/***************************************************************************
-	 *                       Swapping methods - Internal                       *
-	 ***************************************************************************/
-	function _deposit(address user, uint256 value, uint256 minimum)
-	internal
-	{
-		uint256[] memory amounts = router.swapExactETHForTokens{value: value}(minimum, _eth2token(), address(this), now+1);
-		_mint(user, amounts[1]);
-	}
-
-	function _depositExact(address user, uint256 value, uint256 exact)
-	internal
-	{
-		uint256[] memory amounts = router.swapETHForExactTokens{value: value}(exact, _eth2token(), address(this), now+1);
-		_mint(user, amounts[1]);
-		// Refund remaining ETH
-		(bool success, ) = user.call{value: value.sub(amounts[0])}('');
-		require(success, 'native-transfer-failed');
-	}
-
-	function _withdraw(address user, uint256 amount, uint256 minimum)
-	internal
-	{
-		m_baseToken.approve(address(router), amount);
-		uint256[] memory amounts = router.swapExactTokensForETH(amount, minimum, _token2eth(), user, now+1);
-		_burn(user, amounts[0]);
-	}
-
 	function _eth2token()
 	internal view returns (address[] memory)
 	{
@@ -143,6 +49,57 @@ contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, Iex
 	}
 
 	/***************************************************************************
+	 *                       Prediction methods - Public                       *
+	 ***************************************************************************/
+	function estimateDepositEthSent    (uint256 eth  ) external view override returns (uint256 token) { return router.getAmountsOut(eth,   _eth2token())[1]; }
+	function estimateDepositTokenWanted(uint256 token) external view override returns (uint256 eth  ) { return router.getAmountsIn (token, _eth2token())[0]; }
+	function estimateWithdrawTokenSent (uint256 token) external view override returns (uint256 eth  ) { return router.getAmountsOut(token, _token2eth())[1]; }
+	function estimateWithdrawEthWanted (uint256 eth  ) external view override returns (uint256 token) { return router.getAmountsIn (eth,   _token2eth())[0]; }
+
+	/***************************************************************************
+	 *                        Swapping methods - Public                        *
+	 ***************************************************************************/
+	receive                   (                                                ) external override payable {  _deposit(_msgSender(), msg.value, 0      ); }
+	function depositEth       (                                                ) external override payable {  _deposit(_msgSender(), msg.value, 0      ); }
+	function depositEthFor    (                                  address target) external override payable {  _deposit(target,       msg.value, 0      ); }
+	function safeDepositEth   (                 uint256 minimum                ) external override payable {  _deposit(_msgSender(), msg.value, minimum); }
+	function safeDepositEthFor(                 uint256 minimum, address target) external override payable {  _deposit(target,       msg.value, minimum); }
+	function requestToken     (uint256 amount                                  ) external override payable {  _request(_msgSender(), msg.value, amount ); }
+	function requestTokenFor  (uint256 amount,                   address target) external override payable {  _request(target,       msg.value, amount ); }
+	function withdrawEth      (uint256 amount                                  ) external override         { _withdraw(_msgSender(), amount,    0      ); }
+	function withdrawEthTo    (uint256 amount,                   address target) external override         { _withdraw(target,       amount,    0      ); }
+	function safeWithdrawEth  (uint256 amount,  uint256 minimum                ) external override         { _withdraw(_msgSender(), amount,    minimum); }
+	function safeWithdrawEthTo(uint256 amount,  uint256 minimum, address target) external override         { _withdraw(target,       amount,    minimum); }
+
+	/***************************************************************************
+	 *                       Swapping methods - Internal                       *
+	 ***************************************************************************/
+	function _deposit(address target, uint256 value, uint256 minimum)
+	internal
+	{
+		uint256[] memory amounts = router.swapExactETHForTokens{value: value}(minimum, _eth2token(), address(this), now+1);
+		_mint(target, amounts[1]);
+	}
+
+	function _request(address target, uint256 value, uint256 amount)
+	internal
+	{
+		uint256[] memory amounts = router.swapETHForExactTokens{value: value}(amount, _eth2token(), address(this), now+1);
+		_mint(target, amounts[1]);
+		// Refund remaining ETH
+		(bool success, ) = _msgSender().call{value: value.sub(amounts[0])}('');
+		require(success, 'native-transfer-failed');
+	}
+
+	function _withdraw(address target, uint256 amount, uint256 minimum)
+	internal
+	{
+		m_baseToken.approve(address(router), amount);
+		uint256[] memory amounts = router.swapExactTokensForETH(amount, minimum, _token2eth(), target, now+1);
+		_burn(_msgSender(), amounts[0]);
+	}
+
+	/***************************************************************************
 	 *                          Extra public methods                           *
 	 ***************************************************************************/
 	function matchOrdersWithEth(
@@ -159,7 +116,7 @@ contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, Iex
 		volume = volume.min(_workerpoolorder.volume.sub(m_consumed[keccak256(_toEthTypedStruct(_workerpoolorder.hash(), EIP712DOMAIN_SEPARATOR))]));
 		volume = volume.min(   _requestorder.volume.sub(m_consumed[keccak256(_toEthTypedStruct(   _requestorder.hash(), EIP712DOMAIN_SEPARATOR))]));
 
-		_depositExact(
+		_request(
 			_requestorder.requester,
 			msg.value,
 			_apporder.appprice

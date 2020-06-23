@@ -7,18 +7,23 @@ import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecEscrowTokenSwap
 {
-	receive()                                            external payable;
-	function depositEth                ()                external payable;
-	function safeDepositEth            (uint256)         external payable;
-	function depositEthFor             (address)         external payable;
-	function safeDepositEthFor         (uint256,address) external payable;
-	function withdrawEth               (uint256)         external;
-	function safeWithdrawEth           (uint256,uint256) external;
-	function UniswapV2Router           ()                external view returns (IUniswapV2Router02);
-	function estimateDepositEthSent    (uint256)         external view returns (uint256);
-	function estimateDepositTokenWanted(uint256)         external view returns (uint256);
-	function estimateWithdrawTokenSent (uint256)         external view returns (uint256);
-	function estimateWithdrawEthWanted (uint256)         external view returns (uint256);
+	function UniswapV2Router           ()        external view returns (IUniswapV2Router02);
+	function estimateDepositEthSent    (uint256) external view returns (uint256);
+	function estimateDepositTokenWanted(uint256) external view returns (uint256);
+	function estimateWithdrawTokenSent (uint256) external view returns (uint256);
+	function estimateWithdrawEthWanted (uint256) external view returns (uint256);
+
+	receive                   (                         ) external payable;
+	function depositEth       (                         ) external payable;
+	function depositEthFor    (                  address) external payable;
+	function safeDepositEth   (         uint256         ) external payable;
+	function safeDepositEthFor(         uint256, address) external payable;
+	function requestToken     (uint256                  ) external payable;
+	function requestTokenFor  (uint256,          address) external payable;
+	function withdrawEth      (uint256                  ) external;
+	function withdrawEthTo    (uint256,          address) external;
+	function safeWithdrawEth  (uint256, uint256         ) external;
+	function safeWithdrawEthTo(uint256, uint256, address) external;
 
 	function matchOrdersWithEth(
 		IexecLibOrders_v5.AppOrder        memory,
