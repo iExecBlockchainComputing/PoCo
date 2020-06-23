@@ -812,6 +812,19 @@
       "type": "event"
     },
     {
+      "inputs": [],
+      "name": "UniswapV2Router",
+      "outputs": [
+        {
+          "internalType": "contract IUniswapV2Router02",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -1504,6 +1517,26 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "depositEth",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "depositEthFor",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -1594,6 +1627,82 @@
           "internalType": "bytes32",
           "name": "",
           "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateDepositEthSent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateDepositTokenWanted",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateWithdrawEthWanted",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateWithdrawTokenSent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -2436,6 +2545,273 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.AppOrder",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.RequestOrder",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "name": "matchOrdersWithEth",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "name",
       "outputs": [
@@ -2576,6 +2952,55 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "safeDepositEth",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "safeDepositEthFor",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "safeWithdrawEth",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -3580,6 +4005,19 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawEth",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "workerpool_stake_ratio",
       "outputs": [
@@ -3610,26 +4048,27 @@
       "type": "receive"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"AccurateContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"apporder\",\"type\":\"tuple\"}],\"name\":\"BroadcastAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"datasetorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"requestorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"FaultyContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Lock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"}],\"name\":\"OrdersMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Reward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"}],\"name\":\"SchedulerNotice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Seize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"SignedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"SignedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"SignedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"SignedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"consensus\",\"type\":\"bytes32\"}],\"name\":\"TaskConsensus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"TaskContribute\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"TaskFinalize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"}],\"name\":\"TaskInitialize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskReopen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"digest\",\"type\":\"bytes32\"}],\"name\":\"TaskReveal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Unlock\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"appregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"approveAndCall\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"callbackgas\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"name\":\"claimArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contribute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contributeAndFinalize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contribution_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"countCategory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"datasetregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"decreaseAllowance\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositFor\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"},{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"name\":\"depositForArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"domain\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"chainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"verifyingContract\",\"type\":\"address\"}],\"internalType\":\"struct IexecLibOrders_v5.EIP712Domain\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"eip712domain_separator\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"final_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"finalize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"frozenOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"groupmember_purpose\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"importScore\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"increaseAllowance\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeAndClaimArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_address\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_min\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrders\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"receiveApproval\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"recover\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reopen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resultFor\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reveal_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"setCallbackGas\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"ens\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"setTeeBroker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"teebroker\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateDomainSeparator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"verifyPresignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifyPresignatureOrSignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewAccount\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"stake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locked\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Account\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"viewAccountABILegacy\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"viewCategory\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Category\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_catid\",\"type\":\"uint256\"}],\"name\":\"viewCategoryABILegacy\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewConfigABILegacy\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewConsumed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewContribution\",\"outputs\":[{\"components\":[{\"internalType\":\"enum IexecLibCore_v5.ContributionStatusEnum\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"resultHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"resultSeal\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"enclaveChallenge\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Contribution\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_taskid\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"viewContributionABILegacy\",\"outputs\":[{\"internalType\":\"enum IexecLibCore_v5.ContributionStatusEnum\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewDeal\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"app\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"dataset\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"workerpool\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"botFirst\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"botSize\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"workerStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"schedulerRewardRatio\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Deal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewDealABILegacy_pt1\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewDealABILegacy_pt2\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewPresigned\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewScore\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewTask\",\"outputs\":[{\"components\":[{\"internalType\":\"enum IexecLibCore_v5.TaskStatusEnum\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"idx\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timeref\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributionDeadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revealDeadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"finalDeadline\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"consensusValue\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"revealCounter\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"winnerCounter\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"contributors\",\"type\":\"address[]\"},{\"internalType\":\"bytes32\",\"name\":\"resultDigest\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"results\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"resultsTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"resultsCallback\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibCore_v5.Task\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_taskid\",\"type\":\"bytes32\"}],\"name\":\"viewTaskABILegacy\",\"outputs\":[{\"internalType\":\"enum IexecLibCore_v5.TaskStatusEnum\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"workerpool_stake_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"workerpoolregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol\":\"IexecInterfaceTokenABILegacy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol\":{\"keccak256\":\"0x16b45ee5b74a22ce9a6a7096731d2b648567153f0d7a2ef20f459ce62a705fab\",\"urls\":[\"bzz-raw://198b8ccb543a01d17b4495e6565b14e8de8793194907c382aa9ff956ae43fe8c\",\"dweb:/ipfs/QmaMjte8BNoKqdEUWscHBA3VRexhUZHpa7eRbaiZpEEZc8\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x90494b8c9cd400a553d995b3c0fff84d89fc7145038d81049b60528ecb81671d\",\"urls\":[\"bzz-raw://2290367f0e6d8aef161ec549b464014a8473004d1558b08a74c9b20c00433316\",\"dweb:/ipfs/QmXFWuvbj4XVz31C2Rs9D6W95eiZG8C1qR3u4pxE5MctsH\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":{\"keccak256\":\"0x4d3842f83e941c6077de8874963a9625dd51b4cac9c3260f527dad7ff1b24fa3\",\"urls\":[\"bzz-raw://997afda63d45675604f06b171964a28de8d4697b888968a9d8a352f261d8b453\",\"dweb:/ipfs/QmVYiZHDXc4T7Nc1XrfzMXL6N5m6tUken1c7xXSVqyHGmu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IOwnable.sol\":{\"keccak256\":\"0xf84a481a9c8d64463d7ec38fdc5b56a28fb6b77fba37e140eafae35f40bc0f2e\",\"urls\":[\"bzz-raw://e451d4b0573978199ef15ad861c28a3623d4bff2a29ff8ea89b16fbb10828b10\",\"dweb:/ipfs/QmZdGHdi7EcLTY17erkFcadHFt2KDa3EfrBQJFTt8LC2TU\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessors.sol\":{\"keccak256\":\"0x6743223ad8f94bc476636ffe9fe3015661e5771fa41e50e3df7c3edc8326da9c\",\"urls\":[\"bzz-raw://625e6046edc254acf5719dc3c344479d5708918ab704ebf4ffd8a75c52229dbc\",\"dweb:/ipfs/QmcGQPcNXzmqDD1PKNbJfSs3nLEpLt1dvXpSU56y6xamhZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessorsABILegacy.sol\":{\"keccak256\":\"0x02440492050303db068c753e976d2389179e892c0c9e27375667bd7e477cf5a7\",\"urls\":[\"bzz-raw://2ef967f9013ae5650dbec4a76d9ea30aafcb006b09f9603dfe6c371d54869628\",\"dweb:/ipfs/QmcipcECioros7L54b5Th2H8vPhgafVskjq2zBUhJFL2Kg\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecCategoryManager.sol\":{\"keccak256\":\"0x727d836745e8a07d7c815037f70107cfccc5d36864d464aef507040825bb4dd6\",\"urls\":[\"bzz-raw://923a05c812e0401f89dcfde9e1169f2d64757bc88f7b829d1ac868c8cb763161\",\"dweb:/ipfs/Qmc2EuzMSJcNFLWWyA8qjvkEYqpyLjXLF99rxrZMb4x7qE\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecERC20.sol\":{\"keccak256\":\"0xb2c9f75f4f8bcee9c4f0b9c32b349bf55a41662730b36e0a8c94df737d858ae1\",\"urls\":[\"bzz-raw://a3501144bf7fe9c9711ad2d1ba10b98d0894c1dbac57ce0dcdc6914c8b1ab6d8\",\"dweb:/ipfs/QmYf8hSnJZt5DGxdpaAqHrYP9uE1TtC3kpG49aTi19ZFhi\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowToken.sol\":{\"keccak256\":\"0x5152758964dcbb824e56c8949c72a570e1514790f98b457dd72059831ddf58d5\",\"urls\":[\"bzz-raw://1b17535bdbfe8e6e71c1aeedd5b64645b6eb7471c8fcbc6d264bf1f56c941fb7\",\"dweb:/ipfs/QmfDscyFkEqkhfE2QCky5G1tDDj1oQmX5CMQct3hCFaKhV\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol\":{\"keccak256\":\"0x219583e5a9316693fa4a2f6dc4c113de25745e259c3d8c61fb4fe8dba2dafd11\",\"urls\":[\"bzz-raw://00836ee789959c575edc2a0bdaf740d00d8de9baa3b554395135b8322620d7da\",\"dweb:/ipfs/QmV5NtqTdtMUxhcymtc99VsHDS3Thtu8P4fEFR9QbKK6dK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":{\"keccak256\":\"0x8b79ac33287ff55c3fc7ca8b61f422dd59979901dda99d64320bc8f858bced56\",\"urls\":[\"bzz-raw://c705f5671692eb90d26a55897271389fc5ecb1baa883aa48a1a46077524d6ff4\",\"dweb:/ipfs/QmPfxZRG4gdgRUbFHBFf4EBCDTwHP5pHg5H3mcmrbQD4Hi\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecPoco.sol\":{\"keccak256\":\"0x6fb39a0563fdaca7ccaf86fdc46808d85803eff07ae541482d6f76c83739240b\",\"urls\":[\"bzz-raw://d11f19889268d32fe158a765bb4800544ad2578c78aa764a14c7053afc72165b\",\"dweb:/ipfs/QmQ9AS9gPKsGLXsjFYZz5L8dUL4kwSZcvQpofKdErfDe2D\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol\":{\"keccak256\":\"0x9b9a3ed8de64238d1a473121d0ce5df8034617f264ce7dc15a6029b7352625c8\",\"urls\":[\"bzz-raw://4bd0f10a6917b100e1affe960e92c223d8aeeeedf5b929f534145bc0b428f8a7\",\"dweb:/ipfs/QmNn7sJAmPKbhfP4GSVEDdLmS3f84z17jdisfxksaCFASC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol\":{\"keccak256\":\"0x6161676b6468833be22f161bf2d2cc2dac98031cb64e32d871460f1a9e6c857a\",\"urls\":[\"bzz-raw://e03f4fef57f8540a6ede21ebdb3877bd87afe6a08344903852c5fbbfa4939453\",\"dweb:/ipfs/QmTmonyzpeaQNAyLW9cGti9MrHoJtXTRoM25rgbtnVFtep\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"@iexec/solidity/contracts/ERC1154/IERC1154.sol\":{\"keccak256\":\"0x542ed19435ffdf4e5f1fbf57f87d26883e04cf96c21c69f7eb691e46c0f6ee5d\",\"urls\":[\"bzz-raw://d7744c331a362162870775cdea560f2db4da1ae6123ca05aba825a8850da37a0\",\"dweb:/ipfs/Qmf3FgPtiUiCA4Mnb9LpGrUciub9RwxniGSRPriRM4hVpc\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x9175561c374ec1fc33045e5dfdde2057e63e00debf432875f9e1e3395d99c149\",\"urls\":[\"bzz-raw://b0167043c1938b56904deaa481a73041aa4a9e054c60db0b0dfbebfe7869c06a\",\"dweb:/ipfs/QmUoYjhymBr6WUpExKgRvKxXD5fcdpQEe1o9ResKZu6CC5\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x708f339ccc3e9d164ec61bb0db7d4c224161a3bca52413c8bbeddb114154e52b\",\"urls\":[\"bzz-raw://1462c089d30cd75f9ce18c39a26f41adcb74e4a14d2cb9f5c8bcb0a8631fa660\",\"dweb:/ipfs/QmP9hGNkYTpRazqXnQoSyiUiL8DJr3Y8nX9Wcg7SukNMUf\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0x09bbc2d7d73986e6e645d0dd65cd16f41248e5cc991f06d42db2946b5f2e3786\",\"urls\":[\"bzz-raw://4f5f3ca771fe28f1bd7de5521bb2ef23b7fadb681b0b0a7ed13d0e2772a1d945\",\"dweb:/ipfs/QmSbLtedzXRjruuhQjx7AXjpg5CGC98g1TBKaVUf1nU38a\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"AccurateContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"apporder\",\"type\":\"tuple\"}],\"name\":\"BroadcastAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"datasetorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"requestorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"indexed\":false,\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"workerpoolorder\",\"type\":\"tuple\"}],\"name\":\"BroadcastWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"ClosedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"catid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"name\":\"CreateCategory\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"FaultyContribution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Lock\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"}],\"name\":\"OrdersMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Reward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"}],\"name\":\"SchedulerNotice\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"ref\",\"type\":\"bytes32\"}],\"name\":\"Seize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"appHash\",\"type\":\"bytes32\"}],\"name\":\"SignedAppOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"datasetHash\",\"type\":\"bytes32\"}],\"name\":\"SignedDatasetOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"requestHash\",\"type\":\"bytes32\"}],\"name\":\"SignedRequestOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"workerpoolHash\",\"type\":\"bytes32\"}],\"name\":\"SignedWorkerpoolOrder\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"consensus\",\"type\":\"bytes32\"}],\"name\":\"TaskConsensus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"TaskContribute\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"results\",\"type\":\"bytes\"}],\"name\":\"TaskFinalize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"}],\"name\":\"TaskInitialize\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"}],\"name\":\"TaskReopen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskid\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"worker\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"digest\",\"type\":\"bytes32\"}],\"name\":\"TaskReveal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Unlock\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"UniswapV2Router\",\"outputs\":[{\"internalType\":\"contract IUniswapV2Router02\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"appregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"approveAndCall\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"broadcastWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"callbackgas\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"name\":\"claimArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"configure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contribute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"contributeAndFinalize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contribution_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"countCategory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"createCategory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"datasetregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"decreaseAllowance\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"depositEth\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositEthFor\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"depositFor\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"},{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"name\":\"depositForArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"domain\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"chainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"verifyingContract\",\"type\":\"address\"}],\"internalType\":\"struct IexecLibOrders_v5.EIP712Domain\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"eip712domain_separator\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"estimateDepositEthSent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"estimateDepositTokenWanted\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"estimateWithdrawEthWanted\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"estimateWithdrawTokenSent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"final_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"finalize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"frozenOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"groupmember_purpose\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"importScore\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"increaseAllowance\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeAndClaimArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"name\":\"initializeArray\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_address\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_min\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kitty_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageAppOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageDatasetOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageRequestOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"enum IexecLibOrders_v5.OrderOperationEnum\",\"name\":\"operation\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrderOperation\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"manageWorkerpoolOrder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrders\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.AppOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"workerpoolrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.DatasetOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolprice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"apprestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"datasetrestrict\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"requesterrestrict\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.WorkerpoolOrder\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"app\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"appmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"dataset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"datasetmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"workerpool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"workerpoolmaxprice\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"volume\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"sign\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibOrders_v5.RequestOrder\",\"name\":\"\",\"type\":\"tuple\"}],\"name\":\"matchOrdersWithEth\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"receiveApproval\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"recover\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reopen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resultFor\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"reveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reveal_deadline_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"safeDepositEth\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"safeDepositEthFor\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"safeWithdrawEth\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"setCallbackGas\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"ens\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"name\":\"setName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"setTeeBroker\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"teebroker\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateDomainSeparator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"verifyPresignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifyPresignatureOrSignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewAccount\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"stake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locked\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Account\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"viewAccountABILegacy\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"viewCategory\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"workClockTimeRef\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Category\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_catid\",\"type\":\"uint256\"}],\"name\":\"viewCategoryABILegacy\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewConfigABILegacy\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewConsumed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewContribution\",\"outputs\":[{\"components\":[{\"internalType\":\"enum IexecLibCore_v5.ContributionStatusEnum\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"resultHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"resultSeal\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"enclaveChallenge\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Contribution\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_taskid\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_worker\",\"type\":\"address\"}],\"name\":\"viewContributionABILegacy\",\"outputs\":[{\"internalType\":\"enum IexecLibCore_v5.ContributionStatusEnum\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewDeal\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"app\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"dataset\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"pointer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Resource\",\"name\":\"workerpool\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"trust\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tag\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"requester\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"callback\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"params\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"botFirst\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"botSize\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"workerStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"schedulerRewardRatio\",\"type\":\"uint256\"}],\"internalType\":\"struct IexecLibCore_v5.Deal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewDealABILegacy_pt1\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_id\",\"type\":\"bytes32\"}],\"name\":\"viewDealABILegacy_pt2\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewPresigned\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"viewScore\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"viewTask\",\"outputs\":[{\"components\":[{\"internalType\":\"enum IexecLibCore_v5.TaskStatusEnum\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"dealid\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"idx\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timeref\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributionDeadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revealDeadline\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"finalDeadline\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"consensusValue\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"revealCounter\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"winnerCounter\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"contributors\",\"type\":\"address[]\"},{\"internalType\":\"bytes32\",\"name\":\"resultDigest\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"results\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"resultsTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"resultsCallback\",\"type\":\"bytes\"}],\"internalType\":\"struct IexecLibCore_v5.Task\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_taskid\",\"type\":\"bytes32\"}],\"name\":\"viewTaskABILegacy\",\"outputs\":[{\"internalType\":\"enum IexecLibCore_v5.TaskStatusEnum\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawEth\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"workerpool_stake_ratio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"workerpoolregistry\",\"outputs\":[{\"internalType\":\"contract IRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol\":\"IexecInterfaceTokenABILegacy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol\":{\"keccak256\":\"0xde0412c6cf48cb3216ca3224f1e9b9d5d8c118dd9cb93e0de878123c8833eef5\",\"urls\":[\"bzz-raw://de5689dee91d42631fcce4654de60bfe4d6e8776299d8d2bab9213455b6106b5\",\"dweb:/ipfs/QmNzzPnSGBx9wJ583n9Q8ZTzWNgFanqv7975Ga6McVjDbg\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x90494b8c9cd400a553d995b3c0fff84d89fc7145038d81049b60528ecb81671d\",\"urls\":[\"bzz-raw://2290367f0e6d8aef161ec549b464014a8473004d1558b08a74c9b20c00433316\",\"dweb:/ipfs/QmXFWuvbj4XVz31C2Rs9D6W95eiZG8C1qR3u4pxE5MctsH\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0xf2fece8edb03040a06bc18ff9a7354a57c1762c7fd8e5c353e696dd38b7a2693\",\"urls\":[\"bzz-raw://b758832e3a0c3d168ce75cf9569d78104f90afda4d0d2aca80a6612860c49c66\",\"dweb:/ipfs/QmPdteQJsejwYs8Vq4zAKfLUjSECcrRmS1sT3uotFWXpdZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol\":{\"keccak256\":\"0x4d3842f83e941c6077de8874963a9625dd51b4cac9c3260f527dad7ff1b24fa3\",\"urls\":[\"bzz-raw://997afda63d45675604f06b171964a28de8d4697b888968a9d8a352f261d8b453\",\"dweb:/ipfs/QmVYiZHDXc4T7Nc1XrfzMXL6N5m6tUken1c7xXSVqyHGmu\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IOwnable.sol\":{\"keccak256\":\"0xf84a481a9c8d64463d7ec38fdc5b56a28fb6b77fba37e140eafae35f40bc0f2e\",\"urls\":[\"bzz-raw://e451d4b0573978199ef15ad861c28a3623d4bff2a29ff8ea89b16fbb10828b10\",\"dweb:/ipfs/QmZdGHdi7EcLTY17erkFcadHFt2KDa3EfrBQJFTt8LC2TU\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessors.sol\":{\"keccak256\":\"0x6743223ad8f94bc476636ffe9fe3015661e5771fa41e50e3df7c3edc8326da9c\",\"urls\":[\"bzz-raw://625e6046edc254acf5719dc3c344479d5708918ab704ebf4ffd8a75c52229dbc\",\"dweb:/ipfs/QmcGQPcNXzmqDD1PKNbJfSs3nLEpLt1dvXpSU56y6xamhZ\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessorsABILegacy.sol\":{\"keccak256\":\"0x02440492050303db068c753e976d2389179e892c0c9e27375667bd7e477cf5a7\",\"urls\":[\"bzz-raw://2ef967f9013ae5650dbec4a76d9ea30aafcb006b09f9603dfe6c371d54869628\",\"dweb:/ipfs/QmcipcECioros7L54b5Th2H8vPhgafVskjq2zBUhJFL2Kg\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecCategoryManager.sol\":{\"keccak256\":\"0x727d836745e8a07d7c815037f70107cfccc5d36864d464aef507040825bb4dd6\",\"urls\":[\"bzz-raw://923a05c812e0401f89dcfde9e1169f2d64757bc88f7b829d1ac868c8cb763161\",\"dweb:/ipfs/Qmc2EuzMSJcNFLWWyA8qjvkEYqpyLjXLF99rxrZMb4x7qE\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecERC20.sol\":{\"keccak256\":\"0xb2c9f75f4f8bcee9c4f0b9c32b349bf55a41662730b36e0a8c94df737d858ae1\",\"urls\":[\"bzz-raw://a3501144bf7fe9c9711ad2d1ba10b98d0894c1dbac57ce0dcdc6914c8b1ab6d8\",\"dweb:/ipfs/QmYf8hSnJZt5DGxdpaAqHrYP9uE1TtC3kpG49aTi19ZFhi\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowToken.sol\":{\"keccak256\":\"0x711bf424f8380389467e178d2dda04f3513a0ed5001c520e0b61a7ac33c7e723\",\"urls\":[\"bzz-raw://844d7d9d5db532ec8c02f712934671cc3fd41e28f92224de83bebc6a2fc20ce4\",\"dweb:/ipfs/QmXfXQQErXuvKrSZHsK53wgfnUkNAEzNkYi2msGr2aMW6g\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowTokenSwap.sol\":{\"keccak256\":\"0x482bae3eb2f88cab7499795f59e663929e566c10f9d63fa41fc92baefcf115a2\",\"urls\":[\"bzz-raw://d3c5a0e258e37ab31cf236310e7ef50786c9ed5d9004f5026200cd92b32676ac\",\"dweb:/ipfs/QmUa9AWdkMjCkUyVozrimiTLWEcKnb4xjxC6dcggbsMCze\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol\":{\"keccak256\":\"0x219583e5a9316693fa4a2f6dc4c113de25745e259c3d8c61fb4fe8dba2dafd11\",\"urls\":[\"bzz-raw://00836ee789959c575edc2a0bdaf740d00d8de9baa3b554395135b8322620d7da\",\"dweb:/ipfs/QmV5NtqTdtMUxhcymtc99VsHDS3Thtu8P4fEFR9QbKK6dK\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol\":{\"keccak256\":\"0x8b79ac33287ff55c3fc7ca8b61f422dd59979901dda99d64320bc8f858bced56\",\"urls\":[\"bzz-raw://c705f5671692eb90d26a55897271389fc5ecb1baa883aa48a1a46077524d6ff4\",\"dweb:/ipfs/QmPfxZRG4gdgRUbFHBFf4EBCDTwHP5pHg5H3mcmrbQD4Hi\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecPoco.sol\":{\"keccak256\":\"0x6fb39a0563fdaca7ccaf86fdc46808d85803eff07ae541482d6f76c83739240b\",\"urls\":[\"bzz-raw://d11f19889268d32fe158a765bb4800544ad2578c78aa764a14c7053afc72165b\",\"dweb:/ipfs/QmQ9AS9gPKsGLXsjFYZz5L8dUL4kwSZcvQpofKdErfDe2D\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol\":{\"keccak256\":\"0x9b9a3ed8de64238d1a473121d0ce5df8034617f264ce7dc15a6029b7352625c8\",\"urls\":[\"bzz-raw://4bd0f10a6917b100e1affe960e92c223d8aeeeedf5b929f534145bc0b428f8a7\",\"dweb:/ipfs/QmNn7sJAmPKbhfP4GSVEDdLmS3f84z17jdisfxksaCFASC\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol\":{\"keccak256\":\"0x6161676b6468833be22f161bf2d2cc2dac98031cb64e32d871460f1a9e6c857a\",\"urls\":[\"bzz-raw://e03f4fef57f8540a6ede21ebdb3877bd87afe6a08344903852c5fbbfa4939453\",\"dweb:/ipfs/QmTmonyzpeaQNAyLW9cGti9MrHoJtXTRoM25rgbtnVFtep\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0x22cd93dce3ec7f424ca689cdd4d5aa6a7d0d5ff81133c8530c5397f206100b84\",\"urls\":[\"bzz-raw://3a12bb04edc05201d7b0f00d7a401152daaa0ee2fd794a848fd760290edcfffa\",\"dweb:/ipfs/QmXYRdrHLLcutF1JLcKSKiCRMxo5X4713BfXFYM4gzrXWc\"]},\"@iexec/solidity/contracts/ERC1154/IERC1154.sol\":{\"keccak256\":\"0x542ed19435ffdf4e5f1fbf57f87d26883e04cf96c21c69f7eb691e46c0f6ee5d\",\"urls\":[\"bzz-raw://d7744c331a362162870775cdea560f2db4da1ae6123ca05aba825a8850da37a0\",\"dweb:/ipfs/Qmf3FgPtiUiCA4Mnb9LpGrUciub9RwxniGSRPriRM4hVpc\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0xfa152b6e88a1dc50780e8f1580426dc23ad2e1e2c2f086a088adf206a202f453\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5127b264994adab88fae419b1c493efc5acd07134c19ee5c0397e50018291ebf\",\"dweb:/ipfs/QmWwJZVhvdmvUCdimbb6R2Jiu59zjPqm6XTMchM6LaEHAp\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xbff8693dd68117a7662eed35ce4deb60786bbd9d621f36f92edb1b86a4578182\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b80fc44dffeb5d1f478440165be3ffad365f1746c8fa309f2cc899769e482f42\",\"dweb:/ipfs/QmXCCXHKDD5DwiNwxtp482ruc5S95fxM1wWS5i6bELuEf4\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0x3636662804cd8f474536b2875a9038a4c3fb91879f1bbff48af5c3f140fcd2f0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9fab8521263fa581544000cb57335a3f2e6bcdfbb5579d3ceaa5acf741c67c4f\",\"dweb:/ipfs/QmZfXnMom7JSNtfyie5yGPN1SUC4SmHbz4ScVBH88URmA7\"]},\"@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol\":{\"keccak256\":\"0x8a3c5c449d4b7cd76513ed6995f4b86e4a86f222c770f8442f5fc128ce29b4d2\",\"urls\":[\"bzz-raw://1df63ca373dafae3bd0ee7fe70f890a1dc7c45ed869c01de68413e0e97ff9deb\",\"dweb:/ipfs/QmefJgEYGUL8KX7kQKYTrDweF8GB7yjy3nw5Bmqzryg7PG\"]},\"@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol\":{\"keccak256\":\"0x744e30c133bd0f7ca9e7163433cf6d72f45c6bb1508c2c9c02f1a6db796ae59d\",\"urls\":[\"bzz-raw://9bf2f4454ad63d4cff03a0630e787d9e8a9deed80aec89682cd8ad6379d9ef8c\",\"dweb:/ipfs/Qme51hQNR2wpax7ooUadhtqLtXm8ffeVVYyubLkTT4wMCG\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"./modules/interfaces/IOwnable.sol\";\nimport \"./modules/interfaces/IexecAccessors.sol\";\nimport \"./modules/interfaces/IexecAccessorsABILegacy.sol\";\nimport \"./modules/interfaces/IexecCategoryManager.sol\";\nimport \"./modules/interfaces/IexecERC20.sol\";\nimport \"./modules/interfaces/IexecEscrowToken.sol\";\nimport \"./modules/interfaces/IexecMaintenance.sol\";\nimport \"./modules/interfaces/IexecOrderManagement.sol\";\nimport \"./modules/interfaces/IexecPoco.sol\";\nimport \"./modules/interfaces/IexecRelay.sol\";\nimport \"./modules/interfaces/IexecTokenSpender.sol\";\nimport \"./modules/interfaces/ENSIntegration.sol\";\n\n\ninterface IexecInterfaceTokenABILegacy is IOwnable, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration\n{\n}\n",
+  "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"./modules/interfaces/IOwnable.sol\";\nimport \"./modules/interfaces/IexecAccessors.sol\";\nimport \"./modules/interfaces/IexecAccessorsABILegacy.sol\";\nimport \"./modules/interfaces/IexecCategoryManager.sol\";\nimport \"./modules/interfaces/IexecERC20.sol\";\nimport \"./modules/interfaces/IexecEscrowToken.sol\";\nimport \"./modules/interfaces/IexecEscrowTokenSwap.sol\";\nimport \"./modules/interfaces/IexecMaintenance.sol\";\nimport \"./modules/interfaces/IexecOrderManagement.sol\";\nimport \"./modules/interfaces/IexecPoco.sol\";\nimport \"./modules/interfaces/IexecRelay.sol\";\nimport \"./modules/interfaces/IexecTokenSpender.sol\";\nimport \"./modules/interfaces/ENSIntegration.sol\";\n\n\ninterface IexecInterfaceTokenABILegacy is IOwnable, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecEscrowTokenSwap, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration\n{\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol",
     "exportedSymbols": {
       "IexecInterfaceTokenABILegacy": [
-        153
+        159
       ]
     },
-    "id": 154,
+    "id": 160,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 115,
+        "id": 118,
         "literals": [
           "solidity",
           "^",
@@ -3640,7 +4079,7 @@
         "src": "0:23:3"
       },
       {
-        "id": 116,
+        "id": 119,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -3651,10 +4090,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IOwnable.sol",
         "file": "./modules/interfaces/IOwnable.sol",
-        "id": 117,
+        "id": 120,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 6902,
+        "scope": 160,
+        "sourceUnit": 7493,
         "src": "59:43:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3662,10 +4101,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessors.sol",
         "file": "./modules/interfaces/IexecAccessors.sol",
-        "id": 118,
+        "id": 121,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7092,
+        "scope": 160,
+        "sourceUnit": 7683,
         "src": "103:49:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3673,10 +4112,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessorsABILegacy.sol",
         "file": "./modules/interfaces/IexecAccessorsABILegacy.sol",
-        "id": 119,
+        "id": 122,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7219,
+        "scope": 160,
+        "sourceUnit": 7810,
         "src": "153:58:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3684,10 +4123,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecCategoryManager.sol",
         "file": "./modules/interfaces/IexecCategoryManager.sol",
-        "id": 120,
+        "id": 123,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7244,
+        "scope": 160,
+        "sourceUnit": 7835,
         "src": "212:55:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3695,10 +4134,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecERC20.sol",
         "file": "./modules/interfaces/IexecERC20.sol",
-        "id": 121,
+        "id": 124,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7322,
+        "scope": 160,
+        "sourceUnit": 7913,
         "src": "268:45:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3706,77 +4145,88 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowToken.sol",
         "file": "./modules/interfaces/IexecEscrowToken.sol",
-        "id": 122,
+        "id": 125,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7410,
+        "scope": 160,
+        "sourceUnit": 7998,
         "src": "314:51:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowTokenSwap.sol",
+        "file": "./modules/interfaces/IexecEscrowTokenSwap.sol",
+        "id": 126,
+        "nodeType": "ImportDirective",
+        "scope": 160,
+        "sourceUnit": 8085,
+        "src": "366:55:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol",
         "file": "./modules/interfaces/IexecMaintenance.sol",
-        "id": 123,
+        "id": 127,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7457,
-        "src": "366:51:3",
+        "scope": 160,
+        "sourceUnit": 8132,
+        "src": "422:51:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol",
         "file": "./modules/interfaces/IexecOrderManagement.sol",
-        "id": 124,
+        "id": 128,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7527,
-        "src": "418:55:3",
+        "scope": 160,
+        "sourceUnit": 8202,
+        "src": "474:55:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecPoco.sol",
         "file": "./modules/interfaces/IexecPoco.sol",
-        "id": 125,
+        "id": 129,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7775,
-        "src": "474:44:3",
+        "scope": 160,
+        "sourceUnit": 8450,
+        "src": "530:44:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
         "file": "./modules/interfaces/IexecRelay.sol",
-        "id": 126,
+        "id": 130,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7816,
-        "src": "519:45:3",
+        "scope": 160,
+        "sourceUnit": 8491,
+        "src": "575:45:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol",
         "file": "./modules/interfaces/IexecTokenSpender.sol",
-        "id": 127,
+        "id": 131,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7833,
-        "src": "565:52:3",
+        "scope": 160,
+        "sourceUnit": 8508,
+        "src": "621:52:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol",
         "file": "./modules/interfaces/ENSIntegration.sol",
-        "id": 128,
+        "id": 132,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 6879,
-        "src": "618:49:3",
+        "scope": 160,
+        "sourceUnit": 7470,
+        "src": "674:49:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -3787,275 +4237,296 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 129,
+              "id": 133,
               "name": "IOwnable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6901,
-              "src": "712:8:3",
+              "referencedDeclaration": 7492,
+              "src": "768:8:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IOwnable_$6901",
+                "typeIdentifier": "t_contract$_IOwnable_$7492",
                 "typeString": "contract IOwnable"
-              }
-            },
-            "id": 130,
-            "nodeType": "InheritanceSpecifier",
-            "src": "712:8:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 131,
-              "name": "IexecAccessors",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7091,
-              "src": "722:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessors_$7091",
-                "typeString": "contract IexecAccessors"
-              }
-            },
-            "id": 132,
-            "nodeType": "InheritanceSpecifier",
-            "src": "722:14:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 133,
-              "name": "IexecAccessorsABILegacy",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7218,
-              "src": "738:23:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessorsABILegacy_$7218",
-                "typeString": "contract IexecAccessorsABILegacy"
               }
             },
             "id": 134,
             "nodeType": "InheritanceSpecifier",
-            "src": "738:23:3"
+            "src": "768:8:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 135,
-              "name": "IexecCategoryManager",
+              "name": "IexecAccessors",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7243,
-              "src": "763:20:3",
+              "referencedDeclaration": 7682,
+              "src": "778:14:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$7243",
-                "typeString": "contract IexecCategoryManager"
+                "typeIdentifier": "t_contract$_IexecAccessors_$7682",
+                "typeString": "contract IexecAccessors"
               }
             },
             "id": 136,
             "nodeType": "InheritanceSpecifier",
-            "src": "763:20:3"
+            "src": "778:14:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 137,
-              "name": "IexecERC20",
+              "name": "IexecAccessorsABILegacy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7321,
-              "src": "785:10:3",
+              "referencedDeclaration": 7809,
+              "src": "794:23:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecERC20_$7321",
-                "typeString": "contract IexecERC20"
+                "typeIdentifier": "t_contract$_IexecAccessorsABILegacy_$7809",
+                "typeString": "contract IexecAccessorsABILegacy"
               }
             },
             "id": 138,
             "nodeType": "InheritanceSpecifier",
-            "src": "785:10:3"
+            "src": "794:23:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 139,
-              "name": "IexecEscrowToken",
+              "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7409,
-              "src": "797:16:3",
+              "referencedDeclaration": 7834,
+              "src": "819:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecEscrowToken_$7409",
-                "typeString": "contract IexecEscrowToken"
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$7834",
+                "typeString": "contract IexecCategoryManager"
               }
             },
             "id": 140,
             "nodeType": "InheritanceSpecifier",
-            "src": "797:16:3"
+            "src": "819:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 141,
-              "name": "IexecMaintenance",
+              "name": "IexecERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7456,
-              "src": "815:16:3",
+              "referencedDeclaration": 7912,
+              "src": "841:10:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecMaintenance_$7456",
-                "typeString": "contract IexecMaintenance"
+                "typeIdentifier": "t_contract$_IexecERC20_$7912",
+                "typeString": "contract IexecERC20"
               }
             },
             "id": 142,
             "nodeType": "InheritanceSpecifier",
-            "src": "815:16:3"
+            "src": "841:10:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 143,
-              "name": "IexecOrderManagement",
+              "name": "IexecEscrowToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7526,
-              "src": "833:20:3",
+              "referencedDeclaration": 7997,
+              "src": "853:16:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecOrderManagement_$7526",
-                "typeString": "contract IexecOrderManagement"
+                "typeIdentifier": "t_contract$_IexecEscrowToken_$7997",
+                "typeString": "contract IexecEscrowToken"
               }
             },
             "id": 144,
             "nodeType": "InheritanceSpecifier",
-            "src": "833:20:3"
+            "src": "853:16:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 145,
-              "name": "IexecPoco",
+              "name": "IexecEscrowTokenSwap",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7774,
-              "src": "855:9:3",
+              "referencedDeclaration": 8084,
+              "src": "871:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecPoco_$7774",
-                "typeString": "contract IexecPoco"
+                "typeIdentifier": "t_contract$_IexecEscrowTokenSwap_$8084",
+                "typeString": "contract IexecEscrowTokenSwap"
               }
             },
             "id": 146,
             "nodeType": "InheritanceSpecifier",
-            "src": "855:9:3"
+            "src": "871:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 147,
-              "name": "IexecRelay",
+              "name": "IexecMaintenance",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7815,
-              "src": "866:10:3",
+              "referencedDeclaration": 8131,
+              "src": "893:16:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$7815",
-                "typeString": "contract IexecRelay"
+                "typeIdentifier": "t_contract$_IexecMaintenance_$8131",
+                "typeString": "contract IexecMaintenance"
               }
             },
             "id": 148,
             "nodeType": "InheritanceSpecifier",
-            "src": "866:10:3"
+            "src": "893:16:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 149,
-              "name": "IexecTokenSpender",
+              "name": "IexecOrderManagement",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7832,
-              "src": "878:17:3",
+              "referencedDeclaration": 8201,
+              "src": "911:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecTokenSpender_$7832",
-                "typeString": "contract IexecTokenSpender"
+                "typeIdentifier": "t_contract$_IexecOrderManagement_$8201",
+                "typeString": "contract IexecOrderManagement"
               }
             },
             "id": 150,
             "nodeType": "InheritanceSpecifier",
-            "src": "878:17:3"
+            "src": "911:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 151,
-              "name": "ENSIntegration",
+              "name": "IexecPoco",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6878,
-              "src": "897:14:3",
+              "referencedDeclaration": 8449,
+              "src": "933:9:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSIntegration_$6878",
-                "typeString": "contract ENSIntegration"
+                "typeIdentifier": "t_contract$_IexecPoco_$8449",
+                "typeString": "contract IexecPoco"
               }
             },
             "id": 152,
             "nodeType": "InheritanceSpecifier",
-            "src": "897:14:3"
+            "src": "933:9:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 153,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 8490,
+              "src": "944:10:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$8490",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 154,
+            "nodeType": "InheritanceSpecifier",
+            "src": "944:10:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 155,
+              "name": "IexecTokenSpender",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 8507,
+              "src": "956:17:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecTokenSpender_$8507",
+                "typeString": "contract IexecTokenSpender"
+              }
+            },
+            "id": 156,
+            "nodeType": "InheritanceSpecifier",
+            "src": "956:17:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 157,
+              "name": "ENSIntegration",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 7469,
+              "src": "975:14:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ENSIntegration_$7469",
+                "typeString": "contract ENSIntegration"
+              }
+            },
+            "id": 158,
+            "nodeType": "InheritanceSpecifier",
+            "src": "975:14:3"
           }
         ],
         "contractDependencies": [
-          6878,
-          6901,
-          7091,
-          7218,
-          7243,
-          7321,
-          7409,
-          7456,
-          7526,
-          7774,
-          7815,
-          7832,
-          16150
+          7469,
+          7492,
+          7682,
+          7809,
+          7834,
+          7912,
+          7997,
+          8084,
+          8131,
+          8201,
+          8449,
+          8490,
+          8507,
+          10912
         ],
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 153,
+        "id": 159,
         "linearizedBaseContracts": [
-          153,
-          6878,
-          7832,
-          7815,
-          7774,
-          7526,
-          7456,
-          7409,
-          7321,
-          7243,
-          7218,
-          7091,
-          16150,
-          6901
+          159,
+          7469,
+          8507,
+          8490,
+          8449,
+          8201,
+          8131,
+          8084,
+          7997,
+          7912,
+          7834,
+          7809,
+          7682,
+          10912,
+          7492
         ],
         "name": "IexecInterfaceTokenABILegacy",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 154,
-        "src": "670:245:3"
+        "scope": 160,
+        "src": "726:267:3"
       }
     ],
-    "src": "0:916:3"
+    "src": "0:994:3"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/IexecInterfaceTokenABILegacy.sol",
     "exportedSymbols": {
       "IexecInterfaceTokenABILegacy": [
-        153
+        159
       ]
     },
-    "id": 154,
+    "id": 160,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 115,
+        "id": 118,
         "literals": [
           "solidity",
           "^",
@@ -4066,7 +4537,7 @@
         "src": "0:23:3"
       },
       {
-        "id": 116,
+        "id": 119,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -4077,10 +4548,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IOwnable.sol",
         "file": "./modules/interfaces/IOwnable.sol",
-        "id": 117,
+        "id": 120,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 6902,
+        "scope": 160,
+        "sourceUnit": 7493,
         "src": "59:43:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4088,10 +4559,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessors.sol",
         "file": "./modules/interfaces/IexecAccessors.sol",
-        "id": 118,
+        "id": 121,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7092,
+        "scope": 160,
+        "sourceUnit": 7683,
         "src": "103:49:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4099,10 +4570,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecAccessorsABILegacy.sol",
         "file": "./modules/interfaces/IexecAccessorsABILegacy.sol",
-        "id": 119,
+        "id": 122,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7219,
+        "scope": 160,
+        "sourceUnit": 7810,
         "src": "153:58:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4110,10 +4581,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecCategoryManager.sol",
         "file": "./modules/interfaces/IexecCategoryManager.sol",
-        "id": 120,
+        "id": 123,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7244,
+        "scope": 160,
+        "sourceUnit": 7835,
         "src": "212:55:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4121,10 +4592,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecERC20.sol",
         "file": "./modules/interfaces/IexecERC20.sol",
-        "id": 121,
+        "id": 124,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7322,
+        "scope": 160,
+        "sourceUnit": 7913,
         "src": "268:45:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4132,77 +4603,88 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowToken.sol",
         "file": "./modules/interfaces/IexecEscrowToken.sol",
-        "id": 122,
+        "id": 125,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7410,
+        "scope": 160,
+        "sourceUnit": 7998,
         "src": "314:51:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecEscrowTokenSwap.sol",
+        "file": "./modules/interfaces/IexecEscrowTokenSwap.sol",
+        "id": 126,
+        "nodeType": "ImportDirective",
+        "scope": 160,
+        "sourceUnit": 8085,
+        "src": "366:55:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecMaintenance.sol",
         "file": "./modules/interfaces/IexecMaintenance.sol",
-        "id": 123,
+        "id": 127,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7457,
-        "src": "366:51:3",
+        "scope": 160,
+        "sourceUnit": 8132,
+        "src": "422:51:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecOrderManagement.sol",
         "file": "./modules/interfaces/IexecOrderManagement.sol",
-        "id": 124,
+        "id": 128,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7527,
-        "src": "418:55:3",
+        "scope": 160,
+        "sourceUnit": 8202,
+        "src": "474:55:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecPoco.sol",
         "file": "./modules/interfaces/IexecPoco.sol",
-        "id": 125,
+        "id": 129,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7775,
-        "src": "474:44:3",
+        "scope": 160,
+        "sourceUnit": 8450,
+        "src": "530:44:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
         "file": "./modules/interfaces/IexecRelay.sol",
-        "id": 126,
+        "id": 130,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7816,
-        "src": "519:45:3",
+        "scope": 160,
+        "sourceUnit": 8491,
+        "src": "575:45:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecTokenSpender.sol",
         "file": "./modules/interfaces/IexecTokenSpender.sol",
-        "id": 127,
+        "id": 131,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 7833,
-        "src": "565:52:3",
+        "scope": 160,
+        "sourceUnit": 8508,
+        "src": "621:52:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/ENSIntegration.sol",
         "file": "./modules/interfaces/ENSIntegration.sol",
-        "id": 128,
+        "id": 132,
         "nodeType": "ImportDirective",
-        "scope": 154,
-        "sourceUnit": 6879,
-        "src": "618:49:3",
+        "scope": 160,
+        "sourceUnit": 7470,
+        "src": "674:49:3",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -4213,270 +4695,290 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 129,
+              "id": 133,
               "name": "IOwnable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6901,
-              "src": "712:8:3",
+              "referencedDeclaration": 7492,
+              "src": "768:8:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IOwnable_$6901",
+                "typeIdentifier": "t_contract$_IOwnable_$7492",
                 "typeString": "contract IOwnable"
-              }
-            },
-            "id": 130,
-            "nodeType": "InheritanceSpecifier",
-            "src": "712:8:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 131,
-              "name": "IexecAccessors",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7091,
-              "src": "722:14:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessors_$7091",
-                "typeString": "contract IexecAccessors"
-              }
-            },
-            "id": 132,
-            "nodeType": "InheritanceSpecifier",
-            "src": "722:14:3"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 133,
-              "name": "IexecAccessorsABILegacy",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7218,
-              "src": "738:23:3",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecAccessorsABILegacy_$7218",
-                "typeString": "contract IexecAccessorsABILegacy"
               }
             },
             "id": 134,
             "nodeType": "InheritanceSpecifier",
-            "src": "738:23:3"
+            "src": "768:8:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 135,
-              "name": "IexecCategoryManager",
+              "name": "IexecAccessors",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7243,
-              "src": "763:20:3",
+              "referencedDeclaration": 7682,
+              "src": "778:14:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecCategoryManager_$7243",
-                "typeString": "contract IexecCategoryManager"
+                "typeIdentifier": "t_contract$_IexecAccessors_$7682",
+                "typeString": "contract IexecAccessors"
               }
             },
             "id": 136,
             "nodeType": "InheritanceSpecifier",
-            "src": "763:20:3"
+            "src": "778:14:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 137,
-              "name": "IexecERC20",
+              "name": "IexecAccessorsABILegacy",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7321,
-              "src": "785:10:3",
+              "referencedDeclaration": 7809,
+              "src": "794:23:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecERC20_$7321",
-                "typeString": "contract IexecERC20"
+                "typeIdentifier": "t_contract$_IexecAccessorsABILegacy_$7809",
+                "typeString": "contract IexecAccessorsABILegacy"
               }
             },
             "id": 138,
             "nodeType": "InheritanceSpecifier",
-            "src": "785:10:3"
+            "src": "794:23:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 139,
-              "name": "IexecEscrowToken",
+              "name": "IexecCategoryManager",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7409,
-              "src": "797:16:3",
+              "referencedDeclaration": 7834,
+              "src": "819:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecEscrowToken_$7409",
-                "typeString": "contract IexecEscrowToken"
+                "typeIdentifier": "t_contract$_IexecCategoryManager_$7834",
+                "typeString": "contract IexecCategoryManager"
               }
             },
             "id": 140,
             "nodeType": "InheritanceSpecifier",
-            "src": "797:16:3"
+            "src": "819:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 141,
-              "name": "IexecMaintenance",
+              "name": "IexecERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7456,
-              "src": "815:16:3",
+              "referencedDeclaration": 7912,
+              "src": "841:10:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecMaintenance_$7456",
-                "typeString": "contract IexecMaintenance"
+                "typeIdentifier": "t_contract$_IexecERC20_$7912",
+                "typeString": "contract IexecERC20"
               }
             },
             "id": 142,
             "nodeType": "InheritanceSpecifier",
-            "src": "815:16:3"
+            "src": "841:10:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 143,
-              "name": "IexecOrderManagement",
+              "name": "IexecEscrowToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7526,
-              "src": "833:20:3",
+              "referencedDeclaration": 7997,
+              "src": "853:16:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecOrderManagement_$7526",
-                "typeString": "contract IexecOrderManagement"
+                "typeIdentifier": "t_contract$_IexecEscrowToken_$7997",
+                "typeString": "contract IexecEscrowToken"
               }
             },
             "id": 144,
             "nodeType": "InheritanceSpecifier",
-            "src": "833:20:3"
+            "src": "853:16:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 145,
-              "name": "IexecPoco",
+              "name": "IexecEscrowTokenSwap",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7774,
-              "src": "855:9:3",
+              "referencedDeclaration": 8084,
+              "src": "871:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecPoco_$7774",
-                "typeString": "contract IexecPoco"
+                "typeIdentifier": "t_contract$_IexecEscrowTokenSwap_$8084",
+                "typeString": "contract IexecEscrowTokenSwap"
               }
             },
             "id": 146,
             "nodeType": "InheritanceSpecifier",
-            "src": "855:9:3"
+            "src": "871:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 147,
-              "name": "IexecRelay",
+              "name": "IexecMaintenance",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7815,
-              "src": "866:10:3",
+              "referencedDeclaration": 8131,
+              "src": "893:16:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecRelay_$7815",
-                "typeString": "contract IexecRelay"
+                "typeIdentifier": "t_contract$_IexecMaintenance_$8131",
+                "typeString": "contract IexecMaintenance"
               }
             },
             "id": 148,
             "nodeType": "InheritanceSpecifier",
-            "src": "866:10:3"
+            "src": "893:16:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 149,
-              "name": "IexecTokenSpender",
+              "name": "IexecOrderManagement",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7832,
-              "src": "878:17:3",
+              "referencedDeclaration": 8201,
+              "src": "911:20:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IexecTokenSpender_$7832",
-                "typeString": "contract IexecTokenSpender"
+                "typeIdentifier": "t_contract$_IexecOrderManagement_$8201",
+                "typeString": "contract IexecOrderManagement"
               }
             },
             "id": 150,
             "nodeType": "InheritanceSpecifier",
-            "src": "878:17:3"
+            "src": "911:20:3"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
               "id": 151,
-              "name": "ENSIntegration",
+              "name": "IexecPoco",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6878,
-              "src": "897:14:3",
+              "referencedDeclaration": 8449,
+              "src": "933:9:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ENSIntegration_$6878",
-                "typeString": "contract ENSIntegration"
+                "typeIdentifier": "t_contract$_IexecPoco_$8449",
+                "typeString": "contract IexecPoco"
               }
             },
             "id": 152,
             "nodeType": "InheritanceSpecifier",
-            "src": "897:14:3"
+            "src": "933:9:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 153,
+              "name": "IexecRelay",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 8490,
+              "src": "944:10:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecRelay_$8490",
+                "typeString": "contract IexecRelay"
+              }
+            },
+            "id": 154,
+            "nodeType": "InheritanceSpecifier",
+            "src": "944:10:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 155,
+              "name": "IexecTokenSpender",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 8507,
+              "src": "956:17:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IexecTokenSpender_$8507",
+                "typeString": "contract IexecTokenSpender"
+              }
+            },
+            "id": 156,
+            "nodeType": "InheritanceSpecifier",
+            "src": "956:17:3"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 157,
+              "name": "ENSIntegration",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 7469,
+              "src": "975:14:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ENSIntegration_$7469",
+                "typeString": "contract ENSIntegration"
+              }
+            },
+            "id": 158,
+            "nodeType": "InheritanceSpecifier",
+            "src": "975:14:3"
           }
         ],
         "contractDependencies": [
-          6878,
-          6901,
-          7091,
-          7218,
-          7243,
-          7321,
-          7409,
-          7456,
-          7526,
-          7774,
-          7815,
-          7832,
-          16150
+          7469,
+          7492,
+          7682,
+          7809,
+          7834,
+          7912,
+          7997,
+          8084,
+          8131,
+          8201,
+          8449,
+          8490,
+          8507,
+          10912
         ],
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 153,
+        "id": 159,
         "linearizedBaseContracts": [
-          153,
-          6878,
-          7832,
-          7815,
-          7774,
-          7526,
-          7456,
-          7409,
-          7321,
-          7243,
-          7218,
-          7091,
-          16150,
-          6901
+          159,
+          7469,
+          8507,
+          8490,
+          8449,
+          8201,
+          8131,
+          8084,
+          7997,
+          7912,
+          7834,
+          7809,
+          7682,
+          10912,
+          7492
         ],
         "name": "IexecInterfaceTokenABILegacy",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 154,
-        "src": "670:245:3"
+        "scope": 160,
+        "src": "726:267:3"
       }
     ],
-    "src": "0:916:3"
+    "src": "0:994:3"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-09T12:03:26.491Z",
+  "updatedAt": "2020-06-23T11:25:03.057Z",
   "devdoc": {
     "methods": {}
   },

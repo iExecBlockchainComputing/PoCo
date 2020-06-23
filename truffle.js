@@ -1,6 +1,6 @@
 var HDWalletProvider = require("@truffle/hdwallet-provider");
 
-var useEnv = !!process.env.MNEMONIC && !!process.env.DEV_NODE;
+var useEnv = !!process.env.MNEMONIC;
 
 module.exports =
 {
@@ -24,7 +24,7 @@ module.exports =
 		},
 		development:
 		{
-			provider:   useEnv ? () => new HDWalletProvider(process.env.MNEMONIC, process.env.DEV_NODE) : undefined,
+			provider:   useEnv ? () => new HDWalletProvider(process.env.MNEMONIC, process.env.DEV_NODE || "http://localhost:8545") : undefined,
 			host:       useEnv ? undefined : "localhost",
 			port:       useEnv ? undefined : 8545,
 			network_id: "*",
@@ -74,7 +74,7 @@ module.exports =
 	},
 	compilers: {
 		solc: {
-			version: "0.6.6",
+			version: "0.6.10",
 			settings: {
 				optimizer: {
 					enabled: true,

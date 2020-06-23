@@ -15,7 +15,7 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	 *                         Escrow methods: public                          *
 	 ***************************************************************************/
 	receive()
-	external override payable
+	external payable
 	{
 		revert('fallback-disabled');
 	}
