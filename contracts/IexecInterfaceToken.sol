@@ -17,4 +17,6 @@ import "./modules/interfaces/ENSIntegration.sol";
 
 interface IexecInterfaceToken is IOwnable, IexecAccessors, IexecCategoryManager, IexecERC20, IexecEscrowToken, IexecEscrowTokenSwap, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
 {
+	receive()  external override(IexecEscrowToken, IexecEscrowTokenSwap) payable;
+	fallback() external override(IexecEscrowToken, IexecEscrowTokenSwap) payable;
 }

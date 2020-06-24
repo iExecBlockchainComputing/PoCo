@@ -59,7 +59,22 @@ contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, Iex
 	/***************************************************************************
 	 *                        Swapping methods - Public                        *
 	 ***************************************************************************/
-	receive                   (                                                ) external override payable {  _deposit(_msgSender(), msg.value, 0      ); }
+	receive()
+	external override payable
+	{
+		address sender = _msgSender();
+		if (sender != address(router))
+		{
+			_deposit(sender, msg.value, 0);
+		}
+	}
+
+	fallback()
+	external override payable
+	{
+		revert('fallback-disabled');
+	}
+
 	function depositEth       (                                                ) external override payable {  _deposit(_msgSender(), msg.value, 0      ); }
 	function depositEthFor    (                                  address target) external override payable {  _deposit(target,       msg.value, 0      ); }
 	function safeDepositEth   (                 uint256 minimum                ) external override payable {  _deposit(_msgSender(), msg.value, minimum); }

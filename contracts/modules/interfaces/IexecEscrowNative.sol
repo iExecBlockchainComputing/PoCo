@@ -5,6 +5,8 @@ pragma experimental ABIEncoderV2;
 interface IexecEscrowNative
 {
 	receive() external payable;
+	fallback() external payable;
+	
 	function deposit() external payable returns (bool);
 	function depositFor(address) external payable returns (bool);
 	function depositForArray(uint256[] calldata,address[] calldata) external payable returns (bool);

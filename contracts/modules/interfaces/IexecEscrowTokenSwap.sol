@@ -7,13 +7,15 @@ import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecEscrowTokenSwap
 {
+	receive() external payable;
+	fallback() external payable;
+
 	function UniswapV2Router           ()        external view returns (IUniswapV2Router02);
 	function estimateDepositEthSent    (uint256) external view returns (uint256);
 	function estimateDepositTokenWanted(uint256) external view returns (uint256);
 	function estimateWithdrawTokenSent (uint256) external view returns (uint256);
 	function estimateWithdrawEthWanted (uint256) external view returns (uint256);
-
-	receive                   (                         ) external payable;
+	
 	function depositEth       (                         ) external payable;
 	function depositEthFor    (                  address) external payable;
 	function safeDepositEth   (         uint256         ) external payable;
