@@ -62,6 +62,14 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 		return true;
 	}
 
+	function withdrawTo(uint256 amount, address target)
+	external override returns (bool)
+	{
+		_burn(_msgSender(), amount);
+		_withdraw(target, amount);
+		return true;
+	}
+
 	function recover()
 	external override onlyOwner returns (uint256)
 	{

@@ -62,6 +62,14 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		return true;
 	}
 
+	function withdrawTo(uint256 amount, address target)
+	external override returns (bool)
+	{
+		_burn(_msgSender(), amount);
+		_withdraw(target, amount.mul(nRLCtoWei));
+		return true;
+	}
+
 	function recover()
 	external override onlyOwner returns (uint256)
 	{
