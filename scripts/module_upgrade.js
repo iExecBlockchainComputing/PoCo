@@ -12,8 +12,10 @@ const LIBRARIES = [
 ]
 
 const MODULES = [
-	// { module: artifacts.require('IexecAccessorsDelegate'), methods: [ 'viewTask', 'resultFor'             ] }, // result separation update
-	// { module: artifacts.require('IexecPocoDelegate'),      methods: [ 'finalize', 'contributeAndFinalize' ] }, // result separation update
+	// { module: artifacts.require('IexecAccessorsDelegate'),       methods: [ 'viewTask', 'resultFor'             ] }, // result separation update
+	// { module: artifacts.require('IexecPocoDelegate'),            methods: [ 'finalize', 'contributeAndFinalize' ] }, // result separation update
+	// { module: artifacts.require('IexecEscrowTokenDelegate'),     methods: null                                    }, // escrow upgrade (uniswap)
+	// { module: artifacts.require('IexecEscrowTokenSwapDelegate'), methods: null                                    }, // escrow upgrade (uniswap)
 ]
 
 const FUNCTIONS = [
