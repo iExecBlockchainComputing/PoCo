@@ -1,6 +1,6 @@
 {
   "name": "@iexec/poco",
-  "version": "5.1.2",
+  "version": "5.2.0-rc.0",
   "description": "",
   "main": "truffle.js",
   "scripts": {
@@ -28,22 +28,22 @@
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "0.1.0-legacy",
-    "@openzeppelin/contracts": "3.0.2",
-    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "@openzeppelin/contracts": "3.1.0",
+    "@uniswap/v2-periphery": "1.1.0-beta.0",
     "rlc-faucet-contract": "1.0.9"
   },
   "devDependencies": {
-    "@ensdomains/ens": "0.4.4",
+    "@ensdomains/ens": "0.4.5",
     "@ensdomains/resolver": "0.2.4",
     "@openzeppelin/test-helpers": "0.5.6",
-    "@truffle/hdwallet-provider": "1.0.35",
+    "@truffle/hdwallet-provider": "1.0.37",
     "chai": "4.2.0",
     "eth-sig-util": "2.5.3",
-    "ethers": "5.0.2",
+    "ethers": "5.0.4",
     "ganache-cli": "6.9.1",
     "husky": "4.2.5",
-    "solidity-coverage": "0.7.7",
-    "truffle": "5.1.31",
+    "solidity-coverage": "0.7.9",
+    "truffle": "5.1.33",
     "truffle-plugin-verify": "0.3.11"
   }
 }
