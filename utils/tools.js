@@ -26,7 +26,8 @@ module.exports = {
 	{
 		let split = ethers.utils.splitSignature(signature);
 		let vs    = ethers.utils.arrayify(split.s);
-		if (split.recoveryParam) { vs[0] |= 0x80; }
+		// if (split.recoveryParam) { vs[0] |= 0x80; }
+		if (split.v == 28) { vs[0] |= 0x80; } // Fix bug - not really understand the difference between v and recoveryParam
 		return ethers.utils.hexlify(ethers.utils.concat([ split.r, vs ]));
 	},
 
