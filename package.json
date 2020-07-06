@@ -8,8 +8,8 @@
     "migrate": "truffle migrate",
     "test": "truffle test",
     "autotest": "./autotest.sh",
-    "coverage": "truffle run coverage",
-    "verify": "truffle run verify"
+    "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
+    "verify": "NODE_OPTIONS='--max-old-space-size=8192' truffle run verify"
   },
   "repository": {
     "type": "git",
