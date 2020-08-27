@@ -15,8 +15,8 @@ const LIBRARIES = [
 
 const MODULES = [
 	// { module: artifacts.require('IexecEscrowNativeDelegate'),    methods: null },
-	{ module: artifacts.require('IexecEscrowTokenDelegate'),     methods: null },
-	{ module: artifacts.require('IexecEscrowTokenSwapDelegate'), methods: null },
+	// { module: artifacts.require('IexecEscrowTokenDelegate'),     methods: null },
+	// { module: artifacts.require('IexecEscrowTokenSwapDelegate'), methods: null },
 ]
 
 const FUNCTIONS = [
