@@ -35,8 +35,9 @@ var IexecAccessors          = artifacts.require('IexecAccessorsDelegate')
 var IexecAccessorsABILegacy = artifacts.require('IexecAccessorsABILegacyDelegate')
 var IexecCategoryManager    = artifacts.require('IexecCategoryManagerDelegate')
 var IexecERC20              = artifacts.require('IexecERC20Delegate')
-var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
+var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
+var IexecEscrowTokenSwap    = artifacts.require('IexecEscrowTokenSwapDelegate')
 var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
 var IexecMaintenanceExtra   = artifacts.require('IexecMaintenanceExtraDelegate')
 var IexecOrderManagement    = artifacts.require('IexecOrderManagementDelegate')
@@ -165,8 +166,9 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
 		IexecERC20,
-		deploymentOptions.asset == 'Native' && IexecEscrowNative,
-		deploymentOptions.asset == 'Token'  && IexecEscrowToken,
+		deploymentOptions.asset == 'Native'                             && IexecEscrowNative,
+		deploymentOptions.asset == 'Token'                              && IexecEscrowToken,
+		deploymentOptions.asset == 'Token' && deploymentOptions.uniswap && IexecEscrowTokenSwap,
 		IexecMaintenance,
 		IexecOrderManagement,
 		IexecPoco,

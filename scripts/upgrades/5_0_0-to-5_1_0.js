@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 const assert       = require('assert')
-const CONFIG       = require('../config/config.json')
+const CONFIG       = require('../../config/config.json')
 var GenericFactory = artifacts.require('@iexec/solidity/GenericFactory')
 var ERC1538Proxy   = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var ERC1538Update  = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
