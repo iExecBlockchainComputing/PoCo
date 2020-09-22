@@ -59,26 +59,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":\"ERC1538Module\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060006100246001600160e01b0361007216565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206103f7833981519152908290a35061006d6001600160e01b0361007616565b610121565b3390565b6100876001600160e01b0361007216565b6000546001600160a01b039081169116146100e9576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116906000805160206103f7833981519152908390a3600080546001600160a01b0319169055565b6102c7806101306000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b14610074575b600080fd5b61004e61009a565b005b61005861014e565b604080516001600160a01b039092168252519081900360200190f35b61004e6004803603602081101561008a57600080fd5b50356001600160a01b031661015d565b6100a2610267565b6000546001600160a01b03908116911614610104576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b610165610267565b6000546001600160a01b039081169116146101c7576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6001600160a01b03811661020c5760405162461bcd60e51b815260040180806020018281038252602681526020018061026c6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220057bfed9802757f890f5860908f83f66146462032a09c88af70496a03539f22e64736f6c634300060600338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b14610074575b600080fd5b61004e61009a565b005b61005861014e565b604080516001600160a01b039092168252519081900360200190f35b61004e6004803603602081101561008a57600080fd5b50356001600160a01b031661015d565b6100a2610267565b6000546001600160a01b03908116911614610104576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b610165610267565b6000546001600160a01b039081169116146101c7576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6001600160a01b03811661020c5760405162461bcd60e51b815260040180806020018281038252602681526020018061026c6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220057bfed9802757f890f5860908f83f66146462032a09c88af70496a03539f22e64736f6c63430006060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":\"ERC1538Module\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@iexec/solidity/contracts/ERC1538/ERC1538Module.sol\":{\"keccak256\":\"0xb1e1ff5fcce00614303b0bb01c595a7d2f3496ae88bc2068e56ba9cd72ec8921\",\"urls\":[\"bzz-raw://a6b87d03a17727ce6fe6c5b0078a198898153ae8230345468479a9aa4560835d\",\"dweb:/ipfs/QmV4T7Wg8TS3uAVhnqMhqD6yZ7Qv8iouYnYrkTSCJirG2P\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0xdb26cbf4d028490f49831a7865c2fe1b28db44b535ca8d343785a3b768aae183\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://840b14ce0315c47d49ba328f1f9fa7654ded1c9e1559e6c5e777a7b2dc28bf0a\",\"dweb:/ipfs/QmTLLabn4wcfGro9LEmUXUN2nwKqZSotXMvjDCLXEnLtZP\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50600061001b610060565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350916000805160206103dc833981519152908290a35061005b610064565b610106565b3390565b61006c610060565b6000546001600160a01b039081169116146100ce576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116906000805160206103dc833981519152908390a3600080546001600160a01b0319169055565b6102c7806101156000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b14610074575b600080fd5b61004e61009a565b005b61005861014e565b604080516001600160a01b039092168252519081900360200190f35b61004e6004803603602081101561008a57600080fd5b50356001600160a01b031661015d565b6100a2610267565b6000546001600160a01b03908116911614610104576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b610165610267565b6000546001600160a01b039081169116146101c7576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6001600160a01b03811661020c5760405162461bcd60e51b815260040180806020018281038252602681526020018061026c6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220b65cf791c19be882f9191e80e9f3b65906a0dd5ea79c49f17e52a4cb87b6a4fd64736f6c634300060c00338be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b14610074575b600080fd5b61004e61009a565b005b61005861014e565b604080516001600160a01b039092168252519081900360200190f35b61004e6004803603602081101561008a57600080fd5b50356001600160a01b031661015d565b6100a2610267565b6000546001600160a01b03908116911614610104576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b610165610267565b6000546001600160a01b039081169116146101c7576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6001600160a01b03811661020c5760405162461bcd60e51b815260040180806020018281038252602681526020018061026c6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220b65cf791c19be882f9191e80e9f3b65906a0dd5ea79c49f17e52a4cb87b6a4fd64736f6c634300060c0033",
   "immutableReferences": {},
-  "sourceMap": "55:94:76:-:0;;;97:50;5:9:-1;2:2;;;27:1;24;17:12;2:2;-1:-1;832:17:85;852:12;-1:-1:-1;;;;;852:10:85;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:85;-1:-1:-1;;;;;874:18:85;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:85;-1:-1:-1;;;;;;;;;;;907:43:85;874:6;;907:43;-1:-1:-1;124:19:76;-1:-1:-1;;;;;124:17:76;:19;:::i;:::-;55:94;;735:104:84;822:10;735:104;:::o;1656:145:85:-;1247:12;-1:-1:-1;;;;;1247:10:85;:12;:::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:85;;;:22;;;1229:67;;;;;-1:-1:-1;;;1229:67:85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:85;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1725:40:85;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:85::1;::::0;;1656:145::o;55:94:76:-;;;;;;;",
-  "deployedSourceMap": "55:94:76:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;55:94:76;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;1656:145:85;;;:::i;:::-;;1033:77;;;:::i;:::-;;;;-1:-1:-1;;;;;1033:77:85;;;;;;;;;;;;;;1950:240;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1950:240:85;-1:-1:-1;;;;;1950:240:85;;:::i;1656:145::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:85;;;:22;;;1229:67;;;;;-1:-1:-1;;;1229:67:85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;-1:-1:-1;;;;;1746:6:85;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;-1:-1:-1;;;;;;1775:19:85::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;-1:-1:-1;;;;;1097:6:85;1033:77;:::o;1950:240::-;1247:12;:10;:12::i;:::-;1237:6;;-1:-1:-1;;;;;1237:6:85;;;:22;;;1229:67;;;;;-1:-1:-1;;;1229:67:85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;2038:22:85;::::1;2030:73;;;;-1:-1:-1::0;;;2030:73:85::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;-1:-1:-1;;;;;2118:38:85;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;-1:-1:-1;;;;;;2166:17:85::1;-1:-1:-1::0;;;;;2166:17:85;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:84:-;822:10;735:104;:::o",
+  "sourceMap": "55:94:78:-:0;;;97:50;;;;;;;;;-1:-1:-1;865:17:87;885:12;:10;:12::i;:::-;907:6;:18;;-1:-1:-1;;;;;;907:18:87;-1:-1:-1;;;;;907:18:87;;;;;;;940:43;;907:18;;-1:-1:-1;907:18:87;-1:-1:-1;;;;;;;;;;;940:43:87;907:6;;940:43;-1:-1:-1;124:19:78;:17;:19::i;:::-;55:94;;590:104:86;677:10;590:104;:::o;1689:145:87:-;1280:12;:10;:12::i;:::-;1270:6;;-1:-1:-1;;;;;1270:6:87;;;:22;;;1262:67;;;;;-1:-1:-1;;;1262:67:87;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1795:1:::1;1779:6:::0;;1758:40:::1;::::0;-1:-1:-1;;;;;1779:6:87;;::::1;::::0;-1:-1:-1;;;;;;;;;;;1758:40:87;1795:1;;1758:40:::1;1825:1;1808:19:::0;;-1:-1:-1;;;;;;1808:19:87::1;::::0;;1689:145::o;55:94:78:-;;;;;;;",
+  "deployedSourceMap": "55:94:78:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1689:145:87;;;:::i;:::-;;1066:77;;;:::i;:::-;;;;-1:-1:-1;;;;;1066:77:87;;;;;;;;;;;;;;1983:240;;;;;;;;;;;;;;;;-1:-1:-1;1983:240:87;-1:-1:-1;;;;;1983:240:87;;:::i;1689:145::-;1280:12;:10;:12::i;:::-;1270:6;;-1:-1:-1;;;;;1270:6:87;;;:22;;;1262:67;;;;;-1:-1:-1;;;1262:67:87;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1795:1:::1;1779:6:::0;;1758:40:::1;::::0;-1:-1:-1;;;;;1779:6:87;;::::1;::::0;1758:40:::1;::::0;1795:1;;1758:40:::1;1825:1;1808:19:::0;;-1:-1:-1;;;;;;1808:19:87::1;::::0;;1689:145::o;1066:77::-;1104:7;1130:6;-1:-1:-1;;;;;1130:6:87;1066:77;:::o;1983:240::-;1280:12;:10;:12::i;:::-;1270:6;;-1:-1:-1;;;;;1270:6:87;;;:22;;;1262:67;;;;;-1:-1:-1;;;1262:67:87;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;2071:22:87;::::1;2063:73;;;;-1:-1:-1::0;;;2063:73:87::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2172:6;::::0;;2151:38:::1;::::0;-1:-1:-1;;;;;2151:38:87;;::::1;::::0;2172:6;::::1;::::0;2151:38:::1;::::0;::::1;2199:6;:17:::0;;-1:-1:-1;;;;;;2199:17:87::1;-1:-1:-1::0;;;;;2199:17:87;;;::::1;::::0;;;::::1;::::0;;1983:240::o;590:104:86:-;677:10;590:104;:::o",
   "source": "pragma solidity ^0.6.0;\n\nimport \"./ERC1538Store.sol\";\n\ncontract ERC1538Module is ERC1538Store\n{\n\tconstructor()\n\tpublic\n\t{\n\t\trenounceOwnership();\n\t}\n}\n",
   "sourcePath": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
   "ast": {
     "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
     "exportedSymbols": {
       "ERC1538Module": [
-        16175
+        17077
       ]
     },
-    "id": 16176,
+    "id": 17078,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16164,
+        "id": 17066,
         "literals": [
           "solidity",
           "^",
@@ -86,16 +87,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:76"
+        "src": "0:23:78"
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol",
         "file": "./ERC1538Store.sol",
-        "id": 16165,
+        "id": 17067,
         "nodeType": "ImportDirective",
-        "scope": 16176,
-        "sourceUnit": 16188,
-        "src": "25:28:76",
+        "scope": 17078,
+        "sourceUnit": 17090,
+        "src": "25:28:78",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -106,44 +107,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 16166,
+              "id": 17068,
               "name": "ERC1538Store",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 16187,
-              "src": "81:12:76",
+              "referencedDeclaration": 17089,
+              "src": "81:12:78",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC1538Store_$16187",
+                "typeIdentifier": "t_contract$_ERC1538Store_$17089",
                 "typeString": "contract ERC1538Store"
               }
             },
-            "id": 16167,
+            "id": 17069,
             "nodeType": "InheritanceSpecifier",
-            "src": "81:12:76"
+            "src": "81:12:78"
           }
         ],
         "contractDependencies": [
-          16187,
-          16757,
-          16866
+          17089,
+          17656,
+          17765
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16175,
+        "id": 17077,
         "linearizedBaseContracts": [
-          16175,
-          16187,
-          16866,
-          16757
+          17077,
+          17089,
+          17765,
+          17656
         ],
         "name": "ERC1538Module",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 16173,
+              "id": 17075,
               "nodeType": "Block",
-              "src": "120:27:76",
+              "src": "120:27:78",
               "statements": [
                 {
                   "expression": {
@@ -151,18 +152,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 16170,
+                      "id": 17072,
                       "name": "renounceOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16837,
-                      "src": "124:17:76",
+                      "referencedDeclaration": 17736,
+                      "src": "124:17:78",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 16171,
+                    "id": 17073,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -170,21 +171,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "124:19:76",
+                    "src": "124:19:78",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 16172,
+                  "id": 17074,
                   "nodeType": "ExpressionStatement",
-                  "src": "124:19:76"
+                  "src": "124:19:78"
                 }
               ]
             },
             "documentation": null,
-            "id": 16174,
+            "id": 17076,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -192,42 +193,43 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16168,
+              "id": 17070,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "108:2:76"
+              "src": "108:2:78"
             },
             "returnParameters": {
-              "id": 16169,
+              "id": 17071,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "120:0:76"
+              "src": "120:0:78"
             },
-            "scope": 16175,
-            "src": "97:50:76",
+            "scope": 17077,
+            "src": "97:50:78",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 16176,
-        "src": "55:94:76"
+        "scope": 17078,
+        "src": "55:94:78"
       }
     ],
-    "src": "0:150:76"
+    "src": "0:150:78"
   },
   "legacyAST": {
     "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
     "exportedSymbols": {
       "ERC1538Module": [
-        16175
+        17077
       ]
     },
-    "id": 16176,
+    "id": 17078,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16164,
+        "id": 17066,
         "literals": [
           "solidity",
           "^",
@@ -235,16 +237,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:76"
+        "src": "0:23:78"
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol",
         "file": "./ERC1538Store.sol",
-        "id": 16165,
+        "id": 17067,
         "nodeType": "ImportDirective",
-        "scope": 16176,
-        "sourceUnit": 16188,
-        "src": "25:28:76",
+        "scope": 17078,
+        "sourceUnit": 17090,
+        "src": "25:28:78",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -255,44 +257,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 16166,
+              "id": 17068,
               "name": "ERC1538Store",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 16187,
-              "src": "81:12:76",
+              "referencedDeclaration": 17089,
+              "src": "81:12:78",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC1538Store_$16187",
+                "typeIdentifier": "t_contract$_ERC1538Store_$17089",
                 "typeString": "contract ERC1538Store"
               }
             },
-            "id": 16167,
+            "id": 17069,
             "nodeType": "InheritanceSpecifier",
-            "src": "81:12:76"
+            "src": "81:12:78"
           }
         ],
         "contractDependencies": [
-          16187,
-          16757,
-          16866
+          17089,
+          17656,
+          17765
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16175,
+        "id": 17077,
         "linearizedBaseContracts": [
-          16175,
-          16187,
-          16866,
-          16757
+          17077,
+          17089,
+          17765,
+          17656
         ],
         "name": "ERC1538Module",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 16173,
+              "id": 17075,
               "nodeType": "Block",
-              "src": "120:27:76",
+              "src": "120:27:78",
               "statements": [
                 {
                   "expression": {
@@ -300,18 +302,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 16170,
+                      "id": 17072,
                       "name": "renounceOwnership",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16837,
-                      "src": "124:17:76",
+                      "referencedDeclaration": 17736,
+                      "src": "124:17:78",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 16171,
+                    "id": 17073,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -319,21 +321,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "124:19:76",
+                    "src": "124:19:78",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 16172,
+                  "id": 17074,
                   "nodeType": "ExpressionStatement",
-                  "src": "124:19:76"
+                  "src": "124:19:78"
                 }
               ]
             },
             "documentation": null,
-            "id": 16174,
+            "id": 17076,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -341,51 +343,55 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16168,
+              "id": 17070,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "108:2:76"
+              "src": "108:2:78"
             },
             "returnParameters": {
-              "id": 16169,
+              "id": 17071,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "120:0:76"
+              "src": "120:0:78"
             },
-            "scope": 16175,
-            "src": "97:50:76",
+            "scope": 17077,
+            "src": "97:50:78",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 16176,
-        "src": "55:94:76"
+        "scope": 17078,
+        "src": "55:94:78"
       }
     ],
-    "src": "0:150:76"
+    "src": "0:150:78"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-09T12:03:26.689Z",
+  "schemaVersion": "3.2.2",
+  "updatedAt": "2020-09-22T12:25:17.424Z",
   "devdoc": {
+    "kind": "dev",
     "methods": {
       "owner()": {
         "details": "Returns the address of the current owner."
       },
       "renounceOwnership()": {
-        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
       },
       "transferOwnership(address)": {
         "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
       }
-    }
+    },
+    "version": 1
   },
   "userdoc": {
-    "methods": {}
+    "kind": "user",
+    "methods": {},
+    "version": 1
   }
 }
