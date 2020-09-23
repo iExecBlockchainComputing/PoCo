@@ -1,6 +1,6 @@
 {
   "name": "@iexec/poco",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "description": "",
   "main": "truffle.js",
   "scripts": {
@@ -8,8 +8,8 @@
     "migrate": "truffle migrate",
     "test": "truffle test",
     "autotest": "./autotest.sh",
-    "coverage": "truffle run coverage",
-    "verify": "truffle run verify"
+    "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
+    "verify": "NODE_OPTIONS='--max-old-space-size=8192' truffle run verify"
   },
   "repository": {
     "type": "git",
@@ -28,21 +28,22 @@
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "0.1.0-legacy",
-    "@openzeppelin/contracts": "3.0.1",
+    "@openzeppelin/contracts": "3.1.0",
+    "@uniswap/v2-periphery": "1.1.0-beta.0",
     "rlc-faucet-contract": "1.0.9"
   },
   "devDependencies": {
-    "@ensdomains/ens": "0.4.4",
+    "@ensdomains/ens": "0.4.5",
     "@ensdomains/resolver": "0.2.4",
-    "@openzeppelin/test-helpers": "0.5.5",
-    "@truffle/hdwallet-provider": "1.0.41-1",
+    "@openzeppelin/test-helpers": "0.5.6",
+    "@truffle/hdwallet-provider": "1.0.42",
     "chai": "4.2.0",
     "eth-sig-util": "2.5.3",
-    "ethers": "4.0.47",
-    "ganache-cli": "6.9.1",
+    "ethers": "5.0.9",
+    "ganache-cli": "^6.10.1",
     "husky": "4.2.5",
-    "solidity-coverage": "0.7.5",
-    "truffle": "5.1.27",
+    "solidity-coverage": "0.7.10",
+    "truffle": "5.1.41",
     "truffle-plugin-verify": "0.3.11"
   }
 }

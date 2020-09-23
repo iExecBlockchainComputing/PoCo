@@ -38,6 +38,12 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 		_deposit(_msgSender());
 	}
 
+	fallback()
+	external override payable
+	{
+		_deposit(_msgSender());
+	}
+
 	function deposit()
 	external override payable returns (bool)
 	{
@@ -71,6 +77,14 @@ contract IexecEscrowNativeDelegate is IexecEscrowNative, DelegateBase, IexecERC2
 	{
 		_burn(_msgSender(), amount);
 		_withdraw(_msgSender(), amount.mul(nRLCtoWei));
+		return true;
+	}
+
+	function withdrawTo(uint256 amount, address target)
+	external override returns (bool)
+	{
+		_burn(_msgSender(), amount);
+		_withdraw(target, amount.mul(nRLCtoWei));
 		return true;
 	}
 

@@ -38,6 +38,12 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 		revert('fallback-disabled');
 	}
 
+	fallback()
+	external override payable
+	{
+		revert('fallback-disabled');
+	}
+
 	function deposit(uint256 amount)
 	external override returns (bool)
 	{
@@ -71,6 +77,14 @@ contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, Delega
 	{
 		_burn(_msgSender(), amount);
 		_withdraw(_msgSender(), amount);
+		return true;
+	}
+
+	function withdrawTo(uint256 amount, address target)
+	external override returns (bool)
+	{
+		_burn(_msgSender(), amount);
+		_withdraw(target, amount);
 		return true;
 	}
 
