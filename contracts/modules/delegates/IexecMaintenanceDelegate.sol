@@ -42,7 +42,7 @@ contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 		require(EIP712DOMAIN_SEPARATOR == bytes32(0), 'already-configured');
 		EIP712DOMAIN_SEPARATOR = _domain().hash();
 
-		m_baseToken          = IERC20(_token);
+		m_baseToken          = KERC20(_token);
 		m_name               = _name;
 		m_symbol             = _symbol;
 		m_decimals           = _decimal;

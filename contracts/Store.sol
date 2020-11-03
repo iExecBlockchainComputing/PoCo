@@ -21,7 +21,8 @@ pragma solidity ^0.6.0;
 import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
 import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./erlc/KERC20.sol";
 
 import "./libs/IexecLibCore_v5.sol";
 import "./libs/IexecLibOrders_v5.sol";
@@ -47,7 +48,7 @@ abstract contract Store is ERC1538Store
 	IRegistry internal m_workerpoolregistry;
 
 	// Escrow
-	IERC20  internal m_baseToken;
+	KERC20  internal m_baseToken;
 	string  internal m_name;
 	string  internal m_symbol;
 	uint8   internal m_decimals;

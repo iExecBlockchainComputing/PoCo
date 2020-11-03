@@ -56,7 +56,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function reward(address user, uint256 amount, bytes32 ref)
 	internal /* returns (bool) */
 	{
-		_transfer(address(this), user, amount);
+		_transferUnchecked(address(this), user, amount); // prevent locking task
 		emit Reward(user, amount, ref);
 		/* return true; */
 	}
@@ -72,7 +72,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function lock(address user, uint256 amount)
 	internal /* returns (bool) */
 	{
-		_transfer(user, address(this), amount);
+		_transferUnchecked(user, address(this), amount);
 		m_frozens[user] = m_frozens[user].add(amount);
 		emit Lock(user, amount);
 		/* return true; */
@@ -81,7 +81,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	function unlock(address user, uint256 amount)
 	internal /* returns (bool) */
 	{
-		_transfer(address(this), user, amount);
+		_transferUnchecked(address(this), user, amount); // prevent locking task
 		m_frozens[user] = m_frozens[user].sub(amount);
 		emit Unlock(user, amount);
 		/* return true; */
@@ -126,10 +126,10 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
 
 		uint256 requesterstake = deal.app.price
-		                         .add(deal.dataset.price)
-		                         .add(deal.workerpool.price);
+								 .add(deal.dataset.price)
+								 .add(deal.workerpool.price);
 		uint256 poolstake = deal.workerpool.price
-		                    .percentage(WORKERPOOL_STAKE_RATIO);
+							.percentage(WORKERPOOL_STAKE_RATIO);
 
 		// seize requester funds
 		seize(deal.requester, requesterstake, _taskid);
@@ -154,9 +154,9 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		if (kitty > 0)
 		{
 			kitty = kitty
-			        .percentage(KITTY_RATIO) // fraction
-			        .max(KITTY_MIN)          // at least this
-			        .min(kitty);             // but not more than available
+					.percentage(KITTY_RATIO) // fraction
+					.max(KITTY_MIN)          // at least this
+					.min(kitty);             // but not more than available
 			seize (KITTY_ADDRESS,         kitty, _taskid);
 			reward(deal.workerpool.owner, kitty, _taskid);
 		}
@@ -168,10 +168,10 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
 		uint256 requesterstake = deal.app.price
-		                         .add(deal.dataset.price)
-		                         .add(deal.workerpool.price);
+								 .add(deal.dataset.price)
+								 .add(deal.workerpool.price);
 		uint256 poolstake = deal.workerpool.price
-		                    .percentage(WORKERPOOL_STAKE_RATIO);
+							.percentage(WORKERPOOL_STAKE_RATIO);
 
 		unlock(deal.requester,        requesterstake    );
 		seize (deal.workerpool.owner, poolstake, _taskid);
@@ -253,6 +253,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		require(m_appregistry.isRegistered(_apporder.app),                                       'iExecV5-matchOrders-0x20');
 		require(_checkPresignatureOrSignature(ids.appOwner, ids.apporderStruct, _apporder.sign), 'iExecV5-matchOrders-0x21');
+		require(m_baseToken.isKYC(ids.appOwner),                                                 'iExecV5-matchOrders-0x22');
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
@@ -263,6 +264,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 			require(m_datasetregistry.isRegistered(_datasetorder.dataset),                                       'iExecV5-matchOrders-0x30');
 			require(_checkPresignatureOrSignature(ids.datasetOwner, ids.datasetorderStruct, _datasetorder.sign), 'iExecV5-matchOrders-0x31');
+			require(m_baseToken.isKYC(ids.datasetOwner),                                                         'iExecV5-matchOrders-0x32');
 		}
 
 		// workerpool
@@ -272,11 +274,13 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 
 		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),                                       'iExecV5-matchOrders-0x40');
 		require(_checkPresignatureOrSignature(ids.workerpoolOwner, ids.workerpoolorderStruct, _workerpoolorder.sign), 'iExecV5-matchOrders-0x41');
+		require(m_baseToken.isKYC(ids.workerpoolOwner),                                                               'iExecV5-matchOrders-0x42');
 
 		// request
 		ids.requestorderStruct = _toEthTypedStruct(_requestorder.hash(), EIP712DOMAIN_SEPARATOR);
 		ids.requestorderHash   = keccak256(ids.requestorderStruct);
 		require(_checkPresignatureOrSignature(_requestorder.requester, ids.requestorderStruct, _requestorder.sign), 'iExecV5-matchOrders-0x50');
+		require(m_baseToken.isKYC(_requestorder.requester),                                                         'iExecV5-matchOrders-0x51');
 
 		/**
 		 * Check availability
@@ -404,6 +408,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes memory _authorizationSign)
 	public override
 	{
+		require(m_baseToken.isKYC(_msgSender()), 'iExecV5-contribute-0x00');
+
 		IexecLibCore_v5.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
 		IexecLibCore_v5.Deal         memory  deal         = m_deals[task.dealid];
@@ -559,7 +565,7 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 	{
 		IexecLibCore_v5.Task storage task = m_tasks[_taskid];
 		require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE
-		     || task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
+			 || task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
 		require(task.finalDeadline <= now);
 
 		task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
@@ -588,6 +594,8 @@ contract IexecPocoDelegate is IexecPoco, DelegateBase, IexecERC20Common, Signatu
 		bytes memory _authorizationSign)
 	public override
 	{
+		require(m_baseToken.isKYC(_msgSender()), 'iExecV5-contributeAndFinalize-0x00');
+
 		IexecLibCore_v5.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
 		IexecLibCore_v5.Deal         memory  deal         = m_deals[task.dealid];
