@@ -21,6 +21,12 @@ pragma solidity ^0.6.0;
 
 interface IERC677
 {
+    function approveAndCall(address spender, uint256 amount, bytes calldata extraData) external returns (bool);
+    function transferAndCall(address receiver, uint256 amount, bytes calldata data) external returns (bool);
+}
+
+interface IERC677Receiver
+{
     function receiveApproval(address,uint256,address,bytes calldata) external returns (bool);
     function onTokenTransfer(address,uint256,bytes calldata) external returns (bool);
 }

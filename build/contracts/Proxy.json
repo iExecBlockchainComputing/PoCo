@@ -22,15 +22,15 @@
     "absolutePath": "@iexec/solidity/contracts/Upgradeability/Proxy.sol",
     "exportedSymbols": {
       "Proxy": [
-        13405
+        13656
       ]
     },
-    "id": 13406,
+    "id": 13657,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13355,
+        "id": 13606,
         "literals": [
           "solidity",
           "^",
@@ -38,7 +38,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:74"
+        "src": "0:23:79"
       },
       {
         "abstract": true,
@@ -46,24 +46,24 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 13356,
+          "id": 13607,
           "nodeType": "StructuredDocumentation",
-          "src": "25:290:74",
+          "src": "25:290:79",
           "text": " @title Proxy\n @dev Implements delegation of calls to other contracts, with proper\n forwarding of return values and bubbling of failures.\n It defines a fallback function that delegates all calls to the address\n returned by the abstract _implementation() internal function."
         },
         "fullyImplemented": false,
-        "id": 13405,
+        "id": 13656,
         "linearizedBaseContracts": [
-          13405
+          13656
         ],
         "name": "Proxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 13363,
+              "id": 13614,
               "nodeType": "Block",
-              "src": "453:22:74",
+              "src": "453:22:79",
               "statements": [
                 {
                   "expression": {
@@ -71,18 +71,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13360,
+                      "id": 13611,
                       "name": "_fallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13404,
-                      "src": "459:9:74",
+                      "referencedDeclaration": 13655,
+                      "src": "459:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13361,
+                    "id": 13612,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -90,26 +90,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "459:11:74",
+                    "src": "459:11:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13362,
+                  "id": 13613,
                   "nodeType": "ExpressionStatement",
-                  "src": "459:11:74"
+                  "src": "459:11:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13357,
+              "id": 13608,
               "nodeType": "StructuredDocumentation",
-              "src": "344:79:74",
+              "src": "344:79:79",
               "text": " @dev Receive function.\n Implemented entirely in `_fallback`."
             },
-            "id": 13364,
+            "id": 13615,
             "implemented": true,
             "kind": "receive",
             "modifiers": [],
@@ -117,28 +117,28 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13358,
+              "id": 13609,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "433:2:74"
+              "src": "433:2:79"
             },
             "returnParameters": {
-              "id": 13359,
+              "id": 13610,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "453:0:74"
+              "src": "453:0:79"
             },
-            "scope": 13405,
-            "src": "426:49:74",
+            "scope": 13656,
+            "src": "426:49:79",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13371,
+              "id": 13622,
               "nodeType": "Block",
-              "src": "590:22:74",
+              "src": "590:22:79",
               "statements": [
                 {
                   "expression": {
@@ -146,18 +146,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13368,
+                      "id": 13619,
                       "name": "_fallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13404,
-                      "src": "596:9:74",
+                      "referencedDeclaration": 13655,
+                      "src": "596:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13369,
+                    "id": 13620,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -165,26 +165,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "596:11:74",
+                    "src": "596:11:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13370,
+                  "id": 13621,
                   "nodeType": "ExpressionStatement",
-                  "src": "596:11:74"
+                  "src": "596:11:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13365,
+              "id": 13616,
               "nodeType": "StructuredDocumentation",
-              "src": "479:80:74",
+              "src": "479:80:79",
               "text": " @dev Fallback function.\n Implemented entirely in `_fallback`."
             },
-            "id": 13372,
+            "id": 13623,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
@@ -192,19 +192,19 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13366,
+              "id": 13617,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "570:2:74"
+              "src": "570:2:79"
             },
             "returnParameters": {
-              "id": 13367,
+              "id": 13618,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "590:0:74"
+              "src": "590:0:79"
             },
-            "scope": 13405,
-            "src": "562:50:74",
+            "scope": 13656,
+            "src": "562:50:79",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
@@ -212,12 +212,12 @@
           {
             "body": null,
             "documentation": {
-              "id": 13373,
+              "id": 13624,
               "nodeType": "StructuredDocumentation",
-              "src": "616:62:74",
+              "src": "616:62:79",
               "text": " @return impl The Address of the implementation."
             },
-            "id": 13378,
+            "id": 13629,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -225,24 +225,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13374,
+              "id": 13625,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "705:2:74"
+              "src": "705:2:79"
             },
             "returnParameters": {
-              "id": 13377,
+              "id": 13628,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13376,
+                  "id": 13627,
                   "mutability": "mutable",
                   "name": "impl",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13378,
-                  "src": "739:12:74",
+                  "scope": 13629,
+                  "src": "739:12:79",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -250,10 +250,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13375,
+                    "id": 13626,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "739:7:74",
+                    "src": "739:7:79",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -264,24 +264,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "738:14:74"
+              "src": "738:14:79"
             },
-            "scope": 13405,
-            "src": "681:72:74",
+            "scope": 13656,
+            "src": "681:72:79",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13385,
+              "id": 13636,
               "nodeType": "Block",
-              "src": "1091:691:74",
+              "src": "1091:691:79",
               "statements": [
                 {
                   "AST": {
                     "nodeType": "YulBlock",
-                    "src": "1106:672:74",
+                    "src": "1106:672:79",
                     "statements": [
                       {
                         "expression": {
@@ -289,14 +289,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1335:1:74",
+                              "src": "1335:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1338:1:74",
+                              "src": "1338:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -305,26 +305,26 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1341:12:74"
+                                "src": "1341:12:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1341:14:74"
+                              "src": "1341:14:79"
                             }
                           ],
                           "functionName": {
                             "name": "calldatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1322:12:74"
+                            "src": "1322:12:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1322:34:74"
+                          "src": "1322:34:79"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1322:34:74"
+                        "src": "1322:34:79"
                       },
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1465:74:74",
+                        "src": "1465:74:79",
                         "value": {
                           "arguments": [
                             {
@@ -332,20 +332,20 @@
                               "functionName": {
                                 "name": "gas",
                                 "nodeType": "YulIdentifier",
-                                "src": "1492:3:74"
+                                "src": "1492:3:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1492:5:74"
+                              "src": "1492:5:79"
                             },
                             {
                               "name": "implementation",
                               "nodeType": "YulIdentifier",
-                              "src": "1499:14:74"
+                              "src": "1499:14:79"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1515:1:74",
+                              "src": "1515:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -354,22 +354,22 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1518:12:74"
+                                "src": "1518:12:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1518:14:74"
+                              "src": "1518:14:79"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1534:1:74",
+                              "src": "1534:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1537:1:74",
+                              "src": "1537:1:79",
                               "type": "",
                               "value": "0"
                             }
@@ -377,16 +377,16 @@
                           "functionName": {
                             "name": "delegatecall",
                             "nodeType": "YulIdentifier",
-                            "src": "1479:12:74"
+                            "src": "1479:12:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1479:60:74"
+                          "src": "1479:60:79"
                         },
                         "variables": [
                           {
                             "name": "result",
                             "nodeType": "YulTypedName",
-                            "src": "1469:6:74",
+                            "src": "1469:6:79",
                             "type": ""
                           }
                         ]
@@ -397,14 +397,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1595:1:74",
+                              "src": "1595:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1598:1:74",
+                              "src": "1598:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -413,29 +413,29 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1601:14:74"
+                                "src": "1601:14:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1601:16:74"
+                              "src": "1601:16:79"
                             }
                           ],
                           "functionName": {
                             "name": "returndatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1580:14:74"
+                            "src": "1580:14:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1580:38:74"
+                          "src": "1580:38:79"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1580:38:74"
+                        "src": "1580:38:79"
                       },
                       {
                         "cases": [
                           {
                             "body": {
                               "nodeType": "YulBlock",
-                              "src": "1695:31:74",
+                              "src": "1695:31:79",
                               "statements": [
                                 {
                                   "expression": {
@@ -443,7 +443,7 @@
                                       {
                                         "kind": "number",
                                         "nodeType": "YulLiteral",
-                                        "src": "1704:1:74",
+                                        "src": "1704:1:79",
                                         "type": "",
                                         "value": "0"
                                       },
@@ -452,31 +452,31 @@
                                         "functionName": {
                                           "name": "returndatasize",
                                           "nodeType": "YulIdentifier",
-                                          "src": "1707:14:74"
+                                          "src": "1707:14:79"
                                         },
                                         "nodeType": "YulFunctionCall",
-                                        "src": "1707:16:74"
+                                        "src": "1707:16:79"
                                       }
                                     ],
                                     "functionName": {
                                       "name": "revert",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1697:6:74"
+                                      "src": "1697:6:79"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "1697:27:74"
+                                    "src": "1697:27:79"
                                   },
                                   "nodeType": "YulExpressionStatement",
-                                  "src": "1697:27:74"
+                                  "src": "1697:27:79"
                                 }
                               ]
                             },
                             "nodeType": "YulCase",
-                            "src": "1688:38:74",
+                            "src": "1688:38:79",
                             "value": {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1693:1:74",
+                              "src": "1693:1:79",
                               "type": "",
                               "value": "0"
                             }
@@ -484,7 +484,7 @@
                           {
                             "body": {
                               "nodeType": "YulBlock",
-                              "src": "1741:31:74",
+                              "src": "1741:31:79",
                               "statements": [
                                 {
                                   "expression": {
@@ -492,7 +492,7 @@
                                       {
                                         "kind": "number",
                                         "nodeType": "YulLiteral",
-                                        "src": "1750:1:74",
+                                        "src": "1750:1:79",
                                         "type": "",
                                         "value": "0"
                                       },
@@ -501,63 +501,63 @@
                                         "functionName": {
                                           "name": "returndatasize",
                                           "nodeType": "YulIdentifier",
-                                          "src": "1753:14:74"
+                                          "src": "1753:14:79"
                                         },
                                         "nodeType": "YulFunctionCall",
-                                        "src": "1753:16:74"
+                                        "src": "1753:16:79"
                                       }
                                     ],
                                     "functionName": {
                                       "name": "return",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1743:6:74"
+                                      "src": "1743:6:79"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "1743:27:74"
+                                    "src": "1743:27:79"
                                   },
                                   "nodeType": "YulExpressionStatement",
-                                  "src": "1743:27:74"
+                                  "src": "1743:27:79"
                                 }
                               ]
                             },
                             "nodeType": "YulCase",
-                            "src": "1733:39:74",
+                            "src": "1733:39:79",
                             "value": "default"
                           }
                         ],
                         "expression": {
                           "name": "result",
                           "nodeType": "YulIdentifier",
-                          "src": "1633:6:74"
+                          "src": "1633:6:79"
                         },
                         "nodeType": "YulSwitch",
-                        "src": "1626:146:74"
+                        "src": "1626:146:79"
                       }
                     ]
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [
                     {
-                      "declaration": 13381,
+                      "declaration": 13632,
                       "isOffset": false,
                       "isSlot": false,
-                      "src": "1499:14:74",
+                      "src": "1499:14:79",
                       "valueSize": 1
                     }
                   ],
-                  "id": 13384,
+                  "id": 13635,
                   "nodeType": "InlineAssembly",
-                  "src": "1097:681:74"
+                  "src": "1097:681:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13379,
+              "id": 13630,
               "nodeType": "StructuredDocumentation",
-              "src": "757:279:74",
+              "src": "757:279:79",
               "text": " @dev Delegates execution to an implementation contract.\n This is a low level function that doesn't return to its internal call site.\n It will return to the external caller whatever the implementation returns.\n @param implementation Address to delegate."
             },
-            "id": 13386,
+            "id": 13637,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -565,18 +565,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13382,
+              "id": 13633,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13381,
+                  "id": 13632,
                   "mutability": "mutable",
                   "name": "implementation",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13386,
-                  "src": "1058:22:74",
+                  "scope": 13637,
+                  "src": "1058:22:79",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -584,10 +584,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13380,
+                    "id": 13631,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1058:7:74",
+                    "src": "1058:7:79",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -598,34 +598,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1057:24:74"
+              "src": "1057:24:79"
             },
             "returnParameters": {
-              "id": 13383,
+              "id": 13634,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1091:0:74"
+              "src": "1091:0:79"
             },
-            "scope": 13405,
-            "src": "1039:743:74",
+            "scope": 13656,
+            "src": "1039:743:79",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13390,
+              "id": 13641,
               "nodeType": "Block",
-              "src": "2033:5:74",
+              "src": "2033:5:79",
               "statements": []
             },
             "documentation": {
-              "id": 13387,
+              "id": 13638,
               "nodeType": "StructuredDocumentation",
-              "src": "1786:202:74",
+              "src": "1786:202:79",
               "text": " @dev Function that is run as the first thing in the fallback function.\n Can be redefined in derived contracts to add functionality.\n Redefinitions must call super._willFallback()."
             },
-            "id": 13391,
+            "id": 13642,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -633,28 +633,28 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13388,
+              "id": 13639,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2013:2:74"
+              "src": "2013:2:79"
             },
             "returnParameters": {
-              "id": 13389,
+              "id": 13640,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2033:0:74"
+              "src": "2033:0:79"
             },
-            "scope": 13405,
-            "src": "1991:47:74",
+            "scope": 13656,
+            "src": "1991:47:79",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13403,
+              "id": 13654,
               "nodeType": "Block",
-              "src": "2163:60:74",
+              "src": "2163:60:79",
               "statements": [
                 {
                   "expression": {
@@ -662,18 +662,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13395,
+                      "id": 13646,
                       "name": "_willFallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13391,
-                      "src": "2169:13:74",
+                      "referencedDeclaration": 13642,
+                      "src": "2169:13:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13396,
+                    "id": 13647,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -681,16 +681,16 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2169:15:74",
+                    "src": "2169:15:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13397,
+                  "id": 13648,
                   "nodeType": "ExpressionStatement",
-                  "src": "2169:15:74"
+                  "src": "2169:15:79"
                 },
                 {
                   "expression": {
@@ -701,18 +701,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 13399,
+                          "id": 13650,
                           "name": "_implementation",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13378,
-                          "src": "2200:15:74",
+                          "referencedDeclaration": 13629,
+                          "src": "2200:15:79",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
                             "typeString": "function () view returns (address)"
                           }
                         },
-                        "id": 13400,
+                        "id": 13651,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -720,7 +720,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "2200:17:74",
+                        "src": "2200:17:79",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -735,18 +735,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 13398,
+                      "id": 13649,
                       "name": "_delegate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13386,
-                      "src": "2190:9:74",
+                      "referencedDeclaration": 13637,
+                      "src": "2190:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 13401,
+                    "id": 13652,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -754,26 +754,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2190:28:74",
+                    "src": "2190:28:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13402,
+                  "id": 13653,
                   "nodeType": "ExpressionStatement",
-                  "src": "2190:28:74"
+                  "src": "2190:28:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13392,
+              "id": 13643,
               "nodeType": "StructuredDocumentation",
-              "src": "2042:88:74",
+              "src": "2042:88:79",
               "text": " @dev fallback implementation.\n Extracted to enable manual triggering."
             },
-            "id": 13404,
+            "id": 13655,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -781,43 +781,43 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13393,
+              "id": 13644,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2151:2:74"
+              "src": "2151:2:79"
             },
             "returnParameters": {
-              "id": 13394,
+              "id": 13645,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2163:0:74"
+              "src": "2163:0:79"
             },
-            "scope": 13405,
-            "src": "2133:90:74",
+            "scope": 13656,
+            "src": "2133:90:79",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 13406,
-        "src": "316:1909:74"
+        "scope": 13657,
+        "src": "316:1909:79"
       }
     ],
-    "src": "0:2226:74"
+    "src": "0:2226:79"
   },
   "legacyAST": {
     "absolutePath": "@iexec/solidity/contracts/Upgradeability/Proxy.sol",
     "exportedSymbols": {
       "Proxy": [
-        13405
+        13656
       ]
     },
-    "id": 13406,
+    "id": 13657,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13355,
+        "id": 13606,
         "literals": [
           "solidity",
           "^",
@@ -825,7 +825,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:74"
+        "src": "0:23:79"
       },
       {
         "abstract": true,
@@ -833,24 +833,24 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 13356,
+          "id": 13607,
           "nodeType": "StructuredDocumentation",
-          "src": "25:290:74",
+          "src": "25:290:79",
           "text": " @title Proxy\n @dev Implements delegation of calls to other contracts, with proper\n forwarding of return values and bubbling of failures.\n It defines a fallback function that delegates all calls to the address\n returned by the abstract _implementation() internal function."
         },
         "fullyImplemented": false,
-        "id": 13405,
+        "id": 13656,
         "linearizedBaseContracts": [
-          13405
+          13656
         ],
         "name": "Proxy",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 13363,
+              "id": 13614,
               "nodeType": "Block",
-              "src": "453:22:74",
+              "src": "453:22:79",
               "statements": [
                 {
                   "expression": {
@@ -858,18 +858,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13360,
+                      "id": 13611,
                       "name": "_fallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13404,
-                      "src": "459:9:74",
+                      "referencedDeclaration": 13655,
+                      "src": "459:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13361,
+                    "id": 13612,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -877,26 +877,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "459:11:74",
+                    "src": "459:11:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13362,
+                  "id": 13613,
                   "nodeType": "ExpressionStatement",
-                  "src": "459:11:74"
+                  "src": "459:11:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13357,
+              "id": 13608,
               "nodeType": "StructuredDocumentation",
-              "src": "344:79:74",
+              "src": "344:79:79",
               "text": " @dev Receive function.\n Implemented entirely in `_fallback`."
             },
-            "id": 13364,
+            "id": 13615,
             "implemented": true,
             "kind": "receive",
             "modifiers": [],
@@ -904,28 +904,28 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13358,
+              "id": 13609,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "433:2:74"
+              "src": "433:2:79"
             },
             "returnParameters": {
-              "id": 13359,
+              "id": 13610,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "453:0:74"
+              "src": "453:0:79"
             },
-            "scope": 13405,
-            "src": "426:49:74",
+            "scope": 13656,
+            "src": "426:49:79",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13371,
+              "id": 13622,
               "nodeType": "Block",
-              "src": "590:22:74",
+              "src": "590:22:79",
               "statements": [
                 {
                   "expression": {
@@ -933,18 +933,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13368,
+                      "id": 13619,
                       "name": "_fallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13404,
-                      "src": "596:9:74",
+                      "referencedDeclaration": 13655,
+                      "src": "596:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13369,
+                    "id": 13620,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -952,26 +952,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "596:11:74",
+                    "src": "596:11:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13370,
+                  "id": 13621,
                   "nodeType": "ExpressionStatement",
-                  "src": "596:11:74"
+                  "src": "596:11:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13365,
+              "id": 13616,
               "nodeType": "StructuredDocumentation",
-              "src": "479:80:74",
+              "src": "479:80:79",
               "text": " @dev Fallback function.\n Implemented entirely in `_fallback`."
             },
-            "id": 13372,
+            "id": 13623,
             "implemented": true,
             "kind": "fallback",
             "modifiers": [],
@@ -979,19 +979,19 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13366,
+              "id": 13617,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "570:2:74"
+              "src": "570:2:79"
             },
             "returnParameters": {
-              "id": 13367,
+              "id": 13618,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "590:0:74"
+              "src": "590:0:79"
             },
-            "scope": 13405,
-            "src": "562:50:74",
+            "scope": 13656,
+            "src": "562:50:79",
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
@@ -999,12 +999,12 @@
           {
             "body": null,
             "documentation": {
-              "id": 13373,
+              "id": 13624,
               "nodeType": "StructuredDocumentation",
-              "src": "616:62:74",
+              "src": "616:62:79",
               "text": " @return impl The Address of the implementation."
             },
-            "id": 13378,
+            "id": 13629,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1012,24 +1012,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13374,
+              "id": 13625,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "705:2:74"
+              "src": "705:2:79"
             },
             "returnParameters": {
-              "id": 13377,
+              "id": 13628,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13376,
+                  "id": 13627,
                   "mutability": "mutable",
                   "name": "impl",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13378,
-                  "src": "739:12:74",
+                  "scope": 13629,
+                  "src": "739:12:79",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1037,10 +1037,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13375,
+                    "id": 13626,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "739:7:74",
+                    "src": "739:7:79",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1051,24 +1051,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "738:14:74"
+              "src": "738:14:79"
             },
-            "scope": 13405,
-            "src": "681:72:74",
+            "scope": 13656,
+            "src": "681:72:79",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13385,
+              "id": 13636,
               "nodeType": "Block",
-              "src": "1091:691:74",
+              "src": "1091:691:79",
               "statements": [
                 {
                   "AST": {
                     "nodeType": "YulBlock",
-                    "src": "1106:672:74",
+                    "src": "1106:672:79",
                     "statements": [
                       {
                         "expression": {
@@ -1076,14 +1076,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1335:1:74",
+                              "src": "1335:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1338:1:74",
+                              "src": "1338:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -1092,26 +1092,26 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1341:12:74"
+                                "src": "1341:12:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1341:14:74"
+                              "src": "1341:14:79"
                             }
                           ],
                           "functionName": {
                             "name": "calldatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1322:12:74"
+                            "src": "1322:12:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1322:34:74"
+                          "src": "1322:34:79"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1322:34:74"
+                        "src": "1322:34:79"
                       },
                       {
                         "nodeType": "YulVariableDeclaration",
-                        "src": "1465:74:74",
+                        "src": "1465:74:79",
                         "value": {
                           "arguments": [
                             {
@@ -1119,20 +1119,20 @@
                               "functionName": {
                                 "name": "gas",
                                 "nodeType": "YulIdentifier",
-                                "src": "1492:3:74"
+                                "src": "1492:3:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1492:5:74"
+                              "src": "1492:5:79"
                             },
                             {
                               "name": "implementation",
                               "nodeType": "YulIdentifier",
-                              "src": "1499:14:74"
+                              "src": "1499:14:79"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1515:1:74",
+                              "src": "1515:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -1141,22 +1141,22 @@
                               "functionName": {
                                 "name": "calldatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1518:12:74"
+                                "src": "1518:12:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1518:14:74"
+                              "src": "1518:14:79"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1534:1:74",
+                              "src": "1534:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1537:1:74",
+                              "src": "1537:1:79",
                               "type": "",
                               "value": "0"
                             }
@@ -1164,16 +1164,16 @@
                           "functionName": {
                             "name": "delegatecall",
                             "nodeType": "YulIdentifier",
-                            "src": "1479:12:74"
+                            "src": "1479:12:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1479:60:74"
+                          "src": "1479:60:79"
                         },
                         "variables": [
                           {
                             "name": "result",
                             "nodeType": "YulTypedName",
-                            "src": "1469:6:74",
+                            "src": "1469:6:79",
                             "type": ""
                           }
                         ]
@@ -1184,14 +1184,14 @@
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1595:1:74",
+                              "src": "1595:1:79",
                               "type": "",
                               "value": "0"
                             },
                             {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1598:1:74",
+                              "src": "1598:1:79",
                               "type": "",
                               "value": "0"
                             },
@@ -1200,29 +1200,29 @@
                               "functionName": {
                                 "name": "returndatasize",
                                 "nodeType": "YulIdentifier",
-                                "src": "1601:14:74"
+                                "src": "1601:14:79"
                               },
                               "nodeType": "YulFunctionCall",
-                              "src": "1601:16:74"
+                              "src": "1601:16:79"
                             }
                           ],
                           "functionName": {
                             "name": "returndatacopy",
                             "nodeType": "YulIdentifier",
-                            "src": "1580:14:74"
+                            "src": "1580:14:79"
                           },
                           "nodeType": "YulFunctionCall",
-                          "src": "1580:38:74"
+                          "src": "1580:38:79"
                         },
                         "nodeType": "YulExpressionStatement",
-                        "src": "1580:38:74"
+                        "src": "1580:38:79"
                       },
                       {
                         "cases": [
                           {
                             "body": {
                               "nodeType": "YulBlock",
-                              "src": "1695:31:74",
+                              "src": "1695:31:79",
                               "statements": [
                                 {
                                   "expression": {
@@ -1230,7 +1230,7 @@
                                       {
                                         "kind": "number",
                                         "nodeType": "YulLiteral",
-                                        "src": "1704:1:74",
+                                        "src": "1704:1:79",
                                         "type": "",
                                         "value": "0"
                                       },
@@ -1239,31 +1239,31 @@
                                         "functionName": {
                                           "name": "returndatasize",
                                           "nodeType": "YulIdentifier",
-                                          "src": "1707:14:74"
+                                          "src": "1707:14:79"
                                         },
                                         "nodeType": "YulFunctionCall",
-                                        "src": "1707:16:74"
+                                        "src": "1707:16:79"
                                       }
                                     ],
                                     "functionName": {
                                       "name": "revert",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1697:6:74"
+                                      "src": "1697:6:79"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "1697:27:74"
+                                    "src": "1697:27:79"
                                   },
                                   "nodeType": "YulExpressionStatement",
-                                  "src": "1697:27:74"
+                                  "src": "1697:27:79"
                                 }
                               ]
                             },
                             "nodeType": "YulCase",
-                            "src": "1688:38:74",
+                            "src": "1688:38:79",
                             "value": {
                               "kind": "number",
                               "nodeType": "YulLiteral",
-                              "src": "1693:1:74",
+                              "src": "1693:1:79",
                               "type": "",
                               "value": "0"
                             }
@@ -1271,7 +1271,7 @@
                           {
                             "body": {
                               "nodeType": "YulBlock",
-                              "src": "1741:31:74",
+                              "src": "1741:31:79",
                               "statements": [
                                 {
                                   "expression": {
@@ -1279,7 +1279,7 @@
                                       {
                                         "kind": "number",
                                         "nodeType": "YulLiteral",
-                                        "src": "1750:1:74",
+                                        "src": "1750:1:79",
                                         "type": "",
                                         "value": "0"
                                       },
@@ -1288,63 +1288,63 @@
                                         "functionName": {
                                           "name": "returndatasize",
                                           "nodeType": "YulIdentifier",
-                                          "src": "1753:14:74"
+                                          "src": "1753:14:79"
                                         },
                                         "nodeType": "YulFunctionCall",
-                                        "src": "1753:16:74"
+                                        "src": "1753:16:79"
                                       }
                                     ],
                                     "functionName": {
                                       "name": "return",
                                       "nodeType": "YulIdentifier",
-                                      "src": "1743:6:74"
+                                      "src": "1743:6:79"
                                     },
                                     "nodeType": "YulFunctionCall",
-                                    "src": "1743:27:74"
+                                    "src": "1743:27:79"
                                   },
                                   "nodeType": "YulExpressionStatement",
-                                  "src": "1743:27:74"
+                                  "src": "1743:27:79"
                                 }
                               ]
                             },
                             "nodeType": "YulCase",
-                            "src": "1733:39:74",
+                            "src": "1733:39:79",
                             "value": "default"
                           }
                         ],
                         "expression": {
                           "name": "result",
                           "nodeType": "YulIdentifier",
-                          "src": "1633:6:74"
+                          "src": "1633:6:79"
                         },
                         "nodeType": "YulSwitch",
-                        "src": "1626:146:74"
+                        "src": "1626:146:79"
                       }
                     ]
                   },
                   "evmVersion": "istanbul",
                   "externalReferences": [
                     {
-                      "declaration": 13381,
+                      "declaration": 13632,
                       "isOffset": false,
                       "isSlot": false,
-                      "src": "1499:14:74",
+                      "src": "1499:14:79",
                       "valueSize": 1
                     }
                   ],
-                  "id": 13384,
+                  "id": 13635,
                   "nodeType": "InlineAssembly",
-                  "src": "1097:681:74"
+                  "src": "1097:681:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13379,
+              "id": 13630,
               "nodeType": "StructuredDocumentation",
-              "src": "757:279:74",
+              "src": "757:279:79",
               "text": " @dev Delegates execution to an implementation contract.\n This is a low level function that doesn't return to its internal call site.\n It will return to the external caller whatever the implementation returns.\n @param implementation Address to delegate."
             },
-            "id": 13386,
+            "id": 13637,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1352,18 +1352,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13382,
+              "id": 13633,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13381,
+                  "id": 13632,
                   "mutability": "mutable",
                   "name": "implementation",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13386,
-                  "src": "1058:22:74",
+                  "scope": 13637,
+                  "src": "1058:22:79",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1371,10 +1371,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13380,
+                    "id": 13631,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1058:7:74",
+                    "src": "1058:7:79",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1385,34 +1385,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1057:24:74"
+              "src": "1057:24:79"
             },
             "returnParameters": {
-              "id": 13383,
+              "id": 13634,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1091:0:74"
+              "src": "1091:0:79"
             },
-            "scope": 13405,
-            "src": "1039:743:74",
+            "scope": 13656,
+            "src": "1039:743:79",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13390,
+              "id": 13641,
               "nodeType": "Block",
-              "src": "2033:5:74",
+              "src": "2033:5:79",
               "statements": []
             },
             "documentation": {
-              "id": 13387,
+              "id": 13638,
               "nodeType": "StructuredDocumentation",
-              "src": "1786:202:74",
+              "src": "1786:202:79",
               "text": " @dev Function that is run as the first thing in the fallback function.\n Can be redefined in derived contracts to add functionality.\n Redefinitions must call super._willFallback()."
             },
-            "id": 13391,
+            "id": 13642,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1420,28 +1420,28 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13388,
+              "id": 13639,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2013:2:74"
+              "src": "2013:2:79"
             },
             "returnParameters": {
-              "id": 13389,
+              "id": 13640,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2033:0:74"
+              "src": "2033:0:79"
             },
-            "scope": 13405,
-            "src": "1991:47:74",
+            "scope": 13656,
+            "src": "1991:47:79",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "internal"
           },
           {
             "body": {
-              "id": 13403,
+              "id": 13654,
               "nodeType": "Block",
-              "src": "2163:60:74",
+              "src": "2163:60:79",
               "statements": [
                 {
                   "expression": {
@@ -1449,18 +1449,18 @@
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
-                      "id": 13395,
+                      "id": 13646,
                       "name": "_willFallback",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13391,
-                      "src": "2169:13:74",
+                      "referencedDeclaration": 13642,
+                      "src": "2169:13:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
                         "typeString": "function ()"
                       }
                     },
-                    "id": 13396,
+                    "id": 13647,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1468,16 +1468,16 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2169:15:74",
+                    "src": "2169:15:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13397,
+                  "id": 13648,
                   "nodeType": "ExpressionStatement",
-                  "src": "2169:15:74"
+                  "src": "2169:15:79"
                 },
                 {
                   "expression": {
@@ -1488,18 +1488,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 13399,
+                          "id": 13650,
                           "name": "_implementation",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13378,
-                          "src": "2200:15:74",
+                          "referencedDeclaration": 13629,
+                          "src": "2200:15:79",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
                             "typeString": "function () view returns (address)"
                           }
                         },
-                        "id": 13400,
+                        "id": 13651,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1507,7 +1507,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "2200:17:74",
+                        "src": "2200:17:79",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1522,18 +1522,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 13398,
+                      "id": 13649,
                       "name": "_delegate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13386,
-                      "src": "2190:9:74",
+                      "referencedDeclaration": 13637,
+                      "src": "2190:9:79",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 13401,
+                    "id": 13652,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1541,26 +1541,26 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "2190:28:74",
+                    "src": "2190:28:79",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13402,
+                  "id": 13653,
                   "nodeType": "ExpressionStatement",
-                  "src": "2190:28:74"
+                  "src": "2190:28:79"
                 }
               ]
             },
             "documentation": {
-              "id": 13392,
+              "id": 13643,
               "nodeType": "StructuredDocumentation",
-              "src": "2042:88:74",
+              "src": "2042:88:79",
               "text": " @dev fallback implementation.\n Extracted to enable manual triggering."
             },
-            "id": 13404,
+            "id": 13655,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1568,29 +1568,29 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13393,
+              "id": 13644,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2151:2:74"
+              "src": "2151:2:79"
             },
             "returnParameters": {
-              "id": 13394,
+              "id": 13645,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2163:0:74"
+              "src": "2163:0:79"
             },
-            "scope": 13405,
-            "src": "2133:90:74",
+            "scope": 13656,
+            "src": "2133:90:79",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 13406,
-        "src": "316:1909:74"
+        "scope": 13657,
+        "src": "316:1909:79"
       }
     ],
-    "src": "0:2226:74"
+    "src": "0:2226:79"
   },
   "compiler": {
     "name": "solc",
@@ -1598,7 +1598,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.2",
-  "updatedAt": "2020-11-04T10:28:52.959Z",
+  "updatedAt": "2020-11-04T14:54:52.242Z",
   "devdoc": {
     "details": "Implements delegation of calls to other contracts, with proper forwarding of return values and bubbling of failures. It defines a fallback function that delegates all calls to the address returned by the abstract _implementation() internal function.",
     "kind": "dev",

@@ -36,14 +36,18 @@ var IexecAccessors          = artifacts.require('IexecAccessorsDelegate')
 var IexecAccessorsABILegacy = artifacts.require('IexecAccessorsABILegacyDelegate')
 var IexecCategoryManager    = artifacts.require('IexecCategoryManagerDelegate')
 var IexecERC20              = artifacts.require('IexecERC20Delegate')
+var IexecERC20KYC           = artifacts.require('IexecERC20DelegateKYC')
 var IexecEscrowNative       = artifacts.require('IexecEscrowNativeDelegate')
 var IexecEscrowToken        = artifacts.require('IexecEscrowTokenDelegate')
+var IexecEscrowTokenKYC     = artifacts.require('IexecEscrowTokenDelegateKYC')
 var IexecEscrowTokenSwap    = artifacts.require('IexecEscrowTokenSwapDelegate')
 var IexecMaintenance        = artifacts.require('IexecMaintenanceDelegate')
 var IexecMaintenanceExtra   = artifacts.require('IexecMaintenanceExtraDelegate')
 var IexecOrderManagement    = artifacts.require('IexecOrderManagementDelegate')
 var IexecPoco1              = artifacts.require('IexecPoco1Delegate')
+var IexecPoco1KYC           = artifacts.require('IexecPoco1DelegateKYC')
 var IexecPoco2              = artifacts.require('IexecPoco2Delegate')
+var IexecPoco2KYC           = artifacts.require('IexecPoco2DelegateKYC')
 var IexecRelay              = artifacts.require('IexecRelayDelegate')
 var ENSIntegration          = artifacts.require('ENSIntegrationDelegate')
 // Other contracts
@@ -128,10 +132,12 @@ module.exports = async function(deployer, network, accounts)
 	console.log('Deployer is:', accounts[0]);
 
 	/* ------------------------- Existing deployment ------------------------- */
-	const deploymentOptions        = CONFIG.chains[chainid] || CONFIG.chains.default;
-	if (!deploymentOptions.v5e) return;
-	const factoryOptions           = { salt: deploymentOptions.v5.salt  || process.env.SALT || web3.utils.randomHex(32) };
-	const factoryOptionsEnterprise = { salt: deploymentOptions.v5e.salt || process.env.SALT || web3.utils.randomHex(32) };
+	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
+	const factoryOptions    = { salt: deploymentOptions.v5.salt  || process.env.SALT || web3.utils.randomHex(32) };
+
+	if (deploymentOptions.v5.AppRegistry)        AppRegistry.address        = deploymentOptions.v5.AppRegistry;
+	if (deploymentOptions.v5.DatasetRegistry)    DatasetRegistry.address    = deploymentOptions.v5.DatasetRegistry;
+	if (deploymentOptions.v5.WorkerpoolRegistry) WorkerpoolRegistry.address = deploymentOptions.v5.WorkerpoolRegistry;
 
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)
@@ -153,12 +159,15 @@ module.exports = async function(deployer, network, accounts)
 		IexecAccessors,
 		IexecAccessorsABILegacy,
 		IexecCategoryManager,
-		IexecERC20,
-		IexecEscrowToken,
+		deploymentOptions.v5.usekyc ? IexecERC20KYC : IexecERC20,
+		deploymentOptions.asset == 'Native'                                                             && IexecEscrowNative,
+		deploymentOptions.asset == 'Token' &&  deploymentOptions.v5.usekyc                              && IexecEscrowTokenKYC,
+		deploymentOptions.asset == 'Token' && !deploymentOptions.v5.usekyc                              && IexecEscrowToken,
+		deploymentOptions.asset == 'Token' && !deploymentOptions.v5.usekyc && deploymentOptions.uniswap && IexecEscrowTokenSwap,
 		IexecMaintenance,
 		IexecOrderManagement,
-		IexecPoco1,
-		IexecPoco2,
+		deploymentOptions.v5.usekyc ? IexecPoco1KYC : IexecPoco1,
+		deploymentOptions.v5.usekyc ? IexecPoco2KYC : IexecPoco2,
 		IexecRelay,
 		ENSIntegration,
 		chainid != 1 && IexecMaintenanceExtra,
@@ -197,10 +206,6 @@ module.exports = async function(deployer, network, accounts)
 	/* --------------------------- Configure Stack --------------------------- */
 	IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);
 
-	if (factoryOptionsEnterprise.AppRegistry)        AppRegistry.address        = factoryOptionsEnterprise.AppRegistry;
-	if (factoryOptionsEnterprise.DatasetRegistry)    DatasetRegistry.address    = factoryOptionsEnterprise.DatasetRegistry;
-	if (factoryOptionsEnterprise.WorkerpoolRegistry) WorkerpoolRegistry.address = factoryOptionsEnterprise.WorkerpoolRegistry;
-
 	if (deploymentOptions.v5.usefactory)
 	{
 		await Promise.all([
@@ -218,8 +223,24 @@ module.exports = async function(deployer, network, accounts)
 		].filter(Boolean));
 	}
 
-	RLCInstance                = await RLC.deployed();
-	ERLCInstance               = await KERC20.deployed();
+	switch (deploymentOptions.asset)
+	{
+		case 'Token':
+			if (deploymentOptions.v5.usekyc)
+			{
+				TokenInstance = await KERC20.deployed();
+			}
+			else
+			{
+				TokenInstance = await RLC.deployed();
+			}
+			break;
+
+		case 'Native':
+			TokenInstance = { address: ADDRESS_ZERO }
+			break;
+	}
+
 	AppRegistryInstance        = await AppRegistry.deployed();
 	DatasetRegistryInstance    = await DatasetRegistry.deployed();
 	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
@@ -240,9 +261,9 @@ module.exports = async function(deployer, network, accounts)
 		!DatasetRegistryInitialized    && DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`),
 		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
 		!IexecInterfaceInitialized     && IexecInterfaceInstance.configure(
-			ERLCInstance.address,
-			'Staked ERLC',
-			'SERLC',
+			TokenInstance.address,
+			deploymentOptions.v5.usekyc ? 'Staked ERLC'        : 'Staked RLC',
+			deploymentOptions.v5.usekyc ? 'SERLC'              : 'SRLC',
 			9, // TODO: generic ?
 			AppRegistryInstance.address,
 			DatasetRegistryInstance.address,

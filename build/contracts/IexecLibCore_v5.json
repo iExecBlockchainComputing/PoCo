@@ -13,15 +13,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol",
     "exportedSymbols": {
       "IexecLibCore_v5": [
-        1106
+        1133
       ]
     },
-    "id": 1107,
+    "id": 1134,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 994,
+        "id": 1021,
         "literals": [
           "solidity",
           "^",
@@ -38,25 +38,25 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1106,
+        "id": 1133,
         "linearizedBaseContracts": [
-          1106
+          1133
         ],
         "name": "IexecLibCore_v5",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "IexecLibCore_v5.Account",
-            "id": 999,
+            "id": 1026,
             "members": [
               {
                 "constant": false,
-                "id": 996,
+                "id": 1023,
                 "mutability": "mutable",
                 "name": "stake",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 999,
+                "scope": 1026,
                 "src": "1333:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -65,7 +65,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 995,
+                  "id": 1022,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1333:7:8",
@@ -79,12 +79,12 @@
               },
               {
                 "constant": false,
-                "id": 998,
+                "id": 1025,
                 "mutability": "mutable",
                 "name": "locked",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 999,
+                "scope": 1026,
                 "src": "1350:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -93,7 +93,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 997,
+                  "id": 1024,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1350:7:8",
@@ -108,22 +108,22 @@
             ],
             "name": "Account",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1313:55:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Category",
-            "id": 1006,
+            "id": 1033,
             "members": [
               {
                 "constant": false,
-                "id": 1001,
+                "id": 1028,
                 "mutability": "mutable",
                 "name": "name",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1391:12:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -132,7 +132,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1000,
+                  "id": 1027,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1391:6:8",
@@ -146,12 +146,12 @@
               },
               {
                 "constant": false,
-                "id": 1003,
+                "id": 1030,
                 "mutability": "mutable",
                 "name": "description",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1407:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -160,7 +160,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1002,
+                  "id": 1029,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1407:6:8",
@@ -174,12 +174,12 @@
               },
               {
                 "constant": false,
-                "id": 1005,
+                "id": 1032,
                 "mutability": "mutable",
                 "name": "workClockTimeRef",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1430:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -188,7 +188,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1004,
+                  "id": 1031,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1430:7:8",
@@ -203,22 +203,22 @@
             ],
             "name": "Category",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1370:88:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Resource",
-            "id": 1013,
+            "id": 1040,
             "members": [
               {
                 "constant": false,
-                "id": 1008,
+                "id": 1035,
                 "mutability": "mutable",
                 "name": "pointer",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1510:15:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -227,7 +227,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1007,
+                  "id": 1034,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1510:7:8",
@@ -242,12 +242,12 @@
               },
               {
                 "constant": false,
-                "id": 1010,
+                "id": 1037,
                 "mutability": "mutable",
                 "name": "owner",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1529:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -256,7 +256,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1009,
+                  "id": 1036,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1529:7:8",
@@ -271,12 +271,12 @@
               },
               {
                 "constant": false,
-                "id": 1012,
+                "id": 1039,
                 "mutability": "mutable",
                 "name": "price",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1546:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -285,7 +285,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1011,
+                  "id": 1038,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1546:7:8",
@@ -300,38 +300,38 @@
             ],
             "name": "Resource",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1489:74:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Deal",
-            "id": 1044,
+            "id": 1071,
             "members": [
               {
                 "constant": false,
-                "id": 1015,
+                "id": 1042,
                 "mutability": "mutable",
                 "name": "app",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1598:12:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1014,
+                  "id": 1041,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1598:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -340,28 +340,28 @@
               },
               {
                 "constant": false,
-                "id": 1017,
+                "id": 1044,
                 "mutability": "mutable",
                 "name": "dataset",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1614:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1016,
+                  "id": 1043,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1614:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -370,28 +370,28 @@
               },
               {
                 "constant": false,
-                "id": 1019,
+                "id": 1046,
                 "mutability": "mutable",
                 "name": "workerpool",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1634:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1018,
+                  "id": 1045,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1634:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -400,12 +400,12 @@
               },
               {
                 "constant": false,
-                "id": 1021,
+                "id": 1048,
                 "mutability": "mutable",
                 "name": "trust",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1657:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -414,7 +414,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1020,
+                  "id": 1047,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1657:7:8",
@@ -428,12 +428,12 @@
               },
               {
                 "constant": false,
-                "id": 1023,
+                "id": 1050,
                 "mutability": "mutable",
                 "name": "category",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1674:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -442,7 +442,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1022,
+                  "id": 1049,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1674:7:8",
@@ -456,12 +456,12 @@
               },
               {
                 "constant": false,
-                "id": 1025,
+                "id": 1052,
                 "mutability": "mutable",
                 "name": "tag",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1694:11:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -470,7 +470,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1024,
+                  "id": 1051,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "1694:7:8",
@@ -484,12 +484,12 @@
               },
               {
                 "constant": false,
-                "id": 1027,
+                "id": 1054,
                 "mutability": "mutable",
                 "name": "requester",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1732:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -498,7 +498,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1026,
+                  "id": 1053,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1732:7:8",
@@ -513,12 +513,12 @@
               },
               {
                 "constant": false,
-                "id": 1029,
+                "id": 1056,
                 "mutability": "mutable",
                 "name": "beneficiary",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1753:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -527,7 +527,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1028,
+                  "id": 1055,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1753:7:8",
@@ -542,12 +542,12 @@
               },
               {
                 "constant": false,
-                "id": 1031,
+                "id": 1058,
                 "mutability": "mutable",
                 "name": "callback",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1776:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -556,7 +556,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1030,
+                  "id": 1057,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1776:7:8",
@@ -571,12 +571,12 @@
               },
               {
                 "constant": false,
-                "id": 1033,
+                "id": 1060,
                 "mutability": "mutable",
                 "name": "params",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1796:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -585,7 +585,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1032,
+                  "id": 1059,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1796:6:8",
@@ -599,12 +599,12 @@
               },
               {
                 "constant": false,
-                "id": 1035,
+                "id": 1062,
                 "mutability": "mutable",
                 "name": "startTime",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1838:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -613,7 +613,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1034,
+                  "id": 1061,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1838:7:8",
@@ -627,12 +627,12 @@
               },
               {
                 "constant": false,
-                "id": 1037,
+                "id": 1064,
                 "mutability": "mutable",
                 "name": "botFirst",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1859:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -641,7 +641,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1036,
+                  "id": 1063,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1859:7:8",
@@ -655,12 +655,12 @@
               },
               {
                 "constant": false,
-                "id": 1039,
+                "id": 1066,
                 "mutability": "mutable",
                 "name": "botSize",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1879:15:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -669,7 +669,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1038,
+                  "id": 1065,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1879:7:8",
@@ -683,12 +683,12 @@
               },
               {
                 "constant": false,
-                "id": 1041,
+                "id": 1068,
                 "mutability": "mutable",
                 "name": "workerStake",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1915:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -697,7 +697,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1040,
+                  "id": 1067,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1915:7:8",
@@ -711,12 +711,12 @@
               },
               {
                 "constant": false,
-                "id": 1043,
+                "id": 1070,
                 "mutability": "mutable",
                 "name": "schedulerRewardRatio",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1938:28:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -725,7 +725,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1042,
+                  "id": 1069,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1938:7:8",
@@ -740,40 +740,40 @@
             ],
             "name": "Deal",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1565:405:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.TaskStatusEnum",
-            "id": 1050,
+            "id": 1077,
             "members": [
               {
-                "id": 1045,
+                "id": 1072,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
                 "src": "2018:5:8"
               },
               {
-                "id": 1046,
+                "id": 1073,
                 "name": "ACTIVE",
                 "nodeType": "EnumValue",
                 "src": "2083:6:8"
               },
               {
-                "id": 1047,
+                "id": 1074,
                 "name": "REVEALING",
                 "nodeType": "EnumValue",
                 "src": "2136:9:8"
               },
               {
-                "id": 1048,
+                "id": 1075,
                 "name": "COMPLETED",
                 "nodeType": "EnumValue",
                 "src": "2178:9:8"
               },
               {
-                "id": 1049,
+                "id": 1076,
                 "name": "FAILED",
                 "nodeType": "EnumValue",
                 "src": "2213:6:8"
@@ -785,32 +785,32 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Task",
-            "id": 1082,
+            "id": 1109,
             "members": [
               {
                 "constant": false,
-                "id": 1052,
+                "id": 1079,
                 "mutability": "mutable",
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2265:21:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_TaskStatusEnum_$1050",
+                  "typeIdentifier": "t_enum$_TaskStatusEnum_$1077",
                   "typeString": "enum IexecLibCore_v5.TaskStatusEnum"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1051,
+                  "id": 1078,
                   "name": "TaskStatusEnum",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1050,
+                  "referencedDeclaration": 1077,
                   "src": "2265:14:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_TaskStatusEnum_$1050",
+                    "typeIdentifier": "t_enum$_TaskStatusEnum_$1077",
                     "typeString": "enum IexecLibCore_v5.TaskStatusEnum"
                   }
                 },
@@ -819,12 +819,12 @@
               },
               {
                 "constant": false,
-                "id": 1054,
+                "id": 1081,
                 "mutability": "mutable",
                 "name": "dealid",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2290:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -833,7 +833,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1053,
+                  "id": 1080,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2290:7:8",
@@ -847,12 +847,12 @@
               },
               {
                 "constant": false,
-                "id": 1056,
+                "id": 1083,
                 "mutability": "mutable",
                 "name": "idx",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2310:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -861,7 +861,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1055,
+                  "id": 1082,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2310:7:8",
@@ -875,12 +875,12 @@
               },
               {
                 "constant": false,
-                "id": 1058,
+                "id": 1085,
                 "mutability": "mutable",
                 "name": "timeref",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2327:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -889,7 +889,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1057,
+                  "id": 1084,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2327:7:8",
@@ -903,12 +903,12 @@
               },
               {
                 "constant": false,
-                "id": 1060,
+                "id": 1087,
                 "mutability": "mutable",
                 "name": "contributionDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2348:30:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -917,7 +917,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1059,
+                  "id": 1086,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2348:7:8",
@@ -931,12 +931,12 @@
               },
               {
                 "constant": false,
-                "id": 1062,
+                "id": 1089,
                 "mutability": "mutable",
                 "name": "revealDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2382:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -945,7 +945,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1061,
+                  "id": 1088,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2382:7:8",
@@ -959,12 +959,12 @@
               },
               {
                 "constant": false,
-                "id": 1064,
+                "id": 1091,
                 "mutability": "mutable",
                 "name": "finalDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2410:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -973,7 +973,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1063,
+                  "id": 1090,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2410:7:8",
@@ -987,12 +987,12 @@
               },
               {
                 "constant": false,
-                "id": 1066,
+                "id": 1093,
                 "mutability": "mutable",
                 "name": "consensusValue",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2437:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1001,7 +1001,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1065,
+                  "id": 1092,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2437:7:8",
@@ -1015,12 +1015,12 @@
               },
               {
                 "constant": false,
-                "id": 1068,
+                "id": 1095,
                 "mutability": "mutable",
                 "name": "revealCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2465:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1029,7 +1029,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1067,
+                  "id": 1094,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2465:7:8",
@@ -1043,12 +1043,12 @@
               },
               {
                 "constant": false,
-                "id": 1070,
+                "id": 1097,
                 "mutability": "mutable",
                 "name": "winnerCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2492:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1057,7 +1057,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1069,
+                  "id": 1096,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2492:7:8",
@@ -1071,12 +1071,12 @@
               },
               {
                 "constant": false,
-                "id": 1073,
+                "id": 1100,
                 "mutability": "mutable",
                 "name": "contributors",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2519:22:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1086,7 +1086,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1071,
+                    "id": 1098,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2519:7:8",
@@ -1096,7 +1096,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1072,
+                  "id": 1099,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "2519:9:8",
@@ -1110,12 +1110,12 @@
               },
               {
                 "constant": false,
-                "id": 1075,
+                "id": 1102,
                 "mutability": "mutable",
                 "name": "resultDigest",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2545:22:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1124,7 +1124,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1074,
+                  "id": 1101,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2545:7:8",
@@ -1138,12 +1138,12 @@
               },
               {
                 "constant": false,
-                "id": 1077,
+                "id": 1104,
                 "mutability": "mutable",
                 "name": "results",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2571:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1152,7 +1152,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 1076,
+                  "id": 1103,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "2571:5:8",
@@ -1166,12 +1166,12 @@
               },
               {
                 "constant": false,
-                "id": 1079,
+                "id": 1106,
                 "mutability": "mutable",
                 "name": "resultsTimestamp",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2592:26:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1180,7 +1180,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1078,
+                  "id": 1105,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2592:7:8",
@@ -1194,12 +1194,12 @@
               },
               {
                 "constant": false,
-                "id": 1081,
+                "id": 1108,
                 "mutability": "mutable",
                 "name": "resultsCallback",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2622:25:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1208,7 +1208,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 1080,
+                  "id": 1107,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "2622:5:8",
@@ -1223,22 +1223,22 @@
             ],
             "name": "Task",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2248:436:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Consensus",
-            "id": 1089,
+            "id": 1116,
             "members": [
               {
                 "constant": false,
-                "id": 1086,
+                "id": 1113,
                 "mutability": "mutable",
                 "name": "group",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1089,
+                "scope": 1116,
                 "src": "2733:33:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1247,9 +1247,9 @@
                   "typeString": "mapping(bytes32 => uint256)"
                 },
                 "typeName": {
-                  "id": 1085,
+                  "id": 1112,
                   "keyType": {
-                    "id": 1083,
+                    "id": 1110,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2741:7:8",
@@ -1265,7 +1265,7 @@
                     "typeString": "mapping(bytes32 => uint256)"
                   },
                   "valueType": {
-                    "id": 1084,
+                    "id": 1111,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2752:7:8",
@@ -1280,12 +1280,12 @@
               },
               {
                 "constant": false,
-                "id": 1088,
+                "id": 1115,
                 "mutability": "mutable",
                 "name": "total",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1089,
+                "scope": 1116,
                 "src": "2770:33:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1294,7 +1294,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1087,
+                  "id": 1114,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2770:7:8",
@@ -1309,34 +1309,34 @@
             ],
             "name": "Consensus",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2711:96:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.ContributionStatusEnum",
-            "id": 1094,
+            "id": 1121,
             "members": [
               {
-                "id": 1090,
+                "id": 1117,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
                 "src": "2867:5:8"
               },
               {
-                "id": 1091,
+                "id": 1118,
                 "name": "CONTRIBUTED",
                 "nodeType": "EnumValue",
                 "src": "2876:11:8"
               },
               {
-                "id": 1092,
+                "id": 1119,
                 "name": "PROVED",
                 "nodeType": "EnumValue",
                 "src": "2891:6:8"
               },
               {
-                "id": 1093,
+                "id": 1120,
                 "name": "REJECTED",
                 "nodeType": "EnumValue",
                 "src": "2901:8:8"
@@ -1348,32 +1348,32 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Contribution",
-            "id": 1105,
+            "id": 1132,
             "members": [
               {
                 "constant": false,
-                "id": 1096,
+                "id": 1123,
                 "mutability": "mutable",
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2939:29:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$1094",
+                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$1121",
                   "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1095,
+                  "id": 1122,
                   "name": "ContributionStatusEnum",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1094,
+                  "referencedDeclaration": 1121,
                   "src": "2939:22:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$1094",
+                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$1121",
                     "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                   }
                 },
@@ -1382,12 +1382,12 @@
               },
               {
                 "constant": false,
-                "id": 1098,
+                "id": 1125,
                 "mutability": "mutable",
                 "name": "resultHash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2972:18:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1396,7 +1396,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1097,
+                  "id": 1124,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2972:7:8",
@@ -1410,12 +1410,12 @@
               },
               {
                 "constant": false,
-                "id": 1100,
+                "id": 1127,
                 "mutability": "mutable",
                 "name": "resultSeal",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2994:18:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1424,7 +1424,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1099,
+                  "id": 1126,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2994:7:8",
@@ -1438,12 +1438,12 @@
               },
               {
                 "constant": false,
-                "id": 1102,
+                "id": 1129,
                 "mutability": "mutable",
                 "name": "enclaveChallenge",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "3016:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1452,7 +1452,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1101,
+                  "id": 1128,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "3016:7:8",
@@ -1467,12 +1467,12 @@
               },
               {
                 "constant": false,
-                "id": 1104,
+                "id": 1131,
                 "mutability": "mutable",
                 "name": "weight",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "3044:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1481,7 +1481,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1103,
+                  "id": 1130,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "3044:7:8",
@@ -1496,12 +1496,12 @@
             ],
             "name": "Contribution",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2914:148:8",
             "visibility": "public"
           }
         ],
-        "scope": 1107,
+        "scope": 1134,
         "src": "1268:1797:8"
       }
     ],
@@ -1511,15 +1511,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol",
     "exportedSymbols": {
       "IexecLibCore_v5": [
-        1106
+        1133
       ]
     },
-    "id": 1107,
+    "id": 1134,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 994,
+        "id": 1021,
         "literals": [
           "solidity",
           "^",
@@ -1536,25 +1536,25 @@
         "contractKind": "library",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1106,
+        "id": 1133,
         "linearizedBaseContracts": [
-          1106
+          1133
         ],
         "name": "IexecLibCore_v5",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "IexecLibCore_v5.Account",
-            "id": 999,
+            "id": 1026,
             "members": [
               {
                 "constant": false,
-                "id": 996,
+                "id": 1023,
                 "mutability": "mutable",
                 "name": "stake",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 999,
+                "scope": 1026,
                 "src": "1333:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1563,7 +1563,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 995,
+                  "id": 1022,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1333:7:8",
@@ -1577,12 +1577,12 @@
               },
               {
                 "constant": false,
-                "id": 998,
+                "id": 1025,
                 "mutability": "mutable",
                 "name": "locked",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 999,
+                "scope": 1026,
                 "src": "1350:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1591,7 +1591,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 997,
+                  "id": 1024,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1350:7:8",
@@ -1606,22 +1606,22 @@
             ],
             "name": "Account",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1313:55:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Category",
-            "id": 1006,
+            "id": 1033,
             "members": [
               {
                 "constant": false,
-                "id": 1001,
+                "id": 1028,
                 "mutability": "mutable",
                 "name": "name",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1391:12:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1630,7 +1630,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1000,
+                  "id": 1027,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1391:6:8",
@@ -1644,12 +1644,12 @@
               },
               {
                 "constant": false,
-                "id": 1003,
+                "id": 1030,
                 "mutability": "mutable",
                 "name": "description",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1407:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1658,7 +1658,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1002,
+                  "id": 1029,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1407:6:8",
@@ -1672,12 +1672,12 @@
               },
               {
                 "constant": false,
-                "id": 1005,
+                "id": 1032,
                 "mutability": "mutable",
                 "name": "workClockTimeRef",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1006,
+                "scope": 1033,
                 "src": "1430:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1686,7 +1686,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1004,
+                  "id": 1031,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1430:7:8",
@@ -1701,22 +1701,22 @@
             ],
             "name": "Category",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1370:88:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Resource",
-            "id": 1013,
+            "id": 1040,
             "members": [
               {
                 "constant": false,
-                "id": 1008,
+                "id": 1035,
                 "mutability": "mutable",
                 "name": "pointer",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1510:15:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1725,7 +1725,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1007,
+                  "id": 1034,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1510:7:8",
@@ -1740,12 +1740,12 @@
               },
               {
                 "constant": false,
-                "id": 1010,
+                "id": 1037,
                 "mutability": "mutable",
                 "name": "owner",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1529:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1754,7 +1754,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1009,
+                  "id": 1036,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1529:7:8",
@@ -1769,12 +1769,12 @@
               },
               {
                 "constant": false,
-                "id": 1012,
+                "id": 1039,
                 "mutability": "mutable",
                 "name": "price",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1013,
+                "scope": 1040,
                 "src": "1546:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1783,7 +1783,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1011,
+                  "id": 1038,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1546:7:8",
@@ -1798,38 +1798,38 @@
             ],
             "name": "Resource",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1489:74:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Deal",
-            "id": 1044,
+            "id": 1071,
             "members": [
               {
                 "constant": false,
-                "id": 1015,
+                "id": 1042,
                 "mutability": "mutable",
                 "name": "app",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1598:12:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1014,
+                  "id": 1041,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1598:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -1838,28 +1838,28 @@
               },
               {
                 "constant": false,
-                "id": 1017,
+                "id": 1044,
                 "mutability": "mutable",
                 "name": "dataset",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1614:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1016,
+                  "id": 1043,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1614:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -1868,28 +1868,28 @@
               },
               {
                 "constant": false,
-                "id": 1019,
+                "id": 1046,
                 "mutability": "mutable",
                 "name": "workerpool",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1634:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                  "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Resource"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1018,
+                  "id": 1045,
                   "name": "Resource",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1013,
+                  "referencedDeclaration": 1040,
                   "src": "1634:8:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Resource_$1013_storage_ptr",
+                    "typeIdentifier": "t_struct$_Resource_$1040_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Resource"
                   }
                 },
@@ -1898,12 +1898,12 @@
               },
               {
                 "constant": false,
-                "id": 1021,
+                "id": 1048,
                 "mutability": "mutable",
                 "name": "trust",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1657:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1912,7 +1912,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1020,
+                  "id": 1047,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1657:7:8",
@@ -1926,12 +1926,12 @@
               },
               {
                 "constant": false,
-                "id": 1023,
+                "id": 1050,
                 "mutability": "mutable",
                 "name": "category",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1674:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1940,7 +1940,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1022,
+                  "id": 1049,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1674:7:8",
@@ -1954,12 +1954,12 @@
               },
               {
                 "constant": false,
-                "id": 1025,
+                "id": 1052,
                 "mutability": "mutable",
                 "name": "tag",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1694:11:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1968,7 +1968,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1024,
+                  "id": 1051,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "1694:7:8",
@@ -1982,12 +1982,12 @@
               },
               {
                 "constant": false,
-                "id": 1027,
+                "id": 1054,
                 "mutability": "mutable",
                 "name": "requester",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1732:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1996,7 +1996,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1026,
+                  "id": 1053,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1732:7:8",
@@ -2011,12 +2011,12 @@
               },
               {
                 "constant": false,
-                "id": 1029,
+                "id": 1056,
                 "mutability": "mutable",
                 "name": "beneficiary",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1753:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2025,7 +2025,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1028,
+                  "id": 1055,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1753:7:8",
@@ -2040,12 +2040,12 @@
               },
               {
                 "constant": false,
-                "id": 1031,
+                "id": 1058,
                 "mutability": "mutable",
                 "name": "callback",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1776:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2054,7 +2054,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1030,
+                  "id": 1057,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1776:7:8",
@@ -2069,12 +2069,12 @@
               },
               {
                 "constant": false,
-                "id": 1033,
+                "id": 1060,
                 "mutability": "mutable",
                 "name": "params",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1796:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2083,7 +2083,7 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 1032,
+                  "id": 1059,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
                   "src": "1796:6:8",
@@ -2097,12 +2097,12 @@
               },
               {
                 "constant": false,
-                "id": 1035,
+                "id": 1062,
                 "mutability": "mutable",
                 "name": "startTime",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1838:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2111,7 +2111,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1034,
+                  "id": 1061,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1838:7:8",
@@ -2125,12 +2125,12 @@
               },
               {
                 "constant": false,
-                "id": 1037,
+                "id": 1064,
                 "mutability": "mutable",
                 "name": "botFirst",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1859:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2139,7 +2139,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1036,
+                  "id": 1063,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1859:7:8",
@@ -2153,12 +2153,12 @@
               },
               {
                 "constant": false,
-                "id": 1039,
+                "id": 1066,
                 "mutability": "mutable",
                 "name": "botSize",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1879:15:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2167,7 +2167,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1038,
+                  "id": 1065,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1879:7:8",
@@ -2181,12 +2181,12 @@
               },
               {
                 "constant": false,
-                "id": 1041,
+                "id": 1068,
                 "mutability": "mutable",
                 "name": "workerStake",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1915:19:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2195,7 +2195,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1040,
+                  "id": 1067,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1915:7:8",
@@ -2209,12 +2209,12 @@
               },
               {
                 "constant": false,
-                "id": 1043,
+                "id": 1070,
                 "mutability": "mutable",
                 "name": "schedulerRewardRatio",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1044,
+                "scope": 1071,
                 "src": "1938:28:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2223,7 +2223,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1042,
+                  "id": 1069,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "1938:7:8",
@@ -2238,40 +2238,40 @@
             ],
             "name": "Deal",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "1565:405:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.TaskStatusEnum",
-            "id": 1050,
+            "id": 1077,
             "members": [
               {
-                "id": 1045,
+                "id": 1072,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
                 "src": "2018:5:8"
               },
               {
-                "id": 1046,
+                "id": 1073,
                 "name": "ACTIVE",
                 "nodeType": "EnumValue",
                 "src": "2083:6:8"
               },
               {
-                "id": 1047,
+                "id": 1074,
                 "name": "REVEALING",
                 "nodeType": "EnumValue",
                 "src": "2136:9:8"
               },
               {
-                "id": 1048,
+                "id": 1075,
                 "name": "COMPLETED",
                 "nodeType": "EnumValue",
                 "src": "2178:9:8"
               },
               {
-                "id": 1049,
+                "id": 1076,
                 "name": "FAILED",
                 "nodeType": "EnumValue",
                 "src": "2213:6:8"
@@ -2283,32 +2283,32 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Task",
-            "id": 1082,
+            "id": 1109,
             "members": [
               {
                 "constant": false,
-                "id": 1052,
+                "id": 1079,
                 "mutability": "mutable",
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2265:21:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_TaskStatusEnum_$1050",
+                  "typeIdentifier": "t_enum$_TaskStatusEnum_$1077",
                   "typeString": "enum IexecLibCore_v5.TaskStatusEnum"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1051,
+                  "id": 1078,
                   "name": "TaskStatusEnum",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1050,
+                  "referencedDeclaration": 1077,
                   "src": "2265:14:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_TaskStatusEnum_$1050",
+                    "typeIdentifier": "t_enum$_TaskStatusEnum_$1077",
                     "typeString": "enum IexecLibCore_v5.TaskStatusEnum"
                   }
                 },
@@ -2317,12 +2317,12 @@
               },
               {
                 "constant": false,
-                "id": 1054,
+                "id": 1081,
                 "mutability": "mutable",
                 "name": "dealid",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2290:16:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2331,7 +2331,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1053,
+                  "id": 1080,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2290:7:8",
@@ -2345,12 +2345,12 @@
               },
               {
                 "constant": false,
-                "id": 1056,
+                "id": 1083,
                 "mutability": "mutable",
                 "name": "idx",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2310:13:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2359,7 +2359,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1055,
+                  "id": 1082,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2310:7:8",
@@ -2373,12 +2373,12 @@
               },
               {
                 "constant": false,
-                "id": 1058,
+                "id": 1085,
                 "mutability": "mutable",
                 "name": "timeref",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2327:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2387,7 +2387,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1057,
+                  "id": 1084,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2327:7:8",
@@ -2401,12 +2401,12 @@
               },
               {
                 "constant": false,
-                "id": 1060,
+                "id": 1087,
                 "mutability": "mutable",
                 "name": "contributionDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2348:30:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2415,7 +2415,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1059,
+                  "id": 1086,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2348:7:8",
@@ -2429,12 +2429,12 @@
               },
               {
                 "constant": false,
-                "id": 1062,
+                "id": 1089,
                 "mutability": "mutable",
                 "name": "revealDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2382:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2443,7 +2443,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1061,
+                  "id": 1088,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2382:7:8",
@@ -2457,12 +2457,12 @@
               },
               {
                 "constant": false,
-                "id": 1064,
+                "id": 1091,
                 "mutability": "mutable",
                 "name": "finalDeadline",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2410:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2471,7 +2471,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1063,
+                  "id": 1090,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2410:7:8",
@@ -2485,12 +2485,12 @@
               },
               {
                 "constant": false,
-                "id": 1066,
+                "id": 1093,
                 "mutability": "mutable",
                 "name": "consensusValue",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2437:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2499,7 +2499,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1065,
+                  "id": 1092,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2437:7:8",
@@ -2513,12 +2513,12 @@
               },
               {
                 "constant": false,
-                "id": 1068,
+                "id": 1095,
                 "mutability": "mutable",
                 "name": "revealCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2465:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2527,7 +2527,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1067,
+                  "id": 1094,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2465:7:8",
@@ -2541,12 +2541,12 @@
               },
               {
                 "constant": false,
-                "id": 1070,
+                "id": 1097,
                 "mutability": "mutable",
                 "name": "winnerCounter",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2492:23:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2555,7 +2555,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1069,
+                  "id": 1096,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2492:7:8",
@@ -2569,12 +2569,12 @@
               },
               {
                 "constant": false,
-                "id": 1073,
+                "id": 1100,
                 "mutability": "mutable",
                 "name": "contributors",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2519:22:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2584,7 +2584,7 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 1071,
+                    "id": 1098,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2519:7:8",
@@ -2594,7 +2594,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1072,
+                  "id": 1099,
                   "length": null,
                   "nodeType": "ArrayTypeName",
                   "src": "2519:9:8",
@@ -2608,12 +2608,12 @@
               },
               {
                 "constant": false,
-                "id": 1075,
+                "id": 1102,
                 "mutability": "mutable",
                 "name": "resultDigest",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2545:22:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2622,7 +2622,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1074,
+                  "id": 1101,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2545:7:8",
@@ -2636,12 +2636,12 @@
               },
               {
                 "constant": false,
-                "id": 1077,
+                "id": 1104,
                 "mutability": "mutable",
                 "name": "results",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2571:17:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2650,7 +2650,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 1076,
+                  "id": 1103,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "2571:5:8",
@@ -2664,12 +2664,12 @@
               },
               {
                 "constant": false,
-                "id": 1079,
+                "id": 1106,
                 "mutability": "mutable",
                 "name": "resultsTimestamp",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2592:26:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2678,7 +2678,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1078,
+                  "id": 1105,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2592:7:8",
@@ -2692,12 +2692,12 @@
               },
               {
                 "constant": false,
-                "id": 1081,
+                "id": 1108,
                 "mutability": "mutable",
                 "name": "resultsCallback",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1082,
+                "scope": 1109,
                 "src": "2622:25:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2706,7 +2706,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 1080,
+                  "id": 1107,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "2622:5:8",
@@ -2721,22 +2721,22 @@
             ],
             "name": "Task",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2248:436:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.Consensus",
-            "id": 1089,
+            "id": 1116,
             "members": [
               {
                 "constant": false,
-                "id": 1086,
+                "id": 1113,
                 "mutability": "mutable",
                 "name": "group",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1089,
+                "scope": 1116,
                 "src": "2733:33:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2745,9 +2745,9 @@
                   "typeString": "mapping(bytes32 => uint256)"
                 },
                 "typeName": {
-                  "id": 1085,
+                  "id": 1112,
                   "keyType": {
-                    "id": 1083,
+                    "id": 1110,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2741:7:8",
@@ -2763,7 +2763,7 @@
                     "typeString": "mapping(bytes32 => uint256)"
                   },
                   "valueType": {
-                    "id": 1084,
+                    "id": 1111,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2752:7:8",
@@ -2778,12 +2778,12 @@
               },
               {
                 "constant": false,
-                "id": 1088,
+                "id": 1115,
                 "mutability": "mutable",
                 "name": "total",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1089,
+                "scope": 1116,
                 "src": "2770:33:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2792,7 +2792,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1087,
+                  "id": 1114,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "2770:7:8",
@@ -2807,34 +2807,34 @@
             ],
             "name": "Consensus",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2711:96:8",
             "visibility": "public"
           },
           {
             "canonicalName": "IexecLibCore_v5.ContributionStatusEnum",
-            "id": 1094,
+            "id": 1121,
             "members": [
               {
-                "id": 1090,
+                "id": 1117,
                 "name": "UNSET",
                 "nodeType": "EnumValue",
                 "src": "2867:5:8"
               },
               {
-                "id": 1091,
+                "id": 1118,
                 "name": "CONTRIBUTED",
                 "nodeType": "EnumValue",
                 "src": "2876:11:8"
               },
               {
-                "id": 1092,
+                "id": 1119,
                 "name": "PROVED",
                 "nodeType": "EnumValue",
                 "src": "2891:6:8"
               },
               {
-                "id": 1093,
+                "id": 1120,
                 "name": "REJECTED",
                 "nodeType": "EnumValue",
                 "src": "2901:8:8"
@@ -2846,32 +2846,32 @@
           },
           {
             "canonicalName": "IexecLibCore_v5.Contribution",
-            "id": 1105,
+            "id": 1132,
             "members": [
               {
                 "constant": false,
-                "id": 1096,
+                "id": 1123,
                 "mutability": "mutable",
                 "name": "status",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2939:29:8",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$1094",
+                  "typeIdentifier": "t_enum$_ContributionStatusEnum_$1121",
                   "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 1095,
+                  "id": 1122,
                   "name": "ContributionStatusEnum",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1094,
+                  "referencedDeclaration": 1121,
                   "src": "2939:22:8",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$1094",
+                    "typeIdentifier": "t_enum$_ContributionStatusEnum_$1121",
                     "typeString": "enum IexecLibCore_v5.ContributionStatusEnum"
                   }
                 },
@@ -2880,12 +2880,12 @@
               },
               {
                 "constant": false,
-                "id": 1098,
+                "id": 1125,
                 "mutability": "mutable",
                 "name": "resultHash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2972:18:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2894,7 +2894,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1097,
+                  "id": 1124,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2972:7:8",
@@ -2908,12 +2908,12 @@
               },
               {
                 "constant": false,
-                "id": 1100,
+                "id": 1127,
                 "mutability": "mutable",
                 "name": "resultSeal",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "2994:18:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2922,7 +2922,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 1099,
+                  "id": 1126,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "2994:7:8",
@@ -2936,12 +2936,12 @@
               },
               {
                 "constant": false,
-                "id": 1102,
+                "id": 1129,
                 "mutability": "mutable",
                 "name": "enclaveChallenge",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "3016:24:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2950,7 +2950,7 @@
                   "typeString": "address"
                 },
                 "typeName": {
-                  "id": 1101,
+                  "id": 1128,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "3016:7:8",
@@ -2965,12 +2965,12 @@
               },
               {
                 "constant": false,
-                "id": 1104,
+                "id": 1131,
                 "mutability": "mutable",
                 "name": "weight",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 1105,
+                "scope": 1132,
                 "src": "3044:14:8",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2979,7 +2979,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 1103,
+                  "id": 1130,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "3044:7:8",
@@ -2994,12 +2994,12 @@
             ],
             "name": "Contribution",
             "nodeType": "StructDefinition",
-            "scope": 1106,
+            "scope": 1133,
             "src": "2914:148:8",
             "visibility": "public"
           }
         ],
-        "scope": 1107,
+        "scope": 1134,
         "src": "1268:1797:8"
       }
     ],
@@ -3011,7 +3011,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.2",
-  "updatedAt": "2020-11-04T10:28:52.847Z",
+  "updatedAt": "2020-11-04T14:54:52.120Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

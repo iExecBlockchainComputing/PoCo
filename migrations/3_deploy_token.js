@@ -17,7 +17,8 @@
 // CONFIG
 const CONFIG = require('../config/config.json')
 // Token
-var RLC = artifacts.require('rlc-faucet-contract/RLC')
+var RLC    = artifacts.require('rlc-faucet-contract/RLC')
+var KERC20 = artifacts.require('KERC20')
 
 /*****************************************************************************
  *                                   Main                                    *
@@ -38,17 +39,20 @@ module.exports = async function(deployer, network, accounts)
 		case 'Token':
 			if (deploymentOptions.token)
 			{
-				RLCInstance = await RLC.at(deploymentOptions.token);
+				RLC.address = deploymentOptions.token;
 			}
 			else
 			{
 				await deployer.deploy(RLC);
-				RLCInstance = await RLC.deployed();
+			}
+			if (deploymentOptions.v5.usekyc)
+			{
+				await deployer.deploy(KERC20, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, []);
 			}
 			break;
 
 		case 'Native':
-			RLCInstance = { address: '0x0000000000000000000000000000000000000000' };
+			// Should not happen
 			break;
 	}
 };

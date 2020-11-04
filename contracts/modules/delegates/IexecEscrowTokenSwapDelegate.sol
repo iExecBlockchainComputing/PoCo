@@ -19,14 +19,14 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./IexecERC20Common.sol";
+import "./IexecERC20Core.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecEscrowTokenSwap.sol";
 import "../interfaces/IexecPoco1.sol";
 
 
-contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, IexecERC20Common, SignatureVerifier
+contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, IexecERC20Core, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
 	using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;

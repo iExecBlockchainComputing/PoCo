@@ -77,12 +77,12 @@ contract('Poco', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.deployed();
 		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ERC712_domain              = await IexecInstance.domain();
+		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.at(await IexecInstance.token());
 
 		broker          = new odbtools.Broker    (IexecInstance);
 		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
@@ -122,7 +122,6 @@ contract('Poco', async (accounts) => {
 						break;
 
 					case "Token":
-						assert.equal(await RLCInstance.owner(), iexecAdmin.address, "iexecAdmin should own the RLC smart contract");
 						txMined = await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin.address });
 						assert.isBelow(txMined.receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 						break;

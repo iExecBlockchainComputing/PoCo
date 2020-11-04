@@ -19,13 +19,13 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./IexecERC20Common.sol";
+import "./IexecERC20Core.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecERC20.sol";
 import "../interfaces/IexecTokenSpender.sol";
 
 
-contract IexecERC20Delegate is IexecERC20, DelegateBase, IexecERC20Common
+contract IexecERC20Delegate is IexecERC20, DelegateBase, IexecERC20Core
 {
 	function transfer(address recipient, uint256 amount)
 	external override returns (bool)

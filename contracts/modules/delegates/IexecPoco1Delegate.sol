@@ -19,7 +19,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./IexecERC20Common.sol";
+import "./IexecERC20Core.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecPoco1.sol";
@@ -41,7 +41,7 @@ struct Matching
 	bool    hasDataset;
 }
 
-contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Common, SignatureVerifier
+contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, SignatureVerifier
 {
 	using SafeMathExtended  for uint256;
 	using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
@@ -123,7 +123,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Common, Signa
 
 		require(m_appregistry.isRegistered(_apporder.app),                                       'iExecV5-matchOrders-0x20');
 		require(_checkPresignatureOrSignature(ids.appOwner, ids.apporderStruct, _apporder.sign), 'iExecV5-matchOrders-0x21');
-		require(m_baseToken.isKYC(ids.appOwner),                                                 'iExecV5-matchOrders-0x22');
+		require(_isAuthorized(ids.appOwner),                                                            'iExecV5-matchOrders-0x22');
 
 		// dataset
 		if (ids.hasDataset) // only check if dataset is enabled
@@ -134,7 +134,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Common, Signa
 
 			require(m_datasetregistry.isRegistered(_datasetorder.dataset),                                       'iExecV5-matchOrders-0x30');
 			require(_checkPresignatureOrSignature(ids.datasetOwner, ids.datasetorderStruct, _datasetorder.sign), 'iExecV5-matchOrders-0x31');
-			require(m_baseToken.isKYC(ids.datasetOwner),                                                         'iExecV5-matchOrders-0x32');
+			require(_isAuthorized(ids.datasetOwner),                                                                    'iExecV5-matchOrders-0x32');
 		}
 
 		// workerpool
@@ -144,13 +144,13 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Common, Signa
 
 		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),                                       'iExecV5-matchOrders-0x40');
 		require(_checkPresignatureOrSignature(ids.workerpoolOwner, ids.workerpoolorderStruct, _workerpoolorder.sign), 'iExecV5-matchOrders-0x41');
-		require(m_baseToken.isKYC(ids.workerpoolOwner),                                                               'iExecV5-matchOrders-0x42');
+		require(_isAuthorized(ids.workerpoolOwner),                                                                         'iExecV5-matchOrders-0x42');
 
 		// request
 		ids.requestorderStruct = _toEthTypedStruct(_requestorder.hash(), EIP712DOMAIN_SEPARATOR);
 		ids.requestorderHash   = keccak256(ids.requestorderStruct);
 		require(_checkPresignatureOrSignature(_requestorder.requester, ids.requestorderStruct, _requestorder.sign), 'iExecV5-matchOrders-0x50');
-		require(m_baseToken.isKYC(_requestorder.requester),                                                         'iExecV5-matchOrders-0x51');
+		require(_isAuthorized(_requestorder.requester),                                                                    'iExecV5-matchOrders-0x51');
 
 		/**
 		 * Check availability

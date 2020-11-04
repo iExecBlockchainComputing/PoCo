@@ -19,13 +19,13 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./IexecERC20Common.sol";
+import "./IexecERC20Core.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecEscrowToken.sol";
 import "../interfaces/IexecTokenSpender.sol";
 
 
-contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, DelegateBase, IexecERC20Common
+contract IexecEscrowTokenDelegate is IexecEscrowToken, IexecTokenSpender, DelegateBase, IexecERC20Core
 {
 	using SafeMathExtended for uint256;
 

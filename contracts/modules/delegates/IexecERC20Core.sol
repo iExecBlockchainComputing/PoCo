@@ -22,21 +22,22 @@ pragma experimental ABIEncoderV2;
 import "../DelegateBase.sol";
 
 
-contract IexecERC20Common is DelegateBase
+contract IexecERC20Core is DelegateBase
 {
 	using SafeMathExtended for uint256;
 
 	event Transfer(address indexed from, address indexed to, uint256 value);
 	event Approval(address indexed owner, address indexed spender, uint256 value);
 
-	function _beforeTokenTransfer(address from, address to, uint256 amount)
-	internal
+	function _isAuthorized(address)
+	internal virtual returns (bool)
 	{
-		uint8 restrictionCode = m_baseToken.detectTransferRestriction(from, to, amount);
-		if (restrictionCode != uint8(0))
-		{
-			revert(m_baseToken.messageForTransferRestriction(restrictionCode));
-		}
+		return true;
+	}
+
+	function _beforeTokenTransfer(address from, address to, uint256 amount)
+	internal virtual
+	{
 	}
 
 	function _transferUnchecked(address sender, address recipient, uint256 amount)

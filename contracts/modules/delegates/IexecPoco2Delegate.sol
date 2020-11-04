@@ -20,13 +20,13 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
-import "./IexecERC20Common.sol";
+import "./IexecERC20Core.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecPoco2.sol";
 
 
-contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Common, SignatureVerifier
+contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Core, SignatureVerifier
 {
 	/***************************************************************************
 	 *                    Escrow overhead for contribution                     *
@@ -129,7 +129,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Common, Signa
 		bytes memory _authorizationSign)
 	public override
 	{
-		require(m_baseToken.isKYC(_msgSender()));
+		require(_isAuthorized(_msgSender()));
 
 		IexecLibCore_v5.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
@@ -207,7 +207,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Common, Signa
 		bytes memory _authorizationSign)
 	public override
 	{
-		require(m_baseToken.isKYC(_msgSender()));
+		require(_isAuthorized(_msgSender()));
 
 		IexecLibCore_v5.Task         storage task         = m_tasks[_taskid];
 		IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];

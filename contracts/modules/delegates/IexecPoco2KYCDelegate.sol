@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /******************************************************************************
  * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *
  *                                                                            *
@@ -14,34 +16,24 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-// CONFIG
-const CONFIG = require('../config/config.json')
-// Token
-var RLC    = artifacts.require('rlc-faucet-contract/RLC')
-var KERC20 = artifacts.require('KERC20')
+pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
-/*****************************************************************************
- *                                   Main                                    *
- *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+import "./IexecPoco2Delegate.sol";
+import "./IexecERC20CoreKYC.sol";
+
+
+contract IexecPoco2DelegateKYC is IexecPoco2Delegate, IexecERC20CoreKYC
 {
-	console.log('# web3 version:', web3.version);
-	const chainid   = await web3.eth.net.getId();
-	const chaintype = await web3.eth.net.getNetworkType();
-	console.log('Chainid is:', chainid);
-	console.log('Chaintype is:', chaintype);
-	console.log('Deployer is:', accounts[0]);
+	function _beforeTokenTransfer(address from, address to, uint256 amount)
+	internal virtual override(IexecERC20Core, IexecERC20CoreKYC)
+	{
+		IexecERC20CoreKYC._beforeTokenTransfer(from, to, amount);
+	}
 
-	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-
-	if (!deploymentOptions.v5e) return;
-
-	await deployer.deploy(
-		KERC20,
-		(await RLC.deployed()).address,
-		'iExec ERLC Token',
-		'ERLC',
-		0,
-		[]
-	);
-};
+	function _isAuthorized(address account)
+	internal virtual override(IexecERC20Core, IexecERC20CoreKYC) returns (bool)
+	{
+		return IexecERC20CoreKYC._isAuthorized(account);
+	}
+}

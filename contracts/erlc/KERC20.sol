@@ -25,7 +25,7 @@ import "./IERC677.sol";
 import "./IERC1404.sol";
 
 
-contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC1404
+contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1404
 {
     bytes32 public constant KYC_ADMIN_ROLE  = keccak256("KYC_ADMIN_ROLE");
     bytes32 public constant KYC_MEMBER_ROLE = keccak256("KYC_MEMBER_ROLE");
@@ -133,10 +133,10 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC1404
     }
 
     function approveAndCall(address spender, uint256 amount, bytes calldata extraData)
-    external returns (bool)
+    external override returns (bool)
     {
         approve(spender, amount);
-        require(IERC677(spender).receiveApproval(_msgSender(), amount, address(this), extraData), "approval-refused-by-receiver");
+        require(IERC677Receiver(spender).receiveApproval(_msgSender(), amount, address(this), extraData), "approval-refused-by-receiver");
         return true;
     }
 
@@ -149,10 +149,10 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC1404
     }
 
     function transferAndCall(address receiver, uint256 amount, bytes calldata data)
-    external returns (bool)
+    external override returns (bool)
     {
         transfer(receiver, amount);
-        require(IERC677(receiver).onTokenTransfer(_msgSender(), amount, data), "transfer-refused-by-receiver");
+        require(IERC677Receiver(receiver).onTokenTransfer(_msgSender(), amount, data), "transfer-refused-by-receiver");
         return true;
     }
 
