@@ -34,7 +34,7 @@ import "./modules/interfaces/IexecTokenSpender.sol";
 import "./modules/interfaces/ENSIntegration.sol";
 
 
-interface IexecInterfaceNative is
+interface IexecInterfaceNativeABILegacy is
 	IOwnable,
 	IexecAccessors,
 	IexecAccessorsABILegacy,

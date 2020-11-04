@@ -141,7 +141,7 @@ module.exports = async function(deployer, network, accounts)
 	else
 	{
 		await deployer.deploy(IexecLibOrders);
-		await deployer.link(IexecLibOrders, IexecPoco);
+		await deployer.link(IexecLibOrders, IexecPoco1);
 		await deployer.link(IexecLibOrders, IexecMaintenance);
 		await deployer.link(IexecLibOrders, IexecOrderManagement);
 	}
@@ -227,14 +227,19 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
 
+	const AppRegistryInitialized        = await AppRegistryInstance.initialized();
+	const DatasetRegistryInitialized    = await DatasetRegistryInstance.initialized();
+	const WorkerpoolRegistryInitialized = await WorkerpoolRegistryInstance.initialized();
+	const IexecInterfaceInitialized     = await IexecInterfaceInstance.eip712domain_separator() != BYTES32_ZERO;
+
 	await Promise.all([
-		(await AppRegistryInstance.initialized()               == false)        && AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || ADDRESS_ZERO),
-		(await DatasetRegistryInstance.initialized()           == false)        && DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || ADDRESS_ZERO),
-		(await WorkerpoolRegistryInstance.initialized()        == false)        && WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || ADDRESS_ZERO),
-		(await AppRegistryInstance.initialized()               == false)        && AppRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainid}/`),
-		(await DatasetRegistryInstance.initialized()           == false)        && DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`),
-		(await WorkerpoolRegistryInstance.initialized()        == false)        && WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
-		(await IexecInterfaceInstance.eip712domain_separator() == BYTES32_ZERO) && IexecInterfaceInstance.configure(
+		!AppRegistryInitialized        && AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || ADDRESS_ZERO),
+		!DatasetRegistryInitialized    && DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || ADDRESS_ZERO),
+		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || ADDRESS_ZERO),
+		!AppRegistryInitialized        && AppRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainid}/`),
+		!DatasetRegistryInitialized    && DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`),
+		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
+		!IexecInterfaceInitialized     && IexecInterfaceInstance.configure(
 			ERLCInstance.address,
 			'Staked ERLC',
 			'SERLC',
