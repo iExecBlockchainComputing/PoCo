@@ -52,7 +52,10 @@ module.exports = async function(deployer, network, accounts)
 			break;
 
 		case 'Native':
-			// Should not happen
+			if (deploymentOptions.v5.usekyc)
+			{
+				throw 'ERROR: KYC is not supported in native mode.'
+			}
 			break;
 	}
 };
