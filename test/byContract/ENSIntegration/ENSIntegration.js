@@ -102,10 +102,10 @@ contract('ENSIntegration', async (accounts) => {
 		})
 		it("resolve", async () => {
 			if (DEPLOYMENT.asset == "Token") {
-				assert.equal(await enstools.resolve("rlc.iexec.eth"         ), (await RLC.deployed()).address);
+				assert.equal(await enstools.resolve("rlc.iexec.eth"), (await RLC.deployed()).address);
 			}
-			if (DEPLOYMENT.asset == "Token" && DEPLOYMENT.v5.useKYC) {
-				assert.equal(await enstools.resolve("erlc.iexec.eth"        ), (await KERC20.deployed()).address);
+			if (DEPLOYMENT.asset == "Token" && DEPLOYMENT.v5.usekyc) {
+				assert.equal(await enstools.resolve("erlc.iexec.eth"), (await KERC20.deployed()).address);
 			}
 			assert.equal(await enstools.resolve("core.v5.iexec.eth"       ), IexecInstance.address             );
 			assert.equal(await enstools.resolve("apps.v5.iexec.eth"       ), AppRegistryInstance.address       );
