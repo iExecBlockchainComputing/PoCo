@@ -24,6 +24,7 @@ var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistra
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
 // Core
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
+var KERC20                  = artifacts.require('KERC20')
 var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
@@ -46,23 +47,6 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
 	const factoryOptions    = { salt: deploymentOptions.v5.salt || web3.utils.randomHex(32) };
-
-	/* ------------------------- Fetching contracts -------------------------- */
-	switch (deploymentOptions.asset)
-	{
-		case 'Token':  RLCInstance = await RLC.deployed();                                      break;
-		case 'Native': RLCInstance = { address: '0x0000000000000000000000000000000000000000' }; break;
-	}
-
-	switch (deploymentOptions.asset)
-	{
-		case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at((await ERC1538Proxy.deployed()).address);  break;
-		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at((await ERC1538Proxy.deployed()).address); break;
-	}
-
-	AppRegistryInstance        = await AppRegistry.deployed();
-	DatasetRegistryInstance    = await DatasetRegistry.deployed();
-	WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
 	/* ----------------------------- Deploy ENS ------------------------------ */
 	if (chainid > 1000) // skip for mainnet and testnet use
@@ -147,9 +131,23 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain('v5',    'iexec.eth');
 		await registerDomain('users', 'iexec.eth');
 
+		/* ------------------------- Fetching contracts -------------------------- */
+		switch (deploymentOptions.asset)
+		{
+			case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at((await ERC1538Proxy.deployed()).address);  break;
+			case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at((await ERC1538Proxy.deployed()).address); break;
+		}
+
+		const RLCInstance                = deploymentOptions.asset == 'Token' && await RLC.deployed();
+		const ERLCInstance               = deploymentOptions.asset == 'Token' && deploymentOptions.v5.useKYC && await KERC20.deployed();
+		const AppRegistryInstance        = await AppRegistry.deployed();
+		const DatasetRegistryInstance    = await DatasetRegistry.deployed();
+		const WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
+
 		await Promise.all([
 			                             registerAddress('admin',       'iexec.eth',    accounts[0]),
 			RLCInstance                ? registerAddress('rlc',         'iexec.eth',    RLCInstance.address               ) : null,
+			ERLCInstance               ? registerAddress('erlc',        'iexec.eth',    ERLCInstance.address              ) : null,
 			IexecInterfaceInstance     ? registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address    ) : null,
 			AppRegistryInstance        ? registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address       ) : null,
 			DatasetRegistryInstance    ? registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address   ) : null,

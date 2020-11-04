@@ -95,10 +95,6 @@ contract('ENSIntegration', async (accounts) => {
 	 ***************************************************************************/
 	describe("Initial state (migration)", async () => {
 		it("lookup", async () => {
-			if (DEPLOYMENT.asset == "Token") try {
-				await enstools.lookup(RLCInstance.address);
-				assert(false);
-			} catch(e) {}
 			assert.equal(await enstools.lookup(IexecInstance.address             ), "core.v5.iexec.eth"       );
 			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "apps.v5.iexec.eth"       );
 			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "datasets.v5.iexec.eth"   );
@@ -106,7 +102,10 @@ contract('ENSIntegration', async (accounts) => {
 		})
 		it("resolve", async () => {
 			if (DEPLOYMENT.asset == "Token") {
-				assert.equal(await enstools.resolve("rlc.iexec.eth"         ), RLCInstance.address               );
+				assert.equal(await enstools.resolve("rlc.iexec.eth"         ), (await RLC.deployed()).address);
+			}
+			if (DEPLOYMENT.asset == "Token" && DEPLOYMENT.v5.useKYC) {
+				assert.equal(await enstools.resolve("erlc.iexec.eth"        ), (await KERC20.deployed()).address);
 			}
 			assert.equal(await enstools.resolve("core.v5.iexec.eth"       ), IexecInstance.address             );
 			assert.equal(await enstools.resolve("apps.v5.iexec.eth"       ), AppRegistryInstance.address       );
