@@ -23,7 +23,7 @@ import "./IexecERC20Common.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecEscrowTokenSwap.sol";
-import "../interfaces/IexecPoco.sol";
+import "../interfaces/IexecPoco1.sol";
 
 
 contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, IexecERC20Common, SignatureVerifier
@@ -158,6 +158,6 @@ contract IexecEscrowTokenSwapDelegate is IexecEscrowTokenSwap, DelegateBase, Iex
 			.mul(volume)
 		);
 
-		return IexecPoco(address(this)).matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
+		return IexecPoco1(address(this)).matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
 	}
 }

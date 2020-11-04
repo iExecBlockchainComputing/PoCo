@@ -66,15 +66,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
     "exportedSymbols": {
       "DelegateBase": [
-        1558
+        1570
       ]
     },
-    "id": 1559,
+    "id": 1571,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1531,
+        "id": 1543,
         "literals": [
           "solidity",
           "^",
@@ -87,10 +87,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
         "file": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
-        "id": 1532,
+        "id": 1544,
         "nodeType": "ImportDirective",
-        "scope": 1559,
-        "sourceUnit": 12662,
+        "scope": 1571,
+        "sourceUnit": 12850,
         "src": "1267:61:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -98,10 +98,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol",
         "file": "../Store.sol",
-        "id": 1533,
+        "id": 1545,
         "nodeType": "ImportDirective",
-        "scope": 1559,
-        "sourceUnit": 298,
+        "scope": 1571,
+        "sourceUnit": 310,
         "src": "1329:22:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -113,17 +113,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1534,
+              "id": 1546,
               "name": "Store",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 297,
+              "referencedDeclaration": 309,
               "src": "1388:5:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Store_$297",
+                "typeIdentifier": "t_contract$_Store_$309",
                 "typeString": "contract Store"
               }
             },
-            "id": 1535,
+            "id": 1547,
             "nodeType": "InheritanceSpecifier",
             "src": "1388:5:10"
           },
@@ -131,46 +131,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1536,
+              "id": 1548,
               "name": "ERC1538Module",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 12661,
+              "referencedDeclaration": 12849,
               "src": "1395:13:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC1538Module_$12661",
+                "typeIdentifier": "t_contract$_ERC1538Module_$12849",
                 "typeString": "contract ERC1538Module"
               }
             },
-            "id": 1537,
+            "id": 1549,
             "nodeType": "InheritanceSpecifier",
             "src": "1395:13:10"
           }
         ],
         "contractDependencies": [
-          297,
-          12661,
-          12673,
-          13240,
-          13632
+          309,
+          12849,
+          12861,
+          13428,
+          13820
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1558,
+        "id": 1570,
         "linearizedBaseContracts": [
-          1558,
-          12661,
-          297,
-          12673,
-          13632,
-          13240
+          1570,
+          12849,
+          309,
+          12861,
+          13820,
+          13428
         ],
         "name": "DelegateBase",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1556,
+              "id": 1568,
               "nodeType": "Block",
               "src": "1453:87:10",
               "statements": [
@@ -184,7 +184,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1552,
+                        "id": 1564,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -194,18 +194,18 @@
                           "arguments": [],
                           "expression": {
                             "argumentTypes": [],
-                            "id": 1542,
+                            "id": 1554,
                             "name": "_msgSender",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13228,
+                            "referencedDeclaration": 13416,
                             "src": "1465:10:10",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_view$__$returns$_t_address_payable_$",
                               "typeString": "function () view returns (address payable)"
                             }
                           },
-                          "id": 1543,
+                          "id": 1555,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -230,43 +230,43 @@
                               "argumentTypes": null,
                               "baseExpression": {
                                 "argumentTypes": null,
-                                "id": 1544,
+                                "id": 1556,
                                 "name": "m_deals",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 265,
+                                "referencedDeclaration": 277,
                                 "src": "1481:7:10",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1032_storage_$",
+                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1044_storage_$",
                                   "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Deal storage ref)"
                                 }
                               },
-                              "id": 1549,
+                              "id": 1561,
                               "indexExpression": {
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
                                   "baseExpression": {
                                     "argumentTypes": null,
-                                    "id": 1545,
+                                    "id": 1557,
                                     "name": "m_tasks",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 269,
+                                    "referencedDeclaration": 281,
                                     "src": "1489:7:10",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1070_storage_$",
+                                      "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1082_storage_$",
                                       "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Task storage ref)"
                                     }
                                   },
-                                  "id": 1547,
+                                  "id": 1559,
                                   "indexExpression": {
                                     "argumentTypes": null,
-                                    "id": 1546,
+                                    "id": 1558,
                                     "name": "_taskid",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 1539,
+                                    "referencedDeclaration": 1551,
                                     "src": "1497:7:10",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_bytes32",
@@ -280,18 +280,18 @@
                                   "nodeType": "IndexAccess",
                                   "src": "1489:16:10",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Task_$1070_storage",
+                                    "typeIdentifier": "t_struct$_Task_$1082_storage",
                                     "typeString": "struct IexecLibCore_v5.Task storage ref"
                                   }
                                 },
-                                "id": 1548,
+                                "id": 1560,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "dealid",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 1042,
+                                "referencedDeclaration": 1054,
                                 "src": "1489:23:10",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -305,32 +305,32 @@
                               "nodeType": "IndexAccess",
                               "src": "1481:32:10",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Deal_$1032_storage",
+                                "typeIdentifier": "t_struct$_Deal_$1044_storage",
                                 "typeString": "struct IexecLibCore_v5.Deal storage ref"
                               }
                             },
-                            "id": 1550,
+                            "id": 1562,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "workerpool",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1007,
+                            "referencedDeclaration": 1019,
                             "src": "1481:43:10",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Resource_$1001_storage",
+                              "typeIdentifier": "t_struct$_Resource_$1013_storage",
                               "typeString": "struct IexecLibCore_v5.Resource storage ref"
                             }
                           },
-                          "id": 1551,
+                          "id": 1563,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "owner",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 998,
+                          "referencedDeclaration": 1010,
                           "src": "1481:49:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -351,7 +351,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1541,
+                      "id": 1553,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -365,7 +365,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1553,
+                    "id": 1565,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -380,34 +380,34 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1554,
+                  "id": 1566,
                   "nodeType": "ExpressionStatement",
                   "src": "1457:74:10"
                 },
                 {
-                  "id": 1555,
+                  "id": 1567,
                   "nodeType": "PlaceholderStatement",
                   "src": "1535:1:10"
                 }
               ]
             },
             "documentation": null,
-            "id": 1557,
+            "id": 1569,
             "name": "onlyScheduler",
             "nodeType": "ModifierDefinition",
             "overrides": null,
             "parameters": {
-              "id": 1540,
+              "id": 1552,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1539,
+                  "id": 1551,
                   "mutability": "mutable",
                   "name": "_taskid",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1557,
+                  "scope": 1569,
                   "src": "1435:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -416,7 +416,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1538,
+                    "id": 1550,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1435:7:10",
@@ -436,7 +436,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 1559,
+        "scope": 1571,
         "src": "1354:188:10"
       }
     ],
@@ -446,15 +446,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/DelegateBase.sol",
     "exportedSymbols": {
       "DelegateBase": [
-        1558
+        1570
       ]
     },
-    "id": 1559,
+    "id": 1571,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1531,
+        "id": 1543,
         "literals": [
           "solidity",
           "^",
@@ -467,10 +467,10 @@
       {
         "absolutePath": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
         "file": "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol",
-        "id": 1532,
+        "id": 1544,
         "nodeType": "ImportDirective",
-        "scope": 1559,
-        "sourceUnit": 12662,
+        "scope": 1571,
+        "sourceUnit": 12850,
         "src": "1267:61:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -478,10 +478,10 @@
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol",
         "file": "../Store.sol",
-        "id": 1533,
+        "id": 1545,
         "nodeType": "ImportDirective",
-        "scope": 1559,
-        "sourceUnit": 298,
+        "scope": 1571,
+        "sourceUnit": 310,
         "src": "1329:22:10",
         "symbolAliases": [],
         "unitAlias": ""
@@ -493,17 +493,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1534,
+              "id": 1546,
               "name": "Store",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 297,
+              "referencedDeclaration": 309,
               "src": "1388:5:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Store_$297",
+                "typeIdentifier": "t_contract$_Store_$309",
                 "typeString": "contract Store"
               }
             },
-            "id": 1535,
+            "id": 1547,
             "nodeType": "InheritanceSpecifier",
             "src": "1388:5:10"
           },
@@ -511,46 +511,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1536,
+              "id": 1548,
               "name": "ERC1538Module",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 12661,
+              "referencedDeclaration": 12849,
               "src": "1395:13:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC1538Module_$12661",
+                "typeIdentifier": "t_contract$_ERC1538Module_$12849",
                 "typeString": "contract ERC1538Module"
               }
             },
-            "id": 1537,
+            "id": 1549,
             "nodeType": "InheritanceSpecifier",
             "src": "1395:13:10"
           }
         ],
         "contractDependencies": [
-          297,
-          12661,
-          12673,
-          13240,
-          13632
+          309,
+          12849,
+          12861,
+          13428,
+          13820
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1558,
+        "id": 1570,
         "linearizedBaseContracts": [
-          1558,
-          12661,
-          297,
-          12673,
-          13632,
-          13240
+          1570,
+          12849,
+          309,
+          12861,
+          13820,
+          13428
         ],
         "name": "DelegateBase",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1556,
+              "id": 1568,
               "nodeType": "Block",
               "src": "1453:87:10",
               "statements": [
@@ -564,7 +564,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1552,
+                        "id": 1564,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -574,18 +574,18 @@
                           "arguments": [],
                           "expression": {
                             "argumentTypes": [],
-                            "id": 1542,
+                            "id": 1554,
                             "name": "_msgSender",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13228,
+                            "referencedDeclaration": 13416,
                             "src": "1465:10:10",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_view$__$returns$_t_address_payable_$",
                               "typeString": "function () view returns (address payable)"
                             }
                           },
-                          "id": 1543,
+                          "id": 1555,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -610,43 +610,43 @@
                               "argumentTypes": null,
                               "baseExpression": {
                                 "argumentTypes": null,
-                                "id": 1544,
+                                "id": 1556,
                                 "name": "m_deals",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 265,
+                                "referencedDeclaration": 277,
                                 "src": "1481:7:10",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1032_storage_$",
+                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1044_storage_$",
                                   "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Deal storage ref)"
                                 }
                               },
-                              "id": 1549,
+                              "id": 1561,
                               "indexExpression": {
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
                                   "baseExpression": {
                                     "argumentTypes": null,
-                                    "id": 1545,
+                                    "id": 1557,
                                     "name": "m_tasks",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 269,
+                                    "referencedDeclaration": 281,
                                     "src": "1489:7:10",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1070_storage_$",
+                                      "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1082_storage_$",
                                       "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Task storage ref)"
                                     }
                                   },
-                                  "id": 1547,
+                                  "id": 1559,
                                   "indexExpression": {
                                     "argumentTypes": null,
-                                    "id": 1546,
+                                    "id": 1558,
                                     "name": "_taskid",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 1539,
+                                    "referencedDeclaration": 1551,
                                     "src": "1497:7:10",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_bytes32",
@@ -660,18 +660,18 @@
                                   "nodeType": "IndexAccess",
                                   "src": "1489:16:10",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Task_$1070_storage",
+                                    "typeIdentifier": "t_struct$_Task_$1082_storage",
                                     "typeString": "struct IexecLibCore_v5.Task storage ref"
                                   }
                                 },
-                                "id": 1548,
+                                "id": 1560,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "dealid",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 1042,
+                                "referencedDeclaration": 1054,
                                 "src": "1489:23:10",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -685,32 +685,32 @@
                               "nodeType": "IndexAccess",
                               "src": "1481:32:10",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Deal_$1032_storage",
+                                "typeIdentifier": "t_struct$_Deal_$1044_storage",
                                 "typeString": "struct IexecLibCore_v5.Deal storage ref"
                               }
                             },
-                            "id": 1550,
+                            "id": 1562,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "workerpool",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1007,
+                            "referencedDeclaration": 1019,
                             "src": "1481:43:10",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Resource_$1001_storage",
+                              "typeIdentifier": "t_struct$_Resource_$1013_storage",
                               "typeString": "struct IexecLibCore_v5.Resource storage ref"
                             }
                           },
-                          "id": 1551,
+                          "id": 1563,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "owner",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 998,
+                          "referencedDeclaration": 1010,
                           "src": "1481:49:10",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -731,7 +731,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1541,
+                      "id": 1553,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -745,7 +745,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1553,
+                    "id": 1565,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -760,34 +760,34 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1554,
+                  "id": 1566,
                   "nodeType": "ExpressionStatement",
                   "src": "1457:74:10"
                 },
                 {
-                  "id": 1555,
+                  "id": 1567,
                   "nodeType": "PlaceholderStatement",
                   "src": "1535:1:10"
                 }
               ]
             },
             "documentation": null,
-            "id": 1557,
+            "id": 1569,
             "name": "onlyScheduler",
             "nodeType": "ModifierDefinition",
             "overrides": null,
             "parameters": {
-              "id": 1540,
+              "id": 1552,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1539,
+                  "id": 1551,
                   "mutability": "mutable",
                   "name": "_taskid",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 1557,
+                  "scope": 1569,
                   "src": "1435:15:10",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -796,7 +796,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1538,
+                    "id": 1550,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1435:7:10",
@@ -816,7 +816,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 1559,
+        "scope": 1571,
         "src": "1354:188:10"
       }
     ],
@@ -827,8 +827,8 @@
     "version": "0.6.12+commit.27d51765.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.3.1",
-  "updatedAt": "2020-11-03T15:50:40.943Z",
+  "schemaVersion": "3.2.2",
+  "updatedAt": "2020-11-04T09:45:50.825Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

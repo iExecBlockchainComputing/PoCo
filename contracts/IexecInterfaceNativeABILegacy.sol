@@ -27,12 +27,26 @@ import "./modules/interfaces/IexecERC20.sol";
 import "./modules/interfaces/IexecEscrowNative.sol";
 import "./modules/interfaces/IexecMaintenance.sol";
 import "./modules/interfaces/IexecOrderManagement.sol";
-import "./modules/interfaces/IexecPoco.sol";
+import "./modules/interfaces/IexecPoco1.sol";
+import "./modules/interfaces/IexecPoco2.sol";
 import "./modules/interfaces/IexecRelay.sol";
 import "./modules/interfaces/IexecTokenSpender.sol";
 import "./modules/interfaces/ENSIntegration.sol";
 
 
-interface IexecInterfaceNativeABILegacy is IOwnable, IexecAccessors, IexecAccessorsABILegacy, IexecCategoryManager, IexecERC20, IexecEscrowNative, IexecMaintenance, IexecOrderManagement, IexecPoco, IexecRelay, IexecTokenSpender, ENSIntegration
+interface IexecInterfaceNative is
+	IOwnable,
+	IexecAccessors,
+	IexecAccessorsABILegacy,
+	IexecCategoryManager,
+	IexecERC20,
+	IexecEscrowNative,
+	IexecMaintenance,
+	IexecOrderManagement,
+	IexecPoco1,
+	IexecPoco2,
+	IexecRelay,
+	IexecTokenSpender,
+	ENSIntegration
 {
 }

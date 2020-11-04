@@ -374,15 +374,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol",
     "exportedSymbols": {
       "IRegistry": [
-        8744
+        9673
       ]
     },
-    "id": 8745,
+    "id": 9674,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8733,
+        "id": 9662,
         "literals": [
           "solidity",
           "^",
@@ -390,16 +390,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1242:23:38"
+        "src": "1242:23:44"
       },
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
         "file": "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
-        "id": 8734,
+        "id": 9663,
         "nodeType": "ImportDirective",
-        "scope": 8745,
-        "sourceUnit": 14313,
-        "src": "1267:68:38",
+        "scope": 9674,
+        "sourceUnit": 16155,
+        "src": "1267:68:44",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -410,35 +410,35 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8735,
+              "id": 9664,
               "name": "IERC721Enumerable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14312,
-              "src": "1369:17:38",
+              "referencedDeclaration": 16154,
+              "src": "1369:17:44",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC721Enumerable_$14312",
+                "typeIdentifier": "t_contract$_IERC721Enumerable_$16154",
                 "typeString": "contract IERC721Enumerable"
               }
             },
-            "id": 8736,
+            "id": 9665,
             "nodeType": "InheritanceSpecifier",
-            "src": "1369:17:38"
+            "src": "1369:17:44"
           }
         ],
         "contractDependencies": [
-          12960,
-          14281,
-          14312
+          13889,
+          16123,
+          16154
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 8744,
+        "id": 9673,
         "linearizedBaseContracts": [
-          8744,
-          14312,
-          14281,
-          12960
+          9673,
+          16154,
+          16123,
+          13889
         ],
         "name": "IRegistry",
         "nodeType": "ContractDefinition",
@@ -447,7 +447,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "c3c5a547",
-            "id": 8743,
+            "id": 9672,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -455,18 +455,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8739,
+              "id": 9668,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8738,
+                  "id": 9667,
                   "mutability": "mutable",
                   "name": "_entry",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8743,
-                  "src": "1412:14:38",
+                  "scope": 9672,
+                  "src": "1412:14:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -474,10 +474,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8737,
+                    "id": 9666,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1412:7:38",
+                    "src": "1412:7:44",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -488,21 +488,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1411:16:38"
+              "src": "1411:16:44"
             },
             "returnParameters": {
-              "id": 8742,
+              "id": 9671,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8741,
+                  "id": 9670,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8743,
-                  "src": "1459:4:38",
+                  "scope": 9672,
+                  "src": "1459:4:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -510,10 +510,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 8740,
+                    "id": 9669,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1459:4:38",
+                    "src": "1459:4:44",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -523,34 +523,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1458:6:38"
+              "src": "1458:6:44"
             },
-            "scope": 8744,
-            "src": "1390:75:38",
+            "scope": 9673,
+            "src": "1390:75:44",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 8745,
-        "src": "1338:129:38"
+        "scope": 9674,
+        "src": "1338:129:44"
       }
     ],
-    "src": "1242:226:38"
+    "src": "1242:226:44"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol",
     "exportedSymbols": {
       "IRegistry": [
-        8744
+        9673
       ]
     },
-    "id": 8745,
+    "id": 9674,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8733,
+        "id": 9662,
         "literals": [
           "solidity",
           "^",
@@ -558,16 +558,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1242:23:38"
+        "src": "1242:23:44"
       },
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
         "file": "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
-        "id": 8734,
+        "id": 9663,
         "nodeType": "ImportDirective",
-        "scope": 8745,
-        "sourceUnit": 14313,
-        "src": "1267:68:38",
+        "scope": 9674,
+        "sourceUnit": 16155,
+        "src": "1267:68:44",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -578,35 +578,35 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8735,
+              "id": 9664,
               "name": "IERC721Enumerable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14312,
-              "src": "1369:17:38",
+              "referencedDeclaration": 16154,
+              "src": "1369:17:44",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC721Enumerable_$14312",
+                "typeIdentifier": "t_contract$_IERC721Enumerable_$16154",
                 "typeString": "contract IERC721Enumerable"
               }
             },
-            "id": 8736,
+            "id": 9665,
             "nodeType": "InheritanceSpecifier",
-            "src": "1369:17:38"
+            "src": "1369:17:44"
           }
         ],
         "contractDependencies": [
-          12960,
-          14281,
-          14312
+          13889,
+          16123,
+          16154
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 8744,
+        "id": 9673,
         "linearizedBaseContracts": [
-          8744,
-          14312,
-          14281,
-          12960
+          9673,
+          16154,
+          16123,
+          13889
         ],
         "name": "IRegistry",
         "nodeType": "ContractDefinition",
@@ -615,7 +615,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "c3c5a547",
-            "id": 8743,
+            "id": 9672,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -623,18 +623,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8739,
+              "id": 9668,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8738,
+                  "id": 9667,
                   "mutability": "mutable",
                   "name": "_entry",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8743,
-                  "src": "1412:14:38",
+                  "scope": 9672,
+                  "src": "1412:14:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -642,10 +642,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8737,
+                    "id": 9666,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1412:7:38",
+                    "src": "1412:7:44",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -656,21 +656,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1411:16:38"
+              "src": "1411:16:44"
             },
             "returnParameters": {
-              "id": 8742,
+              "id": 9671,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8741,
+                  "id": 9670,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8743,
-                  "src": "1459:4:38",
+                  "scope": 9672,
+                  "src": "1459:4:44",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -678,10 +678,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 8740,
+                    "id": 9669,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1459:4:38",
+                    "src": "1459:4:44",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -691,28 +691,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1458:6:38"
+              "src": "1458:6:44"
             },
-            "scope": 8744,
-            "src": "1390:75:38",
+            "scope": 9673,
+            "src": "1390:75:44",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 8745,
-        "src": "1338:129:38"
+        "scope": 9674,
+        "src": "1338:129:44"
       }
     ],
-    "src": "1242:226:38"
+    "src": "1242:226:44"
   },
   "compiler": {
     "name": "solc",
     "version": "0.6.12+commit.27d51765.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.3.1",
-  "updatedAt": "2020-11-03T15:34:08.533Z",
+  "schemaVersion": "3.2.2",
+  "updatedAt": "2020-11-04T09:45:50.897Z",
   "devdoc": {
     "kind": "dev",
     "methods": {
