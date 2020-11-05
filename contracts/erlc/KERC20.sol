@@ -21,11 +21,10 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Snapshot.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./IERC677.sol";
-import "./IERC1404.sol";
+import "./IKERC20.sol";
 
 
-contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1404
+contract KERC20 is IKERC20, ERC20Snapshot, AccessControl
 {
     bytes32 public constant KYC_ADMIN_ROLE  = keccak256("KYC_ADMIN_ROLE");
     bytes32 public constant KYC_MEMBER_ROLE = keccak256("KYC_MEMBER_ROLE");
@@ -62,7 +61,7 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1
     }
 
     function setMinDeposit(uint256 amount)
-    external
+    external override
     onlyRole(DEFAULT_ADMIN_ROLE, _msgSender(), "restricted-to-admin")
     {
         emit MinDepositChanged(minDeposit, amount);
@@ -73,13 +72,13 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1
      *                              Public view                              *
      *************************************************************************/
     function isKYC(address account)
-    public view returns (bool)
+    public view override returns (bool)
     {
         return hasRole(KYC_MEMBER_ROLE, account);
     }
 
     function grantKYC(address[] calldata accounts)
-    external
+    external override
     {
         for (uint256 i = 0; i < accounts.length; ++i)
         {
@@ -88,7 +87,7 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1
     }
 
     function revokeKYC(address[] calldata accounts)
-    external
+    external override
     {
         for (uint256 i = 0; i < accounts.length; ++i)
         {
@@ -100,21 +99,21 @@ contract KERC20 is ERC20Snapshot, AccessControl, IERC677, IERC677Receiver, IERC1
      *                       Escrow - public interface                       *
      *************************************************************************/
     function deposit(uint256 amount)
-    external
+    external override
     {
         _deposit(_msgSender(), amount);
         _mint(_msgSender(), amount);
     }
 
     function withdraw(uint256 amount)
-    external
+    external override
     {
         _burn(_msgSender(), amount);
         _withdraw(_msgSender(), amount);
     }
 
     function recover()
-    external
+    external override
     onlyRole(DEFAULT_ADMIN_ROLE, _msgSender(), "only-admin")
     {
         _mint(_msgSender(), SafeMath.sub(underlyingToken.balanceOf(address(this)), totalSupply()));
