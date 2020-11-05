@@ -5,30 +5,43 @@
       "inputs": [
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "catid",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
           "internalType": "string",
-          "name": "name",
+          "name": "message",
           "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "description",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "workClockTimeRef",
-          "type": "uint256"
         }
       ],
-      "name": "CreateCategory",
+      "name": "CommitMessage",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes4",
+          "name": "functionId",
+          "type": "bytes4"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldDelegate",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newDelegate",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "functionSignature",
+          "type": "string"
+        }
+      ],
+      "name": "FunctionUpdate",
       "type": "event"
     },
     {
@@ -87,29 +100,23 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "_delegate",
+          "type": "address"
+        },
+        {
           "internalType": "string",
-          "name": "name",
+          "name": "_functionSignatures",
           "type": "string"
         },
         {
           "internalType": "string",
-          "name": "description",
+          "name": "_commitMessage",
           "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "workClockTimeRef",
-          "type": "uint256"
         }
       ],
-      "name": "createCategory",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
+      "name": "updateContract",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     }
