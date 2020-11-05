@@ -99,11 +99,11 @@ contract('Accessors', async (accounts) => {
 
 		describe("ERC20 metadata", async () => {
 			it("name", async () => {
-				assert.equal(await IexecInstance.name(), DEPLOYMENT.v5.usekyc ? "Staked ERLC" : "Staked RLC");
+				assert.equal(await IexecInstance.name(), !!process.env.KYC ? "Staked ERLC" : "Staked RLC");
 			});
 
 			it("symbol", async () => {
-				assert.equal(await IexecInstance.symbol(), DEPLOYMENT.v5.usekyc ? "SERLC" : "SRLC");
+				assert.equal(await IexecInstance.symbol(), !!process.env.KYC ? "SERLC" : "SRLC");
 			});
 
 			it("decimals", async () => {

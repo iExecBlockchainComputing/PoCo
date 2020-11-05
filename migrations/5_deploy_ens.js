@@ -140,7 +140,7 @@ module.exports = async function(deployer, network, accounts)
 		}
 
 		const RLCInstance                = deploymentOptions.asset == 'Token' && await RLC.deployed();
-		const ERLCInstance               = deploymentOptions.asset == 'Token' && deploymentOptions.v5.useKYC && await KERC20.deployed();
+		const ERLCInstance               = deploymentOptions.asset == 'Token' && deploymentOptions.v5.usekyc && await KERC20.deployed();
 		const AppRegistryInstance        = await AppRegistry.deployed();
 		const DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		const WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
