@@ -134,10 +134,7 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
 	const factoryOptions    = { salt: deploymentOptions.v5.salt  || process.env.SALT || web3.utils.randomHex(32) };
-
-	if (deploymentOptions.v5.AppRegistry)        AppRegistry.address        = deploymentOptions.v5.AppRegistry;
-	if (deploymentOptions.v5.DatasetRegistry)    DatasetRegistry.address    = deploymentOptions.v5.DatasetRegistry;
-	if (deploymentOptions.v5.WorkerpoolRegistry) WorkerpoolRegistry.address = deploymentOptions.v5.WorkerpoolRegistry;
+	deploymentOptions.v5.usekyc = !!process.env.KYC;
 
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)

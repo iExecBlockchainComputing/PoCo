@@ -33,6 +33,7 @@ module.exports = async function(deployer, network, accounts)
 	console.log('Deployer is:', accounts[0]);
 
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
+	deploymentOptions.v5.usekyc = !!process.env.KYC;
 
 	switch (deploymentOptions.asset)
 	{

@@ -47,6 +47,7 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
 	const factoryOptions    = { salt: deploymentOptions.v5.salt || web3.utils.randomHex(32) };
+	deploymentOptions.v5.usekyc = !!process.env.KYC;
 
 	/* ----------------------------- Deploy ENS ------------------------------ */
 	if (chainid > 1000) // skip for mainnet and testnet use
