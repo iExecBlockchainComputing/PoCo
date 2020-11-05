@@ -21,7 +21,7 @@ pipeline {
 
 	stages {
 
-		stage("Truffle tests") {
+		stage("Truffle tests - Public") {
 			agent {
 				docker {
 					image "node:10"
@@ -40,12 +40,56 @@ pipeline {
 			}
 		}
 
-		stage("Solidity coverage") {
+		stage("Truffle tests - KYC") {
 			agent {
 				docker {
 					image "node:10"
 					label "${LABEL}"
 				}
+			}
+			environment {
+				KYC = 'true'
+			}
+			steps {
+				script {
+					try {
+						sh "npm install --no-progress"
+						sh "npm run autotest fast"
+					} finally {
+						archiveArtifacts artifacts: "logs/**"
+					}
+				}
+			}
+		}
+
+		stage("Solidity coverage - Public") {
+			agent {
+				docker {
+					image "node:10"
+					label "${LABEL}"
+				}
+			}
+			steps {
+				script {
+					try {
+						sh "npm install --no-progress"
+						sh "npm run coverage"
+					} finally {
+						archiveArtifacts artifacts: "coverage/**"
+					}
+				}
+			}
+		}
+
+		stage("Solidity coverage - KYC") {
+			agent {
+				docker {
+					image "node:10"
+					label "${LABEL}"
+				}
+			}
+			environment {
+				KYC = 'true'
 			}
 			steps {
 				script {
