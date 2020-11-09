@@ -22,7 +22,7 @@ import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
 import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./erlc/IKERC20.sol";
+import "./erlc/IERC20KYC.sol";
 
 import "./libs/IexecLibCore_v5.sol";
 import "./libs/IexecLibOrders_v5.sol";
@@ -48,11 +48,11 @@ abstract contract Store is ERC1538Store
 	IRegistry internal m_workerpoolregistry;
 
 	// Escrow
-	IKERC20 internal m_baseToken;
-	string  internal m_name;
-	string  internal m_symbol;
-	uint8   internal m_decimals;
-	uint256 internal m_totalSupply;
+	IERC20KYC internal m_baseToken;
+	string    internal m_name;
+	string    internal m_symbol;
+	uint8     internal m_decimals;
+	uint256   internal m_totalSupply;
 	mapping (address =>                     uint256 ) internal m_balances;
 	mapping (address =>                     uint256 ) internal m_frozens;
 	mapping (address => mapping (address => uint256)) internal m_allowances;

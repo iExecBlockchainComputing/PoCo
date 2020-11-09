@@ -54,13 +54,13 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":\"Store\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0xb295229d321236101380f7e63e90dc0f197cbfe74f06b9143302e4b0143407cb\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://fa60b25fa4334a7dcc872ba7806c665832c3bd87e3fdee9f647d99a987768f07\",\"dweb:/ipfs/QmWA9twEzA24YnzU1PMKsCrpQCwzBbtMkM56ufDaNVoKyo\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC1404.sol\":{\"keccak256\":\"0xec243d84d26dd07f7a93a6f0665d56d60d20b139bf7f201a502a438ac95ac771\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://75cd876336f5cb77d0492f2082912fa42b526cf00820f1f0a0e8be012d402360\",\"dweb:/ipfs/QmZWgMF27i1JfGbgc7FTny9YkoFWDXiYh9gjpfXnHVLWy8\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC677.sol\":{\"keccak256\":\"0x2fc0f8ca46db18638bd9daed90a3e6bd90fec77ef4c899b7aa1b28010355d096\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://c213b13843b23ba7b755ad821c07b77cfacafddc5348a2191c164300344818ce\",\"dweb:/ipfs/QmSruFZbrEuzJFmRbbzZL3GehKpqEm6RfVGcuZZGwBedsp\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IKERC20.sol\":{\"keccak256\":\"0xfd8fb6ce0d96599df61473bc7742f4b458ccd4e86dd663e60d536af52bb73eae\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://a3b079fd941b519fcb2ac27f9e8227a1802b9a1c90869ae730fc427ec11842db\",\"dweb:/ipfs/QmdSqtzaMy5Lbr6qmCLfWXWnGJpU3hEvQNZvRCSbkaAAgv\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x7fab9c16493884c64cdd31627c5d71389de785becf611b738343d75f7495471d\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://3e243796363e7d4cd249b432a2511cdb49759ed7d2e8bd73817f09ff60ff919c\",\"dweb:/ipfs/Qmeat95AtRviDFcJ3W3aBZmH51aHReX9RLnPZ3Gof3FnzW\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0x430eaa82ce8d43771c8a84af5113e31de79490d5b9d561ef90034bdc5a2a993b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://65cb57ac25afa5b6e0811290866aace3b013fe67aa82c5e72b6bb00d50e9f28a\",\"dweb:/ipfs/QmTTNTASsnM8db9vTjkbxz5kiNtqVxNrjwxkvVEmoHuMj9\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0xc735f7764e312ea161551bc1a2749820928b1bf80c4aeb2f528a2f4a498078cd\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://7dbefb9d9bec9b56f694d2ee6dc0a44b341c027c0d392534b457867208f019b9\",\"dweb:/ipfs/QmSiSkhgUcAGscopDoRtGnHiWAbxNwBf9ZV8nnVYoWqZ8Z\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0x18bdeaad129f5034937fb69a7afbd68ffba8341172a7a124d6be22d6cd2cc5ad\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://e77b038842b0c19eb8cb2bac495025ec2fe074472370708cc0b6b6a9e6e5275c\",\"dweb:/ipfs/QmNPUSUBUPezTebKA3VzRu8u5KKuYiKGP1m3yME2J6YnSc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5e7a46311946df50486dd451f456aee0abe92184dbc31e3a40fc9198f8f6582\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://24f058496713a743781c3353477a03255cdce4cfca845883d207a62346c5c684\",\"dweb:/ipfs/QmVVrLgcoAetTY7EsL3fWfC7VuqKzh1ncVF8spkEkgPQot\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x1408d4f83f2c512ce71a680975d480fffb5ff417b2ecc37de45076e8d8f43d1a\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://e817bcc02c7e8547179b0293ed61b4066a04ab3e2b7cda6db90b41e42cabcecc\",\"dweb:/ipfs/QmVPJzM6SXg4ngSSHi2kioQ2htbJPUta5ZMyrgMnAGmrW6\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0xf58ec4bed61a76b9d557e7b1f486fced23cb4dfc5047fc93ba6b4684c1624c2a\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://530858af626fb5598eb9c973b9d3a0c2c1d431b43ca9e7c49143ab5edf619d67\",\"dweb:/ipfs/QmRkksj1gDnz1kcB6JFKuBKXD3mq52SsjuPN5SMUqSK46u\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0x5604f1f935ea198caa899dfd96af42f9f2280954c9798caa58e9cf198b8d492e\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://10fabd01e983ad441a08c57ff78451237c0d350ba7e0cab42a7dccbf784209bd\",\"dweb:/ipfs/Qmbt3eiERXv3QUHHJAFKwfgrCNz6ZcA1ccUWtztLFiv9Av\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xd1e5b9222925769b40cbf20a4b96d9d3fa462cca6e40d0d9021033ebb0a7d584\",\"urls\":[\"bzz-raw://0e47b7621c8f6cee3c5900f0545cb563fa763712cf235d320fd88d0857699ed1\",\"dweb:/ipfs/QmS18tjVQ6oxc7MHUK5DKLrRSX1v7N4e5Pc6xKjJCNcFv3\"]},\"@iexec/solidity/contracts/ENStools/IENS.sol\":{\"keccak256\":\"0xb109a681632d71269ed4efbe11fc9d1bcee6bc29109f2fb8ced6951dafc28302\",\"urls\":[\"bzz-raw://920ee6b3712ebe1cb28977abf4ded033067305d786116f94777ab03a6b6b9ee9\",\"dweb:/ipfs/QmWFCBtMLUZYJ2cxzHBjHq5WZC8Yydnbk6dezoXHT4Pxgz\"]},\"@iexec/solidity/contracts/ENStools/IReverseRegistrar.sol\":{\"keccak256\":\"0xff985fd263e59bd387e543cd5cf99235ab6e066b6d1be95e79108dacc749673f\",\"urls\":[\"bzz-raw://98a054bc372f5fd6c80793d32a74f3387d562ed6b3e17388b5f8f4b6bc96a62c\",\"dweb:/ipfs/QmQtkE8u6h7zrBrdfEez6STf18766AFP5kK8hGL4SNoWuP\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0xdb26cbf4d028490f49831a7865c2fe1b28db44b535ca8d343785a3b768aae183\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://840b14ce0315c47d49ba328f1f9fa7654ded1c9e1559e6c5e777a7b2dc28bf0a\",\"dweb:/ipfs/QmTLLabn4wcfGro9LEmUXUN2nwKqZSotXMvjDCLXEnLtZP\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xb046d18f9d09683ca1c0ed6d80c61da8a8a7d9b30bad70a17b898538683eff74\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4728713afa6ae36cc9e92c7107c796a313add3ec20f813be2cde76c814486b2a\",\"dweb:/ipfs/QmUJBTXvYaGDF5PVnd5pUvYerc9DRXvqANDzgCzAp3FkkA\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0xfa152b6e88a1dc50780e8f1580426dc23ad2e1e2c2f086a088adf206a202f453\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5127b264994adab88fae419b1c493efc5acd07134c19ee5c0397e50018291ebf\",\"dweb:/ipfs/QmWwJZVhvdmvUCdimbb6R2Jiu59zjPqm6XTMchM6LaEHAp\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x9a9cf02622cd7a64261b10534fc3260449da25c98c9e96d1b4ae8110a20e5806\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2df142592d1dc267d9549049ee3317fa190d2f87eaa565f86ab05ec83f7ab8f5\",\"dweb:/ipfs/QmSkJtcfWo7c42KnL5hho6GFxK6HRNV91XABx1P7xDtfLV\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1071a23188ba7f5bb16f51b0b01a67fd41fe56f862d8f83985788cf46f3b91bd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c7082ca99b93f2e541cafaad00ed32675adf0752eab78eccabcf91dec9fd5d73\",\"dweb:/ipfs/QmdqooMmYBQVi7p6subDFM4e1944AuLjZUpHMjGtae7Lgd\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x227bafd3e165b13f5d98c42a44376e48d41f4a265db8803f2707faaeae9659aa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9aa7959a30871669ce46172cd117b084b607d602d9ce695ce79005582b0b69b\",\"dweb:/ipfs/QmXZUWeLXmArQinHL4RnacJLT22GvCExqREYM6pHLX7CX9\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0x3636662804cd8f474536b2875a9038a4c3fb91879f1bbff48af5c3f140fcd2f0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9fab8521263fa581544000cb57335a3f2e6bcdfbb5579d3ceaa5acf741c67c4f\",\"dweb:/ipfs/QmZfXnMom7JSNtfyie5yGPN1SUC4SmHbz4ScVBH88URmA7\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xe7f984cedc00a138dc27f263c73c32ba9a4b2fd23b6c34ac46f46c074b943538\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0f4acda12f076fe7584921241ddbb5b460ca7cad6cb8a42252ac7f2a9f539127\",\"dweb:/ipfs/QmQmfhkEv9GrhdWe67QtXnU19AMuoEmy31QnHPkucdYLjZ\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x321ee37ef4925020aa818a03ec7fe48e057561f65ab009a84f6c20c86026ade7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://01f9d74a17a56024984251b97e428e24c9d3abffbae5bd290f0ec263c82e9694\",\"dweb:/ipfs/QmRryCuuXu2ukrDmatB8TqdEhPLiK6NBRt41RiPUaX1qKy\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xdfb4f812600ba4ce6738c35584ceb8c9433472583051b48ba5b1f66cb758a498\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df02dffe1c1de089d9b4f6192f0dcf464526f2230f420b3deec4645e0cdd2bff\",\"dweb:/ipfs/QmcqXGAU3KJqwrgUVoGJ2W8osomhSJ4R5kdsRpbuW3fELS\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x16926b3c19504ea52f73abe41dfa9c1ef9c328d6088b82162d475caecaa47a6d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc578656a08c07f33ecf4a54324bad5f951afdcd990cdab1dcde493d6bb49d9c\",\"dweb:/ipfs/QmbXLJtTaqBg7WwC4p9gsRjA3VEwNwGc6W9afJeAaacF71\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0x244e4b74b17716120cf28e58636f11c699b8c0c94628bd952a95cee038d7e32b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://198d566157120c526bd6b5086b32cae85a11389b8a538f533ba9f9447915da0e\",\"dweb:/ipfs/QmeE6d8KWERx7f1FVS5tMnitNJxBm2yWXRSEUBF7R6voLh\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0xb2a11b236f073662f5a196995863f51c11d006bf7c3de158b316dfa1506c4b79\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8651649cf0b9efa18c3b01c030276fa320d41adbdc286833417e7f36e357b2f3\",\"dweb:/ipfs/QmafhM2Nd1aP43QVB1eRRZaqRXQKswNfQcWi8U8xjrxCfN\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0x79484115dbfa737054f73e041009a02eeb434dd81be5d684bf4255ad3b5ab558\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://12c119699463450c2544f5b9d8709b5e9e9164c62948a79c3ec53423a051d969\",\"dweb:/ipfs/QmPJduzSAaekq447QeFqAp3E7dc8CnNk5ajofckJ4ahA7Q\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":\"Store\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol\":{\"keccak256\":\"0xbc74ce351bc304d65cc20a95bad8290711ac47267b7cfff5500cdeff42b1a18b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://f92ebcd5817a7d6f20ef48662f985e9bdb8a68f3752249a14a1a4cbb8b99f190\",\"dweb:/ipfs/QmZAph8GSDPRkXxNUsQpGCXDsmMSGo6Pr5HFg2f4ZXgRZc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC1404.sol\":{\"keccak256\":\"0xec243d84d26dd07f7a93a6f0665d56d60d20b139bf7f201a502a438ac95ac771\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://75cd876336f5cb77d0492f2082912fa42b526cf00820f1f0a0e8be012d402360\",\"dweb:/ipfs/QmZWgMF27i1JfGbgc7FTny9YkoFWDXiYh9gjpfXnHVLWy8\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC20KYC.sol\":{\"keccak256\":\"0xc2aa3e67c31421ad6f43594875c1d5c5a62366d19ef22485d4764a9c2e53ab7c\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://f15679680aa5a9590707ab921d90569eb7e30a3c8340a4d9d0bef3ac5375d56b\",\"dweb:/ipfs/QmWZovmERYpAu3FKW7Ea3gZZeangFyGpkpgcLEggbkqhdM\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC677.sol\":{\"keccak256\":\"0x2fc0f8ca46db18638bd9daed90a3e6bd90fec77ef4c899b7aa1b28010355d096\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://c213b13843b23ba7b755ad821c07b77cfacafddc5348a2191c164300344818ce\",\"dweb:/ipfs/QmSruFZbrEuzJFmRbbzZL3GehKpqEm6RfVGcuZZGwBedsp\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibCore_v5.sol\":{\"keccak256\":\"0x7fab9c16493884c64cdd31627c5d71389de785becf611b738343d75f7495471d\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://3e243796363e7d4cd249b432a2511cdb49759ed7d2e8bd73817f09ff60ff919c\",\"dweb:/ipfs/Qmeat95AtRviDFcJ3W3aBZmH51aHReX9RLnPZ3Gof3FnzW\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol\":{\"keccak256\":\"0x430eaa82ce8d43771c8a84af5113e31de79490d5b9d561ef90034bdc5a2a993b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://65cb57ac25afa5b6e0811290866aace3b013fe67aa82c5e72b6bb00d50e9f28a\",\"dweb:/ipfs/QmTTNTASsnM8db9vTjkbxz5kiNtqVxNrjwxkvVEmoHuMj9\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/IRegistry.sol\":{\"keccak256\":\"0xc735f7764e312ea161551bc1a2749820928b1bf80c4aeb2f528a2f4a498078cd\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://7dbefb9d9bec9b56f694d2ee6dc0a44b341c027c0d392534b457867208f019b9\",\"dweb:/ipfs/QmSiSkhgUcAGscopDoRtGnHiWAbxNwBf9ZV8nnVYoWqZ8Z\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/Registry.sol\":{\"keccak256\":\"0x18bdeaad129f5034937fb69a7afbd68ffba8341172a7a124d6be22d6cd2cc5ad\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://e77b038842b0c19eb8cb2bac495025ec2fe074472370708cc0b6b6a9e6e5275c\",\"dweb:/ipfs/QmNPUSUBUPezTebKA3VzRu8u5KKuYiKGP1m3yME2J6YnSc\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/RegistryEntry.sol\":{\"keccak256\":\"0xc5e7a46311946df50486dd451f456aee0abe92184dbc31e3a40fc9198f8f6582\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://24f058496713a743781c3353477a03255cdce4cfca845883d207a62346c5c684\",\"dweb:/ipfs/QmVVrLgcoAetTY7EsL3fWfC7VuqKzh1ncVF8spkEkgPQot\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/apps/App.sol\":{\"keccak256\":\"0x1408d4f83f2c512ce71a680975d480fffb5ff417b2ecc37de45076e8d8f43d1a\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://e817bcc02c7e8547179b0293ed61b4066a04ab3e2b7cda6db90b41e42cabcecc\",\"dweb:/ipfs/QmVPJzM6SXg4ngSSHi2kioQ2htbJPUta5ZMyrgMnAGmrW6\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/datasets/Dataset.sol\":{\"keccak256\":\"0xf58ec4bed61a76b9d557e7b1f486fced23cb4dfc5047fc93ba6b4684c1624c2a\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://530858af626fb5598eb9c973b9d3a0c2c1d431b43ca9e7c49143ab5edf619d67\",\"dweb:/ipfs/QmRkksj1gDnz1kcB6JFKuBKXD3mq52SsjuPN5SMUqSK46u\"]},\"/home/amxx/Work/iExec/code/PoCo-dev/contracts/registries/workerpools/Workerpool.sol\":{\"keccak256\":\"0x5604f1f935ea198caa899dfd96af42f9f2280954c9798caa58e9cf198b8d492e\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://10fabd01e983ad441a08c57ff78451237c0d350ba7e0cab42a7dccbf784209bd\",\"dweb:/ipfs/Qmbt3eiERXv3QUHHJAFKwfgrCNz6ZcA1ccUWtztLFiv9Av\"]},\"@iexec/interface/contracts/IexecClerk.sol\":{\"keccak256\":\"0x703252a638a5a7e2b600395fd920712a1ac259018bc9578fe581a77fa2f008a9\",\"urls\":[\"bzz-raw://072b9e948e5ac4a7f60466c23b322ea0f1aca711f1a94616e658600c2a4c36a2\",\"dweb:/ipfs/QmRP57bkhWDr5BeawfjiKsbdwFiHnw6nc6zgiEad3hQoSJ\"]},\"@iexec/interface/contracts/IexecHub.sol\":{\"keccak256\":\"0x8e293b7624550823838ed9113400544c5980afac1043ddacad7a862c91b0840d\",\"urls\":[\"bzz-raw://ae34ebc355838595ee69b24a31e60deb186455cc388c88de7ecd0294c7037075\",\"dweb:/ipfs/QmUYVQJBWG7ohAYksJRDJKcJVyPMXNFJSPWMAuQcGfWHo7\"]},\"@iexec/interface/contracts/IexecRegistries.sol\":{\"keccak256\":\"0xb39eef47d62d8751c5adfeaf169ce57b50c480788be8356289bc28b78bc24fde\",\"urls\":[\"bzz-raw://a86593f1ef9953ac0965aab4e764374580a899a7f7871ad66b432523171063a1\",\"dweb:/ipfs/QmcYZhHD45APoS1Ebi416DhXU3fiCzoFW2WSMux4AxhFqk\"]},\"@iexec/interface/contracts/libs/IexecODBLibCore.sol\":{\"keccak256\":\"0x3fc7ff4152e9a8f9747d42e262c15c3d460d409732711d9e1da8a88163880183\",\"urls\":[\"bzz-raw://8bacc98b866852e9f1e3563948381cba142ab61d6b1a7c62fbc53b7d57aa0589\",\"dweb:/ipfs/QmUNjhjBxdtHQFWQ61CgnPoaAzL767tQSKF6x34VFWeRyF\"]},\"@iexec/interface/contracts/libs/IexecODBLibOrders.sol\":{\"keccak256\":\"0xe2848a685785b09dc9ee5a6e6329a417eaf18e520388e8575d45a5376b1d62ca\",\"urls\":[\"bzz-raw://d1385ab26f382baa7aadb80faed54290296be09eeccbee1193a1b8a53b0b15d5\",\"dweb:/ipfs/QmUQTFcGX5VZiYwHKu9Yjc4PHNrMgdAyKwKi6tFEMsbaJk\"]},\"@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol\":{\"keccak256\":\"0xd1e5b9222925769b40cbf20a4b96d9d3fa462cca6e40d0d9021033ebb0a7d584\",\"urls\":[\"bzz-raw://0e47b7621c8f6cee3c5900f0545cb563fa763712cf235d320fd88d0857699ed1\",\"dweb:/ipfs/QmS18tjVQ6oxc7MHUK5DKLrRSX1v7N4e5Pc6xKjJCNcFv3\"]},\"@iexec/solidity/contracts/ENStools/IENS.sol\":{\"keccak256\":\"0xb109a681632d71269ed4efbe11fc9d1bcee6bc29109f2fb8ced6951dafc28302\",\"urls\":[\"bzz-raw://920ee6b3712ebe1cb28977abf4ded033067305d786116f94777ab03a6b6b9ee9\",\"dweb:/ipfs/QmWFCBtMLUZYJ2cxzHBjHq5WZC8Yydnbk6dezoXHT4Pxgz\"]},\"@iexec/solidity/contracts/ENStools/IReverseRegistrar.sol\":{\"keccak256\":\"0xff985fd263e59bd387e543cd5cf99235ab6e066b6d1be95e79108dacc749673f\",\"urls\":[\"bzz-raw://98a054bc372f5fd6c80793d32a74f3387d562ed6b3e17388b5f8f4b6bc96a62c\",\"dweb:/ipfs/QmQtkE8u6h7zrBrdfEez6STf18766AFP5kK8hGL4SNoWuP\"]},\"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\":{\"keccak256\":\"0x4d1e8821dc216013f20044bbf82df3c2ab2c739d1b2ce4d90c15cb65f85707d8\",\"urls\":[\"bzz-raw://e36d4db70862f87b8657c19330f0d45e8e7018ebcf3df97525638c8caa919d2b\",\"dweb:/ipfs/QmZqsrXPsyRkRkjuupKG2SYsyUTBXqe7nkkCy7RKxDKz1L\"]},\"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\":{\"keccak256\":\"0xf2802ae591eb22954d9c8e02658ae7577940890aff8d8927a7255e254fed605b\",\"urls\":[\"bzz-raw://8dcc485d21a3aa3f643768d4ac4fc69697b9b37f8fb779f3998ab4cee143fa66\",\"dweb:/ipfs/QmWdwgKPMoWuidYQp6WFsJBhNbJUwFHNE9YPYQZhBsKj7e\"]},\"@iexec/solidity/contracts/Upgradeability/BaseUpgradeabilityProxy.sol\":{\"keccak256\":\"0x47ec56a1226ecf04d49aa82f768814923c1957b69f7fc9e7e470885c75b5a2c6\",\"urls\":[\"bzz-raw://4eae82be03a247a27a2948ed12d5a826dea977f4b5528830c19d9cf4c23dcd53\",\"dweb:/ipfs/Qmb9HtnohAMvjb7vYnXaT3AnQd9p9sLsThnyLnXVzz1umq\"]},\"@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol\":{\"keccak256\":\"0xe1bf07e5d913bd04484305a3fb0cc576f6b5d8e4fc0406bf7c9a8b6b2ed766e5\",\"urls\":[\"bzz-raw://b42f6dff696ceadeb44a02aae3049e603984c18af8d94f33fb6544a8b279179c\",\"dweb:/ipfs/QmRWTaRHCGZhKZFKrVAJwXukXiCZcezrVhJJ28H2qBbai7\"]},\"@iexec/solidity/contracts/Upgradeability/Proxy.sol\":{\"keccak256\":\"0xd89f285d80cfeff0efc87f11dbc024a587da3bba142a06695cbac7e4050e9302\",\"urls\":[\"bzz-raw://9c8323ec7efc9fde6c1529f1070c3f3406adb5f8836b17221530d8f0110fe3f4\",\"dweb:/ipfs/QmURRsX9L2gZ83aMULtY1EuRMJExHhFYErCbkxE5CNkAzE\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0xdb26cbf4d028490f49831a7865c2fe1b28db44b535ca8d343785a3b768aae183\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://840b14ce0315c47d49ba328f1f9fa7654ded1c9e1559e6c5e777a7b2dc28bf0a\",\"dweb:/ipfs/QmTLLabn4wcfGro9LEmUXUN2nwKqZSotXMvjDCLXEnLtZP\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]},\"@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xb046d18f9d09683ca1c0ed6d80c61da8a8a7d9b30bad70a17b898538683eff74\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4728713afa6ae36cc9e92c7107c796a313add3ec20f813be2cde76c814486b2a\",\"dweb:/ipfs/QmUJBTXvYaGDF5PVnd5pUvYerc9DRXvqANDzgCzAp3FkkA\"]},\"@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0xfa152b6e88a1dc50780e8f1580426dc23ad2e1e2c2f086a088adf206a202f453\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5127b264994adab88fae419b1c493efc5acd07134c19ee5c0397e50018291ebf\",\"dweb:/ipfs/QmWwJZVhvdmvUCdimbb6R2Jiu59zjPqm6XTMchM6LaEHAp\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x9a9cf02622cd7a64261b10534fc3260449da25c98c9e96d1b4ae8110a20e5806\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2df142592d1dc267d9549049ee3317fa190d2f87eaa565f86ab05ec83f7ab8f5\",\"dweb:/ipfs/QmSkJtcfWo7c42KnL5hho6GFxK6HRNV91XABx1P7xDtfLV\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]},\"@openzeppelin/contracts/token/ERC721/ERC721.sol\":{\"keccak256\":\"0x1071a23188ba7f5bb16f51b0b01a67fd41fe56f862d8f83985788cf46f3b91bd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c7082ca99b93f2e541cafaad00ed32675adf0752eab78eccabcf91dec9fd5d73\",\"dweb:/ipfs/QmdqooMmYBQVi7p6subDFM4e1944AuLjZUpHMjGtae7Lgd\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x227bafd3e165b13f5d98c42a44376e48d41f4a265db8803f2707faaeae9659aa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9aa7959a30871669ce46172cd117b084b607d602d9ce695ce79005582b0b69b\",\"dweb:/ipfs/QmXZUWeLXmArQinHL4RnacJLT22GvCExqREYM6pHLX7CX9\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol\":{\"keccak256\":\"0x3636662804cd8f474536b2875a9038a4c3fb91879f1bbff48af5c3f140fcd2f0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9fab8521263fa581544000cb57335a3f2e6bcdfbb5579d3ceaa5acf741c67c4f\",\"dweb:/ipfs/QmZfXnMom7JSNtfyie5yGPN1SUC4SmHbz4ScVBH88URmA7\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol\":{\"keccak256\":\"0xe7f984cedc00a138dc27f263c73c32ba9a4b2fd23b6c34ac46f46c074b943538\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0f4acda12f076fe7584921241ddbb5b460ca7cad6cb8a42252ac7f2a9f539127\",\"dweb:/ipfs/QmQmfhkEv9GrhdWe67QtXnU19AMuoEmy31QnHPkucdYLjZ\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x321ee37ef4925020aa818a03ec7fe48e057561f65ab009a84f6c20c86026ade7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://01f9d74a17a56024984251b97e428e24c9d3abffbae5bd290f0ec263c82e9694\",\"dweb:/ipfs/QmRryCuuXu2ukrDmatB8TqdEhPLiK6NBRt41RiPUaX1qKy\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0xdfb4f812600ba4ce6738c35584ceb8c9433472583051b48ba5b1f66cb758a498\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df02dffe1c1de089d9b4f6192f0dcf464526f2230f420b3deec4645e0cdd2bff\",\"dweb:/ipfs/QmcqXGAU3KJqwrgUVoGJ2W8osomhSJ4R5kdsRpbuW3fELS\"]},\"@openzeppelin/contracts/utils/Create2.sol\":{\"keccak256\":\"0x16926b3c19504ea52f73abe41dfa9c1ef9c328d6088b82162d475caecaa47a6d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc578656a08c07f33ecf4a54324bad5f951afdcd990cdab1dcde493d6bb49d9c\",\"dweb:/ipfs/QmbXLJtTaqBg7WwC4p9gsRjA3VEwNwGc6W9afJeAaacF71\"]},\"@openzeppelin/contracts/utils/EnumerableMap.sol\":{\"keccak256\":\"0x244e4b74b17716120cf28e58636f11c699b8c0c94628bd952a95cee038d7e32b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://198d566157120c526bd6b5086b32cae85a11389b8a538f533ba9f9447915da0e\",\"dweb:/ipfs/QmeE6d8KWERx7f1FVS5tMnitNJxBm2yWXRSEUBF7R6voLh\"]},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"keccak256\":\"0xb2a11b236f073662f5a196995863f51c11d006bf7c3de158b316dfa1506c4b79\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8651649cf0b9efa18c3b01c030276fa320d41adbdc286833417e7f36e357b2f3\",\"dweb:/ipfs/QmafhM2Nd1aP43QVB1eRRZaqRXQKswNfQcWi8U8xjrxCfN\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0x79484115dbfa737054f73e041009a02eeb434dd81be5d684bf4255ad3b5ab558\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://12c119699463450c2544f5b9d8709b5e9e9164c62948a79c3ec53423a051d969\",\"dweb:/ipfs/QmPJduzSAaekq447QeFqAp3E7dc8CnNk5ajofckJ4ahA7Q\"]},\"solstruct/contracts/libs/LibMap2.bytes4.address.bytes.sol\":{\"keccak256\":\"0x471645d4b20cc36606122fc6bb692cdf8489118547f90bde2740cb73b1e64d54\",\"urls\":[\"bzz-raw://7ca824c03cd077e6d9630eaa4755787c785a61f612cb8e3ba13d0ce92ee55738\",\"dweb:/ipfs/QmdavtXDokZ7vWZt8pMxPi7DaG3Hd1Q5MyeJjXGRFQuL9r\"]},\"solstruct/contracts/libs/LibSet.bytes4.sol\":{\"keccak256\":\"0xdec5833ab65ae8cab500b84424dde49c1f7817c6575e1631a729fc88c6d4bd7f\",\"urls\":[\"bzz-raw://2e5d23b8383819e6dd77ea61ed30740bcba45b0fff609922b11d1cae2b0223f1\",\"dweb:/ipfs/QmQ27sefXEYXBUSEGdPkuzCqemtUJzNXhhsyd7kB94w6CE\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// SPDX-License-Identifier: Apache-2.0\n\n/******************************************************************************\n * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *\n *                                                                            *\n * Licensed under the Apache License, Version 2.0 (the \"License\");            *\n * you may not use this file except in compliance with the License.           *\n * You may obtain a copy of the License at                                    *\n *                                                                            *\n *     http://www.apache.org/licenses/LICENSE-2.0                             *\n *                                                                            *\n * Unless required by applicable law or agreed to in writing, software        *\n * distributed under the License is distributed on an \"AS IS\" BASIS,          *\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *\n * See the License for the specific language governing permissions and        *\n * limitations under the License.                                             *\n ******************************************************************************/\n\npragma solidity ^0.6.0;\n\nimport \"@iexec/interface/contracts/IexecHub.sol\";\nimport \"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\";\nimport \"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\";\n// import \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport \"./erlc/IKERC20.sol\";\n\nimport \"./libs/IexecLibCore_v5.sol\";\nimport \"./libs/IexecLibOrders_v5.sol\";\nimport \"./registries/apps/App.sol\";\nimport \"./registries/datasets/Dataset.sol\";\nimport \"./registries/workerpools/Workerpool.sol\";\nimport \"./registries/IRegistry.sol\";\n\n/****************************************************************************\n * WARNING: Be carefull when editing this file.                             *\n *                                                                          *\n * If you want add new variables for expanded features, add them at the     *\n * end, or (better?) create a Store_v2 that inherits from this Store.       *\n *                                                                          *\n * If in doubt, read about ERC1538 memory store.                            *\n ****************************************************************************/\n\nabstract contract Store is ERC1538Store\n{\n\t// Registries\n\tIRegistry internal m_appregistry;\n\tIRegistry internal m_datasetregistry;\n\tIRegistry internal m_workerpoolregistry;\n\n\t// Escrow\n\tIKERC20 internal m_baseToken;\n\tstring  internal m_name;\n\tstring  internal m_symbol;\n\tuint8   internal m_decimals;\n\tuint256 internal m_totalSupply;\n\tmapping (address =>                     uint256 ) internal m_balances;\n\tmapping (address =>                     uint256 ) internal m_frozens;\n\tmapping (address => mapping (address => uint256)) internal m_allowances;\n\n\t// Poco - Constants\n\tuint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;\n\tuint256 internal constant REVEAL_DEADLINE_RATIO       = 2;\n\tuint256 internal constant FINAL_DEADLINE_RATIO        = 10;\n\tuint256 internal constant WORKERPOOL_STAKE_RATIO      = 30;\n\tuint256 internal constant KITTY_RATIO                 = 10;\n\tuint256 internal constant KITTY_MIN                   = 1000000000; // ADJUSTEMENT VARIABLE\n\taddress internal constant KITTY_ADDRESS               = 0x99c2268479b93fDe36232351229815DF80837e23; // address(uint256(keccak256(bytes('iExecKitty'))) - 1);\n\tuint256 internal constant GROUPMEMBER_PURPOSE         = 4;\n\tbytes32 internal          EIP712DOMAIN_SEPARATOR;\n\n\t// Poco - Storage\n\tmapping(bytes32 =>                    address                      ) internal m_presigned;     // per order\n\tmapping(bytes32 =>                    uint256                      ) internal m_consumed;      // per order\n\tmapping(bytes32 =>                    IexecLibCore_v5.Deal         ) internal m_deals;         // per deal\n\tmapping(bytes32 =>                    IexecLibCore_v5.Task         ) internal m_tasks;         // per task\n\tmapping(bytes32 =>                    IexecLibCore_v5.Consensus    ) internal m_consensus;     // per task\n\tmapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions; // per task-worker\n\tmapping(address =>                    uint256                      ) internal m_workerScores;  // per worker\n\n\t// Poco - Settings\n\taddress internal m_teebroker;\n\tuint256 internal m_callbackgas;\n\n\t// Categories\n\tIexecLibCore_v5.Category[] internal m_categories;\n\n\t// Backward compatibility\n\tIexecHubInterface internal m_v3_iexecHub;\n\tmapping(address => bool) internal m_v3_scoreImported;\n}\n",
+  "source": "// SPDX-License-Identifier: Apache-2.0\n\n/******************************************************************************\n * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *\n *                                                                            *\n * Licensed under the Apache License, Version 2.0 (the \"License\");            *\n * you may not use this file except in compliance with the License.           *\n * You may obtain a copy of the License at                                    *\n *                                                                            *\n *     http://www.apache.org/licenses/LICENSE-2.0                             *\n *                                                                            *\n * Unless required by applicable law or agreed to in writing, software        *\n * distributed under the License is distributed on an \"AS IS\" BASIS,          *\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *\n * See the License for the specific language governing permissions and        *\n * limitations under the License.                                             *\n ******************************************************************************/\n\npragma solidity ^0.6.0;\n\nimport \"@iexec/interface/contracts/IexecHub.sol\";\nimport \"@iexec/solidity/contracts/Libs/SafeMathExtended.sol\";\nimport \"@iexec/solidity/contracts/ERC1538/ERC1538Store.sol\";\n// import \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport \"./erlc/IERC20KYC.sol\";\n\nimport \"./libs/IexecLibCore_v5.sol\";\nimport \"./libs/IexecLibOrders_v5.sol\";\nimport \"./registries/apps/App.sol\";\nimport \"./registries/datasets/Dataset.sol\";\nimport \"./registries/workerpools/Workerpool.sol\";\nimport \"./registries/IRegistry.sol\";\n\n/****************************************************************************\n * WARNING: Be carefull when editing this file.                             *\n *                                                                          *\n * If you want add new variables for expanded features, add them at the     *\n * end, or (better?) create a Store_v2 that inherits from this Store.       *\n *                                                                          *\n * If in doubt, read about ERC1538 memory store.                            *\n ****************************************************************************/\n\nabstract contract Store is ERC1538Store\n{\n\t// Registries\n\tIRegistry internal m_appregistry;\n\tIRegistry internal m_datasetregistry;\n\tIRegistry internal m_workerpoolregistry;\n\n\t// Escrow\n\tIERC20KYC internal m_baseToken;\n\tstring    internal m_name;\n\tstring    internal m_symbol;\n\tuint8     internal m_decimals;\n\tuint256   internal m_totalSupply;\n\tmapping (address =>                     uint256 ) internal m_balances;\n\tmapping (address =>                     uint256 ) internal m_frozens;\n\tmapping (address => mapping (address => uint256)) internal m_allowances;\n\n\t// Poco - Constants\n\tuint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;\n\tuint256 internal constant REVEAL_DEADLINE_RATIO       = 2;\n\tuint256 internal constant FINAL_DEADLINE_RATIO        = 10;\n\tuint256 internal constant WORKERPOOL_STAKE_RATIO      = 30;\n\tuint256 internal constant KITTY_RATIO                 = 10;\n\tuint256 internal constant KITTY_MIN                   = 1000000000; // ADJUSTEMENT VARIABLE\n\taddress internal constant KITTY_ADDRESS               = 0x99c2268479b93fDe36232351229815DF80837e23; // address(uint256(keccak256(bytes('iExecKitty'))) - 1);\n\tuint256 internal constant GROUPMEMBER_PURPOSE         = 4;\n\tbytes32 internal          EIP712DOMAIN_SEPARATOR;\n\n\t// Poco - Storage\n\tmapping(bytes32 =>                    address                      ) internal m_presigned;     // per order\n\tmapping(bytes32 =>                    uint256                      ) internal m_consumed;      // per order\n\tmapping(bytes32 =>                    IexecLibCore_v5.Deal         ) internal m_deals;         // per deal\n\tmapping(bytes32 =>                    IexecLibCore_v5.Task         ) internal m_tasks;         // per task\n\tmapping(bytes32 =>                    IexecLibCore_v5.Consensus    ) internal m_consensus;     // per task\n\tmapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions; // per task-worker\n\tmapping(address =>                    uint256                      ) internal m_workerScores;  // per worker\n\n\t// Poco - Settings\n\taddress internal m_teebroker;\n\tuint256 internal m_callbackgas;\n\n\t// Categories\n\tIexecLibCore_v5.Category[] internal m_categories;\n\n\t// Backward compatibility\n\tIexecHubInterface internal m_v3_iexecHub;\n\tmapping(address => bool) internal m_v3_scoreImported;\n}\n",
   "sourcePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol",
   "ast": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol",
@@ -118,13 +118,13 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IKERC20.sol",
-        "file": "./erlc/IKERC20.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC20KYC.sol",
+        "file": "./erlc/IERC20KYC.sol",
         "id": 201,
         "nodeType": "ImportDirective",
         "scope": 310,
-        "sourceUnit": 440,
-        "src": "1500:28:4",
+        "sourceUnit": 1031,
+        "src": "1500:30:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -135,7 +135,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 1195,
-        "src": "1530:36:4",
+        "src": "1532:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -146,7 +146,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 1630,
-        "src": "1567:38:4",
+        "src": "1569:38:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -157,7 +157,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10344,
-        "src": "1606:35:4",
+        "src": "1608:35:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -168,7 +168,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10496,
-        "src": "1642:43:4",
+        "src": "1644:43:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -179,7 +179,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10668,
-        "src": "1686:49:4",
+        "src": "1688:49:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -190,7 +190,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 9986,
-        "src": "1736:36:4",
+        "src": "1738:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -205,7 +205,7 @@
               "name": "ERC1538Store",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 13173,
-              "src": "2427:12:4",
+              "src": "2429:12:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_ERC1538Store_$13173",
                 "typeString": "contract ERC1538Store"
@@ -213,7 +213,7 @@
             },
             "id": 209,
             "nodeType": "InheritanceSpecifier",
-            "src": "2427:12:4"
+            "src": "2429:12:4"
           }
         ],
         "contractDependencies": [
@@ -242,7 +242,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2458:32:4",
+            "src": "2460:32:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -255,7 +255,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2458:9:4",
+              "src": "2460:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -272,7 +272,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2493:36:4",
+            "src": "2495:36:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -285,7 +285,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2493:9:4",
+              "src": "2495:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -302,7 +302,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2532:39:4",
+            "src": "2534:39:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -315,7 +315,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2532:9:4",
+              "src": "2534:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -332,23 +332,23 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2586:28:4",
+            "src": "2588:30:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IKERC20_$439",
-              "typeString": "contract IKERC20"
+              "typeIdentifier": "t_contract$_IERC20KYC_$1030",
+              "typeString": "contract IERC20KYC"
             },
             "typeName": {
               "contractScope": null,
               "id": 216,
-              "name": "IKERC20",
+              "name": "IERC20KYC",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 439,
-              "src": "2586:7:4",
+              "referencedDeclaration": 1030,
+              "src": "2588:9:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IKERC20_$439",
-                "typeString": "contract IKERC20"
+                "typeIdentifier": "t_contract$_IERC20KYC_$1030",
+                "typeString": "contract IERC20KYC"
               }
             },
             "value": null,
@@ -362,7 +362,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2617:23:4",
+            "src": "2621:25:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -373,7 +373,7 @@
               "id": 218,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "2617:6:4",
+              "src": "2621:6:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -390,7 +390,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2643:25:4",
+            "src": "2649:27:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -401,7 +401,7 @@
               "id": 220,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "2643:6:4",
+              "src": "2649:6:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -418,7 +418,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2671:27:4",
+            "src": "2679:29:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -429,7 +429,7 @@
               "id": 222,
               "name": "uint8",
               "nodeType": "ElementaryTypeName",
-              "src": "2671:5:4",
+              "src": "2679:5:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint8",
                 "typeString": "uint8"
@@ -446,7 +446,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2701:30:4",
+            "src": "2711:32:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -457,7 +457,7 @@
               "id": 224,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "2701:7:4",
+              "src": "2711:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -474,7 +474,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2734:69:4",
+            "src": "2746:69:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -487,14 +487,14 @@
                 "id": 226,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2743:7:4",
+                "src": "2755:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2734:49:4",
+              "src": "2746:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -503,7 +503,7 @@
                 "id": 227,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "2774:7:4",
+                "src": "2786:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -521,7 +521,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2806:68:4",
+            "src": "2818:68:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -534,14 +534,14 @@
                 "id": 230,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2815:7:4",
+                "src": "2827:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2806:49:4",
+              "src": "2818:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -550,7 +550,7 @@
                 "id": 231,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "2846:7:4",
+                "src": "2858:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -568,7 +568,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2877:71:4",
+            "src": "2889:71:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -581,14 +581,14 @@
                 "id": 234,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2886:7:4",
+                "src": "2898:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2877:49:4",
+              "src": "2889:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                 "typeString": "mapping(address => mapping(address => uint256))"
@@ -599,14 +599,14 @@
                   "id": 235,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2906:7:4",
+                  "src": "2918:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
                   }
                 },
                 "nodeType": "Mapping",
-                "src": "2897:28:4",
+                "src": "2909:28:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                   "typeString": "mapping(address => uint256)"
@@ -615,7 +615,7 @@
                   "id": 236,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2917:7:4",
+                  "src": "2929:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -634,7 +634,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2973:57:4",
+            "src": "2985:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -645,7 +645,7 @@
               "id": 240,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "2973:7:4",
+              "src": "2985:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -661,7 +661,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3029:1:4",
+              "src": "3041:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_7_by_1",
@@ -679,7 +679,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3033:57:4",
+            "src": "3045:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -690,7 +690,7 @@
               "id": 243,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3033:7:4",
+              "src": "3045:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -706,7 +706,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3089:1:4",
+              "src": "3101:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_2_by_1",
@@ -724,7 +724,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3093:58:4",
+            "src": "3105:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -735,7 +735,7 @@
               "id": 246,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3093:7:4",
+              "src": "3105:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -751,7 +751,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3149:2:4",
+              "src": "3161:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_10_by_1",
@@ -769,7 +769,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3154:58:4",
+            "src": "3166:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -780,7 +780,7 @@
               "id": 249,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3154:7:4",
+              "src": "3166:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -796,7 +796,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3210:2:4",
+              "src": "3222:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_30_by_1",
@@ -814,7 +814,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3215:58:4",
+            "src": "3227:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -825,7 +825,7 @@
               "id": 252,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3215:7:4",
+              "src": "3227:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -841,7 +841,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3271:2:4",
+              "src": "3283:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_10_by_1",
@@ -859,7 +859,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3276:66:4",
+            "src": "3288:66:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -870,7 +870,7 @@
               "id": 255,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3276:7:4",
+              "src": "3288:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -886,7 +886,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3332:10:4",
+              "src": "3344:10:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_1000000000_by_1",
@@ -904,7 +904,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3369:98:4",
+            "src": "3381:98:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -915,7 +915,7 @@
               "id": 258,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "3369:7:4",
+              "src": "3381:7:4",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -932,7 +932,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3425:42:4",
+              "src": "3437:42:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_address_payable",
@@ -950,7 +950,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3527:57:4",
+            "src": "3539:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -961,7 +961,7 @@
               "id": 261,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3527:7:4",
+              "src": "3539:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -977,7 +977,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3583:1:4",
+              "src": "3595:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_4_by_1",
@@ -995,7 +995,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3587:48:4",
+            "src": "3599:48:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1006,7 +1006,7 @@
               "id": 264,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "3587:7:4",
+              "src": "3599:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -1023,7 +1023,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3658:89:4",
+            "src": "3670:89:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1036,14 +1036,14 @@
                 "id": 266,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3666:7:4",
+                "src": "3678:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3658:68:4",
+              "src": "3670:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                 "typeString": "mapping(bytes32 => address)"
@@ -1052,7 +1052,7 @@
                 "id": 267,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "3696:7:4",
+                "src": "3708:7:4",
                 "stateMutability": "nonpayable",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
@@ -1071,7 +1071,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3767:88:4",
+            "src": "3779:88:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1084,14 +1084,14 @@
                 "id": 270,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3775:7:4",
+                "src": "3787:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3767:68:4",
+              "src": "3779:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_uint256_$",
                 "typeString": "mapping(bytes32 => uint256)"
@@ -1100,7 +1100,7 @@
                 "id": 271,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "3805:7:4",
+                "src": "3817:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -1118,7 +1118,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3876:85:4",
+            "src": "3888:85:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1131,14 +1131,14 @@
                 "id": 274,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3884:7:4",
+                "src": "3896:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3876:68:4",
+              "src": "3888:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1132_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Deal)"
@@ -1149,7 +1149,7 @@
                 "name": "IexecLibCore_v5.Deal",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1132,
-                "src": "3914:20:4",
+                "src": "3926:20:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Deal_$1132_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Deal"
@@ -1167,7 +1167,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3984:85:4",
+            "src": "3996:85:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1180,14 +1180,14 @@
                 "id": 278,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3992:7:4",
+                "src": "4004:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3984:68:4",
+              "src": "3996:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1170_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Task)"
@@ -1198,7 +1198,7 @@
                 "name": "IexecLibCore_v5.Task",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1170,
-                "src": "4022:20:4",
+                "src": "4034:20:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Task_$1170_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Task"
@@ -1216,7 +1216,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4092:89:4",
+            "src": "4104:89:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1229,14 +1229,14 @@
                 "id": 282,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "4100:7:4",
+                "src": "4112:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4092:68:4",
+              "src": "4104:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Consensus_$1177_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Consensus)"
@@ -1247,7 +1247,7 @@
                 "name": "IexecLibCore_v5.Consensus",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1177,
-                "src": "4130:25:4",
+                "src": "4142:25:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Consensus_$1177_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Consensus"
@@ -1265,7 +1265,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4200:93:4",
+            "src": "4212:93:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1278,14 +1278,14 @@
                 "id": 286,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "4208:7:4",
+                "src": "4220:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4200:68:4",
+              "src": "4212:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_mapping$_t_address_$_t_struct$_Contribution_$1193_storage_$_$",
                 "typeString": "mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution))"
@@ -1296,14 +1296,14 @@
                   "id": 287,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "4227:7:4",
+                  "src": "4239:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
                   }
                 },
                 "nodeType": "Mapping",
-                "src": "4219:48:4",
+                "src": "4231:48:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Contribution_$1193_storage_$",
                   "typeString": "mapping(address => struct IexecLibCore_v5.Contribution)"
@@ -1314,7 +1314,7 @@
                   "name": "IexecLibCore_v5.Contribution",
                   "nodeType": "UserDefinedTypeName",
                   "referencedDeclaration": 1193,
-                  "src": "4238:28:4",
+                  "src": "4250:28:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_struct$_Contribution_$1193_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Contribution"
@@ -1333,7 +1333,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4315:92:4",
+            "src": "4327:92:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1346,14 +1346,14 @@
                 "id": 292,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "4323:7:4",
+                "src": "4335:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4315:68:4",
+              "src": "4327:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -1362,7 +1362,7 @@
                 "id": 293,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "4353:7:4",
+                "src": "4365:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -1380,7 +1380,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4446:28:4",
+            "src": "4458:28:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1391,7 +1391,7 @@
               "id": 296,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "4446:7:4",
+              "src": "4458:7:4",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -1409,7 +1409,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4477:30:4",
+            "src": "4489:30:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1420,7 +1420,7 @@
               "id": 298,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "4477:7:4",
+              "src": "4489:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -1437,7 +1437,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4526:48:4",
+            "src": "4538:48:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1451,7 +1451,7 @@
                 "name": "IexecLibCore_v5.Category",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1094,
-                "src": "4526:24:4",
+                "src": "4538:24:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Category_$1094_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Category"
@@ -1460,7 +1460,7 @@
               "id": 301,
               "length": null,
               "nodeType": "ArrayTypeName",
-              "src": "4526:26:4",
+              "src": "4538:26:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_array$_t_struct$_Category_$1094_storage_$dyn_storage_ptr",
                 "typeString": "struct IexecLibCore_v5.Category[]"
@@ -1477,7 +1477,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4605:40:4",
+            "src": "4617:40:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1490,7 +1490,7 @@
               "name": "IexecHubInterface",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 12340,
-              "src": "4605:17:4",
+              "src": "4617:17:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IexecHubInterface_$12340",
                 "typeString": "contract IexecHubInterface"
@@ -1507,7 +1507,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4648:52:4",
+            "src": "4660:52:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1520,14 +1520,14 @@
                 "id": 305,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "4656:7:4",
+                "src": "4668:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4648:24:4",
+              "src": "4660:24:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                 "typeString": "mapping(address => bool)"
@@ -1536,7 +1536,7 @@
                 "id": 306,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
-                "src": "4667:4:4",
+                "src": "4679:4:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bool",
                   "typeString": "bool"
@@ -1548,10 +1548,10 @@
           }
         ],
         "scope": 310,
-        "src": "2400:2303:4"
+        "src": "2402:2313:4"
       }
     ],
-    "src": "1242:3462:4"
+    "src": "1242:3474:4"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/Store.sol",
@@ -1609,13 +1609,13 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IKERC20.sol",
-        "file": "./erlc/IKERC20.sol",
+        "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/erlc/IERC20KYC.sol",
+        "file": "./erlc/IERC20KYC.sol",
         "id": 201,
         "nodeType": "ImportDirective",
         "scope": 310,
-        "sourceUnit": 440,
-        "src": "1500:28:4",
+        "sourceUnit": 1031,
+        "src": "1500:30:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1626,7 +1626,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 1195,
-        "src": "1530:36:4",
+        "src": "1532:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1637,7 +1637,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 1630,
-        "src": "1567:38:4",
+        "src": "1569:38:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1648,7 +1648,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10344,
-        "src": "1606:35:4",
+        "src": "1608:35:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1659,7 +1659,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10496,
-        "src": "1642:43:4",
+        "src": "1644:43:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1670,7 +1670,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 10668,
-        "src": "1686:49:4",
+        "src": "1688:49:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1681,7 +1681,7 @@
         "nodeType": "ImportDirective",
         "scope": 310,
         "sourceUnit": 9986,
-        "src": "1736:36:4",
+        "src": "1738:36:4",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1696,7 +1696,7 @@
               "name": "ERC1538Store",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 13173,
-              "src": "2427:12:4",
+              "src": "2429:12:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_ERC1538Store_$13173",
                 "typeString": "contract ERC1538Store"
@@ -1704,7 +1704,7 @@
             },
             "id": 209,
             "nodeType": "InheritanceSpecifier",
-            "src": "2427:12:4"
+            "src": "2429:12:4"
           }
         ],
         "contractDependencies": [
@@ -1733,7 +1733,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2458:32:4",
+            "src": "2460:32:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1746,7 +1746,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2458:9:4",
+              "src": "2460:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -1763,7 +1763,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2493:36:4",
+            "src": "2495:36:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1776,7 +1776,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2493:9:4",
+              "src": "2495:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -1793,7 +1793,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2532:39:4",
+            "src": "2534:39:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1806,7 +1806,7 @@
               "name": "IRegistry",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 9985,
-              "src": "2532:9:4",
+              "src": "2534:9:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IRegistry_$9985",
                 "typeString": "contract IRegistry"
@@ -1823,23 +1823,23 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2586:28:4",
+            "src": "2588:30:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IKERC20_$439",
-              "typeString": "contract IKERC20"
+              "typeIdentifier": "t_contract$_IERC20KYC_$1030",
+              "typeString": "contract IERC20KYC"
             },
             "typeName": {
               "contractScope": null,
               "id": 216,
-              "name": "IKERC20",
+              "name": "IERC20KYC",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 439,
-              "src": "2586:7:4",
+              "referencedDeclaration": 1030,
+              "src": "2588:9:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IKERC20_$439",
-                "typeString": "contract IKERC20"
+                "typeIdentifier": "t_contract$_IERC20KYC_$1030",
+                "typeString": "contract IERC20KYC"
               }
             },
             "value": null,
@@ -1853,7 +1853,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2617:23:4",
+            "src": "2621:25:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1864,7 +1864,7 @@
               "id": 218,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "2617:6:4",
+              "src": "2621:6:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -1881,7 +1881,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2643:25:4",
+            "src": "2649:27:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1892,7 +1892,7 @@
               "id": 220,
               "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "2643:6:4",
+              "src": "2649:6:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_string_storage_ptr",
                 "typeString": "string"
@@ -1909,7 +1909,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2671:27:4",
+            "src": "2679:29:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1920,7 +1920,7 @@
               "id": 222,
               "name": "uint8",
               "nodeType": "ElementaryTypeName",
-              "src": "2671:5:4",
+              "src": "2679:5:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint8",
                 "typeString": "uint8"
@@ -1937,7 +1937,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2701:30:4",
+            "src": "2711:32:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1948,7 +1948,7 @@
               "id": 224,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "2701:7:4",
+              "src": "2711:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -1965,7 +1965,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2734:69:4",
+            "src": "2746:69:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1978,14 +1978,14 @@
                 "id": 226,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2743:7:4",
+                "src": "2755:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2734:49:4",
+              "src": "2746:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -1994,7 +1994,7 @@
                 "id": 227,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "2774:7:4",
+                "src": "2786:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -2012,7 +2012,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2806:68:4",
+            "src": "2818:68:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2025,14 +2025,14 @@
                 "id": 230,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2815:7:4",
+                "src": "2827:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2806:49:4",
+              "src": "2818:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -2041,7 +2041,7 @@
                 "id": 231,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "2846:7:4",
+                "src": "2858:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -2059,7 +2059,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2877:71:4",
+            "src": "2889:71:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2072,14 +2072,14 @@
                 "id": 234,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "2886:7:4",
+                "src": "2898:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "2877:49:4",
+              "src": "2889:49:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                 "typeString": "mapping(address => mapping(address => uint256))"
@@ -2090,14 +2090,14 @@
                   "id": 235,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2906:7:4",
+                  "src": "2918:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
                   }
                 },
                 "nodeType": "Mapping",
-                "src": "2897:28:4",
+                "src": "2909:28:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                   "typeString": "mapping(address => uint256)"
@@ -2106,7 +2106,7 @@
                   "id": 236,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "2917:7:4",
+                  "src": "2929:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -2125,7 +2125,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "2973:57:4",
+            "src": "2985:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2136,7 +2136,7 @@
               "id": 240,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "2973:7:4",
+              "src": "2985:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2152,7 +2152,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3029:1:4",
+              "src": "3041:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_7_by_1",
@@ -2170,7 +2170,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3033:57:4",
+            "src": "3045:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2181,7 +2181,7 @@
               "id": 243,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3033:7:4",
+              "src": "3045:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2197,7 +2197,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3089:1:4",
+              "src": "3101:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_2_by_1",
@@ -2215,7 +2215,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3093:58:4",
+            "src": "3105:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2226,7 +2226,7 @@
               "id": 246,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3093:7:4",
+              "src": "3105:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2242,7 +2242,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3149:2:4",
+              "src": "3161:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_10_by_1",
@@ -2260,7 +2260,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3154:58:4",
+            "src": "3166:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2271,7 +2271,7 @@
               "id": 249,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3154:7:4",
+              "src": "3166:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2287,7 +2287,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3210:2:4",
+              "src": "3222:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_30_by_1",
@@ -2305,7 +2305,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3215:58:4",
+            "src": "3227:58:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2316,7 +2316,7 @@
               "id": 252,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3215:7:4",
+              "src": "3227:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2332,7 +2332,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3271:2:4",
+              "src": "3283:2:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_10_by_1",
@@ -2350,7 +2350,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3276:66:4",
+            "src": "3288:66:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2361,7 +2361,7 @@
               "id": 255,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3276:7:4",
+              "src": "3288:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2377,7 +2377,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3332:10:4",
+              "src": "3344:10:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_1000000000_by_1",
@@ -2395,7 +2395,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3369:98:4",
+            "src": "3381:98:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2406,7 +2406,7 @@
               "id": 258,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "3369:7:4",
+              "src": "3381:7:4",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -2423,7 +2423,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3425:42:4",
+              "src": "3437:42:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_address_payable",
@@ -2441,7 +2441,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3527:57:4",
+            "src": "3539:57:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2452,7 +2452,7 @@
               "id": 261,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "3527:7:4",
+              "src": "3539:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2468,7 +2468,7 @@
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "3583:1:4",
+              "src": "3595:1:4",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_4_by_1",
@@ -2486,7 +2486,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3587:48:4",
+            "src": "3599:48:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2497,7 +2497,7 @@
               "id": 264,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "3587:7:4",
+              "src": "3599:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -2514,7 +2514,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3658:89:4",
+            "src": "3670:89:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2527,14 +2527,14 @@
                 "id": 266,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3666:7:4",
+                "src": "3678:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3658:68:4",
+              "src": "3670:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                 "typeString": "mapping(bytes32 => address)"
@@ -2543,7 +2543,7 @@
                 "id": 267,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "3696:7:4",
+                "src": "3708:7:4",
                 "stateMutability": "nonpayable",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
@@ -2562,7 +2562,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3767:88:4",
+            "src": "3779:88:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2575,14 +2575,14 @@
                 "id": 270,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3775:7:4",
+                "src": "3787:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3767:68:4",
+              "src": "3779:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_uint256_$",
                 "typeString": "mapping(bytes32 => uint256)"
@@ -2591,7 +2591,7 @@
                 "id": 271,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "3805:7:4",
+                "src": "3817:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -2609,7 +2609,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3876:85:4",
+            "src": "3888:85:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2622,14 +2622,14 @@
                 "id": 274,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3884:7:4",
+                "src": "3896:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3876:68:4",
+              "src": "3888:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Deal_$1132_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Deal)"
@@ -2640,7 +2640,7 @@
                 "name": "IexecLibCore_v5.Deal",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1132,
-                "src": "3914:20:4",
+                "src": "3926:20:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Deal_$1132_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Deal"
@@ -2658,7 +2658,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "3984:85:4",
+            "src": "3996:85:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2671,14 +2671,14 @@
                 "id": 278,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "3992:7:4",
+                "src": "4004:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "3984:68:4",
+              "src": "3996:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Task_$1170_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Task)"
@@ -2689,7 +2689,7 @@
                 "name": "IexecLibCore_v5.Task",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1170,
-                "src": "4022:20:4",
+                "src": "4034:20:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Task_$1170_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Task"
@@ -2707,7 +2707,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4092:89:4",
+            "src": "4104:89:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2720,14 +2720,14 @@
                 "id": 282,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "4100:7:4",
+                "src": "4112:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4092:68:4",
+              "src": "4104:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Consensus_$1177_storage_$",
                 "typeString": "mapping(bytes32 => struct IexecLibCore_v5.Consensus)"
@@ -2738,7 +2738,7 @@
                 "name": "IexecLibCore_v5.Consensus",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1177,
-                "src": "4130:25:4",
+                "src": "4142:25:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Consensus_$1177_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Consensus"
@@ -2756,7 +2756,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4200:93:4",
+            "src": "4212:93:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2769,14 +2769,14 @@
                 "id": 286,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "4208:7:4",
+                "src": "4220:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4200:68:4",
+              "src": "4212:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_mapping$_t_address_$_t_struct$_Contribution_$1193_storage_$_$",
                 "typeString": "mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution))"
@@ -2787,14 +2787,14 @@
                   "id": 287,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
-                  "src": "4227:7:4",
+                  "src": "4239:7:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
                   }
                 },
                 "nodeType": "Mapping",
-                "src": "4219:48:4",
+                "src": "4231:48:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Contribution_$1193_storage_$",
                   "typeString": "mapping(address => struct IexecLibCore_v5.Contribution)"
@@ -2805,7 +2805,7 @@
                   "name": "IexecLibCore_v5.Contribution",
                   "nodeType": "UserDefinedTypeName",
                   "referencedDeclaration": 1193,
-                  "src": "4238:28:4",
+                  "src": "4250:28:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_struct$_Contribution_$1193_storage_ptr",
                     "typeString": "struct IexecLibCore_v5.Contribution"
@@ -2824,7 +2824,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4315:92:4",
+            "src": "4327:92:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2837,14 +2837,14 @@
                 "id": 292,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "4323:7:4",
+                "src": "4335:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4315:68:4",
+              "src": "4327:68:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                 "typeString": "mapping(address => uint256)"
@@ -2853,7 +2853,7 @@
                 "id": 293,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "4353:7:4",
+                "src": "4365:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
@@ -2871,7 +2871,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4446:28:4",
+            "src": "4458:28:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2882,7 +2882,7 @@
               "id": 296,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "4446:7:4",
+              "src": "4458:7:4",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -2900,7 +2900,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4477:30:4",
+            "src": "4489:30:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2911,7 +2911,7 @@
               "id": 298,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "4477:7:4",
+              "src": "4489:7:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -2928,7 +2928,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4526:48:4",
+            "src": "4538:48:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2942,7 +2942,7 @@
                 "name": "IexecLibCore_v5.Category",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 1094,
-                "src": "4526:24:4",
+                "src": "4538:24:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Category_$1094_storage_ptr",
                   "typeString": "struct IexecLibCore_v5.Category"
@@ -2951,7 +2951,7 @@
               "id": 301,
               "length": null,
               "nodeType": "ArrayTypeName",
-              "src": "4526:26:4",
+              "src": "4538:26:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_array$_t_struct$_Category_$1094_storage_$dyn_storage_ptr",
                 "typeString": "struct IexecLibCore_v5.Category[]"
@@ -2968,7 +2968,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4605:40:4",
+            "src": "4617:40:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -2981,7 +2981,7 @@
               "name": "IexecHubInterface",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 12340,
-              "src": "4605:17:4",
+              "src": "4617:17:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_contract$_IexecHubInterface_$12340",
                 "typeString": "contract IexecHubInterface"
@@ -2998,7 +2998,7 @@
             "nodeType": "VariableDeclaration",
             "overrides": null,
             "scope": 309,
-            "src": "4648:52:4",
+            "src": "4660:52:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -3011,14 +3011,14 @@
                 "id": 305,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
-                "src": "4656:7:4",
+                "src": "4668:7:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_address",
                   "typeString": "address"
                 }
               },
               "nodeType": "Mapping",
-              "src": "4648:24:4",
+              "src": "4660:24:4",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                 "typeString": "mapping(address => bool)"
@@ -3027,7 +3027,7 @@
                 "id": 306,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
-                "src": "4667:4:4",
+                "src": "4679:4:4",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bool",
                   "typeString": "bool"
@@ -3039,10 +3039,10 @@
           }
         ],
         "scope": 310,
-        "src": "2400:2303:4"
+        "src": "2402:2313:4"
       }
     ],
-    "src": "1242:3462:4"
+    "src": "1242:3474:4"
   },
   "compiler": {
     "name": "solc",
@@ -3050,7 +3050,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.2",
-  "updatedAt": "2020-11-05T09:43:27.574Z",
+  "updatedAt": "2020-11-09T09:15:00.542Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

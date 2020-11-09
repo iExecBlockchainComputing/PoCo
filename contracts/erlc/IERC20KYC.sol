@@ -23,7 +23,7 @@ import "./IERC677.sol";
 import "./IERC1404.sol";
 
 
-interface IKERC20 is IERC20, IERC677, IERC677Receiver, IERC1404
+interface IERC20KYC is IERC20, IERC677, IERC677Receiver, IERC1404
 {
     event MinDepositChanged(uint256 oldMinDeposit, uint256 newMinDeposit);
     event SoftCapReached();

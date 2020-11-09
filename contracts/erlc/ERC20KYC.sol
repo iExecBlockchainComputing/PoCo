@@ -21,10 +21,10 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Snapshot.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./IKERC20.sol";
+import "./IERC20KYC.sol";
 
 
-contract KERC20 is IKERC20, ERC20Snapshot, AccessControl
+contract ERC20KYC is IERC20KYC, ERC20Snapshot, AccessControl
 {
     bytes32 public constant KYC_ADMIN_ROLE  = keccak256("KYC_ADMIN_ROLE");
     bytes32 public constant KYC_MEMBER_ROLE = keccak256("KYC_MEMBER_ROLE");
