@@ -17,8 +17,8 @@
 // CONFIG
 const CONFIG = require('../config/config.json')
 // Token
-var RLC    = artifacts.require('rlc-faucet-contract/RLC')
-var KERC20 = artifacts.require('KERC20')
+var RLC      = artifacts.require('rlc-faucet-contract/RLC')
+var ERLCSwap = artifacts.require('@iexec/erlc/ERLCSwap')
 
 /*****************************************************************************
  *                                   Main                                    *
@@ -48,7 +48,7 @@ module.exports = async function(deployer, network, accounts)
 			}
 			if (deploymentOptions.v5.usekyc)
 			{
-				await deployer.deploy(KERC20, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, []);
+				await deployer.deploy(ERLCSwap, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, [ accounts[0] ], []);
 			}
 			break;
 

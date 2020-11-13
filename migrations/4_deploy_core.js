@@ -19,7 +19,7 @@ const assert = require('assert')
 const CONFIG = require('../config/config.json')
 // Token
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
-var KERC20                  = artifacts.require('KERC20')
+var ERLCSwap                = artifacts.require('@iexec/erlc/ERLCSwap')
 // Factory
 var GenericFactory          = artifacts.require('@iexec/solidity/GenericFactory')
 // ERC1538 core & delegates
@@ -225,7 +225,7 @@ module.exports = async function(deployer, network, accounts)
 		case 'Token':
 			if (deploymentOptions.v5.usekyc)
 			{
-				TokenInstance = await KERC20.deployed();
+				TokenInstance = await ERLCSwap.deployed();
 			}
 			else
 			{

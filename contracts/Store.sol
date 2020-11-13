@@ -22,7 +22,7 @@ import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
 import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./erlc/IERC20KYC.sol";
+import "@iexec/erlc/contracts/interfaces/IERC20KYC.sol";
 
 import "./libs/IexecLibCore_v5.sol";
 import "./libs/IexecLibOrders_v5.sol";

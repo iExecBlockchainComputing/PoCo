@@ -24,7 +24,7 @@ var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistra
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
 // Core
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
-var KERC20                  = artifacts.require('KERC20')
+var ERLCSwap                = artifacts.require('@iexec/erlc/ERLCSwap')
 var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
@@ -140,7 +140,7 @@ module.exports = async function(deployer, network, accounts)
 		}
 
 		const RLCInstance                = deploymentOptions.asset == 'Token' && await RLC.deployed();
-		const ERLCInstance               = deploymentOptions.asset == 'Token' && deploymentOptions.v5.usekyc && await KERC20.deployed();
+		const ERLCInstance               = deploymentOptions.asset == 'Token' && deploymentOptions.v5.usekyc && await ERLCSwap.deployed();
 		const AppRegistryInstance        = await AppRegistry.deployed();
 		const DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		const WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();

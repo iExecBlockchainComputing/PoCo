@@ -18,7 +18,7 @@
 const CONFIG = require('../config/config.json')
 // Token
 var RLC          = artifacts.require('rlc-faucet-contract/RLC')
-var KERC20       = artifacts.require('KERC20')
+var ERLCSwap     = artifacts.require('@iexec/erlc/ERLCSwap')
 var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy')
 
 /*****************************************************************************
@@ -39,7 +39,7 @@ module.exports = async function(deployer, network, accounts)
 	if (deploymentOptions.v5.usekyc && chainid > 1000) // skip for mainnet and testnet use
 	{
 		const rlc            = await RLC.deployed();
-		const erlc           = await KERC20.deployed();
+		const erlc           = await ERLCSwap.deployed();
 		const core           = await ERC1538Proxy.deployed();
 		const supply         = await rlc.totalSupply();
 		const KYC_ADMIN_ROLE = await erlc.KYC_ADMIN_ROLE();
