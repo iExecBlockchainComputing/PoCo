@@ -244,6 +244,7 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`AppRegistry        deployed at address: ${AppRegistryInstance.address}`);
 	console.log(`DatasetRegistry    deployed at address: ${DatasetRegistryInstance.address}`);
 	console.log(`WorkerpoolRegistry deployed at address: ${WorkerpoolRegistryInstance.address}`);
+	console.log(`Using token:                            ${TokenInstance.address}`);
 
 	const AppRegistryInitialized        = await AppRegistryInstance.initialized();
 	const DatasetRegistryInitialized    = await DatasetRegistryInstance.initialized();
