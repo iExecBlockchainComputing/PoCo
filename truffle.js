@@ -11,8 +11,8 @@ module.exports =
 	],
 	api_keys:
 	{
-    etherscan: process.env.ETHERSCAN
-  },
+		etherscan: process.env.ETHERSCAN
+	},
 	networks:
 	{
 		docker:
