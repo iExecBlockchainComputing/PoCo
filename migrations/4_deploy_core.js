@@ -133,13 +133,13 @@ module.exports = async function(deployer, network, accounts)
 
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-	const factoryOptions    = { salt: deploymentOptions.v5.salt  || process.env.SALT || web3.utils.randomHex(32) };
+	const factoryOptions    = { salt: process.env.SALT || deploymentOptions.v5.salt || web3.utils.randomHex(32) };
 	deploymentOptions.v5.usekyc = !!process.env.KYC;
 
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(IexecLibOrders, factoryOptions);
+		await factoryDeployer(IexecLibOrders); // No need for salting here
 	}
 	else
 	{
@@ -172,7 +172,7 @@ module.exports = async function(deployer, network, accounts)
 	.filter(Boolean);
 
 	/* --------------------------- Deploy modules ---------------------------- */
-	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer(module, factoryOptions) : deployer.deploy(module)));
+	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer(module) : deployer.deploy(module))); // No need for salting here
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
 	if (deploymentOptions.v5.usefactory)
@@ -270,10 +270,13 @@ module.exports = async function(deployer, network, accounts)
 	].filter(Boolean));
 
 	/* ----------------------------- Categories ------------------------------ */
-	await Promise.all(CONFIG.categories.map(category => {
-		console.log(`create category: ${category.name}`);
-		return IexecInterfaceInstance.createCategory(category.name, JSON.stringify(category.description), category.workClockTimeRef);
-	}));
+	await CONFIG.categories.reduce(
+		async (promise, category) => {
+			await promise;
+			await IexecInterfaceInstance.createCategory(category.name, JSON.stringify(category.description), category.workClockTimeRef);
+		},
+		null
+	);
 
 	var catCount = await IexecInterfaceInstance.countCategory();
 
