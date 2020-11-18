@@ -99,7 +99,7 @@ async function factoryDeployer(contract, options = {})
 	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
 	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
 	const code             = coreCode + argsCode;
-	const salt             = options.salt  || BYTES32_ZERO;
+	const salt             = options.salt || BYTES32_ZERO;
 
 	contract.address = options.call
 		? await factory.predictAddressWithCall(code, salt, options.call)
