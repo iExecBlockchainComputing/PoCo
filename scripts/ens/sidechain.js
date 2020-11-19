@@ -14,12 +14,12 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-const { ethers }       = require('ethers');
-const FactoryDeployer  = require('./factorydeployer');
-const ENSRegistry      = require('@ensdomains/ens/build/contracts/ENSRegistry.json');
-const FIFSRegistrar    = require('@ensdomains/ens/build/contracts/FIFSRegistrar.json');
-const ReverseRegistrar = require('@ensdomains/ens/build/contracts/ReverseRegistrar.json');
-const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicResolver.json');
+const { ethers }                          = require('ethers');
+const { EthersDeployer: FactoryDeployer } = require('../../utils/FactoryDeployer');
+const ENSRegistry                         = require('@ensdomains/ens/build/contracts/ENSRegistry.json');
+const FIFSRegistrar                       = require('@ensdomains/ens/build/contracts/FIFSRegistrar.json');
+const ReverseRegistrar                    = require('@ensdomains/ens/build/contracts/ReverseRegistrar.json');
+const PublicResolver                      = require('@ensdomains/resolver/build/contracts/PublicResolver.json');
 
 (async() => {
 
@@ -28,13 +28,13 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	const deployer = new FactoryDeployer(wallet);
 
 	await deployer.deploy(ENSRegistry, { call: (new ethers.utils.Interface(ENSRegistry.abi)).encodeFunctionData('setOwner', [ ethers.constants.HashZero, wallet.address ]) });
-	const ens = new ethers.Contract(ENSRegistry.networks[deployer.chainid].address, ENSRegistry.abi, wallet);
+	const ens = new ethers.Contract(ENSRegistry.address, ENSRegistry.abi, wallet);
 
 	await deployer.deploy(PublicResolver, { args: [ ens.address ] });
-	const publicresolver = new ethers.Contract(PublicResolver.networks[deployer.chainid].address, PublicResolver.abi, wallet);
+	const publicresolver = new ethers.Contract(PublicResolver.address, PublicResolver.abi, wallet);
 
 	await deployer.deploy(ReverseRegistrar, { args: [ ens.address, publicresolver.address ] });
-	const reverseregistrar = new ethers.Contract(ReverseRegistrar.networks[deployer.chainid].address, ReverseRegistrar.abi, wallet);
+	const reverseregistrar = new ethers.Contract(ReverseRegistrar.address, ReverseRegistrar.abi, wallet);
 
 	const domains = [{
 		name:    'eth',
@@ -120,16 +120,26 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 		})
 	})
 
-	// Set addresse
+	// Set address
 	await new Promise(resolve => {
 		Promise.all(
 			domains
 			.filter(entry => entry.address)
-			.map(entry => ({ ...entry, resolverContract: entry.resolver ? new ethers.Contract(entry.resolver, PublicResolver.abi, wallet) : publicresolver }))
-			.map(async entry => ({ ...entry, _address: await entry.resolverContract['addr(bytes32)'](ethers.utils.namehash(entry.name)) }))
+			.map(async entry => {
+				try
+				{
+					const resolverContract = new ethers.Contract(await ens.resolver(ethers.utils.namehash(entry.name)), PublicResolver.abi, wallet)
+					const address          = await resolverContract['addr(bytes32)'](ethers.utils.namehash(entry.name))
+					return address == entry.address ? null : { ...entry, resolverContract }
+				}
+				catch
+				{
+					return null // invalid resolverContract
+				}
+			})
 		).then(_ => {
 			_
-			.filter(({ _address, address }) => _address != address)
+			.filter(Boolean)
 			.reduce(async (promise, entry) => {
 				await Promise.resolve(promise);
 				console.log(`setAddr(${entry.name}) → ${entry.address}`)
@@ -157,7 +167,7 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 				}
 				catch
 				{
-					return entry
+					return entry // reverseResolver not set
 				}
 			})
 		).then(_ => {
