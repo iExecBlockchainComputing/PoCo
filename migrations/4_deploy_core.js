@@ -135,6 +135,7 @@ module.exports = async function(deployer, network, accounts)
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
 	const factoryOptions    = { salt: process.env.SALT || deploymentOptions.v5.salt || web3.utils.randomHex(32) };
 	deploymentOptions.v5.usekyc = !!process.env.KYC;
+  const proxySalt = process.env.PROXY_SALT || factoryOptions.salt; // enable deploying extra iExec Proxy instances
 
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)
@@ -180,7 +181,8 @@ module.exports = async function(deployer, network, accounts)
 		await factoryDeployer(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
 			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
+			...factoryOptions,
+      salt: proxySalt, // overwrite salt
 		});
 	}
 	else

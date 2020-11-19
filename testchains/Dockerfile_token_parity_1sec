@@ -14,7 +14,7 @@ RUN mv /iexec-poco/config/config_token.json /iexec-poco/config/config.json
 ARG DEV_NODE
 ARG MNEMONIC
 
-RUN bash /iexec-poco/testchains/parity/1sec/migrate.sh
+RUN bash /iexec-poco/testchains/parity/1sec/migrate-all.sh
 
 ENTRYPOINT ["/bin/parity"]
 CMD ["--chain", "/iexec-poco/testchains/parity/1sec/spec.json", "--config", "/iexec-poco/testchains/parity/1sec/authority.toml", "-d", "/iexec-poco/testchains/parity/1sec/data", "--geth"]
