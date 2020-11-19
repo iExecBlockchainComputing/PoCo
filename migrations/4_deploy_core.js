@@ -17,11 +17,11 @@
 const assert = require('assert')
 // CONFIG
 const CONFIG = require('../config/config.json')
+// FactoryDeployer
+const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer')
 // Token
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
 var ERLCSwap                = artifacts.require('@iexec/erlc/ERLCSwap')
-// Factory
-var GenericFactory          = artifacts.require('@iexec/solidity/GenericFactory')
 // ERC1538 core & delegates
 var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
@@ -55,13 +55,6 @@ var AppRegistry             = artifacts.require('AppRegistry')
 var DatasetRegistry         = artifacts.require('DatasetRegistry')
 var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 
-const LIBRARIES = [
-	IexecLibOrders,
-].map(contract => ({
-	pattern: new RegExp(`__${contract.contractName}${'_'.repeat(38-contract.contractName.length)}`, 'g'),
-	library: contract,
-}))
-
 const BYTES32_ZERO = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -90,35 +83,6 @@ function getFunctionSignatures(abi)
 	].filter(Boolean).join('');
 }
 
-async function factoryDeployer(contract, options = {})
-{
-	console.log(`[factoryDeployer] ${contract.contractName}`);
-	const factory          = await GenericFactory.deployed();
-	const libraryAddresses = await Promise.all(LIBRARIES.filter(({ pattern }) => contract.bytecode.search(pattern) != -1).map(async ({ pattern, library }) => ({ pattern, ...await library.deployed() })));
-	const constructorABI   = contract._json.abi.find(e => e.type == 'constructor');
-	const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), contract.bytecode);
-	const argsCode         = constructorABI ? web3.eth.abi.encodeParameters(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
-	const code             = coreCode + argsCode;
-	const salt             = options.salt || BYTES32_ZERO;
-
-	contract.address = options.call
-		? await factory.predictAddressWithCall(code, salt, options.call)
-		: await factory.predictAddress(code, salt);
-
-	if (await web3.eth.getCode(contract.address) == '0x')
-	{
-		console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
-		options.call
-			? await factory.createContractAndCall(code, salt, options.call)
-			: await factory.createContract(code, salt);
-		console.log(`[factory] ${contract.contractName} successfully deployed at ${contract.address}`);
-	}
-	else
-	{
-		console.log(`[factory] ${contract.contractName} already deployed at ${contract.address}`);
-	}
-}
-
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
@@ -133,13 +97,16 @@ module.exports = async function(deployer, network, accounts)
 
 	/* ------------------------- Existing deployment ------------------------- */
 	const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-	const factoryOptions    = { salt: process.env.SALT || deploymentOptions.v5.salt || web3.utils.randomHex(32) };
 	deploymentOptions.v5.usekyc = !!process.env.KYC;
+
+	const factoryDeployer   = deploymentOptions.v5.usefactory && new Deployer(web3, accounts[0]);
+	const salt              = process.env.SALT || deploymentOptions.v5.salt || web3.utils.randomHex(32);
+	const libraries         = [ IexecLibOrders ];
 
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(IexecLibOrders); // No need for salting here
+		await Promise.all(libraries.map(library => factoryDeployer.deploy(library)));
 	}
 	else
 	{
@@ -172,15 +139,15 @@ module.exports = async function(deployer, network, accounts)
 	.filter(Boolean);
 
 	/* --------------------------- Deploy modules ---------------------------- */
-	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer(module) : deployer.deploy(module))); // No need for salting here
+	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer.deploy(module, { libraries }) : deployer.deploy(module))); // No need for salting here
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer(ERC1538Proxy, {
+		await factoryDeployer.deploy(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
 			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			...factoryOptions
+			salt: process.env.PROXYSALT || salt
 		});
 	}
 	else
@@ -206,9 +173,9 @@ module.exports = async function(deployer, network, accounts)
 	if (deploymentOptions.v5.usefactory)
 	{
 		await Promise.all([
-			!AppRegistry.isDeployed()        && factoryDeployer(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
-			!DatasetRegistry.isDeployed()    && factoryDeployer(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
-			!WorkerpoolRegistry.isDeployed() && factoryDeployer(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), ...factoryOptions }),
+			!AppRegistry.isDeployed()        && factoryDeployer.deploy(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
+			!DatasetRegistry.isDeployed()    && factoryDeployer.deploy(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
+			!WorkerpoolRegistry.isDeployed() && factoryDeployer.deploy(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
 		].filter(Boolean));
 	}
 	else
