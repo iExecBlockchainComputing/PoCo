@@ -21,22 +21,20 @@ const FIFSRegistrar    = require('@ensdomains/ens/build/contracts/FIFSRegistrar.
 const ReverseRegistrar = require('@ensdomains/ens/build/contracts/ReverseRegistrar.json');
 const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicResolver.json');
 
-
 (async() => {
 
 	const provider = new ethers.getDefaultProvider(process.env.NODE);
 	const wallet   = new ethers.Wallet(process.env.MNEMONIC, provider);
 	const deployer = new FactoryDeployer(wallet);
-	const chainid  = await wallet.getChainId();
 
 	await deployer.deploy(ENSRegistry, { call: (new ethers.utils.Interface(ENSRegistry.abi)).encodeFunctionData('setOwner', [ ethers.constants.HashZero, wallet.address ]) });
-	const ens = new ethers.Contract(ENSRegistry.networks[chainid].address, ENSRegistry.abi, wallet);
+	const ens = new ethers.Contract(ENSRegistry.networks[deployer.chainid].address, ENSRegistry.abi, wallet);
 
 	await deployer.deploy(PublicResolver, { args: [ ens.address ] });
-	const publicresolver = new ethers.Contract(PublicResolver.networks[chainid].address, PublicResolver.abi, wallet);
+	const publicresolver = new ethers.Contract(PublicResolver.networks[deployer.chainid].address, PublicResolver.abi, wallet);
 
 	await deployer.deploy(ReverseRegistrar, { args: [ ens.address, publicresolver.address ] });
-	const reverseregistrar = new ethers.Contract(ReverseRegistrar.networks[chainid].address, ReverseRegistrar.abi, wallet);
+	const reverseregistrar = new ethers.Contract(ReverseRegistrar.networks[deployer.chainid].address, ReverseRegistrar.abi, wallet);
 
 	const domains = [{
 		name:    'eth',
@@ -80,9 +78,9 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	await new Promise(resolve => {
 		Promise.all(
 			[
-				...domains.filter(entry => entry.owner),
-				...domains.filter(entry => !entry.owner && entry.name).map(entry => ({ ...entry, owner: wallet.address })),
-			].map(async entry => ({ ...entry, _owner: await ens.owner(ethers.utils.namehash(entry.name)) }))
+				...domains.filter(entry => entry.name),
+			]
+			.map(async entry => ({ ...entry, owner: entry.owner || wallet.address, _owner: await ens.owner(ethers.utils.namehash(entry.name)) }))
 		).then(domains => {
 			domains
 			.filter(({ _owner, owner }) => _owner != owner)
@@ -106,9 +104,8 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	await new Promise(resolve => {
 		Promise.all(
 			[
-				...domains.filter(entry => entry.resolver),
-				...domains.filter(entry => !entry.resolver && entry.address).map(entry => ({ ...entry, resolver: publicresolver.address })),
-			].map(async entry => ({ ...entry, _resolver: await ens.resolver(ethers.utils.namehash(entry.name)) }))
+				...domains.filter(entry => entry.resolver || entry.address),
+			].map(async entry => ({ ...entry, resolver: entry.resolver || publicresolver.address, _resolver: await ens.resolver(ethers.utils.namehash(entry.name)) }))
 		).then(domains => {
 			domains
 			.filter(({ _resolver, resolver }) => _resolver != resolver)

@@ -19,15 +19,50 @@ const FACTORY    = require('@iexec/solidity/deployment/factory.json')
 
 module.exports = class FactoryDeployer
 {
-	constructor(provider, salt = null)
+	// factory: ethers.Contract
+	// factoryAsPromise: Promise<ethers.Contract>
+
+	constructor(wallet)
 	{
-		this._factory = new ethers.Contract(FACTORY.address, FACTORY.abi, provider);
-		this._salt    = salt;
+		this.chainidAsPromise = new Promise(async (resolve, reject) => {
+			this.chainid = await wallet.getChainId()
+			resolve(this.chainid)
+		})
+
+		this.factoryAsPromise = new Promise(async (resolve, reject) => {
+			if (await wallet.provider.getCode(FACTORY.address) !== "0x")
+			{
+				console.debug(`→ Factory is available on this network`)
+			}
+			else
+			{
+				try
+				{
+					console.debug(`→ Factory is not yet deployed on this network`)
+					await wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost })
+					await wallet.provider.sendTransaction(FACTORY.tx)
+					console.debug(`→ Factory successfully deployed`)
+				}
+				catch (e)
+				{
+					console.debug(`→ Error deploying the factory`)
+					reject(e)
+				}
+			}
+			this.factory = new ethers.Contract(FACTORY.address, FACTORY.abi, wallet)
+			resolve(this.factory)
+		})
+	}
+
+	async ready()
+	{
+		await this.factoryAsPromise;
+		await this.chainidAsPromise;
 	}
 
 	async deploy(artefact, options = {})
 	{
-		const chainid = await this._factory.signer.getChainId();
+		await this.ready();
 
 		console.log(`[factoryDeployer] ${artefact.contractName}`);
 		const libraryAddresses = await Promise.all(
@@ -35,7 +70,7 @@ module.exports = class FactoryDeployer
 			.filter(({ contractName }) => artefact.bytecode.search(contractName) != -1)
 			.map(({ contractName, networks }) => ({
 				pattern: new RegExp(`__${contractName}${'_'.repeat(38-contractName.length)}`, 'g'),
-				address: networks[chainid].address,
+				address: networks[this.chainid].address,
 			}))
 		);
 
@@ -45,21 +80,21 @@ module.exports = class FactoryDeployer
 		const code             = coreCode + argsCode;
 		const salt             = options.salt || this._salt || ethers.constants.HashZero;
 		const predicted        = options.call
-			? await this._factory.predictAddressWithCall(code, salt, options.call)
-			: await this._factory.predictAddress(code, salt);
+			? await this.factory.predictAddressWithCall(code, salt, options.call)
+			: await this.factory.predictAddress(code, salt);
 
-		if (await this._factory.provider.getCode(predicted) == '0x')
+		if (await this.factory.provider.getCode(predicted) == '0x')
 		{
 			console.log(`[factory] Preparing to deploy ${artefact.contractName} ...`);
 			options.call
-				? await this._factory.createContractAndCall(code, salt, options.call)
-				: await this._factory.createContract(code, salt);
+				? await this.factory.createContractAndCall(code, salt, options.call)
+				: await this.factory.createContract(code, salt);
 			console.log(`[factory] ${artefact.contractName} successfully deployed at ${predicted}`);
 		}
 		else
 		{
 			console.log(`[factory] ${artefact.contractName} already deployed at ${predicted}`);
 		}
-		artefact.networks[chainid] = { address: predicted };
+		artefact.networks[this.chainid] = { address: predicted };
 	}
 }
