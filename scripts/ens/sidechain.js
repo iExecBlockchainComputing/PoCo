@@ -77,12 +77,11 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	// Register domains
 	await new Promise(resolve => {
 		Promise.all(
-			[
-				...domains.filter(entry => entry.name),
-			]
-			.map(async entry => ({ ...entry, owner: entry.owner || wallet.address, _owner: await ens.owner(ethers.utils.namehash(entry.name)) }))
-		).then(domains => {
 			domains
+			.filter(entry => entry.name)
+			.map(async entry => ({ ...entry, owner: entry.owner || wallet.address, _owner: await ens.owner(ethers.utils.namehash(entry.name)) }))
+		).then(_ => {
+			_
 			.filter(({ _owner, owner }) => _owner != owner)
 			.reduce(async (promise, entry) => {
 				await Promise.resolve(promise);
@@ -103,11 +102,11 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	// Set resolver
 	await new Promise(resolve => {
 		Promise.all(
-			[
-				...domains.filter(entry => entry.resolver || entry.address),
-			].map(async entry => ({ ...entry, resolver: entry.resolver || publicresolver.address, _resolver: await ens.resolver(ethers.utils.namehash(entry.name)) }))
-		).then(domains => {
 			domains
+			.filter(entry => entry.resolver || entry.address)
+			.map(async entry => ({ ...entry, resolver: entry.resolver || publicresolver.address, _resolver: await ens.resolver(ethers.utils.namehash(entry.name)) }))
+		).then(_ => {
+			_
 			.filter(({ _resolver, resolver }) => _resolver != resolver)
 			.reduce(async (promise, entry) => {
 				await Promise.resolve(promise);
@@ -124,13 +123,12 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	// Set addresse
 	await new Promise(resolve => {
 		Promise.all(
-			[
-				...domains.filter(entry => entry.address),
-			]
+			domains
+			.filter(entry => entry.address)
 			.map(entry => ({ ...entry, resolverContract: entry.resolver ? new ethers.Contract(entry.resolver, PublicResolver.abi, wallet) : publicresolver }))
 			.map(async entry => ({ ...entry, _address: await entry.resolverContract['addr(bytes32)'](ethers.utils.namehash(entry.name)) }))
-		).then(domains => {
-			domains
+		).then(_ => {
+			_
 			.filter(({ _address, address }) => _address != address)
 			.reduce(async (promise, entry) => {
 				await Promise.resolve(promise);
@@ -147,9 +145,8 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 	// Set reverse
 	await new Promise(resolve => {
 		Promise.all(
-			[
-				...domains.filter(entry => entry.name && entry.address && entry.setName)
-			]
+			domains
+			.filter(entry => entry.name && entry.address && entry.setName)
 			.map(entry => ({ ...entry, lookup: `${entry.address.toLowerCase().substr(2)}.addr.reverse` }))
 			.map(async entry => {
 				try
@@ -163,8 +160,8 @@ const PublicResolver   = require('@ensdomains/resolver/build/contracts/PublicRes
 					return entry
 				}
 			})
-		).then(domains => {
-			domains
+		).then(_ => {
+			_
 			.filter(Boolean)
 			.reduce(async (promise, entry) => {
 				await Promise.resolve(promise);
