@@ -8,7 +8,7 @@ pipeline:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
-    auto_tag_suffix: -token-parity
+    auto_tag_suffix: token-parity
     when:
       ref: [refs/tags/v5*, refs/tags/lv5*]
 
@@ -21,7 +21,7 @@ pipeline:
       - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
-    auto_tag_suffix: -native-parity
+    auto_tag_suffix: native-parity
     when:
       ref: [refs/tags/v5*]
 
@@ -33,7 +33,7 @@ pipeline:
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
-    auto_tag_suffix: -token
+    auto_tag_suffix: token
     when:
       ref: [refs/tags/v5*]
 
@@ -45,7 +45,7 @@ pipeline:
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
-    auto_tag_suffix: -native
+    auto_tag_suffix: native
     when:
       ref: [refs/tags/v5*]
 
@@ -55,6 +55,6 @@ pipeline:
     secrets: [docker_username, docker_password]
     dockerfile: testchains/Dockerfile_token_ganache_1s
     auto_tag: true
-    auto_tag_suffix: -token-1s
+    auto_tag_suffix: token-1s
     when:
       ref: [refs/tags/v5*]
