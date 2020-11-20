@@ -24,7 +24,7 @@ pipeline {
 		stage("Truffle tests - Public") {
 			agent {
 				docker {
-					image "node:10"
+					image "node:14"
 					label "${LABEL}"
 				}
 			}
@@ -43,7 +43,7 @@ pipeline {
 		stage("Truffle tests - KYC") {
 			agent {
 				docker {
-					image "node:10"
+					image "node:14"
 					label "${LABEL}"
 				}
 			}
@@ -65,7 +65,7 @@ pipeline {
 		stage("Solidity coverage - Public") {
 			agent {
 				docker {
-					image "node:10"
+					image "node:14"
 					label "${LABEL}"
 				}
 			}
@@ -84,7 +84,7 @@ pipeline {
 		stage("Solidity coverage - KYC") {
 			agent {
 				docker {
-					image "node:10"
+					image "node:14"
 					label "${LABEL}"
 				}
 			}
