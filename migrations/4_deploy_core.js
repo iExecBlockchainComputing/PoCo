@@ -147,7 +147,7 @@ module.exports = async function(deployer, network, accounts)
 		await factoryDeployer.deploy(ERC1538Proxy, {
 			args: [ (await ERC1538Update.deployed()).address ],
 			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			salt: process.env.PROXYSALT || salt
+			salt: process.env.PROXY_SALT || salt
 		});
 	}
 	else
