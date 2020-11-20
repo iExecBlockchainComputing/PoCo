@@ -238,19 +238,20 @@ module.exports = async function(deployer, network, accounts)
 	].filter(Boolean));
 
 	/* ----------------------------- Categories ------------------------------ */
-	await CONFIG.categories.reduce(
+
+	const catCountBefore = await IexecInterfaceInstance.countCategory()
+	await CONFIG.categories.slice(catCountBefore.toNumber()).reduce(
 		async (promise, category) => {
 			await promise;
 			await IexecInterfaceInstance.createCategory(category.name, JSON.stringify(category.description), category.workClockTimeRef);
 		},
-		null
+		Promise.resolve()
 	);
 
-	var catCount = await IexecInterfaceInstance.countCategory();
-
-	console.log(`countCategory is now: ${catCount}`);
+	const catCountAfter = await IexecInterfaceInstance.countCategory();
+	console.log(`countCategory is now: ${catCountAfter}`);
 	(await Promise.all(
-		Array(catCount.toNumber()).fill().map((_, i) => IexecInterfaceInstance.viewCategory(i))
+		Array(catCountAfter.toNumber()).fill().map((_, i) => IexecInterfaceInstance.viewCategory(i))
 	))
 	.forEach((category, i) => console.log([ 'category', i, ':', ...category ].join(' ')));
 };
