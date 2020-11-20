@@ -46,6 +46,6 @@ module.exports = async function(deployer, network, accounts)
 
 		await erlc.grantRole(KYC_ADMIN_ROLE, accounts[0]);
 		await erlc.grantKYC([ core.address, ...accounts ]);
-		await rlc.approveAndCall(erlc.address, supply, '0x');
+		await rlc.approveAndCall(erlc.address, supply.div(2), '0x');
 	}
 };

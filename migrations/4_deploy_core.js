@@ -100,7 +100,7 @@ module.exports = async function(deployer, network, accounts)
 	deploymentOptions.v5.usekyc = !!process.env.KYC;
 
 	const factoryDeployer   = deploymentOptions.v5.usefactory && new Deployer(web3, accounts[0]);
-	const salt              = process.env.SALT || deploymentOptions.v5.salt || web3.utils.randomHex(32);
+	const salt              = process.env.SALT || deploymentOptions.v5.salt;
 	const libraries         = [ IexecLibOrders ];
 
 	/* ------------------------ Deploy & link library ------------------------ */
