@@ -17,6 +17,8 @@
 const { ethers } = require('ethers');
 const FACTORY    = require('@iexec/solidity/deployment/factory.json')
 
+async function waitTx(txPromise) { await (await txPromise).wait() }
+
 class EthersDeployer
 {
 	// factory: ethers.Contract
@@ -27,25 +29,25 @@ class EthersDeployer
 		this.factoryAsPromise = new Promise(async (resolve, reject) => {
 			if (await wallet.provider.getCode(FACTORY.address) !== "0x")
 			{
-				console.debug(`→ Factory is available on this network`)
+				console.debug(`→ Factory is available on this network`);
 			}
 			else
 			{
 				try
 				{
-					console.debug(`→ Factory is not yet deployed on this network`)
-					await wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost })
-					await wallet.provider.sendTransaction(FACTORY.tx)
-					console.debug(`→ Factory successfully deployed`)
+					console.debug(`→ Factory is not yet deployed on this network`);
+					await waitTx(wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }));
+					await waitTx(wallet.provider.sendTransaction(FACTORY.tx));
+					console.debug(`→ Factory successfully deployed`);
 				}
 				catch (e)
 				{
-					console.debug(`→ Error deploying the factory`)
-					reject(e)
+					console.debug(`→ Error deploying the factory`);
+					reject(e);
 				}
 			}
-			this.factory = new ethers.Contract(FACTORY.address, FACTORY.abi, wallet)
-			resolve(this.factory)
+			this.factory = new ethers.Contract(FACTORY.address, FACTORY.abi, wallet);
+			resolve(this.factory);
 		})
 	}
 
@@ -80,9 +82,11 @@ class EthersDeployer
 		if (await this.factory.provider.getCode(artefact.address) == '0x')
 		{
 			console.log(`[factory] Preparing to deploy ${artefact.contractName} ...`);
-			options.call
-				? await this.factory.createContractAndCall(code, salt, options.call)
-				: await this.factory.createContract(code, salt);
+			await waitTx(
+				options.call
+				? this.factory.createContractAndCall(code, salt, options.call)
+				: this.factory.createContract(code, salt)
+			);
 			console.log(`[factory] ${artefact.contractName} successfully deployed at ${artefact.address}`);
 		}
 		else
