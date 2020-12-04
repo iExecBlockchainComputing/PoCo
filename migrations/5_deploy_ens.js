@@ -67,31 +67,26 @@ module.exports = async function(deployer, network, accounts)
 
 		function namehash(domain)
 		{
-			return domain.split('.').reverse().reduce(
-				(hash, label) => compose(labelhash(label), hash),
-				'0x0000000000000000000000000000000000000000000000000000000000000000'
-			);
+			return domain.split('.').reverse().reduce((hash, label) => compose(labelhash(label), hash), '0x0');
 		}
 
 		async function bootstrap()
 		{
 			// ens registry
-			await deployer.deploy(ENSRegistry);
+			ENSRegistry.isDeployed() || await deployer.deploy(ENSRegistry);
 			ens = await ENSRegistry.deployed();
-			// resolver
-			await deployer.deploy(PublicResolver, ens.address);
-			resolver = await PublicResolver.deployed();
-			// root registrar
-			registrars[''] = await FIFSRegistrar.new(ens.address, '0x0', { from: accounts[0] });
-			await ens.setOwner('0x0', registrars[''].address, { from: accounts[0] });
-
 			console.log(`ENSRegistry deployed at address: ${ens.address}`);
+			// resolver
+			PublicResolver.isDeployed() || await deployer.deploy(PublicResolver, ens.address);
+			resolver = await PublicResolver.deployed();
 			console.log(`PublicResolver deployed at address: ${resolver.address}`);
+			// root registrar
+			await registerDomain('');
 		}
 
 		async function setReverseRegistrar()
 		{
-			await deployer.deploy(ReverseRegistrar, ens.address, resolver.address);
+			ReverseRegistrar.isDeployed() || await deployer.deploy(ReverseRegistrar, ens.address, resolver.address);
 			reverseregistrar = await ReverseRegistrar.deployed();
 
 			await registrars[''].register(labelhash('reverse'), accounts[0], { from: accounts[0] });
@@ -101,14 +96,26 @@ module.exports = async function(deployer, network, accounts)
 		async function registerDomain(label, domain='')
 		{
 			const name      = domain ? `${label}.${domain}` : `${label}`;
-			const labelHash = labelhash(label);
-			const nameHash  = namehash(name);
-			// deploy domain registrar
-			registrars[name] = await FIFSRegistrar.new(ens.address, nameHash, { from: accounts[0] });
-			// register as subdomain
-			await registrars[domain].register(labelHash, accounts[0], { from: accounts[0] });
-			// give ownership to the new registrar
-			await ens.setOwner(nameHash, registrars[name].address, { from: accounts[0] });
+			const labelHash = label  ? labelhash(label)     : '0x0';
+			const nameHash  = name   ? namehash(name)       : '0x0';
+			const owner     = await ens.owner(nameHash);
+			if (await web3.eth.getCode(owner) == '0x')
+			{
+				registrars[name] = await FIFSRegistrar.new(ens.address, nameHash, { from: accounts[0] });
+				if (!!name)
+				{
+					await registrars[domain].register(labelHash, registrars[name].address, { from: accounts[0] });
+				}
+				else
+				{
+					await ens.setOwner(nameHash, registrars[name].address, { from: accounts[0] });
+				}
+			}
+			else
+			{
+				registrars[name] = await FIFSRegistrar.at(owner);
+			}
+			console.log(`FIFSRegistrar for domain ${name} deployed at address: ${registrars[name].address}`);
 			return registrars[name];
 		}
 
@@ -157,6 +164,6 @@ module.exports = async function(deployer, network, accounts)
 			AppRegistryInstance        ?        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth'       ) : null,
 			DatasetRegistryInstance    ?    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth'   ) : null,
 			WorkerpoolRegistryInstance ? WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth') : null,
-		].filter(Boolean));
+		]);
 	}
 };

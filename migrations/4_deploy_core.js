@@ -173,18 +173,18 @@ module.exports = async function(deployer, network, accounts)
 	if (deploymentOptions.v5.usefactory)
 	{
 		await Promise.all([
-			!AppRegistry.isDeployed()        && factoryDeployer.deploy(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-			!DatasetRegistry.isDeployed()    && factoryDeployer.deploy(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-			!WorkerpoolRegistry.isDeployed() && factoryDeployer.deploy(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-		].filter(Boolean));
+			AppRegistry.isDeployed()        || factoryDeployer.deploy(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
+			DatasetRegistry.isDeployed()    || factoryDeployer.deploy(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
+			WorkerpoolRegistry.isDeployed() || factoryDeployer.deploy(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
+		]);
 	}
 	else
 	{
 		await Promise.all([
-			!AppRegistry.isDeployed()        && deployer.deploy(AppRegistry),
-			!DatasetRegistry.isDeployed()    && deployer.deploy(DatasetRegistry),
-			!WorkerpoolRegistry.isDeployed() && deployer.deploy(WorkerpoolRegistry),
-		].filter(Boolean));
+			AppRegistry.isDeployed()        || deployer.deploy(AppRegistry),
+			DatasetRegistry.isDeployed()    || deployer.deploy(DatasetRegistry),
+			WorkerpoolRegistry.isDeployed() || deployer.deploy(WorkerpoolRegistry),
+		]);
 	}
 
 	switch (deploymentOptions.asset)
@@ -235,7 +235,7 @@ module.exports = async function(deployer, network, accounts)
 			WorkerpoolRegistryInstance.address,
 			ADDRESS_ZERO
 		),
-	].filter(Boolean));
+	]);
 
 	/* ----------------------------- Categories ------------------------------ */
 

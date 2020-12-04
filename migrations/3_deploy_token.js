@@ -44,7 +44,7 @@ module.exports = async function(deployer, network, accounts)
 			}
 			else
 			{
-				await deployer.deploy(RLC);
+				RLC.isDeployed() || await deployer.deploy(RLC);
 			}
 			if (deploymentOptions.v5.usekyc)
 			{
@@ -54,7 +54,7 @@ module.exports = async function(deployer, network, accounts)
 				}
 				else
 				{
-					await deployer.deploy(ERLCSwap, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, [ accounts[0] ], []);
+					ERLCSwap.isDeployed() || await deployer.deploy(ERLCSwap, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, [ accounts[0] ], []);
 				}
 			}
 			break;
