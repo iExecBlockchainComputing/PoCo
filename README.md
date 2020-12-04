@@ -115,3 +115,7 @@ To do so:
 ```
 npm run migrate -- --network <your network name>
 ```
+or
+```
+KYC=1 npm run migrate -- --network <your network name>
+```
