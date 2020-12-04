@@ -20,7 +20,7 @@ module.exports =
 			host:       "iexec-geth-local",
 			port:       8545,
 			network_id: "*",        // Match any network id,
-			gasPrice:   8000000000, // 8 Gwei
+			gasPrice:   "8000000000", // 8 Gwei
 		},
 		development:
 		{
@@ -28,48 +28,56 @@ module.exports =
 			host:       useEnv ? undefined : "localhost",
 			port:       useEnv ? undefined : 8545,
 			network_id: "*",
-			gasPrice:   8000000000, // 8 Gwei
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		mainnet:
 		{
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.MAINNET_NODE),
-			network_id: '1',
-			gasPrice:   8000000000, // 8 Gwei
+			network_id: "1",
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		ropsten:
 		{
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.ROPSTEN_NODE),
-			network_id: '3',
-			gasPrice:   8000000000, // 8 Gwei
+			network_id: "3",
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		rinkeby:
 		{
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.RINKEBY_NODE),
-			network_id: '4',
-			gasPrice:   8000000000, // 8 Gwei
+			network_id: "4",
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		goerli:
 		{
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.GOERLI_NODE),
-			network_id: '5',
-			gasPrice:   8000000000, // 8 Gwei
+			network_id: "5",
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		kovan: {
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.KOVAN_NODE),
-			network_id: '42',
-			gasPrice:   8000000000, // 8 Gwei
+			network_id: "42",
+			gasPrice:   "8000000000", // 8 Gwei
+			disableConfirmationListener: true,
 		},
 		viviani: {
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.VIVIANI_NODE),
-			network_id: '133',
-			gasPrice:   '0', // 0 Gwei
-			gas:        '6700000',
+			network_id: "133",
+			gasPrice:   "0", // 0 Gwei
+			gas:        "6700000",
+			disableConfirmationListener: true,
 		},
 		bellecour: {
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.BELLECOUR_NODE),
-			network_id: '134',
-			gasPrice:   '0', // 0 Gwei
-			gas:        '6700000',
+			network_id: "134",
+			gasPrice:   "0", // 0 Gwei
+			gas:        "6700000",
+			disableConfirmationListener: true,
 		}
 	},
 	compilers: {
