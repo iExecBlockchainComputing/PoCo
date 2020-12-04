@@ -115,7 +115,9 @@ To do so:
 ```
 npm run migrate -- --network <your network name>
 ```
-or
+
+Example of "complexe" deployment:
+
 ```
-KYC=1 npm run migrate -- --network <your network name>
+SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
 ```
