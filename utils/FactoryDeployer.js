@@ -24,8 +24,9 @@ class EthersDeployer
 	// factory: ethers.Contract
 	// factoryAsPromise: Promise<ethers.Contract>
 
-	constructor(wallet)
+	constructor(wallet, options = {})
 	{
+		this.options = options;
 		this.factoryAsPromise = new Promise(async (resolve, reject) => {
 			if (await wallet.provider.getCode(FACTORY.address) !== "0x")
 			{
@@ -56,11 +57,14 @@ class EthersDeployer
 		await this.factoryAsPromise;
 	}
 
-	async deploy(artefact, options = {})
+	async deploy(artefact, ...extra)
 	{
 		await this.ready();
-
 		console.log(`[factoryDeployer] ${artefact.contractName}`);
+		const constructorABI   = artefact.abi.find(e => e.type == 'constructor');
+		const argsCount        = constructorABI ? constructorABI.inputs.length : 0;
+		const args             = extra.slice(0, argsCount);
+		const options          = { ...this.options, ...extra[argsCount] };
 		const libraryAddresses = await Promise.all(
 			(options.libraries || [])
 			.filter(({ contractName }) => artefact.bytecode.search(contractName) != -1)
@@ -69,12 +73,10 @@ class EthersDeployer
 				...await deployed(),
 			}))
 		);
-
-		const constructorABI   = artefact.abi.find(e => e.type == 'constructor');
 		const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), artefact.bytecode);
-		const argsCode         = constructorABI ? ethers.utils.defaultAbiCoder.encode(constructorABI.inputs.map(e => e.type), options.args || []).slice(2) : '';
+		const argsCode         = constructorABI ? ethers.utils.defaultAbiCoder.encode(constructorABI.inputs.map(e => e.type), args).slice(2) : '';
 		const code             = coreCode + argsCode;
-		const salt             = options.salt || this._salt || ethers.constants.HashZero;
+		const salt             = options.salt || ethers.constants.HashZero;
 		artefact.address       = options.call
 			? await this.factory.predictAddressWithCall(code, salt, options.call)
 			: await this.factory.predictAddress(code, salt);
@@ -98,10 +100,10 @@ class EthersDeployer
 
 class TruffleDeployer extends EthersDeployer
 {
-	constructor(web3, wallet = 0)
+	constructor(web3, wallet = 0, options = {})
 	{
 		const provider = new ethers.providers.Web3Provider(web3.currentProvider)
-		super(provider.getSigner(wallet))
+		super(provider.getSigner(wallet), options)
 	}
 }
 

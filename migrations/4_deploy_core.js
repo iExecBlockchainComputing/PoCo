@@ -144,11 +144,14 @@ module.exports = async function(deployer, network, accounts)
 	/* ---------------------------- Deploy proxy ----------------------------- */
 	if (deploymentOptions.v5.usefactory)
 	{
-		await factoryDeployer.deploy(ERC1538Proxy, {
-			args: [ (await ERC1538Update.deployed()).address ],
-			call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
-			salt: process.env.PROXY_SALT || salt
-		});
+		await factoryDeployer.deploy(
+			ERC1538Proxy,
+			(await ERC1538Update.deployed()).address,
+			{
+				call: web3.eth.abi.encodeFunctionCall(ERC1538Proxy._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]),
+				salt: process.env.PROXY_SALT || salt
+			}
+		);
 	}
 	else
 	{
