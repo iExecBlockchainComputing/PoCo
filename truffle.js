@@ -35,7 +35,7 @@ module.exports =
 		{
 			provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.MAINNET_NODE),
 			network_id: "1",
-			gasPrice:   "8000000000", // 8 Gwei
+			gasPrice:   "100000000000", // 100 Gwei
 			disableConfirmationListener: true,
 		},
 		ropsten:

@@ -17,8 +17,8 @@
 // CONFIG
 const CONFIG = require('../config/config.json')
 // Token
-var RLC      = artifacts.require('rlc-faucet-contract/RLC')
-var ERLCSwap = artifacts.require('@iexec/erlc/ERLCSwap')
+var RLC           = artifacts.require('rlc-faucet-contract/RLC')
+var ERLCTokenSwap = artifacts.require('@iexec/erlc/ERLCTokenSwap')
 
 /*****************************************************************************
  *                                   Main                                    *
@@ -50,11 +50,11 @@ module.exports = async function(deployer, network, accounts)
 			{
 				if (deploymentOptions.etoken)
 				{
-					ERLCSwap.address = deploymentOptions.etoken;
+					ERLCTokenSwap.address = deploymentOptions.etoken;
 				}
 				else
 				{
-					ERLCSwap.isDeployed() || await deployer.deploy(ERLCSwap, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, [ accounts[0] ], []);
+					ERLCTokenSwap.isDeployed() || await deployer.deploy(ERLCTokenSwap, (await RLC.deployed()).address, 'iExec ERLC Token', 'ERLC', 0, [ accounts[0] ], []);
 				}
 			}
 			break;

@@ -21,7 +21,7 @@ const CONFIG = require('../config/config.json')
 const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer')
 // Token
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
-var ERLCSwap                = artifacts.require('@iexec/erlc/ERLCSwap')
+var ERLCTokenSwap           = artifacts.require('@iexec/erlc/ERLCTokenSwap')
 // ERC1538 core & delegates
 var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')
@@ -195,7 +195,7 @@ module.exports = async function(deployer, network, accounts)
 		case 'Token':
 			if (deploymentOptions.v5.usekyc)
 			{
-				TokenInstance = await ERLCSwap.deployed();
+				TokenInstance = await ERLCTokenSwap.deployed();
 			}
 			else
 			{
@@ -230,8 +230,8 @@ module.exports = async function(deployer, network, accounts)
 		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
 		!IexecInterfaceInitialized     && IexecInterfaceInstance.configure(
 			TokenInstance.address,
-			deploymentOptions.v5.usekyc ? 'Staked ERLC'        : 'Staked RLC',
-			deploymentOptions.v5.usekyc ? 'SERLC'              : 'SRLC',
+			deploymentOptions.v5.usekyc ? 'Staked eRLC'        : 'Staked RLC',
+			deploymentOptions.v5.usekyc ? 'SeRLC'              : 'SRLC',
 			9, // TODO: generic ?
 			AppRegistryInstance.address,
 			DatasetRegistryInstance.address,
