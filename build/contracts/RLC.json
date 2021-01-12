@@ -419,53 +419,7 @@
   "networks": {
     "1": {
       "address": "0x607F4C5BB672230e8672085532f7e901544a7375",
-      "links": {},
-      "events": {
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        },
-        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "value",
-              "type": "uint256"
-            }
-          ],
-          "name": "Approval",
-          "type": "event"
-        }
-      }
+      "links": {}
     },
     "3": {
       "events": {
@@ -723,7 +677,7 @@
       "updated_at": 1507187064558
     }
   },
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-09T12:07:12.065Z",
+  "schemaVersion": "3.2.2",
+  "updatedAt": "2020-11-04T15:03:32.744Z",
   "networkType": "ethereum"
 }

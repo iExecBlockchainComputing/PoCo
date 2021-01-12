@@ -39,8 +39,9 @@ It contains:
 - For each chainid, a quick configuration:
 	- **"asset":** can be "Token" or "Native", select which escrow to use.
 	- **"token":** the address of the token to use. If asset is set to token, and no token address is provided, a mock will be deployed on the fly.
+	- **"etoken:"** the address of the enterprise token (with KYC) to use in the case of an enterprise deployment. If asset is set to token, and no etoken address is provider, an instance of the eRLC token (backed by the token described earlier) will automatically be deployed.
 	- **"v3":** a list of ressources from a previous (v3) deployment. This allows previous ressources to be automatically available. It also enables score transfer from v3 to v5. [optional]
-	- **"v5":** deployment parameters for the new version. If usefactory is set to true, and no salt is provided, a random salt will be used.
+	- **"v5":** deployment parameters for the new version. If usefactory is set to true, and no salt is provided, `bytes32(0)` will be used by default.
 
 If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the recommanded process is to:
 
@@ -51,6 +52,13 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 4. Unless you know what you are doing, leave all `"v3"` ressources to `Null`;
 5. Use the factory with the same salt as the other blockchains, and use the same wallet as previous deployments to have the same deployment address on this new blockchain.
 
+## Additional configuration & environment variables
+
+Environement variable can be used to alter the configuration of a deployment:
+- **KYC**: if set, the `KYC` envvar will enable the kyc mechanism of the enterprise marketplace during migration and testing. This is only compatible with `asset="Token"`.
+- **SALT**: if set, the `SALT` envvar will overwrite the salt parameter from the config. This can be usefull to distinguish public and enterprise deployment without modifying the config.
+
+Additionnaly, the migration process will look for some smartcontracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if both an enterprise and a public marketplace are deployed to the same network, they will share these registries.
 
 ## Build
 
@@ -106,4 +114,10 @@ To do so:
 3. Run the deployment using:
 ```
 npm run migrate -- --network <your network name>
+```
+
+Example of "complexe" deployment:
+
+```
+SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
 ```

@@ -18,6 +18,7 @@
 var DEPLOYMENT         = require("../../../config/config.json").chains.default;
 // Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
+var ERLCSwap           = artifacts.require('@iexec/erlc/ERLCSwap');
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
 var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
@@ -68,13 +69,13 @@ contract('ENSIntegration', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.deployed();
 		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ERC712_domain              = await IexecInstance.domain();
 		ENSInstance                = await ENSRegistry.deployed();
+		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.at(await IexecInstance.token());
 
 		broker          = new odbtools.Broker    (IexecInstance);
 		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
@@ -95,10 +96,6 @@ contract('ENSIntegration', async (accounts) => {
 	 ***************************************************************************/
 	describe("Initial state (migration)", async () => {
 		it("lookup", async () => {
-			if (DEPLOYMENT.asset == "Token") try {
-				await enstools.lookup(RLCInstance.address);
-				assert(false);
-			} catch(e) {}
 			assert.equal(await enstools.lookup(IexecInstance.address             ), "core.v5.iexec.eth"       );
 			assert.equal(await enstools.lookup(AppRegistryInstance.address       ), "apps.v5.iexec.eth"       );
 			assert.equal(await enstools.lookup(DatasetRegistryInstance.address   ), "datasets.v5.iexec.eth"   );
@@ -106,7 +103,10 @@ contract('ENSIntegration', async (accounts) => {
 		})
 		it("resolve", async () => {
 			if (DEPLOYMENT.asset == "Token") {
-				assert.equal(await enstools.resolve("rlc.iexec.eth"         ), RLCInstance.address               );
+				assert.equal(await enstools.resolve("rlc.iexec.eth"), (await RLC.deployed()).address);
+			}
+			if (DEPLOYMENT.asset == "Token" && !!process.env.KYC) {
+				assert.equal(await enstools.resolve("erlc.iexec.eth"), (await ERLCSwap.deployed()).address);
 			}
 			assert.equal(await enstools.resolve("core.v5.iexec.eth"       ), IexecInstance.address             );
 			assert.equal(await enstools.resolve("apps.v5.iexec.eth"       ), AppRegistryInstance.address       );

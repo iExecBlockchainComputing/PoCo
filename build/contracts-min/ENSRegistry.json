@@ -11,16 +11,44 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "ApprovalForAll",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
           "indexed": true,
+          "internalType": "bytes32",
           "name": "label",
           "type": "bytes32"
         },
         {
           "indexed": false,
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         }
@@ -33,28 +61,13 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
           "indexed": false,
-          "name": "owner",
-          "type": "address"
-        }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "node",
-          "type": "bytes32"
-        },
-        {
-          "indexed": false,
+          "internalType": "address",
           "name": "resolver",
           "type": "address"
         }
@@ -67,11 +80,13 @@
       "inputs": [
         {
           "indexed": true,
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
           "indexed": false,
+          "internalType": "uint64",
           "name": "ttl",
           "type": "uint64"
         }
@@ -84,39 +99,40 @@
       "inputs": [
         {
           "indexed": true,
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "operator",
-          "type": "address"
+          "internalType": "bytes32",
+          "name": "node",
+          "type": "bytes32"
         },
         {
           "indexed": false,
-          "name": "approved",
-          "type": "bool"
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
         }
       ],
-      "name": "ApprovalForAll",
+      "name": "Transfer",
       "type": "event"
     },
     {
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "resolver",
           "type": "address"
         },
         {
+          "internalType": "uint64",
           "name": "ttl",
           "type": "uint64"
         }
@@ -131,22 +147,27 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "bytes32",
           "name": "label",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "resolver",
           "type": "address"
         },
         {
+          "internalType": "uint64",
           "name": "ttl",
           "type": "uint64"
         }
@@ -161,10 +182,12 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         }
@@ -179,14 +202,17 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "bytes32",
           "name": "label",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         }
@@ -194,6 +220,7 @@
       "name": "setSubnodeOwner",
       "outputs": [
         {
+          "internalType": "bytes32",
           "name": "",
           "type": "bytes32"
         }
@@ -206,10 +233,12 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "resolver",
           "type": "address"
         }
@@ -224,10 +253,12 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         },
         {
+          "internalType": "uint64",
           "name": "ttl",
           "type": "uint64"
         }
@@ -242,10 +273,12 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "address",
           "name": "operator",
           "type": "address"
         },
         {
+          "internalType": "bool",
           "name": "approved",
           "type": "bool"
         }
@@ -260,6 +293,7 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         }
@@ -267,6 +301,7 @@
       "name": "owner",
       "outputs": [
         {
+          "internalType": "address",
           "name": "",
           "type": "address"
         }
@@ -279,6 +314,7 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         }
@@ -286,6 +322,7 @@
       "name": "resolver",
       "outputs": [
         {
+          "internalType": "address",
           "name": "",
           "type": "address"
         }
@@ -298,6 +335,7 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         }
@@ -305,6 +343,7 @@
       "name": "ttl",
       "outputs": [
         {
+          "internalType": "uint64",
           "name": "",
           "type": "uint64"
         }
@@ -317,6 +356,7 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         }
@@ -324,6 +364,7 @@
       "name": "recordExists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -336,10 +377,12 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "operator",
           "type": "address"
         }
@@ -347,6 +390,7 @@
       "name": "isApprovedForAll",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }

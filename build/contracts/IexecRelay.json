@@ -584,15 +584,15 @@
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        8714
+        9894
       ]
     },
-    "id": 8715,
+    "id": 9895,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8675,
+        "id": 9855,
         "literals": [
           "solidity",
           "^",
@@ -600,25 +600,25 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1242:23:36"
+        "src": "1242:23:47"
       },
       {
-        "id": 8676,
+        "id": 9856,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1266:33:36"
+        "src": "1266:33:47"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 8677,
+        "id": 9857,
         "nodeType": "ImportDirective",
-        "scope": 8715,
-        "sourceUnit": 847,
-        "src": "1301:42:36",
+        "scope": 9895,
+        "sourceUnit": 1569,
+        "src": "1301:42:47",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -629,9 +629,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 8714,
+        "id": 9894,
         "linearizedBaseContracts": [
-          8714
+          9894
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -639,38 +639,38 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8681,
+            "id": 9861,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8680,
+              "id": 9860,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8679,
+                  "id": 9859,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8681,
-                  "src": "1401:42:36",
+                  "scope": 9861,
+                  "src": "1401:42:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$472_memory_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$1194_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8678,
+                    "id": 9858,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 472,
-                    "src": "1401:26:36",
+                    "referencedDeclaration": 1194,
+                    "src": "1401:26:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$472_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$1194_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrder"
                     }
                   },
@@ -678,45 +678,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1400:51:36"
+              "src": "1400:51:47"
             },
-            "src": "1370:82:36"
+            "src": "1370:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8685,
+            "id": 9865,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8684,
+              "id": 9864,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8683,
+                  "id": 9863,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8685,
-                  "src": "1485:46:36",
+                  "scope": 9865,
+                  "src": "1485:46:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$491_memory_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$1213_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8682,
+                    "id": 9862,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 491,
-                    "src": "1485:30:36",
+                    "referencedDeclaration": 1213,
+                    "src": "1485:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$491_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$1213_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                     }
                   },
@@ -724,45 +724,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1484:51:36"
+              "src": "1484:51:47"
             },
-            "src": "1454:82:36"
+            "src": "1454:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8689,
+            "id": 9869,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8688,
+              "id": 9868,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8687,
+                  "id": 9867,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8689,
-                  "src": "1569:49:36",
+                  "scope": 9869,
+                  "src": "1569:49:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_memory_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8686,
+                    "id": 9866,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 514,
-                    "src": "1569:33:36",
+                    "referencedDeclaration": 1236,
+                    "src": "1569:33:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                     }
                   },
@@ -770,45 +770,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1568:51:36"
+              "src": "1568:51:47"
             },
-            "src": "1538:82:36"
+            "src": "1538:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8693,
+            "id": 9873,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8692,
+              "id": 9872,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8691,
+                  "id": 9871,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8693,
-                  "src": "1653:46:36",
+                  "scope": 9873,
+                  "src": "1653:46:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$547_memory_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$1269_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8690,
+                    "id": 9870,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 547,
-                    "src": "1653:30:36",
+                    "referencedDeclaration": 1269,
+                    "src": "1653:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$547_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$1269_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrder"
                     }
                   },
@@ -816,15 +816,15 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1652:51:36"
+              "src": "1652:51:47"
             },
-            "src": "1622:82:36"
+            "src": "1622:82:47"
           },
           {
             "body": null,
             "documentation": null,
             "functionSelector": "c52e9de1",
-            "id": 8698,
+            "id": 9878,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -832,33 +832,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8696,
+              "id": 9876,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8695,
+                  "id": 9875,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8698,
-                  "src": "1741:42:36",
+                  "scope": 9878,
+                  "src": "1741:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$472_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$1194_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8694,
+                    "id": 9874,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 472,
-                    "src": "1741:26:36",
+                    "referencedDeclaration": 1194,
+                    "src": "1741:26:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$472_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$1194_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrder"
                     }
                   },
@@ -866,16 +866,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1740:44:36"
+              "src": "1740:44:47"
             },
             "returnParameters": {
-              "id": 8697,
+              "id": 9877,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1793:0:36"
+              "src": "1793:0:47"
             },
-            "scope": 8714,
-            "src": "1707:87:36",
+            "scope": 9894,
+            "src": "1707:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -884,7 +884,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c4692de",
-            "id": 8703,
+            "id": 9883,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -892,33 +892,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8701,
+              "id": 9881,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8700,
+                  "id": 9880,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8703,
-                  "src": "1830:42:36",
+                  "scope": 9883,
+                  "src": "1830:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$491_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$1213_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8699,
+                    "id": 9879,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 491,
-                    "src": "1830:30:36",
+                    "referencedDeclaration": 1213,
+                    "src": "1830:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$491_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$1213_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                     }
                   },
@@ -926,16 +926,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1829:44:36"
+              "src": "1829:44:47"
             },
             "returnParameters": {
-              "id": 8702,
+              "id": 9882,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1882:0:36"
+              "src": "1882:0:47"
             },
-            "scope": 8714,
-            "src": "1796:87:36",
+            "scope": 9894,
+            "src": "1796:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -944,7 +944,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "947f5178",
-            "id": 8708,
+            "id": 9888,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -952,33 +952,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8706,
+              "id": 9886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8705,
+                  "id": 9885,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8708,
-                  "src": "1919:42:36",
+                  "scope": 9888,
+                  "src": "1919:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8704,
+                    "id": 9884,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 514,
-                    "src": "1919:33:36",
+                    "referencedDeclaration": 1236,
+                    "src": "1919:33:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                     }
                   },
@@ -986,16 +986,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1918:44:36"
+              "src": "1918:44:47"
             },
             "returnParameters": {
-              "id": 8707,
+              "id": 9887,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1971:0:36"
+              "src": "1971:0:47"
             },
-            "scope": 8714,
-            "src": "1885:87:36",
+            "scope": 9894,
+            "src": "1885:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1004,7 +1004,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4693d172",
-            "id": 8713,
+            "id": 9893,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1012,33 +1012,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8711,
+              "id": 9891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8710,
+                  "id": 9890,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8713,
-                  "src": "2008:42:36",
+                  "scope": 9893,
+                  "src": "2008:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$547_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$1269_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8709,
+                    "id": 9889,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 547,
-                    "src": "2008:30:36",
+                    "referencedDeclaration": 1269,
+                    "src": "2008:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$547_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$1269_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrder"
                     }
                   },
@@ -1046,40 +1046,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2007:44:36"
+              "src": "2007:44:47"
             },
             "returnParameters": {
-              "id": 8712,
+              "id": 9892,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2060:0:36"
+              "src": "2060:0:47"
             },
-            "scope": 8714,
-            "src": "1974:87:36",
+            "scope": 9894,
+            "src": "1974:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 8715,
-        "src": "1346:717:36"
+        "scope": 9895,
+        "src": "1346:717:47"
       }
     ],
-    "src": "1242:822:36"
+    "src": "1242:822:47"
   },
   "legacyAST": {
     "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/modules/interfaces/IexecRelay.sol",
     "exportedSymbols": {
       "IexecRelay": [
-        8714
+        9894
       ]
     },
-    "id": 8715,
+    "id": 9895,
     "license": "Apache-2.0",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8675,
+        "id": 9855,
         "literals": [
           "solidity",
           "^",
@@ -1087,25 +1087,25 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1242:23:36"
+        "src": "1242:23:47"
       },
       {
-        "id": 8676,
+        "id": 9856,
         "literals": [
           "experimental",
           "ABIEncoderV2"
         ],
         "nodeType": "PragmaDirective",
-        "src": "1266:33:36"
+        "src": "1266:33:47"
       },
       {
         "absolutePath": "/home/amxx/Work/iExec/code/PoCo-dev/contracts/libs/IexecLibOrders_v5.sol",
         "file": "../../libs/IexecLibOrders_v5.sol",
-        "id": 8677,
+        "id": 9857,
         "nodeType": "ImportDirective",
-        "scope": 8715,
-        "sourceUnit": 847,
-        "src": "1301:42:36",
+        "scope": 9895,
+        "sourceUnit": 1569,
+        "src": "1301:42:47",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1116,9 +1116,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 8714,
+        "id": 9894,
         "linearizedBaseContracts": [
-          8714
+          9894
         ],
         "name": "IexecRelay",
         "nodeType": "ContractDefinition",
@@ -1126,38 +1126,38 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8681,
+            "id": 9861,
             "name": "BroadcastAppOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8680,
+              "id": 9860,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8679,
+                  "id": 9859,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "apporder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8681,
-                  "src": "1401:42:36",
+                  "scope": 9861,
+                  "src": "1401:42:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$472_memory_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$1194_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8678,
+                    "id": 9858,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 472,
-                    "src": "1401:26:36",
+                    "referencedDeclaration": 1194,
+                    "src": "1401:26:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$472_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$1194_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrder"
                     }
                   },
@@ -1165,45 +1165,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1400:51:36"
+              "src": "1400:51:47"
             },
-            "src": "1370:82:36"
+            "src": "1370:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8685,
+            "id": 9865,
             "name": "BroadcastDatasetOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8684,
+              "id": 9864,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8683,
+                  "id": 9863,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "datasetorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8685,
-                  "src": "1485:46:36",
+                  "scope": 9865,
+                  "src": "1485:46:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$491_memory_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$1213_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8682,
+                    "id": 9862,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 491,
-                    "src": "1485:30:36",
+                    "referencedDeclaration": 1213,
+                    "src": "1485:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$491_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$1213_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                     }
                   },
@@ -1211,45 +1211,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1484:51:36"
+              "src": "1484:51:47"
             },
-            "src": "1454:82:36"
+            "src": "1454:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8689,
+            "id": 9869,
             "name": "BroadcastWorkerpoolOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8688,
+              "id": 9868,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8687,
+                  "id": 9867,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "workerpoolorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8689,
-                  "src": "1569:49:36",
+                  "scope": 9869,
+                  "src": "1569:49:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_memory_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8686,
+                    "id": 9866,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 514,
-                    "src": "1569:33:36",
+                    "referencedDeclaration": 1236,
+                    "src": "1569:33:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                     }
                   },
@@ -1257,45 +1257,45 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1568:51:36"
+              "src": "1568:51:47"
             },
-            "src": "1538:82:36"
+            "src": "1538:82:47"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 8693,
+            "id": 9873,
             "name": "BroadcastRequestOrder",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8692,
+              "id": 9872,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8691,
+                  "id": 9871,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "requestorder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8693,
-                  "src": "1653:46:36",
+                  "scope": 9873,
+                  "src": "1653:46:47",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$547_memory_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$1269_memory_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8690,
+                    "id": 9870,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 547,
-                    "src": "1653:30:36",
+                    "referencedDeclaration": 1269,
+                    "src": "1653:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$547_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$1269_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrder"
                     }
                   },
@@ -1303,15 +1303,15 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1652:51:36"
+              "src": "1652:51:47"
             },
-            "src": "1622:82:36"
+            "src": "1622:82:47"
           },
           {
             "body": null,
             "documentation": null,
             "functionSelector": "c52e9de1",
-            "id": 8698,
+            "id": 9878,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1319,33 +1319,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8696,
+              "id": 9876,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8695,
+                  "id": 9875,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8698,
-                  "src": "1741:42:36",
+                  "scope": 9878,
+                  "src": "1741:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppOrder_$472_calldata_ptr",
+                    "typeIdentifier": "t_struct$_AppOrder_$1194_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.AppOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8694,
+                    "id": 9874,
                     "name": "IexecLibOrders_v5.AppOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 472,
-                    "src": "1741:26:36",
+                    "referencedDeclaration": 1194,
+                    "src": "1741:26:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppOrder_$472_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppOrder_$1194_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.AppOrder"
                     }
                   },
@@ -1353,16 +1353,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1740:44:36"
+              "src": "1740:44:47"
             },
             "returnParameters": {
-              "id": 8697,
+              "id": 9877,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1793:0:36"
+              "src": "1793:0:47"
             },
-            "scope": 8714,
-            "src": "1707:87:36",
+            "scope": 9894,
+            "src": "1707:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1371,7 +1371,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4c4692de",
-            "id": 8703,
+            "id": 9883,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1379,33 +1379,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8701,
+              "id": 9881,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8700,
+                  "id": 9880,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8703,
-                  "src": "1830:42:36",
+                  "scope": 9883,
+                  "src": "1830:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_DatasetOrder_$491_calldata_ptr",
+                    "typeIdentifier": "t_struct$_DatasetOrder_$1213_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8699,
+                    "id": 9879,
                     "name": "IexecLibOrders_v5.DatasetOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 491,
-                    "src": "1830:30:36",
+                    "referencedDeclaration": 1213,
+                    "src": "1830:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DatasetOrder_$491_storage_ptr",
+                      "typeIdentifier": "t_struct$_DatasetOrder_$1213_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.DatasetOrder"
                     }
                   },
@@ -1413,16 +1413,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1829:44:36"
+              "src": "1829:44:47"
             },
             "returnParameters": {
-              "id": 8702,
+              "id": 9882,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1882:0:36"
+              "src": "1882:0:47"
             },
-            "scope": 8714,
-            "src": "1796:87:36",
+            "scope": 9894,
+            "src": "1796:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1431,7 +1431,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "947f5178",
-            "id": 8708,
+            "id": 9888,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1439,33 +1439,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8706,
+              "id": 9886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8705,
+                  "id": 9885,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8708,
-                  "src": "1919:42:36",
+                  "scope": 9888,
+                  "src": "1919:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_calldata_ptr",
+                    "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8704,
+                    "id": 9884,
                     "name": "IexecLibOrders_v5.WorkerpoolOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 514,
-                    "src": "1919:33:36",
+                    "referencedDeclaration": 1236,
+                    "src": "1919:33:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$514_storage_ptr",
+                      "typeIdentifier": "t_struct$_WorkerpoolOrder_$1236_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.WorkerpoolOrder"
                     }
                   },
@@ -1473,16 +1473,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1918:44:36"
+              "src": "1918:44:47"
             },
             "returnParameters": {
-              "id": 8707,
+              "id": 9887,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1971:0:36"
+              "src": "1971:0:47"
             },
-            "scope": 8714,
-            "src": "1885:87:36",
+            "scope": 9894,
+            "src": "1885:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1491,7 +1491,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "4693d172",
-            "id": 8713,
+            "id": 9893,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1499,33 +1499,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8711,
+              "id": 9891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8710,
+                  "id": 9890,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8713,
-                  "src": "2008:42:36",
+                  "scope": 9893,
+                  "src": "2008:42:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_RequestOrder_$547_calldata_ptr",
+                    "typeIdentifier": "t_struct$_RequestOrder_$1269_calldata_ptr",
                     "typeString": "struct IexecLibOrders_v5.RequestOrder"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 8709,
+                    "id": 9889,
                     "name": "IexecLibOrders_v5.RequestOrder",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 547,
-                    "src": "2008:30:36",
+                    "referencedDeclaration": 1269,
+                    "src": "2008:30:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_RequestOrder_$547_storage_ptr",
+                      "typeIdentifier": "t_struct$_RequestOrder_$1269_storage_ptr",
                       "typeString": "struct IexecLibOrders_v5.RequestOrder"
                     }
                   },
@@ -1533,26 +1533,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2007:44:36"
+              "src": "2007:44:47"
             },
             "returnParameters": {
-              "id": 8712,
+              "id": 9892,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2060:0:36"
+              "src": "2060:0:47"
             },
-            "scope": 8714,
-            "src": "1974:87:36",
+            "scope": 9894,
+            "src": "1974:87:47",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 8715,
-        "src": "1346:717:36"
+        "scope": 9895,
+        "src": "1346:717:47"
       }
     ],
-    "src": "1242:822:36"
+    "src": "1242:822:47"
   },
   "compiler": {
     "name": "solc",
@@ -1560,7 +1560,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.2",
-  "updatedAt": "2020-09-22T12:25:17.375Z",
+  "updatedAt": "2020-11-04T15:01:35.863Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

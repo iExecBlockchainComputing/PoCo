@@ -5,23 +5,23 @@
   "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220e0559139e2db3eb592dfcf64d624ae6aadaaa57e10c2e3e4912ccab6cd80ffcb64736f6c634300060c0033",
   "deployedBytecode": "0x6080604052600080fdfea2646970667358221220e0559139e2db3eb592dfcf64d624ae6aadaaa57e10c2e3e4912ccab6cd80ffcb64736f6c634300060c0033",
   "immutableReferences": {},
-  "sourceMap": "165:281:73:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "165:281:73:-:0;;;;;",
+  "sourceMap": "165:281:67:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "165:281:67:-:0;;;;;",
   "source": "pragma solidity ^0.6.0;\n\n// import \"@ensdomains/ens/contracts/ENS.sol\"; // ENS packages are dependency heavy\nimport \"./IENS.sol\";\nimport \"./IReverseRegistrar.sol\";\n\ncontract ENSReverseRegistration\n{\n\tbytes32 internal constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967fb37eeaca72729271025a9e2;\n\n\tfunction _setName(IENS ens, string memory name)\n\tinternal\n\t{\n\t\tIReverseRegistrar(ens.owner(ADDR_REVERSE_NODE)).setName(name);\n\t}\n}\n",
   "sourcePath": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
   "ast": {
     "absolutePath": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
     "exportedSymbols": {
       "ENSReverseRegistration": [
-        16847
+        12870
       ]
     },
-    "id": 16848,
+    "id": 12871,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16823,
+        "id": 12846,
         "literals": [
           "solidity",
           "^",
@@ -29,27 +29,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:73"
+        "src": "0:23:67"
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/IENS.sol",
         "file": "./IENS.sol",
-        "id": 16824,
+        "id": 12847,
         "nodeType": "ImportDirective",
-        "scope": 16848,
-        "sourceUnit": 16985,
-        "src": "109:20:73",
+        "scope": 12871,
+        "sourceUnit": 13008,
+        "src": "109:20:67",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/IReverseRegistrar.sol",
         "file": "./IReverseRegistrar.sol",
-        "id": 16825,
+        "id": 12848,
         "nodeType": "ImportDirective",
-        "scope": 16848,
-        "sourceUnit": 17034,
-        "src": "130:33:73",
+        "scope": 12871,
+        "sourceUnit": 13057,
+        "src": "130:33:67",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -60,22 +60,22 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16847,
+        "id": 12870,
         "linearizedBaseContracts": [
-          16847
+          12870
         ],
         "name": "ENSReverseRegistration",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 16828,
+            "id": 12851,
             "mutability": "constant",
             "name": "ADDR_REVERSE_NODE",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 16847,
-            "src": "200:112:73",
+            "scope": 12870,
+            "src": "200:112:67",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -83,10 +83,10 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16826,
+              "id": 12849,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "200:7:73",
+              "src": "200:7:67",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -95,14 +95,14 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839316431373737373831383834643033613637353761383033393936653338646532613432393637666233376565616361373237323932373130323561396532",
-              "id": 16827,
+              "id": 12850,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "246:66:73",
+              "src": "246:66:67",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_65955458610802586644366824307633271870356699036341805474246458084352783133154_by_1",
@@ -114,9 +114,9 @@
           },
           {
             "body": {
-              "id": 16845,
+              "id": 12868,
               "nodeType": "Block",
-              "src": "375:69:73",
+              "src": "375:69:67",
               "statements": [
                 {
                   "expression": {
@@ -124,12 +124,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 16842,
+                        "id": 12865,
                         "name": "name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 16832,
-                        "src": "435:4:73",
+                        "referencedDeclaration": 12855,
+                        "src": "435:4:67",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
                           "typeString": "string memory"
@@ -151,12 +151,12 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 16838,
+                                "id": 12861,
                                 "name": "ADDR_REVERSE_NODE",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 16828,
-                                "src": "407:17:73",
+                                "referencedDeclaration": 12851,
+                                "src": "407:17:67",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -172,32 +172,32 @@
                               ],
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 16836,
+                                "id": 12859,
                                 "name": "ens",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 16830,
-                                "src": "397:3:73",
+                                "referencedDeclaration": 12853,
+                                "src": "397:3:67",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_IENS_$16984",
+                                  "typeIdentifier": "t_contract$_IENS_$13007",
                                   "typeString": "contract IENS"
                                 }
                               },
-                              "id": 16837,
+                              "id": 12860,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "owner",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 16953,
-                              "src": "397:9:73",
+                              "referencedDeclaration": 12976,
+                              "src": "397:9:67",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                                 "typeString": "function (bytes32) view external returns (address)"
                               }
                             },
-                            "id": 16839,
+                            "id": 12862,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -205,7 +205,7 @@
                             "lValueRequested": false,
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "397:28:73",
+                            "src": "397:28:67",
                             "tryCall": false,
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -220,18 +220,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 16835,
+                          "id": 12858,
                           "name": "IReverseRegistrar",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 17033,
-                          "src": "379:17:73",
+                          "referencedDeclaration": 13056,
+                          "src": "379:17:67",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IReverseRegistrar_$17033_$",
+                            "typeIdentifier": "t_type$_t_contract$_IReverseRegistrar_$13056_$",
                             "typeString": "type(contract IReverseRegistrar)"
                           }
                         },
-                        "id": 16840,
+                        "id": 12863,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -239,28 +239,28 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "379:47:73",
+                        "src": "379:47:67",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IReverseRegistrar_$17033",
+                          "typeIdentifier": "t_contract$_IReverseRegistrar_$13056",
                           "typeString": "contract IReverseRegistrar"
                         }
                       },
-                      "id": 16841,
+                      "id": 12864,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setName",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 17025,
-                      "src": "379:55:73",
+                      "referencedDeclaration": 13048,
+                      "src": "379:55:67",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_string_memory_ptr_$returns$_t_bytes32_$",
                         "typeString": "function (string memory) external returns (bytes32)"
                       }
                     },
-                    "id": 16843,
+                    "id": 12866,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -268,21 +268,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "379:61:73",
+                    "src": "379:61:67",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 16844,
+                  "id": 12867,
                   "nodeType": "ExpressionStatement",
-                  "src": "379:61:73"
+                  "src": "379:61:67"
                 }
               ]
             },
             "documentation": null,
-            "id": 16846,
+            "id": 12869,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -290,33 +290,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16833,
+              "id": 12856,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16830,
+                  "id": 12853,
                   "mutability": "mutable",
                   "name": "ens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16846,
-                  "src": "334:8:73",
+                  "scope": 12869,
+                  "src": "334:8:67",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IENS_$16984",
+                    "typeIdentifier": "t_contract$_IENS_$13007",
                     "typeString": "contract IENS"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16829,
+                    "id": 12852,
                     "name": "IENS",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 16984,
-                    "src": "334:4:73",
+                    "referencedDeclaration": 13007,
+                    "src": "334:4:67",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IENS_$16984",
+                      "typeIdentifier": "t_contract$_IENS_$13007",
                       "typeString": "contract IENS"
                     }
                   },
@@ -325,13 +325,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 16832,
+                  "id": 12855,
                   "mutability": "mutable",
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16846,
-                  "src": "344:18:73",
+                  "scope": 12869,
+                  "src": "344:18:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -339,10 +339,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 16831,
+                    "id": 12854,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "344:6:73",
+                    "src": "344:6:67",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -352,40 +352,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "333:30:73"
+              "src": "333:30:67"
             },
             "returnParameters": {
-              "id": 16834,
+              "id": 12857,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "375:0:73"
+              "src": "375:0:67"
             },
-            "scope": 16847,
-            "src": "316:128:73",
+            "scope": 12870,
+            "src": "316:128:67",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 16848,
-        "src": "165:281:73"
+        "scope": 12871,
+        "src": "165:281:67"
       }
     ],
-    "src": "0:447:73"
+    "src": "0:447:67"
   },
   "legacyAST": {
     "absolutePath": "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol",
     "exportedSymbols": {
       "ENSReverseRegistration": [
-        16847
+        12870
       ]
     },
-    "id": 16848,
+    "id": 12871,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16823,
+        "id": 12846,
         "literals": [
           "solidity",
           "^",
@@ -393,27 +393,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:73"
+        "src": "0:23:67"
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/IENS.sol",
         "file": "./IENS.sol",
-        "id": 16824,
+        "id": 12847,
         "nodeType": "ImportDirective",
-        "scope": 16848,
-        "sourceUnit": 16985,
-        "src": "109:20:73",
+        "scope": 12871,
+        "sourceUnit": 13008,
+        "src": "109:20:67",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "@iexec/solidity/contracts/ENStools/IReverseRegistrar.sol",
         "file": "./IReverseRegistrar.sol",
-        "id": 16825,
+        "id": 12848,
         "nodeType": "ImportDirective",
-        "scope": 16848,
-        "sourceUnit": 17034,
-        "src": "130:33:73",
+        "scope": 12871,
+        "sourceUnit": 13057,
+        "src": "130:33:67",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -424,22 +424,22 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 16847,
+        "id": 12870,
         "linearizedBaseContracts": [
-          16847
+          12870
         ],
         "name": "ENSReverseRegistration",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 16828,
+            "id": 12851,
             "mutability": "constant",
             "name": "ADDR_REVERSE_NODE",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 16847,
-            "src": "200:112:73",
+            "scope": 12870,
+            "src": "200:112:67",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -447,10 +447,10 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 16826,
+              "id": 12849,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
-              "src": "200:7:73",
+              "src": "200:7:67",
               "typeDescriptions": {
                 "typeIdentifier": "t_bytes32",
                 "typeString": "bytes32"
@@ -459,14 +459,14 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307839316431373737373831383834643033613637353761383033393936653338646532613432393637666233376565616361373237323932373130323561396532",
-              "id": 16827,
+              "id": 12850,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
               "kind": "number",
               "lValueRequested": false,
               "nodeType": "Literal",
-              "src": "246:66:73",
+              "src": "246:66:67",
               "subdenomination": null,
               "typeDescriptions": {
                 "typeIdentifier": "t_rational_65955458610802586644366824307633271870356699036341805474246458084352783133154_by_1",
@@ -478,9 +478,9 @@
           },
           {
             "body": {
-              "id": 16845,
+              "id": 12868,
               "nodeType": "Block",
-              "src": "375:69:73",
+              "src": "375:69:67",
               "statements": [
                 {
                   "expression": {
@@ -488,12 +488,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 16842,
+                        "id": 12865,
                         "name": "name",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 16832,
-                        "src": "435:4:73",
+                        "referencedDeclaration": 12855,
+                        "src": "435:4:67",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
                           "typeString": "string memory"
@@ -515,12 +515,12 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 16838,
+                                "id": 12861,
                                 "name": "ADDR_REVERSE_NODE",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 16828,
-                                "src": "407:17:73",
+                                "referencedDeclaration": 12851,
+                                "src": "407:17:67",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
                                   "typeString": "bytes32"
@@ -536,32 +536,32 @@
                               ],
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 16836,
+                                "id": 12859,
                                 "name": "ens",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 16830,
-                                "src": "397:3:73",
+                                "referencedDeclaration": 12853,
+                                "src": "397:3:67",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_IENS_$16984",
+                                  "typeIdentifier": "t_contract$_IENS_$13007",
                                   "typeString": "contract IENS"
                                 }
                               },
-                              "id": 16837,
+                              "id": 12860,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "owner",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 16953,
-                              "src": "397:9:73",
+                              "referencedDeclaration": 12976,
+                              "src": "397:9:67",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                                 "typeString": "function (bytes32) view external returns (address)"
                               }
                             },
-                            "id": 16839,
+                            "id": 12862,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -569,7 +569,7 @@
                             "lValueRequested": false,
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "397:28:73",
+                            "src": "397:28:67",
                             "tryCall": false,
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -584,18 +584,18 @@
                               "typeString": "address"
                             }
                           ],
-                          "id": 16835,
+                          "id": 12858,
                           "name": "IReverseRegistrar",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 17033,
-                          "src": "379:17:73",
+                          "referencedDeclaration": 13056,
+                          "src": "379:17:67",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_IReverseRegistrar_$17033_$",
+                            "typeIdentifier": "t_type$_t_contract$_IReverseRegistrar_$13056_$",
                             "typeString": "type(contract IReverseRegistrar)"
                           }
                         },
-                        "id": 16840,
+                        "id": 12863,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -603,28 +603,28 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "379:47:73",
+                        "src": "379:47:67",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IReverseRegistrar_$17033",
+                          "typeIdentifier": "t_contract$_IReverseRegistrar_$13056",
                           "typeString": "contract IReverseRegistrar"
                         }
                       },
-                      "id": 16841,
+                      "id": 12864,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "setName",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 17025,
-                      "src": "379:55:73",
+                      "referencedDeclaration": 13048,
+                      "src": "379:55:67",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_string_memory_ptr_$returns$_t_bytes32_$",
                         "typeString": "function (string memory) external returns (bytes32)"
                       }
                     },
-                    "id": 16843,
+                    "id": 12866,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -632,21 +632,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "379:61:73",
+                    "src": "379:61:67",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 16844,
+                  "id": 12867,
                   "nodeType": "ExpressionStatement",
-                  "src": "379:61:73"
+                  "src": "379:61:67"
                 }
               ]
             },
             "documentation": null,
-            "id": 16846,
+            "id": 12869,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -654,33 +654,33 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16833,
+              "id": 12856,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16830,
+                  "id": 12853,
                   "mutability": "mutable",
                   "name": "ens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16846,
-                  "src": "334:8:73",
+                  "scope": 12869,
+                  "src": "334:8:67",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IENS_$16984",
+                    "typeIdentifier": "t_contract$_IENS_$13007",
                     "typeString": "contract IENS"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16829,
+                    "id": 12852,
                     "name": "IENS",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 16984,
-                    "src": "334:4:73",
+                    "referencedDeclaration": 13007,
+                    "src": "334:4:67",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IENS_$16984",
+                      "typeIdentifier": "t_contract$_IENS_$13007",
                       "typeString": "contract IENS"
                     }
                   },
@@ -689,13 +689,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 16832,
+                  "id": 12855,
                   "mutability": "mutable",
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16846,
-                  "src": "344:18:73",
+                  "scope": 12869,
+                  "src": "344:18:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -703,10 +703,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 16831,
+                    "id": 12854,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "344:6:73",
+                    "src": "344:6:67",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -716,26 +716,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "333:30:73"
+              "src": "333:30:67"
             },
             "returnParameters": {
-              "id": 16834,
+              "id": 12857,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "375:0:73"
+              "src": "375:0:67"
             },
-            "scope": 16847,
-            "src": "316:128:73",
+            "scope": 12870,
+            "src": "316:128:67",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 16848,
-        "src": "165:281:73"
+        "scope": 12871,
+        "src": "165:281:67"
       }
     ],
-    "src": "0:447:73"
+    "src": "0:447:67"
   },
   "compiler": {
     "name": "solc",
@@ -743,7 +743,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.2",
-  "updatedAt": "2020-09-22T12:25:17.420Z",
+  "updatedAt": "2020-11-04T15:01:35.891Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

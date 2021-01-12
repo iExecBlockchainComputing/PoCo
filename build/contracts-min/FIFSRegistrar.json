@@ -3,10 +3,12 @@
     {
       "inputs": [
         {
+          "internalType": "contract ENS",
           "name": "ensAddr",
           "type": "address"
         },
         {
+          "internalType": "bytes32",
           "name": "node",
           "type": "bytes32"
         }
@@ -19,10 +21,12 @@
       "constant": false,
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "label",
           "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         }

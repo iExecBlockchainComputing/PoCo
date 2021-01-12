@@ -66,12 +66,12 @@ contract('Accessors', async (accounts) => {
 		/**
 		 * Retreive deployed contracts
 		 */
-		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.deployed();
 		IexecInstance              = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
 		AppRegistryInstance        = await AppRegistry.deployed();
 		DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 		ERC712_domain              = await IexecInstance.domain();
+		RLCInstance                = DEPLOYMENT.asset == "Native" ? { address: constants.NULL.ADDRESS } : await RLC.at(await IexecInstance.token());
 
 		broker          = new odbtools.Broker    (IexecInstance);
 		iexecAdmin      = new odbtools.iExecAgent(IexecInstance, accounts[0]);
@@ -99,11 +99,11 @@ contract('Accessors', async (accounts) => {
 
 		describe("ERC20 metadata", async () => {
 			it("name", async () => {
-				assert.equal(await IexecInstance.name(), "Staked RLC");
+				assert.equal(await IexecInstance.name(), !!process.env.KYC ? "Staked ERLC" : "Staked RLC");
 			});
 
 			it("symbol", async () => {
-				assert.equal(await IexecInstance.symbol(), "SRLC");
+				assert.equal(await IexecInstance.symbol(), !!process.env.KYC ? "SERLC" : "SRLC");
 			});
 
 			it("decimals", async () => {
