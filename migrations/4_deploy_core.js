@@ -173,6 +173,9 @@ module.exports = async function(deployer, network, accounts)
 	/* --------------------------- Configure Stack --------------------------- */
 	IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);
 
+	if (deploymentOptions.v5.AppRegistry)        AppRegistry.address        = deploymentOptions.v5.AppRegistry;
+	if (deploymentOptions.v5.DatasetRegistry)    DatasetRegistry.address    = deploymentOptions.v5.DatasetRegistry;
+	if (deploymentOptions.v5.WorkerpoolRegistry) WorkerpoolRegistry.address = deploymentOptions.v5.WorkerpoolRegistry;
 	if (deploymentOptions.v5.usefactory)
 	{
 		await Promise.all([
