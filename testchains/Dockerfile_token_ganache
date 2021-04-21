@@ -17,4 +17,4 @@ FROM trufflesuite/ganache-cli:latest as runtime
 COPY --from=build "/ganachedb" "/ganachedb"
 
 ENTRYPOINT ["node", "/app/ganache-core.docker.cli.js"]
-CMD ["-l", "8000000", "-i", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]
+CMD ["-l", "8000000", "-i", "65535", "--chainId", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]
