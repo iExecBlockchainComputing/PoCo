@@ -22,7 +22,7 @@ module.exports = {
 			{ repo: '@ensdomains/ens',      name: 'FIFSRegistrar'         },
 			{ repo: '@ensdomains/ens',      name: 'ReverseRegistrar'      },
 			{ repo: '@ensdomains/resolver', name: 'PublicResolver'        },
-			{ repo: '@iexec/erlc',          name: 'ERLCSwap'              },
+			{ repo: '@iexec/erlc',          name: 'ERLCTokenSwap'         },
 			{ repo: '@iexec/solidity',      name: 'ERC1538Proxy'          },
 			{ repo: '@iexec/solidity',      name: 'ERC1538UpdateDelegate' },
 			{ repo: '@iexec/solidity',      name: 'ERC1538QueryDelegate'  },
