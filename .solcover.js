@@ -9,6 +9,9 @@ module.exports = {
 	 *	network_id: 65535
 	 * },
 	 */
+	mocha: {
+		timeout: 600000, // double timeout
+	},
 	port: 8555,
 	skipFiles: [
 		'tools/Migrations.sol',
