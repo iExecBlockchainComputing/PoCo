@@ -62,6 +62,9 @@ pipeline {
 			}
 		}
 
+        /*
+		Disable coverage 
+
 		stage("Solidity coverage - Public") {
 			agent {
 				docker {
@@ -102,6 +105,8 @@ pipeline {
 				}
 			}
 		}
+
+		*/
 
 		stage("Log tag") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
