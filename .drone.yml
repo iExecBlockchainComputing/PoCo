@@ -1,28 +1,4 @@
 pipeline:
-  docker_token_parity:
-    image: plugins/docker
-    repo: iexechub/poco-chaintest
-    secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_token_parity_no_seal
-    build_args:
-      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
-    auto_tag: true
-    auto_tag_suffix: token-parity
-    when:
-      ref: [refs/tags/v*]
-
-  docker_native_parity:
-    image: plugins/docker
-    repo: iexechub/poco-chaintest
-    secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_native_parity_no_seal
-    build_args:
-      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
-    auto_tag: true
-    auto_tag_suffix: native-parity
-    when:
-      ref: [refs/tags/v*]
-
   docker_token_openethereum:
     image: plugins/docker
     repo: iexechub/poco-chaintest

@@ -116,51 +116,11 @@ pipeline {
 			}
 		}
 
-		stage("Build poco-chain token (parity)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					tokenParityDockerImage = docker.build (registry + "/poco-chain:token-${TAG_NAME}", "-f testchains/Dockerfile_token_parity_1sec --no-cache .")
-				}
-			}
-		}
-
-		stage("Push poco-chain token (parity)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						tokenParityDockerImage.push()
-					}
-				}
-			}
-		}
-
-		stage("Build poco-chain native (parity)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					nativeParityDockerImage = docker.build (registry + "/poco-chain:native-${TAG_NAME}", "-f testchains/Dockerfile_native_parity_1sec --no-cache .")
-				}
-			}
-		}
-
-		stage("Push poco-chain native (parity)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						nativeParityDockerImage.push()
-					}
-				}
-			}
-		}
-
 		stage("Build poco-chain native (openethereum)") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					nativeOpenethereumDockerImage = docker.build (registry + "/poco-chain:native-openethereum-${TAG_NAME}", "-f testchains/Dockerfile_native_openethereum_1sec --no-cache .")
+					nativeOpenethereumDockerImage = docker.build (registry + "/poco-chain:native-${TAG_NAME}", "-f testchains/Dockerfile_native_openethereum_1sec --no-cache .")
 				}
 			}
 		}
@@ -180,7 +140,7 @@ pipeline {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
 				script {
-					tokenOpenethereumDockerImage = docker.build (registry + "/poco-chain:token-openethereum-${TAG_NAME}", "-f testchains/Dockerfile_token_openethereum_1sec --no-cache .")
+					tokenOpenethereumDockerImage = docker.build (registry + "/poco-chain:token-${TAG_NAME}", "-f testchains/Dockerfile_token_openethereum_1sec --no-cache .")
 				}
 			}
 		}
