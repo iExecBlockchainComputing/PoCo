@@ -18,7 +18,7 @@
 var DEPLOYMENT         = require("../../../config/config.json").chains.default;
 // Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
-var ERLCSwap           = artifacts.require('@iexec/erlc/ERLCSwap');
+var ERLCTokenSwap      = artifacts.require('@iexec/erlc/ERLCTokenSwap');
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
 var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
@@ -106,7 +106,7 @@ contract('ENSIntegration', async (accounts) => {
 				assert.equal(await enstools.resolve("rlc.iexec.eth"), (await RLC.deployed()).address);
 			}
 			if (DEPLOYMENT.asset == "Token" && !!process.env.KYC) {
-				assert.equal(await enstools.resolve("erlc.iexec.eth"), (await ERLCSwap.deployed()).address);
+				assert.equal(await enstools.resolve("erlc.iexec.eth"), (await ERLCTokenSwap.deployed()).address);
 			}
 			assert.equal(await enstools.resolve("core.v5.iexec.eth"       ), IexecInstance.address             );
 			assert.equal(await enstools.resolve("apps.v5.iexec.eth"       ), AppRegistryInstance.address       );

@@ -84,7 +84,7 @@ function runTests
 		logfile="logs/fast.$date.log"
 		printf "Running tests ... "
 		$TRUFFLE test $PARAMS 2>&1 | tee $logfile
-		if [[ $? -ne 0 ]];
+		if [[ ${PIPESTATUS[0]} -ne 0 ]]; # use PIPESTATUS instead of $? which will contain tee exit code
 		then
 			print_style 'danger' "failure\n"
 			catch

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup node /app/ganache-core.docker.cli.js -m "$MNEMONIC" -l 8000000 -i 65535 --chainId 65535 --hardfork istanbul --db "/ganachedb" > deployed.txt 2>&1 &
+nohup /home/openethereum/openethereum --chain /iexec-poco/testchains/openethereum/20sec/spec.json --config /iexec-poco/testchains/openethereum/20sec/authority.toml --force-sealing -d /iexec-poco/testchains/openethereum/20sec/data --geth > deployed.txt 2>&1 &
 sleep 4
 
 cd /iexec-poco && \

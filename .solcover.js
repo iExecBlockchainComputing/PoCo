@@ -9,6 +9,9 @@ module.exports = {
 	 *	network_id: 65535
 	 * },
 	 */
+	mocha: {
+		timeout: 600000, // double timeout
+	},
 	port: 8555,
 	skipFiles: [
 		'tools/Migrations.sol',
@@ -22,7 +25,7 @@ module.exports = {
 			{ repo: '@ensdomains/ens',      name: 'FIFSRegistrar'         },
 			{ repo: '@ensdomains/ens',      name: 'ReverseRegistrar'      },
 			{ repo: '@ensdomains/resolver', name: 'PublicResolver'        },
-			{ repo: '@iexec/erlc',          name: 'ERLCSwap'              },
+			{ repo: '@iexec/erlc',          name: 'ERLCTokenSwap'         },
 			{ repo: '@iexec/solidity',      name: 'ERC1538Proxy'          },
 			{ repo: '@iexec/solidity',      name: 'ERC1538UpdateDelegate' },
 			{ repo: '@iexec/solidity',      name: 'ERC1538QueryDelegate'  },

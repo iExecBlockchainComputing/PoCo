@@ -5,12 +5,11 @@ pipeline:
     secrets: [docker_username, docker_password]
     dockerfile: testchains/Dockerfile_token_parity_no_seal
     build_args:
-      - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
     auto_tag_suffix: token-parity
     when:
-      ref: [refs/tags/v5*, refs/tags/lv5*]
+      ref: [refs/tags/v*]
 
   docker_native_parity:
     image: plugins/docker
@@ -18,12 +17,35 @@ pipeline:
     secrets: [docker_username, docker_password]
     dockerfile: testchains/Dockerfile_native_parity_no_seal
     build_args:
-      - DEV_NODE=http://localhost:8545
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
     auto_tag: true
     auto_tag_suffix: native-parity
     when:
-      ref: [refs/tags/v5*]
+      ref: [refs/tags/v*]
+
+  docker_token_openethereum:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: testchains/Dockerfile_token_openethereum_no_seal
+    build_args:
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+    auto_tag: true
+    auto_tag_suffix: token-openethereum
+    when:
+      ref: [refs/tags/v*]
+
+  docker_native_openethereum:
+    image: plugins/docker
+    repo: iexechub/poco-chaintest
+    secrets: [docker_username, docker_password]
+    dockerfile: testchains/Dockerfile_native_openethereum_no_seal
+    build_args:
+      - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+    auto_tag: true
+    auto_tag_suffix: native-openethereum
+    when:
+      ref: [refs/tags/v*]
 
   docker_token_ganache:
     image: plugins/docker
@@ -35,7 +57,7 @@ pipeline:
     auto_tag: true
     auto_tag_suffix: token
     when:
-      ref: [refs/tags/v5*]
+      ref: [refs/tags/v*]
 
   docker_native_ganache:
     image: plugins/docker
@@ -47,7 +69,7 @@ pipeline:
     auto_tag: true
     auto_tag_suffix: native
     when:
-      ref: [refs/tags/v5*]
+      ref: [refs/tags/v*]
 
   docker_token_1s_ganache:
     image: plugins/docker
@@ -57,4 +79,4 @@ pipeline:
     auto_tag: true
     auto_tag_suffix: token-1s
     when:
-      ref: [refs/tags/v5*]
+      ref: [refs/tags/v*]
