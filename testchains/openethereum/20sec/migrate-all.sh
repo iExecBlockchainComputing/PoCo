@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup /home/openethereum/openethereum --chain /iexec-poco/testchains/openethereum/20sec/spec.json --config /iexec-poco/testchains/openethereum/20sec/authority.toml --force-sealing -d /iexec-poco/testchains/openethereum/20sec/data --geth > deployed.txt 2>&1 &
+nohup /home/openethereum/openethereum --chain /iexec-poco/testchains/openethereum/20sec/spec.json --config /iexec-poco/testchains/openethereum/20sec/authority.toml --force-sealing -d /iexec-poco/testchains/openethereum/20sec/data > deployed.txt 2>&1 &
 sleep 4
 
 cd /iexec-poco && \

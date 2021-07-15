@@ -1,4 +1,4 @@
-FROM openethereum/openethereum:v3.0.0
+FROM openethereum/openethereum:v3.3.0-rc.4
 
 USER root
 
@@ -16,4 +16,4 @@ ARG MNEMONIC
 RUN bash /iexec-poco/testchains/openethereum/20sec/migrate-all.sh
 
 ENTRYPOINT ["/home/openethereum/openethereum"]
-CMD ["--chain", "/iexec-poco/testchains/openethereum/20sec/spec.json", "--config", "/iexec-poco/testchains/openethereum/20sec/authority.toml", "-d", "/iexec-poco/testchains/openethereum/20sec/data", "--geth"]
+CMD ["--chain", "/iexec-poco/testchains/openethereum/20sec/spec.json", "--config", "/iexec-poco/testchains/openethereum/20sec/authority.toml", "-d", "/iexec-poco/testchains/openethereum/20sec/data"]
