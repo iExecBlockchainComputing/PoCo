@@ -26,25 +26,17 @@ module.exports = async function(deployer, network, accounts)
 	switch (deploymentOptions.asset)
 	{
 		case 'Token':  IexecInterfaceInstance = await IexecInterfaceToken.at((await ERC1538Proxy.deployed()).address);  break;
-		case 'Native': IexecInterfaceInstance = await IexecInterfaceNative.at((await ERC1538Proxy.deployed()).address); break;
 	}
 
-	if (chainid > 64 && !process.env.KYC) // skip for mainnet, testnet and enterprise
-	{
+    //only for standard token private chains
+	if (chainid > 134 && deploymentOptions.asset == 'Token'  && !process.env.KYC) {
 		const totalAmount = 1000000000; // 1RLC
-
-		switch (deploymentOptions.asset)
-		{
-			case 'Token':
-                RLCInstance = await RLC.deployed();
-                await RLCInstance.approveAndCall(IexecInterfaceInstance.address, totalAmount, "0x");
-				break;
-			case 'Native':
-				await IexecInterfaceInstance.deposit({ value: totalAmount })
-				break;
-		}
-
-		// all transfers
-		await Promise.all(ACCOUNTS.map(({address, amount}) => IexecInterfaceInstance.transfer(address, amount)))
+        RLCInstance = await RLC.deployed();
+        await RLCInstance.approveAndCall(IexecInterfaceInstance.address, totalAmount, "0x");
+        // all transfers
+        await Promise.all(ACCOUNTS.map(({address, amount}) => {
+            console.log('Transferring for address ' + address + ": " + amount)
+            IexecInterfaceInstance.transfer(address, amount)
+        }))
 	}
 };
