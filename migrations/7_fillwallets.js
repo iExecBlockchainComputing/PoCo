@@ -8,6 +8,7 @@ const RLC = artifacts.require("rlc-faucet-contract/RLC");
 const ERC1538Proxy = artifacts.require("@iexec/solidity/ERC1538Proxy");
 // Interface
 const IexecInterfaceToken = artifacts.require("IexecInterfaceToken");
+const IexecInterfaceNative = artifacts.require("IexecInterfaceNative");
 
 /*****************************************************************************
  *                                   Main                                    *
@@ -22,25 +23,37 @@ module.exports = async function (deployer, network, accounts) {
 
   const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
 
-  //only for standard token private chains
-  if (
-    chainid > 1000 &&
-    deploymentOptions.asset === "Token" &&
-    !process.env.KYC
-  ) {
-    const IexecInterfaceInstance = await IexecInterfaceToken.at(
-      (
-        await ERC1538Proxy.deployed()
-      ).address
-    );
-    const totalAmount = 1000000000; // 1RLC
+  //only for standard private chains
+  if (chainid > 1000 && !process.env.KYC) {
+    let IexecInterfaceInstance;
+    const IexecProxyInstance = await ERC1538Proxy.deployed();
+    const totalAmount = ACCOUNTS.reduce((acc, { amount }) => acc + amount, 0); // 1RLC
 
-    const RLCInstance = await RLC.deployed();
-    await RLCInstance.approveAndCall(
-      IexecInterfaceInstance.address,
-      totalAmount,
-      "0x"
-    );
+    // deposit
+    console.log("Depositing " + totalAmount);
+    switch (deploymentOptions.asset) {
+      case "Token":
+        IexecInterfaceInstance = await IexecInterfaceToken.at(
+          IexecProxyInstance.address
+        );
+        const RLCInstance = await RLC.deployed();
+        await RLCInstance.approveAndCall(
+          IexecInterfaceInstance.address,
+          totalAmount,
+          "0x"
+        );
+        break;
+      case "Native":
+        IexecInterfaceInstance = await IexecInterfaceNative.at(
+          IexecProxyInstance.address
+        );
+        await IexecInterfaceInstance.deposit({
+          from: accounts[0],
+          value: totalAmount * 10 ** 9,
+        });
+        break;
+    }
+
     // all transfers
     await Promise.all(
       ACCOUNTS.map(({ address, amount }) => {
