@@ -24,7 +24,7 @@ module.exports = async function (deployer, network, accounts) {
 
   //only for standard token private chains
   if (
-    chainid > 134 &&
+    chainid > 1000 &&
     deploymentOptions.asset === "Token" &&
     !process.env.KYC
   ) {
