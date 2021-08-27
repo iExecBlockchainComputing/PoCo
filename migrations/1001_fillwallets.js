@@ -26,7 +26,10 @@ module.exports = async function (deployer, network, accounts) {
   if (chainid > 1000 && !process.env.KYC) {
     let IexecInterfaceInstance;
     const IexecProxyInstance = await ERC1538Proxy.deployed();
-    const totalAmount = ACCOUNTS.reduce((acc, { amount }) => acc + amount, 0); // 1RLC
+    const totalAmount = ACCOUNTS.reduce(
+      (acc, { amount }) => acc.add(web3.utils.toBN(amount)),
+      web3.utils.toBN(0)
+    );
 
     // deposit
     console.log("Depositing " + totalAmount);
@@ -48,7 +51,7 @@ module.exports = async function (deployer, network, accounts) {
         );
         await IexecInterfaceInstance.deposit({
           from: accounts[0],
-          value: totalAmount * 10 ** 9,
+          value: totalAmount.mul(web3.utils.toBN(10 ** 9)),
         });
         break;
     }
