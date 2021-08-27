@@ -1,4 +1,3 @@
-const assert = require("assert");
 // CONFIG
 const CONFIG = require("../config/config.json");
 const ACCOUNTS = require("../config/accounts.json");
