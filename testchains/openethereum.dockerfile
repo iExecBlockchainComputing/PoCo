@@ -23,11 +23,11 @@ RUN node -v
 # "native" or "token".
 ARG CHAIN_TYPE
 
-# "migrate.sh" or "migrate-all.sh".
-ARG MIGRATION_FILENAME
-
 # "1sec", "1sec_no_seal", "5sec", "20sec"
 ARG CHAIN_CONFIG_FOLDER_NAME
+
+# "migrate.sh" or "migrate-all.sh".
+ARG MIGRATION_FILENAME
 
 ###
 ## Copy config file
@@ -50,7 +50,7 @@ ENV CHAIN_CONFIG_FOLDER_PATH="/iexec-poco/testchains/openethereum/${CHAIN_CONFIG
 ARG DEV_NODE
 ARG MNEMONIC
 
-# e.g. /iexec-poco/testchains/openethereum/1sec/migrate.sh
+# e.g. bash /iexec-poco/testchains/openethereum/1sec/migrate.sh
 RUN bash ${CHAIN_CONFIG_FOLDER_PATH}/${MIGRATION_FILENAME}
 
 ###
