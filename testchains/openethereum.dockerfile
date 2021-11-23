@@ -11,13 +11,13 @@ RUN node -v
 ###
 
 # "native" or "token".
-ARG CHAIN_TYPE=
+ARG CHAIN_TYPE
 
 # "migrate.sh" or "migrate-all.sh".
-ARG MIGRATION_FILENAME=migrate.sh
+ARG MIGRATION_FILENAME
 
 # "1sec", "1sec_no_seal", "5sec", "20sec"
-ARG CHAIN_CONFIG_FOLDER_NAME=1sec
+ARG CHAIN_CONFIG_FOLDER_NAME
 
 ###
 ## Copy config file
