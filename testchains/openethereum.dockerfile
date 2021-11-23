@@ -1,3 +1,13 @@
+###
+## docker image build \
+##      --file testchains/openethereum.dockerfile \
+##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-some-fork.0 \
+##      --build-arg CHAIN_TYPE=native \
+##      --build-arg MIGRATION_FILENAME=migrate.sh \
+##      --build-arg CHAIN_CONFIG_FOLDER_NAME=1sec \
+##      .
+###
+
 FROM openethereum/openethereum:v3.3.0-rc.4
 
 USER root

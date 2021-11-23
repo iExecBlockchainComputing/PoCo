@@ -155,5 +155,29 @@ pipeline {
 				}
 			}
 		}
+
+        stage("Buidl & Push openethereum poco-chain (native & 5s)") {
+            when {
+                expression {
+                    env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+                }
+            }
+			steps {
+				script {
+					native5secOpenethereumDockerImage = docker.build(
+                        registry + "/poco-chain:native-${TAG_NAME}",
+                        "--file testchains/openethereum.dockerfile" +
+                        "--build-arg CHAIN_TYPE=native " +
+                        "--build-arg CHAIN_CONFIG_FOLDER_NAME=5sec " +
+                        "--build-arg MIGRATION_FILENAME=migrate.sh " +
+                        "--no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						native5secOpenethereumDockerImage.push()
+					}
+				}
+			}
+		}
 	}
 }
