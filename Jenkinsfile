@@ -166,11 +166,11 @@ pipeline {
 				script {
 					native5secOpenethereumDockerImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}",
-						"--file testchains/openethereum.dockerfile" +
-						"--build-arg CHAIN_TYPE=native " +
-						"--build-arg CHAIN_CONFIG_FOLDER_NAME=5sec " +
-						"--build-arg MIGRATION_FILENAME=migrate.sh " +
-						"--no-cache .")
+						"--file testchains/openethereum.dockerfile"
+						+ " --build-arg CHAIN_TYPE=native"
+						+ " --build-arg CHAIN_CONFIG_FOLDER_NAME=5sec"
+						+ " --build-arg MIGRATION_FILENAME=migrate.sh"
+						+ " --no-cache .")
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
