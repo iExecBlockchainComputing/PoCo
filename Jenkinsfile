@@ -116,47 +116,7 @@ pipeline {
 			}
 		}
 
-		stage("Build poco-chain native (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					nativeOpenethereumDockerImage = docker.build (registry + "/poco-chain:native-${TAG_NAME}", "-f testchains/Dockerfile_native_openethereum_1sec --no-cache .")
-				}
-			}
-		}
-
-		stage("Push poco-chain native (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						nativeOpenethereumDockerImage.push()
-					}
-				}
-			}
-		}
-
-		stage("Build poco-chain token (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					tokenOpenethereumDockerImage = docker.build (registry + "/poco-chain:token-${TAG_NAME}", "-f testchains/Dockerfile_token_openethereum_1sec --no-cache .")
-				}
-			}
-		}
-
-		stage("Push poco-chain token (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						tokenOpenethereumDockerImage.push()
-					}
-				}
-			}
-		}
-
-		stage("Buidl & Push openethereum poco-chain (native & 5s)") {
+		stage("Docker - openethereum + native + 1s") {
 			when {
 				expression {
 					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
@@ -164,17 +124,65 @@ pipeline {
 			}
 			steps {
 				script {
-					native5secOpenethereumDockerImage = docker.build(
+					openethereumNative1secImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}",
-						"--file testchains/openethereum.dockerfile"
-						+ " --build-arg CHAIN_TYPE=native"
-						+ " --build-arg CHAIN_CONFIG_FOLDER_NAME=5sec"
-						+ " --build-arg MIGRATION_FILENAME=migrate.sh"
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg CHAIN_TYPE=native" \
+						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
 						+ " --no-cache .")
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
-						native5secOpenethereumDockerImage.push()
+						openethereumNative1secImage.push()
+					}
+				}
+			}
+		}
+
+		stage("Docker - openethereum + token + 1s") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+				}
+			}
+			steps {
+				script {
+					openethereumToken1secImage = docker.build(
+						registry + "/poco-chain:token-${TAG_NAME}",
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg CHAIN_TYPE=token" \
+						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumToken1secImage.push()
+					}
+				}
+			}
+		}
+
+		stage("Docker - openethereum + native + 5s") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+				}
+			}
+			steps {
+				script {
+					openethereumNative5secImage = docker.build(
+						registry + "/poco-chain:native-${TAG_NAME}",
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg CHAIN_TYPE=native" \
+						+ " --build-arg CHAIN_BLOCK_TIME=5" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumNative5secImage.push()
 					}
 				}
 			}
