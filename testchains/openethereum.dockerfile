@@ -57,9 +57,11 @@ RUN bash ${CHAIN_CONFIG_FOLDER_PATH}/${MIGRATION_FILENAME}
 ## Configure entrypoint
 ###
 
-ENTRYPOINT ["/home/openethereum/openethereum"]
+ENTRYPOINT ["sh"]
 CMD [ \
-        "--chain", "${CHAIN_CONFIG_FOLDER_PATH}/spec.json", \
-        "--config", "${CHAIN_CONFIG_FOLDER_PATH}/authority.toml", \
-        "-d", "${CHAIN_CONFIG_FOLDER_PATH}/data" \
+        "-c", \
+        "/home/openethereum/openethereum \
+            --chain ${CHAIN_CONFIG_FOLDER_PATH}/spec.json \
+            --config ${CHAIN_CONFIG_FOLDER_PATH}/authority.toml \
+            -d ${CHAIN_CONFIG_FOLDER_PATH}/data" \
     ]
