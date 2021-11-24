@@ -4,7 +4,7 @@
 nohup /home/openethereum/openethereum \
         --chain /iexec-poco/testchains/openethereum/spec.json \
         --config /iexec-poco/testchains/openethereum/authority.toml \
-        -d /iexec-poco/testchains/openethereum/data > deployed.txt 2>&1 &
+        -d /iexec-poco/testchains/openethereum/chain-data > deployed.txt 2>&1 &
 
 # Wait for the chain to start 
 sleep 4
