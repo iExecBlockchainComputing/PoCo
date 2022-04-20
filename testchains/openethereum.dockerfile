@@ -52,6 +52,7 @@ RUN sed -i "s/@force_sealing@/${CHAIN_FORCE_SEALING}/" ${BASE_DIR}/authority.tom
 ###
 ARG DEV_NODE
 ARG MNEMONIC
+RUN echo "MNEMONIC: ${MNEMONIC}"
 # Choose migration file according to chain type.
 # native -> migrate.sh
 # token -> migrate-all.sh
