@@ -3,9 +3,12 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_token_openethereum_no_seal
+    dockerfile: testchains/openethereum.dockerfile
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+      - CHAIN_TYPE=token
+      - CHAIN_BLOCK_TIME=1
+      - CHAIN_FORCE_SEALING=false
     auto_tag: true
     auto_tag_suffix: token-openethereum
     when:
@@ -15,9 +18,12 @@ pipeline:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_native_openethereum_no_seal
+    dockerfile: testchains/openethereum.dockerfile
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
+      - CHAIN_TYPE=native
+      - CHAIN_BLOCK_TIME=1
+      - CHAIN_FORCE_SEALING=false
     auto_tag: true
     auto_tag_suffix: native-openethereum
     when:

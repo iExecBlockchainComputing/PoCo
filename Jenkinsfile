@@ -62,7 +62,7 @@ pipeline {
 			}
 		}
 
-        /*
+		/*
 		Disable coverage 
 
 		stage("Solidity coverage - Public") {
@@ -116,41 +116,101 @@ pipeline {
 			}
 		}
 
-		stage("Build poco-chain native (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				script {
-					nativeOpenethereumDockerImage = docker.build (registry + "/poco-chain:native-${TAG_NAME}", "-f testchains/Dockerfile_native_openethereum_1sec --no-cache .")
+		stage("Native 1s image") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
 				}
 			}
-		}
-
-		stage("Push poco-chain native (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
+			steps {
 				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						nativeOpenethereumDockerImage.push()
+					openethereumNative1secImage = docker.build(
+						registry + "/poco-chain:native-${TAG_NAME}",
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
+						+ " --build-arg CHAIN_TYPE=native" \
+						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumNative1secImage.push()
 					}
 				}
 			}
 		}
 
-		stage("Build poco-chain token (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
+		stage("Token 1s image") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+				}
+			}
+			steps {
 				script {
-					tokenOpenethereumDockerImage = docker.build (registry + "/poco-chain:token-${TAG_NAME}", "-f testchains/Dockerfile_token_openethereum_1sec --no-cache .")
+					openethereumToken1secImage = docker.build(
+						registry + "/poco-chain:token-${TAG_NAME}",
+						"--file testchains/openethereum.dockerfile" \
+                        + " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
+						+ " --build-arg CHAIN_TYPE=token" \
+						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumToken1secImage.push()
+					}
 				}
 			}
 		}
 
-		stage("Push poco-chain token (openethereum)") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
+		stage("Native 5s image") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+				}
+			}
+			steps {
 				script {
-					docker.withRegistry( "https://"+registry, "nexus" ) {
-						tokenOpenethereumDockerImage.push()
+					openethereumNative5secImage = docker.build(
+						registry + "/poco-chain:native-${TAG_NAME}-5s",
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
+						+ " --build-arg CHAIN_TYPE=native" \
+						+ " --build-arg CHAIN_BLOCK_TIME=5" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumNative5secImage.push()
+					}
+				}
+			}
+		}
+
+		stage("Token 5s image") {
+			when {
+				expression {
+					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
+				}
+			}
+			steps {
+				script {
+					openethereumNative5secImage = docker.build(
+						registry + "/poco-chain:token-${TAG_NAME}-5s",
+						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
+						+ " --build-arg CHAIN_TYPE=token" \
+						+ " --build-arg CHAIN_BLOCK_TIME=5" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
+						+ " --no-cache .")
+				}
+				script {
+					docker.withRegistry("https://" + registry, "nexus") {
+						openethereumNative5secImage.push()
 					}
 				}
 			}
