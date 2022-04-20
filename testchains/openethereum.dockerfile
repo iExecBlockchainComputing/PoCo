@@ -8,7 +8,7 @@
 ##      .
 ###
 
-FROM openethereum/openethereum:v3.3.0-rc.4
+FROM openethereum/openethereum:v3.3.0
 
 USER root
 RUN apk update && apk add bash jq nodejs npm
