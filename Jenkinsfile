@@ -31,7 +31,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "npm run autotest fast"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
@@ -53,7 +53,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "npm run autotest fast"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
@@ -75,7 +75,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "npm run coverage"
 					} finally {
 						archiveArtifacts artifacts: "coverage/**"
@@ -97,7 +97,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm install --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "npm run coverage"
 					} finally {
 						archiveArtifacts artifacts: "coverage/**"
