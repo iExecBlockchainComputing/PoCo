@@ -36,15 +36,16 @@
   "devDependencies": {
     "@ensdomains/ens": "0.4.5",
     "@ensdomains/resolver": "0.2.4",
-    "@openzeppelin/test-helpers": "^0.5.10",
+    "@openzeppelin/test-helpers": "^0.5.15",
     "@truffle/hdwallet-provider": "^1.2.1",
     "chai": "4.2.0",
     "eth-sig-util": "3.0.0",
     "ethers": "^5.0.25",
-    "ganache-cli": "6.12.1",
+    "ganache": "^7.0.4",
     "husky": "^4.3.7",
+    "patched-openzeppelin-test-helpers": "file:patched-openzeppelin-test-helpers",
     "solidity-coverage": "^0.7.16",
-    "truffle": "^5.4.0",
+    "truffle": "^5.5.10",
     "truffle-plugin-verify": "^0.5.4"
   }
 }
