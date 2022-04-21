@@ -57,11 +57,10 @@ module.exports = async function (deployer, network, accounts) {
     }
 
     // all transfers
-    await Promise.all(
-      ACCOUNTS.map(({ address, amount }) => {
-        console.log("Transferring for address " + address + ": " + amount);
-        IexecInterfaceInstance.transfer(address, amount);
-      })
-    );
+    for (account of ACCOUNTS) {
+      const { address, amount } = account
+      console.log("Transferring for address " + address + ": " + amount);
+      await IexecInterfaceInstance.transfer(address, amount);
+    }
   }
 };
