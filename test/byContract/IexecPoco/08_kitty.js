@@ -127,15 +127,13 @@ contract('Poco', async (accounts) => {
 						break;
 				}
 
-				await Promise.all([
-					IexecInstance.transfer(scheduler.address, 100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker1.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker2.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker3.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker4.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker5.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(user.address,      100000, { from: iexecAdmin.address }),
-				]);
+				await IexecInstance.transfer(scheduler.address, 100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker1.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker2.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker3.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker4.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker5.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(user.address,      100000, { from: iexecAdmin.address });
 			});
 
 			it("balances", async () => {

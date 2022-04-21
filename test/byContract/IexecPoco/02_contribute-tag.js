@@ -112,15 +112,13 @@ contract('Poco', async (accounts) => {
 				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin.address });
 				break;
 		}
-		await Promise.all([
-			IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
-		]);
+		await IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address });
 	});
 
 	/***************************************************************************
@@ -228,11 +226,9 @@ contract('Poco', async (accounts) => {
 			sign:               constants.NULL.SIGNATURE,
 		});
 
-		// Market
-		await Promise.all([
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user.address }),
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user.address }),
-		]);
+		// Market		
+		await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user.address });
+		await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user.address });
 
 		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.utils.hashRequestOrder(ERC712_domain, requestorder));
 	});
