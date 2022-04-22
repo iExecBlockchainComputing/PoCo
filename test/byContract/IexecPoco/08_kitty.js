@@ -283,6 +283,8 @@ contract('Poco', async (accounts) => {
 		it("wait", async () => {
 			target = Number((await IexecInstance.viewTask(tasks[0])).finalDeadline);
 			await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+			// workaround for https://github.com/trufflesuite/ganache/issues/1033
+			await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_mine", params: [ ], id: 0 }, () => {});
 		});
 
 		it("[8.3a] claim", async () => {

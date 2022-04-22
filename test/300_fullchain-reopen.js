@@ -430,6 +430,8 @@ contract('Fullchain', async (accounts) => {
 			it("clock fast forward", async () => {
 				target = Number((await IexecInstance.viewTask(taskid)).revealDeadline);
 				await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+				// workaround for https://github.com/trufflesuite/ganache/issues/1033
+				await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_mine", params: [ ], id: 0 }, () => {});
 			});
 		});
 
