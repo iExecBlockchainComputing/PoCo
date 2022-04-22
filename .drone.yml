@@ -1,4 +1,13 @@
 pipeline:
+
+  test:
+    image: node:16
+    pull: true
+    commands:
+      - npm ci --production=false
+      - npm run autotest fast
+      - KYC=1 npm run autotest fast
+
   docker_token_openethereum:
     image: plugins/docker
     repo: iexechub/poco-chaintest
