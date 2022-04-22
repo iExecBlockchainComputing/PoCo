@@ -27,7 +27,7 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
 const tools     = require("../../../utils/tools");
 const enstools  = require("../../../utils/ens-tools");
 const odbtools  = require("../../../utils/odb-tools");
@@ -112,15 +112,13 @@ contract('Poco', async (accounts) => {
 				await RLCInstance.approveAndCall(IexecInstance.address, 10000000, "0x", { from: iexecAdmin.address });
 				break;
 		}
-		await Promise.all([
-			IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
-			IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
-		]);
+		await IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address });
+		await IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address });
 	});
 
 	/***************************************************************************
@@ -229,10 +227,8 @@ contract('Poco', async (accounts) => {
 		});
 
 		// Market
-		await Promise.all([
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user.address }),
-			IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user.address }),
-		]);
+		await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder_offset, requestorder, { from: user.address });
+		await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder,        requestorder, { from: user.address });
 
 		deals = await odbtools.utils.requestToDeal(IexecInstance, odbtools.utils.hashRequestOrder(ERC712_domain, requestorder));
 	});
@@ -368,6 +364,8 @@ contract('Poco', async (accounts) => {
 		target = Number((await IexecInstance.viewTask(tasks[3])).revealDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+		// workaround for https://github.com/trufflesuite/ganache/issues/1033
+		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_mine", params: [ ], id: 0 }, () => {});
 	});
 
 	it("[4.3] Finalize - Correct (partial - wait)", async () => {
@@ -394,6 +392,8 @@ contract('Poco', async (accounts) => {
 		target = Number((await IexecInstance.viewTask(tasks[7])).finalDeadline);
 
 		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+		// workaround for https://github.com/trufflesuite/ganache/issues/1033
+		await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_mine", params: [ ], id: 0 }, () => {});
 	});
 
 	it("[4.7] Finalize - Error (late)", async () => {

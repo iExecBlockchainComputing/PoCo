@@ -9,7 +9,7 @@ sleep 4
 
 cd /iexec-poco && \
   echo "========== INSTALL DEPENDENCIES ==========" && \
-  bash -i -c "npm i" && \
+  bash -i -c "npm ci --production=false" && \
   echo "========== STANDARD DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "./node_modules/.bin/truffle migrate" && \

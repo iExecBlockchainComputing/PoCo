@@ -106,7 +106,9 @@ module.exports = async function(deployer, network, accounts)
 	/* ------------------------ Deploy & link library ------------------------ */
 	if (deploymentOptions.v5.usefactory)
 	{
-		await Promise.all(libraries.map(library => factoryDeployer.deploy(library)));
+		for (library of libraries) {
+			await factoryDeployer.deploy(library);
+		}
 	}
 	else
 	{
@@ -139,7 +141,9 @@ module.exports = async function(deployer, network, accounts)
 	.filter(Boolean);
 
 	/* --------------------------- Deploy modules ---------------------------- */
-	await Promise.all(contracts.map(module => deploymentOptions.v5.usefactory ? factoryDeployer.deploy(module, { libraries }) : deployer.deploy(module))); // No need for salting here
+	for (module of contracts) {
+		deploymentOptions.v5.usefactory ? await factoryDeployer.deploy(module, { libraries }) : await deployer.deploy(module);
+	}
 
 	/* ---------------------------- Deploy proxy ----------------------------- */
 	if (deploymentOptions.v5.usefactory)
@@ -161,14 +165,14 @@ module.exports = async function(deployer, network, accounts)
 	console.log(`IexecInstance deployed at address: ${ERC1538.address}`);
 
 	/* --------------------------- Setup modules ---------------------------- */
-	await Promise.all(contracts.filter(module => module != ERC1538Update).map(async module => {
+	for (module of contracts.filter(module => module != ERC1538Update)) {
 		console.log(`ERC1538 link: ${module.contractName}`);
-		return ERC1538.updateContract(
+		await ERC1538.updateContract(
 			(await module.deployed()).address,
 			getFunctionSignatures(module.abi),
 			'Linking ' + module.contractName
 		);
-	}));
+	}
 
 	/* --------------------------- Configure Stack --------------------------- */
 	IexecInterfaceInstance = await IexecInterfaceToken.at(ERC1538.address);
@@ -178,19 +182,15 @@ module.exports = async function(deployer, network, accounts)
 	if (deploymentOptions.v5.WorkerpoolRegistry) WorkerpoolRegistry.address = deploymentOptions.v5.WorkerpoolRegistry;
 	if (deploymentOptions.v5.usefactory)
 	{
-		await Promise.all([
-			AppRegistry.isDeployed()        || factoryDeployer.deploy(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-			DatasetRegistry.isDeployed()    || factoryDeployer.deploy(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-			WorkerpoolRegistry.isDeployed() || factoryDeployer.deploy(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt }),
-		]);
+		AppRegistry.isDeployed()        || await factoryDeployer.deploy(AppRegistry,        { call: web3.eth.abi.encodeFunctionCall(       AppRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt });
+		DatasetRegistry.isDeployed()    || await factoryDeployer.deploy(DatasetRegistry,    { call: web3.eth.abi.encodeFunctionCall(   DatasetRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt });
+		WorkerpoolRegistry.isDeployed() || await factoryDeployer.deploy(WorkerpoolRegistry, { call: web3.eth.abi.encodeFunctionCall(WorkerpoolRegistry._json.abi.find(e => e.name == 'transferOwnership'), [ accounts[0] ]), salt });
 	}
 	else
 	{
-		await Promise.all([
-			AppRegistry.isDeployed()        || deployer.deploy(AppRegistry),
-			DatasetRegistry.isDeployed()    || deployer.deploy(DatasetRegistry),
-			WorkerpoolRegistry.isDeployed() || deployer.deploy(WorkerpoolRegistry),
-		]);
+		AppRegistry.isDeployed()        || await deployer.deploy(AppRegistry);
+		DatasetRegistry.isDeployed()    || await deployer.deploy(DatasetRegistry);
+		WorkerpoolRegistry.isDeployed() || await deployer.deploy(WorkerpoolRegistry);
 	}
 
 	switch (deploymentOptions.asset)
@@ -224,24 +224,22 @@ module.exports = async function(deployer, network, accounts)
 	const WorkerpoolRegistryInitialized = await WorkerpoolRegistryInstance.initialized();
 	const IexecInterfaceInitialized     = await IexecInterfaceInstance.eip712domain_separator() != BYTES32_ZERO;
 
-	await Promise.all([
-		!AppRegistryInitialized        && AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || ADDRESS_ZERO),
-		!DatasetRegistryInitialized    && DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || ADDRESS_ZERO),
-		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || ADDRESS_ZERO),
-		!AppRegistryInitialized        && AppRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainid}/`),
-		!DatasetRegistryInitialized    && DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`),
-		!WorkerpoolRegistryInitialized && WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`),
-		!IexecInterfaceInitialized     && IexecInterfaceInstance.configure(
-			TokenInstance.address,
-			deploymentOptions.v5.usekyc ? 'Staked eRLC'        : 'Staked RLC',
-			deploymentOptions.v5.usekyc ? 'SeRLC'              : 'SRLC',
-			9, // TODO: generic ?
-			AppRegistryInstance.address,
-			DatasetRegistryInstance.address,
-			WorkerpoolRegistryInstance.address,
-			ADDRESS_ZERO
-		),
-	]);
+	!AppRegistryInitialized        && await AppRegistryInstance.initialize(deploymentOptions.v3.AppRegistry || ADDRESS_ZERO);
+	!DatasetRegistryInitialized    && await DatasetRegistryInstance.initialize(deploymentOptions.v3.DatasetRegistry || ADDRESS_ZERO);
+	!WorkerpoolRegistryInitialized && await WorkerpoolRegistryInstance.initialize(deploymentOptions.v3.WorkerpoolRegistry || ADDRESS_ZERO);
+	!AppRegistryInitialized        && await AppRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainid}/`);
+	!DatasetRegistryInitialized    && await DatasetRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/dataset/${chainid}/`);
+	!WorkerpoolRegistryInitialized && await WorkerpoolRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/workerpool/${chainid}/`);
+	!IexecInterfaceInitialized     && await IexecInterfaceInstance.configure(
+		TokenInstance.address,
+		deploymentOptions.v5.usekyc ? 'Staked eRLC'        : 'Staked RLC',
+		deploymentOptions.v5.usekyc ? 'SeRLC'              : 'SRLC',
+		9, // TODO: generic ?
+		AppRegistryInstance.address,
+		DatasetRegistryInstance.address,
+		WorkerpoolRegistryInstance.address,
+		ADDRESS_ZERO
+	);
 
 	/* ----------------------------- Categories ------------------------------ */
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup node /app/ganache-core.docker.cli.js -m "$MNEMONIC" -l 8000000 -i 65535 --chainId 65535 --hardfork istanbul --db "/ganachedb" > deployed.txt 2>&1 &
+nohup node /app/dist/node/cli.js --wallet.mnemonic "$MNEMONIC" --miner.blockGasLimit 8000000 --chain.networkId 65535 --chain.chainId 65535 --chain.hardfork london --database.dbPath "/ganachedb" > deployed.txt 2>&1 &
 sleep 4
 
 cd /iexec-poco && \
   echo "========== INSTALL DEPENDENCIES ==========" && \
-  bash -i -c "npm i" && \
+  bash -i -c "npm ci --production=false" && \
   echo "========== STANDARD DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "./node_modules/.bin/truffle migrate" && \

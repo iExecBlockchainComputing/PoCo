@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 module.exports = {
-	client: require('ganache-cli'),
+	client: require('ganache'),
 	/*
 	 * providerOptions: {
 	 *	hardfork: "istanbul",
