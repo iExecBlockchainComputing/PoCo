@@ -90,7 +90,7 @@ contract('EscrowToken', async (accounts) => {
 
 	describe("fallback", async () => {
 		it("success", async () => {
-			await expectRevert(web3.eth.sendTransaction({ from: accounts[0], to: IexecInstance.address, value: 100 }), "fallback-disabled");
+			await expectRevert.unspecified(web3.eth.sendTransaction({ from: accounts[0], to: IexecInstance.address, value: 100 }));
 		});
 	});
 
