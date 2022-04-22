@@ -127,6 +127,7 @@ pipeline {
 					openethereumNative1secImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}",
 						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
 						+ " --build-arg CHAIN_FORCE_SEALING=true" \
@@ -151,6 +152,7 @@ pipeline {
 					openethereumToken1secImage = docker.build(
 						registry + "/poco-chain:token-${TAG_NAME}",
 						"--file testchains/openethereum.dockerfile" \
+                        + " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
 						+ " --build-arg CHAIN_FORCE_SEALING=true" \
@@ -175,6 +177,7 @@ pipeline {
 					openethereumNative5secImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}-5s",
 						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
 						+ " --build-arg CHAIN_FORCE_SEALING=true" \
@@ -199,6 +202,7 @@ pipeline {
 					openethereumNative5secImage = docker.build(
 						registry + "/poco-chain:token-${TAG_NAME}-5s",
 						"--file testchains/openethereum.dockerfile" \
+						+ " --build-arg MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
 						+ " --build-arg CHAIN_FORCE_SEALING=true" \
