@@ -1,3 +1,3 @@
 FROM iexechub/poco-chaintest:v5-token
 
-CMD ["--blockTime", "1", "-l", "8000000", "-i", "65535", "--chainId", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]
+CMD ["--miner.blockTime", "1", "--miner.blockGasLimit", "8000000", "--chain.networkId", "65535", "--chain.chainId", "65535", "--chain.hardfork", "london", "--database.dbPath", "/ganachedb"]

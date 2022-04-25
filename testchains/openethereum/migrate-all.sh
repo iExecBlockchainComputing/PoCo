@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup /bin/parity --chain /iexec-poco/testchains/parity/1sec_no_seal/spec.json --config /iexec-poco/testchains/parity/1sec_no_seal/authority.toml -d /iexec-poco/testchains/parity/1sec_no_seal/data --geth > deployed.txt 2>&1 &
+nohup /home/openethereum/openethereum \
+        --chain /iexec-poco/testchains/openethereum/spec.json \
+        --config /iexec-poco/testchains/openethereum/authority.toml \
+        -d /iexec-poco/testchains/openethereum/chain-data > deployed.txt 2>&1 &
+
 sleep 4
 
 cd /iexec-poco && \
   echo "========== INSTALL DEPENDENCIES ==========" && \
-  bash -i -c "npm i" && \
+  bash -i -c "npm ci --production=false" && \
   echo "========== STANDARD DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "./node_modules/.bin/truffle migrate" && \

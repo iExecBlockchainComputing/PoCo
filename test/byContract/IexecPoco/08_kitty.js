@@ -27,7 +27,7 @@ var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
 const tools     = require("../../../utils/tools");
 const enstools  = require("../../../utils/ens-tools");
 const odbtools  = require("../../../utils/odb-tools");
@@ -127,15 +127,13 @@ contract('Poco', async (accounts) => {
 						break;
 				}
 
-				await Promise.all([
-					IexecInstance.transfer(scheduler.address, 100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker1.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker2.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker3.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker4.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker5.address,   100000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(user.address,      100000, { from: iexecAdmin.address }),
-				]);
+				await IexecInstance.transfer(scheduler.address, 100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker1.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker2.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker3.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker4.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(worker5.address,   100000, { from: iexecAdmin.address });
+				await IexecInstance.transfer(user.address,      100000, { from: iexecAdmin.address });
 			});
 
 			it("balances", async () => {
@@ -285,6 +283,8 @@ contract('Poco', async (accounts) => {
 		it("wait", async () => {
 			target = Number((await IexecInstance.viewTask(tasks[0])).finalDeadline);
 			await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_increaseTime", params: [ target - (await web3.eth.getBlock("latest")).timestamp ], id: 0 }, () => {});
+			// workaround for https://github.com/trufflesuite/ganache/issues/1033
+			await web3.currentProvider.send({ jsonrpc: "2.0", method: "evm_mine", params: [ ], id: 0 }, () => {});
 		});
 
 		it("[8.3a] claim", async () => {

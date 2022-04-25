@@ -29,7 +29,7 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var TestClient   = artifacts.require("./TestClient.sol");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
 const tools     = require("../../utils/tools");
 const enstools  = require("../../utils/ens-tools");
 const odbtools  = require("../../utils/odb-tools");
@@ -191,15 +191,15 @@ contract('ERC1154: callback', async (accounts) => {
 						break;
 				}
 
-				txsMined = await Promise.all([
-					IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
-					IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
-				]);
+				const txsMined = [
+					await IexecInstance.transfer(scheduler.address, 1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(worker1.address,   1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(worker2.address,   1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(worker3.address,   1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(worker4.address,   1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(worker5.address,   1000, { from: iexecAdmin.address }),
+					await IexecInstance.transfer(user.address,      1000, { from: iexecAdmin.address }),
+				];
 
 				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.from,  iexecAdmin.address);
 				assert.equal(tools.extractEvents(txsMined[0], IexecInstance.address, "Transfer")[0].args.value, 1000);
@@ -444,12 +444,12 @@ contract('ERC1154: callback', async (accounts) => {
 
 		describe("[1] order matching", async () => {
 			it("[TX] match", async () => {
-				txsMined = await Promise.all([
-					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder1, { from: user.address }),
-					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder2, { from: user.address }),
-					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder3, { from: user.address }),
-					IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder4, { from: user.address }),
-				]);
+				const txsMined = [
+					await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder1, { from: user.address }),
+					await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder2, { from: user.address }),
+					await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder3, { from: user.address }),
+					await IexecInstance.matchOrders(apporder, datasetorder, workerpoolorder, requestorder4, { from: user.address }),
+				];
 
 				deals[1] = tools.extractEvents(txsMined[0], IexecInstance.address, "OrdersMatched")[0].args.dealid;
 				deals[2] = tools.extractEvents(txsMined[1], IexecInstance.address, "OrdersMatched")[0].args.dealid;
@@ -460,12 +460,12 @@ contract('ERC1154: callback', async (accounts) => {
 
 		describe("[2] initialization", async () => {
 			it("[TX] initialize", async () => {
-				txsMined = await Promise.all([
-					IexecInstance.initialize(deals[1], 0, { from: scheduler.address }),
-					IexecInstance.initialize(deals[2], 0, { from: scheduler.address }),
-					IexecInstance.initialize(deals[3], 0, { from: scheduler.address }),
-					IexecInstance.initialize(deals[4], 0, { from: scheduler.address }),
-				]);
+				const txsMined = [
+					await IexecInstance.initialize(deals[1], 0, { from: scheduler.address }),
+					await IexecInstance.initialize(deals[2], 0, { from: scheduler.address }),
+					await IexecInstance.initialize(deals[3], 0, { from: scheduler.address }),
+					await IexecInstance.initialize(deals[4], 0, { from: scheduler.address }),
+				];
 
 				tasks[1] = tools.extractEvents(txsMined[0], IexecInstance.address, "TaskInitialize")[0].args.taskid;
 				tasks[2] = tools.extractEvents(txsMined[1], IexecInstance.address, "TaskInitialize")[0].args.taskid;

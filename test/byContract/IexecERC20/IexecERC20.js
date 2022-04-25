@@ -29,7 +29,7 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var TestReceiver       = artifacts.require("TestReceiver");
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
 const tools     = require("../../../utils/tools");
 const enstools  = require("../../../utils/ens-tools");
 const odbtools  = require("../../../utils/odb-tools");
@@ -85,20 +85,21 @@ contract('ERC20', async (accounts) => {
 	 *                                                                         *
 	 ***************************************************************************/
 	beforeEach(async function () {
-		txsMined = await Promise.all([
-			IexecInstance.withdraw(await IexecInstance.balanceOf(initialHolder),  { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.withdraw(await IexecInstance.balanceOf(recipient),      { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.withdraw(await IexecInstance.balanceOf(anotherAccount), { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(initialHolder,  0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(initialHolder,  0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(initialHolder,  0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(recipient,      0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(recipient,      0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(recipient,      0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(anotherAccount, 0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(anotherAccount, 0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
-			IexecInstance.approve(anotherAccount, 0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
-		]);
+		const txsMined = [
+			await IexecInstance.withdraw(await IexecInstance.balanceOf(initialHolder),  { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.withdraw(await IexecInstance.balanceOf(recipient),      { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.withdraw(await IexecInstance.balanceOf(anotherAccount), { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(initialHolder,  0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(initialHolder,  0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(initialHolder,  0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(recipient,      0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(recipient,      0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(recipient,      0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(anotherAccount, 0, { from: initialHolder,  gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(anotherAccount, 0, { from: recipient,      gas: constants.AMOUNT_GAS_PROVIDED }),
+			await IexecInstance.approve(anotherAccount, 0, { from: anotherAccount, gas: constants.AMOUNT_GAS_PROVIDED }),
+		];
+
 		assert.isBelow(txsMined[ 0].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[ 1].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");
 		assert.isBelow(txsMined[ 2].receipt.gasUsed, constants.AMOUNT_GAS_PROVIDED, "should not use all gas");

@@ -151,19 +151,18 @@ module.exports = async function(deployer, network, accounts)
 		const DatasetRegistryInstance    = await DatasetRegistry.deployed();
 		const WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
-		await Promise.all([
-			                             registerAddress('admin',       'iexec.eth',    accounts[0]),
-			RLCInstance                ? registerAddress('rlc',         'iexec.eth',    RLCInstance.address               ) : null,
-			ERLCInstance               ? registerAddress('erlc',        'iexec.eth',    ERLCInstance.address              ) : null,
-			IexecInterfaceInstance     ? registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address    ) : null,
-			AppRegistryInstance        ? registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address       ) : null,
-			DatasetRegistryInstance    ? registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address   ) : null,
-			WorkerpoolRegistryInstance ? registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address) : null,
-			                                       reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] }),
-			IexecInterfaceInstance     ?     IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth'       ) : null,
-			AppRegistryInstance        ?        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth'       ) : null,
-			DatasetRegistryInstance    ?    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth'   ) : null,
-			WorkerpoolRegistryInstance ? WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth') : null,
-		]);
+		await registerAddress('admin',       'iexec.eth',    accounts[0]);
+		RLCInstance                && await registerAddress('rlc',         'iexec.eth',    RLCInstance.address               );
+		ERLCInstance               && await registerAddress('erlc',        'iexec.eth',    ERLCInstance.address              );
+		IexecInterfaceInstance     && await registerAddress('core',        'v5.iexec.eth', IexecInterfaceInstance.address    );
+		AppRegistryInstance        && await registerAddress('apps',        'v5.iexec.eth', AppRegistryInstance.address       );
+		DatasetRegistryInstance    && await registerAddress('datasets',    'v5.iexec.eth', DatasetRegistryInstance.address   );
+		WorkerpoolRegistryInstance && await registerAddress('workerpools', 'v5.iexec.eth', WorkerpoolRegistryInstance.address);
+		await reverseregistrar.setName('admin.iexec.eth', { from: accounts[0] });
+		IexecInterfaceInstance     && await     IexecInterfaceInstance.setName(ens.address, 'core.v5.iexec.eth'       );
+		AppRegistryInstance        && await        AppRegistryInstance.setName(ens.address, 'apps.v5.iexec.eth'       );
+		DatasetRegistryInstance    && await    DatasetRegistryInstance.setName(ens.address, 'datasets.v5.iexec.eth'   );
+		WorkerpoolRegistryInstance && await WorkerpoolRegistryInstance.setName(ens.address, 'workerpools.v5.iexec.eth');
+
 	}
 };

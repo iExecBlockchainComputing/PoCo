@@ -1,8 +1,9 @@
-FROM trufflesuite/ganache-cli:latest as build
+FROM trufflesuite/ganache:latest as build
 
 USER root
 
-RUN apk add --no-cache make gcc g++ python git bash
+RUN apt update
+RUN apt install -y make gcc g++ python git bash jq
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
 RUN mv /iexec-poco/config/config_native.json /iexec-poco/config/config.json
@@ -12,9 +13,9 @@ ARG MNEMONIC
 RUN mkdir /ganachedb
 RUN bash /iexec-poco/testchains/ganache/migrate.sh
 
-FROM trufflesuite/ganache-cli:latest as runtime
+FROM trufflesuite/ganache:latest as runtime
 
 COPY --from=build "/ganachedb" "/ganachedb"
 
 ENTRYPOINT ["node", "/app/ganache-core.docker.cli.js"]
-CMD ["-l", "8000000", "-i", "65535", "--chainId", "65535", "--hardfork", "istanbul", "--db", "/ganachedb"]
+CMD ["--miner.blockGasLimit", "8000000", "--chain.networkId", "65535", "--chain.chainId", "65535", "--chain.hardfork", "london", "--database.dbPath", "/ganachedb"]
