@@ -12,6 +12,14 @@ FROM openethereum/openethereum:v3.3.0
 
 USER root
 RUN apk update && apk add bash jq nodejs npm
+# Add git required to install ethereumjs-abi from github (https://github.com/MetaMask/web3-provider-engine/issues/345)
+#
+# ├─┬ @truffle/hdwallet-provider@2.0.7
+#   └─┬ web3-provider-engine@16.0.3
+#     └─┬ eth-json-rpc-middleware@6.0.0
+#       └─┬ eth-sig-util@1.4.2
+#         └── ethereumjs-abi@0.6.8  (git+https://github.com/ethereumjs/ethereumjs-abi.git#ee3994657fa7a427238e6ba92a84d0b529bbcde0)
+RUN apk add git
 RUN echo -e "Node: `node -v` - npm: `npm -v`"
 
 ###
