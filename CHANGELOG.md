@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- add FIFS ens domains in testchains migrations
+
 ## v5.3.1
 
 - updated dev deps
