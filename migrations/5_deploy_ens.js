@@ -137,6 +137,9 @@ module.exports = async function(deployer, network, accounts)
 		await registerDomain('iexec', 'eth');
 		await registerDomain('v5',    'iexec.eth');
 		await registerDomain('users', 'iexec.eth');
+		await registerDomain('apps', 'iexec.eth');
+		await registerDomain('datasets', 'iexec.eth');
+		await registerDomain('pools', 'iexec.eth');
 
 		/* ------------------------- Fetching contracts -------------------------- */
 		switch (deploymentOptions.asset)
