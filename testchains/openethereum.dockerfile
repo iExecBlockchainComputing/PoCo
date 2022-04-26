@@ -54,6 +54,11 @@ COPY . /iexec-poco
 RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
 RUN sed -i "s/@stepDuration@/${CHAIN_BLOCK_TIME}/" ${BASE_DIR}/spec.json
 RUN sed -i "s/@force_sealing@/${CHAIN_FORCE_SEALING}/" ${BASE_DIR}/authority.toml
+# remove eip1559 for sidechains
+RUN if [[ "${CHAIN_TYPE}" == "native" ]] ; \
+    then \
+        sed -i "/eip1559/d" ${BASE_DIR}/spec.json; \
+    fi
 
 ###
 ## Run migration
