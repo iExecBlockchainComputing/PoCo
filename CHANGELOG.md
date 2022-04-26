@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- remove EIP 1559 for native testchains
+
 ## v5.3.1
 
 - updated dev deps
