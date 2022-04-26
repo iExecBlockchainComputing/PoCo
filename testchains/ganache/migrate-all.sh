@@ -15,7 +15,7 @@ cd /iexec-poco && \
   echo "========== ENTERPRISE DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "KYC=1 PROXY_SALT=0x0000000000000000000000000000000000000000000000000000000000000001 ./node_modules/.bin/truffle migrate" && \
-  rm -R build && \
   echo "========== CLEANUP ==========" && \
+  rm -R build && \
   rm -R contracts && \
   echo "========== DONE ==========";
