@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup node /app/dist/node/cli.js --wallet.mnemonic "$MNEMONIC" --miner.blockGasLimit 8000000 --chain.networkId 65535 --chain.chainId 65535 --chain.hardfork berlin --database.dbPath "/ganachedb" > deployed.txt 2>&1 &
+nohup node /app/dist/node/cli.js --wallet.mnemonic "$MNEMONIC" --chain.networkId 65535 --chain.chainId 65535 --chain.hardfork berlin --database.dbPath "/ganachedb" > deployed.txt 2>&1 &
 sleep 4
 
 cd /iexec-poco && \

@@ -17,5 +17,5 @@ FROM trufflesuite/ganache:latest as runtime
 
 COPY --from=build "/ganachedb" "/ganachedb"
 
-ENTRYPOINT ["node", "/app/dist/node/cli.js"]
-CMD ["--miner.blockGasLimit", "8000000", "--chain.networkId", "65535", "--chain.chainId", "65535", "--chain.hardfork", "berlin", "--database.dbPath", "/ganachedb"]
+ENTRYPOINT ["node", "/app/dist/node/cli.js", "--chain.networkId", "65535", "--chain.chainId", "65535", "--chain.hardfork", "berlin", "--database.dbPath", "/ganachedb"]
+CMD []
