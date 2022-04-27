@@ -61,13 +61,3 @@ pipeline:
     auto_tag_suffix: native
     when:
       ref: [refs/tags/v*]
-
-  docker_token_1s_ganache:
-    image: plugins/docker
-    repo: iexechub/poco-chaintest
-    secrets: [docker_username, docker_password]
-    dockerfile: testchains/Dockerfile_token_ganache_1s
-    auto_tag: true
-    auto_tag_suffix: token-1s
-    when:
-      ref: [refs/tags/v*]

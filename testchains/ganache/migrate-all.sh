@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN ==========";
-nohup node /app/dist/node/cli.js --wallet.mnemonic "$MNEMONIC" --miner.blockGasLimit 8000000 --chain.networkId 65535 --chain.chainId 65535 --chain.hardfork london --database.dbPath "/ganachedb" > deployed.txt 2>&1 &
+nohup node /app/dist/node/cli.js --wallet.mnemonic "$MNEMONIC" --chain.networkId 65535 --chain.chainId 65535 --chain.hardfork london --database.dbPath "/ganachedb" > deployed.txt 2>&1 &
 sleep 4
 
 cd /iexec-poco && \
@@ -15,7 +15,7 @@ cd /iexec-poco && \
   echo "========== ENTERPRISE DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "KYC=1 PROXY_SALT=0x0000000000000000000000000000000000000000000000000000000000000001 ./node_modules/.bin/truffle migrate" && \
-  rm -R build && \
   echo "========== CLEANUP ==========" && \
+  rm -R build && \
   rm -R contracts && \
   echo "========== DONE ==========";

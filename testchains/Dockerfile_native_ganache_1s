@@ -1,3 +1,0 @@
-FROM iexechub/poco-chaintest:5-native
-
-CMD ["--miner.blockTime", "1", "--miner.blockGasLimit", "8000000", "--chain.networkId", "65535", "--chain.chainId", "65535", "--chain.hardfork", "berlin", "--database.dbPath", "/ganachedb"]
