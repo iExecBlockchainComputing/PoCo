@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- remove EIP 1559 for native testchains
+- drop testchain ganache 1s builds in favor of custom cmd (use `--miner.blockTime 1`)
+
 ## v5.3.1
 
 - updated dev deps
