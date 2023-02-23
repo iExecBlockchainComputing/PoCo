@@ -124,9 +124,9 @@ pipeline {
 			}
 			steps {
 				script {
-					openethereumNative1secImage = docker.build(
+					nethermindNative1secImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}",
-						"--file testchains/openethereum.dockerfile" \
+						"--file testchains/nethermind.dockerfile" \
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
@@ -135,7 +135,7 @@ pipeline {
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
-						openethereumNative1secImage.push()
+						nethermindNative1secImage.push()
 					}
 				}
 			}
@@ -149,9 +149,9 @@ pipeline {
 			}
 			steps {
 				script {
-					openethereumToken1secImage = docker.build(
+					nethermindToken1secImage = docker.build(
 						registry + "/poco-chain:token-${TAG_NAME}",
-						"--file testchains/openethereum.dockerfile" \
+						"--file testchains/nethermind.dockerfile" \
                         + " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
@@ -160,7 +160,7 @@ pipeline {
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
-						openethereumToken1secImage.push()
+						nethermindToken1secImage.push()
 					}
 				}
 			}
@@ -174,9 +174,9 @@ pipeline {
 			}
 			steps {
 				script {
-					openethereumNative5secImage = docker.build(
+					nethermindNative5secImage = docker.build(
 						registry + "/poco-chain:native-${TAG_NAME}-5s",
-						"--file testchains/openethereum.dockerfile" \
+						"--file testchains/nethermind.dockerfile" \
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
@@ -185,7 +185,7 @@ pipeline {
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
-						openethereumNative5secImage.push()
+						nethermindNative5secImage.push()
 					}
 				}
 			}
@@ -199,9 +199,9 @@ pipeline {
 			}
 			steps {
 				script {
-					openethereumNative5secImage = docker.build(
+					nethermindNative5secImage = docker.build(
 						registry + "/poco-chain:token-${TAG_NAME}-5s",
-						"--file testchains/openethereum.dockerfile" \
+						"--file testchains/nethermind.dockerfile" \
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
@@ -210,7 +210,7 @@ pipeline {
 				}
 				script {
 					docker.withRegistry("https://" + registry, "nexus") {
-						openethereumNative5secImage.push()
+						nethermindNative5secImage.push()
 					}
 				}
 			}
