@@ -29,6 +29,7 @@ pipeline {
 				}
 			}
 			steps {
+				println("Build tag : " + env.TAG_NAME)
 				script {
 					try {
 						sh "npm ci --production=false --no-progress"
