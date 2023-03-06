@@ -2,11 +2,9 @@
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN =========="
 
+./Nethermind.Runner --config=${BASE_DIR}/authority.cfg \
+    -d /iexec-poco/testchains/nethermind/chain-data > deployed.txt 2>&1 &
 
-BASE_DIR="/iexec-poco/testchains/nethermind"
-
-echo $${VALIDATOR_ADDRESS} | awk '{print tolower($$0)}' | xargs -I {address} 
-./Nethermind.Runner --config ${BASE_DIR}/authority.cfg &
 sleep 4
 
 cd /iexec-poco && \

@@ -7,8 +7,9 @@
 ##      --build-arg CHAIN_FORCE_SEALING=true \
 ##      .
 ###
-FROM iexechub/nethermind:1.14.1-patch.0-test
-
+# FROM iexechub/nethermind:1.14.1-patch.0-test
+#For intern testing 
+FROM nethermind:1.14.1-patch.1 
 USER root
 RUN apt-get update && apt-get install bash jq nodejs npm -y
 # Add git required to install ethereumjs-abi from github (https://github.com/MetaMask/web3-provider-engine/issues/345)
@@ -46,55 +47,13 @@ RUN echo -e ${MESSAGE}
 ## Copy files and setup the chain config.
 ###
 ENV BASE_DIR="/iexec-poco/testchains/nethermind"
-
-ENV NETHERMIND_SYNCCONFIG_FASTSYNC=true
-ENV NETHERMIND_SYNCCONFIG_SNAPSYNC=true
-ENV NETHERMIND_SYNCCONFIG_USEGETHLIMITSINFASTBLOCKS=true
-ENV NETHERMIND_SYNCCONFIG_WITNESSPROTOCOLENABLED=true
-
-
-
-# Init
-ENV NETHERMIND_INITCONFIG_CHAINSPECPATH=/iexec-poco/testchains/nethermind/spec.json
-ENV NETHERMIND_INITCONFIG_ISMINING=true
-ENV NETHERMIND_INITCONFIG_STORERECEIPTS=true
-ENV NETHERMIND_INITCONFIG_GENESISHASH=0x74fab4898a9ca96a5f2a1845d77850b4107057c7be2b8f1fc499775f7db20587
-
-# Mining
-ENV NETHERMIND_MININGCONFIG_MINGASPRICE=0
-
-# JsonRpc
-ENV NETHERMIND_JSONRPCCONFIG_ENABLED=true
-ENV NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES=Eth,Subscribe,TxPool,Web3,Proof,Net,Parity,Health
-ENV NETHERMIND_JSONRPCCONFIG_HOST=0.0.0.0
-ENV NETHERMIND_JSONRPCCONFIG_PORT=8545
-
-# Aura
-ENV NETHERMIND_AURACONFIG_FORCESEALING=true
-ENV NETHERMIND_AURACONFIG_ALLOWAURAPRIVATECHAINS=true
-
-
-# KeyStore
-ENV NETHERMIND_KEYSTORECONFIG_PASSWORDS=["cLYaO6/petgU0NqdvQo6i6bBWDM7SzZw"]
-ENV NETHERMIND_KEYSTORECONFIG_UNLOCKACCOUNTS=["0xc08c3def622af1476f2db0e3cc8ccaead07be3bb"]
-ENV NETHERMIND_KEYSTORECONFIG_BLOCKAUTHORACCOUNT=0xc08c3def622af1476f2db0e3cc8ccaead07be3bb
-ENV NETHERMIND_KEYSTORECONFIG_PASSWORDFILES=${BASE_DIR}/keystore/validator-wallet-password
-ENV NETHERMIND_KEYSTORECONFIG_ENODEACCOUNT=0xc08c3def622af1476f2db0e3cc8ccaead07be3bb
-ENV NETHERMIND_KEYSTORECONFIG_ENODEKEYFILE=${BASE_DIR}/keystore/validator-wallet-password
-
-# Network
-ENV NETHERMIND_NETWORKCONFIG_ACTIVEPEERSMAXCOUNT=100
-ENV NETHERMIND_NETWORKCONFIG_DISCOVERYPORT=30303
-ENV NETHERMIND_NETWORKCONFIG_STATICPEERS=null
-ENV NETHERMIND_NETWORKCONFIG_DIAGTRACERENABLED=false
-
 RUN mkdir /iexec-poco
 COPY . /iexec-poco
 COPY ./testchains/nethermind/keystore/key-c08c3def622af1476f2db0e3cc8ccaead07be3bb /nethermind/keystore/
 RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
 RUN sed -i "s/@stepDuration@/${CHAIN_BLOCK_TIME}/" ${BASE_DIR}/spec.json
 # remove eip1559 for sidechains
-RUN if [[ "${CHAIN_TYPE}" == "native" ]] ; \
+RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
         sed -i "/eip1559/d" ${BASE_DIR}/spec.json; \
     fi
@@ -107,7 +66,7 @@ RUN echo "MNEMONIC: ${MNEMONIC}"
 # Choose migration file according to chain type.
 # native -> migrate.sh
 # token -> migrate-all.sh
-RUN if [[ "${CHAIN_TYPE}" == "native" ]] ; \
+RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
         echo "Migration file: ${BASE_DIR}/migrate.sh"; \
         bash ${BASE_DIR}/migrate.sh; \
@@ -116,13 +75,8 @@ RUN if [[ "${CHAIN_TYPE}" == "native" ]] ; \
         bash ${BASE_DIR}/migrate-all.sh; \
     fi
 
-###
+# ###
 ## Configure entrypoint
 ###
-ENTRYPOINT ["sh"]
-CMD [ \
-        "-c", \
-        "echo $${VALIDATOR_ADDRESS} | awk '{print tolower($$0)}' | xargs -I {address} \
-        ./Nethermind.Runner", \
-        "--config ${BASE_DIR}/authority.cfg " \
-    ]
+ENTRYPOINT [ "../../nethermind/Nethermind.Runner" ]
+CMD [ "--config=/iexec-poco/testchains/nethermind/authority.cfg" ]
