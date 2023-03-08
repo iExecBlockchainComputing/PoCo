@@ -1,0 +1,59 @@
+version: "3.5"
+
+
+volumes:
+  prometheus-data:
+
+services:
+  poco-chain:
+    image: iexechub/nethermind:1.14.1-patch.0
+    container_name: poco-chain
+    restart: always
+    environment:
+      - NETHERMIND_CONFIG=<config>
+      # Metrics
+      - NETHERMIND_METRICSCONFIG_ENABLED=true
+      - NETHERMIND_METRICSCONFIG_PUSHGATEWAYURL=http://pushgateway:9091/metrics
+    # volumes:
+    #   - nethermind-db:/nethermind/nethermind_db/bellecour
+    #   - keystore:/nethermind/keystore
+    #   - logs:/nethermind/logs
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    expose:
+      - 9090
+    # ports:
+    #   - "9090:9090"
+
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    restart: unless-stopped
+    expose:
+      - 9091
+    # ports:
+    #   - "9091:9091"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    expose:
+      - 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/:/etc/grafana/provisioning/
