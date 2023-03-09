@@ -4,7 +4,6 @@
 ##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-some-fork.0 \
 ##      --build-arg CHAIN_TYPE=native \
 ##      --build-arg CHAIN_BLOCK_TIME=1 \
-##      --build-arg CHAIN_FORCE_SEALING=true \
 ##      .
 ###
 
