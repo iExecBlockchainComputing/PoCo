@@ -56,7 +56,6 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 ###
 ## Copy PoCo contracts
 ###
-# RUN mkdir /iexec-poco
 COPY . /iexec-poco
 RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
 
@@ -72,10 +71,10 @@ RUN echo "MNEMONIC: ${MNEMONIC}"
 RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
         echo "Migration file: ${BASE_DIR}/migrate.sh"; \
-        bash ${BASE_DIR}/migrate.sh; \
+        bash /iexec-poco/testchains/nethermind/migrate.sh; \
     else \
         echo "Migration file: ${BASE_DIR}/migrate-all.sh"; \
-        bash ${BASE_DIR}/migrate-all.sh; \
+        bash /iexec-poco/testchains/nethermind/migrate-all.sh; \
     fi
 
 FROM iexechub/nethermind:1.14.1-patch.0
