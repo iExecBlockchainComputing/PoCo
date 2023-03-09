@@ -54,7 +54,14 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     fi
 
 ###
-## Run migration
+## Copy PoCo contracts
+###
+# RUN mkdir /iexec-poco
+COPY . /iexec-poco
+RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
+
+###
+## Deploy contracts
 ###
 ARG DEV_NODE
 ARG MNEMONIC
