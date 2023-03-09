@@ -8,33 +8,33 @@ pipeline:
       - npm run autotest fast
       - KYC=1 npm run autotest fast
 
-  docker_token_openethereum:
+  docker_token_nethermind:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/openethereum.dockerfile
+    dockerfile: testchains/nethermind.dockerfile
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
       - CHAIN_TYPE=token
       - CHAIN_BLOCK_TIME=1
       - CHAIN_FORCE_SEALING=false
     auto_tag: true
-    auto_tag_suffix: token-openethereum
+    auto_tag_suffix: token-nethermind
     when:
       ref: [refs/tags/v*]
 
-  docker_native_openethereum:
+  docker_native_nethermind:
     image: plugins/docker
     repo: iexechub/poco-chaintest
     secrets: [docker_username, docker_password]
-    dockerfile: testchains/openethereum.dockerfile
+    dockerfile: testchains/nethermind.dockerfile
     build_args:
       - MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final
       - CHAIN_TYPE=native
       - CHAIN_BLOCK_TIME=1
       - CHAIN_FORCE_SEALING=false
     auto_tag: true
-    auto_tag_suffix: native-openethereum
+    auto_tag_suffix: native-nethermind
     when:
       ref: [refs/tags/v*]
 
