@@ -1,9 +1,11 @@
 ###
 ## docker image build \
 ##      --file testchains/nethermind.dockerfile \
-##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-some-fork.0 \
+##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-alpha \
+##      --build-arg MNEMONIC="actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 ##      --build-arg CHAIN_TYPE=native \
-##      --build-arg CHAIN_BLOCK_TIME=1 \
+##      --build-arg CHAIN_BLOCK_TIME=5 \
+##      --build-arg CHAIN_FORCE_SEALING=true \
 ##      .
 ###
 
@@ -26,19 +28,16 @@ RUN echo -e "Node: `node -v` - npm: `npm -v`"
 ###
 # Type of the blockchain to build.
 # "native" or "token".
-ARG CHAIN_TYPE
+ARG CHAIN_TYPE=native
+RUN echo "CHAIN_TYPE: ${CHAIN_TYPE}"
 # New blocks creation interval in seconds.
 # "1", "5", "20", ...
-ARG CHAIN_BLOCK_TIME
-
-###
-## Log build configuration.
-###
-ENV MESSAGE="\n##########\n"
-ENV MESSAGE="${MESSAGE}### CHAIN_TYPE: ${CHAIN_TYPE} \n"
-ENV MESSAGE="${MESSAGE}### CHAIN_BLOCK_TIME: ${CHAIN_BLOCK_TIME} \n"
-ENV MESSAGE="${MESSAGE}########## \n"
-RUN echo -e ${MESSAGE}
+ARG CHAIN_BLOCK_TIME=5
+RUN echo "CHAIN_BLOCK_TIME: ${CHAIN_BLOCK_TIME}"
+# Always create new blocks (even without txs).
+# "true" or "false"
+ARG CHAIN_FORCE_SEALING=true
+RUN echo "CHAIN_FORCE_SEALING: ${CHAIN_FORCE_SEALING}"
 
 ###
 ## Copy files and setup the chain config.
