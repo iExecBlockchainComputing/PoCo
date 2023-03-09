@@ -27,7 +27,7 @@ RUN echo -e "Node: `node -v` - npm: `npm -v`"
 # Type of the blockchain to build.
 # "native" or "token".
 ARG CHAIN_TYPE
-# New blocks creating interval in seconds.
+# New blocks creation interval in seconds.
 # "1", "5", "20", ...
 ARG CHAIN_BLOCK_TIME
 
