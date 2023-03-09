@@ -40,18 +40,17 @@ ARG CHAIN_FORCE_SEALING=true
 RUN echo "CHAIN_FORCE_SEALING: ${CHAIN_FORCE_SEALING}"
 
 ###
-## Copy files and setup the chain config.
+## Copy chain config.
 ###
-ENV BASE_DIR="/iexec-poco/testchains/nethermind"
-RUN mkdir /iexec-poco
-COPY . /iexec-poco
-COPY ./testchains/nethermind/keystore/key-c08c3def622af1476f2db0e3cc8ccaead07be3bb /nethermind/keystore/
-RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
-RUN sed -i "s/@stepDuration@/${CHAIN_BLOCK_TIME}/" ${BASE_DIR}/spec.json
-# remove eip1559 for sidechains
+COPY testchains/nethermind/poco-chain.json /nethermind/chainspec/poco-chain.json
+COPY testchains/nethermind/poco-chain.cfg /nethermind/configs/poco-chain.cfg
+COPY testchains/nethermind/keystore /nethermind/keystore
+RUN sed -i "s/@stepDuration@/${CHAIN_BLOCK_TIME}/" /nethermind/chainspec/poco-chain.json
+RUN sed -i "s/@forceSealing@/${CHAIN_FORCE_SEALING}/" /nethermind/configs/poco-chain.cfg
+# Remove eip1559 for sidechains
 RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
-        sed -i "/eip1559/d" ${BASE_DIR}/spec.json; \
+        sed -i "/eip1559/d" /nethermind/chainspec/poco-chain.json; \
     fi
 
 ###
