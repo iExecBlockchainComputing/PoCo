@@ -130,6 +130,7 @@ pipeline {
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
 						+ " --no-cache .")
 				}
 				script {
@@ -154,6 +155,7 @@ pipeline {
                         + " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=1" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
 						+ " --no-cache .")
 				}
 				script {
@@ -178,6 +180,7 @@ pipeline {
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=native" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
 						+ " --no-cache .")
 				}
 				script {
@@ -202,6 +205,7 @@ pipeline {
 						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
 						+ " --build-arg CHAIN_TYPE=token" \
 						+ " --build-arg CHAIN_BLOCK_TIME=5" \
+						+ " --build-arg CHAIN_FORCE_SEALING=true" \
 						+ " --no-cache .")
 				}
 				script {
