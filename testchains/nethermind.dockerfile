@@ -9,7 +9,7 @@
 ##      .
 ###
 
-FROM iexechub/nethermind:1.14.1-patch.0
+FROM iexechub/nethermind:1.14.1-patch.0 AS builder
 
 USER root
 RUN apt-get update && apt-get install bash jq nodejs npm -y
@@ -72,8 +72,12 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
         bash ${BASE_DIR}/migrate-all.sh; \
     fi
 
-# ###
+FROM iexechub/nethermind:1.14.1-patch.0
+
+COPY --from=builder /nethermind /nethermind
+
+###
 ## Configure entrypoint
 ###
-ENTRYPOINT [ "../../nethermind/Nethermind.Runner" ]
-CMD [ "--config=/iexec-poco/testchains/nethermind/authority.cfg" ]
+ENTRYPOINT [ "/nethermind/Nethermind.Runner" ]
+CMD [ "--config=/nethermind/configs/poco-chain.cfg" ]
