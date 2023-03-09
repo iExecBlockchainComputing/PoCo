@@ -7,7 +7,9 @@
 ##      --build-arg CHAIN_FORCE_SEALING=true \
 ##      .
 ###
+
 FROM iexechub/nethermind:1.14.1-patch.0
+
 USER root
 RUN apt-get update && apt-get install bash jq nodejs npm -y
 # Add git required to install ethereumjs-abi from github (https://github.com/MetaMask/web3-provider-engine/issues/345)
@@ -55,6 +57,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
         sed -i "/eip1559/d" ${BASE_DIR}/spec.json; \
     fi
+
 ###
 ## Run migration
 ###
