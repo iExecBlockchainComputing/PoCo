@@ -30,8 +30,6 @@ ARG CHAIN_TYPE
 # New blocks creating interval in seconds.
 # "1", "5", "20", ...
 ARG CHAIN_BLOCK_TIME
-# Always create new blocks (even without txs).
-# "true" or "false"
 
 ###
 ## Log build configuration.
