@@ -29,9 +29,9 @@ ARG CHAIN_TYPE
 # New blocks creating interval in seconds.
 # "1", "5", "20", ...
 ARG CHAIN_BLOCK_TIME
-ARG CHAIN_FORCE_SEALING
 # Always create new blocks (even without txs).
 # "true" or "false"
+ARG CHAIN_FORCE_SEALING
 
 ###
 ## Log build configuration.
