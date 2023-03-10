@@ -63,7 +63,7 @@ RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.js
 ## Deploy contracts
 ###
 ARG DEV_NODE
-ARG MNEMONIC
+ARG MNEMONIC="actual surround disorder swim upgrade devote digital misery truly verb slide final"
 RUN echo "MNEMONIC: ${MNEMONIC}"
 # Choose migration file according to chain type.
 # native -> migrate.sh
