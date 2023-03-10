@@ -31,6 +31,7 @@ ARG CHAIN_TYPE
 ARG CHAIN_BLOCK_TIME
 # Always create new blocks (even without txs).
 # "true" or "false"
+ARG CHAIN_FORCE_SEALING
 
 ###
 ## Log build configuration.
@@ -38,6 +39,7 @@ ARG CHAIN_BLOCK_TIME
 ENV MESSAGE="\n##########\n"
 ENV MESSAGE="${MESSAGE}### CHAIN_TYPE: ${CHAIN_TYPE} \n"
 ENV MESSAGE="${MESSAGE}### CHAIN_BLOCK_TIME: ${CHAIN_BLOCK_TIME} \n"
+ENV MESSAGE="${MESSAGE}### CHAIN_FORCE_SEALING: ${CHAIN_FORCE_SEALING} \n"
 ENV MESSAGE="${MESSAGE}########## \n"
 RUN echo -e ${MESSAGE}
 
@@ -50,6 +52,7 @@ COPY . /iexec-poco
 COPY ./testchains/nethermind/keystore/key-c08c3def622af1476f2db0e3cc8ccaead07be3bb /nethermind/keystore/
 RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
 RUN sed -i "s/@stepDuration@/${CHAIN_BLOCK_TIME}/" ${BASE_DIR}/spec.json
+RUN sed -i "s/@force_sealing@/${CHAIN_FORCE_SEALING}/" ${BASE_DIR}/authority.cfg
 # remove eip1559 for sidechains
 RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
