@@ -61,7 +61,7 @@ services:
       - 9090
     volumes:
       - ./metrics/prometheus/:/etc/prometheus/
-      - prometheus-data:/prometheus
+      # - prometheus-data:/prometheus
 
   pushgateway:
     image: prom/pushgateway:v1.5.1
