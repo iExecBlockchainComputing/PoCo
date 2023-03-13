@@ -1,0 +1,39 @@
+version: "3.4"
+
+volumes:
+  nethermind-db:
+  keystore:
+  logs:
+
+services:
+  poco-chain:
+    image: nexus.intra.iex.ec/poco-chain:native-vX.Y.Z-alpha
+    container_name: poco-chain
+    restart: always
+    environment:
+      # - NETHERMIND_CONFIG=poco-chain
+      # Netstats
+      - NETHERMIND_ETHSTATSCONFIG_ENABLED=true
+      - NETHERMIND_ETHSTATSCONFIG_CONTACT=name@email.com
+      - NETHERMIND_ETHSTATSCONFIG_SERVER=ws://netstats:3000/api
+      - NETHERMIND_ETHSTATSCONFIG_SECRET=whatever
+      # Metrics
+      # - NETHERMIND_METRICSCONFIG_ENABLED=true
+      # - NETHERMIND_METRICSCONFIG_PUSHGATEWAYURL=http://pushgateway:9091/metrics
+    ports:
+      - 8545:8545
+    volumes:
+      - nethermind-db:/nethermind/nethermind_db/poco-chain
+      - keystore:/nethermind/keystore
+      - logs:/nethermind/logs
+    depends_on:
+      - netstats
+
+  netstats:
+    image: docker-regis.iex.ec/netstats:0.0.9
+    container_name: netstats
+    ports:
+      - 3000:3000
+    environment:
+      - WS_SECRET=whatever
+    restart: always
