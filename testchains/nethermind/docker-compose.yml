@@ -3,7 +3,7 @@ version: "3.4"
 volumes:
   nethermind-db:
   keystore:
-  logs:
+  prometheus-data:
 
 services:
   poco-chain:
@@ -11,29 +11,61 @@ services:
     container_name: poco-chain
     restart: always
     environment:
-      # - NETHERMIND_CONFIG=poco-chain
       # Netstats
       - NETHERMIND_ETHSTATSCONFIG_ENABLED=true
       - NETHERMIND_ETHSTATSCONFIG_CONTACT=name@email.com
       - NETHERMIND_ETHSTATSCONFIG_SERVER=ws://netstats:3000/api
       - NETHERMIND_ETHSTATSCONFIG_SECRET=whatever
       # Metrics
-      # - NETHERMIND_METRICSCONFIG_ENABLED=true
-      # - NETHERMIND_METRICSCONFIG_PUSHGATEWAYURL=http://pushgateway:9091/metrics
+      - NETHERMIND_METRICSCONFIG_ENABLED=true
+      - NETHERMIND_METRICSCONFIG_PUSHGATEWAYURL=http://pushgateway:9091/metrics
     ports:
       - 8545:8545
-    volumes:
-      - nethermind-db:/nethermind/nethermind_db/poco-chain
-      - keystore:/nethermind/keystore
-      - logs:/nethermind/logs
+    # volumes:
+    #   - nethermind-db:/nethermind/nethermind_db/poco-chain
+    #   - keystore:/nethermind/keystore
     depends_on:
       - netstats
+      - pushgateway
 
   netstats:
     image: docker-regis.iex.ec/netstats:0.0.9
     container_name: netstats
     ports:
-      - 3000:3000
+      - 8080:3000
     environment:
       - WS_SECRET=whatever
     restart: always
+
+  grafana:
+    image: grafana/grafana:9.4.3
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./metrics/grafana/:/etc/grafana/provisioning/
+
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    expose:
+      - 9090
+    volumes:
+      - ./metrics/prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+
+  pushgateway:
+    image: prom/pushgateway:v1.5.1
+    container_name: pushgateway
+    restart: unless-stopped
+    expose:
+      - 9091
