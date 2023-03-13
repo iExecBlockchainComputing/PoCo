@@ -7,9 +7,8 @@ volumes:
 
 services:
   poco-chain:
-    image: nexus.intra.iex.ec/poco-chain:native-v5.4.0-alpha.0
+    image: nexus.intra.iex.ec/poco-chain:native-v5.4.0-alpha.0-5s
     container_name: poco-chain
-    restart: always
     environment:
       # Netstats
       - NETHERMIND_ETHSTATSCONFIG_ENABLED=true
