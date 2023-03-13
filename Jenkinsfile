@@ -7,7 +7,7 @@ node("master") {
 pipeline {
 
 	environment {
-		registry = "nexus.iex.ec"
+		registry = "nexus.intra.iex.ec"
 		tokenDockerImage = ""
 		nativeDockerImage = ""
 		buildWhenTagContains = "v"
