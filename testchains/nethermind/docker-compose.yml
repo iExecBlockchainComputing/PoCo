@@ -7,13 +7,13 @@ volumes:
 
 services:
   poco-chain:
-    image: nexus.intra.iex.ec/poco-chain:native-vX.Y.Z-alpha
+    image: nexus.intra.iex.ec/poco-chain:native-v5.4.0-alpha.0
     container_name: poco-chain
     restart: always
     environment:
       # Netstats
       - NETHERMIND_ETHSTATSCONFIG_ENABLED=true
-      - NETHERMIND_ETHSTATSCONFIG_CONTACT=name@email.com
+      - NETHERMIND_ETHSTATSCONFIG_CONTACT=
       - NETHERMIND_ETHSTATSCONFIG_SERVER=ws://netstats:3000/api
       - NETHERMIND_ETHSTATSCONFIG_SECRET=whatever
       # Metrics
