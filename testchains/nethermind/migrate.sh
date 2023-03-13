@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg > deployed.txt 2>&1 &
+/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg > /nethermind/chain.log 2>&1 &
 
 # Wait for the chain to start 
 sleep 5
