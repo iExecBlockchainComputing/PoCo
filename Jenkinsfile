@@ -116,56 +116,6 @@ pipeline {
 			}
 		}
 
-		stage("Native 1s image") {
-			when {
-				expression {
-					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
-				}
-			}
-			steps {
-				script {
-					nethermindNative1secImage = docker.build(
-						registry + "/poco-chain:native-${TAG_NAME}",
-						"--file testchains/nethermind.dockerfile" \
-						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
-						+ " --build-arg CHAIN_TYPE=native" \
-						+ " --build-arg CHAIN_BLOCK_TIME=1" \
-						+ " --build-arg CHAIN_FORCE_SEALING=true" \
-						+ " --no-cache .")
-				}
-				script {
-					docker.withRegistry("https://" + registry, "nexus") {
-						nethermindNative1secImage.push()
-					}
-				}
-			}
-		}
-
-		stage("Token 1s image") {
-			when {
-				expression {
-					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
-				}
-			}
-			steps {
-				script {
-					nethermindToken1secImage = docker.build(
-						registry + "/poco-chain:token-${TAG_NAME}",
-						"--file testchains/nethermind.dockerfile" \
-                        + " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
-						+ " --build-arg CHAIN_TYPE=token" \
-						+ " --build-arg CHAIN_BLOCK_TIME=1" \
-						+ " --build-arg CHAIN_FORCE_SEALING=true" \
-						+ " --no-cache .")
-				}
-				script {
-					docker.withRegistry("https://" + registry, "nexus") {
-						nethermindToken1secImage.push()
-					}
-				}
-			}
-		}
-
 		stage("Native 5s image ") {
 			when {
 				expression {

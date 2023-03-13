@@ -1,7 +1,7 @@
 ###
 ## docker image build \
 ##      --file testchains/nethermind.dockerfile \
-##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-alpha \
+##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-alpha.0 \
 ##      --build-arg MNEMONIC="actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 ##      --build-arg CHAIN_TYPE=native \
 ##      --build-arg CHAIN_BLOCK_TIME=5 \
@@ -62,7 +62,7 @@ RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.js
 ## Deploy contracts
 ###
 ARG DEV_NODE
-ARG MNEMONIC="actual surround disorder swim upgrade devote digital misery truly verb slide final"
+ARG MNEMONIC
 RUN echo "MNEMONIC: ${MNEMONIC}"
 # Choose migration file according to chain type.
 # native -> migrate.sh
