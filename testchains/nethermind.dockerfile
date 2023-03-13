@@ -11,7 +11,6 @@
 
 FROM iexechub/nethermind:1.14.1-patch.0 AS builder
 
-USER root
 RUN apt-get update && apt-get install bash jq nodejs npm -y
 # Add git required to install ethereumjs-abi from github (https://github.com/MetaMask/web3-provider-engine/issues/345)
 #
