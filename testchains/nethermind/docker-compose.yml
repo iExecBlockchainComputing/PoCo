@@ -40,9 +40,13 @@ services:
   grafana:
     image: grafana/grafana:9.4.3
     container_name: grafana
-    restart: unless-stopped
+    environment:
+      # Disable authentication.
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     ports:
-      - 3000:3000
+      - 8081:3000
     volumes:
       - ./metrics/grafana/:/etc/grafana/provisioning/
 
