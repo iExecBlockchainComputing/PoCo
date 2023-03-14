@@ -1,12 +1,12 @@
-
 #!/usr/bin/env bash
 echo "========== STARTING BLOCKCHAIN =========="
 
-./Nethermind.Runner --config=${BASE_DIR}/authority.cfg \
-    -d /iexec-poco/testchains/nethermind/chain-data > deployed.txt 2>&1 &
+/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg > /nethermind/chain.log 2>&1 &
 
-sleep 4
+# Wait for the chain to start 
+sleep 5
 
+# Install node packages and deploy PoCo's smart contracts
 cd /iexec-poco && \
   echo "========== INSTALL DEPENDENCIES ==========" && \
   bash -i -c "npm ci --production=false" && \
