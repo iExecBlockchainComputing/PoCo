@@ -80,10 +80,9 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
         bash /iexec-poco/testchains/nethermind/migrate-all.sh; \
     fi
 
-# FROM iexechub/nethermind:1.14.1-patch.0
+FROM iexechub/nethermind:1.14.1-patch.0
 
-# COPY --from=builder /nethermind /nethermind
-# COPY --from=builder /iexec-poco/build /build
+COPY --from=builder /nethermind /nethermind
 
 ###
 ## Configure entrypoint
