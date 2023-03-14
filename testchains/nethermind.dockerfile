@@ -1,7 +1,7 @@
 ###
 ## docker image build \
 ##      --file testchains/nethermind.dockerfile \
-##      --tag nexus.iex.ec/poco-chain:native-vX.Y.Z-alpha.0 \
+##      --tag nexus.intra.iex.ec/poco-chain:native-vX.Y.Z-alpha.0-5s \
 ##      --build-arg MNEMONIC="actual surround disorder swim upgrade devote digital misery truly verb slide final" \
 ##      --build-arg CHAIN_TYPE=native \
 ##      --build-arg CHAIN_BLOCK_TIME=5 \
