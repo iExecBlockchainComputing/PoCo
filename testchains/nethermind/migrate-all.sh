@@ -8,8 +8,6 @@ sleep 5
 
 # Install node packages and deploy PoCo's smart contracts
 cd /iexec-poco && \
-  echo "========== INSTALL DEPENDENCIES ==========" && \
-  bash -i -c "npm ci --production=false" && \
   echo "========== STANDARD DEPLOYMENT ==========" && \
   jq . config/config.json && \
   bash -i -c "./node_modules/.bin/truffle migrate" && \
@@ -18,8 +16,4 @@ cd /iexec-poco && \
   rm -R build && \
   echo "========== ENTERPRISE DEPLOYMENT ==========" && \
   jq . config/config.json && \
-  bash -i -c "KYC=1 PROXY_SALT=0x0000000000000000000000000000000000000000000000000000000000000001 ./node_modules/.bin/truffle migrate" && \
-  rm -R build && \
-  echo "========== CLEANUP ==========" && \
-  rm -R contracts && \
-  echo "========== DONE ==========";
+  bash -i -c "KYC=1 PROXY_SALT=0x0000000000000000000000000000000000000000000000000000000000000001 ./node_modules/.bin/truffle migrate"

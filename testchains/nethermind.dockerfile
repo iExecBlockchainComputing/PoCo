@@ -11,15 +11,7 @@
 
 FROM iexechub/nethermind:1.14.1-patch.0 AS builder
 
-RUN apt-get update && apt-get install bash jq nodejs npm -y
-# Add git required to install ethereumjs-abi from github (https://github.com/MetaMask/web3-provider-engine/issues/345)
-#
-# ├─┬ @truffle/hdwallet-provider@2.0.7
-#   └─┬ web3-provider-engine@16.0.3
-#     └─┬ eth-json-rpc-middleware@6.0.0
-#       └─┬ eth-sig-util@1.4.2
-#         └── ethereumjs-abi@0.6.8  (git+https://github.com/ethereumjs/ethereumjs-abi.git#ee3994657fa7a427238e6ba92a84d0b529bbcde0)
-RUN apt-get install git -y
+RUN apt-get update && apt-get -y install bash jq nodejs npm git
 RUN echo -e "Node: `node -v` - npm: `npm -v`"
 
 ###
@@ -39,6 +31,18 @@ ARG CHAIN_FORCE_SEALING=true
 RUN echo "CHAIN_FORCE_SEALING: ${CHAIN_FORCE_SEALING}"
 
 ###
+## Install npm packages
+###
+RUN mkdir /iexec-poco
+COPY package.json package-lock.json /iexec-poco/
+# Remove ethereumjs-util for sidechains
+RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
+    then \
+        sed -i '/ethereumjs-util/d' /iexec-poco/package.json; \
+    fi
+RUN cd /iexec-poco && npm ci --production=false
+
+###
 ## Copy chain config.
 ###
 COPY testchains/nethermind/poco-chain.json /nethermind/chainspec/poco-chain.json
@@ -55,7 +59,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 ###
 ## Copy PoCo contracts
 ###
-COPY . /iexec-poco
+COPY . /iexec-poco/
 RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
 
 ###
@@ -76,10 +80,10 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
         bash /iexec-poco/testchains/nethermind/migrate-all.sh; \
     fi
 
-FROM iexechub/nethermind:1.14.1-patch.0
+# FROM iexechub/nethermind:1.14.1-patch.0
 
-COPY --from=builder /nethermind /nethermind
-COPY --from=builder /iexec-poco/build /build
+# COPY --from=builder /nethermind /nethermind
+# COPY --from=builder /iexec-poco/build /build
 
 ###
 ## Configure entrypoint

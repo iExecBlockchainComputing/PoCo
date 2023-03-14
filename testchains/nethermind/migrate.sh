@@ -6,9 +6,4 @@
 sleep 5
 
 # Install node packages and deploy PoCo's smart contracts
-cd /iexec-poco && \
-  sed -i '/ethereumjs-util/d' package.json && \
-  bash -i -c "npm ci --production=false" && \
-  bash -i -c "./node_modules/.bin/truffle migrate" && \
-  rm -R contracts && \
-  rm -R build
+cd /iexec-poco && bash -i -c "./node_modules/.bin/truffle migrate"
