@@ -33,14 +33,14 @@ RUN echo "CHAIN_FORCE_SEALING: ${CHAIN_FORCE_SEALING}"
 ###
 ## Install npm packages
 ###
-RUN mkdir /iexec-poco
-COPY package.json package-lock.json /iexec-poco/
+WORKDIR /iexec-poco
+COPY package.json package-lock.json ./
 # Remove ethereumjs-util for sidechains
 RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
-        sed -i '/ethereumjs-util/d' /iexec-poco/package.json; \
+        sed -i '/ethereumjs-util/d' package.json; \
     fi
-RUN cd /iexec-poco && npm ci --production=false
+RUN npm ci --production=false
 
 ###
 ## Copy chain config.
@@ -59,8 +59,16 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 ###
 ## Copy PoCo contracts
 ###
-COPY . /iexec-poco/
-RUN mv /iexec-poco/config/config_${CHAIN_TYPE}.json /iexec-poco/config/config.json
+COPY config config
+COPY contracts contracts
+COPY migrations migrations
+COPY scripts scripts
+COPY utils utils
+COPY truffle-security.json truffle-security.json
+COPY truffle.js truffle.js
+COPY testchains/nethermind/migrate-all.sh migrate-all.sh
+COPY testchains/nethermind/migrate.sh migrate.sh
+RUN mv config/config_${CHAIN_TYPE}.json config/config.json
 
 ###
 ## Deploy contracts
@@ -73,11 +81,11 @@ RUN echo "MNEMONIC: ${MNEMONIC}"
 # token -> migrate-all.sh
 RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     then \
-        echo "Migration file: ${BASE_DIR}/migrate.sh"; \
-        bash /iexec-poco/testchains/nethermind/migrate.sh; \
+        echo "Migration file: migrate.sh"; \
+        bash migrate.sh; \
     else \
-        echo "Migration file: ${BASE_DIR}/migrate-all.sh"; \
-        bash /iexec-poco/testchains/nethermind/migrate-all.sh; \
+        echo "Migration file: migrate-all.sh"; \
+        bash migrate-all.sh; \
     fi
 
 FROM iexechub/nethermind:1.14.1-patch.0
