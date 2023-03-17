@@ -57,7 +57,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
     fi
 
 ###
-## Copy PoCo contracts
+## Copy project files
 ###
 COPY config config
 COPY contracts contracts
