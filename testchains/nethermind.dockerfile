@@ -93,7 +93,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 FROM iexechub/nethermind:1.14.1-patch.0
 
 COPY --from=builder /nethermind /nethermind
-COPY --from=builder /poco-chain/build /build
+# COPY --from=builder /poco-chain/build /build
 
 ###
 ## Configure entrypoint
