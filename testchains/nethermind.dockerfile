@@ -58,6 +58,8 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 
 ###
 ## Copy project files
+## Copy only needed files to make use
+## of Docker's build cache.
 ###
 COPY config config
 COPY contracts contracts
@@ -91,6 +93,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
 FROM iexechub/nethermind:1.14.1-patch.0
 
 COPY --from=builder /nethermind /nethermind
+COPY --from=builder /poco-chain/build /build
 
 ###
 ## Configure entrypoint
