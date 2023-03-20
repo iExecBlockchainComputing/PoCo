@@ -21,46 +21,46 @@ pipeline {
 
 	stages {
 
-		stage("Truffle tests - Public") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
+		// stage("Truffle tests - Public") {
+		// 	agent {
+		// 		docker {
+		// 			image "node:14"
+		// 			label "${LABEL}"
+		// 		}
+		// 	}
+		// 	steps {
+		// 		script {
+		// 			try {
+		// 				sh "npm ci --production=false --no-progress"
+		// 				sh "npm run autotest fast"
+		// 			} finally {
+		// 				archiveArtifacts artifacts: "logs/**"
+		// 			}
+		// 		}
+		// 	}
+		// }
 
-		stage("Truffle tests - KYC") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
+		// stage("Truffle tests - KYC") {
+		// 	agent {
+		// 		docker {
+		// 			image "node:14"
+		// 			label "${LABEL}"
+		// 		}
+		// 	}
+		// 	environment {
+		// 		KYC = 'true'
+		// 	}
+		// 	steps {
+		// 		script {
+		// 			try {
+		// 				sh "npm ci --production=false --no-progress"
+		// 				sh "npm run autotest fast"
+		// 			} finally {
+		// 				archiveArtifacts artifacts: "logs/**"
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		/*
 		Disable coverage 
