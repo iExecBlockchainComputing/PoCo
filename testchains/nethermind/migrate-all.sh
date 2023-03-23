@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-echo "========== STARTING BLOCKCHAIN =========="
 
-/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg > /nethermind/chain.log 2>&1 &
+echo "### Starting chain"
+/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg &> /nethermind/chain.log &
 
 # Wait for the chain to start 
 sleep 5
 
 # Install node packages and deploy PoCo's smart contracts
+echo "### Running migration"
 cd /iexec-poco && \
   echo "========== STANDARD DEPLOYMENT ==========" && \
   jq . config/config.json && \
