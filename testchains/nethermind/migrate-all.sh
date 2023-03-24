@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "### Starting chain"
-/nethermind/Nethermind.Runner --config=/nethermind/configs/poco-chain.cfg &> /nethermind/chain.log &
+/nethermind/Nethermind.Runner --config poco-chain.cfg &> /nethermind/chain.log &
 
 # Wait for the chain to start 
 sleep 5

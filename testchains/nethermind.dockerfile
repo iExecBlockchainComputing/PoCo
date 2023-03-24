@@ -99,4 +99,4 @@ COPY --from=builder /iexec-poco/build /build
 ## Configure entrypoint
 ###
 ENTRYPOINT [ "/nethermind/Nethermind.Runner" ]
-CMD [ "--config=/nethermind/configs/poco-chain.cfg" ]
+CMD [ "--config poco-chain.cfg" ]
