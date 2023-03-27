@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.4.1
+
+- Fix default `poco-chain` `CMD`. (#127)
+
 ## v5.3.2
 
 - remove EIP 1559 for native testchains
