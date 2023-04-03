@@ -9,7 +9,8 @@
 ##      .
 ###
 
-FROM iexechub/nethermind:1.14.1-patch.0 AS builder
+# FROM iexechub/nethermind:1.14.1-patch.0 AS builder
+FROM nethermindeth/nethermind:iexec AS builder
 
 RUN apt-get update && apt-get -y install bash jq nodejs npm git
 RUN echo -e "Node: `node -v` - npm: `npm -v`"

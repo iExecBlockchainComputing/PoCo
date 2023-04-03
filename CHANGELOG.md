@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.4.2
+- Use latest Nethermind base image `nethermindeth/nethermind:iexec`
+containing a fix for [#5506](https://github.com/NethermindEth/nethermind/issues/5506).
+
 ## v5.4.1
 
 - Fix default `poco-chain` `CMD`. (#127)
