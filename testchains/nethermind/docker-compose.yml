@@ -28,7 +28,7 @@ services:
       - pushgateway
 
   netstats:
-    image: docker-regis.iex.ec/netstats:0.0.10
+    image: docker-regis.iex.ec/netstats:0.1.0
     container_name: netstats
     ports:
       - 8080:3000
