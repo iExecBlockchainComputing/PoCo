@@ -1,6 +1,6 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-dependency-compiler";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-toolbox';
+import 'hardhat-dependency-compiler';
 import '@nomiclabs/hardhat-truffle5';
 
 const settings = {
@@ -13,19 +13,19 @@ const settings = {
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: "0.8.19", settings }, // ENS contracts
-            { version: "0.6.12", settings }, // PoCo contracts
-            { version: "0.4.11", settings }, // RLC contracts
+            { version: '0.8.19', settings }, // ENS contracts
+            { version: '0.6.12', settings }, // PoCo contracts
+            { version: '0.4.11', settings }, // RLC contracts
         ],
     },
     networks: {
         // dev networks
         docker: {
-            url: process.env.DOCKER_NODE || "http://localhost:8545",
+            url: process.env.DOCKER_NODE || 'http://localhost:8545',
             gasPrice: 8_000_000_000, // 8 Gwei
         },
         dev: {
-            url: process.env.DEV_NODE || "http://localhost:8545",
+            url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
@@ -99,19 +99,19 @@ const config: HardhatUserConfig = {
         },
         customChains: [
             {
-                network: "viviani",
+                network: 'viviani',
                 chainId: 133,
                 urls: {
-                    apiURL: "https://blockscout.viviani.iex.ec/api",
-                    browserURL: "https://blockscout.viviani.iex.ec/"
+                    apiURL: 'https://blockscout.viviani.iex.ec/api',
+                    browserURL: 'https://blockscout.viviani.iex.ec/'
                 }
             },
             {
-                network: "bellecour",
+                network: 'bellecour',
                 chainId: 134,
                 urls: {
-                    apiURL: "https://blockscout.bellecour.iex.ec/api",
-                    browserURL: "https://blockscout.bellecour.iex.ec/"
+                    apiURL: 'https://blockscout.bellecour.iex.ec/api',
+                    browserURL: 'https://blockscout.bellecour.iex.ec/'
                 }
             },
         ]
