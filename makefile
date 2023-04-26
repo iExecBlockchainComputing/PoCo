@@ -1,3 +1,5 @@
+# TODO migrate
+
 # MINIFICATION
 JQN       = jqn
 PATH_MAIN = ./build/contracts/

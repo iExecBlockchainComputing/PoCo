@@ -1,3 +1,5 @@
+# TODO migrate
+
 #!/usr/bin/env bash
 
 NETWORKS=(

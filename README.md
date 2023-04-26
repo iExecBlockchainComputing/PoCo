@@ -1,3 +1,13 @@
+<!-- TODO migrate -->
+
+<!-- ```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat typechain
+npx hardhat run scripts/deploy.ts
+``` -->
 
 [![Build Status](https://drone.iex.ec/api/badges/iExecBlockchainComputing/PoCo-dev/status.svg)](https://drone.iex.ec/iExecBlockchainComputing/PoCo-dev)
 
