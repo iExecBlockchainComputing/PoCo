@@ -1,24 +1,22 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-dependency-compiler";
+import '@nomiclabs/hardhat-truffle5';
 
+const settings = {
+    optimizer: {
+        enabled: true,
+        runs: 200,
+    }
+}
 
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            {
-                version: "0.4.11", // RLC contracts
-            },
-            {
-                version: "0.6.12", // PoCo contracts
-            }
+            { version: "0.8.19", settings }, // ENS contracts
+            { version: "0.6.12", settings }, // PoCo contracts
+            { version: "0.4.11", settings }, // RLC contracts
         ],
-        settings: {
-            optimizer: {
-                // enabled: true,
-                runs: 200,
-            },
-        },
     },
     networks: {
         // dev networks
@@ -125,6 +123,22 @@ const config: HardhatUserConfig = {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
             '@iexec/erlc/contracts/ERLCTokenSwap.sol',
+            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
+            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
+            // Latest iexec-solidity is required
+            // Contracts can be imported:
+            // 1. From local clone
+            // cd iexec-solidity && npm link
+            // cd PoCo-dev && npm i && npm link @iexec/solidity
+            // See https://stackoverflow.com/a/72015226
+            // 2. Or From Github
+            // npm i https://github.com/iExecBlockchainComputing/iexec-solidity#<commit>
+            '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
+            // ENS
+            '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
+            '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
+            '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
+            '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
         ],
     }
 };

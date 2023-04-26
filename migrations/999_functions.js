@@ -21,7 +21,7 @@ var ERC1538Query = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+module.exports = async function()
 {
 	const ERC1538QueryInstace = await ERC1538Query.at((await ERC1538Proxy.deployed()).address);
 	const functionCount = await ERC1538QueryInstace.totalFunctions();

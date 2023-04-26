@@ -14,6 +14,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+const deployer = require("../test/hardhat-truffle-utils");
 const assert = require('assert')
 // CONFIG
 const CONFIG = require('../config/config.json')
@@ -86,7 +87,7 @@ function getFunctionSignatures(abi)
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+module.exports = async function(accounts)
 {
 	console.log('# web3 version:', web3.version);
 	const chainid   = await web3.eth.net.getId();
@@ -112,10 +113,10 @@ module.exports = async function(deployer, network, accounts)
 	}
 	else
 	{
-		await deployer.deploy(IexecLibOrders);
-		await deployer.link(IexecLibOrders, IexecPoco1);
-		await deployer.link(IexecLibOrders, IexecMaintenance);
-		await deployer.link(IexecLibOrders, IexecOrderManagement);
+		const iexecLibOrders = await deployer.deploy(IexecLibOrders);
+		await deployer.link(iexecLibOrders, deploymentOptions.v5.usekyc ? IexecPoco1KYC : IexecPoco1);
+		await deployer.link(iexecLibOrders, IexecMaintenance);
+		await deployer.link(iexecLibOrders, IexecOrderManagement);
 	}
 
 	/* ---------------------------- Modules list ----------------------------- */

@@ -130,7 +130,7 @@ function eth_signTypedData(primaryType, message, domain, wallet)
 		else
 		{
 			web3.currentProvider.send({
-				method: "eth_signTypedData",
+				method: "eth_signTypedData_v4",
 				params: [ wallet.address, data ],
 				from: wallet.address,
 			}, (err, result) => {

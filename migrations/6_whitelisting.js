@@ -24,7 +24,7 @@ var ERC1538Proxy  = artifacts.require('@iexec/solidity/ERC1538Proxy')
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+module.exports = async function(accounts)
 {
 	console.log('# web3 version:', web3.version);
 	const chainid   = await web3.eth.net.getId();

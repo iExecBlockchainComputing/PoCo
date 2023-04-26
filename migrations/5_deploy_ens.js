@@ -14,14 +14,15 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+const deployer = require("../test/hardhat-truffle-utils");
 const assert = require('assert')
 // CONFIG
 const CONFIG = require('../config/config.json')
 // ENS
-var ENSRegistry             = artifacts.require('@ensdomains/ens/ENSRegistry')
-var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
-var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
-var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
+var ENSRegistry             = artifacts.require('@ensdomains/ens-contracts/contracts/registry/ENSRegistry')
+var FIFSRegistrar           = artifacts.require('@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar')
+var ReverseRegistrar        = artifacts.require('@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar')
+var PublicResolver          = artifacts.require('@ensdomains/ens-contracts/contracts/resolvers/PublicResolver')
 // Core
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
 var ERLCTokenSwap           = artifacts.require('@iexec/erlc/ERLCTokenSwap')
@@ -35,7 +36,7 @@ var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+module.exports = async function(accounts)
 {
 	console.log('# web3 version:', web3.version);
 	const chainid   = await web3.eth.net.getId();

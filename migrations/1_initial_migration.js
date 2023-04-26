@@ -14,8 +14,9 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+const deployer = require("../test/hardhat-truffle-utils");
 var Migrations = artifacts.require("Migrations");
 
-module.exports = function(deployer) {
-  deployer.deploy(Migrations);
+module.exports = async function () {
+    await deployer.deploy(Migrations);
 };

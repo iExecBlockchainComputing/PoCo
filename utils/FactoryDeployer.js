@@ -65,23 +65,38 @@ class EthersDeployer
 		const argsCount        = constructorABI ? constructorABI.inputs.length : 0;
 		const args             = extra.slice(0, argsCount);
 		const options          = { ...this.options, ...extra[argsCount] };
-		const libraryAddresses = await Promise.all(
-			(options.libraries || [])
-			.filter(({ contractName }) => artefact.bytecode.search(contractName) != -1)
-			.map(async ({ contractName, deployed }) => ({
-				pattern: new RegExp(`__${contractName}${'_'.repeat(38-contractName.length)}`, 'g'),
-				...await deployed(),
-			}))
-		);
-		const coreCode         = libraryAddresses.reduce((code, { pattern, address }) => code.replace(pattern, address.slice(2).toLowerCase()), artefact.bytecode);
-		const argsCode         = constructorABI ? ethers.utils.defaultAbiCoder.encode(constructorABI.inputs.map(e => e.type), args).slice(2) : '';
-		const code             = coreCode + argsCode;
-		const salt             = options.salt || ethers.constants.HashZero;
-		artefact.address       = options.call
+		var librariesLinkPlaceHolderAndAddress = []
+		if (options.libraries) {
+			librariesLinkPlaceHolderAndAddress = await Promise.all(
+				options.libraries.map(async library => {
+					const linkPlaceholder = this.getLinkPlaceholder(library, artefact);
+					if (linkPlaceholder) {
+						return {
+							linkPlaceholder: linkPlaceholder,
+							address: (await library.deployed()).address
+						};
+					}
+				})
+			)
+		}
+		var coreCode = artefact.bytecode;
+		librariesLinkPlaceHolderAndAddress
+			.filter(data => data != undefined)
+			.forEach(element => {
+				// Replace `__$9d824026d0515d8abd681f0f0f4707f16a$__`
+				// by address library without 0x prefix
+				coreCode = coreCode.replaceAll(element.linkPlaceholder,
+					element.address.slice(2).toLowerCase())
+			});
+
+		const argsCode         	= constructorABI ? ethers.utils.defaultAbiCoder.encode(constructorABI.inputs.map(e => e.type), args).slice(2) : '';
+		const code             	= coreCode + argsCode;
+		const salt             	= options.salt || ethers.constants.HashZero;
+		const contractAddress	= options.call
 			? await this.factory.predictAddressWithCall(code, salt, options.call)
 			: await this.factory.predictAddress(code, salt);
 
-		if (await this.factory.provider.getCode(artefact.address) == '0x')
+		if (await this.factory.provider.getCode(contractAddress) == '0x')
 		{
 			console.log(`[factory] Preparing to deploy ${artefact.contractName} ...`);
 			await waitTx(
@@ -89,11 +104,30 @@ class EthersDeployer
 				? this.factory.createContractAndCall(code, salt, options.call)
 				: this.factory.createContract(code, salt)
 			);
-			console.log(`[factory] ${artefact.contractName} successfully deployed at ${artefact.address}`);
+			console.log(`[factory] ${artefact.contractName} successfully deployed at ${contractAddress}`);
 		}
 		else
 		{
-			console.log(`[factory] ${artefact.contractName} already deployed at ${artefact.address}`);
+			console.log(`[factory] ${artefact.contractName} already deployed at ${contractAddress}`);
+		}
+		const instance = await artefact.at(contractAddress)
+		artefact.setAsDeployed(instance)
+	}
+
+	getLinkPlaceholder(libraryArtefact, contractArtefact) {
+		const hLibraryArtifact = libraryArtefact._hArtifact
+		const hArtifact = contractArtefact._hArtifact
+		if (hArtifact.linkReferences) {
+			const linkSourceName = hArtifact.linkReferences[hLibraryArtifact.sourceName];
+			if (linkSourceName) {
+				const firstLinkData = linkSourceName[hLibraryArtifact.contractName][0];
+				// linkPlaceholder code from:
+				// https://github.com/NomicFoundation/hardhat/blob/v1.3.3/packages/buidler-truffle5/src/artifacts.ts#L123
+				return contractArtefact.bytecode.substr(
+					firstLinkData.start * 2 + 2,
+					firstLinkData.length * 2
+				);
+			}
 		}
 	}
 }

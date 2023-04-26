@@ -298,7 +298,7 @@ contract('EscrowNative', async (accounts) => {
 	describe("recover", async () => {
 		describe("unauthorized access", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner.");
+				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner");
 			});
 		});
 

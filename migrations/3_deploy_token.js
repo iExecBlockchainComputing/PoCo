@@ -14,6 +14,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+const deployer = require("../test/hardhat-truffle-utils");
 // CONFIG
 const CONFIG = require('../config/config.json')
 // Token
@@ -23,7 +24,7 @@ var ERLCTokenSwap = artifacts.require('@iexec/erlc/ERLCTokenSwap')
 /*****************************************************************************
  *                                   Main                                    *
  *****************************************************************************/
-module.exports = async function(deployer, network, accounts)
+module.exports = async function(accounts)
 {
 	console.log('# web3 version:', web3.version);
 	const chainid   = await web3.eth.net.getId();
