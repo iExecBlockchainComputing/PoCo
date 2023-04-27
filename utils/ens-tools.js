@@ -14,9 +14,8 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-var ENSRegistry    = artifacts.require("./ENSRegistry.sol");
-var PublicResolver = artifacts.require("./PublicResolver.sol");
-var FIFSRegistrar  = artifacts.require("./FIFSRegistrar.sol");
+var ENSRegistry    = artifacts.require("@ensdomains/ens-contracts/contracts/registry/ENSRegistry");
+var PublicResolver = artifacts.require("@ensdomains/ens-contracts/contracts/resolvers/PublicResolver");
 
 module.exports = {
 

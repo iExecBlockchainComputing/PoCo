@@ -1,4 +1,5 @@
-// TODO migrate
+// TODO1 Remove useless build stages & use scripted pipeline
+// TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
 
 node("master") {
 	stage("Choose Label") {
@@ -23,10 +24,10 @@ pipeline {
 
 	stages {
 
-		stage("Truffle tests - Public") {
+		stage("Hardhat tests - Public") {
 			agent {
 				docker {
-					image "node:14"
+					image "node:18"
 					label "${LABEL}"
 				}
 			}
@@ -34,7 +35,7 @@ pipeline {
 				script {
 					try {
 						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
+						sh "./test.sh"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
 					}
@@ -42,10 +43,10 @@ pipeline {
 			}
 		}
 
-		stage("Truffle tests - KYC") {
+		stage("Hardhat tests - KYC") {
 			agent {
 				docker {
-					image "node:14"
+					image "node:18"
 					label "${LABEL}"
 				}
 			}
@@ -56,7 +57,7 @@ pipeline {
 				script {
 					try {
 						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
+						sh "./test.sh"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
 					}
@@ -109,7 +110,7 @@ pipeline {
 		}
 
 		*/
-
+        /*
 		stage("Log tag") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
@@ -167,5 +168,6 @@ pipeline {
 				}
 			}
 		}
+        */
 	}
 }

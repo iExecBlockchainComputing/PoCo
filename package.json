@@ -10,7 +10,7 @@
     "build": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.ts",
     "test": "REPORT_GAS=true npx hardhat test",
-    "autotest": "./autotest.sh",
+    "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
     "verify": "npx hardhat verify"
   },
@@ -27,26 +27,23 @@
   "dependencies": {
     "@iexec/erlc": "1.0.0",
     "@iexec/interface": "3.0.35-8",
-    "@iexec/solidity": "0.1.0-legacy",
+    "@iexec/solidity": "github:iExecBlockchainComputing/iexec-solidity#462704852aa5b9f577fe856096dcc8f0df782118",
     "@openzeppelin/contracts": "3.3.0",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "rlc-faucet-contract": "1.0.10"
   },
   "devDependencies": {
-    "@ensdomains/ens": "0.4.5",
-    "@ensdomains/resolver": "0.2.4",
+    "@ensdomains/ens-contracts": "^0.0.3",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomiclabs/hardhat-truffle5": "^2.0.7",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/test-helpers": "^0.5.15",
-    "@truffle/hdwallet-provider": "^2.0.7",
-    "chai": "^4.3.6",
     "eth-sig-util": "^3.0.1",
-    "ethers": "^5.6.4",
-    "ganache": "^7.0.4",
-    "hardhat": "^2.14.0",
+    "hardhat": "^2.13.0",
     "hardhat-dependency-compiler": "^1.1.3",
     "husky": "^4.3.7",
     "patched-openzeppelin-test-helpers": "file:patched-openzeppelin-test-helpers",
-    "truffle": "^5.5.11",
-    "truffle-plugin-verify": "^0.5.25"
+    "web3": "^1.9.0"
   }
 }

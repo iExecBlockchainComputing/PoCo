@@ -27,7 +27,7 @@ var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
 var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
-var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
+var ENSRegistry        = artifacts.require("@ensdomains/ens-contracts/contracts/registry/ENSRegistry");
 
 const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
 const tools     = require("../../../utils/tools");

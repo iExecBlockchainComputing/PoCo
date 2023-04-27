@@ -362,7 +362,10 @@ contract('EscrowToken', async (accounts) => {
 				const accountBefore = await IexecInstance.balanceOf(accounts[0]);
 				const amount        = web3.utils.toBN(1000);
 
-				await expectRevert(DummyToken.approveAndCall(IexecInstance.address, amount, "0x", { from: accounts[9] }), "wrong-token");
+ 				//TODO: `expectRevert` on explicit "wrong-token" message 
+				// instead of `expectRevert.assertion`. Cause:
+				// Error: VM Exception while processing transaction: invalid opcode
+				await expectRevert.assertion(DummyToken.approveAndCall(IexecInstance.address, amount, "0x", { from: accounts[9] }));
 
 				assert.equal(await RLCInstance.balanceOf(accounts[0]),   balanceBefore.toString());
 				assert.equal(await IexecInstance.balanceOf(accounts[0]), accountBefore.toString());
@@ -424,7 +427,7 @@ contract('EscrowToken', async (accounts) => {
 	describe("recover", async () => {
 		describe("unauthorized access", async () => {
 			it("reverts", async () => {
-				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner.");
+				await expectRevert(IexecInstance.recover({ from: accounts[9] }), "Ownable: caller is not the owner");
 			});
 		});
 

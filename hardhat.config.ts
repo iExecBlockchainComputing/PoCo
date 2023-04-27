@@ -1,37 +1,37 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-dependency-compiler";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-toolbox';
+import 'hardhat-dependency-compiler';
+import '@nomiclabs/hardhat-truffle5';
 
+const settings = {
+    optimizer: {
+        enabled: true,
+        runs: 200,
+    }
+}
+
+const zeroGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            {
-                version: "0.4.11", // RLC contracts
-            },
-            {
-                version: "0.6.12", // PoCo contracts
-            }
+            { version: '0.8.19', settings }, // ENS contracts
+            { version: '0.6.12', settings }, // PoCo contracts
+            { version: '0.4.11', settings }, // RLC contracts
         ],
-        settings: {
-            optimizer: {
-                // enabled: true,
-                runs: 200,
-            },
-        },
     },
     networks: {
-        // dev networks
+        // dev networks: Get closer to Bellecour network
         docker: {
-            url: process.env.DOCKER_NODE || "http://localhost:8545",
-            gasPrice: 8_000_000_000, // 8 Gwei
+            url: process.env.DOCKER_NODE || 'http://localhost:8545',
+            gasPrice: zeroGasPrice,
         },
         dev: {
-            url: process.env.DEV_NODE || "http://localhost:8545",
+            url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
+            gasPrice: zeroGasPrice,
         },
         // live networks
         mainnet: {
@@ -40,7 +40,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 100_000_000_000, // 100 Gwei
         },
         ropsten: {
             chainId: 3,
@@ -48,7 +47,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         rinkeby: {
             chainId: 4,
@@ -56,7 +54,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         goerli: {
             chainId: 5,
@@ -64,7 +61,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         kovan: {
             chainId: 42,
@@ -72,7 +68,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         viviani: {
             chainId: 133,
@@ -80,7 +75,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0, // 0 Gwei
+            gasPrice: zeroGasPrice,
             gas: 6700000,
         },
         bellecour: {
@@ -89,7 +84,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0, // 0 Gwei
+            gasPrice: zeroGasPrice,
             gas: 6700000,
         },
     },
@@ -101,19 +96,19 @@ const config: HardhatUserConfig = {
         },
         customChains: [
             {
-                network: "viviani",
+                network: 'viviani',
                 chainId: 133,
                 urls: {
-                    apiURL: "https://blockscout.viviani.iex.ec/api",
-                    browserURL: "https://blockscout.viviani.iex.ec/"
+                    apiURL: 'https://blockscout.viviani.iex.ec/api',
+                    browserURL: 'https://blockscout.viviani.iex.ec/'
                 }
             },
             {
-                network: "bellecour",
+                network: 'bellecour',
                 chainId: 134,
                 urls: {
-                    apiURL: "https://blockscout.bellecour.iex.ec/api",
-                    browserURL: "https://blockscout.bellecour.iex.ec/"
+                    apiURL: 'https://blockscout.bellecour.iex.ec/api',
+                    browserURL: 'https://blockscout.bellecour.iex.ec/'
                 }
             },
         ]
@@ -125,6 +120,22 @@ const config: HardhatUserConfig = {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
             '@iexec/erlc/contracts/ERLCTokenSwap.sol',
+            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
+            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
+            // Latest iexec-solidity is required
+            // Contracts can be imported:
+            // 1. From local clone
+            // cd iexec-solidity && npm link
+            // cd PoCo-dev && npm i && npm link @iexec/solidity
+            // See https://stackoverflow.com/a/72015226
+            // 2. Or From Github
+            // npm i https://github.com/iExecBlockchainComputing/iexec-solidity#<commit>
+            '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
+            // ENS
+            '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
+            '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
+            '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
+            '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
         ],
     }
 };
