@@ -1,7 +1,9 @@
 # Changelog
 
 ## v5.5.0
-- Migrate to Hardhat (#134)
+- Migrate to Hardhat:
+    - Init Hardhat project. (#134)
+    - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
 
 ## v5.4.1
 
