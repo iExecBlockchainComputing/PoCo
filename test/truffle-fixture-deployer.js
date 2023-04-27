@@ -20,7 +20,6 @@ async function deployAllContracts() {
 
 async function truffleFixtureDeployer() {
     await loadFixture(deployAllContracts);
-
 }
 
 module.exports = {
