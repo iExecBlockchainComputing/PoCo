@@ -10,6 +10,8 @@ const settings = {
     }
 }
 
+const bellecourGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour
+
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
@@ -19,17 +21,17 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        // dev networks
+        // dev networks: Get closer to Bellecour network
         docker: {
             url: process.env.DOCKER_NODE || 'http://localhost:8545',
-            gasPrice: 8_000_000_000, // 8 Gwei
+            gasPrice: bellecourGasPrice,
         },
         dev: {
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
+            gasPrice: bellecourGasPrice,
         },
         // live networks
         mainnet: {
@@ -73,7 +75,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0, // 0 Gwei
+            gasPrice: bellecourGasPrice,
             gas: 6700000,
         },
         bellecour: {
@@ -82,7 +84,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0, // 0 Gwei
+            gasPrice: bellecourGasPrice,
             gas: 6700000,
         },
     },
