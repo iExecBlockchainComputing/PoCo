@@ -121,12 +121,14 @@ class EthersDeployer
      * @returns the placeholder to be replaced
      */
 	getLinkPlaceholder(libraryArtefact, contractArtefact) {
-		const hLibraryArtifact = libraryArtefact._hArtifact
-		const hArtifact = contractArtefact._hArtifact
-		if (hArtifact.linkReferences) {
-			const linkSourceName = hArtifact.linkReferences[hLibraryArtifact.sourceName];
+		const hardhatLibraryArtifact = libraryArtefact._hArtifact
+		const hardhatContractArtifact = contractArtefact._hArtifact
+		if (hardhatContractArtifact.linkReferences) {
+			const linkSourceName = 
+                hardhatContractArtifact.linkReferences[hardhatLibraryArtifact.sourceName];
 			if (linkSourceName) {
-				const firstLinkData = linkSourceName[hLibraryArtifact.contractName][0];
+				const firstLinkData = 
+                    linkSourceName[hardhatLibraryArtifact.contractName][0];
 				// linkPlaceholder code from:
 				// https://github.com/NomicFoundation/hardhat/blob/v1.3.3/packages/buidler-truffle5/src/artifacts.ts#L123
 				return contractArtefact.bytecode.substr(
