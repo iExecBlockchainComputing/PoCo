@@ -38,7 +38,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 100_000_000_000, // 100 Gwei
         },
         ropsten: {
             chainId: 3,
@@ -46,7 +45,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         rinkeby: {
             chainId: 4,
@@ -54,7 +52,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         goerli: {
             chainId: 5,
@@ -62,7 +59,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         kovan: {
             chainId: 42,
@@ -70,7 +66,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 8_000_000_000, // 8 Gwei
         },
         viviani: {
             chainId: 133,
