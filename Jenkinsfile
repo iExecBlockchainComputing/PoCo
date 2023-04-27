@@ -34,8 +34,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						// Switch to npm ci when package-lock.json freshly commited
-						sh "npm i --production=false --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "./test.sh"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
@@ -57,7 +56,7 @@ pipeline {
 			steps {
 				script {
 					try {
-						sh "npm i --production=false --no-progress"
+						sh "npm ci --production=false --no-progress"
 						sh "./test.sh"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
