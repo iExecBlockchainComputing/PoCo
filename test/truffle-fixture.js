@@ -1,18 +1,15 @@
 
-const initial_migration = require('../migrations/1_initial_migration.js')
-const deploy_token = require('../migrations/3_deploy_token.js')
-const deploy_core = require('../migrations/4_deploy_core.js')
-const deploy_ens = require('../migrations/5_deploy_ens.js')
-const whitelisting = require('../migrations/6_whitelisting.js')
-const functions = require('../migrations/999_functions.js')
+const { truffleFixtureDeployer } = require('./truffle-fixture-deployer')
 
 module.exports = async () => {
-    console.log("Migrating contracts before hardhat-truffle tests")
-    await initial_migration()
-    const accounts = await web3.eth.getAccounts()
-    await deploy_token(accounts)
-    await deploy_core(accounts)
-    await deploy_ens(accounts)
-    await whitelisting(accounts)
-    await functions(accounts)
+    console.log("Running truffle-fixture hook before hardhat-truffle test")
+    // Running all tests at once with`npx hardhat test` requires some fixtures:
+    // 1. In `factory deployment` mode a custom truffle-fixture deployer is required
+    // Used resources:
+    // - https://hardhat.org/hardhat-runner/docs/guides/test-contracts#using-fixtures
+    // - https://github.com/NomicFoundation/hardhat/blob/hardhat%402.13.0/packages/hardhat-network-helpers/test/loadFixture.ts#L52
+    // 2. In `standard deployment` mode, deployment code can be injected directly
+    // in truffle-fixture.js.
+    // https://hardhat.org/hardhat-runner/docs/other-guides/truffle-migration#migrations-and-hardhat-truffle-fixtures
+    await truffleFixtureDeployer()
 };
