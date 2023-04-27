@@ -1,3 +1,5 @@
+# TODO migrate
+
 #!/bin/bash
 
 trap catch INT

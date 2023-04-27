@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.5.0
+- Migrate to Hardhat (#134)
+
 ## v5.4.1
 
 - Fix default `poco-chain` `CMD`. (#127)

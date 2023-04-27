@@ -1,3 +1,5 @@
+// TODO migrate
+
 node("master") {
 	stage("Choose Label") {
 		LABEL = "jenkins-agent-machine-1"
