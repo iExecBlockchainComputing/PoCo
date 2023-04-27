@@ -114,6 +114,12 @@ class EthersDeployer
 		artefact.setAsDeployed(instance)
 	}
 
+    /**
+     * Get placeholder to be replaced with library address for a given contract.
+     * @param libraryArtefact artefact of the library
+     * @param contractArtefact artefact of the contract to be linked with the library
+     * @returns the placeholder to be replaced
+     */
 	getLinkPlaceholder(libraryArtefact, contractArtefact) {
 		const hLibraryArtifact = libraryArtefact._hArtifact
 		const hArtifact = contractArtefact._hArtifact
