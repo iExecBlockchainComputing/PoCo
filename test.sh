@@ -12,7 +12,7 @@ exit_code=0
 for f in $(find test/ -name '*.js' | sort); do
     log_file=$logs_dir$(basename "$f").logs
     echo "Running $sub_dir: $f ($log_file)"
-    npx hardhat test "$f" >"$log_file" 2>&1 # redirect stdout and stderr
+    npx hardhat test "$f" &>"$log_file" # redirect stdout and stderr
     # display summary (filter with passing/failing and only show failing)
     failing_line=$(grep -A 2 'passing (' "$log_file" |
         grep 'failing')
