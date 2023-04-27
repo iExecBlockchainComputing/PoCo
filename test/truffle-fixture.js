@@ -1,5 +1,6 @@
 
-const { truffleFixtureDeployer } = require('./truffle-fixture-deployer')
+const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
+const { deployAllContracts } = require('./truffle-fixture-deployer')
 
 module.exports = async () => {
     console.log("Running truffle-fixture hook before hardhat-truffle test")
@@ -11,5 +12,5 @@ module.exports = async () => {
     // 2. In `standard deployment` mode, deployment code can be injected directly
     // in truffle-fixture.js.
     // https://hardhat.org/hardhat-runner/docs/other-guides/truffle-migration#migrations-and-hardhat-truffle-fixtures
-    await truffleFixtureDeployer()
+    await loadFixture(deployAllContracts);
 };

@@ -1,5 +1,3 @@
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-
 const initial_migration = require('../migrations/1_initial_migration.js')
 const deploy_token = require('../migrations/3_deploy_token.js')
 const deploy_core = require('../migrations/4_deploy_core.js')
@@ -18,10 +16,6 @@ async function deployAllContracts() {
     await functions(accounts)
 }
 
-async function truffleFixtureDeployer() {
-    await loadFixture(deployAllContracts);
-}
-
 module.exports = {
-    truffleFixtureDeployer
+    deployAllContracts
 };
