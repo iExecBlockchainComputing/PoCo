@@ -12,7 +12,8 @@
     "test": "REPORT_GAS=true npx hardhat test",
     "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
-    "verify": "npx hardhat verify"
+    "verify": "npx hardhat verify",
+    "uml": "./generate-uml-from-sol.sh"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,8 @@
     "@iexec/solidity": "^0.1.1",
     "@openzeppelin/contracts": "3.3.0",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
-    "rlc-faucet-contract": "1.0.10"
+    "rlc-faucet-contract": "1.0.10",
+    "sol2uml": "^2.5.4"
   },
   "devDependencies": {
     "@ensdomains/ens-contracts": "^0.0.3",

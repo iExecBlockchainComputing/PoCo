@@ -131,3 +131,9 @@ Example of "complexe" deployment:
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
 ```
+
+## Generate documentation
+
+```
+npm run uml
+```
