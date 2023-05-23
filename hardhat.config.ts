@@ -122,14 +122,6 @@ const config: HardhatUserConfig = {
             '@iexec/erlc/contracts/ERLCTokenSwap.sol',
             '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
             '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
-            // Latest iexec-solidity is required
-            // Contracts can be imported:
-            // 1. From local clone
-            // cd iexec-solidity && npm link
-            // cd PoCo-dev && npm i && npm link @iexec/solidity
-            // See https://stackoverflow.com/a/72015226
-            // 2. Or From Github
-            // npm i https://github.com/iExecBlockchainComputing/iexec-solidity#<commit>
             '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
             // ENS
             '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',

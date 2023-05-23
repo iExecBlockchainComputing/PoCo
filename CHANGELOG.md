@@ -4,6 +4,7 @@
 - Migrate to Hardhat:
     - Init Hardhat project. (#134)
     - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
+    - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
 
 ## v5.4.1
 
