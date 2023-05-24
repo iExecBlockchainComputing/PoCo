@@ -10,7 +10,7 @@ cd "$ROOT/contracts/" || exit
 generate_class_uml_dir() {
     contracts_to_display=$1
     output_filename=${contracts_to_display/\//-} # convert slash to dash of needed
-    $SOL2UML class "$contracts_to_display/" -o "$ROOT/uml/class-uml-$output_filename.svg"
+    $SOL2UML class "$contracts_to_display/" -o "$ROOT/uml/class-uml-dir-$output_filename.svg"
 }
 
 # Generate class UML only connected to set of given contracts
