@@ -1,0 +1,35 @@
+@startuml
+
+!startsub ALL
+
+box "Smart contracts" #LightBlue
+	participant IexecClerk
+	participant IexecHub
+end box
+
+box "Off chain" #TECHNOLOGY
+	participant Marketplace
+end box
+
+box "iExec Core" #Bisque
+	participant Scheduler
+	participant Worker
+end box
+
+box "Ressources" #LightSalmon
+	participant App
+	participant Dataset
+end box
+
+box "Users"
+	participant Requester
+	participant anyone
+end box
+
+skinparam sequenceGroupBodyBackgroundColor transparent
+
+autonumber
+
+!endsub
+
+@enduml
