@@ -1,0 +1,58 @@
+@startuml
+
+!includesub nominalworkflow-ODB-0-actors.puml!ALL
+
+!startsub ALL
+
+activate anyone
+Marketplace --> anyone  : read orders
+anyone -> anyone : match orders
+activate IexecClerk
+
+group Brokering
+	anyone --> IexecClerk : <b>boost_matchOrder()
+	activate IexecClerk #lightgrey
+	deactivate anyone
+	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
+	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+deactivate Marketplace
+activate Scheduler
+IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+deactivate IexecClerk
+
+loop for all task in bag
+
+	group workorder processing
+		Scheduler -> Scheduler : randomly choose worker
+		Scheduler -> Scheduler : build signed authorization
+		activate Worker
+		Scheduler --> Worker : send signed authorization
+
+		group Worker execution
+			Worker  <--> App : getApp
+			Worker  <--> Dataset : getDataset
+			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker --> IexecHub : <b>boost_pushResult()
+			activate IexecHub #lightgrey
+		end
+
+		deactivate  Worker
+
+		IexecHub --> IexecClerk : notify
+		note over IexecClerk : RLC reward/seize for actors
+		deactivate IexecClerk
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskFinalize()
+        IexecHub o-> Scheduler : <font color=blue><b> watch TaskFinalize()
+		deactivate IexecHub
+
+	end
+end
+
+!endsub
+
+@enduml

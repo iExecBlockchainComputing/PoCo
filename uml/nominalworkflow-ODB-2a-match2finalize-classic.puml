@@ -1,0 +1,82 @@
+@startuml
+
+!includesub nominalworkflow-ODB-0-actors.puml!ALL
+
+!startsub ALL
+
+activate anyone
+Marketplace --> anyone  : read orders
+anyone -> anyone : match orders
+activate IexecClerk
+
+group Brokering
+	anyone --> IexecClerk : <b>matchOrders()
+	activate IexecClerk #lightgrey
+	deactivate anyone
+	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
+	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+deactivate Marketplace
+activate Scheduler
+IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+deactivate IexecClerk
+
+loop for all task in bag
+
+	activate IexecHub
+	Scheduler --> IexecHub : <b>initialize()
+	activate IexecHub #lightgrey
+	deactivate Scheduler
+	IexecHub <--> IexecHub : <font color=green><b>emit TaskInitialize()
+	activate Scheduler
+	IexecHub o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	deactivate IexecHub
+
+	group workorder processing
+		Scheduler -> Scheduler : randomly choose worker
+		Scheduler -> Scheduler : build signed authorization
+		activate Worker
+		Scheduler --> Worker : send signed authorization
+
+		group Worker execution
+			Worker  <--> App : getApp
+			Worker  <--> Dataset : getDataset
+			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+			Worker --> IexecHub : <b>contribute()
+			activate IexecHub #lightgrey
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
+			IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskConsensus()
+			IexecHub o-> Worker : <font color=blue><b> watch TaskConsensus()
+			deactivate IexecHub
+			Worker -> Worker : value to reveal is resultDigest
+			Worker --> IexecHub : <b>reveal()
+			activate IexecHub #lightgrey
+			IexecHub <--> IexecHub : <font color=green><b>emit TaskReveal()
+			end
+
+		deactivate  Worker
+
+		IexecHub o-> Scheduler : <font color=blue><b> watch TaskReveal()
+		deactivate IexecHub
+		Scheduler --> IexecHub : <b>finalize()
+		activate IexecHub #lightgrey
+		deactivate Scheduler
+		IexecHub --> IexecClerk : notify
+		note over IexecClerk : RLC reward/seize for actors
+		deactivate IexecClerk
+		IexecHub <--> IexecHub : <font color=green><b>emit TaskFinalize()
+		deactivate IexecHub
+		deactivate IexecHub
+
+	end
+end
+
+!endsub
+
+@enduml
