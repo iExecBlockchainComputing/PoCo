@@ -16,6 +16,7 @@
 
 // Config
 var DEPLOYMENT         = require("../../../config/config.json").chains.default;
+const { artifactsRequireFSThenNPM } = require('../../../utils/migrate-tools');
 // Artefacts
 var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
 var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
