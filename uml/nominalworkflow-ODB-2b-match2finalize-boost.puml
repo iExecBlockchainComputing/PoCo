@@ -39,8 +39,7 @@ loop for all task in bag
 			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
 			Worker --> IexecHub : <b>boost_pushResult()
 			activate IexecHub #lightgrey
-			
-        end
+		end
 
 		deactivate  Worker
 
