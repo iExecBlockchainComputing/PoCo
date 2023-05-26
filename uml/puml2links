@@ -1,0 +1,13 @@
+#!/bin/bash
+# Render .puml files (found in markdown comments) to web links
+
+cd $(dirname $0)
+
+# Using server-side rendering with `puml-for-markdown` since `node-plantuml`` 
+# requires Java on host
+# See https://github.com/danielyaa5/puml-for-markdown
+#
+# Search for markdown in current dir
+../node_modules/puml-for-markdown/bin/index.js
+
+#TODO: Add this script to pre-commit hook in order to keep up-to-date links

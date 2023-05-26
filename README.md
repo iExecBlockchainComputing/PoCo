@@ -28,9 +28,10 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## PoCo UML
 
-- [Contracts and Actors Architecture](./uml/architecture-ODB.png)
-- [Nominal workflow sequence](./uml/nominalworkflow-ODB.png)
-- [Nominal workflow sequence w/ TEE](./uml/nominalworkflow-ODB+TEE.png)
+- [Contracts and Actors Architecture](./uml/UMLs.md#contracts-and-actors-architecture)
+- [Boost workflow sequence](./uml/UMLs.md#boost)
+- [Nominal workflow sequence](./uml/UMLs.md#nominal)
+- [Nominal workflow sequence w/ TEE](./uml/UMLs.md#nominaltee)
 
 ## Documentation
 
@@ -130,4 +131,10 @@ Example of "complexe" deployment:
 
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
+```
+
+## Render .puml files
+
+```
+npm run puml2links
 ```

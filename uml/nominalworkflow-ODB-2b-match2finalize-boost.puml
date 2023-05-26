@@ -1,9 +1,5 @@
 @startuml
 
-!includesub nominalworkflow-ODB-0-actors.puml!ALL
-
-!startsub ALL
-
 activate anyone
 Marketplace --> anyone  : read orders
 anyone -> anyone : match orders
@@ -52,7 +48,5 @@ loop for all task in bag
 
 	end
 end
-
-!endsub
 
 @enduml

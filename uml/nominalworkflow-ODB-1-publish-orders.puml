@@ -1,9 +1,5 @@
 @startuml
 
-!includesub nominalworkflow-ODB-0-actors.puml!ALL
-
-!startsub ALL
-
 activate Marketplace
 
 activate App
@@ -26,7 +22,5 @@ activate Requester
 Requester -> Requester : sign requestorder
 Requester --> Marketplace : publish requestorder
 deactivate Requester
-
-!endsub
 
 @enduml

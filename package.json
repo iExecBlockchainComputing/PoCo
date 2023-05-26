@@ -13,7 +13,7 @@
     "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
     "verify": "npx hardhat verify",
-    "pulm2png": "./uml/pulm2png"
+    "puml2links": "./uml/puml2links"
   },
   "repository": {
     "type": "git",
@@ -44,8 +44,8 @@
     "hardhat": "^2.13.0",
     "hardhat-dependency-compiler": "^1.1.3",
     "husky": "^4.3.7",
-    "node-plantuml": "^0.9.0",
     "patched-openzeppelin-test-helpers": "file:patched-openzeppelin-test-helpers",
+    "puml-for-markdown": "^1.2.1",
     "web3": "^1.9.0"
   }
 }
