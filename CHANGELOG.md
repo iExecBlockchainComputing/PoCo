@@ -1,10 +1,15 @@
 # Changelog
 
-## v5.5.0
+## vNEXT
 - Migrate to Hardhat:
     - Init Hardhat project. (#134)
     - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
     - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
+
+## v5.4.2
+- Use latest Nethermind base image `nethermindeth/nethermind:iexec`
+(saved internally at `nexus.intra.iex.ec/nethermind:1.18.x-0`)
+containing a fix for [#5506](https://github.com/NethermindEth/nethermind/issues/5506).
 
 ## v5.4.1
 

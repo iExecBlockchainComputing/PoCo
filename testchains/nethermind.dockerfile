@@ -9,7 +9,7 @@
 ##      .
 ###
 
-FROM iexechub/nethermind:1.14.1-patch.0 AS builder
+FROM nexus.intra.iex.ec/nethermind:1.18.x-0 AS builder
 
 RUN apt-get update && apt-get -y install bash jq nodejs npm git
 RUN echo -e "Node: `node -v` - npm: `npm -v`"
@@ -90,7 +90,7 @@ RUN if [ "${CHAIN_TYPE}" = "native" ] ; \
         bash migrate-all.sh; \
     fi
 
-FROM iexechub/nethermind:1.14.1-patch.0
+FROM nexus.intra.iex.ec/nethermind:1.18.x-0
 
 COPY --from=builder /nethermind /nethermind
 COPY --from=builder /iexec-poco/build /build
