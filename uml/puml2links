@@ -8,6 +8,6 @@ cd $(dirname $0)
 # See https://github.com/danielyaa5/puml-for-markdown
 #
 # Search for markdown in current dir
-../node_modules/puml-for-markdown/bin/index.js
+npx puml-for-markdown
 
 #TODO: Add this script to pre-commit hook in order to keep up-to-date links

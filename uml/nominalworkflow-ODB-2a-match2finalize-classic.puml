@@ -3,32 +3,32 @@
 activate anyone
 Marketplace --> anyone  : read orders
 anyone -> anyone : match orders
-activate IexecClerk
+activate IexecPoco1
 
 group Brokering
-	anyone --> IexecClerk : <b>matchOrders()
-	activate IexecClerk #lightgrey
+	anyone --> IexecPoco1 : <b>matchOrders()
+	activate IexecPoco1 #lightgrey
 	deactivate anyone
-	IexecClerk <--> IexecClerk : <font color=green><b>emit OrdersMatched()
-	IexecClerk <--> IexecClerk : <font color=green><b>emit SchedulerNotice()
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit OrdersMatched()
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit SchedulerNotice()
 end
 
-IexecClerk o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+IexecPoco1 o-> Marketplace : <font color=blue><b> watch OrdersMatched()
 deactivate Marketplace
 activate Scheduler
-IexecClerk o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
-deactivate IexecClerk
+IexecPoco1 o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+deactivate IexecPoco1
 
 loop for all task in bag
 
-	activate IexecHub
-	Scheduler --> IexecHub : <b>initialize()
-	activate IexecHub #lightgrey
+	activate IexecPoco2
+	Scheduler --> IexecPoco2 : <b>initialize()
+	activate IexecPoco2 #lightgrey
 	deactivate Scheduler
-	IexecHub <--> IexecHub : <font color=green><b>emit TaskInitialize()
+	IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskInitialize()
 	activate Scheduler
-	IexecHub o-> Scheduler : <font color=blue><b> watch TaskInitialize()
-	deactivate IexecHub
+	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	deactivate IexecPoco2
 
 	group workorder processing
 		Scheduler -> Scheduler : randomly choose worker
@@ -43,32 +43,32 @@ loop for all task in bag
 			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
 			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
 			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
-			Worker --> IexecHub : <b>contribute()
-			activate IexecHub #lightgrey
-			IexecHub <--> IexecHub : <font color=green><b>emit TaskContribute()
-			IexecHub o-> Scheduler : <font color=blue><b> watch TaskContribute()
-			IexecHub <--> IexecHub : <font color=green><b>emit TaskConsensus()
-			IexecHub o-> Worker : <font color=blue><b> watch TaskConsensus()
-			deactivate IexecHub
+			Worker --> IexecPoco2 : <b>contribute()
+			activate IexecPoco2 #lightgrey
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskContribute()
+			IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskContribute()
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskConsensus()
+			IexecPoco2 o-> Worker : <font color=blue><b> watch TaskConsensus()
+			deactivate IexecPoco2
 			Worker -> Worker : value to reveal is resultDigest
-			Worker --> IexecHub : <b>reveal()
-			activate IexecHub #lightgrey
-			IexecHub <--> IexecHub : <font color=green><b>emit TaskReveal()
+			Worker --> IexecPoco2 : <b>reveal()
+			activate IexecPoco2 #lightgrey
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskReveal()
 			end
 
 		deactivate  Worker
 
-		IexecHub o-> Scheduler : <font color=blue><b> watch TaskReveal()
-		deactivate IexecHub
-		Scheduler --> IexecHub : <b>finalize()
-		activate IexecHub #lightgrey
+		IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskReveal()
+		deactivate IexecPoco2
+		Scheduler --> IexecPoco2 : <b>finalize()
+		activate IexecPoco2 #lightgrey
 		deactivate Scheduler
-		IexecHub --> IexecClerk : notify
-		note over IexecClerk : RLC reward/seize for actors
-		deactivate IexecClerk
-		IexecHub <--> IexecHub : <font color=green><b>emit TaskFinalize()
-		deactivate IexecHub
-		deactivate IexecHub
+		IexecPoco2 --> IexecPoco1 : notify
+		note over IexecPoco1 : RLC reward/seize for actors
+		deactivate IexecPoco1
+		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskFinalize()
+		deactivate IexecPoco2
+		deactivate IexecPoco2
 
 	end
 end
