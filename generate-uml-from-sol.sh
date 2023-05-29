@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT=$(pwd "$(dirname "$0")")
-SOL2UML="$ROOT/node_modules/sol2uml/lib/sol2uml.js"
+SOL2UML="npx sol2uml"
 cd "$ROOT/contracts/" || exit
 
 # For sol2uml documentaiton, see https://github.com/naddison36/sol2uml#usage
