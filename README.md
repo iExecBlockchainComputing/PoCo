@@ -31,6 +31,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [Contracts and Actors Architecture](./uml/architecture-ODB.png)
 - [Nominal workflow sequence](./uml/nominalworkflow-ODB.png)
 - [Nominal workflow sequence w/ TEE](./uml/nominalworkflow-ODB+TEE.png)
+- [State diagrams](./uml/statuses.md)
 - Class UMLs related to:
     - [IexecPocoDelegates](./uml/class-uml-IexecPocoDelegates.svg)
     - [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
