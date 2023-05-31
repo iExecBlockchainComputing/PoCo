@@ -15,8 +15,10 @@ flowchart TB
 	REVEALING --> |if deadline and claim| FAILED
     REVEALING --> |if no reveal and reopen| ACTIVE
 	REVEALING --> |if enough reveal and after finalize| COMPLETED
-        ACTIVE --> |if trust = 1 and contributeAndFinalize| COMPLETED
+    ACTIVE --> |if trust = 1 and contributeAndFinalize| COMPLETED
+    linkStyle 8 stroke:orange
     UNSET --> |if trust = 1, boost_matchOrder <br>and boost_pushResult| COMPLETED
+    linkStyle 9 stroke:green
 ```
 ## Contributions statuses
 
@@ -28,6 +30,7 @@ flowchart TB
     CONTRIBUTED --> |if not part of the consensus| REJECTED
 	CONTRIBUTED --> |if inside consensus| PROVED
     UNSET --> |if trust = 1 and contributeAndFinalize| PROVED
+    linkStyle 3 stroke:orange
 ```
 
 - Boost flow
