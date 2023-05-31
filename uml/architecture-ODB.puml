@@ -22,21 +22,21 @@ ScheduleProvider -down-> [Marketplace]: broadcast poolorder
 Broker -up-> [Marketplace]: read order
 
 cloud {
-  [IexecClerk]
-  [IexecHub]
+  [IexecPoco1]
+  [IexecPoco2]
   [RLC Token]
 }
-component [IexecClerk]
-component [IexecHub]
+component [IexecPoco1]
+component [IexecPoco2]
 component [RLC Token]
-[IexecHub] <-right-> [IexecClerk]
-[IexecClerk] <-right-> [RLC Token]
+[IexecPoco2] <-right-> [IexecPoco1]
+[IexecPoco1] <-right-> [RLC Token]
 
-Broker -down-> [IexecClerk]: push matched orders
-[IexecClerk] -up-> [Marketplace]: notification events
+Broker -down-> [IexecPoco1]: push matched orders
+[IexecPoco1] -up-> [Marketplace]: notification events
 
-[iexec-scheduler] <-up-> [IexecHub]
-[iexec-worker] <-up-> [IexecHub]
+[iexec-scheduler] <-up-> [IexecPoco2]
+[iexec-worker] <-up-> [IexecPoco2]
 
 
 

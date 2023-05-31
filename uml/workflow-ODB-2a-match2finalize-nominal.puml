@@ -1,0 +1,75 @@
+@startuml
+
+activate anyone
+Marketplace --> anyone  : read orders
+activate IexecPoco1
+
+group Brokering
+	anyone --> IexecPoco1 : <b>matchOrders()
+	activate IexecPoco1 #lightgrey
+	deactivate anyone
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit OrdersMatched()
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecPoco1 o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+deactivate Marketplace
+activate Scheduler
+IexecPoco1 o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+deactivate IexecPoco1
+
+loop for all task in bag
+
+	activate IexecPoco2
+	Scheduler --> IexecPoco2 : <b>initialize()
+	activate IexecPoco2 #lightgrey
+	deactivate Scheduler
+	IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskInitialize()
+	activate Scheduler
+	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	deactivate IexecPoco2
+
+	group workorder processing
+		Scheduler -> Scheduler : randomly choose worker
+		Scheduler -> Scheduler : build signed authorization
+		activate Worker
+		Scheduler --> Worker : send signed authorization
+
+		group Worker execution
+			Worker  <--> App : getApp
+			Worker  <--> Dataset : getDataset
+			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+			Worker -> Worker : resultDigest = hash(Results) //(overwriten by iexecConsensus)//
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+			Worker --> IexecPoco2 : <b>contribute()
+			activate IexecPoco2 #lightgrey
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskContribute()
+			IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskContribute()
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskConsensus()
+			IexecPoco2 o-> Worker : <font color=blue><b> watch TaskConsensus()
+			deactivate IexecPoco2
+			Worker -> Worker : value to reveal is resultDigest
+			Worker --> IexecPoco2 : <b>reveal()
+			activate IexecPoco2 #lightgrey
+			IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskReveal()
+			end
+
+		deactivate  Worker
+
+		IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskReveal()
+		deactivate IexecPoco2
+		Scheduler --> IexecPoco2 : <b>finalize()
+		activate IexecPoco2 #lightgrey
+		deactivate Scheduler
+		IexecPoco2 --> IexecPoco1 : notify
+		note over IexecPoco1 : RLC reward/seize for actors
+		deactivate IexecPoco1
+		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskFinalize()
+		deactivate IexecPoco2
+		deactivate IexecPoco2
+
+	end
+end
+
+@enduml
