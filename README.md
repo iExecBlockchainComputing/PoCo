@@ -28,10 +28,11 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## PoCo UML
 
-- [Contracts and Actors Architecture](./uml/architecture-ODB.png)
-- [Nominal workflow sequence](./uml/nominalworkflow-ODB.png)
-- [Nominal workflow sequence w/ TEE](./uml/nominalworkflow-ODB+TEE.png)
+- [Contracts and Actors Architecture](./uml/UMLs.md#contracts-and-actors-architecture)
 - [State diagrams](./uml/statuses.md)
+- [Nominal workflow sequence](./uml/UMLs.md#nominal)
+- [Nominal workflow sequence w/ TEE](./uml/UMLs.md#nominaltee)
+- [Boost workflow sequence](./uml/UMLs.md#boost)
 - Class UMLs related to:
     - [IexecPocoDelegates](./uml/class-uml-IexecPocoDelegates.svg)
     - [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
@@ -107,7 +108,7 @@ The automatic testing command uses a `ganache-cli` blockchain instance to run th
 
 1. Start your blockchain. You can either use ganache with the following command:
 ```
-ganache <any additional arguments>
+npx ganache <any additional arguments>
 ```
 or run any other blockchain client.
 2. **[Optional]** If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
@@ -138,6 +139,11 @@ Example of "complexe" deployment:
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
 ```
+
+## Render .puml files
+
+```
+npm run puml2links
 
 ## Generate documentation
 

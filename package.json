@@ -13,7 +13,8 @@
     "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
     "verify": "npx hardhat verify",
-    "uml": "./generate-uml-from-sol.sh"
+    "uml": "./generate-uml-from-sol.sh",
+    "puml2links": "./uml/puml2links.sh"
   },
   "repository": {
     "type": "git",
@@ -45,6 +46,7 @@
     "hardhat-dependency-compiler": "^1.1.3",
     "husky": "^4.3.7",
     "patched-openzeppelin-test-helpers": "file:patched-openzeppelin-test-helpers",
+    "puml-for-markdown": "^1.2.1",
     "sol2uml": "^2.5.4",
     "web3": "^1.9.0"
   }
