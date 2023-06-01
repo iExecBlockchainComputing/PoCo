@@ -1,6 +1,14 @@
 @startuml
 
-!include workflow-ODB-0b-actors.puml
+!include workflow-ODB-0-actors.puml
+
+box "Smart contracts" #LightBlue
+	participant SMSRegistry
+end box
+
+box "Off chain infra" #Bisque
+	participant SMS
+end box
 
 !include workflow-ODB-1b-publish-orders-TEE.puml
 
