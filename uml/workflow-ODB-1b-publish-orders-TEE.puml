@@ -2,23 +2,23 @@
 
 == Ressources deployment ==
 
-AppOwner -> App : Push application
-activate AppOwner
-AppOwner --> IexecPoco2 : Register application
-deactivate AppOwner
+App -> App : Push application
+activate App
+App --> IexecPoco2 : Register application
+deactivate App
 
-DatasetOwner -> DatasetOwner : Generate encryption key (Kd)
-activate DatasetOwner
-DatasetOwner -> DatasetOwner : Encrypt Dataset with Kd
-DatasetOwner -> Dataset : Push dataset
-DatasetOwner --> IexecPoco2 : Register dataset
-DatasetOwner -> SMSRegistry : Setup SMS
+Dataset -> Dataset : Generate encryption key (Kd)
+activate Dataset
+Dataset -> Dataset : Encrypt Dataset with Kd
+Dataset -> Dataset : Push dataset
+Dataset --> IexecPoco2 : Register dataset
+Dataset -> SMSRegistry : Setup SMS
 group for each application
-	DatasetOwner -> App : Get application signature
-	DatasetOwner -[#red]> SMS : Authorize application to use Kd
-	DatasetOwner -> DatasetOwner : Add application to whitelist
+	Dataset -> App : Get application signature
+	Dataset -[#red]> SMS : Authorize application to use Kd
+	Dataset -> Dataset : Add application to whitelist
 end
-deactivate DatasetOwner
+deactivate Dataset
 
 Requester -> Requester : Generate encryption key (Kr)
 activate Requester
@@ -30,15 +30,15 @@ deactivate Requester
 
 == Brokering ==
 
-AppOwner -> AppOwner : sign apporder
-activate AppOwner
-AppOwner --> Marketplace : publish apporder
-deactivate AppOwner
+App -> App : sign apporder
+activate App
+App --> Marketplace : publish apporder
+deactivate App
 
-DatasetOwner -> DatasetOwner : sign datasetorder
-activate DatasetOwner
-DatasetOwner --> Marketplace : publish datasetorder
-deactivate DatasetOwner
+Dataset -> Dataset : sign datasetorder
+activate Dataset
+Dataset --> Marketplace : publish datasetorder
+deactivate Dataset
 
 Scheduler -> Scheduler : checks availability
 activate Scheduler
