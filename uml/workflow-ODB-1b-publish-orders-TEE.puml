@@ -1,0 +1,54 @@
+@startuml
+
+== Ressources deployment ==
+
+AppOwner -> App : Push application
+activate AppOwner
+AppOwner --> IexecPoco2 : Register application
+deactivate AppOwner
+
+DatasetOwner -> DatasetOwner : Generate encryption key (Kd)
+activate DatasetOwner
+DatasetOwner -> DatasetOwner : Encrypt Dataset with Kd
+DatasetOwner -> Dataset : Push dataset
+DatasetOwner --> IexecPoco2 : Register dataset
+DatasetOwner -> SMSRegistry : Setup SMS
+group for each application
+	DatasetOwner -> App : Get application signature
+	DatasetOwner -[#red]> SMS : Authorize application to use Kd
+	DatasetOwner -> DatasetOwner : Add application to whitelist
+end
+deactivate DatasetOwner
+
+Requester -> Requester : Generate encryption key (Kr)
+activate Requester
+Requester -> SMSRegistry : Setup SMS
+group for each application
+	Requester -[#red]> SMS: Authorize application to use Kr
+end
+deactivate Requester
+
+== Brokering ==
+
+AppOwner -> AppOwner : sign apporder
+activate AppOwner
+AppOwner --> Marketplace : publish apporder
+deactivate AppOwner
+
+DatasetOwner -> DatasetOwner : sign datasetorder
+activate DatasetOwner
+DatasetOwner --> Marketplace : publish datasetorder
+deactivate DatasetOwner
+
+Scheduler -> Scheduler : checks availability
+activate Scheduler
+Scheduler -> Scheduler : sign workerpoolorder
+Scheduler --> Marketplace : publish workerpoolorder
+deactivate Scheduler
+
+Requester -> Requester : sign requestorder
+activate Requester
+Requester --> Marketplace : publish requestorder
+deactivate Requester
+
+@enduml

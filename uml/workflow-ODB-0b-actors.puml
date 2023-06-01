@@ -1,0 +1,37 @@
+@startuml
+
+box "Off chain repository" #TECHNOLOGY
+	participant App
+	participant Dataset
+    participant Requester
+end box
+
+box "Off chain users"
+	participant AppOwner
+	participant DatasetOwner
+	participant Requester
+	participant anyone
+end box
+
+box "Off chain marketplace" #LightSalmon
+    participant Marketplace
+end box
+
+box "Smart contracts" #LightBlue
+	participant SMSRegistry
+	participant IexecPoco1
+	participant IexecPoco2
+end box
+
+box "Off chain infra" #Bisque
+	participant SMS
+	participant Scheduler
+	participant Worker
+end box
+
+
+skinparam sequenceGroupBodyBackgroundColor transparent
+
+autonumber
+
+@enduml
