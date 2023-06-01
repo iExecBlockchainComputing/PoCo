@@ -9,7 +9,7 @@
 [![Nominal workflow sequence](https://tinyurl.com/2ll7bv8f)](https://tinyurl.com/2ll7bv8f)<!--![Nominal workflow sequence](./nominalworkflow-ODB.puml)-->
 
 ### Nominal+TEE
-[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2zq549mu)](https://tinyurl.com/2zq549mu)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
+[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2e837c33)](https://tinyurl.com/2e837c33)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
 
 ### Boost
 [![Boost workflow sequence](https://tinyurl.com/2nr8ystu)](https://tinyurl.com/2nr8ystu)<!--![Boost workflow sequence](./boost-workflow-ODB.puml)-->
