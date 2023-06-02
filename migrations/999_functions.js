@@ -14,9 +14,11 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+const { artifactsRequireFSThenNPM } = require('../utils/migrate-tools')
 // ERC1538 core & delegates
-var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy')
-var ERC1538Query = artifacts.require('@iexec/solidity/ERC1538QueryDelegate')
+// require ABI previously generated at step 4
+var ERC1538Proxy = artifactsRequireFSThenNPM('@iexec/solidity/ERC1538Proxy')
+var ERC1538Query = artifactsRequireFSThenNPM('@iexec/solidity/ERC1538QueryDelegate')
 
 /*****************************************************************************
  *                                   Main                                    *

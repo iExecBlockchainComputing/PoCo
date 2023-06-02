@@ -15,6 +15,7 @@
  ******************************************************************************/
 
 const assert = require('assert')
+const { artifactsRequireFSThenNPM } = require('../utils/migrate-tools')
 // CONFIG
 const CONFIG = require('../config/config.json')
 // ENS
@@ -23,9 +24,11 @@ var FIFSRegistrar           = artifacts.require('@ensdomains/ens/FIFSRegistrar')
 var ReverseRegistrar        = artifacts.require('@ensdomains/ens/ReverseRegistrar.sol')
 var PublicResolver          = artifacts.require('@ensdomains/resolver/PublicResolver')
 // Core
-var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
-var ERLCTokenSwap           = artifacts.require('@iexec/erlc/ERLCTokenSwap')
-var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
+// require ABIs previously generated at step 3
+var RLC                     = artifactsRequireFSThenNPM('rlc-faucet-contract/RLC')
+var ERLCTokenSwap           = artifactsRequireFSThenNPM('@iexec/erlc/ERLCTokenSwap')
+// require ABI previously generated at step 4
+var ERC1538Proxy            = artifactsRequireFSThenNPM('@iexec/solidity/ERC1538Proxy')
 var IexecInterfaceNative    = artifacts.require('IexecInterfaceNative')
 var IexecInterfaceToken     = artifacts.require('IexecInterfaceToken')
 var AppRegistry             = artifacts.require('AppRegistry')

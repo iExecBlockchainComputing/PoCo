@@ -15,13 +15,15 @@
  ******************************************************************************/
 
 const assert = require('assert')
+const { artifactsRequireFSThenNPM } = require('../utils/migrate-tools')
 // CONFIG
 const CONFIG = require('../config/config.json')
 // FactoryDeployer
 const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer')
 // Token
-var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
-var ERLCTokenSwap           = artifacts.require('@iexec/erlc/ERLCTokenSwap')
+// require ABIs previously generated at step 3
+var RLC                     = artifactsRequireFSThenNPM('rlc-faucet-contract/RLC')
+var ERLCTokenSwap           = artifactsRequireFSThenNPM('@iexec/erlc/ERLCTokenSwap')
 // ERC1538 core & delegates
 var ERC1538Proxy            = artifacts.require('@iexec/solidity/ERC1538Proxy')
 var ERC1538Update           = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate')

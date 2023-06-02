@@ -16,9 +16,10 @@
 
 // Config
 var DEPLOYMENT         = require("../../../config/config.json").chains.default;
+const { artifactsRequireFSThenNPM } = require('../../../utils/migrate-tools')
 // Artefacts
-var RLC                = artifacts.require("rlc-faucet-contract/contracts/RLC");
-var ERC1538Proxy       = artifacts.require("iexec-solidity/ERC1538Proxy");
+var RLC                = artifactsRequireFSThenNPM("rlc-faucet-contract/RLC");
+var ERC1538Proxy       = artifactsRequireFSThenNPM("@iexec/solidity/ERC1538Proxy");
 var IexecInterface     = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
 var AppRegistry        = artifacts.require("AppRegistry");
 var DatasetRegistry    = artifacts.require("DatasetRegistry");
@@ -26,7 +27,7 @@ var WorkerpoolRegistry = artifacts.require("WorkerpoolRegistry");
 var App                = artifacts.require("App");
 var Dataset            = artifacts.require("Dataset");
 var Workerpool         = artifacts.require("Workerpool");
-var ENSRegistry        = artifacts.require("@ensdomains/ens/ENSRegistry");
+var ENSRegistry        = artifactsRequireFSThenNPM("@ensdomains/ens/ENSRegistry");
 
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const tools     = require("../../../utils/tools");
@@ -36,7 +37,7 @@ const constants = require("../../../utils/constants");
 
 Object.extract = (obj, keys) => keys.map(key => obj[key]);
 
-contract('Ressources', async (accounts) => {
+contract('Resources', async (accounts) => {
 
 	assert.isAtLeast(accounts.length, 10, "should have at least 10 accounts");
 	let iexecAdmin      = null;
