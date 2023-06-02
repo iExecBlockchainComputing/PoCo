@@ -1,8 +1,8 @@
 @startuml
 
 box "Off chain actors" #TECHNOLOGY
-	participant App
-	participant Dataset
+	participant "App/Owner" as App
+	participant "Dataset/Owner" as Dataset
     participant Requester
 	participant anyone
 end box

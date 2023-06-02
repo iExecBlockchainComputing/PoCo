@@ -1,14 +1,13 @@
 @startuml
 
 == Ressources deployment ==
-
-App -> App : Push application
 activate App
+App -> App : Push application
 App --> IexecPoco2 : Register application
 deactivate App
 
-Dataset -> Dataset : Generate encryption key (Kd)
 activate Dataset
+Dataset -> Dataset : Generate encryption key (Kd)
 Dataset -> Dataset : Encrypt Dataset with Kd
 Dataset -> Dataset : Push dataset
 Dataset --> IexecPoco2 : Register dataset
@@ -20,8 +19,8 @@ group for each application
 end
 deactivate Dataset
 
-Requester -> Requester : Generate encryption key (Kr)
 activate Requester
+Requester -> Requester : Generate encryption key (Kr)
 Requester -> SMSRegistry : Setup SMS
 group for each application
 	Requester -[#red]> SMS: Authorize application to use Kr
@@ -30,24 +29,24 @@ deactivate Requester
 
 == Brokering ==
 
-App -> App : sign apporder
 activate App
+App -> App : sign apporder
 App --> Marketplace : publish apporder
 deactivate App
 
-Dataset -> Dataset : sign datasetorder
 activate Dataset
+Dataset -> Dataset : sign datasetorder
 Dataset --> Marketplace : publish datasetorder
 deactivate Dataset
 
-Scheduler -> Scheduler : checks availability
 activate Scheduler
+Scheduler -> Scheduler : checks availability
 Scheduler -> Scheduler : sign workerpoolorder
 Scheduler --> Marketplace : publish workerpoolorder
 deactivate Scheduler
 
-Requester -> Requester : sign requestorder
 activate Requester
+Requester -> Requester : sign requestorder
 Requester --> Marketplace : publish requestorder
 deactivate Requester
 
