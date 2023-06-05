@@ -1,5 +1,5 @@
 @startuml
-:iExecSmartContractUser:
+:iExecSCUser:
 :AppProvider:
 :DatasetProvider:
 :SchedulerProvider:
@@ -10,7 +10,7 @@ cloud {
 [IexecRelay]
 }
 component [IexecRelay]
-iExecSmartContractUser -down-> [IexecRelay]: use
+iExecSCUser -down-> [IexecRelay]: use
 
 component [Marketplace]
 [IexecRelay] -down-> [Marketplace]: broadcast userorder
