@@ -1,64 +1,58 @@
 @startuml
 :iExecCloudUser:
-:iExecSCUser:
-:DappProvider:
-:DataProvider:
-:ScheduleProvider:
-:ResourceProvider:
-:Broker:
+:iExecSmartContractUser:
+:ApplicationProvider:
+:DatasetProvider:
+:SchedulerProvider:
+:WorkerProvider:
+:OrderMatcher:
 
 cloud {
-  [IexecRelay]
+[IexecRelay]
 }
 component [IexecRelay]
-iExecSCUser -down-> [IexecRelay]: use
+iExecSmartContractUser -down-> [IexecRelay]: use
 
 component [Marketplace]
 [IexecRelay] -down-> [Marketplace]: broadcast userorder
 iExecCloudUser -down-> [Marketplace]: broadcast userorder
-DappProvider -down-> [Marketplace]: broadcast dapporder
-DataProvider -down-> [Marketplace]: broadcast dataorder
-ScheduleProvider -down-> [Marketplace]: broadcast poolorder
-Broker -up-> [Marketplace]: read order
+ApplicationProvider -down-> [Marketplace]: broadcast apporder
+DatasetProvider -down-> [Marketplace]: broadcast dataorder
+SchedulerProvider -down-> [Marketplace]: broadcast poolorder
+OrderMatcher -up-> [Marketplace]: read order
 
 cloud {
-  [IexecPoco1]
-  [IexecPoco2]
-  [RLC Token]
+[IexecPoCo1]
+[IexecPoCo2]
+[RLC Token]
 }
-component [IexecPoco1]
-component [IexecPoco2]
+component [IexecPoCo1]
+component [IexecPoCo2]
 component [RLC Token]
-[IexecPoco2] <-right-> [IexecPoco1]
-[IexecPoco1] <-right-> [RLC Token]
+[IexecPoCo2] <-right-> [IexecPoCo1]
+[IexecPoCo1] <-right-> [RLC Token]
 
-Broker -down-> [IexecPoco1]: push matched orders
-[IexecPoco1] -up-> [Marketplace]: notification events
+OrderMatcher -down-> [IexecPoCo1]: push matched orders
+[IexecPoCo1] -up-> [Marketplace]: notification events
 
-[iexec-scheduler] <-up-> [IexecPoco2]
-[iexec-worker] <-up-> [IexecPoco2]
+[iexec-scheduler] <-up-> [IexecPoCo2]
+[iexec-worker] <-up-> [IexecPoCo2]
 
-
-
-
-
-component [AppRepository]
-component [DatasetRepository]
+component [AppRegistry]
+component [DatasetRegistry]
 component [iexec-scheduler]
 component [iexec-worker]
 component [ResultRepository]
 
-DappProvider -down-> AppRepository: expose
-DataProvider -down-> DatasetRepository: expose
-ScheduleProvider -down-> [iexec-scheduler]: control
-ScheduleProvider -down-> [ResultRepository]: control and expose
+ApplicationProvider -down-> AppRegistry: expose
+DatasetProvider -down-> DatasetRegistry: expose
+SchedulerProvider -down-> [iexec-scheduler]: control
+SchedulerProvider -down-> [ResultRepository]: control and expose
 ResultRepository <-right-> [iexec-scheduler]
 
-
-
-[ResourceProvider] -right-> [iexec-worker]: control
+[WorkerProvider] -right-> [iexec-worker]: control
 
 [iexec-worker] <-right-> [iexec-scheduler]
-[iexec-worker] <-up-> [AppRepository]
-[iexec-worker] <-up-> [DatasetRepository]
+[iexec-worker] <-up-> [AppRegistry]
+[iexec-worker] <-up-> [DatasetRegistry]
 @enduml
