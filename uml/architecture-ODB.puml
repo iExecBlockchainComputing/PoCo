@@ -4,7 +4,7 @@
 :DatasetProvider:
 :SchedulerProvider:
 :WorkerProvider:
-:Any:
+:Anyone:
 
 cloud {
 [IexecRelay]
@@ -17,7 +17,7 @@ component [Marketplace]
 AppProvider -down-> [Marketplace]: broadcast apporder
 DatasetProvider -down-> [Marketplace]: broadcast dataorder
 SchedulerProvider -down-> [Marketplace]: broadcast poolorder
-Any -up-> [Marketplace]: read order
+Anyone -up-> [Marketplace]: read order
 
 cloud {
 [IexecPoCo1]
@@ -30,7 +30,7 @@ component [RLC Token]
 [IexecPoCo2] <-right-> [IexecPoCo1]
 [IexecPoCo1] <-right-> [RLC Token]
 
-Any -down-> [IexecPoCo1]: push matched orders
+Anyone -down-> [IexecPoCo1]: push matched orders
 [IexecPoCo1] -up-> [Marketplace]: notification events
 
 [iexec-scheduler] <-up-> [IexecPoCo2]
