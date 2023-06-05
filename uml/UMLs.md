@@ -6,13 +6,13 @@
 ## Workflows
 
 ### Nominal
-[![Nominal workflow sequence](https://tinyurl.com/2mjwh2ca)](https://tinyurl.com/2mjwh2ca)<!--![Nominal workflow sequence](./nominalworkflow-ODB.puml)-->
+[![Nominal workflow sequence](https://tinyurl.com/2qlvhsh6)](https://tinyurl.com/2qlvhsh6)<!--![Nominal workflow sequence](./nominalworkflow-ODB.puml)-->
 
 ### Nominal+TEE
-[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2hcle23d)](https://tinyurl.com/2hcle23d)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
+[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2eq468ny)](https://tinyurl.com/2eq468ny)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
 
 ### Boost
-[![Boost workflow sequence](https://tinyurl.com/2o6gh9jn)](https://tinyurl.com/2o6gh9jn)<!--![Boost workflow sequence](./boost-workflow-ODB.puml)-->
+[![Boost workflow sequence](https://tinyurl.com/2zfxl5up)](https://tinyurl.com/2zfxl5up)<!--![Boost workflow sequence](./boost-workflow-ODB.puml)-->
 
 ### Nominal vs Boost: From Match to Finalize
 
@@ -20,4 +20,4 @@
 [![Nominal](https://tinyurl.com/2z24n4o7)](https://tinyurl.com/2z24n4o7)<!--![Nominal](./workflow-ODB-2a-match2finalize-nominal.puml)-->
 
 * Boost
-[![Boost](https://tinyurl.com/2q3ayuko)](https://tinyurl.com/2q3ayuko)<!--![Boost](./workflow-ODB-2b-match2finalize-boost.puml)-->
+[![Boost](https://tinyurl.com/2ox8vc6y)](https://tinyurl.com/2ox8vc6y)<!--![Boost](./workflow-ODB-2b-match2finalize-boost.puml)-->
