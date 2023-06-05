@@ -1,11 +1,10 @@
 @startuml
-:iExecCloudUser:
 :iExecSmartContractUser:
-:ApplicationProvider:
+:AppProvider:
 :DatasetProvider:
 :SchedulerProvider:
 :WorkerProvider:
-:OrderMatcher:
+:Any:
 
 cloud {
 [IexecRelay]
@@ -15,11 +14,10 @@ iExecSmartContractUser -down-> [IexecRelay]: use
 
 component [Marketplace]
 [IexecRelay] -down-> [Marketplace]: broadcast userorder
-iExecCloudUser -down-> [Marketplace]: broadcast userorder
-ApplicationProvider -down-> [Marketplace]: broadcast apporder
+AppProvider -down-> [Marketplace]: broadcast apporder
 DatasetProvider -down-> [Marketplace]: broadcast dataorder
 SchedulerProvider -down-> [Marketplace]: broadcast poolorder
-OrderMatcher -up-> [Marketplace]: read order
+Any -up-> [Marketplace]: read order
 
 cloud {
 [IexecPoCo1]
@@ -32,7 +30,7 @@ component [RLC Token]
 [IexecPoCo2] <-right-> [IexecPoCo1]
 [IexecPoCo1] <-right-> [RLC Token]
 
-OrderMatcher -down-> [IexecPoCo1]: push matched orders
+Any -down-> [IexecPoCo1]: push matched orders
 [IexecPoCo1] -up-> [Marketplace]: notification events
 
 [iexec-scheduler] <-up-> [IexecPoCo2]
@@ -44,7 +42,7 @@ component [iexec-scheduler]
 component [iexec-worker]
 component [ResultRepository]
 
-ApplicationProvider -down-> AppRegistry: expose
+AppProvider -down-> AppRegistry: expose
 DatasetProvider -down-> DatasetRegistry: expose
 SchedulerProvider -down-> [iexec-scheduler]: control
 SchedulerProvider -down-> [ResultRepository]: control and expose
