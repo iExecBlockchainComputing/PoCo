@@ -46,12 +46,12 @@ component [ResultRepository]
 
 AppProvider -down-> AppRegistry: expose
 DatasetProvider -down-> DatasetRegistry: expose 
-WorkerpoolAdmin -down-> [iexec-scheduler]: manage scheduling
+WorkerpoolAdmin -down-> [iexec-scheduler]: manage
 
-[WorkerAdmin] -right-> [iexec-worker]: manage worker
-[iexec-worker] <-right-> [iexec-scheduler]: receive tasks
-[iexec-worker] <-up-> [AppRegistry]: access applications
-[iexec-worker] <-up-> [DatasetRegistry]: access datasets
-[iexec-worker] -down-> [ResultRepository]: push results
-[iexec-scheduler] <-right-> [ResultRepository]: check present result
+[WorkerAdmin] -right-> [iexec-worker]: manage
+[iexec-worker] -right-> [iexec-scheduler]: get tasks
+[iexec-worker] -up-> [AppRegistry]: pull applications
+[iexec-worker] -up-> [DatasetRegistry]: pull datasets
+[iexec-worker] -down-> [ResultRepository]: push result
+[iexec-scheduler] -right-> [ResultRepository]: check present result
 @enduml
