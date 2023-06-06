@@ -46,10 +46,8 @@ loop for all task in bag
 		group Secrets
 			Worker -[#red]> SMS : Authenticate enclave & get Ke
 
-			Worker -> SMSRegistry : Get Dataset SMS
 			Worker -[#red]> SMS : Authenticate enclave & get Kd
 
-			Worker -> SMSRegistry : Get Requester SMS
 			Worker -[#red]> SMS : Authenticate enclave & get Kr
 		end group
 

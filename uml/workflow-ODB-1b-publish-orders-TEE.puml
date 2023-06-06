@@ -11,7 +11,6 @@ Dataset -> Dataset : Generate encryption key (Kd)
 Dataset -> Dataset : Encrypt Dataset with Kd
 Dataset -> Dataset : Push dataset
 Dataset --> IexecPoco2 : Register dataset
-Dataset -> SMSRegistry : Setup SMS
 group for each application
 	Dataset -> App : Get application signature
 	Dataset -[#red]> SMS : Authorize application to use Kd
@@ -21,7 +20,6 @@ deactivate Dataset
 
 activate Requester
 Requester -> Requester : Generate encryption key (Kr)
-Requester -> SMSRegistry : Setup SMS
 group for each application
 	Requester -[#red]> SMS: Authorize application to use Kr
 end

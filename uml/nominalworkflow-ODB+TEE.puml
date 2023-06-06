@@ -1,15 +1,9 @@
 @startuml
 scale 2000 width
 
-box "Smart contracts" #LightBlue
-	participant SMSRegistry
-end box
-
 box "Off chain workerpool" #Bisque
 	participant SMS
 end box
-
-
 !include workflow-ODB-0-actors.puml
 
 box "Repository"
