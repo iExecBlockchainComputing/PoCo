@@ -44,22 +44,20 @@ loop for all task in bag
 		activate Worker #lightgrey
 
 		group Secrets
-			Worker -[#red]> SMS : Authenticate enclave & get Ke
-
-			Worker -[#red]> SMS : Authenticate enclave & get Kd
-
-			Worker -[#red]> SMS : Authenticate enclave & get Kr
+			Worker -[#red]> SMS : Authenticate enclave & get Ke/Kd/Kr
 		end group
 
 		Worker -> Dataset : Get dataset
+		group Execution of enclave•s 
 		Worker -> Worker : Decrypt dataset with Kd
 
-		Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
-		Worker -> Worker : encrypt Results with Kr
-		Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
-		Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
-		Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
-		Worker -> Worker : sign Hash and Seal with Ke
+			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+			Worker -> Worker : encrypt Results with Kr
+			Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+			Worker -> Worker : sign Hash and Seal with Ke
+		end 
 		Worker --> IexecPoco2 : <b>contribute()
 		activate IexecPoco2 #lightgrey
 		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskContribute()
