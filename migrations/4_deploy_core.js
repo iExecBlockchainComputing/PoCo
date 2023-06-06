@@ -19,7 +19,8 @@ const assert = require('assert')
 // CONFIG
 const CONFIG = require('../config/config.json')
 // FactoryDeployer
-const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer')
+const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer');
+const { getFunctionSignatures } = require("./utils/getFunctionSignatures");
 // Token
 var RLC                     = artifacts.require('rlc-faucet-contract/RLC')
 var ERLCTokenSwap           = artifacts.require('@iexec/erlc/ERLCTokenSwap')
@@ -58,31 +59,6 @@ var WorkerpoolRegistry      = artifacts.require('WorkerpoolRegistry')
 
 const BYTES32_ZERO = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
-
-/*****************************************************************************
- *                                   Tools                                   *
- *****************************************************************************/
-function getSerializedObject(entry)
-{
-	return (entry.type == 'tuple')
-		? `(${entry.components.map(getSerializedObject).join(',')})`
-		: entry.type;
-}
-
-function getFunctionSignatures(abi)
-{
-	return [
-		...abi
-			.filter(entry => entry.type == 'receive')
-			.map(entry => 'receive;'),
-		...abi
-			.filter(entry => entry.type == 'fallback')
-			.map(entry => 'fallback;'),
-		...abi
-			.filter(entry => entry.type == 'function')
-			.map(entry => `${entry.name}(${entry.inputs.map(getSerializedObject).join(',')});`),
-	].filter(Boolean).join('');
-}
 
 /*****************************************************************************
  *                                   Main                                    *
