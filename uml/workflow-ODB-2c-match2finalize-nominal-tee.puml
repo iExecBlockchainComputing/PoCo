@@ -19,7 +19,6 @@ activate Scheduler
 deactivate IexecPoco1
 
 loop for all task in bag
-
 	Scheduler -> Scheduler : Instanciate task
 	activate IexecPoco2
 	Scheduler --> IexecPoco2 : <b>initialize()
@@ -29,28 +28,23 @@ loop for all task in bag
 	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskInitialize()
 	activate Scheduler
 	deactivate IexecPoco2
-
 	Scheduler -[#red]> SMS : Get address of signing key (Ke) for application (Generate key pair if needed)
 	Scheduler -> Scheduler : randomly choose worker
 	Scheduler -> Scheduler : build signed authorization
 	group Worker execution
-
 		Scheduler --> Worker : send signed authorization + SMS location
 		activate Worker
-
 		Worker  -> App : Get app
-
 		Worker -> Worker : Spinup Enclave
 		activate Worker #lightgrey
-
-		group Secrets
-			Worker -[#red]> SMS : Authenticate enclave & get Ke/Kd/Kr
-		end group
-
 		Worker -> Dataset : Get dataset
-		group Execution of enclave•s 
-		Worker -> Worker : Decrypt dataset with Kd
-
+		group Enclave execution
+            Worker -[#red]> SMS : Request secrets by authenticating enclave
+            activate SMS #lightgrey
+            SMS -> IexecPoco2: Verify in deal that enclave is authorized by owners of secrets to access them
+            SMS --> Worker: Get Kd, Kr & Ke
+            deactivate SMS
+		    Worker -> Worker : Decrypt dataset with Kd
 			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
 			Worker -> Worker : encrypt Results with Kr
 			Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
@@ -72,7 +66,6 @@ loop for all task in bag
 		activate IexecPoco2 #lightgrey
 		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskReveal()
 		end
-
 	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskReveal()
 	deactivate IexecPoco2
 	Scheduler --> IexecPoco2 : <b>finalize()
@@ -84,6 +77,5 @@ loop for all task in bag
 	IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskFinalize()
 	deactivate IexecPoco2
 	deactivate IexecPoco2
-	
 end
 @enduml
