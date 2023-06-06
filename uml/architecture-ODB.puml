@@ -1,28 +1,28 @@
 @startuml
-:iExecSCUser:
-:AppProvider:
-:DatasetProvider:
+:iExecCloudUser:
+:iExecSmartContractUser:
+:AppAndDataProvider:
 :SchedulerProvider:
 :WorkerProvider:
-:Anyone:
+:OrderMatcher:
 
 cloud {
-[IexecRelay]
+  [IexecRelay]
 }
 component [IexecRelay]
-iExecSCUser -down-> [IexecRelay]: use
+iExecSmartContractUser -down-> [IexecRelay]: use
 
 component [Marketplace]
 [IexecRelay] -down-> [Marketplace]: broadcast userorder
-AppProvider -down-> [Marketplace]: broadcast apporder
-DatasetProvider -down-> [Marketplace]: broadcast dataorder
+iExecCloudUser -down-> [Marketplace]: broadcast userorder
+AppAndDataProvider -down-> [Marketplace]: broadcast apporder, dataorder
 SchedulerProvider -down-> [Marketplace]: broadcast poolorder
-Anyone -up-> [Marketplace]: read order
+OrderMatcher -up-> [Marketplace]: read order
 
 cloud {
-[IexecPoCo1]
-[IexecPoCo2]
-[RLC Token]
+  [IexecPoCo1]
+  [IexecPoCo2]
+  [RLC Token]
 }
 component [IexecPoCo1]
 component [IexecPoCo2]
@@ -30,20 +30,18 @@ component [RLC Token]
 [IexecPoCo2] <-right-> [IexecPoCo1]
 [IexecPoCo1] <-right-> [RLC Token]
 
-Anyone -down-> [IexecPoCo1]: push matched orders
+OrderMatcher -down-> [IexecPoCo1]: push matched orders
 [IexecPoCo1] -up-> [Marketplace]: notification events
 
 [iexec-scheduler] <-up-> [IexecPoCo2]
 [iexec-worker] <-up-> [IexecPoCo2]
 
-component [AppRegistry]
-component [DatasetRegistry]
+component [AppAndDataRegistry]
 component [iexec-scheduler]
 component [iexec-worker]
 component [ResultRepository]
 
-AppProvider -down-> AppRegistry: expose
-DatasetProvider -down-> DatasetRegistry: expose
+AppAndDataProvider -down-> AppAndDataRegistry: expose
 SchedulerProvider -down-> [iexec-scheduler]: control
 SchedulerProvider -down-> [ResultRepository]: control and expose
 ResultRepository <-right-> [iexec-scheduler]
@@ -51,6 +49,5 @@ ResultRepository <-right-> [iexec-scheduler]
 [WorkerProvider] -right-> [iexec-worker]: control
 
 [iexec-worker] <-right-> [iexec-scheduler]
-[iexec-worker] <-up-> [AppRegistry]
-[iexec-worker] <-up-> [DatasetRegistry]
+[iexec-worker] <-up-> [AppAndDataRegistry]
 @enduml
