@@ -18,8 +18,8 @@ component [Marketplace]
 AppProvider -down-> [Marketplace]: publish apporder
 DatasetProvider -down-> [Marketplace]: publish dataorder
 WorkerpoolAdmin -down-> [Marketplace]: publish poolorder
-Anyone -up-> [Marketplace]: read order
 Requester  -down-> [Marketplace]: publish requestorder
+Anyone -up-> [Marketplace]: read order
 
 cloud {
 [IexecPoCo1]
@@ -47,11 +47,11 @@ component [ResultRepository]
 AppProvider -down-> AppRegistry: expose
 DatasetProvider -down-> DatasetRegistry: expose 
 WorkerpoolAdmin -down-> [iexec-scheduler]: manage scheduling
-ResultRepository <-right-> [iexec-scheduler]
 
 [WorkerAdmin] -right-> [iexec-worker]: manage worker
-
 [iexec-worker] <-right-> [iexec-scheduler]: receive tasks
 [iexec-worker] <-up-> [AppRegistry]: access applications
 [iexec-worker] <-up-> [DatasetRegistry]: access datasets
+[iexec-worker] -down-> [ResultRepository]: push results
+[iexec-scheduler] <-right-> [ResultRepository]: check present result
 @enduml
