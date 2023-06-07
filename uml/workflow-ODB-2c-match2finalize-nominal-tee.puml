@@ -1,0 +1,80 @@
+@startuml
+
+== Matching & Execution ==
+group Order matching
+	anyone --> Marketplace  : read orders
+	activate anyone
+	activate IexecPoco1
+	anyone --> IexecPoco1 : <b>matchOrders()
+	deactivate anyone
+	activate IexecPoco1 #lightgrey
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit OrdersMatched()
+	IexecPoco1 <--> IexecPoco1 : <font color=green><b>emit SchedulerNotice()
+end
+
+IexecPoco1 o-> Marketplace : <font color=blue><b> watch OrdersMatched()
+IexecPoco1 o-> Scheduler : <font color=blue><b> watch SchedulerNotice()
+activate Scheduler
+deactivate IexecPoco1
+
+loop for all task in bag
+	Scheduler -> Scheduler : instanciate task
+	activate IexecPoco2
+	Scheduler --> IexecPoco2 : <b>initialize()
+	deactivate Scheduler
+	activate IexecPoco2 #lightgrey
+	IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskInitialize()
+	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskInitialize()
+	activate Scheduler
+	deactivate IexecPoco2
+	Scheduler -[#red]> SMS : get address of signing key (Ke) for application (Generate key pair if needed)
+	Scheduler -> Scheduler : randomly choose worker
+	Scheduler -> Scheduler : build signed authorization
+	group Worker execution
+		Scheduler --> Worker : send signed authorization + SMS location
+		activate Worker
+		Worker  -> App : get app
+		Worker -> Worker : spinup enclave
+		activate Worker #lightgrey
+		Worker -> Dataset : get dataset
+		group Enclave execution
+            Worker -[#red]> SMS : request secrets
+            activate SMS #lightgrey
+            SMS -> IexecPoco2: verify in deal that enclave is authorized (by owners of secrets) to access secrets
+            SMS --> Worker: get Kd, Kr & Ke
+            deactivate SMS
+		    Worker -> Worker : decrypt dataset with Kd
+			Worker -> Worker : compute task → Results //(raw dataset or uri)//
+			Worker -> Worker : encrypt Results with Kr
+			Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
+			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
+			Worker -> Worker : resultSeal = hash(address | taskid | ResultDigest) //(proof of knowledge)//
+			Worker -> Worker : sign Hash and Seal with Ke
+		end 
+		Worker --> IexecPoco2 : <b>contribute()
+		activate IexecPoco2 #lightgrey
+		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskContribute()
+		IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskContribute()
+		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskConsensus()
+		IexecPoco2 o-> Worker : <font color=blue><b> watch TaskConsensus()
+		deactivate IexecPoco2
+		Worker -> Worker : value to reveal is resultDigest
+		Worker --> IexecPoco2 : <b>reveal()
+		Worker -> Results : push encrypted results
+		deactivate  Worker
+		activate IexecPoco2 #lightgrey
+		IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskReveal()
+		end
+	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskReveal()
+	deactivate IexecPoco2
+	Scheduler --> IexecPoco2 : <b>finalize()
+	deactivate Scheduler
+	activate IexecPoco2 #lightgrey
+	IexecPoco2 --> IexecPoco1 : notify
+	note over IexecPoco1 : RLC reward/seize for actors
+	deactivate IexecPoco1
+	IexecPoco2 <--> IexecPoco2 : <font color=green><b>emit TaskFinalize()
+	deactivate IexecPoco2
+	deactivate IexecPoco2
+end
+@enduml
