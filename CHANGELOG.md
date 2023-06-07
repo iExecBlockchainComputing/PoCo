@@ -8,6 +8,7 @@
 - Update documentation:
     - Generate class diagrams from solidity contracts (#139)
     - Add boost workflow sequence diagram. Update nominal workflow sequence diagram (#142)
+    - Update TEE workflow sequence diagram (#147)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
