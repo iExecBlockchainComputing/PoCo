@@ -7,6 +7,7 @@
     - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
 - Update documentation:
     - Generate class diagrams from solidity contracts. (#139)
+    - Add task and contribution state diagrams. (#144)
     - Add boost workflow sequence diagram. Update nominal workflow sequence diagram. (#142)
     - Update TEE workflow sequence diagram. (#147)
 
