@@ -11,18 +11,18 @@ Dataset -> Dataset : Generate encryption key (Kd)
 Dataset -> Dataset : Encrypt Dataset with Kd
 Dataset -> Dataset : Push dataset
 Dataset --> IexecPoco2 : Register dataset
+Dataset -[#red]> SMS: Push Kd
 group for each application
 	Dataset -> App : Get application signature
-	Dataset -[#red]> SMS : Authorize application to use Kd
-	Dataset -> Dataset : Add application to whitelist
+	Dataset -> Dataset : Authorize application in datasetorder
 end
+Dataset -> Dataset : sign datasetorder
+Dataset --> Marketplace : publish datasetorder
 deactivate Dataset
 
 activate Requester
 Requester -> Requester : Generate encryption key (Kr)
-group for each application
-	Requester -[#red]> SMS: Authorize application to use Kr
-end
+Requester -[#red]> SMS: Push Kr
 deactivate Requester
 
 == Brokering ==
@@ -31,11 +31,6 @@ activate App
 App -> App : sign apporder
 App --> Marketplace : publish apporder
 deactivate App
-
-activate Dataset
-Dataset -> Dataset : sign datasetorder
-Dataset --> Marketplace : publish datasetorder
-deactivate Dataset
 
 activate Scheduler
 Scheduler -> Scheduler : checks availability
