@@ -1,7 +1,7 @@
 @startuml
 
 activate anyone
-Marketplace --> anyone  : read orders
+anyone --> Marketplace  : read orders
 activate IexecPoco1
 
 group Brokering

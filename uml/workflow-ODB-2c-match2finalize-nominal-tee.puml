@@ -2,7 +2,7 @@
 
 == Matching & Execution ==
 group Order matching
-	Marketplace --> anyone  : read orders
+	anyone --> Marketplace  : read orders
 	activate anyone
 	activate IexecPoco1
 	anyone --> IexecPoco1 : <b>matchOrders()
