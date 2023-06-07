@@ -6,13 +6,13 @@
 ## Workflows
 
 ### Nominal
-[![Nominal workflow sequence](https://tinyurl.com/2kgg7tnr)](https://tinyurl.com/2kgg7tnr)<!--![Nominal workflow sequence](./nominalworkflow-ODB.puml)-->
+[![Nominal workflow sequence](https://tinyurl.com/2nb5oau3)](https://tinyurl.com/2nb5oau3)<!--![Nominal workflow sequence](./nominalworkflow-ODB.puml)-->
 
 ### Nominal+TEE
-[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2gljo2ea)](https://tinyurl.com/2gljo2ea)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
+[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2jwzqrgx)](https://tinyurl.com/2jwzqrgx)<!--![Nominal workflow sequence w/ TEE](./nominalworkflow-ODB+TEE.puml)-->
 
 ### Boost
-[![Boost workflow sequence](https://tinyurl.com/2ko6t72z)](https://tinyurl.com/2ko6t72z)<!--![Boost workflow sequence](./boost-workflow-ODB.puml)-->
+[![Boost workflow sequence](https://tinyurl.com/2oofk7yf)](https://tinyurl.com/2oofk7yf)<!--![Boost workflow sequence](./boost-workflow-ODB.puml)-->
 
 ### Nominal vs Boost vs Nominal TEE: From Match to Finalize
 
