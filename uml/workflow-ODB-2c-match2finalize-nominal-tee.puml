@@ -4,7 +4,6 @@
 group Order matching
 	Marketplace --> anyone  : read orders
 	activate anyone
-	anyone -> anyone : match orders
 	activate IexecPoco1
 	anyone --> IexecPoco1 : <b>matchOrders()
 	deactivate anyone
