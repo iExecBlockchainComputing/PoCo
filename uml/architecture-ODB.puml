@@ -1,18 +1,16 @@
 @startuml
-:iExecSCUser:
-:AppProvider:
-:DatasetProvider:
-:WorkerpoolAdmin:
-:WorkerAdmin:
+:iExecSCUser: as "Smart-Contract User"
+:AppProvider: as "Application Developer"
+:DatasetProvider: as "Dataset Owner"
+:WorkerpoolAdmin: as "Workerpool Admin"
+:WorkerAdmin: as "Worker"
 :Requester:
 :Anyone:
-
 cloud {
-[IexecRelay]
+    [IexecRelay]
 }
 component [IexecRelay]
 iExecSCUser -down-> [IexecRelay]: use
-
 component [Marketplace]
 [IexecRelay] -down-> [Marketplace]: publish userorder
 AppProvider -down-> [Marketplace]: publish apporder
@@ -20,38 +18,33 @@ DatasetProvider -down-> [Marketplace]: publish dataorder
 WorkerpoolAdmin -down-> [Marketplace]: publish poolorder
 Requester  -down-> [Marketplace]: publish requestorder
 Anyone -up-> [Marketplace]: read order
-
 cloud {
-[IexecPoCo1]
-[IexecPoCo2]
-[RLC Token]
+    [IexecPoCo1]
+    [IexecPoCo2]
+    [RLC Token]
 }
 component [IexecPoCo1]
 component [IexecPoCo2]
 component [RLC Token]
 [IexecPoCo2] <-right-> [IexecPoCo1]
 [IexecPoCo1] <-right-> [RLC Token]
-
-Anyone -down-> [IexecPoCo1]: push matched orders
-[IexecPoCo1] -up-> [Marketplace]: notification events
-
-[iexec-scheduler] <-up-> [IexecPoCo2]
-[iexec-worker] <-up-> [IexecPoCo2]
-
+Anyone -down-> [IexecPoCo1]: match orders
+[IexecPoCo1] -up-> [Marketplace]: emit deal
+[IexecPoCo1] -up-> [iexec-scheduler]: emit deal
+[iexec-scheduler] -up-> [IexecPoCo2]: initialize/finalize task
+[iexec-worker] -up-> [IexecPoCo2]: commit/reveal contribution
 component [AppRegistry]
-component [DatasetRegistry]
+component [PublicStorage]
 component [iexec-scheduler]
 component [iexec-worker]
 component [ResultRepository]
-
-AppProvider -down-> AppRegistry: expose
-DatasetProvider -down-> DatasetRegistry: expose 
+AppProvider -down-> AppRegistry: push application
+DatasetProvider -down-> PublicStorage: push dataset
 WorkerpoolAdmin -down-> [iexec-scheduler]: manage
-
 [WorkerAdmin] -right-> [iexec-worker]: manage
-[iexec-worker] -right-> [iexec-scheduler]: get tasks
-[iexec-worker] -up-> [AppRegistry]: pull applications
-[iexec-worker] -up-> [DatasetRegistry]: pull datasets
+[iexec-worker] -right-> [iexec-scheduler]: request new tasks
+[iexec-worker] -up-> [AppRegistry]: pull application
+[iexec-worker] -up-> [PublicStorage]: pull dataset
 [iexec-worker] -down-> [ResultRepository]: push result
-[iexec-scheduler] -right-> [ResultRepository]: check present result
+[iexec-scheduler] -right-> [ResultRepository]: check result uploaded
 @enduml
