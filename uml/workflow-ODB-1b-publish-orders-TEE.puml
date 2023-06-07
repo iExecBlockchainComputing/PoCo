@@ -2,27 +2,27 @@
 
 == Ressources deployment ==
 activate App
-App -> App : Push application
-App --> IexecPoco2 : Register application
+App -> App : push application
+App --> IexecPoco2 : register application
 deactivate App
 
 activate Dataset
-Dataset -> Dataset : Generate encryption key (Kd)
-Dataset -> Dataset : Encrypt Dataset with Kd
-Dataset -> Dataset : Push dataset
-Dataset --> IexecPoco2 : Register dataset
-Dataset -[#red]> SMS: Push Kd
+Dataset -> Dataset : generate encryption key (Kd)
+Dataset -> Dataset : encrypt Dataset with Kd
+Dataset -> Dataset : push dataset
+Dataset --> IexecPoco2 : register dataset
+Dataset -[#red]> SMS: push Kd
 group for each application
-	Dataset -> App : Get application signature
-	Dataset -> Dataset : Authorize application in datasetorder
+	Dataset -> App : get application signature
+	Dataset -> Dataset : authorize application in datasetorder
 end
 Dataset -> Dataset : sign datasetorder
 Dataset --> Marketplace : publish datasetorder
 deactivate Dataset
 
 activate Requester
-Requester -> Requester : Generate encryption key (Kr)
-Requester -[#red]> SMS: Push Kr
+Requester -> Requester : generate encryption key (Kr)
+Requester -[#red]> SMS: push Kr
 deactivate Requester
 
 == Brokering ==

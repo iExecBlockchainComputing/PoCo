@@ -18,7 +18,7 @@ activate Scheduler
 deactivate IexecPoco1
 
 loop for all task in bag
-	Scheduler -> Scheduler : Instanciate task
+	Scheduler -> Scheduler : instanciate task
 	activate IexecPoco2
 	Scheduler --> IexecPoco2 : <b>initialize()
 	deactivate Scheduler
@@ -27,24 +27,24 @@ loop for all task in bag
 	IexecPoco2 o-> Scheduler : <font color=blue><b> watch TaskInitialize()
 	activate Scheduler
 	deactivate IexecPoco2
-	Scheduler -[#red]> SMS : Get address of signing key (Ke) for application (Generate key pair if needed)
+	Scheduler -[#red]> SMS : get address of signing key (Ke) for application (Generate key pair if needed)
 	Scheduler -> Scheduler : randomly choose worker
 	Scheduler -> Scheduler : build signed authorization
 	group Worker execution
 		Scheduler --> Worker : send signed authorization + SMS location
 		activate Worker
-		Worker  -> App : Get app
-		Worker -> Worker : Spinup Enclave
+		Worker  -> App : get app
+		Worker -> Worker : spinup enclave
 		activate Worker #lightgrey
-		Worker -> Dataset : Get dataset
+		Worker -> Dataset : get dataset
 		group Enclave execution
-            Worker -[#red]> SMS : Request secrets by authenticating enclave
+            Worker -[#red]> SMS : request secrets
             activate SMS #lightgrey
-            SMS -> IexecPoco2: Verify in deal that enclave is authorized by owners of secrets to access them
-            SMS --> Worker: Get Kd, Kr & Ke
+            SMS -> IexecPoco2: verify in deal that enclave is authorized (by owners of secrets) to access secrets
+            SMS --> Worker: get Kd, Kr & Ke
             deactivate SMS
-		    Worker -> Worker : Decrypt dataset with Kd
-			Worker -> Worker : execute the asked work → Results //(raw dataset or uri)//
+		    Worker -> Worker : decrypt dataset with Kd
+			Worker -> Worker : compute task → Results //(raw dataset or uri)//
 			Worker -> Worker : encrypt Results with Kr
 			Worker -> Worker : resultDigest = hash(E(Results) or E(/iexec/consensus.iexec))
 			Worker -> Worker : resultHash = hash(taskid | ResultDigest) //(vote)//
