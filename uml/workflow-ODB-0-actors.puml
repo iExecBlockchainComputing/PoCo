@@ -1,8 +1,8 @@
 @startuml
 
 box "Off chain actors" #TECHNOLOGY
-	participant App
-	participant Dataset
+	participant "App/Owner" as App
+	participant "Dataset/Owner" as Dataset
     participant Requester
 	participant anyone
 end box
@@ -15,9 +15,10 @@ box "Smart contracts" #LightBlue
 	participant IexecPoco2
 end box
 
-box "Off chain workerpool" #Bisque
+box "Off chain workerpool & TEE services" #Bisque
 	participant Scheduler
 	participant Worker
+	participant SMS
 end box
 
 box "Users"
