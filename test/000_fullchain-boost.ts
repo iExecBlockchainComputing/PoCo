@@ -44,30 +44,7 @@ describe("IexecPocoBoostDelegate", function () {
 
         //TODO: Read ERC1538Proxy address dynamically
         const erc1538ProxyAddress = "0x977483a6ED002AFd098E95Be7434445fF1b122ff";
-        const erc1538 = ERC1538Update__factory
-            .connect(erc1538ProxyAddress, owner);
-        console.log(`IexecInstance found at address: ${erc1538.address}`);
-        // Link IexecPocoBoost methods to ERC1538Proxy
-        await erc1538.updateContract(
-            (await iexecPocoBoostInstance.deployed()).address,
-            getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
-            'Linking ' + IexecPocoBoostDelegate__factory.name
-        );
-        // Verify linking on ERC1538Proxy
-        const erc1538QueryInstance = ERC1538Query__factory
-            .connect(erc1538ProxyAddress, owner);
-        const functionCount = await erc1538QueryInstance.totalFunctions();
-        console.log(`The deployed ERC1538Proxy now supports ${functionCount} 
-            functions:`);
-        await Promise.all(
-            [...Array(functionCount.toNumber()).keys()].map(async i => {
-                const [method, _, contract] =
-                    await erc1538QueryInstance.functionByIndex(i)
-                if (contract == (await iexecPocoBoostInstance.deployed()).address) {
-                    console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`)
-                }
-            })
-        );
+        await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         return { iexecPocoBoostInstance, owner, otherAccount };
     }
 
@@ -90,4 +67,31 @@ describe("IexecPocoBoostDelegate", function () {
             );
         });
     });
+
+    async function linkBoostModule(erc1538ProxyAddress: string, owner,
+        iexecPocoBoostInstanceAddress: string) {
+        const erc1538 = ERC1538Update__factory
+            .connect(erc1538ProxyAddress, owner);
+        console.log(`IexecInstance found at address: ${erc1538.address}`);
+        // Link IexecPocoBoost methods to ERC1538Proxy
+        await erc1538.updateContract(
+            iexecPocoBoostInstanceAddress,
+            getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
+            'Linking ' + IexecPocoBoostDelegate__factory.name
+        );
+        // Verify linking on ERC1538Proxy
+        const erc1538QueryInstance = ERC1538Query__factory
+            .connect(erc1538ProxyAddress, owner);
+        const functionCount = await erc1538QueryInstance.totalFunctions();
+        console.log(`The deployed ERC1538Proxy now supports ${functionCount} 
+            functions:`);
+        await Promise.all(
+            [...Array(functionCount.toNumber()).keys()].map(async (i) => {
+                const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
+                if (contract == iexecPocoBoostInstanceAddress) {
+                    console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
+                }
+            })
+        );
+    }
 });
