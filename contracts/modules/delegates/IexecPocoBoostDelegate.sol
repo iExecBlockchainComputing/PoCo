@@ -24,12 +24,12 @@ import "../../libs/IexecLibCore_v5.sol";
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is DelegateBase {
-    event OrdersMatched(bytes32 dealid);
+    event OrdersMatchedBoost(bytes32 dealid);
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
     /// @param _apporder The order signed by the application developer
-    function matchOrders(uint _requestorder, uint _apporder) public {
+    function matchOrdersBoost(uint _requestorder, uint _apporder) public {
         require(
             _requestorder == _apporder,
             "Incompatible request and app orders"
@@ -37,11 +37,11 @@ contract IexecPocoBoostDelegate is DelegateBase {
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder, _apporder)); // random id
         IexecLibCore_v5.Deal storage deal = m_deals[dealid];
         deal.tag = keccak256(abi.encodePacked(_requestorder)); // set random field
-        emit OrdersMatched(dealid);
+        emit OrdersMatchedBoost(dealid);
     }
 
-    // TODO: Move to Accessor
-    function viewDeal(
+    // TODO: Move to IexecAccessorsBoost
+    function viewDealBoost(
         bytes32 _id
     ) external view returns (IexecLibCore_v5.Deal memory deal) {
         return m_deals[_id];

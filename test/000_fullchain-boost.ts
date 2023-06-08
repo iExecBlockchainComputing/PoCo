@@ -72,16 +72,16 @@ describe("IexecPocoBoostDelegate", function () {
             const { iexecPocoBoost } = await loadFixture(deployPocoBoostFixture);
             const expectedDealId =
                 "0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f";
-            await expect(iexecPocoBoost.matchOrders(1, 1))
-                .to.emit(iexecPocoBoost, "OrdersMatched")
+            await expect(iexecPocoBoost.matchOrdersBoost(1, 1))
+                .to.emit(iexecPocoBoost, "OrdersMatchedBoost")
                 .withArgs(expectedDealId);
-            expect((await iexecPocoBoost.viewDeal(expectedDealId)).tag)
+            expect((await iexecPocoBoost.viewDealBoost(expectedDealId)).tag)
                 .is.equal("0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6")
         });
 
         it("Should not match orders", async function () {
             const { iexecPocoBoost } = await loadFixture(deployPocoBoostFixture);
-            await expect(iexecPocoBoost.matchOrders(0, 1)).to.be.revertedWith(
+            await expect(iexecPocoBoost.matchOrdersBoost(0, 1)).to.be.revertedWith(
                 "Incompatible request and app orders"
             );
         });
