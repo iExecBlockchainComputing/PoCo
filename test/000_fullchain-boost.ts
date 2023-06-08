@@ -33,11 +33,14 @@ describe("IexecPocoBoostDelegate", function () {
         await deployPocoNominal()
         console.log("Deploying IexecPocoBoostDelegate")
         const [owner, otherAccount] = await ethers.getSigners();
-        const iexecPocoBoostFactory = await new IexecPocoBoostDelegate__factory()
-            .connect(owner)
-            .deploy();
-        const iexecPocoBoost = await iexecPocoBoostFactory.deployed();
-        console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoost.address}`)
+        const iexecPocoBoostFactoryInstance =
+            await new IexecPocoBoostDelegate__factory()
+                .connect(owner)
+                .deploy();
+        const iexecPocoBoostInstance = await iexecPocoBoostFactoryInstance
+            .deployed();
+        console.log(`IexecPocoBoostDelegate successfully deployed at 
+            ${iexecPocoBoostInstance.address}`)
 
         //TODO: Read ERC1538Proxy address dynamically
         const erc1538ProxyAddress = "0x977483a6ED002AFd098E95Be7434445fF1b122ff";
@@ -46,7 +49,7 @@ describe("IexecPocoBoostDelegate", function () {
         console.log(`IexecInstance found at address: ${erc1538.address}`);
         // Link IexecPocoBoost methods to ERC1538Proxy
         await erc1538.updateContract(
-            (await iexecPocoBoost.deployed()).address,
+            (await iexecPocoBoostInstance.deployed()).address,
             getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
             'Linking ' + IexecPocoBoostDelegate__factory.name
         );
@@ -54,34 +57,35 @@ describe("IexecPocoBoostDelegate", function () {
         const erc1538QueryInstance = ERC1538Query__factory
             .connect(erc1538ProxyAddress, owner);
         const functionCount = await erc1538QueryInstance.totalFunctions();
-        console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
+        console.log(`The deployed ERC1538Proxy now supports ${functionCount} 
+            functions:`);
         await Promise.all(
             [...Array(functionCount.toNumber()).keys()].map(async i => {
                 const [method, _, contract] =
                     await erc1538QueryInstance.functionByIndex(i)
-                if (contract == (await iexecPocoBoost.deployed()).address) {
+                if (contract == (await iexecPocoBoostInstance.deployed()).address) {
                     console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`)
                 }
             })
         );
-        return { iexecPocoBoost, owner, otherAccount };
+        return { iexecPocoBoostInstance, owner, otherAccount };
     }
 
     describe("MatchOrders", function () {
         it("Should match orders", async function () {
-            const { iexecPocoBoost } = await loadFixture(deployPocoBoostFixture);
+            const { iexecPocoBoostInstance } = await loadFixture(deployPocoBoostFixture);
             const expectedDealId =
                 "0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f";
-            await expect(iexecPocoBoost.matchOrdersBoost(1, 1))
-                .to.emit(iexecPocoBoost, "OrdersMatchedBoost")
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(1, 1))
+                .to.emit(iexecPocoBoostInstance, "OrdersMatchedBoost")
                 .withArgs(expectedDealId);
-            expect((await iexecPocoBoost.viewDealBoost(expectedDealId)).tag)
+            expect((await iexecPocoBoostInstance.viewDealBoost(expectedDealId)).tag)
                 .is.equal("0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6")
         });
 
         it("Should not match orders", async function () {
-            const { iexecPocoBoost } = await loadFixture(deployPocoBoostFixture);
-            await expect(iexecPocoBoost.matchOrdersBoost(0, 1)).to.be.revertedWith(
+            const { iexecPocoBoostInstance } = await loadFixture(deployPocoBoostFixture);
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(0, 1)).to.be.revertedWith(
                 "Incompatible request and app orders"
             );
         });
