@@ -10,6 +10,7 @@
     - Add task and contribution state diagrams. (#144)
     - Add boost workflow sequence diagram. Update nominal workflow sequence diagram. (#142)
     - Update TEE workflow sequence diagram. (#147)
+    - Update actors diagram. (#148)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

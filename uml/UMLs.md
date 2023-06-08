@@ -1,7 +1,7 @@
 # UMLs
 
 ## Contracts and Actors Architecture
-[![Contracts and Actors Architecture](https://tinyurl.com/2n6qr3ja)](https://tinyurl.com/2n6qr3ja)<!--![Contracts and Actors Architecture](./architecture-ODB.puml)-->
+[![Contracts and Actors Architecture](https://tinyurl.com/2l3942fk)](https://tinyurl.com/2l3942fk)<!--![Contracts and Actors Architecture](./architecture-ODB.puml)-->
 
 ## Workflows
 
