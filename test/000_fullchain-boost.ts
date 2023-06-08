@@ -19,8 +19,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import {
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
-    ERC1538Update__factory,
-    ERC1538Query__factory,
+    ERC1538Update__factory, ERC1538Update,
+    ERC1538Query__factory, ERC1538Query
 } from "../typechain";
 import deployPocoNominal from "./truffle-fixture";
 import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
@@ -57,12 +57,11 @@ describe("IexecPocoBoostDelegate", function () {
         await deployPocoNominal()
         console.log("Deploying IexecPocoBoostDelegate")
         const [owner, otherAccount] = await ethers.getSigners();
-        const iexecPocoBoostFactoryInstance =
-            await new IexecPocoBoostDelegate__factory()
+        const iexecPocoBoostInstance: IexecPocoBoostDelegate =
+            await (await new IexecPocoBoostDelegate__factory()
                 .connect(owner)
-                .deploy();
-        const iexecPocoBoostInstance = await iexecPocoBoostFactoryInstance
-            .deployed();
+                .deploy())
+                .deployed();
         console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
 
         //TODO: Read ERC1538Proxy address dynamically
@@ -73,7 +72,7 @@ describe("IexecPocoBoostDelegate", function () {
 
     async function linkBoostModule(erc1538ProxyAddress: string, owner,
         iexecPocoBoostInstanceAddress: string) {
-        const erc1538 = ERC1538Update__factory
+        const erc1538: ERC1538Update = ERC1538Update__factory
             .connect(erc1538ProxyAddress, owner);
         console.log(`IexecInstance found at address: ${erc1538.address}`);
         // Link IexecPocoBoost methods to ERC1538Proxy
@@ -83,7 +82,7 @@ describe("IexecPocoBoostDelegate", function () {
             'Linking ' + IexecPocoBoostDelegate__factory.name
         );
         // Verify linking on ERC1538Proxy
-        const erc1538QueryInstance = ERC1538Query__factory
+        const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory
             .connect(erc1538ProxyAddress, owner);
         const functionCount = await erc1538QueryInstance.totalFunctions();
         console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
