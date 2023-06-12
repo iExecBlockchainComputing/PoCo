@@ -9,6 +9,7 @@
   "scripts": {
     "build": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.ts",
+    "test-storage-layout": "npx hardhat run scripts/test-storage.js",
     "test": "REPORT_GAS=true npx hardhat test",
     "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
@@ -31,6 +32,7 @@
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
     "@openzeppelin/contracts": "3.3.0",
+    "@openzeppelin/contracts-v4": "npm:@openzeppelin/contracts@^4.8.3",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "rlc-faucet-contract": "1.0.10"
   },
@@ -41,6 +43,7 @@
     "@nomiclabs/hardhat-truffle5": "^2.0.7",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/test-helpers": "^0.5.15",
+    "@openzeppelin/upgrades-core": "^1.26.2",
     "eth-sig-util": "^3.0.1",
     "hardhat": "^2.13.0",
     "hardhat-dependency-compiler": "^1.1.3",
