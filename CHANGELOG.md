@@ -1,9 +1,22 @@
 # Changelog
 
-## v5.5.0
+## vNEXT
 - Migrate to Hardhat:
     - Init Hardhat project. (#134)
     - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
+    - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
+- Update documentation:
+    - Generate class diagrams from solidity contracts. (#139)
+    - Add task and contribution state diagrams. (#144)
+    - Add boost workflow sequence diagram. Update nominal workflow sequence diagram. (#142)
+    - Update TEE workflow sequence diagram. (#147)
+    - Update actors diagram. (#148)
+    - Rename UMLs.md file to standard README.md. (#150)
+
+## v5.4.2
+- Use latest Nethermind base image `nethermindeth/nethermind:iexec`
+(saved internally at `nexus.intra.iex.ec/nethermind:1.18.x-0`)
+containing a fix for [#5506](https://github.com/NethermindEth/nethermind/issues/5506).
 
 ## v5.4.1
 
