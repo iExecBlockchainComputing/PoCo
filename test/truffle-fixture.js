@@ -12,5 +12,5 @@ module.exports = async () => {
     // 2. In `standard deployment` mode, deployment code can be injected directly
     // in truffle-fixture.js.
     // https://hardhat.org/hardhat-runner/docs/other-guides/truffle-migration#migrations-and-hardhat-truffle-fixtures
-    await loadFixture(deployAllContracts);
+    return (await loadFixture(deployAllContracts));
 };

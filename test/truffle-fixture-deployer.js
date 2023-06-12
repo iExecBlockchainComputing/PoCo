@@ -10,10 +10,11 @@ async function deployAllContracts() {
     await initial_migration()
     const accounts = await web3.eth.getAccounts()
     await deploy_token(accounts)
-    await deploy_core(accounts)
+    const coreDeployment = await deploy_core(accounts)
     await deploy_ens(accounts)
     await whitelisting(accounts)
     await functions(accounts)
+    return coreDeployment;
 }
 
 module.exports = {

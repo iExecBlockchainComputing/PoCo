@@ -53,8 +53,11 @@ describe("IexecPocoBoostDelegate", function () {
         });
     });
 
+
+
+
     async function deployPocoBoostFixture() {
-        await deployPocoNominal()
+        const erc1538ProxyAddress = await deployPocoNominal()
         console.log("Deploying IexecPocoBoostDelegate")
         const [owner, otherAccount] = await ethers.getSigners();
         const iexecPocoBoostInstance: IexecPocoBoostDelegate =
@@ -65,7 +68,7 @@ describe("IexecPocoBoostDelegate", function () {
         console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
 
         //TODO: Read ERC1538Proxy address dynamically
-        const erc1538ProxyAddress = "0x977483a6ED002AFd098E95Be7434445fF1b122ff";
+        console.log("erc1538ProxyAddress",erc1538ProxyAddress);
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         return { iexecPocoBoostInstance, owner, otherAccount };
     }
