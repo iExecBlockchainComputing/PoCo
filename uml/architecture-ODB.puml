@@ -1,64 +1,55 @@
 @startuml
-:iExecCloudUser:
-:iExecSCUser:
-:DappProvider:
-:DataProvider:
-:ScheduleProvider:
-:ResourceProvider:
-:Broker:
-
+:iExecSCUser: as "User"
+:AppProvider: as "Application Developer"
+:DatasetProvider: as "Dataset Owner"
+:WorkerpoolAdmin: as "Workerpool Admin"
+:WorkerAdmin: as "Worker"
+:Requester:
+:Anyone:
 cloud {
-  [IexecRelay]
+    [IexecRelay]
+    [IexecOrderManagement]
 }
 component [IexecRelay]
-iExecSCUser -down-> [IexecRelay]: use
-
+iExecSCUser -up-> [IexecRelay]: broadcast order
 component [Marketplace]
-[IexecRelay] -down-> [Marketplace]: broadcast userorder
-iExecCloudUser -down-> [Marketplace]: broadcast userorder
-DappProvider -down-> [Marketplace]: broadcast dapporder
-DataProvider -down-> [Marketplace]: broadcast dataorder
-ScheduleProvider -down-> [Marketplace]: broadcast poolorder
-Broker -up-> [Marketplace]: read order
-
+[IexecRelay] -down-> [IexecRelay]: emit BroadcastOrder
+AppProvider -up-> [IexecOrderManagement]: presign apporder
+DatasetProvider -up-> [IexecOrderManagement]: presign datasetorder
+WorkerpoolAdmin -up-> [IexecOrderManagement]: presign workerpoolorder
+Requester -up-> [IexecOrderManagement]: presign requestorder
+AppProvider -down-> [Marketplace]: publish apporder
+DatasetProvider -down-> [Marketplace]: publish datasetorder
+WorkerpoolAdmin -down-> [Marketplace]: publish workerpoolorder
+Requester  -down-> [Marketplace]: publish requestorder
+Anyone -up-> [Marketplace]: read order
 cloud {
-  [IexecClerk]
-  [IexecHub]
-  [RLC Token]
+    [IexecPoCo1]
+    [IexecPoCo2]
+    [RLC Token]
 }
-component [IexecClerk]
-component [IexecHub]
+component [IexecPoCo1]
+component [IexecPoCo2]
 component [RLC Token]
-[IexecHub] <-right-> [IexecClerk]
-[IexecClerk] <-right-> [RLC Token]
-
-Broker -down-> [IexecClerk]: push matched orders
-[IexecClerk] -up-> [Marketplace]: notification events
-
-[iexec-scheduler] <-up-> [IexecHub]
-[iexec-worker] <-up-> [IexecHub]
-
-
-
-
-
-component [AppRepository]
-component [DatasetRepository]
+[IexecPoCo2] <-right-> [IexecPoCo1]
+[IexecPoCo1] <-right-> [RLC Token]
+Anyone -down-> [IexecPoCo1]: match orders
+[IexecPoCo1] -up-> [Marketplace]: notify match
+[IexecPoCo1] -up-> [iexec-scheduler]: notify new deal
+[iexec-scheduler] -up-> [IexecPoCo2]: initialize/finalize
+[iexec-worker] -up-> [IexecPoCo2]: commit/reveal
+component [AppRegistry]
+component [PublicStorage]
 component [iexec-scheduler]
 component [iexec-worker]
 component [ResultRepository]
-
-DappProvider -down-> AppRepository: expose
-DataProvider -down-> DatasetRepository: expose
-ScheduleProvider -down-> [iexec-scheduler]: control
-ScheduleProvider -down-> [ResultRepository]: control and expose
-ResultRepository <-right-> [iexec-scheduler]
-
-
-
-[ResourceProvider] -right-> [iexec-worker]: control
-
-[iexec-worker] <-right-> [iexec-scheduler]
-[iexec-worker] <-up-> [AppRepository]
-[iexec-worker] <-up-> [DatasetRepository]
+AppProvider -down-> AppRegistry: push application
+DatasetProvider -down-> PublicStorage: push dataset
+WorkerpoolAdmin -down-> [iexec-scheduler]: manage
+[WorkerAdmin] -right-> [iexec-worker]: manage
+[iexec-worker] -right-> [iexec-scheduler]: request new tasks
+[iexec-worker] -up-> [AppRegistry]: pull application
+[iexec-worker] -up-> [PublicStorage]: pull dataset
+[iexec-worker] -down-> [ResultRepository]: push result
+[iexec-scheduler] -right-> [ResultRepository]: check result uploaded
 @enduml
