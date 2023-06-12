@@ -66,9 +66,6 @@ describe("IexecPocoBoostDelegate", function () {
                 .deploy())
                 .deployed();
         console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
-
-        //TODO: Read ERC1538Proxy address dynamically
-        console.log("erc1538ProxyAddress",erc1538ProxyAddress);
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         return { iexecPocoBoostInstance, owner, otherAccount };
     }

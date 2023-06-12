@@ -236,6 +236,5 @@ module.exports = async function(accounts)
 	))
 	.forEach((category, i) => console.log([ 'category', i, ':', ...category ].join(' ')));
 
-	console.log("Returning some address",(await ERC1538Proxy.deployed()).address);
 	return (await ERC1538Proxy.deployed()).address;
 };
