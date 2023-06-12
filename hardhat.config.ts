@@ -7,7 +7,8 @@ const settings = {
     optimizer: {
         enabled: true,
         runs: 200,
-    }
+    },
+    outputSelection: { '*': { '*': ['storageLayout'] } },
 }
 
 const zeroGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
