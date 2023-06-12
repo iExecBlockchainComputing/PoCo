@@ -42,7 +42,7 @@ for (const name of names) {
         continue;
     }
 
-    const report = getStorageUpgradeReport(...versions.map(v => layouts[name][v]), {});
+    const report = getStorageUpgradeReport(...versions.map(version => layouts[name][version]), {});
     if (report.ok) {
         console.log(`[${name}] storage layout is compatible`);
     } else {
