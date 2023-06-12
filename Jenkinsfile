@@ -58,7 +58,7 @@ pipeline {
 				script {
 					try {
 						sh "npm ci --production=false --no-progress"
-                        sh "npm run test-storage-layout"
+						sh "npm run test-storage-layout"
 						sh "./test.sh"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
