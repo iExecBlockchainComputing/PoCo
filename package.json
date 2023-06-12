@@ -9,6 +9,7 @@
   "scripts": {
     "build": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.ts",
+    "test-storage-layout": "npx hardhat run scripts/test-storage.js",
     "test": "REPORT_GAS=true npx hardhat test",
     "autotest": "./test.sh",
     "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
