@@ -235,6 +235,4 @@ module.exports = async function(accounts)
 		Array(catCountAfter.toNumber()).fill().map((_, i) => IexecInterfaceInstance.viewCategory(i))
 	))
 	.forEach((category, i) => console.log([ 'category', i, ':', ...category ].join(' ')));
-
-	return (await ERC1538Proxy.deployed()).address;
 };
