@@ -48,7 +48,7 @@ contract IexecPocoBoostDelegate is DelegateBase {
         return m_deals[_id];
     }
 
-    /// @notice Accept result pushed by the deal's dedicated worker during Boost workflow.
+    /// @notice Accept a result for a task computed by a worker during Boost workflow.
     /// @param _dealId id of the target deal.
     /// @param _index index of the target task of the deal.
     /// @param _result result bytes.
