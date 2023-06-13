@@ -25,6 +25,7 @@ import "../../libs/IexecLibCore_v5.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is DelegateBase {
     event OrdersMatchedBoost(bytes32 dealid);
+    event ResultPushedBoost(uint indexed dealId, uint dealIndex, bytes result);
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
