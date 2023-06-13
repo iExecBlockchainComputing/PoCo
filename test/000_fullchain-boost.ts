@@ -16,18 +16,16 @@
 
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import hre from "hardhat";
 import {
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
     ERC1538Update__factory, ERC1538Update,
-    ERC1538Query__factory, ERC1538Query
+    ERC1538Query__factory, ERC1538Query,
+    ERC1538Proxy
 } from "../typechain";
-
 import deployPocoNominal from "./truffle-fixture";
 import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
-
-var ERC1538Proxy           = artifacts.require('@iexec/solidity/ERC1538Proxy')
-
+const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 
 describe("IexecPocoBoostDelegate", function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
@@ -57,20 +55,17 @@ describe("IexecPocoBoostDelegate", function () {
         });
     });
 
-
-
-
     async function deployPocoBoostFixture() {
         await deployPocoNominal()
         console.log("Deploying IexecPocoBoostDelegate")
-        const [owner, otherAccount] = await ethers.getSigners();
+        const [owner, otherAccount] = await hre.ethers.getSigners();
         const iexecPocoBoostInstance: IexecPocoBoostDelegate =
             await (await new IexecPocoBoostDelegate__factory()
                 .connect(owner)
                 .deploy())
                 .deployed();
         console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
-        const erc1538ProxyAddress = (await ERC1538Proxy.deployed()).address; 
+        const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         return { iexecPocoBoostInstance, owner, otherAccount };
     }
