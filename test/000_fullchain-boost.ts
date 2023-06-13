@@ -16,7 +16,7 @@
 
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import hre from "hardhat";
+import hre, { ethers } from "hardhat";
 import {
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
     ERC1538Update__factory, ERC1538Update,
@@ -52,6 +52,29 @@ describe("IexecPocoBoostDelegate", function () {
         it("Should not match orders", async function () {
             await expect(iexecPocoBoostInstance.matchOrdersBoost(0, 1))
                 .to.be.revertedWith("Incompatible request and app orders");
+        });
+    });
+
+    describe("PushResult", function () {
+        it("Should push result", async function () {
+            const dealId: string =
+                "0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f";
+            const index: number = 0;
+            // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
+            const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes("the-result"));
+            await iexecPocoBoostInstance.matchOrdersBoost(1, 1);
+            await expect(iexecPocoBoostInstance.pushResultBoost(dealId, index, result))
+                .to.emit(iexecPocoBoostInstance, "ResultPushedBoost")
+                .withArgs(dealId, index, result);
+        });
+
+        it("Should not push result when deal not found", async function () {
+            // No match order
+            const badDealId: string =
+                "0xff6973ffda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688aaaa"
+            const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes("the-result"));
+            await expect(iexecPocoBoostInstance.pushResultBoost(badDealId, 0, result))
+                .to.be.revertedWith("Deal not found");
         });
     });
 
