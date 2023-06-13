@@ -25,7 +25,7 @@ import {
 } from "../typechain";
 import deployPocoNominal from "./truffle-fixture";
 import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
-const ERC1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
+const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 
 describe("IexecPocoBoostDelegate", function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
@@ -65,7 +65,7 @@ describe("IexecPocoBoostDelegate", function () {
                 .deploy())
                 .deployed();
         console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
-        const erc1538ProxyAddress = (await ERC1538Proxy.deployed()).address;
+        const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         return { iexecPocoBoostInstance, owner, otherAccount };
     }
