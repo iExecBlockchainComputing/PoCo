@@ -25,7 +25,7 @@ import "../../libs/IexecLibCore_v5.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is DelegateBase {
     event OrdersMatchedBoost(bytes32 dealid);
-    event ResultPushedBoost(uint indexed dealId, uint dealIndex, bytes result);
+    event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
@@ -46,5 +46,15 @@ contract IexecPocoBoostDelegate is DelegateBase {
         bytes32 _id
     ) external view returns (IexecLibCore_v5.Deal memory deal) {
         return m_deals[_id];
+    }
+
+    /// @notice Accept result pushed by the deal's dedicated worker during Boost workflow.
+    /// @param _dealId id of the target deal.
+    /// @param _index index of the target task of the deal.
+    /// @param _result result bytes.
+    function pushResultBoost(bytes32 _dealId, uint _index, bytes32 _result) public {
+        IexecLibCore_v5.Deal storage deal = m_deals[_dealId];
+        require(deal.tag != bytes32(0), "Deal not found");
+        emit ResultPushedBoost(_dealId, _index, _result);
     }
 }
