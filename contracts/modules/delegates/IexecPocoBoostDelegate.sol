@@ -19,13 +19,12 @@
 pragma solidity ^0.8.0;
 
 import "../DelegateBase.v8.sol";
-import "../../libs/IexecLibCore_v5.sol";
+import "../interfaces/IexecPocoBoost.sol";
+import "../interfaces/IexecAccessorsBoost.sol";
 
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
-contract IexecPocoBoostDelegate is DelegateBase {
-    event OrdersMatchedBoost(bytes32 dealid);
-    event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
+contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
