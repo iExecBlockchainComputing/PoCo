@@ -12,7 +12,7 @@
     "test-storage-layout": "npx hardhat run scripts/test-storage.js",
     "test": "REPORT_GAS=true npx hardhat test",
     "autotest": "./test.sh",
-    "coverage": "NODE_OPTIONS='--max-old-space-size=8192' truffle run coverage",
+    "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
     "uml": "./generate-uml-from-sol.sh",
     "puml2links": "./uml/puml2links.sh"

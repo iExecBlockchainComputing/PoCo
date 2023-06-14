@@ -5,6 +5,7 @@
     - Init Hardhat project. (#134)
     - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
     - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
+    - Migrate tests coverage with [solidity-coverage](https://github.com/sc-forks/solidity-coverage) of `@nomicfoundation/hardhat-toolbox`. (#155)
 - Update documentation:
     - Generate class diagrams from solidity contracts. (#139)
     - Add task and contribution state diagrams. (#144)

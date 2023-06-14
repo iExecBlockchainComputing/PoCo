@@ -90,35 +90,34 @@ npm run build
 
 ### Automatic testing
 
-The PoCo smart contracts come with a test suite in the `./test` folder. You can startup a sandbox blockchain and run the tests using the following command:
+PoCo smart contracts come with a test suite in the `./test` folder. You can startup a sandbox blockchain and run the tests using the following command:
 
 ```
 npm install
-npm run autotest fast
+npm run autotest
 ```
 
-Additionnaly, you can produce a coverage report using the following command:
+Additionally, you can produce a coverage report using the following command:
 ```
 npm run coverage
 ```
 
-The automatic testing command uses a `ganache-cli` blockchain instance to run the tests. You can also use your own blockchain endpoint to run these tests.
+The automatic testing command uses the Hardhat network by default to run the tests.
 
 ### Testing on a custom blockchain
 
-1. Start your blockchain. You can either use ganache with the following command:
-```
-npx ganache <any additional arguments>
-```
-or run any other blockchain client.
-2. **[Optional]** If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `./truffle.js` configuration accordingly (see the documentation [here](https://www.trufflesuite.com/docs/truffle/reference/configuration)).
-3. Run the tests using:
+1. Start a blockchain
+    -   You can either use the Hardhat CLI with the following command:
+    ```
+    npx hardhat node [<any additional arguments>]
+    ```
+    - Or run any other blockchain client.
+2. **[Optional]** Update the configuration
+    
+    If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
+3. Run tests
 ```
 npm run test
-```
-or
-```
-truffle test
 ```
 
 ## Deploy
@@ -144,6 +143,7 @@ SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 np
 
 ```
 npm run puml2links
+```
 
 ## Generate documentation
 
