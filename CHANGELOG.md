@@ -14,6 +14,7 @@
     - Rename UMLs.md file to standard README.md. (#150)
 - Add `Store` contract compatible with solidity `^0.8.0`. (#138)
 - Add Boost module. (#149 #151 #153)
+    - Add interfaces. (#156)   
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
