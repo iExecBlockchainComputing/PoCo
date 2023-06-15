@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /******************************************************************************
- * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *
+ * Copyright 2023 IEXEC BLOCKCHAIN TECH                                       *
  *                                                                            *
  * Licensed under the Apache License, Version 2.0 (the "License");            *
  * you may not use this file except in compliance with the License.           *
@@ -17,16 +17,10 @@
  ******************************************************************************/
 
 pragma solidity ^0.8.0;
-pragma experimental ABIEncoderV2;
 
 
 interface IexecPocoBoost
 {
-	event Reward(address owner, uint256 amount, bytes32 ref);
-	event Seize (address owner, uint256 amount, bytes32 ref);
-	event Lock  (address owner, uint256 amount);
-	event Unlock(address owner, uint256 amount);
-
     event OrdersMatchedBoost(bytes32 dealid);
     event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /******************************************************************************
- * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *
+ * Copyright 2023 IEXEC BLOCKCHAIN TECH                                       *
  *                                                                            *
  * Licensed under the Apache License, Version 2.0 (the "License");            *
  * you may not use this file except in compliance with the License.           *
@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 pragma solidity ^0.8.0;
-pragma experimental ABIEncoderV2;
 
 import "../../libs/IexecLibCore_v5.sol";
 
