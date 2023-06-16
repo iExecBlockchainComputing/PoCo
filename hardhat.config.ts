@@ -13,6 +13,7 @@ const settings = {
 
 const zeroGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
+
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
@@ -22,18 +23,20 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        // dev networks: Get closer to Bellecour network
-        docker: {
-            url: process.env.DOCKER_NODE || 'http://localhost:8545',
-            gasPrice: zeroGasPrice,
-        },
-        dev: {
+        "dev-native": {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: zeroGasPrice, // Get closer to Bellecour network
+        },
+        "dev-token": {
+            chainId: 65535,
+            url: process.env.DEV_NODE || 'http://localhost:8545',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
         },
         // live networks
         mainnet: {
