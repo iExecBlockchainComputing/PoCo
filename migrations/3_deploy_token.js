@@ -41,7 +41,7 @@ module.exports = async function(accounts)
 		case 'Token':
 			if (deploymentOptions.token)
 			{
-				RLC.address = deploymentOptions.token;
+                RLC.setAsDeployed(await RLC.at(deploymentOptions.token));
 			}
 			else
 			{

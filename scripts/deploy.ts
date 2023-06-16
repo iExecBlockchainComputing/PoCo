@@ -1,8 +1,10 @@
 import hre from "hardhat";
 import fs from "fs";
+import path from "path";
 import {
-    IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
     ERC1538Proxy,
+    IexecAccessors, IexecAccessors__factory,
+    IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
 } from "../typechain";
 import { deployAllContracts } from "../test/truffle-fixture-deployer"
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
@@ -25,6 +27,11 @@ async function main() {
 
     saveDeployments("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
     saveDeployments("ERC1538Proxy", erc1538ProxyAddress);
+    if (process.env.CHAIN_TYPE == "token") {
+        const tokenAddress = await IexecAccessors__factory
+            .connect(erc1538ProxyAddress, owner).token();
+        saveDeployments("RLC", tokenAddress);
+    }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -43,6 +50,7 @@ function saveDeployments(contractName: string, deployedAddress: string) {
     var deployed = {
         [chainId]: deployedAddress,
     };
+    fs.mkdir(path.join(__dirname, '../build'), (err) => {});
     fs.writeFileSync(`./build/${contractName}.json`, JSON.stringify(deployed));
 }
 
