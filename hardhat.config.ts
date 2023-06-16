@@ -28,6 +28,7 @@ const config: HardhatUserConfig = {
             gasPrice: zeroGasPrice,
         },
         dev: {
+            chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
