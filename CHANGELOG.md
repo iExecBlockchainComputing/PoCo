@@ -12,7 +12,7 @@
     - Update TEE workflow sequence diagram. (#147)
     - Update actors diagram. (#148)
     - Rename UMLs.md file to standard README.md. (#150)
-- Add `Store` contract compatible with solidity `^0.8.0`. (#138)
+- Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
 

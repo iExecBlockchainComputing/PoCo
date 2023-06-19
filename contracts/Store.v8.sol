@@ -57,8 +57,8 @@ abstract contract ERC1538Store is Ownable {
 }
 
 /// @dev registries
-abstract contract IRegistry is IERC721Enumerable {
-	function isRegistered(address _entry) external virtual view returns (bool);
+interface IRegistry is IERC721Enumerable {
+	function isRegistered(address _entry) external view returns (bool);
 }
 
 /// @dev IERC20KYC
