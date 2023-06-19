@@ -56,7 +56,7 @@ function saveDeployments(contractName: string, deployedAddress: string) {
     };
     fs.mkdir(path.join(__dirname, '../build'), (err) => {
         fs.writeFileSync(
-            path.resolve(__dirname, `./build/${contractName}.json`),
+            path.resolve(__dirname, `../build/${contractName}.json`),
             JSON.stringify(deployed));
     });
 }
