@@ -38,7 +38,7 @@ async function main() {
             .deployed();
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
     // Save addresses of deployed PoCo Boost contracts for later use
-    saveDeployedAddress("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
+    saveDeployedAddress(IexecPocoBoostDelegate__factory.name, iexecPocoBoostInstance.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
