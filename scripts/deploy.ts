@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import {
     ERC1538Proxy,
-    IexecAccessors, IexecAccessors__factory,
+    IexecAccessors__factory,
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
 } from "../typechain";
 import { deployAllContracts } from "./truffle-fixture-deployer"
@@ -25,12 +25,12 @@ async function main() {
             .deployed();
     console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
 
-    saveDeployments("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
-    saveDeployments("ERC1538Proxy", erc1538ProxyAddress);
+    // Store addresses of deployed contracts
+    storeDeployedAddress("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
+    storeDeployedAddress("ERC1538Proxy", erc1538ProxyAddress);
     if (process.env.CHAIN_TYPE == "token") {
-        const tokenAddress = await IexecAccessors__factory
-            .connect(erc1538ProxyAddress, owner).token();
-        saveDeployments("RLC", tokenAddress);
+        storeDeployedAddress("RLC", await IexecAccessors__factory
+            .connect(erc1538ProxyAddress, owner).token());
     }
 }
 
@@ -41,23 +41,27 @@ main().catch((error) => {
     process.exitCode = 1;
 });
 
-// Write deployed manually
-// https://ethereum.stackexchange.com/a/134499
-// Or write them with hardhat-deploy
+// TODO [optional]: Use hardhat-deploy to store addresses automatically
 // https://github.com/wighawag/hardhat-deploy/tree/master#hardhat-deploy-in-a-nutshell
-function saveDeployments(contractName: string, deployedAddress: string) {
+/**
+ * Store addresses of deployed contracts (since hardhat does not do it for us).
+ * @param contractName contract name to deploy
+ * @param deployedAddress address where contract where deployed
+ */
+function storeDeployedAddress(contractName: string, deployedAddress: string) {
     const chainId = hre.network.config.chainId || 0;
-    var deployed = {
+    var deployedContractJson = {
         "networks": {
             [chainId]: {
                 "address": deployedAddress
             }
         }
     };
-    fs.mkdir(path.join(__dirname, '../build'), (err) => {
+    const BUILD_DIR = '../build';
+    // Create parent dir if missing
+    fs.mkdir(path.join(__dirname, BUILD_DIR), (err) => {
         fs.writeFileSync(
-            path.resolve(__dirname, `../build/${contractName}.json`),
-            JSON.stringify(deployed));
+            path.resolve(__dirname, `${BUILD_DIR}/${contractName}.json`),
+            JSON.stringify(deployedContractJson));
     });
 }
-

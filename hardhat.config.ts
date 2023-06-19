@@ -13,7 +13,6 @@ const settings = {
 
 const zeroGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
-
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
