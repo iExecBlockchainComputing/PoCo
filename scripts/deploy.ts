@@ -48,9 +48,16 @@ main().catch((error) => {
 function saveDeployments(contractName: string, deployedAddress: string) {
     const chainId = hre.network.config.chainId || 0;
     var deployed = {
-        [chainId]: deployedAddress,
+        "networks": {
+            [chainId]: {
+                "address": deployedAddress
+            }
+        }
     };
-    fs.mkdir(path.join(__dirname, '../build'), (err) => {});
-    fs.writeFileSync(`./build/${contractName}.json`, JSON.stringify(deployed));
+    fs.mkdir(path.join(__dirname, '../build'), (err) => {
+        fs.writeFileSync(
+            path.resolve(__dirname, `./build/${contractName}.json`),
+            JSON.stringify(deployed));
+    });
 }
 
