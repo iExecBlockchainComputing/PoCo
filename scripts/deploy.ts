@@ -6,7 +6,7 @@ import {
     IexecAccessors, IexecAccessors__factory,
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
 } from "../typechain";
-import { deployAllContracts } from "../test/truffle-fixture-deployer"
+import { deployAllContracts } from "./truffle-fixture-deployer"
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 
 async function main() {

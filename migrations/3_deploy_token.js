@@ -14,7 +14,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-const deployer = require("../test/hardhat-truffle-utils");
+const deployer = require("../scripts/hardhat-truffle-utils");
 // CONFIG
 const CONFIG = require('../config/config.json')
 // Token
