@@ -4,10 +4,9 @@ import path from "path";
 import { deployAllContracts } from "./truffle-fixture-deployer"
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import {
-    ERC1538Proxy, ERC1538Proxy__factory,
+    ERC1538Proxy,
     IexecAccessors__factory,
-    RLC__factory,
-    IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
+    IexecPocoBoostDelegate, IexecPocoBoostDelegate__factory,
 } from "../typechain";
 
 async function main() {
@@ -23,10 +22,10 @@ async function main() {
     }
     console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
     // Save addresses of deployed PoCo Nominal contracts for later use
-    saveDeployedAddress(ERC1538Proxy__factory.name, erc1538ProxyAddress);
+    saveDeployedAddress("ERC1538Proxy", erc1538ProxyAddress);
     if (process.env.CHAIN_TYPE == "token") {
         // Retrieve token address from IexecAccessors
-        saveDeployedAddress(RLC__factory.name, await IexecAccessors__factory
+        saveDeployedAddress("RLC", await IexecAccessors__factory
             .connect(erc1538ProxyAddress, owner).token());
     }
 
@@ -38,7 +37,7 @@ async function main() {
             .deployed();
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
     // Save addresses of deployed PoCo Boost contracts for later use
-    saveDeployedAddress(IexecPocoBoostDelegate__factory.name, iexecPocoBoostInstance.address);
+    saveDeployedAddress("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
