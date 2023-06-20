@@ -1,32 +1,39 @@
 import hre from "hardhat";
 import fs from "fs";
 import path from "path";
-const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
+import initial_migration from '../migrations/1_initial_migration';
+import deploy_token from '../migrations/3_deploy_token';
+import deploy_core from '../migrations/4_deploy_core';
+import deploy_ens from '../migrations/5_deploy_ens';
+import whitelisting from '../migrations/6_whitelisting';
+import functions from '../migrations/999_functions';
+const erc1538Proxy: ERC1538Proxy =
+    hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import {
     ERC1538Proxy,
     IexecAccessors__factory,
     IexecPocoBoostDelegate, IexecPocoBoostDelegate__factory,
 } from "../typechain";
 
-const initial_migration = require('../migrations/1_initial_migration.js')
-const deploy_token = require('../migrations/3_deploy_token.js')
-const deploy_core = require('../migrations/4_deploy_core.js')
-const deploy_ens = require('../migrations/5_deploy_ens.js')
-const whitelisting = require('../migrations/6_whitelisting.js')
-const functions = require('../migrations/999_functions.js')
-
+/**
+ * @dev Deploying contracts with `npx hardhat deploy` task brought by 
+ * `hardhat-deploy` plugin.
+ * Previous deployments made with `npx hardhat run scripts/deploy.ts` used to 
+ * hang at the end of deployments (terminal did not return at the end).
+ * 
+ * The`hardhat-deploy` plugin is currently being under used compared to all 
+ * available features.
+ */
 module.exports = async function () {
-    const [owner] = await hre.ethers.getSigners();
+    const accounts = await hre.ethers.getSigners();
+    const owner = accounts[0]
 
-    console.log("Migrating contracts..")
+    console.log("Deploying PoCo Nominal..")
     await initial_migration()
-    const accounts = await hre.web3.eth.getAccounts()
     await deploy_token(accounts)
     await deploy_core(accounts)
     await deploy_ens(accounts)
     await whitelisting(accounts)
-    await functions(accounts)
-
     // Retrieve proxy address from previous truffle-fixture deployment
     const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
     if (!erc1538ProxyAddress) {
@@ -51,6 +58,10 @@ module.exports = async function () {
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
     // Save addresses of deployed PoCo Boost contracts for later use
     saveDeployedAddress("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
+
+    // Show proxy functions
+    //TODO: Link PocoBoost module to ERC1538Proxy
+    await functions(accounts)
 };
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
