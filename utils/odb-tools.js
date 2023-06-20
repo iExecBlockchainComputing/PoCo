@@ -14,8 +14,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-const sigUtil   = require('eth-sig-util');
+const sigUtil   = require('@metamask/eth-sig-util');
 const constants = require('./constants');
+const keccak = require('ethereum-cryptography/keccak')
+
 
 
 
@@ -165,12 +167,22 @@ function signStruct(primaryType, message, domain, wallet)
 
 function hashStruct(primaryType, message, domain)
 {
-	return '0x' + sigUtil.TypedDataUtils.sign({
+
+	const typedData = {
 		types: TYPES,
 		primaryType,
 		message,
 		domain,
-	}).toString('hex');
+	}
+	const useV4 = "V4"
+	const sanitizedData = sigUtil.TypedDataUtils.sanitizeData(typedData);
+	const parts = [Buffer.from('1901', 'hex')];
+	parts.push(sigUtil.TypedDataUtils.hashStruct('EIP712Domain', sanitizedData.domain, sanitizedData.types, useV4));
+	if (sanitizedData.primaryType !== 'EIP712Domain') {
+		parts.push(sigUtil.TypedDataUtils.hashStruct(sanitizedData.primaryType, sanitizedData.message, sanitizedData.types, useV4));
+	}
+	return "0x"+keccak.keccak256(Buffer.concat(parts)).toString('hex');
+
 }
 
 /* NOT EIP712 compliant */
