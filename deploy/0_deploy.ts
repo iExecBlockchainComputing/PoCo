@@ -25,10 +25,8 @@ import {
  * available features.
  */
 module.exports = async function () {
-    const accounts = await hre.ethers.getSigners();
-    const owner = accounts[0]
-
     console.log("Deploying PoCo Nominal..")
+    const accounts = await hre.web3.eth.getAccounts()
     await initial_migration()
     await deploy_token(accounts)
     await deploy_core(accounts)
@@ -43,6 +41,7 @@ module.exports = async function () {
     console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
     // Save addresses of deployed PoCo Nominal contracts for later use
     saveDeployedAddress("ERC1538Proxy", erc1538ProxyAddress);
+    const [owner] = await hre.ethers.getSigners();
     if (process.env.CHAIN_TYPE == "token") {
         // Retrieve token address from IexecAccessors
         saveDeployedAddress("RLC", await IexecAccessors__factory
