@@ -3,7 +3,6 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-dependency-compiler';
 import '@nomiclabs/hardhat-truffle5';
 import 'hardhat-deploy';
-import '@nomiclabs/hardhat-ethers';
 
 const settings = {
     optimizer: {
