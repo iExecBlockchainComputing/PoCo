@@ -42,22 +42,15 @@ module.exports = async function () {
     console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
     // Save addresses of deployed PoCo Nominal contracts for later use
     saveDeployedAddress("ERC1538Proxy", erc1538ProxyAddress);
-    const [owner] = await hre.ethers.getSigners();
-    if (process.env.CHAIN_TYPE == "token") {
-        // Retrieve token address from IexecAccessors
-        saveDeployedAddress("RLC", await IexecAccessors__factory
-            .connect(erc1538ProxyAddress, owner).token());
-    }
-
+    
     console.log("Deploying PoCo Boost..")
+    const [owner] = await hre.ethers.getSigners();
     const iexecPocoBoostInstance: IexecPocoBoostDelegate =
         await (await new IexecPocoBoostDelegate__factory()
             .connect(owner)
             .deploy())
             .deployed();
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
-    // Save addresses of deployed PoCo Boost contracts for later use
-    saveDeployedAddress("IexecPocoBoostDelegate", iexecPocoBoostInstance.address);
 
     // Show proxy functions
     //TODO: Link PocoBoost module to ERC1538Proxy
