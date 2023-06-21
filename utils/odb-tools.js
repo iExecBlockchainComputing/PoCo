@@ -255,29 +255,6 @@ async function requestToDeal(IexecClerk, requestHash)
 	}
 }
 
-// will be usefull later
-async function requestToDealBoost(IexecClerk, requestHash)
-{
-	let idx     = 0;
-	let dealids = [];
-	while (true)
-	{
-		let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
-		let deal = await IexecClerk.viewDealBoost(dealid);
-		if (deal.botSize == 0)
-		{
-			return dealids;
-		}
-		else
-		{
-			dealids.push(dealid);
-			idx += deal.botSize;
-		}
-	}
-}
-
-
-
 
 /*****************************************************************************
  *                                 MOCK AGENT                                *
@@ -419,7 +396,6 @@ module.exports = {
 		hashDatasetOrderOperation:    function(domain, struct) { return hashStruct("DatasetOrderOperation",    struct, domain); },
 		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
 		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
-		requestToDeal,
-		requestToDealBoost
+		requestToDeal
 	},
 };
