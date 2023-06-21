@@ -173,11 +173,11 @@ function hashStruct(primaryType, message, domain)
 		chainId: domain.chainId,
 		verifyingContract: domain.verifyingContract
 	};
-    	const types = {
+	const types = {
 		[primaryType]: TYPES[primaryType],
-    };
+	};
 
-    return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
+	return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
 }
 
 /* NOT EIP712 compliant */
