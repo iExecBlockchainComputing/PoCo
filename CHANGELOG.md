@@ -5,6 +5,7 @@
     - Init Hardhat project. (#134)
     - Migrate unit tests with `@nomiclabs/hardhat-truffle5`. (#135)
     - Fetch `@iexec/solidity@0.1.1` from default public registry. (#136 #137)
+    - Migrate tests coverage with [solidity-coverage](https://github.com/sc-forks/solidity-coverage) of `@nomicfoundation/hardhat-toolbox`. (#155)
 - Update documentation:
     - Generate class diagrams from solidity contracts. (#139)
     - Add task and contribution state diagrams. (#144)
@@ -12,10 +13,11 @@
     - Update TEE workflow sequence diagram. (#147)
     - Update actors diagram. (#148)
     - Rename UMLs.md file to standard README.md. (#150)
-- Add `Store` contract compatible with solidity `^0.8.0`. (#138)
+- Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
-    - Add interfaces. (#156)   
-- Deploy Nominal and Boost modules with Hardhat. (#)
+    - Add interfaces. (#156)
+- Upgrade `hashStruct` function to use `ethers`. Bump deprecated `eth-sig-util` from v3 to v5. (#157)
+- Deploy Nominal and Boost modules with Hardhat. (#158)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

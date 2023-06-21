@@ -14,8 +14,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-const sigUtil   = require('eth-sig-util');
+// TODO: Sign with ethers and get rid of @metamask/eth-sig-util
+const sigUtil   = require('@metamask/eth-sig-util');
 const constants = require('./constants');
+const ethers = require("ethers")
 
 
 
@@ -165,12 +167,17 @@ function signStruct(primaryType, message, domain, wallet)
 
 function hashStruct(primaryType, message, domain)
 {
-	return '0x' + sigUtil.TypedDataUtils.sign({
-		types: TYPES,
-		primaryType,
-		message,
-		domain,
-	}).toString('hex');
+	let typedDataDomain = {
+		name: domain.name,
+		version: domain.version,
+		chainId: domain.chainId,
+		verifyingContract: domain.verifyingContract
+	};
+	const types = {
+		[primaryType]: TYPES[primaryType],
+	};
+
+	return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
 }
 
 /* NOT EIP712 compliant */
@@ -248,8 +255,6 @@ async function requestToDeal(IexecClerk, requestHash)
 		}
 	}
 }
-
-
 
 
 /*****************************************************************************
@@ -392,6 +397,6 @@ module.exports = {
 		hashDatasetOrderOperation:    function(domain, struct) { return hashStruct("DatasetOrderOperation",    struct, domain); },
 		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
 		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
-		requestToDeal,
+		requestToDeal
 	},
 };
