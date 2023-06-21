@@ -14,6 +14,7 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+// TODO: Sign with ethers and get rid of @metamask/eth-sig-util
 const sigUtil   = require('@metamask/eth-sig-util');
 const constants = require('./constants');
 const ethers = require("ethers")
