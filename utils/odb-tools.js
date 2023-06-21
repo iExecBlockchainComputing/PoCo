@@ -166,7 +166,6 @@ function signStruct(primaryType, message, domain, wallet)
 }
 
 function hashStruct(primaryType, message, domain) {
-
 	let domainBis = {
 		name: domain.name,
 		version: domain.version,
