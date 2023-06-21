@@ -21,7 +21,6 @@ const ethers = require("ethers")
 
 
 
-
 const TYPES =
 {
 	EIP712Domain: [
