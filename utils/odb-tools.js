@@ -173,7 +173,7 @@ function hashStruct(primaryType, message, domain)
 		chainId: domain.chainId,
 		verifyingContract: domain.verifyingContract
 	};
-    const types = {
+    	const types = {
 		[primaryType]: TYPES[primaryType],
     };
 
