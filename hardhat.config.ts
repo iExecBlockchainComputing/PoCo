@@ -37,6 +37,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
+            gasPrice: 8_000_000_000, // 8 Gwei
         },
         // live networks
         mainnet: {
