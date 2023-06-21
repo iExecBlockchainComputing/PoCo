@@ -16,7 +16,7 @@
 
 const sigUtil   = require('@metamask/eth-sig-util');
 const constants = require('./constants');
-const keccak = require('ethereum-cryptography/keccak')
+const ethers = require("ethers")
 
 
 
@@ -165,24 +165,19 @@ function signStruct(primaryType, message, domain, wallet)
 	});
 }
 
-function hashStruct(primaryType, message, domain)
-{
+function hashStruct(primaryType, message, domain) {
 
-	const typedData = {
-		types: TYPES,
-		primaryType,
-		message,
-		domain,
-	}
-	const useV4 = "V4"
-	const sanitizedData = sigUtil.TypedDataUtils.sanitizeData(typedData);
-	const parts = [Buffer.from('1901', 'hex')];
-	parts.push(sigUtil.TypedDataUtils.hashStruct('EIP712Domain', sanitizedData.domain, sanitizedData.types, useV4));
-	if (sanitizedData.primaryType !== 'EIP712Domain') {
-		parts.push(sigUtil.TypedDataUtils.hashStruct(sanitizedData.primaryType, sanitizedData.message, sanitizedData.types, useV4));
-	}
-	return "0x"+keccak.keccak256(Buffer.concat(parts)).toString('hex');
+	let domainBis = {
+		name: domain.name,
+		version: domain.version,
+		chainId: domain.chainId,
+		verifyingContract: domain.verifyingContract
+	};
+    const types = {
+        [primaryType]: TYPES[primaryType],
+    };
 
+    return ethers.utils._TypedDataEncoder.hash(domainBis, types, message);
 }
 
 /* NOT EIP712 compliant */
@@ -249,6 +244,27 @@ async function requestToDeal(IexecClerk, requestHash)
 	{
 		let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
 		let deal = await IexecClerk.viewDeal(dealid);
+		if (deal.botSize == 0)
+		{
+			return dealids;
+		}
+		else
+		{
+			dealids.push(dealid);
+			idx += deal.botSize;
+		}
+	}
+}
+
+// will be usefull later
+async function requestToDealBoost(IexecClerk, requestHash)
+{
+	let idx     = 0;
+	let dealids = [];
+	while (true)
+	{
+		let dealid = web3.utils.soliditySha3({ t: 'bytes32', v: requestHash }, { t: 'uint256', v: idx });
+		let deal = await IexecClerk.viewDealBoost(dealid);
 		if (deal.botSize == 0)
 		{
 			return dealids;
@@ -405,5 +421,6 @@ module.exports = {
 		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
 		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
 		requestToDeal,
+		requestToDealBoost
 	},
 };
