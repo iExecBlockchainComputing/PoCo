@@ -165,7 +165,8 @@ function signStruct(primaryType, message, domain, wallet)
 	});
 }
 
-function hashStruct(primaryType, message, domain) {
+function hashStruct(primaryType, message, domain) 
+{
 	let typedDataDomain = {
 		name: domain.name,
 		version: domain.version,
