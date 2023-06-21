@@ -37,6 +37,8 @@ pipeline {
 						sh "npm ci --production=false --no-progress"
 						sh "npm run test-storage-layout"
 						sh "./test.sh"
+                        // Verify basic deployment. Might be removed at some point.
+						sh "npm run deploy"
 					} finally {
 						archiveArtifacts artifacts: "logs/**"
 					}

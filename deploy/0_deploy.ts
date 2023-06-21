@@ -80,9 +80,6 @@ function saveDeployedAddress(contractName: string, deployedAddress: string) {
         }
     };
     const BUILD_DIR = '../build';
-    // Create parent dir if missing
-    //fs.mkdir(path.join(__dirname, BUILD_DIR), () => { });
-    console.log(deployedContractJson)
     const filePath = `${BUILD_DIR}/${contractName}.json`;
     fs.writeFileSync(
         path.resolve(__dirname, filePath),
