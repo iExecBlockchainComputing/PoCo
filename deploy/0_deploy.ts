@@ -21,8 +21,9 @@ import {
  * Previous deployments made with `npx hardhat run scripts/deploy.ts` used to 
  * hang at the end of deployments (terminal did not return at the end).
  * 
+ * Note:
  * The`hardhat-deploy` plugin is currently being under used compared to all 
- * available features.
+ * features available in it.
  */
 module.exports = async function () {
     console.log("Deploying PoCo Nominal..")
