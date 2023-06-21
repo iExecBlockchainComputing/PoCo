@@ -166,17 +166,17 @@ function signStruct(primaryType, message, domain, wallet)
 }
 
 function hashStruct(primaryType, message, domain) {
-	let domainBis = {
+	let typedDataDomain = {
 		name: domain.name,
 		version: domain.version,
 		chainId: domain.chainId,
 		verifyingContract: domain.verifyingContract
 	};
     const types = {
-        [primaryType]: TYPES[primaryType],
+		[primaryType]: TYPES[primaryType],
     };
 
-    return ethers.utils._TypedDataEncoder.hash(domainBis, types, message);
+    return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
 }
 
 /* NOT EIP712 compliant */
