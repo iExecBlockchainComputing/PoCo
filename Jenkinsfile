@@ -1,72 +1,30 @@
 // TODO1 Remove useless build stages & use scripted pipeline
 // TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
+node("jenkins-agent-machine-1") {
+    node("node:18") {
+        stage("Hardhat tests - Public") {
+            try {
+                sh "npm ci --production=false --no-progress"
+                sh "npm run test-storage-layout"
+                sh "./test.sh"
+            } finally {
+                archiveArtifacts artifacts: "logs/**"
+            }
+        }
 
-node("master") {
-	stage("Choose Label") {
-		LABEL = "jenkins-agent-machine-1"
-	}
+        stage("Hardhat tests - KYC") {
+            try {
+                sh "npm ci --production=false --no-progress"
+                sh "npm run test-storage-layout"
+                sh "./test.sh"
+            } finally {
+                archiveArtifacts artifacts: "logs/**"
+            }
+        }
+    }
 }
 
-pipeline {
-
-	environment {
-		registry = "nexus.intra.iex.ec"
-		tokenDockerImage = ""
-		nativeDockerImage = ""
-		buildWhenTagContains = "v"
-	}
-
-	agent {
-		node {
-			label "${LABEL}"
-		}
-	}
-
-	stages {
-
-		stage("Hardhat tests - Public") {
-			agent {
-				docker {
-					image "node:18"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run test-storage-layout"
-						sh "./test.sh"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
-		stage("Hardhat tests - KYC") {
-			agent {
-				docker {
-					image "node:18"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run test-storage-layout"
-						sh "./test.sh"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
+//TODO: Remove
 		/*
 		Disable coverage 
 
@@ -171,5 +129,3 @@ pipeline {
 			}
 		}
         */
-	}
-}
