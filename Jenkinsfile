@@ -1,26 +1,49 @@
 // TODO1 Remove useless build stages & use scripted pipeline
 // TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
-node("jenkins-agent-machine-1") {
-    node("node:18") {
-        stage("Hardhat tests - Public") {
-            try {
-                sh "npm ci --production=false --no-progress"
-                sh "npm run test-storage-layout"
-                sh "./test.sh"
-            } finally {
-                archiveArtifacts artifacts: "logs/**"
-            }
+pipeline {
+    agent {
+        docker {
+            label 'docker'
+            image 'node:18'
         }
+    }
 
-        stage("Hardhat tests - KYC") {
-            try {
-                sh "npm ci --production=false --no-progress"
-                sh "npm run test-storage-layout"
-                sh "./test.sh"
-            } finally {
-                archiveArtifacts artifacts: "logs/**"
+    stages {
+        stage('Coverage') {
+            steps {
+                script {
+                    sh 'node --version'
+                    sh 'npm ci --production=false --no-progress'
+                    sh 'npm run test-storage-layout'
+                    try {
+                        sh 'npm run coverage'
+                    } finally {
+                        archiveArtifacts artifacts: 'coverage/**'
+                    }
+                }
             }
         }
+        stage('Hardhat tests - Public') {
+            steps {
+                script { test() }
+            }
+        }
+        stage('Hardhat tests - KYC') {
+            environment {
+                KYC = 'true'
+            }
+            steps {
+                script { test() }
+            }
+        }
+    }
+}
+
+def test() {
+    try {
+        sh './test.sh'
+    } finally {
+        archiveArtifacts artifacts: 'logs/**'
     }
 }
 
