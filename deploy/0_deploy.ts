@@ -42,7 +42,7 @@ module.exports = async function () {
     console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
     // Save addresses of deployed PoCo Nominal contracts for later use
     saveDeployedAddress("ERC1538Proxy", erc1538ProxyAddress);
-    
+
     console.log("Deploying PoCo Boost..")
     const [owner] = await hre.ethers.getSigners();
     const iexecPocoBoostInstance: IexecPocoBoostDelegate =
@@ -68,7 +68,7 @@ function saveDeployedAddress(contractName: string, deployedAddress: string) {
     const chainId = hre.network.config.chainId || 0;
     const BUILD_DIR = '../build';
     fs.writeFileSync(
-        path.resolve(__dirname, BUILD_DIR, `${contractName}.json`), 
+        path.resolve(__dirname, BUILD_DIR, `${contractName}.json`),
         JSON.stringify({
             "networks": {
                 [chainId]: {
@@ -76,6 +76,6 @@ function saveDeployedAddress(contractName: string, deployedAddress: string) {
                 }
             }
         },
-    ));
-    console.log(`Saved ${deployedAddress} to ${filePath}`)
+        ));
+    console.log(`Saved deployment at ${deployedAddress} for ${contractName}`)
 }
