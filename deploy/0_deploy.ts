@@ -34,7 +34,7 @@ module.exports = async function () {
     await deploy_ens(accounts)
     await whitelisting(accounts)
     // Retrieve proxy address from previous truffle-fixture deployment
-    const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
+    const { address: erc1538ProxyAddress } = await erc1538Proxy.deployed();
     if (!erc1538ProxyAddress) {
         console.error("Failed to retrieve deployed address of ERC1538Proxy")
         process.exitCode = 1;
@@ -46,10 +46,10 @@ module.exports = async function () {
     console.log("Deploying PoCo Boost..")
     const [owner] = await hre.ethers.getSigners();
     const iexecPocoBoostInstance: IexecPocoBoostDelegate =
-        await (await new IexecPocoBoostDelegate__factory()
+        await new IexecPocoBoostDelegate__factory()
             .connect(owner)
-            .deploy())
-            .deployed();
+            .deploy()
+            .then(instance => instance.deployed());
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
 
     // Show proxy functions
@@ -66,17 +66,16 @@ module.exports = async function () {
  */
 function saveDeployedAddress(contractName: string, deployedAddress: string) {
     const chainId = hre.network.config.chainId || 0;
-    var deployedContractJson = {
-        "networks": {
-            [chainId]: {
-                "address": deployedAddress
-            }
-        }
-    };
     const BUILD_DIR = '../build';
-    const filePath = `${BUILD_DIR}/${contractName}.json`;
     fs.writeFileSync(
-        path.resolve(__dirname, filePath),
-        JSON.stringify(deployedContractJson));
+        path.resolve(__dirname, BUILD_DIR, `${contractName}.json`), 
+        JSON.stringify({
+            "networks": {
+                [chainId]: {
+                    "address": deployedAddress
+                }
+            }
+        },
+    ));
     console.log(`Saved ${deployedAddress} to ${filePath}`)
 }

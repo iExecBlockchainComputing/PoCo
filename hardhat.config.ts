@@ -37,6 +37,9 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
+            // When deploying on a blockchain with EIP-1559 enabled and
+            // force-sealing disabled, deployment gets stuck if gasPrice is
+            // not manually set. Other approaches might be considered here.
             gasPrice: 8_000_000_000, // 8 Gwei
         },
         // live networks
