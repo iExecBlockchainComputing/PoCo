@@ -12,7 +12,6 @@ pipeline {
         stage('Coverage') {
             steps {
                 script {
-                    sh 'node --version'
                     sh 'npm ci --production=false --no-progress'
                     sh 'npm run test-storage-layout'
                     try {
@@ -151,4 +150,6 @@ def test() {
 				}
 			}
 		}
+	}
+}
         */

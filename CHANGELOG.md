@@ -17,6 +17,7 @@
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
 - Upgrade `hashStruct` function to use `ethers`. Bump deprecated `eth-sig-util` from v3 to v5. (#157)
+- Publish coverage report on CI/CD. Refactor Jenkinsfile. (#160)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
