@@ -1,6 +1,6 @@
 
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { deployAllContracts } = require('./truffle-fixture-deployer')
+const { deployAllContracts } = require('../scripts/truffle-fixture-deployer')
 
 module.exports = async () => {
     console.log("Running truffle-fixture hook before hardhat-truffle test")

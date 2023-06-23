@@ -2,6 +2,7 @@ import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-dependency-compiler';
 import '@nomiclabs/hardhat-truffle5';
+import 'hardhat-deploy';
 
 const settings = {
     optimizer: {
@@ -22,17 +23,24 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        // dev networks: Get closer to Bellecour network
-        docker: {
-            url: process.env.DOCKER_NODE || 'http://localhost:8545',
-            gasPrice: zeroGasPrice,
-        },
-        dev: {
+        "dev-native": {
+            chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: zeroGasPrice, // Get closer to Bellecour network
+        },
+        "dev-token": {
+            chainId: 65535,
+            url: process.env.DEV_NODE || 'http://localhost:8545',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
+            // When deploying on a blockchain with EIP-1559 enabled and
+            // force-sealing disabled, deployment gets stuck if gasPrice is
+            // not manually set. Other approaches might be considered here.
+            gasPrice: 8_000_000_000, // 8 Gwei
         },
         // live networks
         mainnet: {

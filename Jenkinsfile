@@ -14,6 +14,8 @@ pipeline {
                 script {
                     sh 'npm ci --production=false --no-progress'
                     sh 'npm run test-storage-layout'
+                    // Verify basic deployment. Might be removed at some point.
+                    sh 'npm run deploy'
                     try {
                         sh 'npm run coverage'
                     } finally {
