@@ -111,7 +111,6 @@ abstract contract Store is ERC1538Store
 	mapping(bytes32 =>                    address                      ) internal m_presigned;     // per order
 	mapping(bytes32 =>                    uint256                      ) internal m_consumed;      // per order
 	mapping(bytes32 =>                    IexecLibCore_v5.Deal         ) internal m_deals;         // per deal
-    mapping(bytes32 =>                    IexecLibCore_v5.DealBoost    ) internal m_dealsBoost;    // per deal
 	mapping(bytes32 =>                    IexecLibCore_v5.Task         ) internal m_tasks;         // per task
 	mapping(bytes32 =>                    IexecLibCore_v5.Consensus    ) internal m_consensus;     // per task
 	mapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions; // per task-worker
@@ -127,4 +126,7 @@ abstract contract Store is ERC1538Store
 	// Backward compatibility
 	address internal m_v3_iexecHub; // IexecHubInterface
 	mapping(address => bool) internal m_v3_scoreImported;
+
+	// Boost
+	mapping(bytes32 => IexecLibCore_v5.DealBoost) internal m_dealsBoost; // per deal
 }
