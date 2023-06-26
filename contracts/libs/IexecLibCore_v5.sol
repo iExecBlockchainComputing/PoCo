@@ -69,7 +69,7 @@ library IexecLibCore_v5
 	}
 	struct DealBoost {
 		address appOwner;
-        bytes32 tag;
+		bytes32 tag;
 	}
 	/**
 	 * Tasks
