@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 // TODO: Sign with ethers and get rid of @metamask/eth-sig-util
-const sigUtil   = require('@metamask/eth-sig-util');
 const constants = require('./constants');
 const ethers = require("ethers")
 
@@ -110,42 +109,53 @@ function eth_sign(hash, wallet)
 	});
 }
 
+function buildTypes(primaryType) {
+	const types = {
+		[primaryType]: TYPES[primaryType],
+	};
+
+	// Check if primaryType ends with 'Operation'
+	if (primaryType.endsWith('Operation')) {
+		const referredType = primaryType.slice(0, -'Operation'.length);
+		types[referredType] = TYPES[referredType];
+	}
+
+	return types;
+}
+
 function eth_signTypedData(primaryType, message, domain, wallet)
 {
 	return new Promise((resolve, reject) => {
-		const data = {
-			types: TYPES,
-			primaryType,
-			domain:
-			{
-				name:              domain.name,
-				version:           domain.version,
-				chainId:           domain.chainId,
-				verifyingContract: domain.verifyingContract,
-			},
-			message,
+
+		let typedDataDomain = {
+			name: domain.name,
+			version: domain.version,
+			chainId: domain.chainId,
+			verifyingContract: domain.verifyingContract
 		};
-		if (wallet.privateKey)
-		{
-			resolve(sigUtil.signTypedData(Buffer.from(wallet.privateKey.substring(2), 'hex'), { data }));
-		}
-		else
-		{
-			web3.currentProvider.send({
-				method: "eth_signTypedData_v4",
-				params: [ wallet.address, data ],
-				from: wallet.address,
-			}, (err, result) => {
-				if (!err)
-				{
-					resolve(result.result);
-				}
-				else
-				{
-					reject(err);
-				}
-			});
-		}
+		const types = buildTypes(primaryType);
+		
+		if (wallet.privateKey) {
+			const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
+			walletInstance._signTypedData(typedDataDomain, types, message)
+				.then(signedData => {
+					resolve(signedData);
+				})
+				.catch(error => {
+					reject(error);
+				});
+			} else {
+			hre.ethers.getSigner(wallet.address)
+				.then(signer => {
+					return signer._signTypedData(typedDataDomain, types, message);
+				})
+				.then(signedData => {
+					resolve(signedData);
+				})
+				.catch(error => {
+					reject(error);
+				});
+			}
 	});
 }
 
