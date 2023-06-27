@@ -29,6 +29,7 @@ import deployPocoNominal from "./truffle-fixture";
 import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import constants from "../utils/constants";
+import { extractEventsFromReceipt } from "../utils/tools";
 import { createRequestOrder, createAppOrder } from "../utils/createOrders";
 
 describe("IexecPocoBoostDelegate", function () {
@@ -114,8 +115,9 @@ describe("IexecPocoBoostDelegate", function () {
             constants.NULL.BYTES32,
             constants.NULL.BYTES32)
             .then(tx => tx.wait())
-        const appAddress = ethers.utils.defaultAbiCoder.decode(["address"],
-            receipt.logs[0].topics[3])[0]
+        const events = extractEventsFromReceipt(receipt,
+            appRegistryInstance.address, "Transfer")
+        const appAddress = events? events[0].args['tokenId'].toHexString() : ""
         return { iexecPocoBoostInstance, appAddress, owner, otherAccount };
     }
 
