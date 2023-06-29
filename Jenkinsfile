@@ -26,7 +26,9 @@ pipeline {
         }
         stage('Hardhat tests - Public') {
             steps {
-                script { test() }
+                script {
+                    test()
+                }
             }
         }
         stage('Hardhat tests - KYC') {
@@ -34,7 +36,9 @@ pipeline {
                 KYC = 'true'
             }
             steps {
-                script { test() }
+                script {
+                    test()
+                }
             }
         }
     }
