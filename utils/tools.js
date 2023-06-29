@@ -28,9 +28,9 @@ module.exports = {
 		return _extractEvents(txMined.logs, address, name);
 	},
 
-    extractEventsFromReceipt: function(txReceipt, address, name)
+	extractEventsFromReceipt: function(txReceipt, address, name)
 	{
-        return _extractEvents(txReceipt.events, address, name);
+		return _extractEvents(txReceipt.events, address, name);
 	},
 
 	BN2Address: function(n)
