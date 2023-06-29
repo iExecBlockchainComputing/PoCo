@@ -107,7 +107,7 @@ describe("IexecPocoBoostDelegate", function () {
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         // Expose hardhat AppRegistry instance
         const appRegistryInstance =
-            AppRegistry__factory.connect(await get('AppRegistry'), owner)
+            AppRegistry__factory.connect(await getContractAddress('AppRegistry'), owner)
         const receipt = await appRegistryInstance.createApp(appProvider.address,
             "my-app",
             "APP_TYPE_0",
@@ -153,7 +153,7 @@ describe("IexecPocoBoostDelegate", function () {
  * @param contractName contract to retrieve
  * @returns deployed address
  */
-async function get(contractName: string): Promise<string> {
+async function getContractAddress(contractName: string): Promise<string> {
     return await ((await hre.artifacts.require(contractName)
         .deployed()).address);
 }
