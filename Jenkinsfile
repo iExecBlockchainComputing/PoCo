@@ -1,120 +1,65 @@
 // TODO1 Remove useless build stages & use scripted pipeline
 // TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
+pipeline {
+    agent {
+        docker {
+            label 'docker'
+            image 'node:18'
+        }
+    }
 
-node("master") {
-	stage("Choose Label") {
-		LABEL = "jenkins-agent-machine-1"
-	}
+    stages {
+        stage('Init') {
+            steps {
+                script {
+                    sh 'npm ci --production=false --no-progress'
+                    sh 'npm run test-storage-layout'
+                    // Verify basic deployment. Might be removed at some point.
+                    sh 'npm run deploy'
+                }
+            }
+        }
+        stage('Hardhat tests - Public') {
+            steps {
+                script {
+                    test()
+                }
+            }
+        }
+        stage('Hardhat tests - KYC') {
+            environment {
+                KYC = 'true'
+            }
+            steps {
+                script {
+                    test()
+                }
+            }
+        }
+    }
 }
 
-pipeline {
+def test() {
+    try {
+        sh 'npm run coverage'
+    } catch(Exception e) {
+        echo 'Exception occurred: ' + e.toString()
+        runEachTestWithDedicatedLogFile()
+    } finally {
+        archiveArtifacts artifacts: 'coverage/**'
+    }
+}
 
-	environment {
-		registry = "nexus.intra.iex.ec"
-		tokenDockerImage = ""
-		nativeDockerImage = ""
-		buildWhenTagContains = "v"
-	}
+def runEachTestWithDedicatedLogFile() {
+    try {
+        sh './test.sh'
+    } finally {
+        archiveArtifacts artifacts: 'logs/**'
+    }
+}
 
-	agent {
-		node {
-			label "${LABEL}"
-		}
-	}
-
-	stages {
-
-		stage("Hardhat tests - Public") {
-			agent {
-				docker {
-					image "node:18"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run test-storage-layout"
-						sh "./test.sh"
-						// Verify basic deployment. Might be removed at some point.
-						sh "npm run deploy"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
-		stage("Hardhat tests - KYC") {
-			agent {
-				docker {
-					image "node:18"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run test-storage-layout"
-						sh "./test.sh"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
+//TODO: Remove
 		/*
-		Disable coverage 
-
-		stage("Solidity coverage - Public") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		stage("Solidity coverage - KYC") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		*/
-        /*
 		stage("Log tag") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
@@ -172,6 +117,6 @@ pipeline {
 				}
 			}
 		}
-        */
 	}
 }
+        */
