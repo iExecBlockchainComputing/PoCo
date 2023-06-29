@@ -19,6 +19,7 @@
 - Upgrade `hashStruct` function to use `ethers`. Bump deprecated `eth-sig-util` from v3 to v5. (#157)
 - Deploy Nominal and Boost modules with Hardhat. (#158)
 - Publish coverage report on CI/CD. Refactor Jenkinsfile. (#160)
+- Init Boost deal structure. (#161)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

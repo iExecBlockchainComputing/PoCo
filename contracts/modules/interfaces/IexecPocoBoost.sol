@@ -18,11 +18,16 @@
 
 pragma solidity ^0.8.0;
 
+import "../../libs/IexecLibOrders_v5.sol";
+
 interface IexecPocoBoost
 {
     event OrdersMatchedBoost(bytes32 dealid);
     event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
 
-    function matchOrdersBoost(uint _requestorder, uint _apporder) external;
+    function matchOrdersBoost(
+        IexecLibOrders_v5.RequestOrder calldata,
+        IexecLibOrders_v5.AppOrder calldata
+    ) external;
     function pushResultBoost(bytes32 _dealId, uint _index, bytes32 _result) external;
 }

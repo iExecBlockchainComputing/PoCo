@@ -67,7 +67,10 @@ library IexecLibCore_v5
 		uint256 workerStake;
 		uint256 schedulerRewardRatio;
 	}
-
+	struct DealBoost {
+		address appOwner;
+		bytes32 tag;
+	}
 	/**
 	 * Tasks
 	 */
