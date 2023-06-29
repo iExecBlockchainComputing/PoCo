@@ -78,7 +78,6 @@ contract('Fullchain', async (accounts) => {
 	 *                        Environment configuration                        *
 	 ***************************************************************************/
 	before("configure", async () => {
-        assert.equal(0, 1);
 		console.log("# web3 version:", web3.version);
 
 		/**
