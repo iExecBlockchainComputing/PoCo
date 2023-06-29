@@ -109,21 +109,18 @@ function eth_sign(hash, wallet)
 }
 
 function buildTypes(primaryType) {
+	const OPERATION = 'Operation';
 	const types = {
 		[primaryType]: TYPES[primaryType],
 	};
 
 	// Check if primaryType ends with 'Operation'
-	if (primaryType.endsWith('Operation')) {
-		const referredType = primaryType.slice(0, -'Operation'.length);
+	if (primaryType.endsWith(OPERATION)) {
+		const referredType = primaryType.slice(0, -OPERATION.length);
 		types[referredType] = TYPES[referredType];
 	}
 
 	return types;
-}
-
-function signTypedData(signer, typedDataDomain, types, message) {
-	return signer._signTypedData(typedDataDomain, types, message);
 }
 
 
@@ -147,7 +144,7 @@ function eth_signTypedData(primaryType, message, domain, wallet) {
 		}
 
 		signerPromise
-			.then(signer => signTypedData(signer, typedDataDomain, types, message))
+			.then(signer => signer._signTypedData(typedDataDomain, types, message))
 			.then(resolve)
 			.catch(reject);
     });
