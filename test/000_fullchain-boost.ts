@@ -23,7 +23,7 @@ import {
     ERC1538Update__factory, ERC1538Update,
     ERC1538Query__factory, ERC1538Query,
     ERC1538Proxy,
-    AppRegistry__factory,
+    AppRegistry__factory, AppRegistry
 } from "../typechain";
 import deployPocoNominal from "./truffle-fixture";
 import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
@@ -106,7 +106,7 @@ describe("IexecPocoBoostDelegate", function () {
         const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         // Expose hardhat AppRegistry instance
-        const appRegistryInstance =
+        const appRegistryInstance: AppRegistry =
             AppRegistry__factory.connect(await getContractAddress('AppRegistry'), owner)
         const receipt = await appRegistryInstance.createApp(appProvider.address,
             "my-app",
