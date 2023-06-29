@@ -9,18 +9,13 @@ pipeline {
     }
 
     stages {
-        stage('Coverage') {
+        stage('Init') {
             steps {
                 script {
                     sh 'npm ci --production=false --no-progress'
                     sh 'npm run test-storage-layout'
                     // Verify basic deployment. Might be removed at some point.
                     sh 'npm run deploy'
-                    try {
-                        sh 'npm run coverage'
-                    } finally {
-                        archiveArtifacts artifacts: 'coverage/**'
-                    }
                 }
             }
         }
@@ -45,6 +40,11 @@ pipeline {
 }
 
 def test() {
+    try {
+        sh 'npm run coverage'
+    } finally {
+        archiveArtifacts artifacts: 'coverage/**'
+    }
     try {
         sh './test.sh'
     } finally {
