@@ -16,9 +16,8 @@
 - Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
-- Upgrade `hashStruct` function to use `ethers`. Bump deprecated `eth-sig-util` from v3 to v5. (#157).
-    - Upgrade `eth_signTypedData` function to use `ethers`. Not using `eth-sig-util` in `odb-tools.js` anymore (#163).
-
+- Upgrade `hashStruct` function to use `ethers`. (#157).
+- Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163).
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
