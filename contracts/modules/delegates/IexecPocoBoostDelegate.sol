@@ -18,6 +18,8 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts-v4/access/Ownable.sol";
+
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
 import "../interfaces/IexecAccessorsBoost.sol";
@@ -25,26 +27,24 @@ import "../interfaces/IexecAccessorsBoost.sol";
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
-
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
     /// @param _apporder The order signed by the application developer
-    function matchOrdersBoost(uint _requestorder, uint _apporder) public {
-        require(
-            _requestorder == _apporder,
-            "Incompatible request and app orders"
-        );
-        bytes32 dealid = keccak256(abi.encodePacked(_requestorder, _apporder)); // random id
-        IexecLibCore_v5.Deal storage deal = m_deals[dealid];
-        deal.tag = keccak256(abi.encodePacked(_requestorder)); // set random field
+    function matchOrdersBoost(
+        IexecLibOrders_v5.RequestOrder memory _requestorder,
+        IexecLibOrders_v5.AppOrder memory _apporder
+    ) public {
+        require(_requestorder.tag == _apporder.tag, "Incompatible request and app orders");
+        bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
+        deal.appOwner = Ownable(_apporder.app).owner();
+        deal.tag = _requestorder.tag; // set random field
         emit OrdersMatchedBoost(dealid);
     }
 
     // TODO: Move to IexecAccessorsBoost
-    function viewDealBoost(
-        bytes32 _id
-    ) external view returns (IexecLibCore_v5.Deal memory deal) {
-        return m_deals[_id];
+    function viewDealBoost(bytes32 _id) external view returns (IexecLibCore_v5.DealBoost memory deal) {
+        return m_dealsBoost[_id];
     }
 
     /// @notice Accept a result for a task computed by a worker during Boost workflow.
@@ -52,8 +52,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     /// @param _index index of the target task of the deal.
     /// @param _result result bytes.
     function pushResultBoost(bytes32 _dealId, uint _index, bytes32 _result) public {
-        IexecLibCore_v5.Deal storage deal = m_deals[_dealId];
-        require(deal.tag != bytes32(0), "Deal not found");
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[_dealId];
+        require(deal.appOwner != address(0), "Deal not found");
         emit ResultPushedBoost(_dealId, _index, _result);
     }
 }
