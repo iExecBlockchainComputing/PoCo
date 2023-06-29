@@ -153,7 +153,6 @@ function eth_signTypedData(primaryType, message, domain, wallet) {
     });
 }
 
-
 function signMessage(obj, hash, wallet)
 {
 	return eth_sign(hash, wallet).then(sign => {
