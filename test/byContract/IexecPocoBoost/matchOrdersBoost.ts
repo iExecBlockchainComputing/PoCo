@@ -2,7 +2,7 @@ import { smock } from '@defi-wonderland/smock';
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { createRequestOrder, createAppOrder } from "../../../utils/createOrders";
+import { createEmptyRequestOrder, createEmptyAppOrder } from "../../../utils/createOrders";
 import {
     IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate, App__factory
 } from "../../../typechain";
@@ -34,8 +34,8 @@ describe("Match orders boost", function () {
         const dealId = "0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f"
         const dealTag = "0x0000000000000000000000000000000000000000000000000000000000000001"
 
-        let appOrder = createAppOrder();
-        let requestOrder = createRequestOrder();
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;

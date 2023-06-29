@@ -30,7 +30,7 @@ import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import constants from "../utils/constants";
 import { extractEventsFromReceipt } from "../utils/tools";
-import { createRequestOrder, createAppOrder } from "../utils/createOrders";
+import { createEmptyRequestOrder, createEmptyAppOrder } from "../utils/createOrders";
 
 describe("IexecPocoBoostDelegate", function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
@@ -44,8 +44,8 @@ describe("IexecPocoBoostDelegate", function () {
         const boostDeployment = (await loadFixture(deployPocoBoostFixture))
         iexecPocoBoostInstance = boostDeployment.iexecPocoBoostInstance
         appAddress = boostDeployment.appAddress
-        requestOrder = createRequestOrder()
-        appOrder = createAppOrder()
+        requestOrder = createEmptyRequestOrder()
+        appOrder = createEmptyAppOrder()
     });
 
     describe("MatchOrders", function () {
