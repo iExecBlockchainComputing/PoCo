@@ -54,51 +54,6 @@ def test() {
 
 //TODO: Remove
 		/*
-		Disable coverage 
-
-		stage("Solidity coverage - Public") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		stage("Solidity coverage - KYC") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		*/
-        /*
 		stage("Log tag") {
 			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
 			steps{
