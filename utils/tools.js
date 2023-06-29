@@ -17,9 +17,11 @@
 const { ethers } = require('ethers');
 
 function _extractEvents(data, address, name) {
-    return data.filter((ev) => {
+    const events = data.filter((ev) => {
         return ev.address == address && ev.event == name;
     });
+    assert.isNotEmpty(events, `Fail to extract '${name}' event`);
+    return events
 }
 
 module.exports = {

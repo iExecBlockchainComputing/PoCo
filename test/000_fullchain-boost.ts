@@ -117,7 +117,7 @@ describe("IexecPocoBoostDelegate", function () {
             .then(tx => tx.wait())
         const events = extractEventsFromReceipt(receipt,
             appRegistryInstance.address, "Transfer")
-        const appAddress = events? events[0].args['tokenId'].toHexString() : ""
+        const appAddress = events[0].args['tokenId'].toHexString()
         return { iexecPocoBoostInstance, appAddress, owner, otherAccount };
     }
 
