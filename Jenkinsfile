@@ -45,13 +45,8 @@ def test() {
     } catch(Exception e) {
         echo 'Exception occurred: ' + e.toString()
         runEachTestWithDedicatedLogFile()
-    }   finally {
-        archiveArtifacts artifacts: 'coverage/**'
-    }
-    try {
-        sh './test.sh'
     } finally {
-        archiveArtifacts artifacts: 'logs/**'
+        archiveArtifacts artifacts: 'coverage/**'
     }
 }
 
