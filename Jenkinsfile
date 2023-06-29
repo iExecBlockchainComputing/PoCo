@@ -42,9 +42,20 @@ pipeline {
 def test() {
     try {
         sh 'npm run coverage'
-    } finally {
+    } catch(Exception e) {
+        echo 'Exception occurred: ' + e.toString()
+        runEachTestWithDedicatedLogFile()
+    }   finally {
         archiveArtifacts artifacts: 'coverage/**'
     }
+    try {
+        sh './test.sh'
+    } finally {
+        archiveArtifacts artifacts: 'logs/**'
+    }
+}
+
+def runEachTestWithDedicatedLogFile() {
     try {
         sh './test.sh'
     } finally {
