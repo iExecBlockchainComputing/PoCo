@@ -14,7 +14,6 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-// TODO: Sign with ethers and get rid of @metamask/eth-sig-util
 const constants = require('./constants');
 const ethers = require("ethers")
 
@@ -123,41 +122,37 @@ function buildTypes(primaryType) {
 	return types;
 }
 
-function eth_signTypedData(primaryType, message, domain, wallet)
-{
-	return new Promise((resolve, reject) => {
+function signTypedData(signer, typedDataDomain, types, message) {
+	return signer._signTypedData(typedDataDomain, types, message);
+}
 
-		let typedDataDomain = {
+
+function eth_signTypedData(primaryType, message, domain, wallet) {
+	return new Promise((resolve, reject) => {
+		const typedDataDomain = {
 			name: domain.name,
 			version: domain.version,
 			chainId: domain.chainId,
 			verifyingContract: domain.verifyingContract
 		};
 		const types = buildTypes(primaryType);
-		
+
+		let signerPromise;
+
 		if (wallet.privateKey) {
 			const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
-			walletInstance._signTypedData(typedDataDomain, types, message)
-				.then(signedData => {
-					resolve(signedData);
-				})
-				.catch(error => {
-					reject(error);
-				});
-			} else {
-			hre.ethers.getSigner(wallet.address)
-				.then(signer => {
-					return signer._signTypedData(typedDataDomain, types, message);
-				})
-				.then(signedData => {
-					resolve(signedData);
-				})
-				.catch(error => {
-					reject(error);
-				});
-			}
-	});
+			signerPromise = Promise.resolve(walletInstance);
+		} else {
+			signerPromise = hre.ethers.getSigner(wallet.address);
+		}
+
+		signerPromise
+			.then(signer => signTypedData(signer, typedDataDomain, types, message))
+			.then(resolve)
+			.catch(reject);
+    });
 }
+
 
 function signMessage(obj, hash, wallet)
 {
