@@ -20,8 +20,6 @@ pragma solidity ^0.8.0;
 
 import "../../libs/IexecLibCore_v5.sol";
 
-interface IexecAccessorsBoost
-{
+interface IexecAccessorsBoost {
     function viewDealBoost(bytes32 _id) external view returns (IexecLibCore_v5.DealBoost memory);
-
 }

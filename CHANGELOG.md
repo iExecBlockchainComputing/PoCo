@@ -16,11 +16,12 @@
 - Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
-- Upgrade `hashStruct` function to use `ethers`. (#157).
+- Upgrade `hashStruct` function to use `ethers`. (#157)
 - Deploy Nominal and Boost modules with Hardhat. (#158)
 - Publish coverage report on CI/CD. Refactor Jenkinsfile. (#160)
 - Init Boost deal structure. (#161)
-- Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163).
+- Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163)
+- Run automatically before commit a prettier on `.ts` and `.sol` staged files. (#162)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

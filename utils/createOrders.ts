@@ -1,5 +1,5 @@
-import { IexecLibOrders_v5 } from "../typechain";
-import constants from "./constants";
+import { IexecLibOrders_v5 } from '../typechain';
+import constants from './constants';
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
   return {
