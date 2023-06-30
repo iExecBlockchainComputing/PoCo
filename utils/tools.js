@@ -16,10 +16,23 @@
 
 const { ethers } = require('ethers');
 
+function _extractEvents(data, address, name) {
+    const events = data.filter((ev) => {
+        return ev.address == address && ev.event == name;
+    });
+    assert.isNotEmpty(events, `Fail to extract '${name}' event`);
+    return events
+}
+
 module.exports = {
 	extractEvents: function(txMined, address, name)
 	{
-		return txMined.logs.filter((ev) => { return ev.address == address && ev.event == name });
+		return _extractEvents(txMined.logs, address, name);
+	},
+
+	extractEventsFromReceipt: function(txReceipt, address, name)
+	{
+		return _extractEvents(txReceipt.events, address, name);
 	},
 
 	BN2Address: function(n)

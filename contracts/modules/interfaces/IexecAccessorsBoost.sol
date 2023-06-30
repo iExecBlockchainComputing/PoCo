@@ -22,6 +22,6 @@ import "../../libs/IexecLibCore_v5.sol";
 
 interface IexecAccessorsBoost
 {
-    function viewDealBoost(bytes32 _id) external view returns (IexecLibCore_v5.Deal memory);
+    function viewDealBoost(bytes32 _id) external view returns (IexecLibCore_v5.DealBoost memory);
 
 }

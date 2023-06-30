@@ -126,4 +126,7 @@ abstract contract Store is ERC1538Store
 	// Backward compatibility
 	address internal m_v3_iexecHub; // IexecHubInterface
 	mapping(address => bool) internal m_v3_scoreImported;
+
+	// Boost
+	mapping(bytes32 => IexecLibCore_v5.DealBoost) internal m_dealsBoost; // per deal
 }
