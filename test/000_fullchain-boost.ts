@@ -31,7 +31,7 @@ describe("IexecPocoBoostDelegate", function () {
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
     let appAddress = "";
-    before("Deploy IexecPocoBoostDelegate", async () => {
+    beforeEach("Deploy IexecPocoBoostDelegate", async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
@@ -79,8 +79,6 @@ describe("IexecPocoBoostDelegate", function () {
 
     describe("PushResult", function () {
         it("Should push result", async function () {
-            requestOrder = createEmptyRequestOrder()
-            appOrder = createEmptyAppOrder()
             requestOrder.app = appAddress;
             appOrder.app = appAddress;
             const dealId: string =
