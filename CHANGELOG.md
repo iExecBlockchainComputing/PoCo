@@ -23,7 +23,7 @@
 - Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163)
 - Run automatically before commit a prettier on `.ts` and `.sol` staged files. (#162)
 - Clean files related to docker build of a test blockchain. (#164, #165)
-- Migrate Link IexecPocoBoost to hardhat deploy script (#166)
+- Migrate `IexecPocoBoost` linking to hardhat deploy script. (#166)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
