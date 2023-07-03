@@ -1,4 +1,5 @@
 import hre from "hardhat";
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import fs from "fs";
 import path from "path";
 import initial_migration from '../migrations/1_initial_migration';
@@ -48,11 +49,14 @@ module.exports = async function () {
 
     console.log("Deploying PoCo Boost..")
     const [owner] = await hre.ethers.getSigners();
-    const iexecPocoBoostInstance: IexecPocoBoostDelegate =
-        await new IexecPocoBoostDelegate__factory()
-            .connect(owner)
-            .deploy()
-            .then(instance => instance.deployed());
+
+    await hre.deployments.deploy('IexecPocoBoostDelegate', {
+		from: owner.address,
+		log: true,
+		autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+	});
+
+    const iexecPocoBoostInstance = await hre.deployments.get('IexecPocoBoostDelegate');
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
 
     // Show proxy functions
@@ -80,8 +84,6 @@ module.exports = async function () {
                 }
             })
         );
-    
-    return iexecPocoBoostInstance
 };
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
@@ -106,3 +108,5 @@ function saveDeployedAddress(contractName: string, deployedAddress: string) {
         ));
     console.log(`Saved deployment at ${deployedAddress} for ${contractName}`)
 }
+
+module.exports.tags = ['IexecPocoBoostDelegate'];

@@ -16,13 +16,12 @@
 
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import hre, { ethers } from "hardhat";
+import hre, { ethers,deployments,getNamedAccounts } from "hardhat";
 import {
     IexecLibOrders_v5,
-    IexecPocoBoostDelegate,
+    IexecPocoBoostDelegate__factory,IexecPocoBoostDelegate,
     AppRegistry__factory, AppRegistry
 } from "../typechain";
-import deployPocoBoostFixture from "../deploy/0_deploy";
 import constants from "../utils/constants";
 import { extractEventsFromReceipt } from "../utils/tools";
 import { createEmptyRequestOrder, createEmptyAppOrder } from "../utils/createOrders";
@@ -38,8 +37,8 @@ describe("IexecPocoBoostDelegate", function () {
         // and reset Hardhat Network to that snapshot in every test.
 
         const [owner, appProvider, otherAccount] = await hre.ethers.getSigners();
-        iexecPocoBoostInstance = await deployPocoBoostFixture()
-        console.log("iexecPocoBoostInstance.addr",iexecPocoBoostInstance.address)
+        await deployments.fixture();
+        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect( (await deployments.get('IexecPocoBoostDelegate')).address, owner)
 
         const appRegistryInstance: AppRegistry =
         AppRegistry__factory.connect(await getContractAddress('AppRegistry'), owner)
