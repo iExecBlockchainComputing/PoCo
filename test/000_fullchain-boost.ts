@@ -19,15 +19,10 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import {
     IexecLibOrders_v5,
-    IexecPocoBoostDelegate__factory, IexecPocoBoostDelegate,
-    ERC1538Update__factory, ERC1538Update,
-    ERC1538Query__factory, ERC1538Query,
-    ERC1538Proxy,
+    IexecPocoBoostDelegate,
     AppRegistry__factory, AppRegistry
 } from "../typechain";
-import deployPocoNominal from "./truffle-fixture";
-import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
-const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
+import deployPocoBoostFixture from "../deploy/0_deploy";
 import constants from "../utils/constants";
 import { extractEventsFromReceipt } from "../utils/tools";
 import { createEmptyRequestOrder, createEmptyAppOrder } from "../utils/createOrders";
@@ -37,13 +32,28 @@ describe("IexecPocoBoostDelegate", function () {
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
     let appAddress = "";
-    beforeEach("Deploy IexecPocoBoostDelegate", async () => {
+    before("Deploy IexecPocoBoostDelegate", async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        const boostDeployment = (await loadFixture(deployPocoBoostFixture))
-        iexecPocoBoostInstance = boostDeployment.iexecPocoBoostInstance
-        appAddress = boostDeployment.appAddress
+
+        const [owner, appProvider, otherAccount] = await hre.ethers.getSigners();
+        iexecPocoBoostInstance = await deployPocoBoostFixture()
+        console.log("iexecPocoBoostInstance.addr",iexecPocoBoostInstance.address)
+
+        const appRegistryInstance: AppRegistry =
+        AppRegistry__factory.connect(await getContractAddress('AppRegistry'), owner)
+        const receipt = await appRegistryInstance.createApp(appProvider.address,
+            "my-app",
+            "APP_TYPE_0",
+            constants.NULL.BYTES32,
+            constants.NULL.BYTES32,
+            constants.NULL.BYTES32)
+            .then(tx => tx.wait())
+        const events = extractEventsFromReceipt(receipt,
+            appRegistryInstance.address, "Transfer")
+        appAddress = events[0].args['tokenId'].toHexString()
+
         requestOrder = createEmptyRequestOrder()
         appOrder = createEmptyAppOrder()
     });
@@ -70,6 +80,8 @@ describe("IexecPocoBoostDelegate", function () {
 
     describe("PushResult", function () {
         it("Should push result", async function () {
+            requestOrder = createEmptyRequestOrder()
+            appOrder = createEmptyAppOrder()
             requestOrder.app = appAddress;
             appOrder.app = appAddress;
             const dealId: string =
@@ -92,60 +104,6 @@ describe("IexecPocoBoostDelegate", function () {
                 .to.be.revertedWith("Deal not found");
         });
     });
-
-    async function deployPocoBoostFixture() {
-        await deployPocoNominal()
-        console.log("Deploying IexecPocoBoostDelegate")
-        const [owner, appProvider, otherAccount] = await hre.ethers.getSigners();
-        const iexecPocoBoostInstance: IexecPocoBoostDelegate =
-            await (await new IexecPocoBoostDelegate__factory()
-                .connect(owner)
-                .deploy())
-                .deployed();
-        console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`)
-        const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
-        await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
-        // Expose hardhat AppRegistry instance
-        const appRegistryInstance: AppRegistry =
-            AppRegistry__factory.connect(await getContractAddress('AppRegistry'), owner)
-        const receipt = await appRegistryInstance.createApp(appProvider.address,
-            "my-app",
-            "APP_TYPE_0",
-            constants.NULL.BYTES32,
-            constants.NULL.BYTES32,
-            constants.NULL.BYTES32)
-            .then(tx => tx.wait())
-        const events = extractEventsFromReceipt(receipt,
-            appRegistryInstance.address, "Transfer")
-        const appAddress = events[0].args['tokenId'].toHexString()
-        return { iexecPocoBoostInstance, appAddress, owner, otherAccount };
-    }
-
-    async function linkBoostModule(erc1538ProxyAddress: string, owner,
-        iexecPocoBoostInstanceAddress: string) {
-        const erc1538: ERC1538Update = ERC1538Update__factory
-            .connect(erc1538ProxyAddress, owner);
-        console.log(`IexecInstance found at address: ${erc1538.address}`);
-        // Link IexecPocoBoost methods to ERC1538Proxy
-        await erc1538.updateContract(
-            iexecPocoBoostInstanceAddress,
-            getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
-            'Linking ' + IexecPocoBoostDelegate__factory.name
-        );
-        // Verify linking on ERC1538Proxy
-        const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory
-            .connect(erc1538ProxyAddress, owner);
-        const functionCount = await erc1538QueryInstance.totalFunctions();
-        console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
-        await Promise.all(
-            [...Array(functionCount.toNumber()).keys()].map(async (i) => {
-                const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
-                if (contract == iexecPocoBoostInstanceAddress) {
-                    console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
-                }
-            })
-        );
-    }
 });
 
 /**

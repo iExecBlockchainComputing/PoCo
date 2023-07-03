@@ -7,12 +7,15 @@ import deploy_core from '../migrations/4_deploy_core';
 import deploy_ens from '../migrations/5_deploy_ens';
 import whitelisting from '../migrations/6_whitelisting';
 import functions from '../migrations/999_functions';
+import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
 const erc1538Proxy: ERC1538Proxy =
     hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import {
     ERC1538Proxy,
     IexecAccessors__factory,
     IexecPocoBoostDelegate, IexecPocoBoostDelegate__factory,
+    ERC1538Update, ERC1538Update__factory,
+    ERC1538Query, ERC1538Query__factory
 } from "../typechain";
 
 /**
@@ -53,8 +56,32 @@ module.exports = async function () {
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
 
     // Show proxy functions
-    //TODO: Link PocoBoost module to ERC1538Proxy
     await functions(accounts)
+
+    const erc1538: ERC1538Update = ERC1538Update__factory
+            .connect(erc1538ProxyAddress, owner);
+        console.log(`IexecInstance found at address: ${erc1538.address}`);
+        // Link IexecPocoBoost methods to ERC1538Proxy
+        await erc1538.updateContract(
+            iexecPocoBoostInstance.address,
+            getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
+            'Linking ' + IexecPocoBoostDelegate__factory.name
+        );
+        // Verify linking on ERC1538Proxy
+        const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory
+            .connect(erc1538ProxyAddress, owner);
+        const functionCount = await erc1538QueryInstance.totalFunctions();
+        console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
+        await Promise.all(
+            [...Array(functionCount.toNumber()).keys()].map(async (i) => {
+                const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
+                if (contract == iexecPocoBoostInstance.address) {
+                    console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
+                }
+            })
+        );
+    
+    return iexecPocoBoostInstance
 };
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
