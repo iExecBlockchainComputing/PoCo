@@ -50,14 +50,13 @@ module.exports = async function () {
     console.log("Deploying PoCo Boost..")
     const [owner] = await hre.ethers.getSigners();
 
-    await hre.deployments.deploy('IexecPocoBoostDelegate', {
+    const iexecPocoBoostDeployement  = await hre.deployments.deploy('IexecPocoBoostDelegate', {
 		from: owner.address,
 		log: true,
 		autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
 	});
 
-    const iexecPocoBoostInstance = await hre.deployments.get('IexecPocoBoostDelegate');
-    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`)
+    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployement.address}`)
 
     // Show proxy functions
     await functions(accounts)
@@ -67,7 +66,7 @@ module.exports = async function () {
         console.log(`IexecInstance found at address: ${erc1538.address}`);
         // Link IexecPocoBoost methods to ERC1538Proxy
         await erc1538.updateContract(
-            iexecPocoBoostInstance.address,
+            iexecPocoBoostDeployement.address,
             getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
             'Linking ' + IexecPocoBoostDelegate__factory.name
         );
@@ -79,7 +78,7 @@ module.exports = async function () {
         await Promise.all(
             [...Array(functionCount.toNumber()).keys()].map(async (i) => {
                 const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
-                if (contract == iexecPocoBoostInstance.address) {
+                if (contract == iexecPocoBoostDeployement.address) {
                     console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
                 }
             })
