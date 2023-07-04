@@ -23,6 +23,7 @@
 - Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163)
 - Run automatically before commit a prettier on `.ts` and `.sol` staged files. (#162)
 - Clean files related to docker build of a test blockchain. (#164, #165)
+- Update prettier rules and reformat. (#167)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
