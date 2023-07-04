@@ -68,8 +68,20 @@ library IexecLibCore_v5
 		uint256 schedulerRewardRatio;
 	}
 	struct DealBoost {
+		address requester;
+		address workerpoolOwner;
+		uint96 workerpoolPrice;
 		address appOwner;
+		uint96 appPrice;
+		address datasetOwner;
+		uint96 datasetPrice;
+		uint96 workerReward;
+		address beneficiary;
+		uint48 deadline;
+		uint24 botFirst;
+		uint24 botSize;
 		bytes32 tag;
+		address callback;
 	}
 	/**
 	 * Tasks
