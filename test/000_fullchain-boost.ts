@@ -14,9 +14,8 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import hre, { ethers,deployments,getNamedAccounts } from "hardhat";
+import hre, { ethers,deployments } from "hardhat";
 import {
     IexecLibOrders_v5,
     IexecPocoBoostDelegate__factory,IexecPocoBoostDelegate,

@@ -52,8 +52,7 @@ module.exports = async function () {
 
     const iexecPocoBoostDeployement  = await hre.deployments.deploy('IexecPocoBoostDelegate', {
 		from: owner.address,
-		log: true,
-		autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+		log: true
 	});
 
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployement.address}`)
