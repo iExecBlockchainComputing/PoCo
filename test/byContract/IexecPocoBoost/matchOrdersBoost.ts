@@ -29,16 +29,23 @@ async function deployBoostFixture() {
     };
 }
 
+async function setupMockApp(appProvider: any) {
+    const appInstance = await smock
+        .mock<App__factory>('App')
+        .then((contract) => contract.deploy())
+        .then((instance) => instance.deployed());
+    appInstance.owner.returns(appProvider.address);
+    return appInstance;
+}
+
 describe('Match orders boost', function () {
     it('Should match orders', async function () {
         const { iexecPocoBoostInstance, requester, beneficiary, appProvider } = await loadFixture(
             deployBoostFixture,
         );
 
-        const appInstance = await smock
-            .mock<App__factory>('App')
-            .then((contract) => contract.deploy())
-            .then((instance) => instance.deployed());
+        const appInstance = await setupMockApp(appProvider);
+
         const appAddress = appInstance.address;
         appInstance.owner.returns(appProvider.address);
 
@@ -54,6 +61,9 @@ describe('Match orders boost', function () {
         appOrder.tag = dealTag;
         requestOrder.tag = dealTag;
 
+        // Set zero trust _ by defalt is 0
+        requestOrder.trust = 0;
+
         await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
@@ -61,5 +71,49 @@ describe('Match orders boost', function () {
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         expect(deal.appOwner).to.be.equal(appProvider.address);
         expect(deal.tag).to.be.equal(dealTag);
+    });
+
+    it('Should fail when tags are different', async function () {
+        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
+        const appInstance = await setupMockApp(appProvider);
+        const appAddress = appInstance.address;
+
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set different tags
+        appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+        requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002';
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+        ).to.be.revertedWith('Incompatible request and app orders');
+    });
+
+    it('Should fail when trust is not zero', async function () {
+        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
+
+        const appInstance = await setupMockApp(appProvider);
+
+        const appAddress = appInstance.address;
+
+        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set same tags
+        appOrder.tag = dealTag;
+        requestOrder.tag = dealTag;
+        // Set non-zero trust
+        requestOrder.trust = 1;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+        ).to.be.revertedWith('iExecV5-matchOrders-0x02');
     });
 });
