@@ -1,5 +1,4 @@
 import hre from "hardhat";
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import fs from "fs";
 import path from "path";
 import initial_migration from '../migrations/1_initial_migration';
@@ -13,8 +12,7 @@ const erc1538Proxy: ERC1538Proxy =
     hre.artifacts.require('@iexec/solidity/ERC1538Proxy')
 import {
     ERC1538Proxy,
-    IexecAccessors__factory,
-    IexecPocoBoostDelegate, IexecPocoBoostDelegate__factory,
+    IexecPocoBoostDelegate__factory,
     ERC1538Update, ERC1538Update__factory,
     ERC1538Query, ERC1538Query__factory
 } from "../typechain";
