@@ -56,7 +56,8 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should match orders', async function () {
             requestOrder.app = appAddress;
             appOrder.app = appAddress;
-            const expectedDealId = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+            const expectedDealId =
+                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
             await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(expectedDealId);
@@ -67,9 +68,9 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not match orders', async function () {
             requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder)).to.be.revertedWith(
-                'Incompatible request and app orders',
-            );
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+            ).to.be.revertedWith('Incompatible request and app orders');
         });
     });
 
@@ -77,7 +78,8 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should push result', async function () {
             requestOrder.app = appAddress;
             appOrder.app = appAddress;
-            const dealId: string = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+            const dealId: string =
+                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
             const index: number = 0;
             // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
             const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
@@ -89,11 +91,12 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result when deal not found', async function () {
             // No match order
-            const badDealId: string = '0xff6973ffda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688aaaa';
+            const badDealId: string =
+                '0xff6973ffda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688aaaa';
             const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
-            await expect(iexecPocoBoostInstance.pushResultBoost(badDealId, 0, result)).to.be.revertedWith(
-                'Deal not found',
-            );
+            await expect(
+                iexecPocoBoostInstance.pushResultBoost(badDealId, 0, result),
+            ).to.be.revertedWith('Deal not found');
         });
     });
 
@@ -104,7 +107,9 @@ describe('IexecPocoBoostDelegate', function () {
         const iexecPocoBoostInstance: IexecPocoBoostDelegate = await (
             await new IexecPocoBoostDelegate__factory().connect(owner).deploy()
         ).deployed();
-        console.log(`IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`);
+        console.log(
+            `IexecPocoBoostDelegate successfully deployed at ${iexecPocoBoostInstance.address}`,
+        );
         const erc1538ProxyAddress = (await erc1538Proxy.deployed()).address;
         await linkBoostModule(erc1538ProxyAddress, owner, iexecPocoBoostInstance.address);
         // Expose hardhat AppRegistry instance
@@ -127,7 +132,11 @@ describe('IexecPocoBoostDelegate', function () {
         return { iexecPocoBoostInstance, appAddress, owner, otherAccount };
     }
 
-    async function linkBoostModule(erc1538ProxyAddress: string, owner, iexecPocoBoostInstanceAddress: string) {
+    async function linkBoostModule(
+        erc1538ProxyAddress: string,
+        owner,
+        iexecPocoBoostInstanceAddress: string,
+    ) {
         const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
         console.log(`IexecInstance found at address: ${erc1538.address}`);
         // Link IexecPocoBoost methods to ERC1538Proxy
@@ -137,7 +146,10 @@ describe('IexecPocoBoostDelegate', function () {
             'Linking ' + IexecPocoBoostDelegate__factory.name,
         );
         // Verify linking on ERC1538Proxy
-        const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(erc1538ProxyAddress, owner);
+        const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
+            erc1538ProxyAddress,
+            owner,
+        );
         const functionCount = await erc1538QueryInstance.totalFunctions();
         console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
         await Promise.all(

@@ -43,7 +43,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     // TODO: Move to IexecAccessorsBoost
-    function viewDealBoost(bytes32 _id) external view returns (IexecLibCore_v5.DealBoost memory deal) {
+    function viewDealBoost(
+        bytes32 _id
+    ) external view returns (IexecLibCore_v5.DealBoost memory deal) {
         return m_dealsBoost[_id];
     }
 
