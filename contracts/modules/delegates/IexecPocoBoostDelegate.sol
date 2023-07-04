@@ -36,7 +36,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     ) public {
         require(_requestorder.tag == _apporder.tag, "Incompatible request and app orders");
         require(_requestorder.trust == 0, "iExecV5-matchOrders-0x02");
-        // require(_requestorder.trust== _workerpoolorder.trust,'iExecV5-matchOrders-0x02');
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
