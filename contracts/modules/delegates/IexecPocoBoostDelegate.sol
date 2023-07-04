@@ -29,10 +29,14 @@ import "../interfaces/IexecAccessorsBoost.sol";
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _requestorder The order signed by the requester
+    /// @param _workerpoolOrder The order signed by the workerpool manager
     /// @param _apporder The order signed by the application developer
+    /// @param _datasetOrder The order signed by the dataset provider
     function matchOrdersBoost(
-        IexecLibOrders_v5.RequestOrder memory _requestorder,
-        IexecLibOrders_v5.AppOrder memory _apporder
+        IexecLibOrders_v5.RequestOrder memory _requestorder, // TODO _requestOrder
+        IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolOrder,
+        IexecLibOrders_v5.AppOrder memory _apporder, // TODO appOrder
+        IexecLibOrders_v5.DatasetOrder memory _datasetOrder
     ) public {
         require(_requestorder.tag == _apporder.tag, "Incompatible request and app orders");
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id

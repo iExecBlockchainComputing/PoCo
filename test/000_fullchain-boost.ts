@@ -34,12 +34,20 @@ import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import { createEmptyRequestOrder, createEmptyAppOrder } from '../utils/createOrders';
+import {
+    createEmptyRequestOrder,
+    createEmptyAppOrder,
+    createEmptyWorkerpoolOrder,
+    createEmptyDatasetOrder,
+} from '../utils/createOrders';
+import { Signer } from 'ethers';
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
+    let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
+    let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
     let appAddress = '';
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
@@ -49,7 +57,9 @@ describe('IexecPocoBoostDelegate', function () {
         iexecPocoBoostInstance = boostDeployment.iexecPocoBoostInstance;
         appAddress = boostDeployment.appAddress;
         requestOrder = createEmptyRequestOrder();
+        workerpoolOrder = createEmptyWorkerpoolOrder();
         appOrder = createEmptyAppOrder();
+        datasetOrder = createEmptyDatasetOrder();
     });
 
     describe('MatchOrders', function () {
@@ -58,7 +68,14 @@ describe('IexecPocoBoostDelegate', function () {
             appOrder.app = appAddress;
             const expectedDealId =
                 '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-            await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    requestOrder,
+                    workerpoolOrder,
+                    appOrder,
+                    datasetOrder,
+                ),
+            )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(expectedDealId);
             expect((await iexecPocoBoostInstance.viewDealBoost(expectedDealId)).tag).is.equal(
@@ -69,7 +86,12 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should not match orders', async function () {
             requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
             await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    requestOrder,
+                    workerpoolOrder,
+                    appOrder,
+                    datasetOrder,
+                ),
             ).to.be.revertedWith('Incompatible request and app orders');
         });
     });
@@ -83,7 +105,12 @@ describe('IexecPocoBoostDelegate', function () {
             const index: number = 0;
             // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
             const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
-            await iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                requestOrder,
+                workerpoolOrder,
+                appOrder,
+                datasetOrder,
+            );
             await expect(iexecPocoBoostInstance.pushResultBoost(dealId, index, result))
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, index, result);
@@ -134,7 +161,7 @@ describe('IexecPocoBoostDelegate', function () {
 
     async function linkBoostModule(
         erc1538ProxyAddress: string,
-        owner,
+        owner: Signer,
         iexecPocoBoostInstanceAddress: string,
     ) {
         const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
