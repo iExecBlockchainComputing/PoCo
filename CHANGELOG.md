@@ -23,6 +23,7 @@
 - Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163)
 - Run automatically before commit a prettier on `.ts` and `.sol` staged files. (#162)
 - Clean files related to docker build of a test blockchain. (#164, #165)
+- Migrate `IexecPocoBoost` linking to hardhat deploy script. (#166)
 - Update prettier rules and reformat. (#167, #168, #169)
 
 ## v5.4.2

@@ -7,12 +7,15 @@ import deploy_core from '../migrations/4_deploy_core';
 import deploy_ens from '../migrations/5_deploy_ens';
 import whitelisting from '../migrations/6_whitelisting';
 import functions from '../migrations/999_functions';
+import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
 import {
     ERC1538Proxy,
-    IexecAccessors__factory,
-    IexecPocoBoostDelegate,
     IexecPocoBoostDelegate__factory,
+    ERC1538Update,
+    ERC1538Update__factory,
+    ERC1538Query,
+    ERC1538Query__factory,
 } from '../typechain';
 
 /**
@@ -45,16 +48,40 @@ module.exports = async function () {
 
     console.log('Deploying PoCo Boost..');
     const [owner] = await hre.ethers.getSigners();
-    const iexecPocoBoostInstance: IexecPocoBoostDelegate =
-        await new IexecPocoBoostDelegate__factory()
-            .connect(owner)
-            .deploy()
-            .then((instance) => instance.deployed());
-    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostInstance.address}`);
+
+    const iexecPocoBoostDeployement = await hre.deployments.deploy('IexecPocoBoostDelegate', {
+        from: owner.address,
+        log: true,
+    });
+
+    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployement.address}`);
 
     // Show proxy functions
-    //TODO: Link PocoBoost module to ERC1538Proxy
     await functions(accounts);
+
+    const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
+    console.log(`IexecInstance found at address: ${erc1538.address}`);
+    // Link IexecPocoBoost methods to ERC1538Proxy
+    await erc1538.updateContract(
+        iexecPocoBoostDeployement.address,
+        getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
+        'Linking ' + IexecPocoBoostDelegate__factory.name,
+    );
+    // Verify linking on ERC1538Proxy
+    const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
+        erc1538ProxyAddress,
+        owner,
+    );
+    const functionCount = await erc1538QueryInstance.totalFunctions();
+    console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
+    await Promise.all(
+        [...Array(functionCount.toNumber()).keys()].map(async (i) => {
+            const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
+            if (contract == iexecPocoBoostDeployement.address) {
+                console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
+            }
+        }),
+    );
 };
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
@@ -79,3 +106,5 @@ function saveDeployedAddress(contractName: string, deployedAddress: string) {
     );
     console.log(`Saved deployment at ${deployedAddress} for ${contractName}`);
 }
+
+module.exports.tags = ['IexecPocoBoostDelegate'];
