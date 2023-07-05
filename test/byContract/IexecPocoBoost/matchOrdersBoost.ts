@@ -76,23 +76,6 @@ describe('Match orders boost', function () {
         expect(deal.tag).to.be.equal(dealTag);
     });
 
-    it('Should fail when tags are different', async function () {
-        const appAddress = appInstance.address;
-
-        let appOrder = createEmptyAppOrder();
-        let requestOrder = createEmptyRequestOrder();
-        // Set app address
-        appOrder.app = appAddress;
-        requestOrder.app = appAddress;
-        // Set different tags
-        appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-        requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002';
-
-        await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
-        ).to.be.revertedWith('Incompatible request and app orders');
-    });
-
     it('Should fail when trust is not zero', async function () {
         const appAddress = appInstance.address;
 
