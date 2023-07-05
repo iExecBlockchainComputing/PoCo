@@ -29,22 +29,19 @@ async function deployBoostFixture() {
     };
 }
 
-async function setupMockApp(appProvider: any) {
+async function createMockApp() {
     const appInstance = await smock
         .mock<App__factory>('App')
         .then((contract) => contract.deploy())
         .then((instance) => instance.deployed());
-    appInstance.owner.returns(appProvider.address);
     return appInstance;
 }
 
 describe('Match orders boost', function () {
     it('Should match orders', async function () {
-        const { iexecPocoBoostInstance, requester, beneficiary, appProvider } = await loadFixture(
-            deployBoostFixture,
-        );
+        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
 
-        const appInstance = await setupMockApp(appProvider);
+        const appInstance = await createMockApp();
 
         const appAddress = appInstance.address;
         appInstance.owner.returns(appProvider.address);
@@ -74,8 +71,8 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when tags are different', async function () {
-        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
-        const appInstance = await setupMockApp(appProvider);
+        const { iexecPocoBoostInstance } = await loadFixture(deployBoostFixture);
+        const appInstance = await createMockApp();
         const appAddress = appInstance.address;
 
         let appOrder = createEmptyAppOrder();
@@ -93,9 +90,9 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when trust is not zero', async function () {
-        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
+        const { iexecPocoBoostInstance } = await loadFixture(deployBoostFixture);
 
-        const appInstance = await setupMockApp(appProvider);
+        const appInstance = await createMockApp();
 
         const appAddress = appInstance.address;
 
