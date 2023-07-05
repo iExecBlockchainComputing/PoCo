@@ -27,7 +27,6 @@
 - Update prettier rules and reformat. (#167, #168, #169, #170)
 - Implement `matchOrdersBoost` general implementation. (#171)
 
-
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
 (saved internally at `nexus.intra.iex.ec/nethermind:1.18.x-0`)
