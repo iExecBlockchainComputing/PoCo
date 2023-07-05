@@ -2,6 +2,8 @@ import { smock } from '@defi-wonderland/smock';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { Contract } from '@ethersproject/contracts';
 import { createEmptyRequestOrder, createEmptyAppOrder } from '../../../utils/createOrders';
 import {
     IexecPocoBoostDelegate__factory,
@@ -38,11 +40,18 @@ async function createMockApp() {
 }
 
 describe('Match orders boost', function () {
+    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let appProvider: SignerWithAddress;
+    let appInstance: Contract;
+
+    beforeEach('set up contract instances and mock app', async () => {
+        const fixtures = await loadFixture(deployBoostFixture);
+        iexecPocoBoostInstance = fixtures.iexecPocoBoostInstance;
+        appProvider = fixtures.appProvider;
+        appInstance = await createMockApp();
+    });
+
     it('Should match orders', async function () {
-        const { iexecPocoBoostInstance, appProvider } = await loadFixture(deployBoostFixture);
-
-        const appInstance = await createMockApp();
-
         const appAddress = appInstance.address;
         appInstance.owner.returns(appProvider.address);
 
@@ -58,9 +67,6 @@ describe('Match orders boost', function () {
         appOrder.tag = dealTag;
         requestOrder.tag = dealTag;
 
-        // Set zero trust _ by defalt is 0
-        requestOrder.trust = 0;
-
         await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
@@ -71,8 +77,6 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when tags are different', async function () {
-        const { iexecPocoBoostInstance } = await loadFixture(deployBoostFixture);
-        const appInstance = await createMockApp();
         const appAddress = appInstance.address;
 
         let appOrder = createEmptyAppOrder();
@@ -90,10 +94,6 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when trust is not zero', async function () {
-        const { iexecPocoBoostInstance } = await loadFixture(deployBoostFixture);
-
-        const appInstance = await createMockApp();
-
         const appAddress = appInstance.address;
 
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -111,6 +111,6 @@ describe('Match orders boost', function () {
 
         await expect(
             iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
-        ).to.be.revertedWith('iExecV5-matchOrders-0x02');
+        ).to.be.revertedWith('iExecV5-matchOrdersBoost-0x02');
     });
 });
