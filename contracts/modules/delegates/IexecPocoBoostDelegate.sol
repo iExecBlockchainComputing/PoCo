@@ -34,7 +34,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibOrders_v5.RequestOrder memory _requestorder,
         IexecLibOrders_v5.AppOrder memory _apporder
     ) public {
-        require(_requestorder.tag == _apporder.tag, "Incompatible request and app orders");
+        require(_requestorder.trust == 0, "MatchOrdersBoost: Trust level is not zero");
+
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.appOwner = Ownable(_apporder.app).owner();

@@ -2,6 +2,8 @@ import { smock } from '@defi-wonderland/smock';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { Contract } from '@ethersproject/contracts';
 import { createEmptyRequestOrder, createEmptyAppOrder } from '../../../utils/createOrders';
 import {
     IexecPocoBoostDelegate__factory,
@@ -29,16 +31,27 @@ async function deployBoostFixture() {
     };
 }
 
-describe('Match orders boost', function () {
-    it('Should match orders', async function () {
-        const { iexecPocoBoostInstance, requester, beneficiary, appProvider } = await loadFixture(
-            deployBoostFixture,
-        );
+async function createMockApp() {
+    const appInstance = await smock
+        .mock<App__factory>('App')
+        .then((contract) => contract.deploy())
+        .then((instance) => instance.deployed());
+    return appInstance;
+}
 
-        const appInstance = await smock
-            .mock<App__factory>('App')
-            .then((contract) => contract.deploy())
-            .then((instance) => instance.deployed());
+describe('Match orders boost', function () {
+    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let appProvider: SignerWithAddress;
+    let appInstance: Contract;
+
+    beforeEach('set up contract instances and mock app', async () => {
+        const fixtures = await loadFixture(deployBoostFixture);
+        iexecPocoBoostInstance = fixtures.iexecPocoBoostInstance;
+        appProvider = fixtures.appProvider;
+        appInstance = await createMockApp();
+    });
+
+    it('Should match orders', async function () {
         const appAddress = appInstance.address;
         appInstance.owner.returns(appProvider.address);
 
@@ -61,5 +74,26 @@ describe('Match orders boost', function () {
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         expect(deal.appOwner).to.be.equal(appProvider.address);
         expect(deal.tag).to.be.equal(dealTag);
+    });
+
+    it('Should fail when trust is not zero', async function () {
+        const appAddress = appInstance.address;
+
+        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set same tags
+        appOrder.tag = dealTag;
+        requestOrder.tag = dealTag;
+        // Set non-zero trust
+        requestOrder.trust = 1;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+        ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
     });
 });
