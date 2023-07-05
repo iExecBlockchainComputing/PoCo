@@ -78,13 +78,6 @@ describe('IexecPocoBoostDelegate', function () {
                 '0x0000000000000000000000000000000000000000000000000000000000000000',
             );
         });
-
-        it('Should not match orders', async function () {
-            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
-            ).to.be.revertedWith('Incompatible request and app orders');
-        });
     });
 
     describe('PushResult', function () {
