@@ -94,6 +94,6 @@ describe('Match orders boost', function () {
 
         await expect(
             iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
-        ).to.be.revertedWith('iExecV5-matchOrdersBoost-0x02');
+        ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
     });
 });
