@@ -64,7 +64,7 @@ describe('Match orders boost', function () {
 
         let appOrder = createEmptyAppOrder();
         let requestOrder = createEmptyRequestOrder();
-        let workerpollOrder = createWorkerpoolOrder();
+        let workerpoolOrder = createWorkerpoolOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
@@ -73,7 +73,7 @@ describe('Match orders boost', function () {
         requestOrder.tag = dealTag;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpollOrder, requestOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
         )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
@@ -90,7 +90,7 @@ describe('Match orders boost', function () {
 
         let appOrder = createEmptyAppOrder();
         let requestOrder = createEmptyRequestOrder();
-        let workerpollOrder = createWorkerpoolOrder();
+        let workerpoolOrder = createWorkerpoolOrder();
 
         // Set app address
         appOrder.app = appAddress;
@@ -102,7 +102,7 @@ describe('Match orders boost', function () {
         requestOrder.trust = 1;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpollOrder, requestOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
         ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
     });
 
