@@ -31,9 +31,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     /// @param _requestorder The order signed by the requester
     /// @param _apporder The order signed by the application developer
     function matchOrdersBoost(
-        IexecLibOrders_v5.AppOrder memory _apporder,
-        IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
-        IexecLibOrders_v5.RequestOrder memory _requestorder
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) public {
         require(_requestorder.trust == 0, "MatchOrdersBoost: Trust level is not zero");
         require(
