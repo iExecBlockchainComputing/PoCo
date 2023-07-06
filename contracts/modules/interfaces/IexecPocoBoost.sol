@@ -26,7 +26,7 @@ interface IexecPocoBoost {
 
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata,
-        IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata
     ) external;
 
