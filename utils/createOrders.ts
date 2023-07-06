@@ -35,3 +35,19 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         sign: constants.NULL.BYTES32,
     };
 }
+
+export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
+    return {
+        workerpool: constants.NULL.ADDRESS,
+        workerpoolprice: 0,
+        volume: 0,
+        tag: constants.NULL.BYTES32,
+        category: 0,
+        trust: 0,
+        apprestrict: constants.NULL.ADDRESS,
+        datasetrestrict: constants.NULL.ADDRESS,
+        requesterrestrict: constants.NULL.ADDRESS,
+        salt: constants.NULL.BYTES32,
+        sign: constants.NULL.BYTES32,
+    };
+}

@@ -25,12 +25,17 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import { createEmptyRequestOrder, createEmptyAppOrder } from '../utils/createOrders';
+import {
+    createEmptyRequestOrder,
+    createEmptyAppOrder,
+    createWorkerpoolOrder,
+} from '../utils/createOrders';
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
+    let workerpollOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
     let appAddress = '';
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
@@ -63,6 +68,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         requestOrder = createEmptyRequestOrder();
         appOrder = createEmptyAppOrder();
+        workerpollOrder = createWorkerpoolOrder();
     });
 
     describe('MatchOrders', function () {
@@ -71,7 +77,9 @@ describe('IexecPocoBoostDelegate', function () {
             appOrder.app = appAddress;
             const expectedDealId =
                 '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-            await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpollOrder, requestOrder),
+            )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(expectedDealId);
             expect((await iexecPocoBoostInstance.viewDealBoost(expectedDealId)).tag).is.equal(
@@ -89,7 +97,7 @@ describe('IexecPocoBoostDelegate', function () {
             const index: number = 0;
             // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
             const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
-            await iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder);
+            await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpollOrder, requestOrder);
             await expect(iexecPocoBoostInstance.pushResultBoost(dealId, index, result))
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, index, result);
