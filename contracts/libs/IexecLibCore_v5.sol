@@ -63,6 +63,7 @@ library IexecLibCore_v5 {
     }
     struct DealBoost {
         address appOwner;
+        address workerpoolOwner;
         bytes32 tag;
     }
     /**

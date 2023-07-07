@@ -26,6 +26,7 @@
 - Migrate `IexecPocoBoost` linking to hardhat deploy script. (#166)
 - Update prettier rules and reformat. (#167, #168, #169, #170)
 - Implement `matchOrdersBoost`. (#171, #172)
+- Implement `pushResultBoost`. (#173)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

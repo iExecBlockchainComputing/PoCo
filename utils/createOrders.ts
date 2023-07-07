@@ -36,7 +36,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
     };
 }
 
-export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
+export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
     return {
         workerpool: constants.NULL.ADDRESS,
         workerpoolprice: 0,
@@ -50,4 +50,19 @@ export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
+}
+
+export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
+    let requestOrder = createEmptyRequestOrder();
+    let appOrder = createEmptyAppOrder();
+    let workerpoolOrder = createEmptyWorkerpoolOrder();
+    // Set app
+    appOrder.app = app;
+    requestOrder.app = app;
+    // Set workerpool
+    workerpoolOrder.workerpool = workerpool;
+    // Set tag
+    appOrder.tag = tag;
+    requestOrder.tag = tag;
+    return { appOrder, workerpoolOrder, requestOrder };
 }
