@@ -35,10 +35,10 @@ import { Signer } from 'ethers';
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
-    let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
     let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
+    let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
+    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appAddress = '';
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
@@ -83,10 +83,10 @@ describe('IexecPocoBoostDelegate', function () {
                 '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
-                    requestOrder,
-                    workerpoolOrder,
                     appOrder,
                     datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
                 ),
             )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
@@ -107,10 +107,10 @@ describe('IexecPocoBoostDelegate', function () {
             // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
             const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
             await iexecPocoBoostInstance.matchOrdersBoost(
-                requestOrder,
-                workerpoolOrder,
                 appOrder,
                 datasetOrder,
+                workerpoolOrder,
+                requestOrder,
             );
             await expect(iexecPocoBoostInstance.pushResultBoost(dealId, index, result))
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')

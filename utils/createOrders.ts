@@ -11,7 +11,7 @@ export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
         workerpoolrestrict: constants.NULL.ADDRESS,
         requesterrestrict: constants.NULL.ADDRESS,
         salt: constants.NULL.BYTES32,
-        sign: constants.NULL.BYTES32,
+        sign: constants.NULL.SIGNATURE,
     };
 }
 
@@ -32,7 +32,23 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         callback: constants.NULL.ADDRESS,
         params: '',
         salt: constants.NULL.BYTES32,
-        sign: constants.NULL.BYTES32,
+        sign: constants.NULL.SIGNATURE,
+    };
+}
+
+export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
+    return {
+        workerpool: constants.NULL.ADDRESS,
+        workerpoolprice: 0,
+        volume: 0,
+        tag: constants.NULL.BYTES32,
+        category: 0,
+        trust: 0,
+        apprestrict: constants.NULL.ADDRESS,
+        datasetrestrict: constants.NULL.ADDRESS,
+        requesterrestrict: constants.NULL.ADDRESS,
+        salt: constants.NULL.BYTES32,
+        sign: constants.NULL.SIGNATURE,
     };
 }
 

@@ -100,8 +100,6 @@ describe('Match orders boost', function () {
 
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        let appOrder = createEmptyAppOrder();
-        let requestOrder = createEmptyRequestOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
@@ -119,5 +117,31 @@ describe('Match orders boost', function () {
                 requestOrder,
             ),
         ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
+    });
+
+    it('Should fail when categories are different', async function () {
+        const appAddress = appInstance.address;
+        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set same tags
+        appOrder.tag = dealTag;
+        requestOrder.tag = dealTag;
+        // Set same trust
+        requestOrder.trust = 0;
+        // Set different categories
+        requestOrder.category = 1;
+        workerpoolOrder.category = 2;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith('MatchOrdersBoost: Category mismatch');
     });
 });
