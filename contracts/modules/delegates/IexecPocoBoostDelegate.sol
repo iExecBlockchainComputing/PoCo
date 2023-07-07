@@ -42,8 +42,25 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
+        deal.requester = _requestorder.requester;
+        // deal.workerpoolOwner = ;
+        deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
+        // deal.appOwner = ;
+        deal.appPrice = uint96(_apporder.appprice);
+        bool hasDataset = false; // TODO
+        // deal.datasetOwner = ;
+        deal.datasetPrice = uint96(hasDataset ? _datasetorder.datasetprice : 0);
+        // deal.workerReward = ;
+        deal.beneficiary = _requestorder.beneficiary;
+        // deal.deadline = ;
+        // deal.botFirst = ;
+        // deal.botSize = ;
+        // deal.tag = ;
+        deal.callback = _requestorder.callback;
+
         deal.appOwner = Ownable(_apporder.app).owner();
         deal.tag = _requestorder.tag; // set random field
+        // TODO emit deal params
         emit OrdersMatchedBoost(dealid);
     }
 
