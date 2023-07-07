@@ -37,7 +37,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
-    ) public {
+    ) external {
         require(_requestorder.trust == 0, "MatchOrdersBoost: Trust level is not zero");
         require(
             _requestorder.category == _workerpoolorder.category,

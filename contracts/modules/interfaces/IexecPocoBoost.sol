@@ -25,10 +25,10 @@ interface IexecPocoBoost {
     event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
 
     function matchOrdersBoost(
-        IexecLibOrders_v5.AppOrder calldata,
-        IexecLibOrders_v5.DatasetOrder calldata,
-        IexecLibOrders_v5.WorkerpoolOrder calldata,
-        IexecLibOrders_v5.RequestOrder calldata
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external;
 
     function pushResultBoost(bytes32 _dealId, uint _index, bytes32 _result) external;

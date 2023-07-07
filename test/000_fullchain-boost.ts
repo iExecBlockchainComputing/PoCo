@@ -35,10 +35,10 @@ import { Signer } from 'ethers';
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
     let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
     let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
-    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let appAddress = '';
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
