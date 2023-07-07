@@ -62,43 +62,12 @@ describe('Match orders boost', function () {
         appOrder = createEmptyAppOrder();
         requestOrder = createEmptyRequestOrder();
         requestOrder.requester = fixtures.requester.address;
+        requestOrder.beneficiary = fixtures.beneficiary.address;
         workerpoolOrder = createEmptyWorkerpoolOrder();
         datasetOrder = createEmptyDatasetOrder();
     });
 
     it('Should match orders', async function () {
-        const appAddress = appInstance.address;
-        appInstance.owner.returns(appProvider.address);
-
-        const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
-        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-        // Set app address
-        appOrder.app = appAddress;
-        requestOrder.app = appAddress;
-        // Set tag
-        appOrder.tag = dealTag;
-        requestOrder.tag = dealTag;
-
-        await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ),
-        )
-            .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-            .withArgs(dealId);
-
-        const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
-        // Check addresses.
-        expect(deal.requester).to.be.equal(requestOrder.requester);
-        expect(deal.appOwner).to.be.equal(appProvider.address);
-    });
-
-    // Note: this will probably get merged in the 'Should match orders' test.
-    it('Should match orders with correct prices', async function () {
         const appAddress = appInstance.address;
         appInstance.owner.returns(appProvider.address);
 
@@ -132,8 +101,10 @@ describe('Match orders boost', function () {
 
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         // Check addresses.
-        expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
-        expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+        expect(deal.requester).to.be.equal(requestOrder.requester);
+        expect(deal.appOwner).to.be.equal(appProvider.address);
+        expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary);
+        expect(deal.callback).to.be.equal(requestOrder.callback);
         // Check prices.
         expect(deal.workerpoolPrice).to.be.equal(
             workerpoolOrder.workerpoolprice,
