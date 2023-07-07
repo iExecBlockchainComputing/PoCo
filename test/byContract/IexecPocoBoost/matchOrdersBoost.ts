@@ -4,7 +4,11 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from '@ethersproject/contracts';
-import { createEmptyRequestOrder, createEmptyAppOrder } from '../../../utils/createOrders';
+import {
+    createEmptyRequestOrder,
+    createEmptyAppOrder,
+    createEmptyWorkerpoolOrder,
+} from '../../../utils/createOrders';
 import {
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
@@ -58,6 +62,9 @@ describe('Match orders boost', function () {
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
+        let workerpoolOrder = createEmptyWorkerpoolOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
