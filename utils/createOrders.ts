@@ -52,9 +52,24 @@ export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderS
     };
 }
 
+export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct {
+    return {
+        dataset: constants.NULL.ADDRESS,
+        datasetprice: 0,
+        volume: 0,
+        tag: constants.NULL.BYTES32,
+        apprestrict: constants.NULL.ADDRESS,
+        workerpoolrestrict: constants.NULL.ADDRESS,
+        requesterrestrict: constants.NULL.ADDRESS,
+        salt: constants.NULL.BYTES32,
+        sign: constants.NULL.BYTES32,
+    };
+}
+
 export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
+    let datasetOrder = createEmptyDatasetOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     // Set app
     appOrder.app = app;
@@ -64,5 +79,5 @@ export function buildCompatibleOrders(app: string, workerpool: string, tag: stri
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
-    return { appOrder, workerpoolOrder, requestOrder };
+    return { appOrder, datasetOrder, workerpoolOrder, requestOrder };
 }
