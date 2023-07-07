@@ -8,11 +8,13 @@ import {
     createEmptyRequestOrder,
     createEmptyAppOrder,
     createEmptyWorkerpoolOrder,
+    createEmptyDatasetOrder,
 } from '../../../utils/createOrders';
 import {
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
+    IexecLibOrders_v5,
 } from '../../../typechain';
 
 async function deployBoostFixture() {
@@ -47,12 +49,20 @@ describe('Match orders boost', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appProvider: SignerWithAddress;
     let appInstance: Contract;
+    let appOrder: IexecLibOrders_v5.AppOrderStruct;
+    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
+    let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
+    let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
 
     beforeEach('set up contract instances and mock app', async () => {
         const fixtures = await loadFixture(deployBoostFixture);
         iexecPocoBoostInstance = fixtures.iexecPocoBoostInstance;
         appProvider = fixtures.appProvider;
         appInstance = await createMockApp();
+        appOrder = createEmptyAppOrder();
+        requestOrder = createEmptyRequestOrder();
+        workerpoolOrder = createEmptyWorkerpoolOrder();
+        datasetOrder = createEmptyDatasetOrder();
     });
 
     it('Should match orders', async function () {
@@ -62,9 +72,6 @@ describe('Match orders boost', function () {
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        let appOrder = createEmptyAppOrder();
-        let requestOrder = createEmptyRequestOrder();
-        let workerpoolOrder = createEmptyWorkerpoolOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
@@ -72,7 +79,14 @@ describe('Match orders boost', function () {
         appOrder.tag = dealTag;
         requestOrder.tag = dealTag;
 
-        await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
 
@@ -98,7 +112,12 @@ describe('Match orders boost', function () {
         requestOrder.trust = 1;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
         ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
     });
 });
