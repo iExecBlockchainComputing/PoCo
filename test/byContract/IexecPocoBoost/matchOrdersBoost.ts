@@ -95,8 +95,52 @@ describe('Match orders boost', function () {
         // Check addresses.
         expect(deal.requester).to.be.equal(requestOrder.requester);
         expect(deal.appOwner).to.be.equal(appProvider.address);
+    });
+
+    // Note: this will probably get merged in the 'Should match orders' test.
+    it('Should match orders with correct prices', async function () {
+        const appAddress = appInstance.address;
+        appInstance.owner.returns(appProvider.address);
+
+        const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
+        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+        const nonZeroAppPrice = 3000;
+        const nonZeroDatasetPrice = 900546000;
+        const nonZeroWorkerpoolPrice = 569872878;
+
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set tag
+        appOrder.tag = dealTag;
+        requestOrder.tag = dealTag;
+        // Set prices
+        appOrder.appprice = nonZeroAppPrice;
+        datasetOrder.datasetprice = nonZeroDatasetPrice;
+        workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        )
+            .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+            .withArgs(dealId);
+
+        const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         // Check addresses.
-        expect(deal.requester).to.be.equal(requestOrder.requester);
+        expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
+        expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+        // Check prices.
+        expect(deal.workerpoolPrice).to.be.equal(
+            workerpoolOrder.workerpoolprice,
+            'Workerpool price mismatch',
+        );
+        expect(deal.appPrice).to.be.equal(appOrder.appprice, 'App price mismatch');
+        expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice, 'Dataset price mismatch');
     });
 
     it('Should fail when trust is not zero', async function () {
