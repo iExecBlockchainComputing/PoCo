@@ -4,7 +4,11 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from '@ethersproject/contracts';
-import { createEmptyRequestOrder, createEmptyAppOrder } from '../../../utils/createOrders';
+import {
+    createEmptyRequestOrder,
+    createEmptyAppOrder,
+    createWorkerpoolOrder,
+} from '../../../utils/createOrders';
 import {
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
@@ -60,6 +64,7 @@ describe('Match orders boost', function () {
 
         let appOrder = createEmptyAppOrder();
         let requestOrder = createEmptyRequestOrder();
+        let workerpoolOrder = createWorkerpoolOrder();
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
@@ -67,7 +72,9 @@ describe('Match orders boost', function () {
         appOrder.tag = dealTag;
         requestOrder.tag = dealTag;
 
-        await expect(iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder))
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+        )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
 
@@ -83,6 +90,8 @@ describe('Match orders boost', function () {
 
         let appOrder = createEmptyAppOrder();
         let requestOrder = createEmptyRequestOrder();
+        let workerpoolOrder = createWorkerpoolOrder();
+
         // Set app address
         appOrder.app = appAddress;
         requestOrder.app = appAddress;
@@ -93,7 +102,32 @@ describe('Match orders boost', function () {
         requestOrder.trust = 1;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(requestOrder, appOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
         ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
+    });
+
+    it('Should fail when categories are different', async function () {
+        const appAddress = appInstance.address;
+        const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+
+        let appOrder = createEmptyAppOrder();
+        let requestOrder = createEmptyRequestOrder();
+        let workerpoolOrder = createWorkerpoolOrder();
+
+        // Set app address
+        appOrder.app = appAddress;
+        requestOrder.app = appAddress;
+        // Set same tags
+        appOrder.tag = dealTag;
+        requestOrder.tag = dealTag;
+        // Set same trust
+        requestOrder.trust = 0;
+        // Set different categories
+        requestOrder.category = 1;
+        workerpoolOrder.category = 2;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+        ).to.be.revertedWith('MatchOrdersBoost: Category mismatch');
     });
 });
