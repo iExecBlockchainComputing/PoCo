@@ -87,6 +87,8 @@ describe('Match orders boost', function () {
         appOrder.appprice = nonZeroAppPrice;
         datasetOrder.datasetprice = nonZeroDatasetPrice;
         workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
+        // Set callback
+        requestOrder.callback = ethers.Wallet.createRandom().address;
 
         await expect(
             iexecPocoBoostInstance.matchOrdersBoost(
@@ -101,10 +103,10 @@ describe('Match orders boost', function () {
 
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         // Check addresses.
-        expect(deal.requester).to.be.equal(requestOrder.requester);
-        expect(deal.appOwner).to.be.equal(appProvider.address);
-        expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary);
-        expect(deal.callback).to.be.equal(requestOrder.callback);
+        expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
+        expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+        expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
+        expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
         // Check prices.
         expect(deal.workerpoolPrice).to.be.equal(
             workerpoolOrder.workerpoolprice,
