@@ -49,7 +49,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.requester = _requestorder.requester;
         // deal.workerpoolOwner = ;
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
-        // deal.appOwner = ;
+        deal.appOwner = Ownable(_apporder.app).owner();
         deal.appPrice = uint96(_apporder.appprice);
         bool hasDataset = false; // TODO
         // deal.datasetOwner = ;
@@ -61,9 +61,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // deal.botSize = ;
         // deal.tag = ;
         deal.callback = _requestorder.callback;
-
-        deal.appOwner = Ownable(_apporder.app).owner();
-        deal.tag = _requestorder.tag; // set random field
         // TODO emit deal params
         emit OrdersMatchedBoost(dealid);
     }

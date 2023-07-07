@@ -92,7 +92,8 @@ describe('Match orders boost', function () {
 
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
         expect(deal.appOwner).to.be.equal(appProvider.address);
-        expect(deal.tag).to.be.equal(dealTag);
+        // Check addresses.
+        expect(deal.requester).to.be.equal(requestOrder.requester);
     });
 
     it('Should fail when trust is not zero', async function () {
