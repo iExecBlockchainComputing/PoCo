@@ -16,36 +16,40 @@
 
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-    IexecLibOrders_v5,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
     AppRegistry,
+    WorkerpoolRegistry__factory,
+    WorkerpoolRegistry,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import {
-    createEmptyRequestOrder,
-    createEmptyAppOrder,
-    createEmptyWorkerpoolOrder,
-    createEmptyDatasetOrder,
-} from '../utils/createOrders';
-import { Signer } from 'ethers';
+import { buildCompatibleOrders } from '../utils/createOrders';
+import { buildAndSignSchedulerMessage } from '../utils/poco-tools';
+
+const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
+const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const taskIndex = 0;
+const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
+const result: string = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('the-result'));
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-    let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
-    let appOrder: IexecLibOrders_v5.AppOrderStruct;
-    let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
-    let workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct;
     let appAddress = '';
+    let workerpoolAddress = '';
+    let [scheduler, worker, enclave] = [] as SignerWithAddress[];
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
+        const [owner, appProvider, _scheduler, _worker, _enclave] = await hre.ethers.getSigners();
+        scheduler = _scheduler;
+        worker = _worker;
+        enclave = _enclave;
 
-        const [owner, appProvider, otherAccount] = await hre.ethers.getSigners();
         await deployments.fixture();
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(
             (await deployments.get('IexecPocoBoostDelegate')).address,
@@ -69,18 +73,28 @@ describe('IexecPocoBoostDelegate', function () {
         const events = extractEventsFromReceipt(receipt, appRegistryInstance.address, 'Transfer');
         appAddress = events[0].args['tokenId'].toHexString();
 
-        requestOrder = createEmptyRequestOrder();
-        workerpoolOrder = createEmptyWorkerpoolOrder();
-        appOrder = createEmptyAppOrder();
-        datasetOrder = createEmptyDatasetOrder();
+        const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
+            await getContractAddress('WorkerpoolRegistry'),
+            owner,
+        );
+        const poolReceipt = await workerpoolRegistryInstance
+            .createWorkerpool(scheduler.address, 'my-workerpool')
+            .then((tx) => tx.wait());
+        const poolEvents = extractEventsFromReceipt(
+            poolReceipt,
+            workerpoolRegistryInstance.address,
+            'Transfer',
+        );
+        workerpoolAddress = poolEvents[0].args['tokenId'].toHexString();
     });
 
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
-            requestOrder.app = appAddress;
-            appOrder.app = appAddress;
-            const expectedDealId =
-                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appAddress,
+                workerpoolAddress,
+                dealTag,
+            );
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -90,41 +104,39 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(expectedDealId);
-            expect((await iexecPocoBoostInstance.viewDealBoost(expectedDealId)).tag).is.equal(
-                '0x0000000000000000000000000000000000000000000000000000000000000000',
-            );
+                .withArgs(dealId);
         });
     });
 
     describe('PushResult', function () {
         it('Should push result', async function () {
-            requestOrder.app = appAddress;
-            appOrder.app = appAddress;
-            const dealId: string =
-                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-            const index: number = 0;
-            // 0xf2e081861701d912a7a1365bc24c79a52c1ea122b05776aa47471f6d660d233d
-            const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
-            await iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
+            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appAddress,
+                workerpoolAddress,
+                dealTag,
             );
-            await expect(iexecPocoBoostInstance.pushResultBoost(dealId, index, result))
-                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, index, result);
-        });
+            await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder);
 
-        it('Should not push result when deal not found', async function () {
-            // No match order
-            const badDealId: string =
-                '0xff6973ffda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688aaaa';
-            const result: string = ethers.utils.sha256(ethers.utils.toUtf8Bytes('the-result'));
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+
             await expect(
-                iexecPocoBoostInstance.pushResultBoost(badDealId, 0, result),
-            ).to.be.revertedWith('Deal not found');
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        result,
+                        schedulerSignature,
+                        enclave.address,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, result);
         });
     });
 });

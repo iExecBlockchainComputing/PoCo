@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: Apache-2.0
-
 /******************************************************************************
  * Copyright 2023 IEXEC BLOCKCHAIN TECH                                       *
  *                                                                            *
@@ -16,26 +14,26 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-pragma solidity ^0.8.0;
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import "../../libs/IexecLibOrders_v5.sol";
+export async function buildAndSignSchedulerMessage(
+    worker: string,
+    taskId: string,
+    enclave: string,
+    scheduler: SignerWithAddress,
+) {
+    const schedulerMessage = buildSchedulerMessage(worker, taskId, enclave);
+    return await signMessage(scheduler, schedulerMessage);
+}
 
-interface IexecPocoBoost {
-    event OrdersMatchedBoost(bytes32 dealid);
-    event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
+function buildSchedulerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
+    return ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'address'],
+        [workerAddress, taskId, enclaveAddress],
+    );
+}
 
-    function matchOrdersBoost(
-        IexecLibOrders_v5.AppOrder calldata appOrder,
-        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
-        IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external;
-
-    function pushResultBoost(
-        bytes32 _dealId,
-        uint _index,
-        bytes32 _result,
-        bytes calldata _authorizationSign,
-        address _enclaveChallenge
-    ) external;
+export async function signMessage(signerAccount: SignerWithAddress, message: string) {
+    return signerAccount.signMessage(ethers.utils.arrayify(message));
 }

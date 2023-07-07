@@ -36,7 +36,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
     };
 }
 
-export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
+export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
     return {
         workerpool: constants.NULL.ADDRESS,
         workerpoolprice: 0,
@@ -52,22 +52,6 @@ export function createWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct
     };
 }
 
-export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
-    return {
-        workerpool: constants.NULL.ADDRESS,
-        workerpoolprice: 0,
-        volume: 0,
-        tag: constants.NULL.BYTES32,
-        category: 0,
-        trust: 0,
-        apprestrict: constants.NULL.ADDRESS,
-        datasetrestrict: constants.NULL.ADDRESS,
-        requesterrestrict: constants.NULL.ADDRESS,
-        salt: constants.NULL.BYTES32,
-        sign: constants.NULL.BYTES32,
-    };
-}
-
 export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct {
     return {
         dataset: constants.NULL.ADDRESS,
@@ -80,4 +64,19 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.BYTES32,
     };
+}
+
+export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
+    let requestOrder = createEmptyRequestOrder();
+    let appOrder = createEmptyAppOrder();
+    let workerpoolOrder = createEmptyWorkerpoolOrder();
+    // Set app
+    appOrder.app = app;
+    requestOrder.app = app;
+    // Set workerpool
+    workerpoolOrder.workerpool = workerpool;
+    // Set tag
+    appOrder.tag = tag;
+    requestOrder.tag = tag;
+    return { appOrder, workerpoolOrder, requestOrder };
 }
