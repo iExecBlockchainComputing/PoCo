@@ -69,6 +69,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
 export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
+    let datasetOrder = createEmptyDatasetOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     // Set app
     appOrder.app = app;
@@ -78,5 +79,5 @@ export function buildCompatibleOrders(app: string, workerpool: string, tag: stri
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
-    return { appOrder, workerpoolOrder, requestOrder };
+    return { appOrder, datasetOrder, workerpoolOrder, requestOrder };
 }

@@ -24,6 +24,8 @@ import {
     AppRegistry,
     WorkerpoolRegistry__factory,
     WorkerpoolRegistry,
+    DatasetRegistry,
+    DatasetRegistry__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -90,7 +92,7 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
-            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 dealTag,
@@ -110,12 +112,17 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('PushResult', function () {
         it('Should push result', async function () {
-            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 dealTag,
             );
-            await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
 
             const schedulerSignature = await buildAndSignSchedulerMessage(
                 worker.address,
