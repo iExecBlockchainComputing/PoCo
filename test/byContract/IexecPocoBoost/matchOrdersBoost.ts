@@ -61,6 +61,7 @@ describe('Match orders boost', function () {
         appInstance = await createMockApp();
         appOrder = createEmptyAppOrder();
         requestOrder = createEmptyRequestOrder();
+        requestOrder.requester = fixtures.requester.address;
         workerpoolOrder = createEmptyWorkerpoolOrder();
         datasetOrder = createEmptyDatasetOrder();
     });
@@ -91,6 +92,8 @@ describe('Match orders boost', function () {
             .withArgs(dealId);
 
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+        // Check addresses.
+        expect(deal.requester).to.be.equal(requestOrder.requester);
         expect(deal.appOwner).to.be.equal(appProvider.address);
         // Check addresses.
         expect(deal.requester).to.be.equal(requestOrder.requester);
