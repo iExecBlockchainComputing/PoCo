@@ -29,6 +29,14 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
+import {
+    Contract,
+    ContractFactory,
+    ContractTransaction,
+    ContractInterface,
+    ContractReceipt,
+} from '@ethersproject/contracts';
+
 import { buildCompatibleOrders } from '../utils/createOrders';
 import { buildAndSignSchedulerMessage } from '../utils/poco-tools';
 
@@ -37,6 +45,21 @@ const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000
 const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const result: string = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('the-result'));
+
+async function createRegistryEntry<T extends Contract>(
+    registryFactory: any,
+    contractName: string,
+    creationFunction: (registryInstance: T) => Promise<ContractTransaction>,
+    owner: SignerWithAddress,
+): Promise<string> {
+    const registryInstance: T = (await registryFactory.connect(
+        await getContractAddress(contractName),
+        owner,
+    )) as T;
+    const receipt = await creationFunction(registryInstance).then((tx) => tx.wait());
+    const events = extractEventsFromReceipt(receipt, registryInstance.address, 'Transfer');
+    return events[0].args['tokenId'].toHexString();
+}
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
@@ -60,57 +83,41 @@ describe('IexecPocoBoostDelegate', function () {
             owner,
         );
 
-        const appRegistryInstance: AppRegistry = AppRegistry__factory.connect(
-            await getContractAddress('AppRegistry'),
-            owner,
-        );
-        const receipt = await appRegistryInstance
-            .createApp(
-                appProvider.address,
-                'my-app',
-                'APP_TYPE_0',
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-            )
-            .then((tx) => tx.wait());
-        const events = extractEventsFromReceipt(receipt, appRegistryInstance.address, 'Transfer');
-        appAddress = events[0].args['tokenId'].toHexString();
-
-        const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
-            await getContractAddress('WorkerpoolRegistry'),
-            owner,
-        );
-        const poolReceipt = await workerpoolRegistryInstance
-            .createWorkerpool(scheduler.address, 'my-workerpool')
-            .then((tx) => tx.wait());
-        const poolEvents = extractEventsFromReceipt(
-            poolReceipt,
-            workerpoolRegistryInstance.address,
-            'Transfer',
-        );
-        workerpoolAddress = poolEvents[0].args['tokenId'].toHexString();
-
-        const datasetRegistryInstance: DatasetRegistry = DatasetRegistry__factory.connect(
-            await getContractAddress('DatasetRegistry'),
+        appAddress = await createRegistryEntry(
+            AppRegistry__factory,
+            'AppRegistry',
+            (instance: AppRegistry) =>
+                instance.createApp(
+                    appProvider.address,
+                    'my-app',
+                    'APP_TYPE_0',
+                    constants.NULL.BYTES32,
+                    constants.NULL.BYTES32,
+                    constants.NULL.BYTES32,
+                ),
             owner,
         );
 
-        const receiptDataset = await datasetRegistryInstance
-            .createDataset(
-                datasetProvider.address,
-                'my-dataset',
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-            )
-            .then((tx) => tx.wait());
-
-        const eventsDataset = extractEventsFromReceipt(
-            receiptDataset,
-            datasetRegistryInstance.address,
-            'Transfer',
+        workerpoolAddress = await createRegistryEntry(
+            WorkerpoolRegistry__factory,
+            'WorkerpoolRegistry',
+            (instance: WorkerpoolRegistry) =>
+                instance.createWorkerpool(scheduler.address, 'my-workerpool'),
+            owner,
         );
-        datasetAddress = eventsDataset[0].args['tokenId'].toHexString();
+
+        datasetAddress = await createRegistryEntry(
+            DatasetRegistry__factory,
+            'DatasetRegistry',
+            (instance: DatasetRegistry) =>
+                instance.createDataset(
+                    datasetProvider.address,
+                    'my-dataset',
+                    constants.NULL.BYTES32,
+                    constants.NULL.BYTES32,
+                ),
+            owner,
+        );
     });
 
     describe('MatchOrders', function () {
