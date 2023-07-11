@@ -95,6 +95,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[_dealId];
         bytes32 taskId = keccak256(abi.encodePacked(_dealId, _index));
+        // TODO: Check enclave challenge if TEE bit set
         // Check scheduler signature
         require(
             _verifySignature(

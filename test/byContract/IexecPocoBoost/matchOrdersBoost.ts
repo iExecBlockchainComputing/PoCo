@@ -193,7 +193,7 @@ describe('Match orders boost', function () {
     });
 
     //TODO: Rename current file to IexecPocoBoost.test.ts
-    it('Should push result', async function () {
+    it('Should push result (TEE)', async function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
 
@@ -209,9 +209,6 @@ describe('Match orders boost', function () {
             requestOrder,
         );
 
-        expect(
-            ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]),
-        ).to.be.equal(taskId);
         const schedulerSignature = await buildAndSignSchedulerMessage(
             worker.address,
             taskId,
@@ -234,6 +231,47 @@ describe('Match orders boost', function () {
                     schedulerSignature,
                     enclave.address,
                     enclaveSignature,
+                ),
+        )
+            .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+            .withArgs(dealId, taskIndex, results);
+    });
+
+    it('Should push result (Standard)', async function () {
+        appInstance.owner.returns(appProvider.address);
+        workerpoolInstance.owner.returns(scheduler.address);
+        const tag = constants.NULL.BYTES32;
+        const dealId = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+        const taskId = getTaskId(dealId, taskIndex);
+
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            appInstance.address,
+            workerpoolInstance.address,
+            tag,
+        );
+        await iexecPocoBoostInstance.matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+        );
+        const emptyEnclaveAddress = constants.NULL.ADDRESS;
+        const schedulerSignature = await buildAndSignSchedulerMessage(
+            worker.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await expect(
+            iexecPocoBoostInstance
+                .connect(worker)
+                .pushResultBoost(
+                    dealId,
+                    taskIndex,
+                    results,
+                    schedulerSignature,
+                    emptyEnclaveAddress,
+                    constants.NULL.SIGNATURE,
                 ),
         )
             .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
@@ -308,3 +346,7 @@ describe('Match orders boost', function () {
         ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
     });
 });
+
+function getTaskId(dealId: string, taskIndex: number): any {
+    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
+}
