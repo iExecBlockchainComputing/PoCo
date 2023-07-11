@@ -31,8 +31,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     using ECDSA for bytes32;
 
     /// @notice This boost match orders is only compatible with trust = 0.
-    /// @param _requestorder The order signed by the requester
     /// @param _apporder The order signed by the application developer
+    /// @param _datasetorder The order signed by the dataset provider
+    /// @param _workerpoolorder The order signed by the workerpool manager
+    /// @param _requestorder The order signed by the requester
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata _apporder,
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
@@ -60,8 +62,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
-        deal.appOwner = Ownable(_apporder.app).owner();
+        deal.requester = _requestorder.requester;
         deal.workerpoolOwner = Ownable(_workerpoolorder.workerpool).owner();
+        deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
+        deal.appOwner = Ownable(_apporder.app).owner();
+        deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
+        bool hasDataset = true; // TODO
+        // deal.datasetOwner = ;
+        deal.datasetPrice = uint96(hasDataset ? _datasetorder.datasetprice : 0); // TODO check overflow
+        // deal.workerReward = ;
+        deal.beneficiary = _requestorder.beneficiary;
+        // deal.deadline = ;
+        // deal.botFirst = ;
+        // deal.botSize = ;
+        // deal.tag = ;
+        deal.callback = _requestorder.callback;
+        // TODO emit deal params
         deal.tag = _requestorder.tag; // set random field
         emit OrdersMatchedBoost(dealid);
     }

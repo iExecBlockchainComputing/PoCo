@@ -3,11 +3,18 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import {
+    createEmptyRequestOrder,
+    createEmptyAppOrder,
+    createEmptyWorkerpoolOrder,
+    createEmptyDatasetOrder,
+} from '../../../utils/createOrders';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
+    IexecLibOrders_v5,
     Workerpool__factory,
     Dataset__factory,
 } from '../../../typechain';
@@ -68,17 +75,20 @@ describe('Match orders boost', function () {
     let appInstance: Contract;
     let workerpoolInstance: Contract;
     let datasetInstance: Contract;
-    let [appProvider, scheduler, datasetProvider, worker, enclave, anyone] =
+    let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
 
     beforeEach('set up contract instances and mock app', async () => {
         const fixtures = await loadFixture(deployBoostFixture);
         iexecPocoBoostInstance = fixtures.iexecPocoBoostInstance;
         appProvider = fixtures.appProvider;
+        datasetProvider = fixtures.datasetProvider;
         scheduler = fixtures.scheduler;
         datasetProvider = fixtures.datasetProvider;
         worker = fixtures.worker;
         enclave = fixtures.enclave;
+        requester = fixtures.requester;
+        beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
         appInstance = await createMock<App__factory>('App');
         workerpoolInstance = await createMock<Workerpool__factory>('Workerpool');
@@ -92,13 +102,31 @@ describe('Match orders boost', function () {
 
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+        const nonZeroAppPrice = 3000;
+        const nonZeroDatasetPrice = 900546000;
+        const nonZeroWorkerpoolPrice = 569872878;
 
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
             dealTag,
         );
+
+        requestOrder.requester = requester.address;
+        requestOrder.beneficiary = beneficiary.address;
+        // Set prices
+        appOrder.appprice = nonZeroAppPrice;
+        requestOrder.appmaxprice = nonZeroAppPrice;
+
+        datasetOrder.datasetprice = nonZeroDatasetPrice;
+        requestOrder.datasetmaxprice = nonZeroDatasetPrice;
+
+        workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
+        requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+
+        // Set callback
+        requestOrder.callback = ethers.Wallet.createRandom().address;
 
         await expect(
             iexecPocoBoostInstance.matchOrdersBoost(
@@ -111,15 +139,26 @@ describe('Match orders boost', function () {
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
-        expect(deal.appOwner).to.be.equal(appProvider.address);
-        expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
+        // Check addresses.
+        expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
+        expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+        expect(deal.workerpoolOwner).to.be.equal(scheduler.address, 'Workerpool owner mismatch');
+        expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
+        expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
+        // Check prices.
+        expect(deal.workerpoolPrice).to.be.equal(
+            workerpoolOrder.workerpoolprice,
+            'Workerpool price mismatch',
+        );
+        expect(deal.appPrice).to.be.equal(appOrder.appprice, 'App price mismatch');
+        expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice, 'Dataset price mismatch');
         expect(deal.tag).to.be.equal(dealTag);
     });
 
     it('Should fail when trust is not zero', async function () {
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
@@ -141,7 +180,7 @@ describe('Match orders boost', function () {
     it('Should fail when categories are different', async function () {
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
@@ -232,7 +271,7 @@ describe('Match orders boost', function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
 
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
@@ -267,7 +306,7 @@ describe('Match orders boost', function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
 
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,

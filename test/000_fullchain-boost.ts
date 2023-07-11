@@ -115,7 +115,7 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
-            const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 datasetAddress,
@@ -136,7 +136,7 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('PushResult', function () {
         it('Should push result', async function () {
-            const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 datasetAddress,
