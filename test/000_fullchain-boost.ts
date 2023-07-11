@@ -42,7 +42,7 @@ const result: string = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('the-resu
 
 async function createRegistryEntry<T extends Contract>(
     registryFactory: any,
-    contractName: string,
+    registryContractName: string,
     creationFunction: (registryInstance: T) => Promise<ContractTransaction>,
     owner: SignerWithAddress,
 ): Promise<string> {
