@@ -66,7 +66,12 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
+export function buildCompatibleOrders(
+    app: string,
+    workerpool: string,
+    dataset: string,
+    tag: string,
+) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
@@ -76,6 +81,8 @@ export function buildCompatibleOrders(app: string, workerpool: string, tag: stri
     requestOrder.app = app;
     // Set workerpool
     workerpoolOrder.workerpool = workerpool;
+    // Set dataset
+    datasetOrder.dataset = dataset;
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
