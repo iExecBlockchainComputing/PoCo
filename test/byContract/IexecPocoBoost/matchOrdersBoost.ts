@@ -87,14 +87,19 @@ describe('Match orders boost', function () {
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             dealTag,
         );
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
         )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
             .withArgs(dealId);
@@ -107,7 +112,7 @@ describe('Match orders boost', function () {
     it('Should fail when trust is not zero', async function () {
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             dealTag,
@@ -116,7 +121,12 @@ describe('Match orders boost', function () {
         requestOrder.trust = 1;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
         ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
     });
 
@@ -124,7 +134,7 @@ describe('Match orders boost', function () {
         const appAddress = appInstance.address;
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-        const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             dealTag,
@@ -134,7 +144,12 @@ describe('Match orders boost', function () {
         workerpoolOrder.category = 2;
 
         await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
         ).to.be.revertedWith('MatchOrdersBoost: Category mismatch');
     });
 
@@ -143,12 +158,17 @@ describe('Match orders boost', function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
 
-        const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             dealTag,
         );
-        await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder);
+        await iexecPocoBoostInstance.matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+        );
 
         expect(
             ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]),
@@ -172,12 +192,17 @@ describe('Match orders boost', function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
 
-        const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             dealTag,
         );
-        await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder);
+        await iexecPocoBoostInstance.matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+        );
 
         const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
         await expect(

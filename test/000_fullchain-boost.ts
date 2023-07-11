@@ -90,13 +90,18 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
-            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 dealTag,
             );
             await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder),
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
             )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(dealId);
@@ -105,12 +110,17 @@ describe('IexecPocoBoostDelegate', function () {
 
     describe('PushResult', function () {
         it('Should push result', async function () {
-            const { appOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
                 dealTag,
             );
-            await iexecPocoBoostInstance.matchOrdersBoost(appOrder, workerpoolOrder, requestOrder);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
 
             const schedulerSignature = await buildAndSignSchedulerMessage(
                 worker.address,

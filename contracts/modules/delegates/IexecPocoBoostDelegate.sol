@@ -35,6 +35,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     /// @param _apporder The order signed by the application developer
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external {
@@ -42,6 +43,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(
             _requestorder.category == _workerpoolorder.category,
             "MatchOrdersBoost: Category mismatch"
+        );
+
+        require(
+            _requestorder.appmaxprice >= _apporder.appprice,
+            "MatchOrdersBoost: App max price less than app price"
+        );
+        require(
+            _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
+            "MatchOrdersBoost: Dataset max price less than dataset price"
+        );
+        require(
+            _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
+            "MatchOrdersBoost: Workerpool max price less than workerpool price"
         );
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
