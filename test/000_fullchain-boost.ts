@@ -30,7 +30,7 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import { Contract, ContractTransaction } from '@ethersproject/contracts';
+import { ContractTransaction } from '@ethersproject/contracts';
 
 import { buildCompatibleOrders } from '../utils/createOrders';
 import { buildAndSignSchedulerMessage } from '../utils/poco-tools';
