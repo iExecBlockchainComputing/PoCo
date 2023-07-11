@@ -48,7 +48,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         require(
             _requestorder.appmaxprice >= _apporder.appprice,
-            "PocoBoost: Insufficient app max price"
+            "PocoBoost: App price mismatch"
         );
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
