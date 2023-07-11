@@ -29,13 +29,7 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import {
-    Contract,
-    ContractFactory,
-    ContractTransaction,
-    ContractInterface,
-    ContractReceipt,
-} from '@ethersproject/contracts';
+import { Contract, ContractTransaction } from '@ethersproject/contracts';
 
 import { buildCompatibleOrders } from '../utils/createOrders';
 import { buildAndSignSchedulerMessage } from '../utils/poco-tools';
