@@ -18,6 +18,7 @@ import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
+    Registry,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
@@ -47,7 +48,7 @@ async function createRegistryEntry<T extends Registry>(
     owner: SignerWithAddress,
 ): Promise<string> {
     const registryInstance: T = (await registryFactory.connect(
-        await getContractAddress(contractName),
+        await getContractAddress(registryContractName),
         owner,
     )) as T;
     const receipt = await creationFunction(registryInstance).then((tx) => tx.wait());
