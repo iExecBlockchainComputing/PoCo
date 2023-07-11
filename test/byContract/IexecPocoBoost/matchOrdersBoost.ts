@@ -173,7 +173,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
+        ).to.be.revertedWith('PocoBoost: Non-zero trust level');
     });
 
     it('Should fail when categories are different', async function () {
@@ -196,7 +196,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Category mismatch');
+        ).to.be.revertedWith('PocoBoost: Category mismatch');
     });
 
     it('Should fail when app max price is less than app price', async function () {
@@ -216,7 +216,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: App max price less than app price');
+        ).to.be.revertedWith('PocoBoost: Insufficient app max price');
     });
 
     it('Should fail when dataset max price is less than dataset price', async function () {
@@ -238,7 +238,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Dataset max price less than dataset price');
+        ).to.be.revertedWith('PocoBoost: Insufficient dataset max price');
     });
 
     it('Should fail when workerpool max price is less than workerpool price', async function () {
@@ -260,7 +260,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Workerpool max price less than workerpool price');
+        ).to.be.revertedWith('PocoBoost: Insufficient workerpool max price');
     });
 
     // Push Result tests
@@ -323,6 +323,6 @@ describe('Match orders boost', function () {
             iexecPocoBoostInstance
                 .connect(worker)
                 .pushResultBoost(dealId, taskIndex, result, anyoneSignature, enclave.address),
-        ).to.be.revertedWith('PushResultBoost: Scheduler signature is not valid');
+        ).to.be.revertedWith('PocoBoost: Scheduler signature is not valid');
     });
 });

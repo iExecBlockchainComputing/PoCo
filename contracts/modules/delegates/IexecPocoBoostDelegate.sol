@@ -41,22 +41,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external {
-        require(_requestorder.trust == 0, "BoostMatch: Non-zero trust level");
+        require(_requestorder.trust == 0, "PocoBoost: Non-zero trust level");
         require(
             _requestorder.category == _workerpoolorder.category,
-            "BoostMatch: Category mismatch"
+            "PocoBoost: Category mismatch"
         );
         require(
             _requestorder.appmaxprice >= _apporder.appprice,
-            "BoostMatch: Insufficient app max price"
+            "PocoBoost: Insufficient app max price"
         );
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "BoostMatch: Insufficient dataset max price"
+            "PocoBoost: Insufficient dataset max price"
         );
         require(
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
-            "BoostMatch: Insufficient workerpool max price"
+            "PocoBoost: Insufficient workerpool max price"
         );
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
@@ -112,7 +112,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 abi.encodePacked(msg.sender, taskId, _enclaveChallenge),
                 _authorizationSign
             ),
-            "PushResultBoost: Scheduler signature is not valid"
+            "PocoBoost: Scheduler signature is not valid"
         );
         emit ResultPushedBoost(_dealId, _index, _result);
     }
