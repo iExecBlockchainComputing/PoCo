@@ -41,23 +41,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external {
-        require(_requestorder.trust == 0, "MatchOrdersBoost: Trust level is not zero");
+        require(_requestorder.trust == 0, "BoostMatch: Non-zero trust level");
         require(
             _requestorder.category == _workerpoolorder.category,
-            "MatchOrdersBoost: Category mismatch"
+            "BoostMatch: Category mismatch"
         );
-
         require(
             _requestorder.appmaxprice >= _apporder.appprice,
-            "PocoBoost: Something shorter if possible"
+            "BoostMatch: Insufficient app max price"
         );
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "MatchOrdersBoost: Dataset max price less than dataset price"
+            "BoostMatch: Insufficient dataset max price"
         );
         require(
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
-            "MatchOrdersBoost: Workerpool max price less than workerpool price"
+            "BoostMatch: Insufficient workerpool max price"
         );
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
