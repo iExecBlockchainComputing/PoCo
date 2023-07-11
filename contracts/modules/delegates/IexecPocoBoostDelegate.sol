@@ -46,17 +46,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category == _workerpoolorder.category,
             "PocoBoost: Category mismatch"
         );
-        require(
-            _requestorder.appmaxprice >= _apporder.appprice,
-            "PocoBoost: App price mismatch"
-        );
+        require(_requestorder.appmaxprice >= _apporder.appprice, "PocoBoost: Overpriced app");
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "PocoBoost: Insufficient dataset max price"
+            "PocoBoost: Overpriced dataset"
         );
         require(
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
-            "PocoBoost: Insufficient workerpool max price"
+            "PocoBoost: Overpriced workerpool"
         );
 
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id

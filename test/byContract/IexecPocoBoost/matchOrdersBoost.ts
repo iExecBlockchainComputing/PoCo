@@ -216,7 +216,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('PocoBoost: Insufficient app max price');
+        ).to.be.revertedWith('PocoBoost: Overpriced app');
     });
 
     it('Should fail when dataset max price is less than dataset price', async function () {
@@ -238,7 +238,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('PocoBoost: Insufficient dataset max price');
+        ).to.be.revertedWith('PocoBoost: Overpriced dataset');
     });
 
     it('Should fail when workerpool max price is less than workerpool price', async function () {
@@ -260,7 +260,7 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('PocoBoost: Insufficient workerpool max price');
+        ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
     });
 
     // Push Result tests
