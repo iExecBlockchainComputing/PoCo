@@ -34,6 +34,29 @@ function buildSchedulerMessage(workerAddress: string, taskId: string, enclaveAdd
     );
 }
 
+export function buildUtf8ResultAndDigest(resultPayload: string) {
+    const results = ethers.utils.toUtf8Bytes(resultPayload);
+    const resultDigest = ethers.utils.keccak256(results);
+    return { results, resultDigest };
+}
+
+export async function buildAndSignEnclaveMessage(
+    workerAddress: string,
+    taskId: string,
+    resultDigest: string,
+    enclave: SignerWithAddress,
+) {
+    const enclaveMessage = buildEnclaveMessage(workerAddress, taskId, resultDigest);
+    return await signMessage(enclave, enclaveMessage);
+}
+
+function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest: string) {
+    return ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'bytes32'],
+        [workerAddress, taskId, resultDigest],
+    );
+}
+
 export async function signMessage(signerAccount: SignerWithAddress, message: string) {
     return signerAccount.signMessage(ethers.utils.arrayify(message));
 }

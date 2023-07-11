@@ -83,13 +83,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
      * @param _authorizationSign authorization signed by the scheduler authorizing
      * the worker to push a result
      * @param _enclaveChallenge enclave address which can produce enclave signature
+     * @param _enclaveSign signature generated from the enclave
      */
     function pushResultBoost(
         bytes32 _dealId,
         uint _index,
-        bytes32 _result,
+        bytes calldata _results,
         bytes calldata _authorizationSign,
-        address _enclaveChallenge
+        address _enclaveChallenge,
+        bytes calldata _enclaveSign
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[_dealId];
         bytes32 taskId = keccak256(abi.encodePacked(_dealId, _index));
@@ -102,7 +104,18 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             ),
             "PushResultBoost: Scheduler signature is not valid"
         );
-        emit ResultPushedBoost(_dealId, _index, _result);
+        bytes32 resultDigest = keccak256(abi.encodePacked(_results));
+        // Check enclave signature
+        require(
+            _enclaveChallenge == address(0) ||
+                _verifySignature(
+                    _enclaveChallenge,
+                    abi.encodePacked(msg.sender, taskId, resultDigest),
+                    _enclaveSign
+                ),
+            "PocoBoost: Invalid enclave signature"
+        );
+        emit ResultPushedBoost(_dealId, _index, _results);
     }
 
     /**
