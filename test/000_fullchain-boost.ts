@@ -40,7 +40,7 @@ const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const result: string = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('the-result'));
 
-async function createRegistryEntry<T extends Contract>(
+async function createRegistryEntry<T extends Registry>(
     registryFactory: any,
     registryContractName: string,
     creationFunction: (registryInstance: T) => Promise<ContractTransaction>,
