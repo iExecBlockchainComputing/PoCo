@@ -49,7 +49,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         require(
             _requestorder.appmaxprice >= _apporder.appprice,
-            "MatchOrdersBoost: App max price less than app price"
+            "PocoBoost: Something shorter if possible"
         );
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
