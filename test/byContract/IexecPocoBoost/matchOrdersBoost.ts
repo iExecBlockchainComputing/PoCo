@@ -84,7 +84,6 @@ describe('Match orders boost', function () {
         appProvider = fixtures.appProvider;
         datasetProvider = fixtures.datasetProvider;
         scheduler = fixtures.scheduler;
-        datasetProvider = fixtures.datasetProvider;
         worker = fixtures.worker;
         enclave = fixtures.enclave;
         requester = fixtures.requester;
@@ -98,7 +97,7 @@ describe('Match orders boost', function () {
     it('Should match orders', async function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
-        datasetInstance.owner.returns(scheduler.address);
+        datasetInstance.owner.returns(datasetProvider.address);
 
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -201,7 +200,7 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when app max price is less than app price', async function () {
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
@@ -221,7 +220,7 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when dataset max price is less than dataset price', async function () {
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
@@ -243,7 +242,7 @@ describe('Match orders boost', function () {
     });
 
     it('Should fail when workerpool max price is less than workerpool price', async function () {
-        const { appOrder, workerpoolOrder, requestOrder, datasetOrder } = buildCompatibleOrders(
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
             datasetInstance.address,
