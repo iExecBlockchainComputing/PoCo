@@ -18,6 +18,7 @@ import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
+    Registry,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
@@ -29,6 +30,8 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
+import { ContractReceipt } from '@ethersproject/contracts';
+
 import { buildCompatibleOrders } from '../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
@@ -42,16 +45,26 @@ const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
+async function extractRegistryEntryAddress(
+    receipt: ContractReceipt,
+    registryInstanceAddress: string,
+): Promise<string> {
+    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
+    return events[0].args['tokenId'].toHexString();
+}
+
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appAddress = '';
     let workerpoolAddress = '';
+    let datasetAddress = '';
     let [scheduler, worker, enclave] = [] as SignerWithAddress[];
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        const [owner, appProvider, _scheduler, _worker, _enclave] = await hre.ethers.getSigners();
+        const [owner, appProvider, datasetProvider, _scheduler, _worker, _enclave] =
+            await hre.ethers.getSigners();
         scheduler = _scheduler;
         worker = _worker;
         enclave = _enclave;
@@ -66,7 +79,7 @@ describe('IexecPocoBoostDelegate', function () {
             await getContractAddress('AppRegistry'),
             owner,
         );
-        const receipt = await appRegistryInstance
+        const appReceipt = await appRegistryInstance
             .createApp(
                 appProvider.address,
                 'my-app',
@@ -76,22 +89,36 @@ describe('IexecPocoBoostDelegate', function () {
                 constants.NULL.BYTES32,
             )
             .then((tx) => tx.wait());
-        const events = extractEventsFromReceipt(receipt, appRegistryInstance.address, 'Transfer');
-        appAddress = events[0].args['tokenId'].toHexString();
+        appAddress = await extractRegistryEntryAddress(appReceipt, appRegistryInstance.address);
 
         const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await getContractAddress('WorkerpoolRegistry'),
             owner,
         );
-        const poolReceipt = await workerpoolRegistryInstance
+        const workerpoolReceipt = await workerpoolRegistryInstance
             .createWorkerpool(scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
-        const poolEvents = extractEventsFromReceipt(
-            poolReceipt,
+        workerpoolAddress = await extractRegistryEntryAddress(
+            workerpoolReceipt,
             workerpoolRegistryInstance.address,
-            'Transfer',
         );
-        workerpoolAddress = poolEvents[0].args['tokenId'].toHexString();
+
+        const datasetRegistryInstance: DatasetRegistry = DatasetRegistry__factory.connect(
+            await getContractAddress('DatasetRegistry'),
+            owner,
+        );
+        const datasetReceipt = await datasetRegistryInstance
+            .createDataset(
+                datasetProvider.address,
+                'my-dataset',
+                constants.NULL.BYTES32,
+                constants.NULL.BYTES32,
+            )
+            .then((tx) => tx.wait());
+        datasetAddress = await extractRegistryEntryAddress(
+            datasetReceipt,
+            datasetRegistryInstance.address,
+        );
     });
 
     describe('MatchOrders', function () {
@@ -99,6 +126,7 @@ describe('IexecPocoBoostDelegate', function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
+                datasetAddress,
                 dealTag,
             );
             await expect(
@@ -119,6 +147,7 @@ describe('IexecPocoBoostDelegate', function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
+                datasetAddress,
                 dealTag,
             );
             await iexecPocoBoostInstance.matchOrdersBoost(

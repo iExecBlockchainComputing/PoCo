@@ -72,6 +72,7 @@ describe('Match orders boost', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appInstance: Contract;
     let workerpoolInstance: Contract;
+    let datasetInstance: Contract;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
 
@@ -88,11 +89,13 @@ describe('Match orders boost', function () {
         anyone = fixtures.anyone;
         appInstance = await createMock<App__factory>('App');
         workerpoolInstance = await createMock<Workerpool__factory>('Workerpool');
+        datasetInstance = await createMock<Dataset__factory>('Dataset');
     });
 
     it('Should match orders', async function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
+        datasetInstance.owner.returns(datasetProvider.address);
 
         const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -103,6 +106,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
 
@@ -110,8 +114,14 @@ describe('Match orders boost', function () {
         requestOrder.beneficiary = beneficiary.address;
         // Set prices
         appOrder.appprice = nonZeroAppPrice;
+        requestOrder.appmaxprice = nonZeroAppPrice;
+
         datasetOrder.datasetprice = nonZeroDatasetPrice;
+        requestOrder.datasetmaxprice = nonZeroDatasetPrice;
+
         workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
+        requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+
         // Set callback
         requestOrder.callback = ethers.Wallet.createRandom().address;
 
@@ -148,6 +158,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
         // Set non-zero trust
@@ -160,16 +171,16 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Trust level is not zero');
+        ).to.be.revertedWith('PocoBoost: Non-zero trust level');
     });
 
     it('Should fail when categories are different', async function () {
-        const appAddress = appInstance.address;
         const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
         // Set different categories
@@ -183,8 +194,74 @@ describe('Match orders boost', function () {
                 workerpoolOrder,
                 requestOrder,
             ),
-        ).to.be.revertedWith('MatchOrdersBoost: Category mismatch');
+        ).to.be.revertedWith('PocoBoost: Category mismatch');
     });
+
+    it('Should fail when app max price is less than app price', async function () {
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            appInstance.address,
+            workerpoolInstance.address,
+            datasetInstance.address,
+            dealTag,
+        );
+        appOrder.appprice = 200;
+        requestOrder.appmaxprice = 100;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith('PocoBoost: Overpriced app');
+    });
+
+    it('Should fail when dataset max price is less than dataset price', async function () {
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            appInstance.address,
+            workerpoolInstance.address,
+            datasetInstance.address,
+            dealTag,
+        );
+
+        // Set dataset price higher than dataset max price
+        datasetOrder.datasetprice = 300;
+        requestOrder.datasetmaxprice = 200;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith('PocoBoost: Overpriced dataset');
+    });
+
+    it('Should fail when workerpool max price is less than workerpool price', async function () {
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            appInstance.address,
+            workerpoolInstance.address,
+            datasetInstance.address,
+            dealTag,
+        );
+
+        // Set workerpool price higher than workerpool max price
+        workerpoolOrder.workerpoolprice = 400;
+        requestOrder.workerpoolmaxprice = 300;
+
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
+    });
+
+    // Push Result tests
 
     //TODO: Rename current file to IexecPocoBoost.test.ts
     it('Should push result (TEE)', async function () {
@@ -193,6 +270,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
         await iexecPocoBoostInstance.matchOrdersBoost(
@@ -239,6 +317,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             tag,
         );
         await iexecPocoBoostInstance.matchOrdersBoost(
@@ -277,6 +356,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
         await iexecPocoBoostInstance.matchOrdersBoost(
@@ -298,7 +378,7 @@ describe('Match orders boost', function () {
                     enclave.address,
                     constants.NULL.SIGNATURE,
                 ),
-        ).to.be.revertedWith('PocoBoost:  Invalid scheduler signature');
+        ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
     });
 
     it('Should not push result with invalid enclave signature', async function () {
@@ -307,6 +387,7 @@ describe('Match orders boost', function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
             appInstance.address,
             workerpoolInstance.address,
+            datasetInstance.address,
             dealTag,
         );
         await iexecPocoBoostInstance.matchOrdersBoost(
