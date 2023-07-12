@@ -62,20 +62,27 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
         workerpoolrestrict: constants.NULL.ADDRESS,
         requesterrestrict: constants.NULL.ADDRESS,
         salt: constants.NULL.BYTES32,
-        sign: constants.NULL.BYTES32,
+        sign: constants.NULL.SIGNATURE,
     };
 }
 
-export function buildCompatibleOrders(app: string, workerpool: string, tag: string) {
+export function buildCompatibleOrders(
+    app: string,
+    workerpool: string,
+    dataset: string,
+    tag: string,
+) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
-    let datasetOrder = createEmptyDatasetOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
+    let datasetOrder = createEmptyDatasetOrder();
     // Set app
     appOrder.app = app;
     requestOrder.app = app;
     // Set workerpool
     workerpoolOrder.workerpool = workerpool;
+    // Set dataset
+    datasetOrder.dataset = dataset;
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
