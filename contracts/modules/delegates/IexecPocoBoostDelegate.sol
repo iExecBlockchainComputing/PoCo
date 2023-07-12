@@ -77,7 +77,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * @notice Accept a result for a task computed by a worker during Boost workflow.
+     * @notice Accept results of a task computed by a worker during Boost workflow.
      * @param dealId id of the target deal
      * @param index index of the target task of the deal
      * @param results results of the task computed by the worker
