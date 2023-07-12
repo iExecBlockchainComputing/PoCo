@@ -75,7 +75,7 @@ describe('IexecPocoBoostDelegate', function () {
             await getContractAddress('AppRegistry'),
             owner,
         );
-        const receipt = await appRegistryInstance
+        const appReceipt = await appRegistryInstance
             .createApp(
                 appProvider.address,
                 'my-app',
@@ -85,17 +85,17 @@ describe('IexecPocoBoostDelegate', function () {
                 constants.NULL.BYTES32,
             )
             .then((tx) => tx.wait());
-        appAddress = await extractRegistryEntryAddress(receipt, appRegistryInstance.address);
+        appAddress = await extractRegistryEntryAddress(appReceipt, appRegistryInstance.address);
 
         const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await getContractAddress('WorkerpoolRegistry'),
             owner,
         );
-        const receiptWP = await workerpoolRegistryInstance
+        const workerpoolReceipt = await workerpoolRegistryInstance
             .createWorkerpool(scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
         workerpoolAddress = await extractRegistryEntryAddress(
-            receiptWP,
+            workerpoolReceipt,
             workerpoolRegistryInstance.address,
         );
 
@@ -103,7 +103,7 @@ describe('IexecPocoBoostDelegate', function () {
             await getContractAddress('DatasetRegistry'),
             owner,
         );
-        const receiptDataset = await datasetRegistryInstance
+        const datasetReceipt = await datasetRegistryInstance
             .createDataset(
                 datasetProvider.address,
                 'my-dataset',
@@ -112,7 +112,7 @@ describe('IexecPocoBoostDelegate', function () {
             )
             .then((tx) => tx.wait());
         datasetAddress = await extractRegistryEntryAddress(
-            receiptDataset,
+            datasetReceipt,
             datasetRegistryInstance.address,
         );
     });
