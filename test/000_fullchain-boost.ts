@@ -33,13 +33,17 @@ import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
 import { buildCompatibleOrders } from '../utils/createOrders';
-import { buildAndSignSchedulerMessage } from '../utils/poco-tools';
+import {
+    buildAndSignSchedulerMessage,
+    buildUtf8ResultAndDigest,
+    buildAndSignEnclaveMessage,
+} from '../utils/poco-tools';
 
 const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
-const result: string = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('the-result'));
+const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 async function extractRegistryEntryAddress(
     receipt: ContractReceipt,
@@ -159,20 +163,26 @@ describe('IexecPocoBoostDelegate', function () {
                 enclave.address,
                 scheduler,
             );
-
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
                         dealId,
                         taskIndex,
-                        result,
+                        results,
                         schedulerSignature,
                         enclave.address,
+                        enclaveSignature,
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, taskIndex, result);
+                .withArgs(dealId, taskIndex, results);
         });
     });
 });

@@ -22,7 +22,7 @@ import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
     event OrdersMatchedBoost(bytes32 dealid);
-    event ResultPushedBoost(bytes32 dealId, uint index, bytes32 result);
+    event ResultPushedBoost(bytes32 dealId, uint index, bytes results);
 
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -32,10 +32,11 @@ interface IexecPocoBoost {
     ) external;
 
     function pushResultBoost(
-        bytes32 _dealId,
-        uint _index,
-        bytes32 _result,
-        bytes calldata _authorizationSign,
-        address _enclaveChallenge
+        bytes32 dealId,
+        uint index,
+        bytes calldata results,
+        bytes calldata authorizationSign,
+        address enclaveChallenge,
+        bytes calldata enclaveSign
     ) external;
 }

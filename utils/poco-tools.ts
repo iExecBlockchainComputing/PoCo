@@ -17,6 +17,10 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
+export function getTaskId(dealId: string, taskIndex: number): any {
+    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
+}
+
 export async function buildAndSignSchedulerMessage(
     worker: string,
     taskId: string,
@@ -31,6 +35,29 @@ function buildSchedulerMessage(workerAddress: string, taskId: string, enclaveAdd
     return ethers.utils.solidityKeccak256(
         ['address', 'bytes32', 'address'],
         [workerAddress, taskId, enclaveAddress],
+    );
+}
+
+export function buildUtf8ResultAndDigest(resultPayload: string) {
+    const results = ethers.utils.toUtf8Bytes(resultPayload);
+    const resultDigest = ethers.utils.keccak256(results);
+    return { results, resultDigest };
+}
+
+export async function buildAndSignEnclaveMessage(
+    workerAddress: string,
+    taskId: string,
+    resultDigest: string,
+    enclave: SignerWithAddress,
+) {
+    const enclaveMessage = buildEnclaveMessage(workerAddress, taskId, resultDigest);
+    return await signMessage(enclave, enclaveMessage);
+}
+
+function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest: string) {
+    return ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'bytes32'],
+        [workerAddress, taskId, resultDigest],
     );
 }
 

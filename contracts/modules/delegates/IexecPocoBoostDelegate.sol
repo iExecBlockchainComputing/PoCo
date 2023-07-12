@@ -86,32 +86,47 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * @notice Accept a result for a task computed by a worker during Boost workflow.
-     * @param _dealId id of the target deal
-     * @param _index index of the target task of the deal
-     * @param _authorizationSign authorization signed by the scheduler authorizing
+     * @notice Accept results of a task computed by a worker during Boost workflow.
+     * @param dealId id of the target deal
+     * @param index index of the target task of the deal
+     * @param results results of the task computed by the worker
+     * @param authorizationSign authorization signed by the scheduler authorizing
      * the worker to push a result
-     * @param _enclaveChallenge enclave address which can produce enclave signature
+     * @param enclaveChallenge enclave address which can produce enclave signature
+     * @param enclaveSign signature generated from the enclave
      */
     function pushResultBoost(
-        bytes32 _dealId,
-        uint _index,
-        bytes32 _result,
-        bytes calldata _authorizationSign,
-        address _enclaveChallenge
+        bytes32 dealId,
+        uint index,
+        bytes calldata results,
+        bytes calldata authorizationSign,
+        address enclaveChallenge,
+        bytes calldata enclaveSign
     ) external {
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[_dealId];
-        bytes32 taskId = keccak256(abi.encodePacked(_dealId, _index));
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
+        // TODO: Check enclave challenge if TEE bit set
         // Check scheduler signature
         require(
             _verifySignature(
                 deal.workerpoolOwner,
-                abi.encodePacked(msg.sender, taskId, _enclaveChallenge),
-                _authorizationSign
+                abi.encodePacked(msg.sender, taskId, enclaveChallenge),
+                authorizationSign
             ),
-            "PocoBoost: Scheduler signature is not valid"
+            "PocoBoost: Invalid scheduler signature"
         );
-        emit ResultPushedBoost(_dealId, _index, _result);
+        bytes32 resultDigest = keccak256(abi.encodePacked(results));
+        // Check enclave signature
+        require(
+            enclaveChallenge == address(0) ||
+                _verifySignature(
+                    enclaveChallenge,
+                    abi.encodePacked(msg.sender, taskId, resultDigest),
+                    enclaveSign
+                ),
+            "PocoBoost: Invalid enclave signature"
+        );
+        emit ResultPushedBoost(dealId, index, results);
     }
 
     /**
