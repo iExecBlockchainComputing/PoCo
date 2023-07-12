@@ -104,7 +104,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
             ),
-            "PushResultBoost: Scheduler signature is not valid"
+            "PocoBoost:  Invalid scheduler signature"
         );
         bytes32 resultDigest = keccak256(abi.encodePacked(results));
         // Check enclave signature

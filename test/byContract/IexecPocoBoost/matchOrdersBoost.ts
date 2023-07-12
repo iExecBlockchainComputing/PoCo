@@ -297,7 +297,7 @@ describe('Match orders boost', function () {
                     enclave.address,
                     constants.NULL.SIGNATURE,
                 ),
-        ).to.be.revertedWith('PushResultBoost: Scheduler signature is not valid');
+        ).to.be.revertedWith('PocoBoost:  Invalid scheduler signature');
     });
 
     it('Should not push result with invalid enclave signature', async function () {
