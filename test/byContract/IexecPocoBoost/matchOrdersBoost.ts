@@ -17,6 +17,7 @@ import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
     buildAndSignEnclaveMessage,
+    getTaskId,
 } from '../../../utils/poco-tools';
 
 const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
@@ -336,7 +337,3 @@ describe('Match orders boost', function () {
         ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
     });
 });
-
-function getTaskId(dealId: string, taskIndex: number): any {
-    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
-}

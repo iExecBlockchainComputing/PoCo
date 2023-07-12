@@ -17,6 +17,10 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
+export function getTaskId(dealId: string, taskIndex: number): any {
+    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
+}
+
 export async function buildAndSignSchedulerMessage(
     worker: string,
     taskId: string,
