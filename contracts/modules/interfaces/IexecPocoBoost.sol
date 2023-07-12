@@ -32,11 +32,11 @@ interface IexecPocoBoost {
     ) external;
 
     function pushResultBoost(
-        bytes32 _dealId,
-        uint _index,
-        bytes calldata _results,
-        bytes calldata _authorizationSign,
-        address _enclaveChallenge,
-        bytes calldata _enclaveSign
+        bytes32 dealId,
+        uint index,
+        bytes calldata results,
+        bytes calldata authorizationSign,
+        address enclaveChallenge,
+        bytes calldata enclaveSign
     ) external;
 }
