@@ -68,7 +68,7 @@ async function createMock<T extends ContractFactory>(contractName: string): Prom
         .then((instance) => instance.deployed());
 }
 
-describe('IexecPocoBoost', function () {
+describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appInstance: Contract;
     let workerpoolInstance: Contract;
