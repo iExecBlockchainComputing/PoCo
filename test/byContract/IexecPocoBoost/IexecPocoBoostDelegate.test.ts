@@ -264,7 +264,6 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('Push Result Boost', function () {
-        //TODO: Re-indent block
         it('Should push result (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
