@@ -263,7 +263,6 @@ describe('Match orders boost', function () {
 
     // Push Result tests
 
-    //TODO: Rename current file to IexecPocoBoost.test.ts
     it('Should push result (TEE)', async function () {
         appInstance.owner.returns(appProvider.address);
         workerpoolInstance.owner.returns(scheduler.address);
