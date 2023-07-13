@@ -55,7 +55,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
-
+        bytes32 tag = _requestorder.tag; // TODO compute tag
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
@@ -71,10 +71,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // deal.deadline = ;
         // deal.botFirst = ;
         // deal.botSize = ;
-        // deal.tag = ;
+        deal.tag = tag;
         deal.callback = _requestorder.callback;
         // TODO emit deal params
-        deal.tag = _requestorder.tag; // set random field
         emit OrdersMatchedBoost(dealid);
     }
 
