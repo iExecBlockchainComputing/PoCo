@@ -20,8 +20,8 @@ import {
     getTaskId,
 } from '../../../utils/poco-tools';
 
-const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
-const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const dealIdTee = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
+const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
@@ -98,8 +98,6 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
 
-            const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
-            const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
             const nonZeroAppPrice = 3000;
             const nonZeroDatasetPrice = 900546000;
             const nonZeroWorkerpoolPrice = 569872878;
@@ -108,7 +106,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
 
             requestOrder.requester = requester.address;
@@ -135,8 +133,8 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealId);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+                .withArgs(dealIdTee);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
@@ -156,17 +154,15 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetOrder.datasetprice,
                 'Dataset price mismatch',
             );
-            expect(deal.tag).to.be.equal(dealTag);
+            expect(deal.tag).to.be.equal(dealTagTee);
         });
 
         it('Should fail when trust is not zero', async function () {
-            const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             // Set non-zero trust
             requestOrder.trust = 1;
@@ -182,13 +178,11 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should fail when categories are different', async function () {
-            const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             // Set different categories
             requestOrder.category = 1;
@@ -209,7 +203,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             appOrder.appprice = 200;
             requestOrder.appmaxprice = 100;
@@ -229,7 +223,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
 
             // Set dataset price higher than dataset max price
@@ -251,7 +245,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
 
             // Set workerpool price higher than workerpool max price
@@ -277,7 +271,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -302,7 +296,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealId,
+                        dealIdTee,
                         taskIndex,
                         results,
                         schedulerSignature,
@@ -311,15 +305,16 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, taskIndex, results);
+                .withArgs(dealIdTee, taskIndex, results);
         });
 
         it('Should push result (Standard)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             const tag = constants.NULL.BYTES32;
-            const dealId = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-            const taskId = getTaskId(dealId, taskIndex);
+            const dealIdStandard =
+                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+            const taskId = getTaskId(dealIdStandard, taskIndex);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
@@ -344,7 +339,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealId,
+                        dealIdStandard,
                         taskIndex,
                         results,
                         schedulerSignature,
@@ -353,7 +348,7 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, taskIndex, results);
+                .withArgs(dealIdStandard, taskIndex, results);
         });
 
         it('Should not push result with invalid scheduler signature', async function () {
@@ -363,7 +358,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -377,7 +372,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealId,
+                        dealIdTee,
                         taskIndex,
                         results,
                         anyoneSignature,
@@ -394,7 +389,7 @@ describe('IexecPocoBoostDelegate', function () {
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
-                dealTag,
+                dealTagTee,
             );
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -414,7 +409,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealId,
+                        dealIdTee,
                         taskIndex,
                         results,
                         schedulerSignature,
