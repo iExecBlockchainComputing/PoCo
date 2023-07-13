@@ -27,7 +27,7 @@
 - Update prettier rules and reformat. (#167, #168, #169, #170)
 - Implement `matchOrdersBoost`. (#171, #172, #174, #175)
 - Implement `pushResultBoost`. (#173, #176)
-- Refactor tests. (#177, #178)
+- Refactor tests. (#177, #178, #179)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
