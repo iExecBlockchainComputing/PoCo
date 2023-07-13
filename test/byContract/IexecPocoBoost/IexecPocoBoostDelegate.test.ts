@@ -140,7 +140,10 @@ describe('IexecPocoBoostDelegate', function () {
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
-            expect(deal.workerpoolOwner).to.be.equal(scheduler.address, 'Workerpool owner mismatch');
+            expect(deal.workerpoolOwner).to.be.equal(
+                scheduler.address,
+                'Workerpool owner mismatch',
+            );
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
             // Check prices.
@@ -149,7 +152,10 @@ describe('IexecPocoBoostDelegate', function () {
                 'Workerpool price mismatch',
             );
             expect(deal.appPrice).to.be.equal(appOrder.appprice, 'App price mismatch');
-            expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice, 'Dataset price mismatch');
+            expect(deal.datasetPrice).to.be.equal(
+                datasetOrder.datasetprice,
+                'Dataset price mismatch',
+            );
             expect(deal.tag).to.be.equal(dealTag);
         });
 
@@ -264,159 +270,158 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('Push Result Boost', function () {
-    //TODO: Re-indent block
-    it('Should push result (TEE)', async function () {
-        appInstance.owner.returns(appProvider.address);
-        workerpoolInstance.owner.returns(scheduler.address);
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-            appInstance.address,
-            workerpoolInstance.address,
-            datasetInstance.address,
-            dealTag,
-        );
-        await iexecPocoBoostInstance.matchOrdersBoost(
-            appOrder,
-            datasetOrder,
-            workerpoolOrder,
-            requestOrder,
-        );
-        const schedulerSignature = await buildAndSignSchedulerMessage(
-            worker.address,
-            taskId,
-            enclave.address,
-            scheduler,
-        );
-        const enclaveSignature = await buildAndSignEnclaveMessage(
-            worker.address,
-            taskId,
-            resultDigest,
-            enclave,
-        );
+        it('Should push result (TEE)', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTag,
+            );
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
 
-        await expect(
-            iexecPocoBoostInstance
-                .connect(worker)
-                .pushResultBoost(
-                    dealId,
-                    taskIndex,
-                    results,
-                    schedulerSignature,
-                    enclave.address,
-                    enclaveSignature,
-                ),
-        )
-            .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-            .withArgs(dealId, taskIndex, results);
-    });
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results);
+        });
 
-    it('Should push result (Standard)', async function () {
-        appInstance.owner.returns(appProvider.address);
-        workerpoolInstance.owner.returns(scheduler.address);
-        const tag = constants.NULL.BYTES32;
-        const dealId = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-        const taskId = getTaskId(dealId, taskIndex);
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-            appInstance.address,
-            workerpoolInstance.address,
-            datasetInstance.address,
-            tag,
-        );
-        await iexecPocoBoostInstance.matchOrdersBoost(
-            appOrder,
-            datasetOrder,
-            workerpoolOrder,
-            requestOrder,
-        );
-        const emptyEnclaveAddress = constants.NULL.ADDRESS;
-        const schedulerSignature = await buildAndSignSchedulerMessage(
-            worker.address,
-            taskId,
-            emptyEnclaveAddress,
-            scheduler,
-        );
+        it('Should push result (Standard)', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const tag = constants.NULL.BYTES32;
+            const dealId = '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
+            const taskId = getTaskId(dealId, taskIndex);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                tag,
+            );
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const emptyEnclaveAddress = constants.NULL.ADDRESS;
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                emptyEnclaveAddress,
+                scheduler,
+            );
 
-        await expect(
-            iexecPocoBoostInstance
-                .connect(worker)
-                .pushResultBoost(
-                    dealId,
-                    taskIndex,
-                    results,
-                    schedulerSignature,
-                    emptyEnclaveAddress,
-                    constants.NULL.SIGNATURE,
-                ),
-        )
-            .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-            .withArgs(dealId, taskIndex, results);
-    });
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        schedulerSignature,
+                        emptyEnclaveAddress,
+                        constants.NULL.SIGNATURE,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results);
+        });
 
-    it('Should not push result with invalid scheduler signature', async function () {
-        appInstance.owner.returns(appProvider.address);
-        workerpoolInstance.owner.returns(scheduler.address);
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-            appInstance.address,
-            workerpoolInstance.address,
-            datasetInstance.address,
-            dealTag,
-        );
-        await iexecPocoBoostInstance.matchOrdersBoost(
-            appOrder,
-            datasetOrder,
-            workerpoolOrder,
-            requestOrder,
-        );
-        const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
+        it('Should not push result with invalid scheduler signature', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTag,
+            );
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
 
-        await expect(
-            iexecPocoBoostInstance
-                .connect(worker)
-                .pushResultBoost(
-                    dealId,
-                    taskIndex,
-                    results,
-                    anyoneSignature,
-                    enclave.address,
-                    constants.NULL.SIGNATURE,
-                ),
-        ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
-    });
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        anyoneSignature,
+                        enclave.address,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
+        });
 
-    it('Should not push result with invalid enclave signature', async function () {
-        appInstance.owner.returns(appProvider.address);
-        workerpoolInstance.owner.returns(scheduler.address);
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-            appInstance.address,
-            workerpoolInstance.address,
-            datasetInstance.address,
-            dealTag,
-        );
-        await iexecPocoBoostInstance.matchOrdersBoost(
-            appOrder,
-            datasetOrder,
-            workerpoolOrder,
-            requestOrder,
-        );
-        const schedulerSignature = await buildAndSignSchedulerMessage(
-            worker.address,
-            taskId,
-            enclave.address,
-            scheduler,
-        );
-        const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
+        it('Should not push result with invalid enclave signature', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTag,
+            );
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
 
-        await expect(
-            iexecPocoBoostInstance
-                .connect(worker)
-                .pushResultBoost(
-                    dealId,
-                    taskIndex,
-                    results,
-                    schedulerSignature,
-                    enclave.address,
-                    anyoneSignature,
-                ),
-        ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
-    });
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        schedulerSignature,
+                        enclave.address,
+                        anyoneSignature,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
+        });
     });
 });
