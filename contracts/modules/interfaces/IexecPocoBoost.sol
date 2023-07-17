@@ -21,6 +21,14 @@ pragma solidity ^0.8.0;
 import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
+    event SchedulerNoticeBoost(
+        address indexed workerpoolAddress,
+        bytes32 dealId,
+        address appAddress,
+        address datasetAddress,
+        uint256 category,
+        string params
+    );
     event OrdersMatchedBoost(bytes32 dealid);
     event ResultPushedBoost(bytes32 dealId, uint index, bytes results);
 
