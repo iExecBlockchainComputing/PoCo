@@ -176,6 +176,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealId,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         schedulerSignature,
                         enclave.address,
                         enclaveSignature,

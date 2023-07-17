@@ -44,6 +44,28 @@ export function buildUtf8ResultAndDigest(resultPayload: string) {
     return { results, resultDigest };
 }
 
+export function buildDefaultResultCallbackAndDigest(oracleCallValue: number) {
+    return buildResultCallbackAndDigest(
+        '0x0000000000000000000000000000000000000000000000000000000000000001', // random ID
+        new Date(1672531200 * 1000), // random date (January 1, 2023 12:00:00 AM)
+        oracleCallValue,
+    );
+}
+
+export function buildResultCallbackAndDigest(
+    oracleId: string,
+    oracleCallDate: Date,
+    oracleCallValue: number, // this is an oracle accepting "int" values (e.g: price oracle)
+) {
+    const oracleResult = ethers.utils.solidityKeccak256(['uint256'], [oracleCallValue]);
+    const resultsCallback = ethers.utils.solidityKeccak256(
+        ['bytes32', 'uint256', 'bytes'],
+        [oracleId, oracleCallDate.getTime(), oracleResult],
+    );
+    const resultDigest = ethers.utils.keccak256(resultsCallback);
+    return { resultsCallback, resultDigest };
+}
+
 export async function buildAndSignEnclaveMessage(
     workerAddress: string,
     taskId: string,

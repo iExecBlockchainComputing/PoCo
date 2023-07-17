@@ -89,6 +89,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
      * @param dealId id of the target deal
      * @param index index of the target task of the deal
      * @param results results of the task computed by the worker
+     * @param resultsCallback results of the task computed by the worker that will
+     * be forwarded as call data to the callback address set by the requester.
      * @param authorizationSign authorization signed by the scheduler authorizing
      * the worker to push a result
      * @param enclaveChallenge enclave address which can produce enclave signature
@@ -98,6 +100,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bytes32 dealId,
         uint index,
         bytes calldata results,
+        bytes calldata resultsCallback,
         bytes calldata authorizationSign,
         address enclaveChallenge,
         bytes calldata enclaveSign
@@ -114,7 +117,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             ),
             "PocoBoost: Invalid scheduler signature"
         );
-        bytes32 resultDigest = keccak256(abi.encodePacked(results));
+        address target = deal.callback;
+        bytes32 resultDigest = keccak256(
+            target != address(0) ? resultsCallback : abi.encodePacked(results)
+        );
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
@@ -125,6 +131,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 ),
             "PocoBoost: Invalid enclave signature"
         );
+
+        if (target != address(0)) {
+            require(resultsCallback.length > 0, "PocoBoost: Callback data missing");
+            (bool success, ) = target.call{gas: m_callbackgas}(
+                abi.encodeWithSignature("receiveResult(bytes32,bytes)", taskId, resultsCallback)
+            );
+            success; // silent unused variable warning
+            require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
+        }
         emit ResultPushedBoost(dealId, index, results);
     }
 

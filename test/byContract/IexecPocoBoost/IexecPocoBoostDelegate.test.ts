@@ -1,6 +1,6 @@
 import { smock } from '@defi-wonderland/smock';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
@@ -10,15 +10,19 @@ import {
     App__factory,
     Workerpool__factory,
     Dataset__factory,
+    TestClient__factory,
 } from '../../../typechain';
 import constants from '../../../utils/constants';
 import { buildCompatibleOrders } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
+    buildDefaultResultCallbackAndDigest,
     buildUtf8ResultAndDigest,
     buildAndSignEnclaveMessage,
     getTaskId,
 } from '../../../utils/poco-tools';
+
+chai.use(smock.matchers);
 
 const dealIdTee = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -264,6 +268,58 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('Push Result Boost', function () {
+        it('Should push result (TEE & callback)', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            const oracleInstance = await createMock<TestClient__factory>('TestClient');
+            requestOrder.callback = oracleInstance.address;
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const { resultsCallback, resultDigest: callbackResultDigest } =
+                buildDefaultResultCallbackAndDigest(123);
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                callbackResultDigest,
+                enclave,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealIdTee,
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealIdTee, taskIndex, results);
+            console.log(taskId);
+            console.log(resultsCallback);
+            expect(oracleInstance.receiveResult).to.have.been.calledWith(taskId, resultsCallback);
+        });
+
         it('Should push result (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -299,6 +355,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealIdTee,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         schedulerSignature,
                         enclave.address,
                         enclaveSignature,
@@ -342,6 +399,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealIdStandard,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         schedulerSignature,
                         emptyEnclaveAddress,
                         constants.NULL.SIGNATURE,
@@ -375,6 +433,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealIdTee,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         anyoneSignature,
                         enclave.address,
                         constants.NULL.SIGNATURE,
@@ -412,6 +471,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealIdTee,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         schedulerSignature,
                         enclave.address,
                         anyoneSignature,
