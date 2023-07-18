@@ -81,8 +81,10 @@ export function buildCompatibleOrders(
     requestOrder.app = app;
     // Set workerpool
     workerpoolOrder.workerpool = workerpool;
+    requestOrder.workerpool = workerpool;
     // Set dataset
     datasetOrder.dataset = dataset;
+    requestOrder.dataset = dataset;
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
