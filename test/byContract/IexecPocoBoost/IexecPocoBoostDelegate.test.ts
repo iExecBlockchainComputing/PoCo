@@ -478,5 +478,50 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
         });
+
+        it('Should not push result with missing data for callback', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            requestOrder.callback = '0x000000000000000000000000000000000000ca11';
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const resultsCallback = '0x';
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                ethers.utils.keccak256(resultsCallback),
+                enclave,
+            );
+
+            expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealIdTee,
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Callback requires data');
+        });
     });
 });
