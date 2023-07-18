@@ -28,6 +28,7 @@
 - Implement `matchOrdersBoost`. (#171, #172, #174, #175)
 - Implement `pushResultBoost`. (#173, #176)
 - Refactor tests. (#177, #178, #179, #181)
+- Add mocha to use test explorer. (#180)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
