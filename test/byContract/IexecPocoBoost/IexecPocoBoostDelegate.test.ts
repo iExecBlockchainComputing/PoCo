@@ -135,6 +135,15 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolInstance.address,
+                    dealIdTee,
+                    appInstance.address,
+                    datasetInstance.address,
+                    requestOrder.category,
+                    requestOrder.params,
+                )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(dealIdTee);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
