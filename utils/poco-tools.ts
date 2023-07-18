@@ -44,26 +44,36 @@ export function buildUtf8ResultAndDigest(resultPayload: string) {
     return { results, resultDigest };
 }
 
-export function buildDefaultResultCallbackAndDigest(oracleCallValue: number) {
-    return buildResultCallbackAndDigest(
-        '0x0000000000000000000000000000000000000000000000000000000000000001', // random ID
+/**
+ * See `buildResultCallbackAndDigestForIntegerOracle` method.
+ * Build a default date internally for a lighter usage from caller.
+ */
+export function buildResultCallbackAndDigest(oracleCallValue: number) {
+    return buildResultCallbackAndDigestForIntegerOracle(
         new Date(1672531200 * 1000), // random date (January 1, 2023 12:00:00 AM)
         oracleCallValue,
     );
 }
 
-export function buildResultCallbackAndDigest(
-    oracleId: string,
+/**
+ * Build callback and digest for an oracle accepting integer values
+ * (e.g: price oracle).
+ *
+ * @param oracleCallDate date when the value was obtained
+ * @param oracleCallValue oracle call value to report
+ * @returns result callback to forward and result digest required for later
+ *  signature
+ */
+export function buildResultCallbackAndDigestForIntegerOracle(
     oracleCallDate: Date,
-    oracleCallValue: number, // this is an oracle accepting "int" values (e.g: price oracle)
+    oracleCallValue: number,
 ) {
-    const oracleResult = ethers.utils.solidityKeccak256(['uint256'], [oracleCallValue]);
-    const resultsCallback = ethers.utils.solidityKeccak256(
-        ['bytes32', 'uint256', 'bytes'],
-        [oracleId, oracleCallDate.getTime(), oracleResult],
+    const resultsCallback = ethers.utils.solidityPack(
+        ['uint256', 'uint256'],
+        [oracleCallDate.getTime(), oracleCallValue],
     );
-    const resultDigest = ethers.utils.keccak256(resultsCallback);
-    return { resultsCallback, resultDigest };
+    const callbackResultDigest = ethers.utils.keccak256(resultsCallback);
+    return { resultsCallback, callbackResultDigest };
 }
 
 export async function buildAndSignEnclaveMessage(

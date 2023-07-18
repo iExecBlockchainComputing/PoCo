@@ -16,8 +16,8 @@ import constants from '../../../utils/constants';
 import { buildCompatibleOrders } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
-    buildDefaultResultCallbackAndDigest,
     buildUtf8ResultAndDigest,
+    buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
     getTaskId,
 } from '../../../utils/poco-tools';
@@ -277,8 +277,8 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
-            const oracleInstance = await createMock<TestClient__factory>('TestClient');
-            requestOrder.callback = oracleInstance.address;
+            const oracleConsumerInstance = await createMock<TestClient__factory>('TestClient');
+            requestOrder.callback = oracleConsumerInstance.address;
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -291,8 +291,7 @@ describe('IexecPocoBoostDelegate', function () {
                 enclave.address,
                 scheduler,
             );
-            const { resultsCallback, resultDigest: callbackResultDigest } =
-                buildDefaultResultCallbackAndDigest(123);
+            const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
             const enclaveSignature = await buildAndSignEnclaveMessage(
                 worker.address,
                 taskId,
@@ -315,9 +314,10 @@ describe('IexecPocoBoostDelegate', function () {
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealIdTee, taskIndex, results);
-            console.log(taskId);
-            console.log(resultsCallback);
-            expect(oracleInstance.receiveResult).to.have.been.calledWith(taskId, resultsCallback);
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
+                taskId,
+                resultsCallback,
+            );
         });
 
         it('Should push result (TEE)', async function () {
