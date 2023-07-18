@@ -22,10 +22,10 @@ import "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
     event SchedulerNoticeBoost(
-        address indexed workerpoolAddress,
+        address indexed workerpool,
         bytes32 dealId,
-        address appAddress,
-        address datasetAddress,
+        address app,
+        address dataset,
         uint256 category,
         string params
     );
