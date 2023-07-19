@@ -56,6 +56,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Overpriced workerpool"
         );
         bytes32 tag = _requestorder.tag; // TODO compute tag
+        bool hasDataset = _requestorder.dataset != address(0);
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
@@ -63,9 +64,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
         deal.appOwner = Ownable(_apporder.app).owner();
         deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
-        bool hasDataset = true; // TODO
-        // deal.datasetOwner = ;
-        deal.datasetPrice = uint96(hasDataset ? _datasetorder.datasetprice : 0); // TODO check overflow
+        if (hasDataset) {
+            deal.datasetOwner = Ownable(_datasetorder.dataset).owner();
+            deal.datasetPrice = uint96(hasDataset ? _datasetorder.datasetprice : 0); // TODO check overflow
+        }
         // deal.workerReward = ;
         deal.beneficiary = _requestorder.beneficiary;
         // deal.deadline = ;
@@ -82,6 +84,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category,
             _requestorder.params
         );
+        // Notify publishers & consumers.
         emit OrdersMatchedBoost(dealid);
     }
 
