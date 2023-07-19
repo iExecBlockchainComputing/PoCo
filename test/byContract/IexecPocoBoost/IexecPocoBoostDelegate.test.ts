@@ -223,7 +223,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(dealIdTee);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
-            expect(deal.datasetPrice).to.be.equal(0, 'Dataset price mismatch');
+            expect(deal.datasetPrice).to.be.equal(0);
         });
 
         it('Should fail when trust is not zero', async function () {
