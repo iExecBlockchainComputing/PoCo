@@ -142,7 +142,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
-            uint m_callbackgas = 100000; //TODO: Use Store.m_callbackgas
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeWithSignature("receiveResult(bytes32,bytes)", taskId, resultsCallback)
             );

@@ -82,7 +82,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
         await deployments.fixture();
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(
-            (await deployments.get('IexecPocoBoostDelegate')).address,
+            await getContractAddress('ERC1538Proxy'),
             owner,
         );
 
