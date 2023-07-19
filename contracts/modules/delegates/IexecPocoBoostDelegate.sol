@@ -84,7 +84,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category,
             _requestorder.params
         );
-        // Notify publishers & consumers.
+        // Broadcast consumption of orders.
         emit OrdersMatchedBoost(dealid);
     }
 
