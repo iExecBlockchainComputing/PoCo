@@ -174,9 +174,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .connect(anyone)
                 .deploy()
                 .then((contract) => contract.deployed());
-            console.log(`OracleConsumer: ${oracleConsumerInstance.address}`);
             requestOrder.callback = oracleConsumerInstance.address;
-
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -196,6 +194,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 callbackResultDigest,
                 enclave,
             );
+
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
