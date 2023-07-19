@@ -173,6 +173,56 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.tag).to.be.equal(dealTagTee);
         });
 
+        it('Should match orders without dataset', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+
+            const nonZeroAppPrice = 3000;
+            const nonZeroDatasetPrice = 900546000;
+            const nonZeroWorkerpoolPrice = 569872878;
+
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                constants.NULL.ADDRESS, // No dataset.
+                dealTagTee,
+            );
+
+            requestOrder.requester = requester.address;
+            requestOrder.beneficiary = beneficiary.address;
+            // Set prices
+            appOrder.appprice = nonZeroAppPrice;
+            requestOrder.appmaxprice = nonZeroAppPrice;
+
+            workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
+            requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+
+            // Set callback
+            requestOrder.callback = ethers.Wallet.createRandom().address;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolInstance.address,
+                    dealIdTee,
+                    appInstance.address,
+                    constants.NULL.ADDRESS, // No dataset.
+                    requestOrder.category,
+                    requestOrder.params,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+                .withArgs(dealIdTee);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
+            expect(deal.datasetPrice).to.be.equal(0);
+        });
+
         it('Should fail when trust is not zero', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
