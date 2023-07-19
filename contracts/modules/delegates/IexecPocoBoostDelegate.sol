@@ -126,9 +126,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Invalid scheduler signature"
         );
         address target = deal.callback;
-        bytes32 resultDigest = keccak256(
-            target != address(0) ? resultsCallback : abi.encodePacked(results)
-        );
+        bytes32 resultDigest = target == address(0) ? keccak256(abi.encodePacked(results) : keccak256(resultsCallback);
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
