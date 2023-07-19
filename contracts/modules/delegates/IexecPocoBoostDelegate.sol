@@ -66,7 +66,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
         if (hasDataset) {
             deal.datasetOwner = Ownable(_datasetorder.dataset).owner();
-            deal.datasetPrice = uint96(hasDataset ? _datasetorder.datasetprice : 0); // TODO check overflow
+            deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
         }
         // deal.workerReward = ;
         deal.beneficiary = _requestorder.beneficiary;
