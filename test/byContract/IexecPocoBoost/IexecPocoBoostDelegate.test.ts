@@ -194,9 +194,6 @@ describe('IexecPocoBoostDelegate', function () {
             appOrder.appprice = nonZeroAppPrice;
             requestOrder.appmaxprice = nonZeroAppPrice;
 
-            datasetOrder.datasetprice = nonZeroDatasetPrice;
-            requestOrder.datasetmaxprice = nonZeroDatasetPrice;
-
             workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
             requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
 
