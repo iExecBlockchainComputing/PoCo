@@ -44,6 +44,38 @@ export function buildUtf8ResultAndDigest(resultPayload: string) {
     return { results, resultDigest };
 }
 
+/**
+ * See `buildResultCallbackAndDigestForIntegerOracle` method.
+ * Build a default date internally for a lighter usage from caller.
+ */
+export function buildResultCallbackAndDigest(oracleCallValue: number) {
+    return buildResultCallbackAndDigestForIntegerOracle(
+        new Date(1672531200 * 1000), // random date (January 1, 2023 12:00:00 AM)
+        oracleCallValue,
+    );
+}
+
+/**
+ * Build callback and digest for an oracle accepting integer values
+ * (e.g: price oracle).
+ *
+ * @param oracleCallDate date when the value was obtained
+ * @param oracleCallValue oracle call value to report
+ * @returns result callback to forward and result digest required for later
+ *  signature
+ */
+export function buildResultCallbackAndDigestForIntegerOracle(
+    oracleCallDate: Date,
+    oracleCallValue: number,
+) {
+    const resultsCallback = ethers.utils.solidityPack(
+        ['uint256', 'uint256'],
+        [oracleCallDate.getTime(), oracleCallValue],
+    );
+    const callbackResultDigest = ethers.utils.keccak256(resultsCallback);
+    return { resultsCallback, callbackResultDigest };
+}
+
 export async function buildAndSignEnclaveMessage(
     workerAddress: string,
     taskId: string,

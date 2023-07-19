@@ -43,6 +43,7 @@ interface IexecPocoBoost {
         bytes32 dealId,
         uint index,
         bytes calldata results,
+        bytes calldata resultsCallback,
         bytes calldata authorizationSign,
         address enclaveChallenge,
         bytes calldata enclaveSign

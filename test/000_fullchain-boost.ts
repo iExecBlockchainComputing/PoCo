@@ -27,6 +27,7 @@ import {
     WorkerpoolRegistry,
     DatasetRegistry,
     DatasetRegistry__factory,
+    TestClient__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -36,6 +37,7 @@ import { buildCompatibleOrders } from '../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
+    buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
 } from '../utils/poco-tools';
 
@@ -61,25 +63,26 @@ async function extractRegistryEntryAddress(
     return ethers.utils.getAddress(lowercaseAddress);
 }
 
-describe('IexecPocoBoostDelegate', function () {
+describe('IexecPocoBoostDelegate (integration tests)', function () {
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
-    let [scheduler, worker, enclave] = [] as SignerWithAddress[];
+    let [scheduler, worker, enclave, anyone] = [] as SignerWithAddress[];
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        const [owner, appProvider, datasetProvider, _scheduler, _worker, _enclave] =
+        const [owner, appProvider, datasetProvider, _scheduler, _worker, _enclave, _anyone] =
             await hre.ethers.getSigners();
         scheduler = _scheduler;
         worker = _worker;
         enclave = _enclave;
+        anyone = _anyone;
 
         await deployments.fixture();
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(
-            (await deployments.get('IexecPocoBoostDelegate')).address,
+            await getContractAddress('ERC1538Proxy'),
             owner,
         );
 
@@ -160,7 +163,59 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('PushResult', function () {
-        it('Should push result', async function () {
+        it('Should push result (TEE & callback)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appAddress,
+                workerpoolAddress,
+                datasetAddress,
+                dealTag,
+            );
+            const oracleConsumerInstance = await new TestClient__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            requestOrder.callback = oracleConsumerInstance.address;
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                callbackResultDigest,
+                enclave,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results)
+                .to.emit(oracleConsumerInstance, 'GotResult')
+                .withArgs(taskId, resultsCallback);
+            expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
+        });
+
+        it('Should push result (TEE)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appAddress,
                 workerpoolAddress,
@@ -193,6 +248,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dealId,
                         taskIndex,
                         results,
+                        constants.NULL.BYTES32,
                         schedulerSignature,
                         enclave.address,
                         enclaveSignature,
