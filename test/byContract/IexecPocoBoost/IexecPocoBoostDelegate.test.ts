@@ -65,10 +65,13 @@ async function deployBoostFixture() {
     };
 }
 
-async function createMock<T extends ContractFactory>(contractName: string): Promise<Contract> {
+async function createMock<T extends ContractFactory>(
+    contractName: string,
+    ...args: Parameters<T['deploy']>
+): Promise<Contract> {
     return await smock
         .mock<T>(contractName)
-        .then((contract) => contract.deploy())
+        .then((contract) => contract.deploy(...args))
         .then((instance) => instance.deployed());
 }
 
@@ -136,6 +139,15 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolInstance.address,
+                    dealIdTee,
+                    appInstance.address,
+                    datasetInstance.address,
+                    requestOrder.category,
+                    requestOrder.params,
+                )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(dealIdTee);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);

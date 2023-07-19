@@ -73,7 +73,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // deal.botSize = ;
         deal.tag = tag;
         deal.callback = _requestorder.callback;
-        // TODO emit deal params
+        // Notify workerpool.
+        emit SchedulerNoticeBoost(
+            _requestorder.workerpool,
+            dealid,
+            _requestorder.app,
+            _requestorder.dataset,
+            _requestorder.category,
+            _requestorder.params
+        );
         emit OrdersMatchedBoost(dealid);
     }
 

@@ -47,12 +47,20 @@ const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
+/**
+ * Extract address of a newly created entry in a registry contract
+ * from the tx's receipt.
+ * @param receipt contract receipt
+ * @param registryInstanceAddress address of the registry contract
+ * @returns address of the entry in checksum format.
+ */
 async function extractRegistryEntryAddress(
     receipt: ContractReceipt,
     registryInstanceAddress: string,
 ): Promise<string> {
     const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    return events[0].args['tokenId'].toHexString();
+    const lowercaseAddress = events[0].args['tokenId'].toHexString();
+    return ethers.utils.getAddress(lowercaseAddress);
 }
 
 describe('IexecPocoBoostDelegate (integration tests)', function () {
@@ -140,6 +148,15 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder,
                 ),
             )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolAddress,
+                    dealId,
+                    appAddress,
+                    datasetAddress,
+                    requestOrder.category,
+                    requestOrder.params,
+                )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
                 .withArgs(dealId);
         });
