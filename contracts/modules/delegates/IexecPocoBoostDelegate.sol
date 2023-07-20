@@ -29,6 +29,7 @@ import "../interfaces/IexecAccessorsBoost.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     using ECDSA for bytes32;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _apporder The order signed by the application developer
@@ -55,6 +56,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
+        // app
+        address appOwner = Ownable(_apporder.app).owner();
+        bytes32 appOrderHash = ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, _apporder.hash());
+        // TODO: Handle presign
+        require(
+            _verifySignature(appOwner, appOrderHash, _apporder.sign),
+            "PocoBoost: Invalid app order signature"
+        );
         bytes32 tag = _requestorder.tag; // TODO compute tag
         bool hasDataset = _requestorder.dataset != address(0);
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
@@ -62,7 +71,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = Ownable(_workerpoolorder.workerpool).owner();
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
-        deal.appOwner = Ownable(_apporder.app).owner();
+        deal.appOwner = appOwner;
         deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
         if (hasDataset) {
             deal.datasetOwner = Ownable(_datasetorder.dataset).owner();
@@ -155,7 +164,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * Verify that a message a signed by a particular account.
+     * Verify that a signature is an Ethereum Signed Message from a particular account.
      * @param account expected signer account
      * @param message original message that was signed
      * @param signature signature to be verified
@@ -166,5 +175,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bytes memory signature
     ) internal pure returns (bool) {
         return keccak256(message).toEthSignedMessageHash().recover(signature) == account;
+    }
+
+    /**
+     * Verify that a message hash is signed by a particular account.
+     * @param account expected signer account
+     * @param messageHash message hash that was signed
+     * @param signature signature to be verified
+     */
+    function _verifySignature(
+        address account,
+        bytes32 messageHash,
+        bytes memory signature
+    ) internal pure returns (bool) {
+        return messageHash.recover(signature) == account;
     }
 }
