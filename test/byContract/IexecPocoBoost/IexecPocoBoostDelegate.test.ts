@@ -1,4 +1,5 @@
-import { smock } from '@defi-wonderland/smock';
+import { MockContract, smock } from '@defi-wonderland/smock';
+import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import chai, { expect } from 'chai';
 import { ethers } from 'hardhat';
@@ -11,9 +12,13 @@ import {
     Workerpool__factory,
     Dataset__factory,
     TestClient__factory,
+    IexecLibOrders_v5__factory,
+    App,
+    Workerpool,
+    Dataset,
 } from '../../../typechain';
 import constants from '../../../utils/constants';
-import { buildCompatibleOrders } from '../../../utils/createOrders';
+import { buildCompatibleOrders, buildDomain, signOrder } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
@@ -29,6 +34,8 @@ const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000
 const taskIndex = 0;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
+const { domain, domainSeparator } = buildDomain();
 
 async function deployBoostFixture() {
     const [
@@ -43,12 +50,25 @@ async function deployBoostFixture() {
         enclave,
         anyone,
     ] = await ethers.getSigners();
-    const iexecPocoBoostInstance: IexecPocoBoostDelegate =
-        await new IexecPocoBoostDelegate__factory()
-            .connect(admin)
-            .deploy()
-            .then((instance) => instance.deployed());
-
+    const iexecLibOrdersInstanceAddress = await new IexecLibOrders_v5__factory()
+        .connect(admin)
+        .deploy()
+        .then((instance) => instance.deployed())
+        .then((instance) => instance.address);
+    // Using native smock call here for understandability purposes (also works with
+    // the custom `createMock` method)
+    const iexecPocoBoostInstance = (await smock
+        .mock<IexecPocoBoostDelegate__factory>('IexecPocoBoostDelegate', {
+            libraries: {
+                ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+                    iexecLibOrdersInstanceAddress,
+            },
+        })
+        .then((instance) => instance.deploy())
+        .then((instance) => instance.deployed())) as MockContract<IexecPocoBoostDelegate>;
+    // A global domain separator needs to be set since current contract is being
+    // unit tested here (hence no proxy)
+    await iexecPocoBoostInstance.setVariable(EIP712DOMAIN_SEPARATOR, domainSeparator);
     return {
         iexecPocoBoostInstance,
         admin,
@@ -65,21 +85,22 @@ async function deployBoostFixture() {
     };
 }
 
-async function createMock<T extends ContractFactory>(
+async function createMock<CF extends ContractFactory, C extends Contract>(
     contractName: string,
-    ...args: Parameters<T['deploy']>
-): Promise<Contract> {
-    return await smock
-        .mock<T>(contractName)
+    factoryOptions?: FactoryOptions,
+    ...args: Parameters<CF['deploy']>
+): Promise<MockContract<C>> {
+    return (await smock
+        .mock<CF>(contractName, factoryOptions)
         .then((contract) => contract.deploy(...args))
-        .then((instance) => instance.deployed());
+        .then((instance) => instance.deployed())) as MockContract<C>;
 }
 
 describe('IexecPocoBoostDelegate', function () {
-    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-    let appInstance: Contract;
-    let workerpoolInstance: Contract;
-    let datasetInstance: Contract;
+    let iexecPocoBoostInstance: MockContract<IexecPocoBoostDelegate>;
+    let appInstance: MockContract<App>;
+    let workerpoolInstance: MockContract<Workerpool>;
+    let datasetInstance: MockContract<Dataset>;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
 
@@ -94,9 +115,9 @@ describe('IexecPocoBoostDelegate', function () {
         requester = fixtures.requester;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
-        appInstance = await createMock<App__factory>('App');
-        workerpoolInstance = await createMock<Workerpool__factory>('Workerpool');
-        datasetInstance = await createMock<Dataset__factory>('Dataset');
+        appInstance = await createMock<App__factory, App>('App');
+        workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
+        datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
     });
 
     describe('Match Orders Boost', function () {
@@ -130,6 +151,7 @@ describe('IexecPocoBoostDelegate', function () {
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -199,6 +221,7 @@ describe('IexecPocoBoostDelegate', function () {
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -327,6 +350,28 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
         });
+
+        it('Should fail when invalid app order signature', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            appOrder.sign = await signOrder(domain, appOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
+        });
     });
 
     describe('Push Result Boost', function () {
@@ -341,6 +386,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             const oracleConsumerInstance = await createMock<TestClient__factory>('TestClient');
             requestOrder.callback = oracleConsumerInstance.address;
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -391,6 +437,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -440,6 +487,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 tag,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -480,6 +528,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -512,6 +561,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -551,6 +601,7 @@ describe('IexecPocoBoostDelegate', function () {
                 dealTagTee,
             );
             requestOrder.callback = '0x000000000000000000000000000000000000ca11';
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,

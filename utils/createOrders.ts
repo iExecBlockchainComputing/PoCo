@@ -1,5 +1,9 @@
+import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
+import { utils } from './odb-tools';
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
@@ -89,4 +93,38 @@ export function buildCompatibleOrders(
     appOrder.tag = tag;
     requestOrder.tag = tag;
     return { appOrder, datasetOrder, workerpoolOrder, requestOrder };
+}
+
+/**
+ * Build a domain separator from a given domain of create them for testing purposes
+ * @returns a domain and a domain separator
+ */
+export function buildDomain(domain?: TypedDataDomain | undefined) {
+    if (!domain) {
+        domain = { name: 'domain-name' }; // testing purposes
+    }
+    const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
+    return { domain, domainSeparator };
+}
+
+/**
+ * Sign an iExec EIP712 order: app, dataset, workerpool or request
+ * @returns signature of order
+ */
+export async function signOrder(
+    domain: TypedDataDomain,
+    order: Record<string, any>,
+    signer: SignerWithAddress,
+): Promise<string> {
+    let types: Record<string, any> = {};
+    if ('requester' in order) {
+        types = utils.buildTypes('RequestOrder');
+    } else if ('app' in order) {
+        types = utils.buildTypes('AppOrder');
+    } else if ('dataset' in order) {
+        types = utils.buildTypes('DatasetOrder');
+    } else if ('workerpool' in order) {
+        types = utils.buildTypes('WorkerpoolOrder');
+    }
+    return await signer._signTypedData(domain, types, order);
 }
