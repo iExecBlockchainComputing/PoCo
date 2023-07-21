@@ -8,15 +8,17 @@ import deploy_ens from '../migrations/5_deploy_ens';
 import whitelisting from '../migrations/6_whitelisting';
 import functions from '../migrations/999_functions';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
-const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
 import {
     ERC1538Proxy,
+    IexecLibOrders_v5,
     IexecPocoBoostDelegate__factory,
     ERC1538Update,
     ERC1538Update__factory,
     ERC1538Query,
     ERC1538Query__factory,
 } from '../typechain';
+const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
+const IexecLibOrders: IexecLibOrders_v5 = hre.artifacts.require('IexecLibOrders_v5');
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
@@ -48,13 +50,14 @@ module.exports = async function () {
 
     console.log('Deploying PoCo Boost..');
     const [owner] = await hre.ethers.getSigners();
-
-    const iexecPocoBoostDeployement = await hre.deployments.deploy('IexecPocoBoostDelegate', {
+    const iexecPocoBoostDeployment = await hre.deployments.deploy('IexecPocoBoostDelegate', {
+        libraries: {
+            IexecLibOrders_v5: (await IexecLibOrders.deployed()).address,
+        },
         from: owner.address,
         log: true,
     });
-
-    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployement.address}`);
+    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployment.address}`);
 
     // Show proxy functions
     await functions(accounts);
@@ -63,7 +66,7 @@ module.exports = async function () {
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Link IexecPocoBoost methods to ERC1538Proxy
     await erc1538.updateContract(
-        iexecPocoBoostDeployement.address,
+        iexecPocoBoostDeployment.address,
         getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
         'Linking ' + IexecPocoBoostDelegate__factory.name,
     );
@@ -77,7 +80,7 @@ module.exports = async function () {
     await Promise.all(
         [...Array(functionCount.toNumber()).keys()].map(async (i) => {
             const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
-            if (contract == iexecPocoBoostDeployement.address) {
+            if (contract == iexecPocoBoostDeployment.address) {
                 console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
             }
         }),

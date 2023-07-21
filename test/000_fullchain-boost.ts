@@ -17,8 +17,8 @@
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { TypedDataDomain } from 'ethers';
 import {
-    Registry,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
@@ -33,7 +33,7 @@ import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
-import { buildCompatibleOrders } from '../utils/createOrders';
+import { buildCompatibleOrders, buildDomain, signOrder } from '../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
@@ -64,31 +64,38 @@ async function extractRegistryEntryAddress(
 }
 
 describe('IexecPocoBoostDelegate (integration tests)', function () {
+    let domain: TypedDataDomain;
+    let domainSeparator = '';
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
-    let [scheduler, worker, enclave, anyone] = [] as SignerWithAddress[];
+    let [appProvider, scheduler, worker, enclave, anyone] = [] as SignerWithAddress[];
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        const [owner, appProvider, datasetProvider, _scheduler, _worker, _enclave, _anyone] =
+        const [owner, _appProvider, datasetProvider, _scheduler, _worker, _enclave, _anyone] =
             await hre.ethers.getSigners();
+        appProvider = _appProvider;
         scheduler = _scheduler;
         worker = _worker;
         enclave = _enclave;
         anyone = _anyone;
 
         await deployments.fixture();
-        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(
-            await getContractAddress('ERC1538Proxy'),
-            owner,
-        );
-
+        const proxyAddress = await getContractAddress('ERC1538Proxy');
+        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
+        domain = {
+            name: 'iExecODB',
+            version: '5.0.0',
+            chainId: hre.network.config.chainId,
+            verifyingContract: proxyAddress,
+        };
+        domainSeparator = buildDomain(domain).domainSeparator;
         const appRegistryInstance: AppRegistry = AppRegistry__factory.connect(
             await getContractAddress('AppRegistry'),
-            owner,
+            appProvider,
         );
         const appReceipt = await appRegistryInstance
             .createApp(
@@ -140,6 +147,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -175,6 +183,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .deploy()
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -222,6 +231,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
+            appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,

@@ -399,6 +399,6 @@ module.exports = {
 		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
 		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
 		requestToDeal,
-        buildTypes
+		buildTypes
 	},
 };
