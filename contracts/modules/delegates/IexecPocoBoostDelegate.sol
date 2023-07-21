@@ -56,10 +56,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
-        // app
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderHash = ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, _apporder.hash());
-        // TODO: Handle presign
+        // TODO: Handle presignature
         require(
             _verifySignature(appOwner, appOrderHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
@@ -172,7 +171,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     function _verifySignature(
         address account,
         bytes memory message,
-        bytes memory signature
+        bytes calldata signature
     ) internal pure returns (bool) {
         return keccak256(message).toEthSignedMessageHash().recover(signature) == account;
     }
@@ -186,7 +185,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     function _verifySignature(
         address account,
         bytes32 messageHash,
-        bytes memory signature
+        bytes calldata signature
     ) internal pure returns (bool) {
         return messageHash.recover(signature) == account;
     }
