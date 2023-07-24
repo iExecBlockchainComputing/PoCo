@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { _TypedDataEncoder } from '@ethersproject/hash';
 import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
@@ -116,15 +117,33 @@ export async function signOrder(
     order: Record<string, any>,
     signer: SignerWithAddress,
 ): Promise<string> {
-    let types: Record<string, any> = {};
+    const iexecOrderClassType = getTypeOf(order);
+    return await signer._signTypedData(domain, utils.buildTypes(iexecOrderClassType), order);
+}
+
+/**
+ * Get typed data hash of order: app, dataset, workerpool or request
+ * @returns order hash
+ */
+export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): string {
+    const iexecOrderClassType = getTypeOf(order);
+    return _TypedDataEncoder.hash(domain, utils.buildTypes(iexecOrderClassType), order);
+}
+
+/**
+ * Retrieve specific order type from generic order instance
+ * @param order iExec order (app, dataset, workerpool or request orders)
+ * @returns class type
+ */
+function getTypeOf(order: Record<string, any>) {
     if ('requester' in order) {
-        types = utils.buildTypes('RequestOrder');
+        return 'RequestOrder';
     } else if ('app' in order) {
-        types = utils.buildTypes('AppOrder');
+        return 'AppOrder';
     } else if ('dataset' in order) {
-        types = utils.buildTypes('DatasetOrder');
+        return 'DatasetOrder';
     } else if ('workerpool' in order) {
-        types = utils.buildTypes('WorkerpoolOrder');
+        return 'WorkerpoolOrder';
     }
-    return await signer._signTypedData(domain, types, order);
+    return '';
 }

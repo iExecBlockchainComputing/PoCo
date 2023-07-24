@@ -57,10 +57,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Overpriced workerpool"
         );
         address appOwner = Ownable(_apporder.app).owner();
-        bytes32 appOrderHash = ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, _apporder.hash());
-        // TODO: Handle presignature
+        bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
+            EIP712DOMAIN_SEPARATOR,
+            _apporder.hash()
+        );
         require(
-            _verifySignature(appOwner, appOrderHash, _apporder.sign),
+            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bytes32 tag = _requestorder.tag; // TODO compute tag
@@ -93,7 +95,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.params
         );
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(dealid);
+        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash);
     }
 
     // TODO: Move to IexecAccessorsBoost
@@ -129,7 +131,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // TODO: Check enclave challenge if TEE bit set
         // Check scheduler signature
         require(
-            _verifySignature(
+            _verifySignatureOfEthSignedMessage(
                 deal.workerpoolOwner,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
@@ -143,7 +145,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
-                _verifySignature(
+                _verifySignatureOfEthSignedMessage(
                     enclaveChallenge,
                     abi.encodePacked(msg.sender, taskId, resultDigest),
                     enclaveSign
@@ -163,12 +165,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * Verify that a signature is an Ethereum Signed Message from a particular account.
+     * Verify that an Ethereum Signed Message is signed by a particular account.
      * @param account expected signer account
      * @param message original message that was signed
      * @param signature signature to be verified
      */
-    function _verifySignature(
+    function _verifySignatureOfEthSignedMessage(
         address account,
         bytes memory message,
         bytes calldata signature
@@ -177,7 +179,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * Verify that a message hash is signed by a particular account.
+     * Verify that a message is signed by a particular account.
      * @param account expected signer account
      * @param messageHash message hash that was signed
      * @param signature signature to be verified
@@ -188,5 +190,33 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bytes calldata signature
     ) internal pure returns (bool) {
         return messageHash.recover(signature) == account;
+    }
+
+    /**
+     * Verify that a message hash is presigned by a particular account.
+     * @param account expected presigner account
+     * @param messageHash message hash that was presigned
+     */
+    function _verifyPresignature(
+        address account,
+        bytes32 messageHash
+    ) internal view returns (bool) {
+        return account != address(0) && account == m_presigned[messageHash];
+    }
+
+    /**
+     * Verify that a message hash is signed or presigned by a particular account.
+     * @param account expected signer or presigner account
+     * @param messageHash message hash that was signed or presigned
+     * @param signature signature to be verified. Not required for a presignature.
+     */
+    function _verifySignatureOrPresignature(
+        address account,
+        bytes32 messageHash,
+        bytes calldata signature
+    ) internal view returns (bool) {
+        return
+            (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
+            _verifyPresignature(account, messageHash);
     }
 }
