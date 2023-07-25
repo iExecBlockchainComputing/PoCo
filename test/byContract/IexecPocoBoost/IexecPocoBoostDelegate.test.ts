@@ -11,6 +11,7 @@ import {
     App__factory,
     Workerpool__factory,
     Dataset__factory,
+    TestClient,
     TestClient__factory,
     IexecLibOrders_v5__factory,
     App,
@@ -353,8 +354,6 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when invalid app order signature', async function () {
             appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            datasetInstance.owner.returns(datasetProvider.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
@@ -375,16 +374,25 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('Push Result Boost', function () {
-        it('Should push result (TEE & callback)', async function () {
+        beforeEach('mock app, dataset and workerpool', async () => {
+            // Mock app, dataset and workerpool here before each test so
+            // matchOrdersBoost setup will be lighter when unit testing
+            // pushResultBoost
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+        });
+
+        it('Should push result (TEE & callback)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
                 datasetInstance.address,
                 dealTagTee,
             );
-            const oracleConsumerInstance = await createMock<TestClient__factory>('TestClient');
+            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
+                'TestClient',
+            );
             requestOrder.callback = oracleConsumerInstance.address;
             appOrder.sign = await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -429,8 +437,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result (TEE)', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
@@ -475,8 +481,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result (Standard)', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
             const tag = constants.NULL.BYTES32;
             const dealIdStandard =
                 '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
@@ -520,8 +524,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should not push result with invalid scheduler signature', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
@@ -553,8 +555,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should not push result with invalid enclave signature', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
@@ -592,8 +592,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should not push result with missing data for callback', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
