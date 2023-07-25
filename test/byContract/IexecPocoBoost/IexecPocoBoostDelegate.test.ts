@@ -372,6 +372,58 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('PocoBoost: Invalid app order signature');
         });
+
+        it('Should fail when the workerpool tag does not match the combined tag', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Manually set the tags for app, dataset, and request orders
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002';
+            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000003';
+
+            // Set the workerpool tag to a different value
+            workerpoolOrder.tag =
+                '0x0000000000000000000000000000000000000000000000000000000000000004';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid workerpool tag');
+        });
+
+        it('Should fail when the last byte of the xor between the combined tag and the app tag is not zero', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+
+            // Manually set the tags for app, dataset, and request orders
+            // The last byte of the XOR of these three tags is 1
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002';
+            workerpoolOrder.tag =
+                '0x0000000000000000000000000000000000000000000000000000000000000003';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid app tag');
+        });
     });
 
     describe('Push Result Boost', function () {
