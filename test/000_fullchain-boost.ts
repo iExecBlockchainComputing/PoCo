@@ -19,6 +19,8 @@ import hre, { ethers, deployments } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from 'ethers';
 import {
+    IexecOrderManagement,
+    IexecOrderManagement__factory,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
@@ -33,7 +35,7 @@ import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
-import { buildCompatibleOrders, buildDomain, signOrder } from '../utils/createOrders';
+import { buildCompatibleOrders, hashOrder, signOrder } from '../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
@@ -65,7 +67,7 @@ async function extractRegistryEntryAddress(
 
 describe('IexecPocoBoostDelegate (integration tests)', function () {
     let domain: TypedDataDomain;
-    let domainSeparator = '';
+    let iexecCategoryManagementInstance: IexecOrderManagement;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let appAddress = '';
     let workerpoolAddress = '';
@@ -85,6 +87,10 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
         await deployments.fixture();
         const proxyAddress = await getContractAddress('ERC1538Proxy');
+        iexecCategoryManagementInstance = IexecOrderManagement__factory.connect(
+            proxyAddress,
+            anyone,
+        );
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         domain = {
             name: 'iExecODB',
@@ -92,7 +98,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             chainId: hre.network.config.chainId,
             verifyingContract: proxyAddress,
         };
-        domainSeparator = buildDomain(domain).domainSeparator;
         const appRegistryInstance: AppRegistry = AppRegistry__factory.connect(
             await getContractAddress('AppRegistry'),
             appProvider,
@@ -147,7 +152,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -166,8 +171,41 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealId);
+                .withArgs(dealId, hashOrder(domain, appOrder));
         });
+    });
+
+    it('Should match orders with pre-signatures', async function () {
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+            appAddress,
+            workerpoolAddress,
+            datasetAddress,
+            dealTag,
+        );
+        await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
+            order: appOrder,
+            operation: 0,
+            sign: '0x',
+        });
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        )
+            .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+            .withArgs(
+                workerpoolAddress,
+                dealId,
+                appAddress,
+                datasetAddress,
+                requestOrder.category,
+                requestOrder.params,
+            )
+            .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+            .withArgs(dealId, hashOrder(domain, appOrder));
     });
 
     describe('PushResult', function () {
@@ -183,7 +221,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .deploy()
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -231,7 +269,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,

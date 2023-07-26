@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { _TypedDataEncoder } from '@ethersproject/hash';
 import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
@@ -103,7 +104,12 @@ export function buildCompatibleOrders(
  */
 export function buildDomain(domain?: TypedDataDomain | undefined) {
     if (!domain) {
-        domain = { name: 'domain-name' }; // testing purposes
+        domain = {
+            name: 'domain-name',
+            version: 'domain-version',
+            chainId: 123,
+            verifyingContract: '0x0000000000000000000000000000000000000001',
+        }; // testing purposes
     }
     const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
@@ -111,22 +117,37 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 
 /**
  * Sign an iExec EIP712 order: app, dataset, workerpool or request
- * @returns signature of order
  */
 export async function signOrder(
     domain: TypedDataDomain,
     order: Record<string, any>,
     signer: SignerWithAddress,
-): Promise<string> {
-    let types: Record<string, any> = {};
+): Promise<void> {
+    return utils.signStruct(getTypeOf(order), order, domain, signer);
+}
+
+/**
+ * Get typed data hash of order: app, dataset, workerpool or request
+ * @returns order hash
+ */
+export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): string {
+    return utils.hashStruct(getTypeOf(order), order, domain);
+}
+
+/**
+ * Retrieve specific order type from generic order instance
+ * @param order iExec order (app, dataset, workerpool or request orders)
+ * @returns class type
+ */
+function getTypeOf(order: Record<string, any>): string {
     if ('requester' in order) {
-        types = utils.buildTypes('RequestOrder');
+        return 'RequestOrder';
     } else if ('app' in order) {
-        types = utils.buildTypes('AppOrder');
+        return 'AppOrder';
     } else if ('dataset' in order) {
-        types = utils.buildTypes('DatasetOrder');
+        return 'DatasetOrder';
     } else if ('workerpool' in order) {
-        types = utils.buildTypes('WorkerpoolOrder');
+        return 'WorkerpoolOrder';
     }
-    return await signer._signTypedData(domain, types, order);
+    return '';
 }
