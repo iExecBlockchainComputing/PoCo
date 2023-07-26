@@ -373,7 +373,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid app order signature');
         });
 
-        it('Should fail when the workerpool tag does not match the combined tag', async function () {
+        it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
