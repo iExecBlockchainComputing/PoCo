@@ -398,7 +398,6 @@ module.exports = {
 		hashDatasetOrderOperation:    function(domain, struct) { return hashStruct("DatasetOrderOperation",    struct, domain); },
 		hashWorkerpoolOrderOperation: function(domain, struct) { return hashStruct("WorkerpoolOrderOperation", struct, domain); },
 		hashRequestOrderOperation:    function(domain, struct) { return hashStruct("RequestOrderOperation",    struct, domain); },
-		requestToDeal,
-		buildTypes
+		requestToDeal
 	},
 };

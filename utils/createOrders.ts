@@ -102,7 +102,12 @@ export function buildCompatibleOrders(
  */
 export function buildDomain(domain?: TypedDataDomain | undefined) {
     if (!domain) {
-        domain = { name: 'domain-name' }; // testing purposes
+        domain = {
+            name: 'domain-name',
+            version: 'domain-version',
+            chainId: 123,
+            verifyingContract: '0x0000000000000000000000000000000000000001',
+        }; // testing purposes
     }
     const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
@@ -110,15 +115,13 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 
 /**
  * Sign an iExec EIP712 order: app, dataset, workerpool or request
- * @returns signature of order
  */
 export async function signOrder(
     domain: TypedDataDomain,
     order: Record<string, any>,
     signer: SignerWithAddress,
-): Promise<string> {
-    const iexecOrderClassType = getTypeOf(order);
-    return await signer._signTypedData(domain, utils.buildTypes(iexecOrderClassType), order);
+): Promise<void> {
+    return utils.signStruct(getTypeOf(order), order, domain, signer);
 }
 
 /**
@@ -126,8 +129,7 @@ export async function signOrder(
  * @returns order hash
  */
 export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): string {
-    const iexecOrderClassType = getTypeOf(order);
-    return _TypedDataEncoder.hash(domain, utils.buildTypes(iexecOrderClassType), order);
+    return utils.hashStruct(getTypeOf(order), order, domain);
 }
 
 /**
@@ -135,7 +137,7 @@ export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): 
  * @param order iExec order (app, dataset, workerpool or request orders)
  * @returns class type
  */
-function getTypeOf(order: Record<string, any>) {
+function getTypeOf(order: Record<string, any>): string {
     if ('requester' in order) {
         return 'RequestOrder';
     } else if ('app' in order) {
