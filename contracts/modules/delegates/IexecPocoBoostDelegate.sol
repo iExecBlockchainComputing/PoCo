@@ -56,6 +56,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
+
+        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        require(
+            tag & ~_workerpoolorder.tag == 0x0,
+            "PocoBoost: Workerpool tag does not match demand"
+        );
+        require(
+            (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
+            "PocoBoost: App tag does not match demand"
+        );
+
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
             EIP712DOMAIN_SEPARATOR,
@@ -65,7 +76,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
         );
-        bytes32 tag = _requestorder.tag; // TODO compute tag
         bool hasDataset = _requestorder.dataset != address(0);
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];

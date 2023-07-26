@@ -412,6 +412,60 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('PocoBoost: Invalid app order signature');
         });
+
+        it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Manually set the tags for app, dataset, and request orders
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
+            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
+            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
+
+            // Set the workerpool tag to a different value
+            workerpoolOrder.tag =
+                '0x0000000000000000000000000000000000000000000000000000000000000004'; // 0b0100
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool tag does not match demand');
+        });
+
+        it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+
+            // Manually set the tags for app, dataset, and request orders
+            // The last bit of dataset and request tag is 1, but app tag does not set it
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
+            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
+            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
+
+            // Set the workerpool tag to pass first tag check
+            workerpoolOrder.tag =
+                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App tag does not match demand');
+        });
     });
 
     describe('Push Result Boost', function () {

@@ -93,6 +93,8 @@ export function buildCompatibleOrders(
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
+    datasetOrder.tag = tag;
+    workerpoolOrder.tag = tag;
     return { appOrder, datasetOrder, workerpoolOrder, requestOrder };
 }
 
