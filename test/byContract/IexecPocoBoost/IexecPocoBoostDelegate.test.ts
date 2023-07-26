@@ -409,7 +409,7 @@ describe('IexecPocoBoostDelegate', function () {
 
             // Manually set the tags for app, dataset, and request orders
             // The last byte of the XOR of these three tags is 1
-            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000000'; //0b0000
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000000'; // 0b0000
             datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
             requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
             workerpoolOrder.tag =
