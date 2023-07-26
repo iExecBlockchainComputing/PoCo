@@ -396,7 +396,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Workerpool tag lacking features');
+            ).to.be.revertedWith('PocoBoost: Workerpool tag does not match demand');
         });
 
         it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
@@ -422,7 +422,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: App tag lacking features');
+            ).to.be.revertedWith('PocoBoost: App tag does not match demand');
         });
     });
 
