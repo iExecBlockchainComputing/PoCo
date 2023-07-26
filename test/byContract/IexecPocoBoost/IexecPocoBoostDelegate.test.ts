@@ -399,7 +399,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid workerpool tag');
         });
 
-        it('Should fail when the last byte of the xor between the combined tag and the app tag is not zero', async function () {
+        it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
                 workerpoolInstance.address,
