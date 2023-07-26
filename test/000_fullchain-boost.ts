@@ -35,7 +35,7 @@ import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
-import { buildCompatibleOrders, buildDomain, hashOrder, signOrder } from '../utils/createOrders';
+import { buildCompatibleOrders, hashOrder, signOrder } from '../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
     buildUtf8ResultAndDigest,
@@ -152,7 +152,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -221,7 +221,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .deploy()
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -269,7 +269,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 datasetAddress,
                 dealTag,
             );
-            appOrder.sign = await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, appOrder, appProvider);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
