@@ -56,9 +56,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
+
         bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "PocoBoost: Workerpool tag lacking features");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag lacking features");
+
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderHash = ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, _apporder.hash());
         // TODO: Handle presignature

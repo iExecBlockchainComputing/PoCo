@@ -396,7 +396,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Invalid workerpool tag');
+            ).to.be.revertedWith('PocoBoost: Workerpool tag lacking features');
         });
 
         it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
@@ -409,11 +409,11 @@ describe('IexecPocoBoostDelegate', function () {
 
             // Manually set the tags for app, dataset, and request orders
             // The last byte of the XOR of these three tags is 1
-            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002';
+            appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000000'; //0b0000
+            datasetOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
+            requestOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
             workerpoolOrder.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003';
+                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -422,7 +422,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Invalid app tag');
+            ).to.be.revertedWith('PocoBoost: App tag lacking features');
         });
     });
 
