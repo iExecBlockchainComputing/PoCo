@@ -187,7 +187,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, hashOrder(domain, appOrder));
+                .withArgs(dealIdTee, hashOrder(domain, appOrder), hashOrder(domain, datasetOrder));
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
@@ -246,7 +246,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, appOrderHash);
+                .withArgs(dealIdTee, appOrderHash, datasetOrderHash);
         });
 
         it('Should match orders without dataset', async function () {
@@ -295,7 +295,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, hashOrder(domain, appOrder));
+                .withArgs(dealIdTee, hashOrder(domain, appOrder), constants.NULL.BYTES32);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             expect(deal.datasetPrice).to.be.equal(0);
         });

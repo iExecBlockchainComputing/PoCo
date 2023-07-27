@@ -83,9 +83,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         bool hasDataset = _requestorder.dataset != address(0);
         address datasetOwner;
+        bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             datasetOwner = Ownable(_datasetorder.dataset).owner();
-            bytes32 datasetOrderTypedDataHash = ECDSA.toTypedDataHash(
+            datasetOrderTypedDataHash = ECDSA.toTypedDataHash(
                 EIP712DOMAIN_SEPARATOR,
                 _datasetorder.hash()
             );
@@ -126,7 +127,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.params
         );
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash);
+        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash, datasetOrderTypedDataHash);
     }
 
     // TODO: Move to IexecAccessorsBoost
