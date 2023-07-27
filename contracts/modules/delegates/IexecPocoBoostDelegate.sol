@@ -71,43 +71,43 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
         require(
-            _checkNullOrIdentity(_requestorder.workerpool, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(_requestorder.workerpool, _workerpoolorder.workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            _checkNullOrIdentity(_apporder.datasetrestrict, _datasetorder.dataset),
+            _isNullIdentityOrEquals(_apporder.datasetrestrict, _datasetorder.dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            _checkNullOrIdentity(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         require(
-            _checkNullOrIdentity(_apporder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(_apporder.requesterrestrict, _requestorder.requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            _checkNullOrIdentity(_datasetorder.apprestrict, _apporder.app),
+            _isNullIdentityOrEquals(_datasetorder.apprestrict, _apporder.app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            _checkNullOrIdentity(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            _checkNullOrIdentity(_datasetorder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(_datasetorder.requesterrestrict, _requestorder.requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            _checkNullOrIdentity(_workerpoolorder.apprestrict, _apporder.app),
+            _isNullIdentityOrEquals(_workerpoolorder.apprestrict, _apporder.app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            _checkNullOrIdentity(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
+            _isNullIdentityOrEquals(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            _checkNullOrIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(_workerpoolorder.requesterrestrict, _requestorder.requester),
             "PocoBoost: Requester restricted by workerpool order"
         );
 
