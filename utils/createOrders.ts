@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { IexecLibOrders_v5, Ownable__factory } from '../typechain';
+import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
@@ -145,10 +145,10 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 }
 
 /**
- * Sign all orders required by `matchOrder` calls
+ * Sign all orders required by `matchOrder` calls.
  * @param domain typed data domain for EIP-712 signature
  * @param orders orders to sign (app, dataset, workerpool and requester orders)
- * @param signers accounts that will respectively sign orders depending on their
+ * @param signers accounts which will respectively sign orders according to their
  *  role
  */
 export async function signOrders(
