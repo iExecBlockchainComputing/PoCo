@@ -527,7 +527,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Workerpool restriction in requestorder mismatch');
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
         it('Should fail when apporder mismatch dataset restriction ', async function () {
@@ -547,7 +547,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Dataset restriction in apporder mismatch');
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by app order');
         });
 
         it('Should fail when apporder mismatch workerpool restriction', async function () {
@@ -567,7 +567,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Workerpool restriction in apporder mismatch');
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by app order');
         });
 
         it('Should fail when apporder mismatch requester restriction', async function () {
@@ -587,7 +587,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Requester restriction in apporder mismatch');
+            ).to.be.revertedWith('PocoBoost: Requester restricted by app order');
         });
 
         it('Should fail when datasetorder mismatch app restriction', async function () {
@@ -607,7 +607,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: App restriction in datasetorder mismatch');
+            ).to.be.revertedWith('PocoBoost: App restricted by dataset order');
         });
 
         it('Should fail when datasetorder mismatch workerpool restriction', async function () {
@@ -626,7 +626,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Workerpool restriction in datasetorder mismatch');
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by dataset order');
         });
 
         it('Should fail when datasetorder mismatch requester restriction', async function () {
@@ -645,7 +645,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Requester restriction in datasetorder mismatch');
+            ).to.be.revertedWith('PocoBoost: Requester restricted by dataset order');
         });
 
         it('Should fail when workerpoolorder mismatch app restriction', async function () {
@@ -664,7 +664,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: App restriction in workerpoolorder mismatch');
+            ).to.be.revertedWith('PocoBoost: App restricted by workerpool order');
         });
 
         it('Should fail when workerpoolorder mismatch dataset restriction', async function () {
@@ -683,7 +683,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Dataset restriction in workerpoolorder mismatch');
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by workerpool order');
         });
 
         it('Should fail when workerpoolorder mismatch requester restriction', async function () {
@@ -702,7 +702,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Requester restriction in workerpoolorder mismatch');
+            ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
         });
     });
 

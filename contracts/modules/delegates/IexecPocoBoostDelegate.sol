@@ -72,43 +72,43 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
         require(
             _checkNullOrIdentity(_requestorder.workerpool, _workerpoolorder.workerpool),
-            "PocoBoost: Workerpool restricted by requester"
+            "PocoBoost: Workerpool restricted by request order"
         );
         require(
             _checkNullOrIdentity(_apporder.datasetrestrict, _datasetorder.dataset),
-            "PocoBoost: Dataset restriction in apporder mismatch"
+            "PocoBoost: Dataset restricted by app order"
         );
         require(
             _checkNullOrIdentity(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
-            "PocoBoost: Workerpool restriction in apporder mismatch"
+            "PocoBoost: Workerpool restricted by app order"
         );
         require(
             _checkNullOrIdentity(_apporder.requesterrestrict, _requestorder.requester),
-            "PocoBoost: Requester restriction in apporder mismatch"
+            "PocoBoost: Requester restricted by app order"
         );
         require(
             _checkNullOrIdentity(_datasetorder.apprestrict, _apporder.app),
-            "PocoBoost: App restriction in datasetorder mismatch"
+            "PocoBoost: App restricted by dataset order"
         );
         require(
             _checkNullOrIdentity(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
-            "PocoBoost: Workerpool restriction in datasetorder mismatch"
+            "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
             _checkNullOrIdentity(_datasetorder.requesterrestrict, _requestorder.requester),
-            "PocoBoost: Requester restriction in datasetorder mismatch"
+            "PocoBoost: Requester restricted by dataset order"
         );
         require(
             _checkNullOrIdentity(_workerpoolorder.apprestrict, _apporder.app),
-            "PocoBoost: App restriction in workerpoolorder mismatch"
+            "PocoBoost: App restricted by workerpool order"
         );
         require(
             _checkNullOrIdentity(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
-            "PocoBoost: Dataset restriction in workerpoolorder mismatch"
+            "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
             _checkNullOrIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester),
-            "PocoBoost: Requester restriction in workerpoolorder mismatch"
+            "PocoBoost: Requester restricted by workerpool order"
         );
 
         address appOwner = Ownable(_apporder.app).owner();
