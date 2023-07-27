@@ -474,9 +474,8 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
-            // Set different app adress
+            // Request different app adress
             requestOrder.app = '0x0000000000000000000000000000000000000001';
-            requestOrder.app = '0x0000000000000000000000000000000000000002';
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
