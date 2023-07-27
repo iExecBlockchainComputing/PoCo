@@ -67,11 +67,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: App tag does not match demand"
         );
 
-        // Check match
+        // Check match and restriction
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
-
-        //Check restriction
         require(
             _checkNullOrIdentity(_requestorder.workerpool, _workerpoolorder.workerpool),
             "PocoBoost: Workerpool restriction in requestorder mismatch"
