@@ -30,6 +30,7 @@ import "../interfaces/IexecAccessorsBoost.sol";
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     using ECDSA for bytes32;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _apporder The order signed by the application developer
@@ -112,15 +113,26 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
 
         address appOwner = Ownable(_apporder.app).owner();
-        bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
-            EIP712DOMAIN_SEPARATOR,
-            _apporder.hash()
-        );
+        bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
             _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = _requestorder.dataset != address(0);
+        address datasetOwner;
+        bytes32 datasetOrderTypedDataHash;
+        if (hasDataset) {
+            datasetOwner = Ownable(_datasetorder.dataset).owner();
+            datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
+            require(
+                _verifySignatureOrPresignature(
+                    datasetOwner,
+                    datasetOrderTypedDataHash,
+                    _datasetorder.sign
+                ),
+                "PocoBoost: Invalid dataset order signature"
+            );
+        }
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
@@ -129,7 +141,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.appOwner = appOwner;
         deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
         if (hasDataset) {
-            deal.datasetOwner = Ownable(_datasetorder.dataset).owner();
+            deal.datasetOwner = datasetOwner;
             deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
         }
         // deal.workerReward = ;
@@ -149,7 +161,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.params
         );
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash);
+        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash, datasetOrderTypedDataHash);
     }
 
     // TODO: Move to IexecAccessorsBoost
@@ -216,6 +228,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
         emit ResultPushedBoost(dealId, index, results);
+    }
+
+    /**
+     * Hash a Typed Data using the configured domain.
+     * @param structHash original structure hash
+     */
+    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+        return ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
 
     /**

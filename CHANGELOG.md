@@ -26,6 +26,7 @@
 - Migrate `IexecPocoBoost` linking to hardhat deploy script. (#166)
 - Update prettier rules and reformat. (#167, #168, #169, #170)
 - Implement `matchOrdersBoost`. (#171, #172, #174, #175, #182, #184, #185, #188, #186, #187, #189, #190)
+    - Sign and presign orders. (#191)
 - Implement `pushResultBoost`. (#173, #176, #183)
 - Refactor tests. (#177, #178, #179, #181)
 - Add mocha to use test explorer. (#180)
