@@ -279,7 +279,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
      * @param identity address to be verified
      * @param expectedAddress expected address
      */
-    function _checkNullOrIdentity(
+    function _isNullIdentityOrEquals(
         address identity,
         address expectedAddress
     ) internal pure returns (bool) {
