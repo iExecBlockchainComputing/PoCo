@@ -14,6 +14,7 @@ interface Iexec<T> {
 }
 
 export interface IexecAccounts extends Iexec<SignerWithAddress> {}
+
 export interface IexecOrders extends Iexec<Record<string, any>> {
     app: IexecLibOrders_v5.AppOrderStruct;
     dataset: IexecLibOrders_v5.DatasetOrderStruct;
@@ -118,7 +119,7 @@ export function buildCompatibleOrders(
             workerpool: workerpoolOrder,
             requester: requestOrder,
         } as IexecOrders,
-        // expose orders differently to make them easier to use in tests
+        // Expose orders differently to make them easier to use in tests
         appOrder: appOrder,
         datasetOrder: datasetOrder,
         workerpoolOrder: workerpoolOrder,
@@ -143,6 +144,13 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
     return { domain, domainSeparator };
 }
 
+/**
+ * Sign all orders required by `matchOrder` calls
+ * @param domain typed data domain for EIP-712 signature
+ * @param orders orders to sign (app, dataset, workerpool and requester orders)
+ * @param signers accounts that will respectively sign orders depending on their
+ *  role
+ */
 export async function signOrders(
     domain: TypedDataDomain,
     orders: IexecOrders,

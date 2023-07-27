@@ -153,7 +153,6 @@ describe('IexecPocoBoostDelegate', function () {
                     datasetInstance.address,
                     dealTagTee,
                 );
-            //const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders;
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
             // Set prices
