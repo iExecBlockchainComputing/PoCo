@@ -494,9 +494,8 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
-            // Set different dataset adress
+            // Request different dataset adress
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
-            datasetOrder.dataset = '0x0000000000000000000000000000000000000002';
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
