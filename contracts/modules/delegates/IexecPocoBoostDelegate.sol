@@ -71,6 +71,48 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
 
+        //Check restriction
+        require(
+            _checkNullOrIdentity(_requestorder.workerpool, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restriction in requestorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_apporder.datasetrestrict, _datasetorder.dataset),
+            "PocoBoost: Dataset restriction in apporder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restriction in apporder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_apporder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restriction in apporder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_datasetorder.apprestrict, _apporder.app),
+            "PocoBoost: App restriction in datasetorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restriction in datasetorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_datasetorder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restriction in datasetorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_workerpoolorder.apprestrict, _apporder.app),
+            "PocoBoost: App restriction in workerpoolorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
+            "PocoBoost: Dataset restriction in workerpoolorder mismatch"
+        );
+        require(
+            _checkNullOrIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restriction in workerpoolorder mismatch"
+        );
+
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
             EIP712DOMAIN_SEPARATOR,
@@ -232,5 +274,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         return
             (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
             _verifyPresignature(account, messageHash);
+    }
+
+    /**
+     * Identity verification
+     * @param identity address of the expected retricted object
+     * @param candidate address of the object
+     */
+    function _checkNullOrIdentity(
+        address identity,
+        address candidate
+    ) internal pure returns (bool valid) {
+        return identity == address(0) || identity == candidate; // Simple address
     }
 }
