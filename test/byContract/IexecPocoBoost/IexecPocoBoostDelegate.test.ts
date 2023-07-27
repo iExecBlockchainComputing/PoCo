@@ -424,6 +424,28 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid app order signature');
         });
 
+        it('Should fail when invalid dataset order signature', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
+        });
+
         it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 appInstance.address,
