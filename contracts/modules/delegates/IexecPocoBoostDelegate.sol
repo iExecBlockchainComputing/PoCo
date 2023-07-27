@@ -67,9 +67,49 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: App tag does not match demand"
         );
 
-        // Check match
+        // Check match and restriction
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
+        require(
+            _isNullIdentityOrEquals(_requestorder.workerpool, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restricted by request order"
+        );
+        require(
+            _isNullIdentityOrEquals(_apporder.datasetrestrict, _datasetorder.dataset),
+            "PocoBoost: Dataset restricted by app order"
+        );
+        require(
+            _isNullIdentityOrEquals(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restricted by app order"
+        );
+        require(
+            _isNullIdentityOrEquals(_apporder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restricted by app order"
+        );
+        require(
+            _isNullIdentityOrEquals(_datasetorder.apprestrict, _apporder.app),
+            "PocoBoost: App restricted by dataset order"
+        );
+        require(
+            _isNullIdentityOrEquals(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
+            "PocoBoost: Workerpool restricted by dataset order"
+        );
+        require(
+            _isNullIdentityOrEquals(_datasetorder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restricted by dataset order"
+        );
+        require(
+            _isNullIdentityOrEquals(_workerpoolorder.apprestrict, _apporder.app),
+            "PocoBoost: App restricted by workerpool order"
+        );
+        require(
+            _isNullIdentityOrEquals(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
+            "PocoBoost: Dataset restricted by workerpool order"
+        );
+        require(
+            _isNullIdentityOrEquals(_workerpoolorder.requesterrestrict, _requestorder.requester),
+            "PocoBoost: Requester restricted by workerpool order"
+        );
 
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
@@ -232,5 +272,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         return
             (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
             _verifyPresignature(account, messageHash);
+    }
+
+    /**
+     * Verify that an identity is null or equal to an expected address.
+     * @param identity address to be verified
+     * @param expectedAddress expected address
+     */
+    function _isNullIdentityOrEquals(
+        address identity,
+        address expectedAddress
+    ) internal pure returns (bool) {
+        return identity == address(0) || identity == expectedAddress; // Simple address
     }
 }

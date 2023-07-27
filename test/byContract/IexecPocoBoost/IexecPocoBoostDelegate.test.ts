@@ -506,6 +506,201 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
+
+        it('Should fail when requestorder mismatch workerpool restriction ', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Request different dataset adress
+            requestOrder.workerpool = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+        });
+
+        it('Should fail when apporder mismatch dataset restriction ', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Request different dataset adress
+            appOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by app order');
+        });
+
+        it('Should fail when apporder mismatch workerpool restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Set different workerpool address
+            appOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by app order');
+        });
+
+        it('Should fail when apporder mismatch requester restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Set different requester address
+            appOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Requester restricted by app order');
+        });
+
+        it('Should fail when datasetorder mismatch app restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            // Set different app address
+            datasetOrder.apprestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App restricted by dataset order');
+        });
+
+        it('Should fail when datasetorder mismatch workerpool restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            datasetOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by dataset order');
+        });
+
+        it('Should fail when datasetorder mismatch requester restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            datasetOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Requester restricted by dataset order');
+        });
+
+        it('Should fail when workerpoolorder mismatch app restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            workerpoolOrder.apprestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App restricted by workerpool order');
+        });
+
+        it('Should fail when workerpoolorder mismatch dataset restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            workerpoolOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by workerpool order');
+        });
+
+        it('Should fail when workerpoolorder mismatch requester restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                appInstance.address,
+                workerpoolInstance.address,
+                datasetInstance.address,
+                dealTagTee,
+            );
+            workerpoolOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
+        });
     });
 
     describe('Push Result Boost', function () {
