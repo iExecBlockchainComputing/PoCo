@@ -72,7 +72,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
         require(
             _checkNullOrIdentity(_requestorder.workerpool, _workerpoolorder.workerpool),
-            "PocoBoost: Workerpool restriction in requestorder mismatch"
+            "PocoBoost: Workerpool restricted by requester"
         );
         require(
             _checkNullOrIdentity(_apporder.datasetrestrict, _datasetorder.dataset),
