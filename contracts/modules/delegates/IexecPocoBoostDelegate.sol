@@ -282,7 +282,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     function _checkNullOrIdentity(
         address identity,
         address expectedAddress
-    ) internal pure returns (bool valid) {
+    ) internal pure returns (bool) {
         return identity == address(0) || identity == expectedAddress; // Simple address
     }
 }
