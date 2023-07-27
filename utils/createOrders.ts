@@ -2,9 +2,24 @@ import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { IexecLibOrders_v5 } from '../typechain';
+import { IexecLibOrders_v5, Ownable__factory } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
+
+interface Iexec<T> {
+    app: T;
+    dataset: T;
+    workerpool: T;
+    requester: T;
+}
+
+export interface IexecAccounts extends Iexec<SignerWithAddress> {}
+export interface IexecOrders extends Iexec<Record<string, any>> {
+    app: IexecLibOrders_v5.AppOrderStruct;
+    dataset: IexecLibOrders_v5.DatasetOrderStruct;
+    workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
+    requester: IexecLibOrders_v5.RequestOrderStruct;
+}
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
@@ -95,7 +110,20 @@ export function buildCompatibleOrders(
     requestOrder.tag = tag;
     datasetOrder.tag = tag;
     workerpoolOrder.tag = tag;
-    return { appOrder, datasetOrder, workerpoolOrder, requestOrder };
+
+    return {
+        orders: {
+            app: appOrder,
+            dataset: datasetOrder,
+            workerpool: workerpoolOrder,
+            requester: requestOrder,
+        } as IexecOrders,
+        // expose orders differently to make them easier to use in tests
+        appOrder: appOrder,
+        datasetOrder: datasetOrder,
+        workerpoolOrder: workerpoolOrder,
+        requestOrder: requestOrder,
+    };
 }
 
 /**
@@ -113,6 +141,19 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
     }
     const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
+}
+
+export async function signOrders(
+    domain: TypedDataDomain,
+    orders: IexecOrders,
+    signers: IexecAccounts,
+): Promise<void> {
+    await signOrder(domain, orders.app, signers.app);
+    if (orders.dataset) {
+        await signOrder(domain, orders.dataset, signers.dataset);
+    }
+    await signOrder(domain, orders.workerpool, signers.workerpool);
+    await signOrder(domain, orders.requester, signers.requester);
 }
 
 /**
