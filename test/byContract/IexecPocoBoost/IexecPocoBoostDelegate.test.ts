@@ -476,7 +476,6 @@ describe('IexecPocoBoostDelegate', function () {
             );
             // Request different app adress
             requestOrder.app = '0x0000000000000000000000000000000000000001';
-            appOrder.app = '0x0000000000000000000000000000000000000002';
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -497,7 +496,6 @@ describe('IexecPocoBoostDelegate', function () {
             );
             // Request different dataset adress
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
-            datasetOrder.dataset = '0x0000000000000000000000000000000000000002';
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -518,7 +516,6 @@ describe('IexecPocoBoostDelegate', function () {
             );
             // Request different dataset adress
             requestOrder.workerpool = '0x0000000000000000000000000000000000000001';
-            workerpoolOrder.workerpool = '0x0000000000000000000000000000000000000002';
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
