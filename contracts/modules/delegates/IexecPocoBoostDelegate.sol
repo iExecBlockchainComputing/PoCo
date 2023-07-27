@@ -73,10 +73,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
 
         address appOwner = Ownable(_apporder.app).owner();
-        bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
-            EIP712DOMAIN_SEPARATOR,
-            _apporder.hash()
-        );
+        bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
             _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
@@ -86,10 +83,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             datasetOwner = Ownable(_datasetorder.dataset).owner();
-            datasetOrderTypedDataHash = ECDSA.toTypedDataHash(
-                EIP712DOMAIN_SEPARATOR,
-                _datasetorder.hash()
-            );
+            datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
             require(
                 _verifySignatureOrPresignature(
                     datasetOwner,
@@ -194,6 +188,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
         emit ResultPushedBoost(dealId, index, results);
+    }
+
+    /**
+     * Hash a Typed Data using the configured domain.
+     * @param structHash original structure hash
+     */
+    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+        return ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
 
     /**
