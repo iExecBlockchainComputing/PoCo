@@ -67,6 +67,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: App tag does not match demand"
         );
 
+        // Check match
+        require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
+        require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
+
         address appOwner = Ownable(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = ECDSA.toTypedDataHash(
             EIP712DOMAIN_SEPARATOR,
