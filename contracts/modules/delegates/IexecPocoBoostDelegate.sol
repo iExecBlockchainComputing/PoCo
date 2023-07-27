@@ -283,6 +283,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         address identity,
         address expectedAddress
     ) internal pure returns (bool valid) {
-        return identity == address(0) || identity == candidate; // Simple address
+        return identity == address(0) || identity == expectedAddress; // Simple address
     }
 }
