@@ -495,7 +495,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetInstance.address,
                 dealTagTee,
             );
-            // Set different app adress
+            // Set different dataset adress
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
             datasetOrder.dataset = '0x0000000000000000000000000000000000000002';
 
