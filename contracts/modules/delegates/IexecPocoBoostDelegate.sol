@@ -275,7 +275,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     }
 
     /**
-     * Identity verification
+     * Verify that an identity is null or equal to an expected address.
      * @param identity address to be verified
      * @param expectedAddress expected address
      */
