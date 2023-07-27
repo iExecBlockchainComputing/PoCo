@@ -79,23 +79,15 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        const [
-            owner,
-            _requester,
-            _appProvider,
-            _datasetProvider,
-            _scheduler,
-            _worker,
-            _enclave,
-            _anyone,
-        ] = await hre.ethers.getSigners();
-        requester = _requester;
-        appProvider = _appProvider;
-        datasetProvider = _datasetProvider;
-        scheduler = _scheduler;
-        worker = _worker;
-        enclave = _enclave;
-        anyone = _anyone;
+        let signers = await hre.ethers.getSigners();
+        const owner = signers[0];
+        requester = signers[1];
+        appProvider = signers[2];
+        datasetProvider = signers[3];
+        scheduler = signers[4];
+        worker = signers[5];
+        enclave = signers[6];
+        anyone = signers[7];
         accounts = {
             app: appProvider,
             dataset: datasetProvider,
@@ -134,7 +126,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
         const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await getContractAddress('WorkerpoolRegistry'),
-            owner,
+            anyone,
         );
         const workerpoolReceipt = await workerpoolRegistryInstance
             .createWorkerpool(scheduler.address, 'my-workerpool')
@@ -146,7 +138,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
         const datasetRegistryInstance: DatasetRegistry = DatasetRegistry__factory.connect(
             await getContractAddress('DatasetRegistry'),
-            owner,
+            anyone,
         );
         const datasetReceipt = await datasetRegistryInstance
             .createDataset(
