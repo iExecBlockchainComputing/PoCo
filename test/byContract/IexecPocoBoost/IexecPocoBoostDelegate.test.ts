@@ -475,6 +475,7 @@ describe('IexecPocoBoostDelegate', function () {
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, datasetOrder, datasetProvider);
             await signOrder(domain, workerpoolOrder, scheduler);
+            await signOrder(domain, requestOrder, anyone);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
